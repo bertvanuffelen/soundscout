@@ -1,0 +1,157 @@
+{
+  "app": {
+    "title": "SoundScout"
+  },
+  "common": {
+    "back": "Back",
+    "loading": "Loading..."
+  },
+  "map": {
+    "title": "Choose a location",
+    "selectLocation": "Click on a location to explore"
+  },
+  "themes": {
+    "basis": {
+      "name": "Default",
+      "description": "The default theme with the farm"
+    },
+    "test-metro": {
+      "name": "Metro (Test)",
+      "description": "Test theme with metro station"
+    }
+  },
+  "start": {
+    "startGame": "Start Game",
+    "newComposition": "New Composition",
+    "howItWorks": "How does it work?",
+    "myCompositions": "My Compositions",
+    "tagline": "Discover sounds, make music!",
+    "loading": "Loading audio...",
+    "tutorialTitle": "How SoundScout works",
+    "tutorialSteps": [
+      "Explore a location and click on the sounds you hear",
+      "Collect up to 6 sounds in your recorder",
+      "Go to the studio and drag your sounds onto the timeline",
+      "Combine sounds into your own composition!"
+    ],
+    "closeTutorial": "Got it!"
+  },
+  "location": {
+    "backToMap": "Back",
+    "toStudio": "To Studio",
+    "recorderFull": "Your recorder is full!",
+    "goToStudio": "Go to the studio?",
+    "moreLocations": "Another location?",
+    "stayHere": "Stay here"
+  },
+  "recorder": {
+    "title": "Recorder",
+    "eject": "Remove",
+    "preview": "Listen",
+    "empty": "Empty"
+  },
+  "studio": {
+    "title": "Studio",
+    "library": "Library",
+    "timeline": "Timeline",
+    "backToLocation": "Back to City",
+    "toClub": "To Club",
+    "emptyLibrary": "Go collect some sounds first!",
+    "dragHint": "Drag sounds to the timeline",
+    "dragToTimeline": "Drag to timeline"
+  },
+  "transport": {
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "loop": "Loop",
+    "clearAll": "Clear All",
+    "confirmClear": "Are you sure?"
+  },
+  "club": {
+    "title": "The Stage",
+    "backToStudio": "Back to Studio",
+    "playAgain": "Play Again",
+    "share": "Share",
+    "nameComposition": "Name your composition",
+    "namePlaceholder": "My composition",
+    "newComposition": "New composition",
+    "newCompositionConfirm": "Are you sure you want to start over? Your collected sounds and composition will be lost and cannot be recovered.",
+    "nowPlaying": "Now playing...",
+    "cancel": "Cancel",
+    "save": "Save",
+    "saved": "Saved!",
+    "saveTitle": "Save composition",
+    "saveWarning": "Your composition is saved locally in your browser. Note: if you clear your browser data, your composition will be lost.",
+    "dontShowAgain": "Don't show again",
+    "download": "Download MP3",
+    "exporting": "Exporting...",
+    "exportSuccess": "Success! Your MP3 is downloading.",
+    "exportError": "Export failed. Please try again."
+  },
+  "compositions": {
+    "title": "My Compositions",
+    "back": "Back",
+    "tracks": "tracks",
+    "play": "Play",
+    "delete": "Delete",
+    "cancel": "Cancel",
+    "deleteTitle": "Delete composition",
+    "deleteConfirm": "Are you sure you want to delete \"{{name}}\"? This cannot be undone.",
+    "emptyTitle": "No compositions yet",
+    "emptyDescription": "Your saved compositions will appear here.",
+    "startNew": "Create new composition",
+    "storageWarning": "Compositions are saved locally in your browser. If you clear your browser data, your compositions will be lost."
+  },
+  "locations": {
+    "boerderij": {
+      "name": "The Farm",
+      "description": "A cozy farm full of animal sounds"
+    },
+    "speeltuin": {
+      "name": "The Playground",
+      "description": "A cheerful playground full of kids having fun"
+    },
+    "metro": {
+      "name": "The Metro Station",
+      "description": "A busy metro station with urban sounds"
+    },
+    "gymzaal": {
+      "name": "The Gym",
+      "description": "A sporty gym full of active sounds"
+    },
+    "muziekwinkel": {
+      "name": "The Music Store",
+      "description": "A cozy music store full of instruments"
+    }
+  },
+  "samples": {
+    "boerderij-lach": "Laugh",
+    "boerderij-geit": "Goat",
+    "boerderij-hond": "Dog",
+    "boerderij-kippen": "Chickens",
+    "boerderij-koe": "Cow",
+    "boerderij-paard": "Horse",
+    "speeltuin-drone": "Drone",
+    "speeltuin-skateboard": "Skateboard",
+    "speeltuin-vissen": "Fishing",
+    "speeltuin-voetbal": "Football",
+    "speeltuin-zandbak": "Sandbox",
+    "speeltuin-robot": "Robot",
+    "metro-train": "Train",
+    "metro-announcement": "Announcement",
+    "metro-doors": "Doors",
+    "gymzaal-bal": "Ball",
+    "gymzaal-fluitje": "Whistle",
+    "gymzaal-karate": "Karate",
+    "gymzaal-robot-smiling": "Smiling",
+    "gymzaal-rolschaatsen": "Roller Skating",
+    "gymzaal-vallen": "Falling",
+    "muziekwinkel-drums": "Drums",
+    "muziekwinkel-brass": "Brass",
+    "muziekwinkel-bass": "Bass",
+    "muziekwinkel-guitar": "Guitar",
+    "muziekwinkel-strings": "Strings",
+    "muziekwinkel-piano": "Piano"
+  }
+}

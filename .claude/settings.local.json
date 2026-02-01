@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(tree:*)",
+      "Skill(sc:analyze)",
+      "Skill(sc:analyze:*)",
+      "WebFetch(domain:lucide.dev)"
+    ]
+  }
+}

@@ -1,0 +1,157 @@
+{
+  "app": {
+    "title": "SoundScout"
+  },
+  "common": {
+    "back": "Terug",
+    "loading": "Laden..."
+  },
+  "map": {
+    "title": "Kies een locatie",
+    "selectLocation": "Klik op een locatie om te verkennen"
+  },
+  "themes": {
+    "basis": {
+      "name": "Standaard",
+      "description": "Het basis thema met de boerderij"
+    },
+    "test-metro": {
+      "name": "Metro (Test)",
+      "description": "Test thema met metrostation"
+    }
+  },
+  "start": {
+    "startGame": "Start Spel",
+    "newComposition": "Nieuwe Compositie",
+    "howItWorks": "Hoe werkt het?",
+    "myCompositions": "Mijn Composities",
+    "tagline": "Ontdek geluiden, maak muziek!",
+    "loading": "Audio laden...",
+    "tutorialTitle": "Zo werkt SoundScout",
+    "tutorialSteps": [
+      "Verken een locatie en klik op de geluiden die je hoort",
+      "Verzamel tot 6 geluiden in je recorder",
+      "Ga naar de studio en sleep je geluiden op de tijdlijn",
+      "Combineer geluiden tot je eigen compositie!"
+    ],
+    "closeTutorial": "Begrepen!"
+  },
+  "location": {
+    "backToMap": "Terug",
+    "toStudio": "Naar Studio",
+    "recorderFull": "Je recorder is vol!",
+    "goToStudio": "Naar de studio?",
+    "moreLocations": "Nog een locatie?",
+    "stayHere": "Hier blijven"
+  },
+  "recorder": {
+    "title": "Recorder",
+    "eject": "Verwijder",
+    "preview": "Luister",
+    "empty": "Leeg"
+  },
+  "studio": {
+    "title": "Studio",
+    "library": "Bibliotheek",
+    "timeline": "Tijdlijn",
+    "backToLocation": "Terug naar Stad",
+    "toClub": "Naar Club",
+    "emptyLibrary": "Ga eerst geluiden verzamelen!",
+    "dragHint": "Sleep geluiden naar de tijdlijn",
+    "dragToTimeline": "Sleep naar tijdlijn"
+  },
+  "transport": {
+    "play": "Afspelen",
+    "pause": "Pauze",
+    "stop": "Stop",
+    "loop": "Herhalen",
+    "clearAll": "Alles wissen",
+    "confirmClear": "Weet je het zeker?"
+  },
+  "club": {
+    "title": "Het Podium",
+    "backToStudio": "Terug naar Studio",
+    "playAgain": "Opnieuw afspelen",
+    "share": "Delen",
+    "nameComposition": "Geef je compositie een naam",
+    "namePlaceholder": "Mijn compositie",
+    "newComposition": "Nieuwe compositie",
+    "newCompositionConfirm": "Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en compositie gaan verloren en kunnen niet worden teruggehaald.",
+    "nowPlaying": "Nu speelt...",
+    "cancel": "Annuleer",
+    "save": "Opslaan",
+    "saved": "Opgeslagen!",
+    "saveTitle": "Compositie opslaan",
+    "saveWarning": "Je compositie wordt lokaal opgeslagen in je browser. Let op: als je browsergegevens wist, gaat je compositie verloren.",
+    "dontShowAgain": "Niet meer tonen",
+    "download": "Download MP3",
+    "exporting": "Exporteren...",
+    "exportSuccess": "Gelukt! Je MP3 wordt gedownload.",
+    "exportError": "Export mislukt. Probeer opnieuw."
+  },
+  "compositions": {
+    "title": "Mijn Composities",
+    "back": "Terug",
+    "tracks": "tracks",
+    "play": "Afspelen",
+    "delete": "Verwijderen",
+    "cancel": "Annuleren",
+    "deleteTitle": "Compositie verwijderen",
+    "deleteConfirm": "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Dit kan niet ongedaan worden.",
+    "emptyTitle": "Nog geen composities",
+    "emptyDescription": "Je opgeslagen composities verschijnen hier.",
+    "startNew": "Nieuwe compositie maken",
+    "storageWarning": "Composities worden lokaal opgeslagen in je browser. Als je browsergegevens wist, gaan je composities verloren."
+  },
+  "locations": {
+    "boerderij": {
+      "name": "De Boerderij",
+      "description": "Een gezellige boerderij vol dierengeluiden"
+    },
+    "speeltuin": {
+      "name": "De Speeltuin",
+      "description": "Een vrolijke speeltuin vol kinderpret"
+    },
+    "metro": {
+      "name": "Het Metrostation",
+      "description": "Een druk metrostation met stadse geluiden"
+    },
+    "gymzaal": {
+      "name": "De Gymzaal",
+      "description": "Een sportieve gymzaal vol actieve geluiden"
+    },
+    "muziekwinkel": {
+      "name": "De Muziekwinkel",
+      "description": "Een gezellige muziekwinkel vol instrumenten"
+    }
+  },
+  "samples": {
+    "boerderij-lach": "Lach",
+    "boerderij-geit": "Geit",
+    "boerderij-hond": "Hond",
+    "boerderij-kippen": "Kippen",
+    "boerderij-koe": "Koe",
+    "boerderij-paard": "Paard",
+    "speeltuin-drone": "Drone",
+    "speeltuin-skateboard": "Skateboard",
+    "speeltuin-vissen": "Vissen",
+    "speeltuin-voetbal": "Voetbal",
+    "speeltuin-zandbak": "Zandbak",
+    "speeltuin-robot": "Robot",
+    "metro-train": "Metro",
+    "metro-announcement": "Omroep",
+    "metro-doors": "Deuren",
+    "gymzaal-bal": "Bal",
+    "gymzaal-fluitje": "Fluitje",
+    "gymzaal-karate": "Karate",
+    "gymzaal-robot-smiling": "Smiling",
+    "gymzaal-rolschaatsen": "Rolschaatsen",
+    "gymzaal-vallen": "Vallen",
+    "muziekwinkel-drums": "Drums",
+    "muziekwinkel-brass": "Koperblazers",
+    "muziekwinkel-bass": "Basgitaar",
+    "muziekwinkel-guitar": "Gitaar",
+    "muziekwinkel-strings": "Strijkers",
+    "muziekwinkel-piano": "Piano"
+  }
+}
