@@ -55,7 +55,7 @@
     "library": "Bibliotheek",
     "timeline": "Tijdlijn",
     "backToLocation": "Terug naar Stad",
-    "toClub": "Naar Club",
+    "toStage": "Naar Podium",
     "emptyLibrary": "Ga eerst geluiden verzamelen!",
     "dragHint": "Sleep geluiden naar de tijdlijn",
     "dragToTimeline": "Sleep naar tijdlijn"
@@ -68,7 +68,7 @@
     "clearAll": "Alles wissen",
     "confirmClear": "Weet je het zeker?"
   },
-  "club": {
+  "stage": {
     "title": "Het Podium",
     "backToStudio": "Terug naar Studio",
     "playAgain": "Opnieuw afspelen",
@@ -123,6 +123,10 @@
     "muziekwinkel": {
       "name": "De Muziekwinkel",
       "description": "Een gezellige muziekwinkel vol instrumenten"
+    },
+    "klaslokaal": {
+      "name": "Het Klaslokaal",
+      "description": "Een vrolijk klaslokaal vol met activiteiten"
     }
   },
   "samples": {
@@ -152,6 +156,13 @@
     "muziekwinkel-bass": "Basgitaar",
     "muziekwinkel-guitar": "Gitaar",
     "muziekwinkel-strings": "Strijkers",
-    "muziekwinkel-piano": "Piano"
+    "muziekwinkel-piano": "Piano",
+    "klaslokaal-beker-gevallen": "Beker",
+    "klaslokaal-bijen": "Bijen",
+    "klaslokaal-blokken-stapelen": "Blokken",
+    "klaslokaal-lachen-emoji": "Lachen",
+    "klaslokaal-schilderen": "Schilderen",
+    "klaslokaal-tekenen": "Tekenen",
+    "klaslokaal-vallende-bouten": "Bouten"
   }
 }

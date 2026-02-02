@@ -2,7 +2,7 @@
  * useAudioCleanup - Hook for cleaning up audio on component unmount
  *
  * Stops all audio playback when the component unmounts.
- * Use this in components that play audio (StudioView, LocationScene, ClubView).
+ * Use this in components that play audio (StudioView, LocationScene, StageView).
  */
 
 import { useEffect } from 'react';

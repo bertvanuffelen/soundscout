@@ -13,8 +13,9 @@ export type GameScreen =
   | 'map'
   | 'location'
   | 'studio'
-  | 'club'
-  | 'compositions';
+  | 'stage'
+  | 'compositions'
+  | 'teacher';
 
 export type VisualHint = 'glow' | 'pulse' | 'none';
 

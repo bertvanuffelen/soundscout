@@ -17,5 +17,6 @@ export const mapConfig: MapConfig = {
     { locationId: 'speeltuin', x: 64.6, y: 39.1 },
     { locationId: 'gymzaal', x: 11.2, y: 46.9 },
     { locationId: 'muziekwinkel', x: 32.8, y: 23.8 },
+    { locationId: 'klaslokaal', x: 81.3, y: 25.9 },
   ],
 };

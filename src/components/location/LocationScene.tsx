@@ -134,7 +134,7 @@ export function LocationScene() {
       {/* Main area: canvas + surrounding space */}
       <div className="flex-1 flex items-start justify-center pt-1 sm:pt-2 px-2 sm:px-4 pb-0">
         {/* 16:9 Canvas container */}
-        <div className="relative w-full max-w-[calc(100vh*16/9-120px)] sm:max-w-[calc(100vh*16/9-140px)] aspect-video rounded-lg overflow-hidden shadow-2xl">
+        <div className="relative w-full max-w-[calc(100vh*16/9-120px)] sm:max-w-[calc(100vh*16/9-140px)] aspect-video rounded-2xl overflow-hidden shadow-2xl">
           {/* Background image */}
           <div className="absolute inset-0 bg-screen-location" />
           {!bgImageFailed && (

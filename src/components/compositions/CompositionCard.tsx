@@ -68,20 +68,20 @@ export function CompositionCard({
     <>
       <div
         onClick={handleCardClick}
-        className="bg-slate-800/50 hover:bg-slate-800 border border-slate-700 hover:border-slate-600 rounded-xl p-4 cursor-pointer transition-all group"
+        className="bg-bg-surface hover:bg-neutral-50 border border-border-subtle hover:border-primary-300 rounded-2xl p-4 cursor-pointer transition-all group shadow-sm hover:shadow-md"
       >
         <div className="flex items-start gap-3">
           {/* Icon */}
-          <div className="w-10 h-10 rounded-lg bg-accent-500/20 flex items-center justify-center flex-shrink-0">
-            <Music size={20} className="text-accent-400" />
+          <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
+            <Music size={20} className="text-primary-600" />
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-white truncate group-hover:text-accent-300 transition-colors">
+            <h3 className="font-semibold text-text-main truncate group-hover:text-primary-700 transition-colors">
               {composition.name}
             </h3>
-            <p className="text-sm text-slate-400 mt-0.5">
+            <p className="text-sm text-text-muted mt-0.5">
               {formatDate(composition.updatedAt)} •{' '}
               {formatDuration(composition.metadata.duration)} •{' '}
               {composition.metadata.trackCount} {t('compositions.tracks')}
@@ -89,12 +89,11 @@ export function CompositionCard({
           </div>
 
           {/* Actions - always visible on touch, hover on desktop */}
-          <div className="flex items-center gap-1 sm:gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
+          <div className="flex items-center gap-2 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
             <Button
-              variant="ghost"
+              variant="primary"
               size="sm"
               onClick={handlePlayClick}
-              className="bg-accent-500/20 hover:bg-accent-500/40 active:bg-accent-500/60 text-accent-300 px-2 sm:px-3"
               title={t('compositions.play')}
             >
               <Play size={16} className="mr-1" />
@@ -102,7 +101,7 @@ export function CompositionCard({
             </Button>
             <button
               onClick={handleDeleteClick}
-              className="p-2 rounded-lg text-slate-400 sm:text-slate-500 hover:text-error-400 hover:bg-error-500/20 active:bg-error-500/30 transition-colors"
+              className="p-2 rounded-xl text-text-muted hover:text-error-600 hover:bg-error-50 active:bg-error-100 transition-colors"
               title={t('compositions.delete')}
             >
               <Trash2 size={16} />
@@ -118,7 +117,7 @@ export function CompositionCard({
         title={t('compositions.deleteTitle')}
         size="sm"
       >
-        <p className="text-slate-600 text-sm mb-6">
+        <p className="text-text-muted text-sm mb-6">
           {t('compositions.deleteConfirm', { name: composition.name })}
         </p>
         <div className="flex gap-3">
@@ -130,9 +129,9 @@ export function CompositionCard({
             {t('compositions.cancel')}
           </Button>
           <Button
-            variant="primary"
+            variant="danger"
             onClick={handleDeleteConfirm}
-            className="flex-1 bg-error-500 hover:bg-error-600"
+            className="flex-1"
           >
             {t('compositions.delete')}
           </Button>

@@ -227,4 +227,68 @@ export const samples: Sample[] = [
     icon: 'Piano',
     color: '#3498DB', // blue
   },
+  // Klaslokaal samples
+  {
+    id: 'klaslokaal-beker-gevallen',
+    name: 'samples.klaslokaal-beker-gevallen',
+    locationId: 'klaslokaal',
+    audioUrl: '/audio/themes/basis/klaslokaal/beker-gevallen.mp3',
+    duration: 4.0,
+    icon: 'CupSoda',
+    color: '#795548', // brown
+  },
+  {
+    id: 'klaslokaal-bijen',
+    name: 'samples.klaslokaal-bijen',
+    locationId: 'klaslokaal',
+    audioUrl: '/audio/themes/basis/klaslokaal/bijen.mp3',
+    duration: 4.0,
+    icon: 'Bug',
+    color: '#F1C40F', // yellow
+  },
+  {
+    id: 'klaslokaal-blokken-stapelen',
+    name: 'samples.klaslokaal-blokken-stapelen',
+    locationId: 'klaslokaal',
+    audioUrl: '/audio/themes/basis/klaslokaal/blokken-stapelen.mp3',
+    duration: 4.0,
+    icon: 'Boxes',
+    color: '#E74C3C', // red
+  },
+  {
+    id: 'klaslokaal-lachen-emoji',
+    name: 'samples.klaslokaal-lachen-emoji',
+    locationId: 'klaslokaal',
+    audioUrl: '/audio/themes/basis/klaslokaal/lachen-emoji.mp3',
+    duration: 4.0,
+    icon: 'Laugh',
+    color: '#FFD700', // gold
+  },
+  {
+    id: 'klaslokaal-schilderen',
+    name: 'samples.klaslokaal-schilderen',
+    locationId: 'klaslokaal',
+    audioUrl: '/audio/themes/basis/klaslokaal/schilderen.mp3',
+    duration: 4.0,
+    icon: 'Paintbrush',
+    color: '#3498DB', // blue
+  },
+  {
+    id: 'klaslokaal-tekenen',
+    name: 'samples.klaslokaal-tekenen',
+    locationId: 'klaslokaal',
+    audioUrl: '/audio/themes/basis/klaslokaal/tekenen.mp3',
+    duration: 4.0,
+    icon: 'Pencil',
+    color: '#27AE60', // green
+  },
+  {
+    id: 'klaslokaal-vallende-bouten',
+    name: 'samples.klaslokaal-vallende-bouten',
+    locationId: 'klaslokaal',
+    audioUrl: '/audio/themes/basis/klaslokaal/vallende-bouten.mp3',
+    duration: 4.0,
+    icon: 'Wrench',
+    color: '#9E9E9E', // grey
+  },
 ];

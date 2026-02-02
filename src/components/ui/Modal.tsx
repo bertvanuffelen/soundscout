@@ -79,7 +79,7 @@ export function Modal({
       {/* Modal content */}
       <div
         className={cn(
-          'relative w-full bg-white rounded-2xl sm:rounded-3xl shadow-2xl',
+          'relative w-full bg-white rounded-2xl shadow-2xl',
           'transform transition-all',
           'animate-in fade-in zoom-in-95 duration-200',
           sizeStyles[size],
@@ -93,7 +93,7 @@ export function Modal({
           <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-1 sm:pb-2">
             <h2
               id="modal-title"
-              className="text-xl sm:text-2xl font-bold text-sky-700"
+              className="text-xl sm:text-2xl font-bold text-text-main"
             >
               {title}
             </h2>

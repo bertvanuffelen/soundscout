@@ -27,7 +27,7 @@ export function StudioView() {
 
   // Navigation
   const goToMap = useGameStore((s) => s.goToMap);
-  const goToClub = useGameStore((s) => s.goToClub);
+  const goToStage = useGameStore((s) => s.goToStage);
 
   // Timeline state
   const tracks = useTimelineStore((s) => s.tracks);
@@ -74,10 +74,10 @@ export function StudioView() {
     goToMap();
   }, [handleStop, goToMap]);
 
-  const handleGoToClub = useCallback(() => {
+  const handleGoToStage = useCallback(() => {
     handleStop();
-    goToClub();
-  }, [handleStop, goToClub]);
+    goToStage();
+  }, [handleStop, goToStage]);
 
   const handleRemoveClip = useCallback(
     (trackIndex: number, clipId: string) => {
@@ -87,21 +87,21 @@ export function StudioView() {
   );
 
   return (
-    <div className="min-h-screen flex flex-col bg-studio-bg">
+    <div className="min-h-screen flex flex-col bg-studio-bg md:bg-bg-app">
       {/* Navigation bar */}
-      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 bg-white/80 border-b border-primary-200">
+      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
         <Button variant="secondary" size="sm" onClick={handleBack}>
           <span className="hidden sm:inline">{t('studio.backToLocation')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
-        <h1 className="text-base sm:text-lg font-bold text-primary-700">{t('studio.title')}</h1>
+        <h1 className="text-base sm:text-lg font-bold text-text-main">{t('studio.title')}</h1>
         <Button
           variant="primary"
           size="sm"
-          onClick={handleGoToClub}
+          onClick={handleGoToStage}
           disabled={!hasClips}
         >
-          {t('studio.toClub')}
+          {t('studio.toStage')}
         </Button>
       </div>
 

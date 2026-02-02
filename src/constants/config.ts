@@ -18,7 +18,10 @@ export const PLAYHEAD_UPDATE_INTERVAL_MS = 50;
 // =============================================================================
 
 /** Default number of beats in the timeline */
-export const DEFAULT_TOTAL_BEATS = 64;
+export const DEFAULT_TOTAL_BEATS = 128;
+
+/** Number of beats visible in viewport (rest is scrollable) */
+export const VISIBLE_BEATS = 64;
 
 /** Default number of tracks in the timeline */
 export const DEFAULT_TRACK_COUNT = 8;

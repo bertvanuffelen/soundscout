@@ -1,14 +1,16 @@
 import { useEffect } from 'react';
 import { useGameStore } from './stores/gameStore';
 import { useThemeStore } from './stores/themeStore';
+import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { StartScreen } from './components/StartScreen';
 import { MapView } from './components/map/MapView';
 import { LocationScene } from './components/location/LocationScene';
 import { StudioView } from './components/studio/StudioView';
-import { ClubView } from './components/club/ClubView';
+import { StageView } from './components/stage/StageView';
 import { CompositionsView } from './components/compositions';
 import { LocationEditor } from './pages/LocationEditor';
+import { TeacherPage } from './pages/TeacherPage';
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
@@ -47,11 +49,14 @@ function AppContent() {
     case 'studio':
       return <StudioView />;
 
-    case 'club':
-      return <ClubView />;
+    case 'stage':
+      return <StageView />;
 
     case 'compositions':
       return <CompositionsView />;
+
+    case 'teacher':
+      return <TeacherPage />;
 
     default:
       return <StartScreen />;
@@ -71,7 +76,9 @@ function App() {
   // Regular app
   return (
     <ErrorBoundary>
-      <AppContent />
+      <AuthProvider>
+        <AppContent />
+      </AuthProvider>
     </ErrorBoundary>
   );
 }

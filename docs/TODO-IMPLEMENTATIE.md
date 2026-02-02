@@ -31,7 +31,6 @@
 - [x] Gymzaal locatie (6 samples)
 - [x] Muziekwinkel locatie (6 samples)
 - [x] Voortgangsindicator per locatie (verzameld/totaal badge)
-- [ ] Extra locaties toevoegen - LATER (assets nodig)
 
 ### 2. Audio Export als MP3 (4.5) ✅
 **Status:** VOLTOOID
@@ -74,12 +73,51 @@
 - [x] Timeline onderaan (boven transport controls)
 - [x] Library met flex-wrap (geen horizontal scroll)
 
+### 6. Nieuwe Locaties Assets ✅
+**Status:** VOLTOOID (2026-02-01)
+
+- [x] Boerderij: achtergrond + 6 samples
+- [x] Speeltuin: achtergrond + 6 samples
+- [x] Gymzaal: achtergrond + 6 samples
+- [x] Muziekwinkel: achtergrond + 6 samples
+- [x] Alle locaties geconfigureerd via Locatie Editor exports
+
 ---
 
 ## 🔴 P1 - HOOGSTE PRIORITEIT (nu)
 
-### 6. Locatie Editor (5.8) - Voor ontwikkelaar
-**Waarom hoog?** Maakt het makkelijker om nieuwe locaties visueel te bouwen.
+### 7. Klas-code Systeem (4.4) - Supabase vereist
+**Waarom hoog?** Kernfunctionaliteit voor educatief gebruik. Docenten willen composities van leerlingen verzamelen.
+
+**Gedetailleerd plan:** Zie `docs/PLAN-KLASCODE-SYSTEEM.md`
+
+**Kernfeatures:**
+- [ ] Supabase project opzetten + database schema
+- [ ] Docent registratie/login (email + wachtwoord)
+- [ ] Docent kan klassen aanmaken → krijgt 4-cijferige code
+- [ ] Docent dashboard: alle composities per klas bekijken
+- [ ] Leerling: "Deel met docent" → voer klas-code + naam (optioneel) in
+- [ ] Grappige random namen voor anonieme leerlingen
+- [ ] Docent kan composities afspelen en verwijderen
+
+**Privacy:**
+- Geen accounts voor kinderen (GDPR-vriendelijk)
+- Optionele naam met grappige fallback
+- School/docent is data controller
+
+---
+
+## 🟠 P2 - HOGE PRIORITEIT
+
+*Momenteel geen P2 items - focus op P1 (Klas-code Systeem)*
+
+---
+
+## 🟡 P3 - MEDIUM PRIORITEIT
+
+### 8. Locatie Editor Verbeteringen (5.8)
+**Status:** Basis werkend, verbeteringen kunnen later
+**Waarom P3?** Huidige versie is voldoende voor interne ontwikkeling.
 
 - [x] Upload achtergrondafbeelding
 - [x] Klik om hotspots te plaatsen
@@ -89,20 +127,7 @@
 - [ ] Upload samples (MP3) direct koppelen
 - [ ] Drag & drop hotspots verplaatsen
 
----
-
-## 🟠 P2 - HOGE PRIORITEIT
-
-### 7. Nieuwe Locaties Toevoegen
-- [ ] Extra achtergrondafbeeldingen maken/verkrijgen
-- [ ] Samples opnemen/verzamelen per locatie
-- [ ] Via Locatie Editor configureren
-
----
-
-## 🟡 P3 - MEDIUM PRIORITEIT
-
-### 6. Hotspot Animaties (5.3)
+### 9. Hotspot Animaties (5.3)
 **Status:** Basis animaties al geïmplementeerd (pulse, hover)
 - [ ] Idle animatie (subtiele beweging)
 - [ ] Hover animatie
@@ -111,14 +136,14 @@
 
 **Technisch:** Sprite sheets of CSS animaties.
 
-### 7. Ambient Audio (5.2)
+### 10. Ambient Audio (5.2)
 - [ ] Loopende ambient track per locatie
 - [ ] Fade in bij betreden locatie
 - [ ] Fade out bij verlaten
 - [ ] **Toggle in openingsscherm**: "Achtergrondmuziek aan/uit"
 - [ ] ~~Volume slider~~ ❌ VERWIJDERD - alleen aan/uit
 
-### 8. Thema Pakketten Architectuur (5.9)
+### 11. Thema Pakketten Architectuur (5.9)
 - [ ] URL parameter voor thema: `?theme=kerst`
 - [ ] Thema config structuur ontwerpen
 - [ ] Dropdown in openingsscherm (leeg zolang geen thema's)
@@ -128,32 +153,26 @@
 - Nu architectuur voorbereiden zodat later makkelijk uit te breiden
 - Dropdown is leeg/hidden totdat eerste thema bestaat
 
-### 9. Delen met Link (4.3) - Supabase vereist
+### 12. Delen met Link (4.3) - Supabase vereist
+**Notitie:** Kan eventueel gecombineerd met Klas-code Systeem
 - [ ] Deellink genereren (bijv. PARK-7X3K)
 - [ ] Kopieer knop in modal
 - [ ] Publieke luisterpagina (`/luister/:shareCode`)
 - [ ] Link 30 dagen geldig
 - [ ] ~~QR-code~~ (optioneel, lage prio)
 
-### 10. Klas-code Systeem (4.4) - Supabase vereist
-- [ ] Docent maakt klas-code aan
-- [ ] Leerling voert code in bij delen
-- [ ] Docenten dashboard met overzicht
-- [ ] ~~Bulk afspelen~~ ❌ VERWIJDERD
-- [ ] ~~CSV export~~ ❌ VERWIJDERD
-
 ---
 
 ## 🟢 P4 - LAGE PRIORITEIT
 
-### 11. Overige Locaties (5.1 vervolg)
+### 13. Extra Locaties (5.1 vervolg)
 - [ ] Spookhuis locatie
 - [ ] School locatie
 - [ ] Strand locatie
 - [ ] Markt locatie
 - [ ] Ruimtestation locatie
 
-### 12. Eigen Samples Opnemen (5.5)
+### 14. Eigen Samples Opnemen (5.5)
 **Notitie:** Mooie feature, maar pas implementeren na rest.
 
 - [ ] Microfoon permissie
@@ -166,7 +185,7 @@
 
 ## ⚪ P5 - ZEER LAGE PRIORITEIT / PARKEREN
 
-### 13. Sample Effecten (5.4)
+### 15. Sample Effecten (5.4)
 **Notitie:** Niet relevant nu, ver in de toekomst.
 
 - [ ] Per-clip volume
@@ -175,7 +194,7 @@
 - [ ] Pan
 - [ ] Filter
 
-### 14. Multiplayer (5.7)
+### 16. Multiplayer (5.7)
 **Status:** 🔄 GEPARKEERD - misschien later
 
 - [ ] Real-time samenwerken
@@ -212,9 +231,6 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 | `ClipEffects` type | ✅ | 5.4 (lage prio) |
 | `GameScreen` met 'map' | ✅ | 5.1 |
 
-**Te verwijderen** (niet meer nodig):
-- Badge-gerelateerde types (indien aanwezig)
-
 ---
 
 ## Belangrijke UX Notities
@@ -244,6 +260,6 @@ Structuur: `https://soundscout.app/?theme=kerst`
 3. ~~Lokaal Opslaan + Beheren~~ ✅ VOLTOOID
 4. ~~Responsive Design~~ ✅ VOLTOOID
 5. ~~Studio Layout (8 tracks)~~ ✅ VOLTOOID
-6. **Nu**: Locatie Editor verbeteren (drag & drop hotspots)
-7. **Daarna**: Nieuwe locaties toevoegen
-8. **Dan**: Delen met Link (P3, vereist Supabase)
+6. ~~Nieuwe Locaties Assets~~ ✅ VOLTOOID
+7. **Nu**: Klas-code Systeem (Supabase) - zie `docs/PLAN-KLASCODE-SYSTEEM.md`
+8. **Daarna**: Hotspot animaties / Ambient audio (P3)

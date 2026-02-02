@@ -27,8 +27,9 @@ interface AppStore {
   goToMap: () => void;
   goToLocation: (locationId: string) => void;
   goToStudio: () => void;
-  goToClub: () => void;
+  goToStage: () => void;
   goToCompositions: () => void;
+  goToTeacher: () => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -51,9 +52,11 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   goToStudio: () => set({ currentScreen: 'studio' }),
 
-  goToClub: () => set({ currentScreen: 'club' }),
+  goToStage: () => set({ currentScreen: 'stage' }),
 
   goToCompositions: () => set({ currentScreen: 'compositions' }),
+
+  goToTeacher: () => set({ currentScreen: 'teacher' }),
 }));
 
 // Re-export for backwards compatibility during migration

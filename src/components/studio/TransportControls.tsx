@@ -29,7 +29,7 @@ export const TransportControls = memo(function TransportControls({
   const [showConfirmClear, setShowConfirmClear] = useState(false);
 
   return (
-    <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 border-t-2 border-primary-200">
+    <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-t border-border-subtle">
       {/* Play / Pause */}
       <button
         onClick={isPlaying ? onPause : onPlay}

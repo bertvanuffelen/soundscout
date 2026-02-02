@@ -25,30 +25,38 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 
 const variantStyles = {
   primary: [
-    'bg-amber-400 hover:bg-amber-500 active:bg-amber-600 active:scale-[0.98]',
+    // 3D tactile button effect with soft shadow
+    'bg-amber-400 hover:bg-amber-500 active:bg-amber-500',
     'text-amber-900 font-bold',
-    'shadow-lg hover:shadow-xl active:shadow-md',
-    'disabled:bg-amber-300 disabled:shadow-none disabled:active:scale-100',
+    'shadow-[0_4px_0_0_rgba(180,83,9,0.5)] hover:shadow-[0_4px_0_0_rgba(146,64,14,0.5)]',
+    'active:shadow-[0_1px_0_0_rgba(180,83,9,0.5)] active:translate-y-[3px]',
+    'disabled:bg-amber-300 disabled:shadow-[0_4px_0_0_rgba(217,119,6,0.4)] disabled:translate-y-0',
   ].join(' '),
 
   secondary: [
-    'bg-white/70 hover:bg-white/90 active:bg-white active:scale-[0.98]',
-    'text-sky-700 font-semibold',
-    'shadow-md hover:shadow-lg active:shadow-sm',
-    'disabled:bg-white/50 disabled:text-sky-400 disabled:active:scale-100',
+    // 3D tactile effect with soft shadow
+    'bg-white hover:bg-neutral-50 active:bg-neutral-100',
+    'text-text-main font-semibold',
+    'border border-border-subtle',
+    'shadow-[0_3px_0_0_rgba(148,163,184,0.5)] hover:shadow-[0_3px_0_0_rgba(100,116,139,0.5)]',
+    'active:shadow-[0_1px_0_0_rgba(148,163,184,0.5)] active:translate-y-[2px]',
+    'disabled:bg-neutral-100 disabled:text-neutral-400 disabled:translate-y-0',
   ].join(' '),
 
   ghost: [
-    'bg-white/10 hover:bg-white/20 active:bg-white/30 active:scale-[0.98]',
+    'bg-transparent hover:bg-white/10 active:bg-white/20',
     'text-white font-semibold',
-    'disabled:bg-white/5 disabled:text-white/50 disabled:active:scale-100',
+    'active:translate-y-[1px]',
+    'disabled:bg-transparent disabled:text-white/50 disabled:translate-y-0',
   ].join(' '),
 
   danger: [
-    'bg-red-500 hover:bg-red-600 active:bg-red-700 active:scale-[0.98]',
+    // 3D tactile effect with soft shadow
+    'bg-red-500 hover:bg-red-600 active:bg-red-600',
     'text-white font-bold',
-    'shadow-md hover:shadow-lg active:shadow-sm',
-    'disabled:bg-red-300 disabled:active:scale-100',
+    'shadow-[0_4px_0_0_rgba(153,27,27,0.5)] hover:shadow-[0_4px_0_0_rgba(127,29,29,0.5)]',
+    'active:shadow-[0_1px_0_0_rgba(153,27,27,0.5)] active:translate-y-[3px]',
+    'disabled:bg-red-300 disabled:shadow-[0_4px_0_0_rgba(220,38,38,0.4)] disabled:translate-y-0',
   ].join(' '),
 };
 

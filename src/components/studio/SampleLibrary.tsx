@@ -71,8 +71,8 @@ const DraggableSample = memo(function DraggableSample({
         className="w-1 sm:w-2 h-4 sm:h-8 rounded-full shrink-0"
         style={{ backgroundColor: sample.color }}
       />
-      <SampleIcon name={sample.icon} size={12} className="text-neutral-700 sm:w-5 sm:h-5" />
-      <span className="text-[10px] sm:text-sm font-medium text-neutral-700 whitespace-nowrap">
+      <SampleIcon name={sample.icon} size={12} className="text-text-main sm:w-5 sm:h-5" />
+      <span className="text-[10px] sm:text-sm font-medium text-text-main whitespace-nowrap">
         {t(sample.name)}
       </span>
       <button
@@ -91,15 +91,15 @@ export const SampleLibrary = memo(function SampleLibrary({ samples, onPreview }:
 
   if (samples.length === 0) {
     return (
-      <div className="flex-1 px-2 sm:px-4 py-2 sm:py-3 bg-white/80 border-b border-neutral-200">
-        <p className="text-xs sm:text-sm text-neutral-400 italic">{t('studio.emptyLibrary')}</p>
+      <div className="flex-1 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
+        <p className="text-xs sm:text-sm text-text-muted italic">{t('studio.emptyLibrary')}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 px-2 sm:px-4 py-2 sm:py-3 bg-white/80 border-b border-neutral-200">
-      <h3 className="text-[10px] sm:text-xs font-bold text-primary-600 uppercase tracking-wide mb-1.5 sm:mb-2">
+    <div className="flex-1 flex flex-col min-h-0 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
+      <h3 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide mb-1.5 sm:mb-2">
         {t('studio.library')}
       </h3>
       <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto">

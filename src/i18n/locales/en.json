@@ -55,7 +55,7 @@
     "library": "Library",
     "timeline": "Timeline",
     "backToLocation": "Back to City",
-    "toClub": "To Club",
+    "toStage": "To Stage",
     "emptyLibrary": "Go collect some sounds first!",
     "dragHint": "Drag sounds to the timeline",
     "dragToTimeline": "Drag to timeline"
@@ -68,7 +68,7 @@
     "clearAll": "Clear All",
     "confirmClear": "Are you sure?"
   },
-  "club": {
+  "stage": {
     "title": "The Stage",
     "backToStudio": "Back to Studio",
     "playAgain": "Play Again",
@@ -123,6 +123,10 @@
     "muziekwinkel": {
       "name": "The Music Store",
       "description": "A cozy music store full of instruments"
+    },
+    "klaslokaal": {
+      "name": "The Classroom",
+      "description": "A cheerful classroom full of activities"
     }
   },
   "samples": {
@@ -152,6 +156,13 @@
     "muziekwinkel-bass": "Bass",
     "muziekwinkel-guitar": "Guitar",
     "muziekwinkel-strings": "Strings",
-    "muziekwinkel-piano": "Piano"
+    "muziekwinkel-piano": "Piano",
+    "klaslokaal-beker-gevallen": "Cup",
+    "klaslokaal-bijen": "Bees",
+    "klaslokaal-blokken-stapelen": "Blocks",
+    "klaslokaal-lachen-emoji": "Laugh",
+    "klaslokaal-schilderen": "Painting",
+    "klaslokaal-tekenen": "Drawing",
+    "klaslokaal-vallende-bouten": "Bolts"
   }
 }
