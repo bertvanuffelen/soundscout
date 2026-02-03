@@ -6,7 +6,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { MapPin, ArrowLeft, Music } from 'lucide-react';
+import { MapPin, ArrowLeft } from 'lucide-react';
 import { useGameStore } from '../../stores/gameStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useLibraryStore } from '../../stores/libraryStore';
@@ -63,7 +63,7 @@ export function MapView() {
           <span className="hidden sm:inline">{t('map.title')}</span>
         </h1>
         <Button variant="primary" size="sm" onClick={goToStudio}>
-          <Music className="w-4 h-4 mr-0.5 sm:mr-1" />
+
           <span className="hidden sm:inline">{t('studio.title')}</span>
           <span className="sm:hidden">Studio</span>
         </Button>

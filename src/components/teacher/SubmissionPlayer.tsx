@@ -1,27 +1,34 @@
 /**
- * SubmissionPlayer - Modal voor het afspelen van een leerling compositie
+ * SubmissionPlayer - Fullscreen modal voor het bekijken en afspelen van een leerling compositie
  *
- * Gebruikt de AudioService om de compositie af te spelen.
+ * Features:
+ * - Fullscreen modal met timeline weergave (read-only)
+ * - Playhead die meebeweegt tijdens afspelen
+ * - Play/Pause en Stop controls
  */
 
-import { useState, useEffect, useCallback } from 'react';
-import { X, Music, AlertCircle, Play, Square, RotateCcw } from 'lucide-react';
+import { useState, useEffect, useCallback, useRef } from 'react';
+import { X, Music, AlertCircle, Play, Pause, Square } from 'lucide-react';
+import * as Tone from 'tone';
 import type { Submission } from '../../hooks/useSubmissions';
 import { audioService } from '../../services/AudioService';
-import { Button } from '../ui/Button';
+import { Timeline } from '../studio/Timeline';
+import { DEFAULT_BPM } from '../../constants/config';
 
 interface SubmissionPlayerProps {
   submission: Submission;
   onClose: () => void;
 }
 
-type PlayerState = 'loading' | 'ready' | 'playing' | 'error';
+type PlayerState = 'loading' | 'ready' | 'playing' | 'paused' | 'error';
 
 export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps) {
   const { student_name, composition_name, composition_data, created_at } = submission;
   const [playerState, setPlayerState] = useState<PlayerState>('loading');
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [currentBeat, setCurrentBeat] = useState(0);
+  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Format datum
   const formattedDate = new Date(created_at).toLocaleDateString('nl-NL', {
@@ -36,13 +43,55 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
   const tracks = composition_data?.tracks || [];
   const samples = composition_data?.samples || [];
   const totalBeats = composition_data?.totalBeats || 16;
+  const bpm = composition_data?.bpm || DEFAULT_BPM;
   const isLooping = composition_data?.isLooping || false;
 
-  const trackCount = tracks.length;
+  const trackCount = tracks.filter((t: any) => t.clips?.length > 0).length;
   const clipCount = tracks.reduce(
     (total: number, track: any) => total + (track.clips?.length || 0),
     0
   );
+
+  // Store values in refs to avoid recreating the update function
+  const bpmRef = useRef(bpm);
+  const totalBeatsRef = useRef(totalBeats);
+  const isLoopingRef = useRef(isLooping);
+
+  // Keep refs in sync
+  useEffect(() => {
+    bpmRef.current = bpm;
+    totalBeatsRef.current = totalBeats;
+    isLoopingRef.current = isLooping;
+  }, [bpm, totalBeats, isLooping]);
+
+  // Beat tracking via setInterval (more stable than RAF for this use case)
+  useEffect(() => {
+    if (playerState === 'playing') {
+      // Update at ~30fps for smooth but stable playhead movement
+      intervalRef.current = setInterval(() => {
+        const seconds = Tone.Transport.seconds;
+        const beat = (seconds / 60) * bpmRef.current;
+
+        // Handle looping: wrap beat position
+        if (isLoopingRef.current && totalBeatsRef.current > 0) {
+          setCurrentBeat(beat % totalBeatsRef.current);
+        } else {
+          setCurrentBeat(Math.min(beat, totalBeatsRef.current));
+        }
+      }, 33); // ~30fps
+    } else {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+        intervalRef.current = null;
+      }
+    }
+
+    return () => {
+      if (intervalRef.current) {
+        clearInterval(intervalRef.current);
+      }
+    };
+  }, [playerState]);
 
   // Initialize audio en laad samples
   useEffect(() => {
@@ -50,7 +99,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
 
     const initAudio = async () => {
       try {
-        // Initialize audio context (needs user gesture, but modal open counts)
+        // Initialize audio context
         await audioService.initialize();
 
         if (!isMounted) return;
@@ -89,35 +138,37 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
 
     return () => {
       isMounted = false;
-      // Stop playback on unmount
       audioService.stop();
     };
   }, [samples]);
 
-  // Play handler
-  const handlePlay = useCallback(() => {
-    audioService.scheduleTimeline(tracks, samples);
-    audioService.setLoop(isLooping, totalBeats);
-    audioService.play();
-    setPlayerState('playing');
-  }, [tracks, samples, isLooping, totalBeats]);
+  // Play/Pause toggle handler
+  const handlePlayPause = useCallback(() => {
+    if (playerState === 'playing') {
+      // Pause
+      audioService.pause();
+      setPlayerState('paused');
+    } else {
+      // Play or resume
+      if (playerState === 'paused') {
+        // Resume from current position
+        audioService.play();
+      } else {
+        // Start fresh
+        audioService.scheduleTimeline(tracks, samples);
+        audioService.setLoop(isLooping, totalBeats);
+        audioService.play();
+      }
+      setPlayerState('playing');
+    }
+  }, [playerState, tracks, samples, isLooping, totalBeats]);
 
   // Stop handler
   const handleStop = useCallback(() => {
     audioService.stop();
+    setCurrentBeat(0);
     setPlayerState('ready');
   }, []);
-
-  // Play again handler
-  const handlePlayAgain = useCallback(() => {
-    audioService.stop();
-    setTimeout(() => {
-      audioService.scheduleTimeline(tracks, samples);
-      audioService.setLoop(isLooping, totalBeats);
-      audioService.play();
-      setPlayerState('playing');
-    }, 50);
-  }, [tracks, samples, isLooping, totalBeats]);
 
   // Close handler - stop audio first
   const handleClose = useCallback(() => {
@@ -125,131 +176,128 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
     onClose();
   }, [onClose]);
 
+  // Determine if we should show the timeline (not during loading/error)
+  const showTimeline = playerState !== 'loading' && playerState !== 'error';
+  const isPlaying = playerState === 'playing';
+
   return (
-    <div className="fixed inset-0 bg-black/70 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-lg">
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-3 sm:p-4 md:p-6 z-50">
+      <div className="bg-bg-surface rounded-2xl shadow-2xl w-full h-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
-        <div className="flex items-start justify-between mb-4">
-          <div>
-            <h2 className="text-xl font-bold text-gray-800">
-              {composition_name}
-            </h2>
-            <p className="text-gray-600">
-              Door: <span className="font-medium">{student_name}</span>
-            </p>
-            <p className="text-gray-400 text-sm">
-              {formattedDate}
-            </p>
-          </div>
+        <div className="relative px-4 sm:px-6 py-4 border-b border-border-subtle shrink-0">
+          {/* Close button */}
           <button
             onClick={handleClose}
-            className="text-gray-400 hover:text-gray-600 p-1"
+            className="absolute top-3 right-3 sm:top-4 sm:right-4 text-text-muted hover:text-text-main p-2 hover:bg-neutral-100 rounded-lg transition-colors"
           >
-            <X className="w-6 h-6" />
+            <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>
-        </div>
 
-        {/* Compositie info */}
-        <div className="bg-gray-50 rounded-xl p-4 mb-4">
-          <div className="flex gap-6">
-            <div className="text-center">
-              <div className="text-2xl font-bold text-amber-600">{trackCount}</div>
-              <div className="text-gray-500 text-sm">Tracks</div>
+          {/* Composition info */}
+          <h2 className="text-xl sm:text-2xl font-bold text-text-main pr-12">
+            {composition_name}
+          </h2>
+          <p className="text-text-muted mt-1">
+            Door: <span className="font-medium text-text-main">{student_name}</span>
+            <span className="mx-2">•</span>
+            {formattedDate}
+          </p>
+
+          {/* Metadata */}
+          <div className="flex gap-4 sm:gap-6 mt-3">
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg sm:text-xl font-bold text-accent-600">{trackCount}</span>
+              <span className="text-text-muted text-sm">Tracks</span>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-amber-600">{clipCount}</div>
-              <div className="text-gray-500 text-sm">Clips</div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg sm:text-xl font-bold text-accent-600">{clipCount}</span>
+              <span className="text-text-muted text-sm">Clips</span>
             </div>
-            <div className="text-center">
-              <div className="text-2xl font-bold text-amber-600">{samples.length}</div>
-              <div className="text-gray-500 text-sm">Samples</div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-lg sm:text-xl font-bold text-accent-600">{samples.length}</span>
+              <span className="text-text-muted text-sm">Samples</span>
             </div>
           </div>
         </div>
 
-        {/* Player area */}
-        <div className="bg-gradient-to-br from-amber-100 to-amber-50 rounded-xl p-6 mb-4">
+        {/* Main content area */}
+        <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Loading state */}
           {playerState === 'loading' && (
-            <div className="text-center">
-              <Music className="w-12 h-12 text-amber-500 mx-auto mb-3 animate-pulse" />
-              <p className="text-gray-600 mb-2">Samples laden...</p>
-              <div className="w-full bg-gray-200 rounded-full h-2">
-                <div
-                  className="bg-amber-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${loadingProgress}%` }}
-                />
+            <div className="flex-1 flex items-center justify-center p-6">
+              <div className="text-center max-w-xs">
+                <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" />
+                <p className="text-text-main font-medium mb-3">Samples laden...</p>
+                <div className="w-full bg-neutral-200 rounded-full h-2">
+                  <div
+                    className="bg-accent-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${loadingProgress}%` }}
+                  />
+                </div>
+                <p className="text-text-muted text-sm mt-2">{loadingProgress}%</p>
               </div>
-              <p className="text-gray-400 text-sm mt-1">{loadingProgress}%</p>
             </div>
           )}
 
           {/* Error state */}
           {playerState === 'error' && (
-            <div className="text-center">
-              <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-3" />
-              <p className="text-red-600 mb-2">{errorMessage}</p>
-              <p className="text-gray-400 text-sm">
-                Probeer de pagina te verversen.
-              </p>
+            <div className="flex-1 flex items-center justify-center p-6">
+              <div className="text-center max-w-xs">
+                <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" />
+                <p className="text-error-600 font-medium mb-2">{errorMessage}</p>
+                <p className="text-text-muted text-sm">
+                  Probeer de pagina te verversen.
+                </p>
+              </div>
             </div>
           )}
 
-          {/* Ready state */}
-          {playerState === 'ready' && (
-            <div className="text-center">
-              <button
-                onClick={handlePlay}
-                className="w-20 h-20 mx-auto bg-amber-500 hover:bg-amber-600 active:bg-amber-700 rounded-full flex items-center justify-center text-white shadow-lg transition-all active:scale-95"
-              >
-                <Play className="w-10 h-10" />
-              </button>
-              <p className="text-gray-600 mt-3">Klik om af te spelen</p>
-            </div>
-          )}
-
-          {/* Playing state */}
-          {playerState === 'playing' && (
-            <div className="text-center">
-              <div className="flex justify-center gap-4 mb-4">
-                <button
-                  onClick={handleStop}
-                  className="w-16 h-16 bg-gray-600 hover:bg-gray-700 active:bg-gray-800 rounded-full flex items-center justify-center text-white shadow-lg transition-all active:scale-95"
-                  title="Stop"
-                >
-                  <Square className="w-7 h-7" />
-                </button>
-                <button
-                  onClick={handlePlayAgain}
-                  className="w-16 h-16 bg-amber-500 hover:bg-amber-600 active:bg-amber-700 rounded-full flex items-center justify-center text-white shadow-lg transition-all active:scale-95"
-                  title="Opnieuw afspelen"
-                >
-                  <RotateCcw className="w-7 h-7" />
-                </button>
-              </div>
-              <div className="flex justify-center gap-1">
-                {[0, 1, 2, 3, 4].map((i) => (
-                  <div
-                    key={i}
-                    className="w-2 h-6 bg-amber-500 rounded-full animate-bounce"
-                    style={{ animationDelay: `${i * 100}ms` }}
-                  />
-                ))}
-              </div>
-              <p className="text-amber-700 mt-3 font-medium">Nu aan het spelen...</p>
+          {/* Timeline (read-only) */}
+          {showTimeline && (
+            <div className="flex-1 overflow-hidden">
+              <Timeline
+                tracks={tracks}
+                bpm={bpm}
+                totalBeats={totalBeats}
+                currentBeat={currentBeat}
+                isPlaying={isPlaying}
+                onRemoveClip={() => {}}
+                snapPreview={null}
+                readOnly={true}
+                samples={samples}
+              />
             </div>
           )}
         </div>
 
-        {/* Close button */}
-        <Button
-          variant="secondary"
-          size="md"
-          onClick={handleClose}
-          className="w-full"
-        >
-          Sluiten
-        </Button>
+        {/* Transport controls */}
+        {showTimeline && (
+          <div className="px-4 sm:px-6 py-4 sm:py-6 border-t border-border-subtle bg-neutral-50 shrink-0">
+            <div className="flex justify-center gap-4">
+              {/* Play/Pause button */}
+              <button
+                onClick={handlePlayPause}
+                className="w-16 h-16 sm:w-20 sm:h-20 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95"
+                title={isPlaying ? 'Pauzeren' : 'Afspelen'}
+              >
+                {isPlaying ? (
+                  <Pause className="w-8 h-8 sm:w-10 sm:h-10" />
+                ) : (
+                  <Play className="w-8 h-8 sm:w-10 sm:h-10 ml-1" />
+                )}
+              </button>
+
+              {/* Stop button */}
+              <button
+                onClick={handleStop}
+                className="w-16 h-16 sm:w-20 sm:h-20 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95"
+                title="Stoppen"
+              >
+                <Square className="w-7 h-7 sm:w-8 sm:h-8" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

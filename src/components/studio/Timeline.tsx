@@ -1,6 +1,6 @@
 import { memo, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import type { Track as TrackType } from '../../types';
+import type { Track as TrackType, Sample } from '../../types';
 import { Track } from './Track';
 import { VISIBLE_BEATS } from '../../constants/config';
 
@@ -12,6 +12,8 @@ interface TimelineProps {
   isPlaying: boolean;
   onRemoveClip: (trackIndex: number, clipId: string) => void;
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
+  readOnly?: boolean;
+  samples?: Sample[];  // Optional: for read-only mode with custom samples
 }
 
 export const Timeline = memo(function Timeline({
@@ -22,6 +24,8 @@ export const Timeline = memo(function Timeline({
   isPlaying,
   onRemoveClip,
   snapPreview,
+  readOnly = false,
+  samples,
 }: TimelineProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -98,6 +102,8 @@ export const Timeline = memo(function Timeline({
                 totalBeats={totalBeats}
                 onRemoveClip={onRemoveClip}
                 snapPreview={snapPreview?.trackId === track.id ? snapPreview : null}
+                readOnly={readOnly}
+                samples={samples}
               />
             ))}
           </div>
@@ -112,8 +118,8 @@ export const Timeline = memo(function Timeline({
             </div>
           )}
 
-          {/* Empty state hint */}
-          {tracks.every((tr) => tr.clips.length === 0) && (
+          {/* Empty state hint - only show in edit mode */}
+          {!readOnly && tracks.every((tr) => tr.clips.length === 0) && (
             <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
               <p className="text-xs sm:text-sm text-text-muted italic">
                 {t('studio.dragHint')}

@@ -15,6 +15,7 @@ import { useLocationAudio } from '../../hooks/useLocationAudio';
 import { Hotspot } from './Hotspot';
 import { RecorderBar } from './RecorderBar';
 import { RecorderFullModal } from './RecorderFullModal';
+import { ZoomableView } from './ZoomableView';
 import { Button } from '../ui';
 import type { Sample } from '../../types';
 
@@ -120,6 +121,22 @@ export function LocationScene() {
     setShowFullModal(false);
   }, []);
 
+  // Helper for ZoomableView - checks if a sample should be hidden (already collected)
+  const isSampleHidden = useCallback(
+    (sampleId: string) => {
+      return isSampleInRecorder(sampleId) || isSampleCollected(sampleId);
+    },
+    [isSampleInRecorder, isSampleCollected]
+  );
+
+  // Helper for ZoomableView - checks if a sample should be disabled (recorder full)
+  const isSampleDisabled = useCallback(
+    () => {
+      return isRecorderFull();
+    },
+    [isRecorderFull]
+  );
+
   // Error state
   if (!location) {
     return (
@@ -172,14 +189,17 @@ export function LocationScene() {
           </div>
 
           {/* Hotspots - positioned relative to the canvas */}
+          {/* Only show hotspots for samples that haven't been collected yet */}
           {location.hotspots.map((hotspot) => {
             const sample = getSampleById(hotspot.sampleId);
             if (!sample) return null;
 
-            const disabled =
-              isSampleInRecorder(sample.id) ||
-              isSampleCollected(sample.id) ||
-              isRecorderFull();
+            // Hide hotspot if sample is already in recorder or collected
+            const isAlreadyCollected = isSampleInRecorder(sample.id) || isSampleCollected(sample.id);
+            if (isAlreadyCollected) return null;
+
+            // Disable if recorder is full (but still show the hotspot)
+            const disabled = isRecorderFull();
 
             return (
               <Hotspot
@@ -193,6 +213,18 @@ export function LocationScene() {
               />
             );
           })}
+
+          {/* Zoom mode for mobile exploration */}
+          <ZoomableView
+            location={location}
+            getSampleById={getSampleById}
+            isSampleHidden={isSampleHidden}
+            isSampleDisabled={isSampleDisabled}
+            onCollect={handleCollect}
+            onHoverStart={handleHoverStart}
+            onHoverEnd={handleHoverEnd}
+            showZoomButton="mobile-portrait"
+          />
 
           {/* Loading overlay */}
           {isLoading && (

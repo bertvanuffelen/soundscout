@@ -442,6 +442,116 @@ Status: **VOLTOOID** (31-01-2026)
 | src/i18n/locales/nl.json | club.cancel key |
 | src/i18n/locales/en.json | club.cancel key |
 
+---
+
+## Stap 13: Styling & Design System
+Status: **VOLTOOID** (02-02-2026)
+
+### Design System Reorganisatie
+- [x] CSS variabelen georganiseerd volgens 60-30-10 regel (02-02-2026)
+- [x] 60% Neutral: bg-app (#F4F6F8), bg-surface (#FFFFFF), neutral-* (slate) (02-02-2026)
+- [x] 30% Brand: brand-* (slate palette, primair #0f172a) (02-02-2026)
+- [x] 10% Accent: accent-* (amber palette) voor CTAs en highlights (02-02-2026)
+- [x] Legacy aliases: primary-* verwijst naar accent-* (02-02-2026)
+
+### UI Updates
+- [x] "Club" hernoemd naar "Stage" overal in de app (02-02-2026)
+- [x] Headers in brand colors (donkerblauw slate-900) (02-02-2026)
+- [x] Stage lights achtergrond met geanimeerde gradient overlays (02-02-2026)
+- [x] Gele "nieuwe compositie maken" knop (accent color) (02-02-2026)
+
+### Bestanden gewijzigd
+| Bestand | Wijziging |
+|---|---|
+| src/index.css | Volledige reorganisatie design tokens |
+| src/components/StartScreen.tsx | Header in brand color |
+| src/components/MapView.tsx | Header in brand color |
+| src/components/studio/StudioView.tsx | Header styling |
+| src/components/teacher/TeacherDashboard.tsx | Header in brand color |
+| src/components/teacher/CompositionsView.tsx | Header + button styling |
+
+---
+
+## Stap 14: Teacher Timeline Viewer
+Status: **VOLTOOID** (02-02-2026)
+
+### Implementatie
+- [x] Read-only prop toegevoegd aan Clip.tsx (02-02-2026)
+  - disabled op useDraggable
+  - cursor-default wanneer readOnly
+  - Verberg remove button
+- [x] Read-only prop toegevoegd aan Track.tsx (02-02-2026)
+  - disabled op useDroppable
+  - Custom getSampleById met samples prop fallback
+- [x] Read-only prop toegevoegd aan Timeline.tsx (02-02-2026)
+  - Doorgeven aan tracks
+  - Verberg drag hint
+- [x] SubmissionPlayer.tsx refactor naar fullscreen modal (02-02-2026)
+  - Timeline component met readOnly={true}
+  - Custom samples lookup voor submission data
+  - Play/Pause/Stop controls
+  - Beat tracking met Tone.Transport
+
+### Playhead Fix
+- [x] Stotterend playhead probleem opgelost (02-02-2026)
+  - Veranderd van requestAnimationFrame naar setInterval (~30fps)
+  - Refs (bpmRef, totalBeatsRef, isLoopingRef) voor stabiele callbacks
+  - Minder re-renders, stabielere animatie
+
+### Bestanden gewijzigd
+| Bestand | Wijziging |
+|---|---|
+| src/components/studio/Clip.tsx | readOnly prop |
+| src/components/studio/Track.tsx | readOnly + samples props |
+| src/components/studio/Timeline.tsx | readOnly + samples props |
+| src/components/teacher/SubmissionPlayer.tsx | Fullscreen modal + stable playhead |
+
+---
+
+## Stap 15: StartScreen Verbeteringen
+Status: **VOLTOOID** (02-02-2026)
+
+### Footer
+- [x] Footer toegevoegd onder aan StartScreen (02-02-2026)
+- [x] Social media links: Instagram, Facebook, LinkedIn, YouTube (02-02-2026)
+- [x] Alle accounts: @bvanuffelen (YouTube: @BertvanUffelen) (02-02-2026)
+- [x] "Gemaakt door Bert van Uffelen" tekst (02-02-2026)
+- [x] Info icon met "Over deze app" modal (02-02-2026)
+- [x] Modal bevat workshop/training informatie (02-02-2026)
+
+### Logo
+- [x] SoundScout logo toegevoegd aan StartScreen (02-02-2026)
+- [x] Logo als favicon in index.html (02-02-2026)
+- [x] SVG kleur aangepast naar brand blue (#0f172a) (02-02-2026)
+
+### Bestanden gewijzigd
+| Bestand | Wijziging |
+|---|---|
+| src/components/StartScreen.tsx | Footer + logo + About modal |
+| index.html | Favicon links (SVG, PNG, Apple touch icon) |
+| public/images/overige/logo-soundscout.svg | Kleur naar #0f172a |
+
+---
+
+## Samenvatting Post-MVP Updates (02-02-2026)
+
+### Styling & Design System
+- 60-30-10 kleurregel geïmplementeerd
+- Brand colors (slate), Accent colors (amber), Neutral colors
+- "Club" → "Stage" rename
+
+### Teacher Features
+- Read-only timeline viewer voor docenten
+- Fullscreen modal voor compositie review
+- Stabiel playhead met setInterval
+
+### Branding
+- Logo op StartScreen en als favicon
+- Footer met social links
+- "Over deze app" modal
+
+---
+
 ### Volgende stappen (buiten scope MVP)
 - Echte MP3 audio bestanden toevoegen
 - Meerdere locaties (haven, markt, bos)

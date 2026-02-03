@@ -4,6 +4,7 @@
   },
   "common": {
     "back": "Back",
+    "close": "Close",
     "loading": "Loading..."
   },
   "map": {
@@ -42,7 +43,9 @@
     "recorderFull": "Your recorder is full!",
     "goToStudio": "Go to the studio?",
     "moreLocations": "Another location?",
-    "stayHere": "Stay here"
+    "stayHere": "Stay here",
+    "explore": "Explore",
+    "panHint": "Drag to look around"
   },
   "recorder": {
     "title": "Recorder",

@@ -22,6 +22,8 @@ interface UseClassesReturn {
   classes: TeacherClass[];
   loading: boolean;
   error: string | null;
+  maxClasses: number | null; // null = onbeperkt
+  canCreateClass: boolean;
   createClass: (name: string) => Promise<TeacherClass>;
   deleteClass: (id: string) => Promise<void>;
   refetch: () => Promise<void>;
@@ -30,24 +32,50 @@ interface UseClassesReturn {
 /**
  * Hook voor het beheren van klassen
  */
+// Default limiet voor gratis gebruikers
+const DEFAULT_MAX_CLASSES = 8;
+
 export function useClasses(): UseClassesReturn {
   const [classes, setClasses] = useState<TeacherClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [maxClasses, setMaxClasses] = useState<number | null>(DEFAULT_MAX_CLASSES);
 
-  // Fetch alle klassen van de ingelogde docent
+  // Fetch alle klassen van de ingelogde docent + max_classes limiet
   const fetchClasses = useCallback(async () => {
     try {
       setLoading(true);
       setError(null);
 
-      // Haal klassen op met aantal submissions
+      // Haal huidige user op voor teacher info
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        setClasses([]);
+        setLoading(false);
+        return;
+      }
+
+      // Haal max_classes op van de teacher
+      const { data: teacherData } = await supabase
+        .from('teachers')
+        .select('max_classes')
+        .eq('id', user.id)
+        .single();
+
+      // null = onbeperkt, undefined = gebruik default
+      if (teacherData) {
+        setMaxClasses(teacherData.max_classes ?? DEFAULT_MAX_CLASSES);
+      }
+
+      // Haal klassen op van DEZE docent met aantal submissions
       const { data, error: fetchError } = await supabase
         .from('classes')
         .select(`
           *,
           submissions:submissions(count)
         `)
+        .eq('teacher_id', user.id)
         .order('created_at', { ascending: false });
 
       if (fetchError) throw fetchError;
@@ -73,6 +101,14 @@ export function useClasses(): UseClassesReturn {
 
   // Maak nieuwe klas aan
   const createClass = async (name: string): Promise<TeacherClass> => {
+    // Check klassen limiet (null = onbeperkt)
+    if (maxClasses !== null && classes.length >= maxClasses) {
+      throw new Error(
+        `Je hebt het maximum van ${maxClasses} klassen bereikt. ` +
+        `Verwijder een bestaande klas om een nieuwe aan te maken.`
+      );
+    }
+
     // Genereer unieke code via database functie
     const { data: codeData, error: codeError } = await supabase.rpc('generate_class_code');
 
@@ -139,10 +175,15 @@ export function useClasses(): UseClassesReturn {
     fetchClasses();
   }, [fetchClasses]);
 
+  // Bereken of er nog klassen aangemaakt mogen worden
+  const canCreateClass = maxClasses === null || classes.length < maxClasses;
+
   return {
     classes,
     loading,
     error,
+    maxClasses,
+    canCreateClass,
     createClass,
     deleteClass,
     refetch: fetchClasses,

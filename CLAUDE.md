@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-SoundScout is a React web app for teaching kids music composition. Players explore locations to collect audio samples, arrange them on a beat-based timeline in a studio, and perform compositions in a club venue.
+SoundScout is a React web app for teaching kids music composition. Players explore locations to collect audio samples, arrange them on a beat-based timeline in a studio, and perform compositions on a stage (formerly "club"). Teachers can create classes, receive student submissions via class codes, and review compositions through a dedicated dashboard.
 
 ## Commands
 
@@ -31,9 +31,14 @@ npm test         # Vitest test suite
 ### Screen Navigation
 
 No router — `App.tsx` switches on `gameStore.currentScreen`:
-`'start'` → `'map'` → `'location'` → `'studio'` → `'club'`
+`'start'` → `'map'` → `'location'` → `'studio'` → `'stage'`
+
+Additional screens for teachers:
+`'teacher-login'` → `'teacher-dashboard'` → `'compositions'`
 
 Each screen maps to a top-level component in `src/components/`.
+
+**Note:** "Club" renamed to "Stage" (2026-02-02)
 
 ### Theme System
 
@@ -88,6 +93,72 @@ MP3 export implemented in `src/utils/audioExport.ts`:
 
 `StudioView.tsx` owns the dnd-kit `DndContext`. Clips are draggable within and across tracks. `DragOverlay` renders a preview during drag. Sensors: PointerSensor (8px) + TouchSensor (150ms delay).
 
+### Teacher Dashboard
+
+Teachers can log in via Supabase auth and view student compositions:
+- `TeacherDashboard.tsx` - Class overview with student submissions
+- `CompositionsView.tsx` - Detailed list of compositions per class
+- `SubmissionPlayer.tsx` - Fullscreen modal to play student compositions with read-only timeline
+
+**Class Limits:**
+- Free tier: Maximum 8 classes per teacher (sufficient for primary school groups 1-8)
+- Stored in `teachers.max_classes` column (default: 8)
+- Future: Paid tier with unlimited classes
+
+**Read-Only Timeline Viewing:**
+The Timeline, Track, and Clip components support a `readOnly` prop:
+- `readOnly={true}` disables drag-and-drop (via `disabled` prop on useDraggable/useDroppable)
+- Hides remove buttons on clips
+- Hides drag hints
+- Custom `samples` prop allows lookup from submission data instead of theme store
+
+### Supabase Security (BELANGRIJK)
+
+**Row Level Security (RLS)** moet ALTIJD worden ingesteld voor alle tabellen met gebruikersdata. Dit voorkomt dat gebruikers elkaars data kunnen zien/bewerken.
+
+**Basis principe:**
+1. **Code-level filtering:** Queries filteren op `user.id` (bijv. `.eq('teacher_id', user.id)`)
+2. **Database-level security:** RLS policies als tweede beveiligingslaag
+
+**RLS Policies voor classes tabel (voorbeeld):**
+```sql
+-- Enable RLS
+ALTER TABLE classes ENABLE ROW LEVEL SECURITY;
+
+-- Docenten kunnen alleen eigen klassen zien
+CREATE POLICY "Teachers can view own classes"
+ON classes FOR SELECT
+USING (teacher_id = auth.uid());
+
+-- Docenten kunnen alleen voor zichzelf klassen aanmaken
+CREATE POLICY "Teachers can insert own classes"
+ON classes FOR INSERT
+WITH CHECK (teacher_id = auth.uid());
+
+-- Docenten kunnen alleen eigen klassen updaten
+CREATE POLICY "Teachers can update own classes"
+ON classes FOR UPDATE
+USING (teacher_id = auth.uid());
+
+-- Docenten kunnen alleen eigen klassen verwijderen
+CREATE POLICY "Teachers can delete own classes"
+ON classes FOR DELETE
+USING (teacher_id = auth.uid());
+```
+
+**Checklist bij nieuwe tabellen:**
+- [ ] RLS inschakelen: `ALTER TABLE x ENABLE ROW LEVEL SECURITY;`
+- [ ] SELECT policy aanmaken
+- [ ] INSERT policy met `WITH CHECK`
+- [ ] UPDATE/DELETE policies indien nodig
+- [ ] Code-level filtering toevoegen (`.eq('user_id', user.id)`)
+
+**URL Configuration (Authentication → URL Configuration):**
+- **Site URL**: Productie domein (zonder trailing slash)
+- **Redirect URLs**: Beide toevoegen met wildcard:
+  - `https://jouw-domein.nl/**`
+  - `http://localhost:5173/**`
+
 ### Data Layer
 
 Theme-based organization in `src/data/themes/{themeId}/`:
@@ -135,13 +206,30 @@ Reusable components in `src/components/ui/`:
 
 Use `cn()` utility from `src/utils/cn.ts` for conditional class merging (clsx + tailwind-merge).
 
-### CSS Theme
+### CSS Theme & Design System
 
-Design tokens defined in `src/index.css` via Tailwind `@theme` directive:
-- `--color-primary-*` (sky blue)
-- `--color-accent-*` (amber)
+Design tokens defined in `src/index.css` via Tailwind `@theme` directive, following the **60-30-10 rule**:
+
+**60% - Neutral Colors (Background & Text)**
+- `--color-neutral-*` (slate 50-900)
+- `--color-bg-app` (#F4F6F8 - main app background)
+- `--color-bg-surface` (#FFFFFF - cards/panels)
+- `--color-text-primary`, `--color-text-secondary`, `--color-text-muted`
+
+**30% - Brand Colors (Headers, Navigation)**
+- `--color-brand-*` (slate palette, 50-900)
+- Primary brand color: `#0f172a` (slate-900) - used for headers, logo
+
+**10% - Accent Colors (CTAs, Interactive)**
+- `--color-accent-*` (amber palette)
+- Primary accent: amber-400/500 for buttons, highlights
+- `--color-primary-*` aliased to accent colors for compatibility
+
+**Semantic Colors:**
 - `--color-danger-*`, `--color-success-*`, `--color-warning-*`
-- Screen gradients: `--color-{start,location,studio,club}-{from,via,to}`
+- Screen gradients: `--color-{start,location,studio,stage}-{from,via,to}`
+
+**Note:** "Club" has been renamed to "Stage" throughout the app.
 
 ### Responsive Design
 
@@ -176,10 +264,28 @@ All components use Tailwind `sm:` breakpoint (640px) for mobile/desktop distinct
 
 | File | Purpose |
 |---|---|
-| `todo-implementatie.md` | MVP implementation progress (Fase 1-3, voltooid) |
+| `todo-implementatie.md` | MVP implementation progress (Fase 1-3) + styling/UX updates |
 | `docs/TODO-IMPLEMENTATIE.md` | Fase 4-5 prioritized feature list |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Guide for adding locations and themes |
 | `docs/PLAN-EXPORT-MP3.md` | MP3 export implementation plan (voltooid) |
-| `docs/PLAN-KLASCODE-SYSTEEM.md` | Future Supabase integration plan |
+| `docs/PLAN-KLASCODE-SYSTEEM.md` | Supabase integration plan (gedeeltelijk voltooid) |
+| `docs/PLAN-LOCATIE-EDITOR.md` | Location editor implementation plan |
 | `docs/responsive-design-analysis.md` | Responsive design patterns and implementation |
 | `soundscout-prd.md` | Product requirements document |
+
+## Recent Updates (2026-02-03)
+
+- **RLS Security Fix**: Classes query nu gefilterd op `teacher_id` - docenten zien alleen eigen klassen
+- **Hotspot Hiding**: Verzamelde geluiden verdwijnen nu van de locatie (in recorder of library)
+- **ZoomableView Fix**: Console errors opgelost (passive touch event listener)
+- **White Logo Mobile**: Wit logo voor donkere mobiele achtergrond toegevoegd
+
+## Updates (2026-02-02)
+
+- **Styling Overhaul**: Implemented 60-30-10 color rule with brand (slate), accent (amber), and neutral colors
+- **Club → Stage Rename**: "Club" renamed to "Stage" throughout app and documentation
+- **Stage Lights Background**: Added animated stage lights effect with gradient overlays
+- **Teacher Timeline Viewer**: Teachers can view student compositions with read-only timeline and playhead
+- **Playhead Fix**: Changed from requestAnimationFrame to setInterval (~30fps) for stable animation
+- **StartScreen Footer**: Added social links (Instagram, Facebook, LinkedIn, YouTube) and "About" modal
+- **Logo Integration**: Added SoundScout logo to StartScreen and as favicon (brand blue #0f172a)

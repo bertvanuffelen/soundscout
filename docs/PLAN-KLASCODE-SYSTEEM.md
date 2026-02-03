@@ -3,7 +3,7 @@
 **Status**: 🚧 In ontwikkeling
 **Prioriteit**: P1 - Hoge prioriteit
 **Backend**: Supabase
-**Laatste update**: 2026-02-01
+**Laatste update**: 2026-02-02
 
 ---
 
@@ -32,6 +32,7 @@
 | **Leerling naam** | Optioneel | Privacy-vriendelijk, grappige fallback naam |
 | **Klas-code formaat** | 4 cijfers | Makkelijk voor kinderen (bijv. `7392`) |
 | **Data eigenaar** | Docent | School/docent is data controller |
+| **Max klassen per docent** | 8 | Gratis limiet, uitbreidbaar voor betalende gebruikers |
 
 ### 1.2 User Flows
 
@@ -67,12 +68,26 @@
   - Verwijder-knop
 - **Klas beheer**: Klas hernoemen, verwijderen
 
-### 1.4 Wenslijst (Later)
+### 1.4 Klassen Limiet
+
+| Niveau | Max klassen | Beschrijving |
+|--------|-------------|--------------|
+| **Gratis** | 8 | Voldoende voor een basisschool (groep 1-8) |
+| **Betaald** | Onbeperkt | Toekomstige optie voor power users |
+
+**Implementatie:**
+- `max_classes` kolom in `teachers` tabel (default: 8)
+- Frontend check vóór aanmaken nieuwe klas
+- Duidelijke foutmelding bij bereiken limiet
+- Later: upgrade flow naar betaald account
+
+### 1.5 Wenslijst (Later)
 
 - [ ] MP3 download voor docent
 - [ ] Leerling kan compositie importeren vanuit docent-link
 - [ ] Docent kan feedback/sterren geven
 - [ ] Bulk verwijderen van composities
+- [ ] Betaald tier met onbeperkte klassen
 
 ---
 
@@ -191,6 +206,7 @@ CREATE TABLE public.teachers (
   email TEXT UNIQUE NOT NULL,
   display_name TEXT NOT NULL,
   school_name TEXT,
+  max_classes INT DEFAULT 8,              -- Gratis limiet: 8 klassen
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -637,6 +653,18 @@ export function useClasses() {
   const createClass = async (name: string) => {
     if (!user) throw new Error('Niet ingelogd');
 
+    // Check klassen limiet
+    const { data: teacher } = await supabase
+      .from('teachers')
+      .select('max_classes')
+      .eq('id', user.id)
+      .single();
+
+    const maxClasses = teacher?.max_classes ?? 8;
+    if (classes.length >= maxClasses) {
+      throw new Error(`Je hebt het maximum van ${maxClasses} klassen bereikt. Verwijder een klas of neem contact op voor meer.`);
+    }
+
     // Genereer code via database functie
     const { data: codeData } = await supabase.rpc('generate_class_code');
     const code = codeData as string;
@@ -931,6 +959,7 @@ export function generateMultipleNames(count: number): string[] {
 | Code formaat? | 4 cijfers | 2026-02-01 |
 | Later bewerken? | Nee (wenslijst) | 2026-02-01 |
 | Meerdere klassen? | Ja | 2026-02-01 |
+| Max klassen per docent? | 8 (gratis), uitbreidbaar | 2026-02-02 |
 
 ---
 

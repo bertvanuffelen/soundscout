@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import type { Track as TrackType, Sample } from '../../types';
 import { useThemeStore } from '../../stores/themeStore';
@@ -11,6 +11,8 @@ interface TrackProps {
   totalBeats: number;
   onRemoveClip: (trackIndex: number, clipId: string) => void;
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
+  readOnly?: boolean;
+  samples?: Sample[];  // Optional: for read-only mode with custom samples
 }
 
 export const Track = memo(function Track({
@@ -20,12 +22,23 @@ export const Track = memo(function Track({
   totalBeats,
   onRemoveClip,
   snapPreview,
+  readOnly = false,
+  samples,
 }: TrackProps) {
-  const getSampleById = useThemeStore((s) => s.getSampleById);
+  const themeGetSampleById = useThemeStore((s) => s.getSampleById);
+
+  // Use provided samples array if available, otherwise fall back to theme store
+  const getSampleById = useCallback((id: string): Sample | undefined => {
+    if (samples) {
+      return samples.find(s => s.id === id);
+    }
+    return themeGetSampleById(id);
+  }, [samples, themeGetSampleById]);
 
   const { setNodeRef, isOver } = useDroppable({
     id: track.id,
     data: { type: 'track', trackIndex },
+    disabled: readOnly,
   });
 
   return (
@@ -34,7 +47,7 @@ export const Track = memo(function Track({
       id={track.id}
       className={`
         relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150
-        ${isOver ? 'bg-primary-100/60' : 'bg-white/40'}
+        ${isOver && !readOnly ? 'bg-primary-100/60' : 'bg-white/40'}
       `}
     >
       {/* Track label */}
@@ -59,6 +72,7 @@ export const Track = memo(function Track({
               bpm={bpm}
               totalBeats={totalBeats}
               onRemove={(clipId) => onRemoveClip(trackIndex, clipId)}
+              readOnly={readOnly}
             />
           );
         })}

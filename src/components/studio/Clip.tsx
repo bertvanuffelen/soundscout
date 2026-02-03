@@ -15,6 +15,7 @@ interface ClipProps {
   bpm: number;
   totalBeats: number;
   onRemove: (clipId: string) => void;
+  readOnly?: boolean;
 }
 
 export const Clip = memo(function Clip({
@@ -24,6 +25,7 @@ export const Clip = memo(function Clip({
   bpm,
   totalBeats,
   onRemove,
+  readOnly = false,
 }: ClipProps) {
   const { t } = useTranslation();
   const durationBeats = secondsToBeats(sample.duration, bpm);
@@ -34,6 +36,7 @@ export const Clip = memo(function Clip({
     useDraggable({
       id: `clip-${clip.id}`,
       data: { type: 'clip', clip, sample, trackIndex },
+      disabled: readOnly,
     });
 
   const dragStyle = transform
@@ -47,7 +50,7 @@ export const Clip = memo(function Clip({
       {...attributes}
       className={`
         absolute top-1 bottom-1 rounded-lg flex items-center gap-1 px-1.5 overflow-hidden
-        cursor-grab active:cursor-grabbing group transition-shadow hover:shadow-md select-none
+        ${readOnly ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} group transition-shadow hover:shadow-md select-none
         ${isDragging ? 'opacity-30 z-30' : ''}
       `}
       style={{
@@ -66,18 +69,20 @@ export const Clip = memo(function Clip({
       <span className="text-[10px] font-semibold text-white truncate leading-tight">
         {t(sample.name)}
       </span>
-      {/* Remove button - always visible on touch, hover on desktop */}
-      <button
-        onPointerDown={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.stopPropagation();
-          onRemove(clip.id);
-        }}
-        className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-black/40 sm:bg-black/30 hover:bg-error-500 active:bg-error-600 text-white text-xs rounded-bl-lg sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer z-20"
-        title={t('recorder.eject')}
-      >
-        <X size={10} className="sm:w-3 sm:h-3" />
-      </button>
+      {/* Remove button - always visible on touch, hover on desktop, hidden in readOnly */}
+      {!readOnly && (
+        <button
+          onPointerDown={(e) => e.stopPropagation()}
+          onClick={(e) => {
+            e.stopPropagation();
+            onRemove(clip.id);
+          }}
+          className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-black/40 sm:bg-black/30 hover:bg-error-500 active:bg-error-600 text-white text-xs rounded-bl-lg sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer z-20"
+          title={t('recorder.eject')}
+        >
+          <X size={10} className="sm:w-3 sm:h-3" />
+        </button>
+      )}
     </div>
   );
 });

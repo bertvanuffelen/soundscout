@@ -3,7 +3,7 @@
  */
 
 import { useState } from 'react';
-import { Music, ArrowLeft } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { signInTeacher } from '../../lib/auth';
 import { Button } from '../ui/Button';
 
@@ -51,7 +51,6 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Music className="w-7 h-7 sm:w-8 sm:h-8 text-primary-500" />
             <h1 className="text-2xl sm:text-3xl font-bold text-text-main">
               SoundScout
             </h1>

@@ -4,6 +4,7 @@
   },
   "common": {
     "back": "Terug",
+    "close": "Sluiten",
     "loading": "Laden..."
   },
   "map": {
@@ -42,7 +43,9 @@
     "recorderFull": "Je recorder is vol!",
     "goToStudio": "Naar de studio?",
     "moreLocations": "Nog een locatie?",
-    "stayHere": "Hier blijven"
+    "stayHere": "Hier blijven",
+    "explore": "Verkennen",
+    "panHint": "Sleep om rond te kijken"
   },
   "recorder": {
     "title": "Recorder",

@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen } from 'lucide-react';
+import { FolderOpen, Info, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
 import { useGameStore } from '../stores/gameStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
@@ -24,6 +24,7 @@ export function StartScreen() {
 
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showAbout, setShowAbout] = useState(false);
   const [hasCompositions, setHasCompositions] = useState(false);
 
   // Check if there are saved compositions
@@ -54,12 +55,24 @@ export function StartScreen() {
     <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
       {/* Card container - white card on desktop, transparent on mobile */}
       <div className="w-full max-w-md md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-8 lg:p-12 flex flex-col items-center">
-        {/* Title */}
-        <div className="text-center mb-8 sm:mb-10">
-          <h1 className="text-5xl sm:text-6xl md:text-7xl font-extrabold text-white md:text-text-main tracking-tight mb-3 sm:mb-4">
+        {/* Logo + Title */}
+        <div className="text-center mb-6 sm:mb-8">
+          {/* White logo for mobile (dark background) */}
+          <img
+            src="/images/overige/logo-soundscout-white.svg"
+            alt="SoundScout Logo"
+            className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-4 md:hidden"
+          />
+          {/* Dark logo for desktop (light background) */}
+          <img
+            src="/images/overige/logo-soundscout.svg"
+            alt="SoundScout Logo"
+            className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-4 hidden md:block"
+          />
+          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white md:text-text-main tracking-tight mb-2 sm:mb-3">
             {t('app.title')}
           </h1>
-          <p className="text-lg sm:text-xl md:text-2xl text-brand-300 md:text-text-muted font-semibold">
+          <p className="text-base sm:text-lg md:text-xl text-brand-300 md:text-text-muted font-semibold">
             {t('start.tagline')}
           </p>
         </div>
@@ -107,6 +120,84 @@ export function StartScreen() {
           </button>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="mt-8 flex items-center gap-3 text-brand-400 md:text-text-muted">
+        <span className="text-sm">Gemaakt door Bert van Uffelen</span>
+        <button
+          onClick={() => setShowAbout(true)}
+          className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+          title="Over deze app"
+        >
+          <Info className="w-4 h-4" />
+        </button>
+        <div className="w-px h-4 bg-brand-700 md:bg-neutral-300" />
+        <div className="flex items-center gap-2">
+          <a
+            href="https://www.instagram.com/bvanuffelen/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+            title="Instagram"
+          >
+            <Instagram className="w-4 h-4" />
+          </a>
+          <a
+            href="https://www.facebook.com/bvanuffelen"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+            title="Facebook"
+          >
+            <Facebook className="w-4 h-4" />
+          </a>
+          <a
+            href="https://www.linkedin.com/in/bvanuffelen/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+            title="LinkedIn"
+          >
+            <Linkedin className="w-4 h-4" />
+          </a>
+          <a
+            href="https://www.youtube.com/@BertvanUffelen"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+            title="YouTube"
+          >
+            <Youtube className="w-4 h-4" />
+          </a>
+        </div>
+      </footer>
+
+      {/* About modal */}
+      <Modal
+        isOpen={showAbout}
+        onClose={() => setShowAbout(false)}
+        title="Over deze app"
+      >
+        <div className="space-y-4 text-text-main">
+          <p>
+            SoundScout is gemaakt door Bert van Uffelen, muziekdocent en ontwikkelaar van creatieve digitale tools voor het onderwijs.
+          </p>
+          <p>
+            Benieuwd naar meer apps, workshops of muzikale ideeën? Of wil je een training waarin je leert hoe je technologie effectief inzet in de muziekles?
+          </p>
+          <p>
+            Neem een kijkje op mijn LinkedIn-profiel:
+          </p>
+          <a
+            href="https://www.linkedin.com/in/bvanuffelen/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-block text-brand-700 hover:text-brand-800 font-semibold underline underline-offset-2"
+          >
+            linkedin.com/in/bvanuffelen
+          </a>
+        </div>
+      </Modal>
 
       {/* Tutorial modal */}
       <Modal
