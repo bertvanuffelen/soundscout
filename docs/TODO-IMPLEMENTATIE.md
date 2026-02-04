@@ -1,6 +1,6 @@
 # SoundScout - Implementatie Todo's
 
-**Laatst bijgewerkt**: 2026-02-03
+**Laatst bijgewerkt**: 2026-02-04 (Drag Offset Alignment #16 voltooid)
 **Gebaseerd op**: PRD Fase 4 & 5, gebruiker feedback
 
 ---
@@ -159,41 +159,199 @@
 
 **Notitie:** Collected fade-out animatie is optioneel - huidige implementatie verbergt hotspot direct wat duidelijker is voor gebruikers.
 
+### 12. Clip Trimming & Smart Snap (#12 + #16) ✅
+**Status:** VOLTOOID (2026-02-03)
+**Roadmap:** `docs/ROADMAP-CLIP-TRIMMING.md`
+**Complexiteit:** ⭐⭐⭐⭐ Hoog (12-16 uur, 7 fases)
+
+Volledig geïmplementeerde feature set voor clip trimming en smart snap:
+
+**Fase 1: Type Extensies** ✅
+- [x] Clip type uitgebreid met `trimStart` en `trimEnd` (seconden)
+- [x] Constants: `MIN_TRIM_DURATION_SECONDS`, `WAVEFORM_PEAK_COUNT`
+- [x] Helper functies: `getClipDuration`, `getClipDurationBeats`, `getClipEndBeat`
+
+**Fase 2: Smart Snap & Overlap Detectie** ✅
+- [x] `clipCollision.ts` met `getClipBounds`, `boundsOverlap`, `wouldOverlap`
+- [x] `findSmartSnapPosition()` algoritme (original → shifted → track_below → rejected)
+- [x] `timelineStore.addClip()` en `moveClip()` gebruiken smart snap
+
+**Fase 3: Clip Selection State** ✅
+- [x] `selectionStore.ts` met `selectedClipId`, `selectedTrackIndex`
+- [x] Clip component met selection highlight (ring)
+- [x] Click-away to deselect op Track en Timeline
+
+**Fase 4: Edit Toolbar Component** ✅
+- [x] `EditToolbar.tsx` met sample info, trim/delete buttons
+- [x] Geïntegreerd in StudioView boven timeline
+- [x] Translations (nl + en)
+
+**Fase 5: Waveform Generatie** ✅
+- [x] `waveform.ts` met `extractWaveformPeaks()`, `createWaveformData()`
+- [x] `AudioService.getWaveform()` met caching
+- [x] `AudioService.playSampleRegion()` voor preview
+- [x] `Waveform.tsx` canvas component met trim region highlighting
+
+**Fase 6: Trim Modal** ✅
+- [x] `TrimModal.tsx` met waveform visualisatie
+- [x] Drag handles voor trim start/end
+- [x] Preview playback, Apply/Cancel/Reset
+- [x] Geïntegreerd in StudioView
+
+**Fase 7: Audio Scheduling met Trim** ✅
+- [x] `scheduleTimeline()` gebruikt `player.start(time, trimStart, trimDuration)`
+- [x] Clip visuele breedte reflecteert getrimde duration
+- [x] StorageService `computeMetadata()` respecteert trim
+
+**Bug fixes:**
+- [x] Toolbar deselect: Track component cleared selection on click
+- [x] Trim handle: clamp() fix voor rechter handle bij ongetrimde samples
+
+**Nieuwe bestanden:**
+- `src/utils/clipCollision.ts`
+- `src/utils/waveform.ts`
+- `src/stores/selectionStore.ts`
+- `src/components/studio/EditToolbar.tsx`
+- `src/components/studio/Waveform.tsx`
+- `src/components/studio/TrimModal.tsx`
+
+### 13. Audio Loading Robuuster (#15) ✅
+**Status:** VOLTOOID (2026-02-03)
+**Complexiteit:** ⭐⭐ Medium
+**Bron:** Docent feedback groep 6 - "Niet alle geluiden werkten bij iedereen"
+
+**Geïmplementeerd:**
+- [x] Parallel loading met concurrency limiet (3 tegelijk)
+- [x] Retry mechanisme met exponential backoff (1s, 2s)
+- [x] Timeout bescherming (15 seconden per sample)
+- [x] Progress bar met percentage in LocationScene
+- [x] "Opnieuw proberen" knop bij fouten
+- [x] Error feedback in gebruikersvriendelijke taal
+
+**Nieuwe constants (`config.ts`):**
+```typescript
+AUDIO_LOAD_TIMEOUT_MS = 15000
+AUDIO_LOAD_MAX_RETRIES = 2
+AUDIO_LOAD_CONCURRENCY = 3
+```
+
+**Gewijzigde bestanden:**
+- `src/constants/config.ts` - Nieuwe audio loading constants
+- `src/services/AudioService.ts` - Parallel loading + retry + timeout
+- `src/hooks/useAudioEngine.ts` - onProgress callback
+- `src/hooks/useLocationAudio.ts` - Progress/error/retry state
+- `src/components/location/LocationScene.tsx` - Progress bar + retry UI
+- `src/i18n/locales/{nl,en}.json` - Nieuwe i18n keys
+
+### 14. Ambient Audio (#18) ✅
+**Status:** VOLTOOID (2026-02-03)
+**Complexiteit:** ⭐⭐ Medium
+**Notitie:** Feature werkt, maar nog niet gekoppeld aan bestaande thema's
+
+**Geïmplementeerd:**
+- [x] Ambient audio methods in AudioService
+- [x] Looping playback met `Tone.Player`
+- [x] Zachter volume dan samples (-15dB)
+- [x] Fade in/out bij scene transitions (1.5s)
+- [x] Optioneel per locatie (`ambientAudio: ''` = uit)
+- [x] Geïntegreerd in useLocationAudio hook
+
+**Hoe ambient audio toe te voegen:**
+```typescript
+// In locations.ts van een thema:
+{
+  id: 'boerderij',
+  ambientAudio: '/audio/themes/basis/ambient/boerderij.mp3', // ← Pad naar MP3
+  // ...rest
+}
+```
+
+**Gewijzigde bestanden:**
+- `src/constants/config.ts` - AMBIENT_AUDIO_VOLUME_DB, AMBIENT_AUDIO_FADE_SECONDS
+- `src/services/AudioService.ts` - loadAmbient, playAmbient, stopAmbient, setAmbientVolume
+- `src/hooks/useAudioEngine.ts` - Ambient audio methods
+- `src/hooks/useLocationAudio.ts` - ambientUrl prop
+
+**Huidige status:** Alle locaties hebben `ambientAudio: ''` - feature klaar voor gebruik.
+
+### 15. Drag Offset Alignment (#16) ✅
+**Status:** VOLTOOID (2026-02-04)
+**Complexiteit:** ⭐⭐ Medium
+**Bron:** Docent feedback (2026-02-03) - leerlingen verward door visuele mismatch
+**Roadmap:** `docs/ROADMAP-DRAG-OFFSET.md`
+
+**Probleem:**
+Bij het slepen van een sample/clip naar de timeline waren er meerdere visuele elementen zichtbaar:
+1. **Originele clip** (met opacity-30 en transform)
+2. **DragOverlay** (volgt cursor op grip-punt)
+3. **Snap Preview** (gestippeld, toont daadwerkelijke drop positie)
+
+Dit veroorzaakte verwarring bij leerlingen. Extra probleem: als je een clip in het midden aanklikt, sprong de snap preview naar de cursor positie i.p.v. de originele positie van de clip.
+
+**Oplossing (twee-delige aanpak):**
+
+**Deel 1: Eén visueel element**
+- DragOverlay verbergen wanneer snapPreview actief is
+- Originele clip volledig onzichtbaar (opacity-0) tijdens slepen
+- Resultaat: alleen de snap preview is zichtbaar boven tracks
+
+**Deel 2: Delta-based clip repositioning**
+- Nieuwe refs voor het onthouden van originele clip positie
+- Samples uit library: cursor-based berekening (cursor = linkerrand preview)
+- Clips verplaatsen: delta-based berekening (originele positie + delta)
+- Belangrijke fix: waarden opslaan in lokale variabelen VOORDAT refs worden gereset
+
+**Geïmplementeerd:**
+- [x] DragOverlay verborgen wanneer `snapPreview` bestaat (StudioView.tsx)
+- [x] Originele clip `opacity-0` tijdens isDragging (Clip.tsx)
+- [x] `originalClipStartBeatRef` en `activeDragTypeRef` refs (useStudioDnD.ts)
+- [x] `calculateClipDropBeat()` functie voor delta-based berekening
+- [x] Waarden opslaan vóór ref reset in handleDragEnd
+- [x] Build & lint verificatie succesvol
+
+**Code snippets:**
+
+```typescript
+// useStudioDnD.ts - Nieuwe refs
+const originalClipStartBeatRef = useRef<number | null>(null);
+const activeDragTypeRef = useRef<'sample' | 'clip' | null>(null);
+
+// handleDragStart - Originele positie opslaan
+if (dragType === 'clip') {
+  const clip = event.active.data.current?.clip as Clip | undefined;
+  originalClipStartBeatRef.current = clip?.startBeat ?? null;
+}
+
+// handleDragMove/handleDragEnd - Kies juiste berekening
+const beat =
+  activeDragTypeRef.current === 'clip'
+    ? calculateClipDropBeat(over, delta)    // Delta-based voor clips
+    : calculateDropBeat(over, activatorEvent, delta);  // Cursor-based voor samples
+
+// handleDragEnd - KRITIEK: waarden opslaan VOOR reset
+const currentDragType = activeDragTypeRef.current;
+const originalClipStartBeat = originalClipStartBeatRef.current; // Eerst opslaan!
+// ... dan pas refs resetten ...
+```
+
+**Gewijzigde bestanden:**
+- `src/hooks/useStudioDnD.ts` - Nieuwe refs, calculateClipDropBeat, delta-based logica
+- `src/components/studio/StudioView.tsx` - DragOverlay verbergen bij snapPreview
+- `src/components/studio/Clip.tsx` - opacity-0 bij isDragging
+
+**Resultaat:**
+| Scenario | Gedrag |
+|----------|--------|
+| Sample uit library slepen | Cursor = linkerrand snap preview |
+| Clip verplaatsen | Originele positie + delta = snap preview |
+| Boven track | Alleen snap preview zichtbaar |
+| Niet boven track | Alleen DragOverlay zichtbaar |
+
 ---
 
 ## 🔴 P1 - HOOGSTE PRIORITEIT (nu)
 
-### 12. Clip Trimming / Inkorten
-**Status:** Niet begonnen
-**Complexiteit:** ⭐⭐⭐ Medium (4-6 uur)
-**Feedback:** Gebruikersverzoek (2026-02-03) - studenten willen samples inkorten op timeline
-
-**Beschrijving:**
-Gebruikers kunnen clips op de timeline inkorten door aan de linker- of rechterkant van de clip te slepen met een resize handle. Dit maakt het mogelijk om alleen een deel van een sample te gebruiken.
-
-**Technische implementatie:**
-- [ ] Clip type uitbreiden met `trimStart` en `trimEnd` (in beats of seconden)
-- [ ] Resize handles toevoegen aan Clip component (links + rechts)
-- [ ] Drag-to-resize logica implementeren (naast bestaande drag-to-move)
-- [ ] Visuele breedte berekening aanpassen voor getrimde clips
-- [ ] Tone.js scheduling aanpassen: `player.start(time, offset, duration)`
-- [ ] Minimum clip lengte afdwingen (bijv. 0.5 beat)
-- [ ] SavedComposition/SharedComposition types updaten voor trim data
-
-**UI/UX:**
-- Handles alleen zichtbaar bij hover (desktop) of altijd op mobile
-- Cursor verandert naar `ew-resize` bij hover op handles
-- Visuele feedback tijdens resize (clip past mee)
-- Waveform (indien aanwezig) past mee met trim
-
-**Belangrijke overwegingen:**
-- dnd-kit wordt al gebruikt voor clip verplaatsing - resize moet hier goed mee samenwerken
-- Mogelijk aparte drag handler nodig (niet via dnd-kit maar eigen mouse/touch events)
-- Audio offset berekening: `trimStart` in seconden → Tone.js offset parameter
-
-**Combineren met:**
-- Kan standalone geïmplementeerd worden
-- Optioneel later uitbreiden met Sample Effecten (P5) voor een "Clip Editor" feature set
+*Geen P1 items - alle hoge prioriteit features zijn voltooid*
 
 ---
 
@@ -255,73 +413,54 @@ CREATE TABLE shares (
 - Compositie data wordt gekopieerd (niet gelinkt aan gebruiker)
 - Automatische cleanup van verlopen shares (cron of on-access check)
 
-### 15. Audio Loading Robuuster Maken
+### 15. Emergency Knop bij Foutmeldingen
 **Status:** Niet begonnen
 **Complexiteit:** ⭐⭐ Medium
-**Bron:** Docent feedback groep 6 (2026-02-03) - "Niet alle geluiden werkten bij iedereen"
+**Bron:** Gebruiker feedback (2026-02-03)
 
-**Probleem:**
-Bij klasgebruik laden niet altijd alle samples correct. Mogelijk oorzaken:
-- Schoolnetwerk traag/instabiel
-- Veel gelijktijdige gebruikers
-- Geen retry bij timeout
-- Geen duidelijke feedback bij laadfouten
+**Beschrijving:**
+Wanneer er een foutmelding optreedt (audio laadt niet, netwerk error, etc.) moet er een duidelijke "noodknop" zijn waarmee gebruikers terug kunnen naar een werkende staat.
 
 **Te implementeren:**
-- [ ] Retry mechanisme bij laden (3x met exponential backoff)
-- [ ] Per-sample loading indicator (niet alleen globale spinner)
-- [ ] Duidelijke error feedback als sample niet laadt ("Geluid kon niet laden, tik om opnieuw te proberen")
-- [ ] Preloading strategie verbeteren (prioriteit: huidige locatie eerst)
-- [ ] Offline detectie + melding
-- [ ] Cache headers optimaliseren voor herhaald bezoek
+- [ ] Globale error boundary component
+- [ ] "Opnieuw proberen" knop bij laadfouten
+- [ ] "Terug naar start" emergency knop bij kritieke fouten
+- [ ] Duidelijke foutmeldingen in gebruikersvriendelijke taal
+- [ ] Logging van errors voor debugging
+- [ ] Graceful degradation bij gedeeltelijke failures
 
-**Technische aanpak:**
-```typescript
-// In useLocationAudio.ts of AudioService
-const loadWithRetry = async (url: string, retries = 3): Promise<Tone.Player> => {
-  for (let i = 0; i < retries; i++) {
-    try {
-      const player = new Tone.Player(url).toDestination();
-      await player.load(url);
-      return player;
-    } catch (err) {
-      if (i === retries - 1) throw err;
-      await new Promise(r => setTimeout(r, 1000 * (i + 1))); // Exponential backoff
-    }
-  }
-};
-```
+**UI/UX:**
+- Rode/oranje waarschuwingskleur voor error states
+- Grote, duidelijk zichtbare knoppen
+- Korte, begrijpelijke foutmeldingen (geen technische jargon)
+- Optie om "door te gaan" waar mogelijk
 
-**Test scenario's:**
-- [ ] Test met trage netwerk simulatie (Chrome DevTools → Network → Slow 3G)
-- [ ] Test met 20+ gelijktijdige gebruikers
-- [ ] Test met intermitterende connectie
-
-### 16. Drag-and-Drop UX Verbetering
+### 16. Touch Gevoeligheid & Autoplay Issues
 **Status:** Niet begonnen
-**Complexiteit:** ⭐⭐ Medium
-**Bron:** Docent feedback groep 6 (2026-02-03) - "Samples konden ineens verspringen"
+**Complexiteit:** ⭐⭐⭐ Medium-Hoog
+**Bron:** Gebruiker feedback (2026-02-03) - problemen op tablets en mobiles
 
 **Probleem:**
-Bij het slepen van clips op de timeline "verspringen" ze soms onverwacht. Dit is frustrerend voor kinderen en maakt nauwkeurig werken lastig.
-
-**Mogelijke oorzaken:**
-- Snap-to-beat te agressief
-- Touch sensitivity te hoog op tablets/Chromebooks
-- Drag threshold te laag
-- Conflict tussen drag-to-move en andere touch events
+Touch interacties werken niet optimaal op tablets en mobiele apparaten. Mogelijk ook issues met automatisch afspelen van audio.
 
 **Te onderzoeken:**
-- [ ] Test op verschillende devices (tablet, Chromebook, desktop)
-- [ ] Log drag events om patroon te vinden
-- [ ] Check dnd-kit configuratie (PointerSensor distance, TouchSensor delay)
+- [ ] Test touch gevoeligheid op verschillende tablets (iPad, Android, Chromebook)
+- [ ] Test drag-and-drop op touchscreens
+- [ ] Autoplay beleid van verschillende browsers
+- [ ] Audio context initialisatie op mobile
+
+**Mogelijke problemen:**
+- Touch targets te klein
+- Drag threshold niet geoptimaliseerd voor touch
+- Audio autoplay geblokkeerd door browser
+- Dubbele touch events (touch + click)
 
 **Mogelijke oplossingen:**
-- [ ] Verhoog drag threshold (nu 8px, mogelijk 12-16px)
-- [ ] Voeg "drag preview" toe die duidelijker laat zien waar clip komt
-- [ ] Visuele snap indicator (grid highlight tijdens drag)
-- [ ] TouchSensor delay verhogen voor tablets
-- [ ] Optioneel: "Fijn positioneren" modus zonder snap
+- [ ] Verhoog drag threshold voor touch (nu 150ms delay)
+- [ ] Vergroot touch targets waar nodig
+- [ ] Expliciete "Tik om audio te starten" prompt
+- [ ] Prevent default op touch events waar nodig
+- [ ] Test met `touch-action: none` op drag elements
 
 **Huidige configuratie (te reviewen):**
 ```typescript
@@ -336,7 +475,7 @@ const sensors = useSensors(
 
 ## 🟡 P3 - MEDIUM PRIORITEIT
 
-### 17. Locatie Editor Verbeteringen (5.8)
+### 18. Locatie Editor Verbeteringen (5.8)
 **Status:** Basis werkend, verbeteringen optioneel
 **Locatie:** `src/pages/LocationEditor.tsx`
 
@@ -360,46 +499,6 @@ const sensors = useSensors(
 - Browser kan niet direct naar filesystem schrijven
 - Optie 1: ZIP download met alle assets
 - Optie 2: Copy-paste instructies met file paths
-
-### 18. Ambient Audio (5.2)
-**Status:** Architectuur voorbereid, geen implementatie
-**Complexiteit:** ⭐⭐ Medium
-
-**Wat al bestaat:**
-- [x] `ambientAudio: string` veld in Location interface
-- [x] Alle locaties hebben het veld (momenteel leeg: `''`)
-
-**Te implementeren:**
-- [ ] Ambient audio files toevoegen per locatie
-- [ ] Audio playback starten bij betreden locatie (`LocationScene` mount)
-- [ ] Fade in effect (0.5-1s)
-- [ ] Fade out bij verlaten locatie (cleanup)
-- [ ] **Toggle in StartScreen**: "Achtergrondmuziek aan/uit"
-- [ ] Voorkeur opslaan in localStorage
-- [ ] Loop ambient track continu
-
-**Technische aanpak:**
-```typescript
-// In LocationScene.tsx of nieuwe useAmbientAudio hook
-useEffect(() => {
-  if (!location.ambientAudio || !ambientEnabled) return;
-
-  const player = new Tone.Player(location.ambientAudio).toDestination();
-  player.loop = true;
-  player.volume.value = -10; // Zachter dan samples
-
-  // Fade in
-  player.volume.value = -Infinity;
-  player.start();
-  player.volume.rampTo(-10, 0.5);
-
-  return () => {
-    // Fade out
-    player.volume.rampTo(-Infinity, 0.3);
-    setTimeout(() => player.dispose(), 300);
-  };
-}, [location.ambientAudio, ambientEnabled]);
-```
 
 ### 19. Eigen Samples Opnemen (5.5)
 **Status:** Niet begonnen
@@ -474,7 +573,24 @@ Op digiborden (interactieve schoolborden) zijn niet altijd alle 8 tracks zichtba
 3. Hotspot configuratie (LocationEditor)
 4. Vertaling keys (NL + EN)
 
-### 22. Multiplayer (5.7)
+### 22. Beat Ruler met Cijfers
+**Status:** Niet begonnen
+**Complexiteit:** ⭐ Laag
+**Gerelateerd aan:** Playhead Scrubbing (#16)
+
+**Beschrijving:**
+De ruler strip boven de timeline toont momenteel alleen maatgrens-lijnen (elke 4 beats). Een toekomstige verbetering is het toevoegen van beat/maat cijfers.
+
+**Te implementeren:**
+- [ ] Beat nummers tonen in ruler (1, 2, 3, 4 of maatnummers)
+- [ ] Responsive tekst grootte (kleiner op mobile)
+- [ ] Alleen major beats labelen (elke 4 of elke 8)
+
+**Locatie:** `src/components/studio/Timeline.tsx` - ruler strip sectie
+
+**Notitie:** Ruler strip infrastructuur is al aanwezig door Playhead Scrubbing implementatie.
+
+### 23. Multiplayer (5.7)
 **Status:** 🔄 GEPARKEERD
 **Complexiteit:** ⭐⭐⭐⭐⭐ Zeer hoog
 
@@ -547,7 +663,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 
 ## Volgende Stappen
 
-### ✅ Voltooid (1-11)
+### ✅ Voltooid (1-15)
 1. ~~Locaties & Stadskaart~~ ✅
 2. ~~MP3 Export~~ ✅
 3. ~~Lokaal Opslaan + Beheren~~ ✅
@@ -559,25 +675,28 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 9. ~~StartScreen Branding~~ ✅
 10. ~~Klas-code Systeem~~ ✅
 11. ~~Hotspot Animaties~~ ✅
+12. ~~Clip Trimming & Smart Snap~~ ✅
+13. ~~Audio Loading Robuuster~~ ✅
+14. ~~Ambient Audio~~ ✅
+15. ~~Drag Offset Alignment~~ ✅
 
 ### 🔴 Nu: P1
-12. **Clip Trimming** - Studenten willen samples inkorten
+*Geen P1 items - alle hoge prioriteit features zijn voltooid*
 
 ### 🟠 Daarna: P2
-13. Thema Dropdown in UI
-14. Delen met Link (publieke luisterlinks)
-15. Audio Loading Robuuster (docent feedback: geluiden laden niet altijd)
-16. Drag-and-Drop UX Fix (docent feedback: samples verspringen)
+- Thema Dropdown in UI (#13)
+- Delen met Link (#14)
+- Emergency Knop bij Foutmeldingen (#15)
+- Touch Gevoeligheid & Autoplay Issues (#16)
 
 ### 🟡 Later: P3
-17. Locatie Editor Verbeteringen
-18. Ambient Audio
-19. Eigen Samples Opnemen
-20. Digibord/Classroom Display Optimalisatie
+- Locatie Editor Verbeteringen (#18)
+- Eigen Samples Opnemen (#19)
+- Digibord/Classroom Display Optimalisatie (#20)
 
 ### 🟢 Toekomst: P4
-21. Extra Locaties (Spookhuis, Strand, etc.)
-22. Multiplayer (geparkeerd)
+- Extra Locaties (#21)
+- Multiplayer (#22)
 
 ### ⚪ Backlog: P5
-23. Sample Effecten (volume, pitch, reverb)
+- Sample Effecten (#23)

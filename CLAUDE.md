@@ -51,16 +51,17 @@ Themes are configured in `src/data/themes/`:
 
 ### State Management (Zustand Stores)
 
-Five independent stores in `src/stores/`:
+Six independent stores in `src/stores/`:
 
 | Store | Responsibility |
 |---|---|
 | `appStore` (alias: `gameStore`) | Current screen + active location ID + current composition ID |
 | `audioStore` | Playback state (isPlaying, currentBeat) |
-| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, overlap prevention |
+| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim |
 | `libraryStore` | Recorder slots (max 6), collected samples, transfer to library |
 | `userStore` | User session, role (guest/student/teacher), class code (Fase 4 prep) |
 | `themeStore` | Active theme, locations, samples, map config (loaded from URL param) |
+| `selectionStore` | Selected clip ID + track index for edit toolbar |
 
 Stores are consumed with direct selectors: `useStore((s) => s.field)`.
 
@@ -91,7 +92,16 @@ MP3 export implemented in `src/utils/audioExport.ts`:
 
 ### Drag-and-Drop
 
-`StudioView.tsx` owns the dnd-kit `DndContext`. Clips are draggable within and across tracks. `DragOverlay` renders a preview during drag. Sensors: PointerSensor (8px) + TouchSensor (150ms delay).
+`StudioView.tsx` owns the dnd-kit `DndContext`. Clips are draggable within and across tracks.
+
+**Visual feedback:**
+- When dragging over a track: only the **snap preview** (dashed outline) is visible
+- When not over a track: only the **DragOverlay** is visible
+- Original clip is hidden (`opacity-0`) during drag
+
+**Clip repositioning:** Uses delta-based calculation so clips stay at their original position + drag delta (not cursor position). This allows precise fine-tuning.
+
+Sensors: PointerSensor (8px) + TouchSensor (150ms delay).
 
 ### Teacher Dashboard
 
@@ -266,6 +276,8 @@ All components use Tailwind `sm:` breakpoint (640px) for mobile/desktop distinct
 |---|---|
 | `todo-implementatie.md` | MVP implementation progress (Fase 1-3) + styling/UX updates |
 | `docs/TODO-IMPLEMENTATIE.md` | Fase 4-5 prioritized feature list |
+| `docs/ROADMAP-CLIP-TRIMMING.md` | Clip Trimming & Smart Snap roadmap (✅ voltooid) |
+| `docs/ROADMAP-DRAG-OFFSET.md` | Drag Offset Alignment implementatie log (tijdelijk) |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Guide for adding locations and themes |
 | `docs/PLAN-EXPORT-MP3.md` | MP3 export implementation plan (voltooid) |
 | `docs/PLAN-KLASCODE-SYSTEEM.md` | Supabase integration plan (gedeeltelijk voltooid) |
@@ -273,8 +285,188 @@ All components use Tailwind `sm:` breakpoint (640px) for mobile/desktop distinct
 | `docs/responsive-design-analysis.md` | Responsive design patterns and implementation |
 | `soundscout-prd.md` | Product requirements document |
 
-## Recent Updates (2026-02-03)
+## Recent Updates (2026-02-04)
 
+### Drag Offset Alignment (#16) ✅ VOLTOOID
+
+Verbeterde drag-and-drop UX: één duidelijk visueel element tijdens slepen.
+
+**Problemen (opgelost):**
+1. Meerdere visuele elementen zichtbaar tijdens drag (verwarrend voor leerlingen)
+2. Bij clip verplaatsen: snap preview sprong naar cursor i.p.v. originele positie
+
+**Oplossing - Deel 1: Eén visueel element**
+- DragOverlay verborgen wanneer snap preview actief (boven track)
+- Originele clip volledig verborgen tijdens drag (`opacity-0`)
+
+**Oplossing - Deel 2: Delta-based clip repositioning**
+- Clips behouden originele positie als uitgangspunt
+- Nieuwe positie = originele positie + drag delta
+- Samples uit library: cursor = linkerrand (ongewijzigd)
+
+**Gewijzigde bestanden:**
+
+| Bestand | Wijziging |
+|---------|-----------|
+| `src/hooks/useStudioDnD.ts` | Delta-based berekening voor clips |
+| `src/components/studio/StudioView.tsx` | DragOverlay verbergen bij snapPreview |
+| `src/components/studio/Clip.tsx` | `opacity-0` bij isDragging |
+
+**Implementatie useStudioDnD.ts:**
+```typescript
+// Nieuwe refs voor clip repositioning
+const originalClipStartBeatRef = useRef<number | null>(null);
+const activeDragTypeRef = useRef<'sample' | 'clip' | null>(null);
+
+// Bij drag start: onthoud originele positie
+if (dragType === 'clip') {
+  originalClipStartBeatRef.current = clip?.startBeat ?? null;
+}
+
+// Bij drag move/end: delta-based berekening voor clips
+if (currentDragType === 'clip' && originalClipStartBeat !== null) {
+  const deltaBeats = (delta.x / clipAreaWidth) * totalBeats;
+  startBeat = Math.round(originalClipStartBeat + deltaBeats);
+} else {
+  startBeat = calculateDropBeat(over, activatorEvent, delta);
+}
+```
+
+**Implementatie StudioView.tsx:**
+```typescript
+// DragOverlay alleen tonen als NIET boven track (geen snapPreview)
+<DragOverlay>
+  {activeDragSample && !snapPreview ? (...) : null}
+</DragOverlay>
+```
+
+**Implementatie Clip.tsx:**
+```typescript
+// Originele clip volledig verborgen tijdens drag
+${isDragging ? 'opacity-0' : ''}
+```
+
+---
+
+## Updates (2026-02-03)
+
+### Audio Loading Robuuster (#15) ✅ VOLTOOID
+
+Verbeterde audio loading met parallel loading, retry mechanisme, timeout bescherming, en progress UI:
+
+**Nieuwe constants (`config.ts`):**
+```typescript
+AUDIO_LOAD_TIMEOUT_MS = 15000     // 15 seconden per sample
+AUDIO_LOAD_MAX_RETRIES = 2        // Max 2 retry pogingen
+AUDIO_LOAD_CONCURRENCY = 3        // Max 3 parallel loads
+AMBIENT_AUDIO_VOLUME_DB = -15     // Ambient volume (-15dB)
+AMBIENT_AUDIO_FADE_SECONDS = 1.5  // Fade duur
+```
+
+**AudioService verbeteringen:**
+- `loadSamples()`: Nu parallel met batching (3 tegelijk) i.p.v. sequentieel
+- `loadSampleWithRetry()`: Automatische retry met exponential backoff (1s, 2s)
+- `loadSampleWithTimeout()`: 15 seconden timeout per sample
+- Errors worden gelogd maar app crasht niet
+
+**useLocationAudio verbeteringen:**
+```typescript
+const {
+  isLoading,        // boolean
+  loadingProgress,  // 0-100
+  hasError,         // boolean (sommige samples gefaald)
+  failedCount,      // aantal gefaalde samples
+  retry,            // () => void - herlaad gefaalde samples
+  playSample,
+  stopSample,
+  stopAll,
+} = useLocationAudio({ samples, locationId, ambientUrl });
+```
+
+**LocationScene UI:**
+- Progress bar met percentage tijdens laden
+- Error state met amber icon + "Opnieuw proberen" knop
+
+### Ambient Audio (#18) ✅ VOLTOOID
+
+Ambient audio functionaliteit geïmplementeerd maar nog niet gekoppeld aan bestaande thema's:
+
+**AudioService ambient methods:**
+```typescript
+audioService.loadAmbient(url: string): Promise<boolean>
+audioService.playAmbient(): void
+audioService.stopAmbient(fade?: boolean): void
+audioService.setAmbientVolume(db: number): void
+audioService.isAmbientAudioPlaying(): boolean
+```
+
+**Hoe ambient audio toe te voegen aan een locatie:**
+```typescript
+// In locations.ts van een thema:
+{
+  id: 'boerderij',
+  name: 'locations.boerderij.name',
+  description: 'locations.boerderij.description',
+  backgroundImage: '/images/themes/basis/boerderij.png',
+  ambientAudio: '/audio/themes/basis/ambient/boerderij.mp3', // ← Vul in
+  hotspots: [...],
+  unlocked: true,
+}
+```
+
+**Kenmerken:**
+- Loopt automatisch (loop: true)
+- Zachter volume dan samples (-15dB)
+- Fade in/out bij scene transitions (1.5s)
+- Optioneel per locatie (lege string = geen ambient)
+
+**Huidige status:** Alle locaties hebben `ambientAudio: ''` - feature is klaar voor gebruik maar nog niet actief.
+
+### Clip Trimming & Smart Snap (#12 + #16) ✅ VOLTOOID
+**Roadmap:** `docs/ROADMAP-CLIP-TRIMMING.md`
+
+Volledig geïmplementeerde 7-fase roadmap voor clip trimming en smart snap functionaliteit:
+
+**Nieuwe bestanden:**
+| Bestand | Functie |
+|---------|---------|
+| `src/utils/clipCollision.ts` | Overlap detectie & smart snap algoritme |
+| `src/utils/waveform.ts` | Waveform peak extractie uit AudioBuffer |
+| `src/stores/selectionStore.ts` | Clip selectie state management |
+| `src/components/studio/EditToolbar.tsx` | Toolbar voor geselecteerde clips |
+| `src/components/studio/Waveform.tsx` | Canvas-based waveform visualisatie |
+| `src/components/studio/TrimModal.tsx` | Modal met drag handles voor trimmen |
+
+**Uitgebreide types:**
+```typescript
+// src/types/index.ts
+interface Clip {
+  id: string;
+  sampleId: string;
+  startBeat: number;
+  effects?: ClipEffects;
+  trimStart?: number;  // Start positie trim in seconden
+  trimEnd?: number;    // Eind positie trim in seconden
+}
+```
+
+**Smart Snap strategie:**
+1. Probeer originele positie op target track
+2. Bij overlap: schuif na blokkerende clip (zelfde track)
+3. Geen ruimte: probeer tracks eronder
+4. Nergens ruimte: reject plaatsing
+
+**Audio scheduling met trim:**
+```typescript
+// In AudioService.scheduleTimeline()
+player.start(time, trimStart, trimDuration);
+```
+
+**Bug fixes (2026-02-03):**
+- Toolbar deselect: Click-away werkt nu correct op Track component
+- Trim handle: Rechter handle nu sleepbaar bij ongetrimde samples (clamp fix)
+
+### Eerdere Updates (2026-02-03)
 - **RLS Security Fix**: Classes query nu gefilterd op `teacher_id` - docenten zien alleen eigen klassen
 - **Hotspot Hiding**: Verzamelde geluiden verdwijnen nu van de locatie (in recorder of library)
 - **ZoomableView Fix**: Console errors opgelost (passive touch event listener)

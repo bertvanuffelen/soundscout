@@ -39,7 +39,12 @@ export interface SnapPreview {
   color: string;
 }
 
-export function useStudioDnD() {
+interface UseStudioDnDOptions {
+  /** All available samples (needed for collision detection) */
+  samples: Sample[];
+}
+
+export function useStudioDnD({ samples }: UseStudioDnDOptions) {
   const bpm = useTimelineStore((s) => s.bpm);
   const totalBeats = useTimelineStore((s) => s.totalBeats);
   const addClip = useTimelineStore((s) => s.addClip);
@@ -49,6 +54,10 @@ export function useStudioDnD() {
   const [activeDragType, setActiveDragType] = useState<'sample' | 'clip' | null>(null);
   const [snapPreview, setSnapPreview] = useState<SnapPreview | null>(null);
   const activeDragSampleRef = useRef<Sample | null>(null);
+
+  // For clip repositioning: remember original position for delta-based calculation
+  const originalClipStartBeatRef = useRef<number | null>(null);
+  const activeDragTypeRef = useRef<'sample' | 'clip' | null>(null);
 
   // Configure sensors
   const sensors = useSensors(
@@ -105,6 +114,29 @@ export function useStudioDnD() {
     [totalBeats]
   );
 
+  // Calculate drop beat for clips using delta-based positioning
+  // This keeps the clip at its original position + drag delta, instead of jumping to cursor
+  const calculateClipDropBeat = useCallback(
+    (over: DragEndEvent['over'], delta: { x: number }) => {
+      const originalBeat = originalClipStartBeatRef.current;
+      if (originalBeat === null || !over) return null;
+
+      const trackEl = document.getElementById(over.id as string);
+      if (!trackEl) return null;
+
+      const trackRect = trackEl.getBoundingClientRect();
+      const trackLabelWidth = TRACK_LABEL_WIDTH_PX;
+      const clipAreaWidth = trackRect.width - trackLabelWidth;
+
+      // Convert delta pixels to delta beats
+      const deltaBeats = (delta.x / clipAreaWidth) * totalBeats;
+      const newBeat = originalBeat + deltaBeats;
+
+      return Math.max(0, Math.min(totalBeats - 1, Math.round(newBeat)));
+    },
+    [totalBeats]
+  );
+
   // Handle drag start
   const handleDragStart = useCallback((event: DragStartEvent) => {
     const sample = event.active.data.current?.sample as Sample | undefined;
@@ -113,6 +145,15 @@ export function useStudioDnD() {
     setActiveDragSample(sample ?? null);
     setActiveDragType(dragType);
     activeDragSampleRef.current = sample ?? null;
+    activeDragTypeRef.current = dragType;
+
+    // For clips: remember original position for delta-based repositioning
+    if (dragType === 'clip') {
+      const clip = event.active.data.current?.clip as Clip | undefined;
+      originalClipStartBeatRef.current = clip?.startBeat ?? null;
+    } else {
+      originalClipStartBeatRef.current = null;
+    }
   }, []);
 
   // Handle drag move (for snap preview)
@@ -132,7 +173,12 @@ export function useStudioDnD() {
         return;
       }
 
-      const beat = calculateDropBeat(over, activatorEvent, delta);
+      // For clips: use delta-based calculation (keeps original position as reference)
+      // For samples from library: use cursor-based calculation
+      const beat =
+        activeDragTypeRef.current === 'clip'
+          ? calculateClipDropBeat(over, delta)
+          : calculateDropBeat(over, activatorEvent, delta);
       if (beat === null) {
         setSnapPreview(null);
         return;
@@ -147,16 +193,22 @@ export function useStudioDnD() {
         return { trackId, beat, durationBeats, color };
       });
     },
-    [calculateDropBeat, bpm]
+    [calculateDropBeat, calculateClipDropBeat, bpm]
   );
 
   // Handle drag end
   const handleDragEnd = useCallback(
     (event: DragEndEvent) => {
+      // Save values BEFORE resetting refs (needed for calculation)
+      const currentDragType = activeDragTypeRef.current;
+      const originalClipStartBeat = originalClipStartBeatRef.current;
+
       setActiveDragSample(null);
       setActiveDragType(null);
       setSnapPreview(null);
       activeDragSampleRef.current = null;
+      activeDragTypeRef.current = null;
+      originalClipStartBeatRef.current = null;
 
       const { active, over, activatorEvent, delta } = event;
       if (!over) return;
@@ -165,7 +217,22 @@ export function useStudioDnD() {
       if (trackData?.type !== 'track') return;
 
       const toTrackIndex = trackData.trackIndex as number;
-      const startBeat = calculateDropBeat(over, activatorEvent, delta);
+
+      // For clips: use delta-based calculation (keeps original position as reference)
+      // For samples from library: use cursor-based calculation
+      let startBeat: number | null;
+      if (currentDragType === 'clip' && originalClipStartBeat !== null) {
+        // Calculate using saved original position (not the ref which is now null)
+        const trackEl = document.getElementById(over.id as string);
+        if (!trackEl) return;
+        const trackRect = trackEl.getBoundingClientRect();
+        const trackLabelWidth = TRACK_LABEL_WIDTH_PX;
+        const clipAreaWidth = trackRect.width - trackLabelWidth;
+        const deltaBeats = (delta.x / clipAreaWidth) * totalBeats;
+        startBeat = Math.max(0, Math.min(totalBeats - 1, Math.round(originalClipStartBeat + deltaBeats)));
+      } else {
+        startBeat = calculateDropBeat(over, activatorEvent, delta);
+      }
       if (startBeat === null) return;
 
       const dragType = active.data.current?.type as string | undefined;
@@ -173,21 +240,32 @@ export function useStudioDnD() {
       if (dragType === 'clip') {
         // Moving an existing clip
         const clip = active.data.current?.clip as Clip;
+        const sample = active.data.current?.sample as Sample;
         const fromTrackIndex = active.data.current?.trackIndex as number;
-        moveClip(fromTrackIndex, toTrackIndex, clip.id, startBeat);
+
+        if (!sample) return;
+
+        // Smart snap will find the best position
+        moveClip(fromTrackIndex, toTrackIndex, clip.id, startBeat, sample, samples);
       } else {
         // Adding new clip from library
         const sample = active.data.current?.sample as Sample | undefined;
         if (!sample) return;
 
-        addClip(toTrackIndex, {
-          id: generateClipId(),
-          sampleId: sample.id,
-          startBeat,
-        });
+        // Smart snap will find the best position
+        addClip(
+          toTrackIndex,
+          {
+            id: generateClipId(),
+            sampleId: sample.id,
+            startBeat,
+          },
+          sample,
+          samples,
+        );
       }
     },
-    [addClip, moveClip, calculateDropBeat]
+    [addClip, moveClip, calculateDropBeat, calculateClipDropBeat, samples]
   );
 
   // Handle drag cancel
@@ -196,6 +274,8 @@ export function useStudioDnD() {
     setActiveDragType(null);
     setSnapPreview(null);
     activeDragSampleRef.current = null;
+    activeDragTypeRef.current = null;
+    originalClipStartBeatRef.current = null;
   }, []);
 
   return {

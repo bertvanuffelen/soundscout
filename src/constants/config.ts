@@ -13,6 +13,21 @@ export const DEFAULT_BPM = 120;
 /** Interval for playhead position updates in milliseconds */
 export const PLAYHEAD_UPDATE_INTERVAL_MS = 50;
 
+/** Timeout for loading a single audio sample in milliseconds */
+export const AUDIO_LOAD_TIMEOUT_MS = 15000;
+
+/** Maximum number of retry attempts for loading a sample */
+export const AUDIO_LOAD_MAX_RETRIES = 2;
+
+/** Maximum number of samples to load in parallel */
+export const AUDIO_LOAD_CONCURRENCY = 3;
+
+/** Default volume for ambient audio in dB (relative to samples) */
+export const AMBIENT_AUDIO_VOLUME_DB = -15;
+
+/** Fade duration for ambient audio in seconds */
+export const AMBIENT_AUDIO_FADE_SECONDS = 1.5;
+
 // =============================================================================
 // TIMELINE
 // =============================================================================
@@ -58,3 +73,19 @@ export const TOUCH_ACTIVATION_TOLERANCE = 8;
 
 /** Default hotspot radius as percentage of container width */
 export const DEFAULT_HOTSPOT_RADIUS = 4;
+
+// =============================================================================
+// CLIP EDITING / TRIMMING
+// =============================================================================
+
+/** Minimum trim duration in seconds (prevents clips from becoming too short) */
+export const MIN_TRIM_DURATION_SECONDS = 0.1;
+
+/** Waveform resolution - number of peaks to extract from audio */
+export const WAVEFORM_PEAK_COUNT = 100;
+
+/** Waveform bar width in pixels */
+export const WAVEFORM_BAR_WIDTH_PX = 3;
+
+/** Waveform gap between bars in pixels */
+export const WAVEFORM_GAP_PX = 1;

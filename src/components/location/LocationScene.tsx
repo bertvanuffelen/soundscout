@@ -8,6 +8,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AlertCircle } from 'lucide-react';
 import { useGameStore } from '../../stores/gameStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useThemeStore } from '../../stores/themeStore';
@@ -55,10 +56,20 @@ export function LocationScene() {
     ? getSamplesByLocationId(currentLocationId)
     : [];
 
-  // Audio hook
-  const { isLoading, playSample, stopSample, stopAll } = useLocationAudio({
+  // Audio hook (with progress, error handling, and optional ambient audio)
+  const {
+    isLoading,
+    loadingProgress,
+    hasError,
+    failedCount,
+    retry,
+    playSample,
+    stopSample,
+    stopAll,
+  } = useLocationAudio({
     samples: locationSamples,
     locationId: currentLocationId,
+    ambientUrl: location?.ambientAudio || undefined,
   });
 
   // Handlers
@@ -226,11 +237,37 @@ export function LocationScene() {
             showZoomButton="mobile-portrait"
           />
 
-          {/* Loading overlay */}
+          {/* Loading overlay with progress */}
           {isLoading && (
-            <div className="absolute inset-0 bg-black/20 flex items-center justify-center z-30">
-              <div className="bg-white/90 backdrop-blur-sm rounded-2xl px-6 py-4 shadow-lg">
-                <p className="text-sky-700 font-semibold">{t('start.loading')}</p>
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-30">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
+                <p className="text-sky-700 font-semibold mb-3">{t('start.loading')}</p>
+                {/* Progress bar */}
+                <div className="w-full bg-neutral-200 rounded-full h-2 mb-2">
+                  <div
+                    className="bg-sky-500 h-2 rounded-full transition-all duration-300"
+                    style={{ width: `${loadingProgress}%` }}
+                  />
+                </div>
+                <p className="text-neutral-500 text-sm">{loadingProgress}%</p>
+              </div>
+            </div>
+          )}
+
+          {/* Error state with retry button */}
+          {!isLoading && hasError && (
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-30">
+              <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
+                <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
+                <p className="text-gray-700 font-medium mb-2">
+                  {t('location.loadingError', { count: failedCount })}
+                </p>
+                <p className="text-gray-500 text-sm mb-4">
+                  {t('location.loadingErrorHint')}
+                </p>
+                <Button onClick={retry} variant="primary">
+                  {t('common.retry')}
+                </Button>
               </div>
             </div>
           )}

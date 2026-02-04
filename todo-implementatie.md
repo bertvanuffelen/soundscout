@@ -552,6 +552,48 @@ Status: **VOLTOOID** (02-02-2026)
 
 ---
 
+---
+
+## Stap 16: Clip Trimming & Smart Snap
+Status: **VOLTOOID** (03-02-2026)
+
+### Feature Overzicht
+Volledige implementatie van clip trimming en smart snap functionaliteit volgens 7-fase roadmap.
+Zie: `docs/ROADMAP-CLIP-TRIMMING.md`
+
+### Nieuwe Bestanden
+| Bestand | Functie |
+|---------|---------|
+| `src/utils/clipCollision.ts` | Overlap detectie & smart snap algoritme |
+| `src/utils/waveform.ts` | Waveform peak extractie |
+| `src/stores/selectionStore.ts` | Clip selectie state |
+| `src/components/studio/EditToolbar.tsx` | Toolbar voor geselecteerde clips |
+| `src/components/studio/Waveform.tsx` | Canvas waveform component |
+| `src/components/studio/TrimModal.tsx` | Modal met trim handles |
+
+### Gewijzigde Bestanden
+| Bestand | Wijziging |
+|---------|-----------|
+| `src/types/index.ts` | `trimStart`, `trimEnd` op Clip interface |
+| `src/constants/config.ts` | Trim/waveform constants |
+| `src/utils/audio.ts` | Trim helper functies |
+| `src/stores/timelineStore.ts` | Smart snap + `updateClipTrim` |
+| `src/services/AudioService.ts` | Waveform cache, region playback, trim scheduling |
+| `src/services/StorageService.ts` | Trim-aware metadata |
+| `src/components/studio/Clip.tsx` | Selection state, trim-aware width |
+| `src/components/studio/Track.tsx` | Click-away deselect |
+| `src/components/studio/StudioView.tsx` | EditToolbar + TrimModal integratie |
+
+### Bug Fixes
+- [x] Toolbar deselect: Track component cleared selection on click (03-02-2026)
+- [x] Trim handle: clamp() fix voor rechter handle bij ongetrimde samples (03-02-2026)
+
+### Testresultaten
+- `npm run build`: Succesvol
+- `npm test`: 13/13 tests geslaagd
+
+---
+
 ### Volgende stappen (buiten scope MVP)
 - Echte MP3 audio bestanden toevoegen
 - Meerdere locaties (haven, markt, bos)

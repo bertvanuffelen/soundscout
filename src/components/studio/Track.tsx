@@ -2,6 +2,7 @@ import { memo, useCallback } from 'react';
 import { useDroppable } from '@dnd-kit/core';
 import type { Track as TrackType, Sample } from '../../types';
 import { useThemeStore } from '../../stores/themeStore';
+import { useSelectionStore } from '../../stores/selectionStore';
 import { Clip } from './Clip';
 
 interface TrackProps {
@@ -26,6 +27,7 @@ export const Track = memo(function Track({
   samples,
 }: TrackProps) {
   const themeGetSampleById = useThemeStore((s) => s.getSampleById);
+  const clearSelection = useSelectionStore((s) => s.clearSelection);
 
   // Use provided samples array if available, otherwise fall back to theme store
   const getSampleById = useCallback((id: string): Sample | undefined => {
@@ -34,6 +36,17 @@ export const Track = memo(function Track({
     }
     return themeGetSampleById(id);
   }, [samples, themeGetSampleById]);
+
+  // Clear selection when clicking on empty track space
+  const handleTrackClick = useCallback(
+    (e: React.MouseEvent) => {
+      // Only clear if clicking directly on the track or clips area, not on a clip
+      if (e.target === e.currentTarget) {
+        clearSelection();
+      }
+    },
+    [clearSelection],
+  );
 
   const { setNodeRef, isOver } = useDroppable({
     id: track.id,
@@ -45,6 +58,7 @@ export const Track = memo(function Track({
     <div
       ref={setNodeRef}
       id={track.id}
+      onClick={handleTrackClick}
       className={`
         relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150
         ${isOver && !readOnly ? 'bg-primary-100/60' : 'bg-white/40'}
@@ -58,7 +72,10 @@ export const Track = memo(function Track({
       </div>
 
       {/* Clips area */}
-      <div className="absolute left-5 sm:left-6 right-0 top-0 bottom-0">
+      <div
+        className="absolute left-5 sm:left-6 right-0 top-0 bottom-0"
+        onClick={handleTrackClick}
+      >
         {track.clips.map((clip) => {
           const sample = getSampleById(clip.sampleId) as Sample;
           if (!sample) return null;

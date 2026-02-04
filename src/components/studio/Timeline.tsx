@@ -1,8 +1,10 @@
-import { memo, useRef, useEffect } from 'react';
+import { memo, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Track as TrackType, Sample } from '../../types';
 import { Track } from './Track';
+import { Playhead } from './Playhead';
 import { VISIBLE_BEATS } from '../../constants/config';
+import { useSelectionStore } from '../../stores/selectionStore';
 
 interface TimelineProps {
   tracks: TrackType[];
@@ -11,6 +13,7 @@ interface TimelineProps {
   currentBeat: number;
   isPlaying: boolean;
   onRemoveClip: (trackIndex: number, clipId: string) => void;
+  onSeek?: (beat: number) => void;
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
   readOnly?: boolean;
   samples?: Sample[];  // Optional: for read-only mode with custom samples
@@ -23,12 +26,25 @@ export const Timeline = memo(function Timeline({
   currentBeat,
   isPlaying,
   onRemoveClip,
+  onSeek,
   snapPreview,
   readOnly = false,
   samples,
 }: TimelineProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const clearSelection = useSelectionStore((s) => s.clearSelection);
+
+  // Handle click on timeline background to clear selection
+  const handleTimelineClick = useCallback(
+    (e: React.MouseEvent) => {
+      // Only clear if clicking on timeline background, not on a clip
+      if (e.target === e.currentTarget) {
+        clearSelection();
+      }
+    },
+    [clearSelection],
+  );
 
   // Calculate width multiplier for scrollable content
   const widthMultiplier = totalBeats / VISIBLE_BEATS;
@@ -67,14 +83,48 @@ export const Timeline = memo(function Timeline({
       <div
         ref={scrollContainerRef}
         className="relative overflow-x-auto bg-neutral-50/50 md:bg-neutral-100/50"
+        onClick={handleTimelineClick}
       >
         {/* Scrollable content wrapper */}
         <div
           className="relative"
           style={{ width: `${widthMultiplier * 100}%`, minWidth: '100%' }}
         >
-          {/* Grid lines */}
-          <div className="absolute inset-0 left-5 sm:left-6 pointer-events-none">
+          {/* Ruler strip - 16px with measure lines */}
+          <div className="relative h-4 border-b border-border-subtle bg-neutral-100/80">
+            {/* Track label spacer */}
+            <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 bg-neutral-200/50" />
+
+            {/* Measure lines in ruler (every 4 beats) */}
+            <div className="absolute inset-0 left-5 sm:left-6">
+              {gridLines
+                .filter((b) => b % 4 === 0)
+                .map((beat) => {
+                  const leftPercent = (beat / totalBeats) * 100;
+                  return (
+                    <div
+                      key={beat}
+                      className="absolute top-0 bottom-0 border-l border-neutral-300"
+                      style={{ left: `${leftPercent}%` }}
+                    />
+                  );
+                })}
+
+              {/* Playhead (handle in ruler + line through tracks) */}
+              {!readOnly && onSeek && (
+                <Playhead
+                  currentBeat={currentBeat}
+                  totalBeats={totalBeats}
+                  isPlaying={isPlaying}
+                  onSeek={onSeek}
+                  containerRef={scrollContainerRef}
+                />
+              )}
+            </div>
+          </div>
+
+          {/* Grid lines for tracks */}
+          <div className="absolute top-4 inset-x-0 bottom-0 left-5 sm:left-6 pointer-events-none">
             {gridLines.map((beat) => {
               const leftPercent = (beat / totalBeats) * 100;
               const isMajor = beat % 4 === 0;
@@ -108,11 +158,11 @@ export const Timeline = memo(function Timeline({
             ))}
           </div>
 
-          {/* Playhead */}
-          {isPlaying && (
-            <div className="absolute inset-0 left-5 sm:left-6 pointer-events-none z-20">
+          {/* Playhead line for read-only mode (no seeking) */}
+          {readOnly && (
+            <div className="absolute top-4 inset-x-0 bottom-0 left-5 sm:left-6 pointer-events-none z-20">
               <div
-                className="absolute top-0 bottom-0 w-0.5 bg-error-500 transition-[left] duration-75"
+                className="absolute top-0 bottom-0 w-0.5 bg-error-500 -translate-x-1/2"
                 style={{ left: `${playheadPercent}%` }}
               />
             </div>
@@ -120,7 +170,7 @@ export const Timeline = memo(function Timeline({
 
           {/* Empty state hint - only show in edit mode */}
           {!readOnly && tracks.every((tr) => tr.clips.length === 0) && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="absolute inset-0 top-4 flex items-center justify-center pointer-events-none">
               <p className="text-xs sm:text-sm text-text-muted italic">
                 {t('studio.dragHint')}
               </p>

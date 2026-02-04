@@ -127,6 +127,12 @@ export interface Clip {
   startBeat: number; // position on timeline in beats
   /** Optional audio effects for this clip (Fase 5) */
   effects?: ClipEffects;
+
+  // Trim boundaries (optional, default = hele sample)
+  /** Start positie van trim in seconden (0 = begin sample) */
+  trimStart?: number;
+  /** Eind positie van trim in seconden (undefined = eind sample) */
+  trimEnd?: number;
 }
 
 // --- Game State ---

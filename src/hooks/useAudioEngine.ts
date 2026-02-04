@@ -40,9 +40,15 @@ export function useAudioEngine() {
     return audioService.loadSample(sample);
   }, []);
 
-  const loadSamples = useCallback(async (samples: Sample[]) => {
-    return audioService.loadSamples(samples);
-  }, []);
+  const loadSamples = useCallback(
+    async (
+      samples: Sample[],
+      onProgress?: (loaded: number, total: number) => void
+    ) => {
+      return audioService.loadSamples(samples, onProgress);
+    },
+    []
+  );
 
   const isSampleLoaded = useCallback((sampleId: string): boolean => {
     return audioService.isSampleLoaded(sampleId);
@@ -91,6 +97,28 @@ export function useAudioEngine() {
     return audioService.getCurrentBeat();
   }, []);
 
+  const seekTo = useCallback((beat: number) => {
+    audioService.seek(beat);
+  }, []);
+
+  // --- Ambient Audio ---
+
+  const loadAmbient = useCallback(async (url: string) => {
+    return audioService.loadAmbient(url);
+  }, []);
+
+  const playAmbient = useCallback(() => {
+    audioService.playAmbient();
+  }, []);
+
+  const stopAmbient = useCallback((fade = true) => {
+    audioService.stopAmbient(fade);
+  }, []);
+
+  const setAmbientVolume = useCallback((db: number) => {
+    audioService.setAmbientVolume(db);
+  }, []);
+
   return {
     // Audio context
     initAudio,
@@ -113,5 +141,12 @@ export function useAudioEngine() {
     stopTimeline,
     setTransportLoop,
     getCurrentBeat,
+    seekTo,
+
+    // Ambient audio
+    loadAmbient,
+    playAmbient,
+    stopAmbient,
+    setAmbientVolume,
   };
 }

@@ -20,7 +20,7 @@ import type {
 import { DEFAULT_USER_PREFERENCES } from '../types';
 import { generateId, generateShareCode } from '../utils/uuid';
 import { logger } from '../utils/logger';
-import { beatsToSeconds } from '../utils/audio';
+import { beatsToSeconds, getClipEndBeat } from '../utils/audio';
 
 // Current storage version for migrations (reserved for future use)
 // const STORAGE_VERSION = 1;
@@ -292,14 +292,13 @@ class StorageServiceImpl {
       }
     }
 
-    // Calculate duration (find the last clip end time)
+    // Calculate duration (find the last clip end time, respecting trim)
     let maxEndBeat = 0;
     for (const track of timeline.tracks) {
       for (const clip of track.clips) {
         const sample = sampleMap.get(clip.sampleId);
         if (sample) {
-          const endBeat =
-            clip.startBeat + Math.ceil(sample.duration * (timeline.bpm / 60));
+          const endBeat = getClipEndBeat(clip, sample, timeline.bpm);
           if (endBeat > maxEndBeat) {
             maxEndBeat = endBeat;
           }

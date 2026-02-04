@@ -5,7 +5,8 @@
   "common": {
     "back": "Terug",
     "close": "Sluiten",
-    "loading": "Laden..."
+    "loading": "Laden...",
+    "retry": "Opnieuw proberen"
   },
   "map": {
     "title": "Kies een locatie",
@@ -45,7 +46,9 @@
     "moreLocations": "Nog een locatie?",
     "stayHere": "Hier blijven",
     "explore": "Verkennen",
-    "panHint": "Sleep om rond te kijken"
+    "panHint": "Sleep om rond te kijken",
+    "loadingError": "{{count}} geluid(en) konden niet worden geladen",
+    "loadingErrorHint": "Controleer je internetverbinding en probeer opnieuw."
   },
   "recorder": {
     "title": "Recorder",
@@ -61,7 +64,17 @@
     "toStage": "Naar Podium",
     "emptyLibrary": "Ga eerst geluiden verzamelen!",
     "dragHint": "Sleep geluiden naar de tijdlijn",
-    "dragToTimeline": "Sleep naar tijdlijn"
+    "dragToTimeline": "Sleep naar tijdlijn",
+    "trim": "Inkorten",
+    "duplicate": "Dupliceren",
+    "delete": "Verwijderen",
+    "trimModal": {
+      "title": "Sample inkorten",
+      "preview": "Voorbeeld",
+      "apply": "Toepassen",
+      "cancel": "Annuleren",
+      "reset": "Reset"
+    }
   },
   "transport": {
     "play": "Afspelen",

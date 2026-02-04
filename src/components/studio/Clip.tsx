@@ -4,9 +4,10 @@ import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { X } from 'lucide-react';
 import type { Clip as ClipType, Sample } from '../../types';
-import { secondsToBeats } from '../../utils/audio';
+import { getClipDurationBeats } from '../../utils/audio';
 import { CLIP_MIN_WIDTH_PX } from '../../constants/config';
 import { SampleIcon } from '../../utils/iconMap';
+import { useSelectionStore } from '../../stores/selectionStore';
 
 interface ClipProps {
   clip: ClipType;
@@ -28,7 +29,14 @@ export const Clip = memo(function Clip({
   readOnly = false,
 }: ClipProps) {
   const { t } = useTranslation();
-  const durationBeats = secondsToBeats(sample.duration, bpm);
+
+  // Selection state
+  const selectedClipId = useSelectionStore((s) => s.selectedClipId);
+  const selectClip = useSelectionStore((s) => s.selectClip);
+  const isSelected = selectedClipId === clip.id;
+
+  // Calculate dimensions (respects trim boundaries)
+  const durationBeats = getClipDurationBeats(clip, sample, bpm);
   const leftPercent = (clip.startBeat / totalBeats) * 100;
   const widthPercent = (durationBeats / totalBeats) * 100;
 
@@ -43,15 +51,24 @@ export const Clip = memo(function Clip({
     ? { transform: CSS.Translate.toString(transform) }
     : undefined;
 
+  // Handle click for selection (not drag)
+  const handleClick = (e: React.MouseEvent) => {
+    if (readOnly) return;
+    e.stopPropagation();
+    selectClip(clip.id, trackIndex);
+  };
+
   return (
     <div
       ref={setNodeRef}
       {...listeners}
       {...attributes}
+      onClick={handleClick}
       className={`
         absolute top-1 bottom-1 rounded-lg flex items-center gap-1 px-1.5 overflow-hidden
-        ${readOnly ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} group transition-shadow hover:shadow-md select-none
-        ${isDragging ? 'opacity-30 z-30' : ''}
+        ${readOnly ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} group transition-all select-none
+        ${isDragging ? 'opacity-0' : ''}
+        ${isSelected ? 'ring-2 ring-white ring-offset-1 ring-offset-black/20 shadow-lg z-20' : 'hover:shadow-md'}
       `}
       style={{
         left: `${leftPercent}%`,

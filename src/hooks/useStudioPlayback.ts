@@ -30,6 +30,7 @@ export function useStudioPlayback() {
     pauseTimeline,
     stopTimeline,
     setTransportLoop,
+    seekTo,
   } = useAudioEngine();
 
   // Load library samples when they change
@@ -85,6 +86,14 @@ export function useStudioPlayback() {
     clearAllTracks();
   }, [stopTimeline, clearAllTracks]);
 
+  // Seek to a specific beat (for playhead scrubbing)
+  const handleSeek = useCallback(
+    (beat: number) => {
+      seekTo(beat);
+    },
+    [seekTo]
+  );
+
   return {
     // State
     librarySamples,
@@ -98,5 +107,6 @@ export function useStudioPlayback() {
     handleToggleLoop,
     handlePreview,
     handleClearAll,
+    handleSeek,
   };
 }

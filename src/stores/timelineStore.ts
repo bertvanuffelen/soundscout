@@ -1,10 +1,15 @@
 import { create } from 'zustand';
-import type { Clip, Track, TimelineState } from '../types';
+import type { Clip, Sample, Track, TimelineState } from '../types';
 import {
   DEFAULT_BPM,
   DEFAULT_TOTAL_BEATS,
   DEFAULT_TRACK_COUNT,
 } from '../constants/config';
+import {
+  findSmartSnapPosition,
+  createSampleMap,
+  type SmartSnapResult,
+} from '../utils/clipCollision';
 
 function createEmptyTracks(): Track[] {
   return Array.from({ length: DEFAULT_TRACK_COUNT }, (_, i) => ({
@@ -19,15 +24,30 @@ interface TimelineStore {
   totalBeats: number;
   isLooping: boolean;
 
-  // Clip actions
-  addClip: (trackIndex: number, clip: Clip) => boolean;
+  // Clip actions (with smart snap support)
+  addClip: (
+    trackIndex: number,
+    clip: Clip,
+    sample: Sample,
+    allSamples: Sample[],
+  ) => SmartSnapResult;
   removeClip: (trackIndex: number, clipId: string) => void;
   moveClip: (
     fromTrackIndex: number,
     toTrackIndex: number,
     clipId: string,
     newStartBeat: number,
-  ) => boolean;
+    sample: Sample,
+    allSamples: Sample[],
+  ) => SmartSnapResult;
+
+  // Clip trim action
+  updateClipTrim: (
+    trackIndex: number,
+    clipId: string,
+    trimStart: number,
+    trimEnd: number,
+  ) => void;
 
   // Track actions
   clearTrack: (trackIndex: number) => void;
@@ -49,24 +69,41 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   totalBeats: DEFAULT_TOTAL_BEATS,
   isLooping: false,
 
-  addClip: (trackIndex, clip) => {
+  addClip: (trackIndex, clip, sample, allSamples) => {
     const state = get();
+    const sampleMap = createSampleMap(allSamples);
 
     // Validate track index
-    if (trackIndex < 0 || trackIndex >= state.tracks.length) return false;
+    if (trackIndex < 0 || trackIndex >= state.tracks.length) {
+      return { trackIndex, startBeat: clip.startBeat, reason: 'rejected' };
+    }
 
-    // Check for overlap: no two clips can start at the same beat on the same track
-    const track = state.tracks[trackIndex];
-    const hasOverlap = track.clips.some((c) => c.startBeat === clip.startBeat);
-    if (hasOverlap) return false;
+    // Use smart snap to find optimal position
+    const result = findSmartSnapPosition(
+      state.tracks,
+      trackIndex,
+      clip,
+      sample,
+      sampleMap,
+      state.bpm,
+      state.totalBeats,
+    );
+
+    // If rejected, don't add the clip
+    if (result.reason === 'rejected') {
+      return result;
+    }
+
+    // Create the clip with the final position
+    const finalClip: Clip = { ...clip, startBeat: result.startBeat };
 
     set((prev) => ({
       tracks: prev.tracks.map((t, i) =>
-        i === trackIndex ? { ...t, clips: [...t.clips, clip] } : t,
+        i === result.trackIndex ? { ...t, clips: [...t.clips, finalClip] } : t,
       ),
     }));
 
-    return true;
+    return result;
   },
 
   removeClip: (trackIndex, clipId) => {
@@ -79,8 +116,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     }));
   },
 
-  moveClip: (fromTrackIndex, toTrackIndex, clipId, newStartBeat) => {
+  moveClip: (fromTrackIndex, toTrackIndex, clipId, newStartBeat, sample, allSamples) => {
     const state = get();
+    const sampleMap = createSampleMap(allSamples);
 
     // Validate track indices
     if (
@@ -89,27 +127,43 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       toTrackIndex < 0 ||
       toTrackIndex >= state.tracks.length
     ) {
-      return false;
+      return { trackIndex: toTrackIndex, startBeat: newStartBeat, reason: 'rejected' };
     }
 
     // Find the clip being moved
-    const clip = state.tracks[fromTrackIndex].clips.find(
+    const existingClip = state.tracks[fromTrackIndex].clips.find(
       (c) => c.id === clipId,
     );
-    if (!clip) return false;
+    if (!existingClip) {
+      return { trackIndex: toTrackIndex, startBeat: newStartBeat, reason: 'rejected' };
+    }
 
-    // Check for overlap at destination (exclude the clip being moved)
-    const destTrack = state.tracks[toTrackIndex];
-    const hasOverlap = destTrack.clips.some(
-      (c) => c.id !== clipId && c.startBeat === newStartBeat,
+    // Create a temporary clip with the desired new position
+    const tempClip: Clip = { ...existingClip, startBeat: newStartBeat };
+
+    // Use smart snap to find optimal position (exclude the clip being moved)
+    const result = findSmartSnapPosition(
+      state.tracks,
+      toTrackIndex,
+      tempClip,
+      sample,
+      sampleMap,
+      state.bpm,
+      state.totalBeats,
+      clipId, // Exclude this clip from collision checks
     );
-    if (hasOverlap) return false;
 
-    const movedClip: Clip = { ...clip, startBeat: newStartBeat };
+    // If rejected, don't move the clip
+    if (result.reason === 'rejected') {
+      return result;
+    }
+
+    // Create the final moved clip
+    const movedClip: Clip = { ...existingClip, startBeat: result.startBeat };
 
     set((prev) => ({
       tracks: prev.tracks.map((t, i) => {
-        if (i === fromTrackIndex && i === toTrackIndex) {
+        if (i === fromTrackIndex && i === result.trackIndex) {
           // Moving within same track
           return {
             ...t,
@@ -120,7 +174,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
           // Remove from source
           return { ...t, clips: t.clips.filter((c) => c.id !== clipId) };
         }
-        if (i === toTrackIndex) {
+        if (i === result.trackIndex) {
           // Add to destination
           return { ...t, clips: [...t.clips, movedClip] };
         }
@@ -128,7 +182,24 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       }),
     }));
 
-    return true;
+    return result;
+  },
+
+  updateClipTrim: (trackIndex, clipId, trimStart, trimEnd) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? { ...clip, trimStart, trimEnd }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+    }));
   },
 
   clearTrack: (trackIndex) => {

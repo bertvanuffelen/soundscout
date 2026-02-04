@@ -5,7 +5,8 @@
   "common": {
     "back": "Back",
     "close": "Close",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "retry": "Try again"
   },
   "map": {
     "title": "Choose a location",
@@ -45,7 +46,9 @@
     "moreLocations": "Another location?",
     "stayHere": "Stay here",
     "explore": "Explore",
-    "panHint": "Drag to look around"
+    "panHint": "Drag to look around",
+    "loadingError": "{{count}} sound(s) could not be loaded",
+    "loadingErrorHint": "Check your internet connection and try again."
   },
   "recorder": {
     "title": "Recorder",
@@ -61,7 +64,17 @@
     "toStage": "To Stage",
     "emptyLibrary": "Go collect some sounds first!",
     "dragHint": "Drag sounds to the timeline",
-    "dragToTimeline": "Drag to timeline"
+    "dragToTimeline": "Drag to timeline",
+    "trim": "Trim",
+    "duplicate": "Duplicate",
+    "delete": "Delete",
+    "trimModal": {
+      "title": "Trim sample",
+      "preview": "Preview",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "reset": "Reset"
+    }
   },
   "transport": {
     "play": "Play",
