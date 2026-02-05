@@ -435,20 +435,27 @@ Transport controls vereenvoudigd van `[Play] [Pause] [Stop] [Loop] | [Alles Wiss
 - `handleStop` blijft intern beschikbaar voor navigatie (bijv. terug naar map)
 - `handleRewind` = `handleStop` (zelfde gedrag: stop + ga naar beat 0)
 
-### 24. Getrimde Clip Visuele Lengte bij Drag
-**Status:** Niet begonnen
+### 24. Getrimde Clip Visuele Lengte bij Drag ✅
+**Status:** VOLTOOID (2026-02-05)
 **Complexiteit:** ⭐⭐ Medium
 **Bron:** Gebruiker feedback (2026-02-05)
 
 **Probleem:**
-Wanneer je een getrimde clip sleept, toont de drag preview de volledige originele sample lengte in plaats van de getrimde lengte.
+Wanneer je een getrimde clip sleept, toonde de snap preview de volledige originele sample lengte in plaats van de getrimde lengte.
 
-**Te onderzoeken:**
-- [ ] DragOverlay component krijgt getrimde duration mee
-- [ ] Snap preview berekening respecteert trim bounds
-- [ ] Visuele breedte = `getClipDuration()` niet sample duration
+**Oorzaak:**
+In `useStudioDnD.ts` lijn 187 werd `secondsToBeats(sample.duration, bpm)` gebruikt, wat de trim boundaries negeerde.
 
-**Locatie:** `src/components/studio/StudioView.tsx` (DragOverlay), `src/hooks/useStudioDnD.ts`
+**Geïmplementeerd:**
+- [x] `activeDragClipRef` toegevoegd om clip data op te slaan bij drag start
+- [x] Import `getClipDurationBeats` van audio utils
+- [x] In `handleDragMove`: juiste durationBeats berekening afhankelijk van drag type
+- [x] Voor clip drags: `getClipDurationBeats(clip, sample, bpm)` (respecteert trim)
+- [x] Voor sample drags: `secondsToBeats(sample.duration, bpm)` (volledige lengte)
+- [x] Ref reset in `handleDragEnd` en `handleDragCancel`
+
+**Gewijzigde bestanden:**
+- `src/hooks/useStudioDnD.ts` - Nieuwe ref, import, logica in handleDragMove
 
 ### 25. Getrimde Clip Kopiëren/Dupliceren ✅
 **Status:** VOLTOOID (2026-02-05)
@@ -862,7 +869,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 
 ## Volgende Stappen
 
-### ✅ Voltooid (1-16)
+### ✅ Voltooid (1-19)
 1. ~~Locaties & Stadskaart~~ ✅
 2. ~~MP3 Export~~ ✅
 3. ~~Lokaal Opslaan + Beheren~~ ✅
@@ -881,11 +888,14 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 16. ~~Playhead Seeking~~ ✅
 17. ~~Vereenvoudigde Transport Controls~~ ✅
 18. ~~Getrimde Clip Kopiëren/Dupliceren~~ ✅
+19. ~~Getrimde Clip Visuele Lengte bij Drag~~ ✅
 
 ### 🔴 Nu: P1
 - ~~Vereenvoudigde Transport Controls (#23)~~ ✅
-- Getrimde Clip Visuele Lengte bij Drag (#24)
+- ~~Getrimde Clip Visuele Lengte bij Drag (#24)~~ ✅
 - ~~Getrimde Clip Kopiëren/Dupliceren (#25)~~ ✅
+
+**Alle P1 items voltooid!** 🎉
 
 ### 🟠 Daarna: P2
 - Thema Dropdown in UI (#13)

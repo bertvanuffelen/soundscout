@@ -19,7 +19,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core';
 import { useTimelineStore } from '../stores/timelineStore';
-import { secondsToBeats } from '../utils/audio';
+import { secondsToBeats, getClipDurationBeats } from '../utils/audio';
 import type { Clip, Sample } from '../types';
 import {
   POINTER_ACTIVATION_DISTANCE,
@@ -58,6 +58,8 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
   // For clip repositioning: remember original position for delta-based calculation
   const originalClipStartBeatRef = useRef<number | null>(null);
   const activeDragTypeRef = useRef<'sample' | 'clip' | null>(null);
+  // For clip drags: remember the clip to calculate trimmed duration
+  const activeDragClipRef = useRef<Clip | null>(null);
 
   // Configure sensors
   const sensors = useSensors(
@@ -147,12 +149,14 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
     activeDragSampleRef.current = sample ?? null;
     activeDragTypeRef.current = dragType;
 
-    // For clips: remember original position for delta-based repositioning
+    // For clips: remember original position and clip data for delta-based repositioning
     if (dragType === 'clip') {
       const clip = event.active.data.current?.clip as Clip | undefined;
       originalClipStartBeatRef.current = clip?.startBeat ?? null;
+      activeDragClipRef.current = clip ?? null;
     } else {
       originalClipStartBeatRef.current = null;
+      activeDragClipRef.current = null;
     }
   }, []);
 
@@ -184,7 +188,12 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
         return;
       }
 
-      const durationBeats = secondsToBeats(sample.duration, bpm);
+      // For clip drags: use trimmed duration. For sample drags: use full duration.
+      const clip = activeDragClipRef.current;
+      const durationBeats =
+        activeDragTypeRef.current === 'clip' && clip
+          ? getClipDurationBeats(clip, sample, bpm)
+          : secondsToBeats(sample.duration, bpm);
       const trackId = over.id as string;
       const color = sample.color;
 
@@ -209,6 +218,7 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
       activeDragSampleRef.current = null;
       activeDragTypeRef.current = null;
       originalClipStartBeatRef.current = null;
+      activeDragClipRef.current = null;
 
       const { active, over, activatorEvent, delta } = event;
       if (!over) return;
@@ -276,6 +286,7 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
     activeDragSampleRef.current = null;
     activeDragTypeRef.current = null;
     originalClipStartBeatRef.current = null;
+    activeDragClipRef.current = null;
   }, []);
 
   return {

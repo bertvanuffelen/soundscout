@@ -550,6 +550,46 @@ duplicateClip: (trackIndex, clipId, sample, allSamples) => {
 
 ---
 
+### Getrimde Clip Visuele Lengte bij Drag (#24) ✅ VOLTOOID
+
+Snap preview toont nu de correcte getrimde lengte wanneer een getrimde clip wordt versleept.
+
+**Probleem:**
+Wanneer je een getrimde clip versleept, toonde de snap preview (gestippelde lijn) de volledige originele sample lengte in plaats van de getrimde lengte.
+
+**Oorzaak:**
+In `useStudioDnD.ts` lijn 187 werd `secondsToBeats(sample.duration, bpm)` gebruikt, wat de trim boundaries negeerde. Voor clip drags moest `getClipDurationBeats(clip, sample, bpm)` worden gebruikt.
+
+**Oplossing:**
+```typescript
+// Nieuwe ref om clip data op te slaan
+const activeDragClipRef = useRef<Clip | null>(null);
+
+// In handleDragStart: clip opslaan
+if (dragType === 'clip') {
+  activeDragClipRef.current = clip ?? null;
+}
+
+// In handleDragMove: juiste durationBeats berekenen
+const durationBeats =
+  activeDragTypeRef.current === 'clip' && clip
+    ? getClipDurationBeats(clip, sample, bpm)  // Respecteert trim
+    : secondsToBeats(sample.duration, bpm);     // Volledige lengte
+```
+
+**Gewijzigde bestanden:**
+| Bestand | Wijziging |
+|---------|-----------|
+| `src/hooks/useStudioDnD.ts` | `activeDragClipRef`, import `getClipDurationBeats`, logica in handleDragMove |
+
+**Resultaat:**
+| Scenario | Snap Preview Breedte |
+|----------|---------------------|
+| Sample uit library | Volledige sample duration |
+| Getrimde clip verplaatsen | Getrimde duration |
+
+---
+
 ### Drag Offset Alignment (#16) ✅ VOLTOOID
 
 Verbeterde drag-and-drop UX: één duidelijk visueel element tijdens slepen.
