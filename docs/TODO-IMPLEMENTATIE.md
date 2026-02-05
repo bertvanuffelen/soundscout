@@ -915,11 +915,12 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 - Real-time Geluiden Toevoegen tijdens Afspelen (#22)
 
 ### 🟡 Later: P3
-- Template Systeem voor Docenten (#21) ← NIEUW
+- Template Systeem voor Docenten (#21)
 - Ambient Audio Timeout Cleanup (#26)
 - Locatie Editor Verbeteringen (#27)
 - Eigen Samples Opnemen (#28)
 - Digibord/Classroom Display Optimalisatie (#29)
+- Sample Wis Knop UI Aanpassen (#34) ← NIEUW
 
 ### 🟢 Toekomst: P4
 - Extra Locaties (#30)

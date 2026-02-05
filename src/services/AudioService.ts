@@ -461,16 +461,29 @@ class AudioService {
    * Start all clips that are active at the given beat position.
    * These clips have their start moment in the "past" relative to seek position,
    * so they need to be started immediately with adjusted offset and duration.
+   *
+   * NOTE: If the same sample is used in multiple active clips, we can only start
+   * one of them (Tone.Player limitation). We pick the one with the longest remaining duration.
    */
   private startActiveClips(seekBeat: number): void {
     const activeClips = this.getActiveClipsAtBeat(seekBeat);
 
     if (activeClips.length === 0) return;
 
-    // Start all active clips at the same time with small buffer
+    // Deduplicate by sampleId - keep the clip with longest remaining duration
+    // This is needed because Tone.Player can't be started multiple times simultaneously
+    const clipsBySample = new Map<string, typeof activeClips[0]>();
+    activeClips.forEach((clipData) => {
+      const existing = clipsBySample.get(clipData.clip.sampleId);
+      if (!existing || clipData.remainingDuration > existing.remainingDuration) {
+        clipsBySample.set(clipData.clip.sampleId, clipData);
+      }
+    });
+
+    // Start all unique clips at the same time with small buffer
     const startTime = Tone.now() + 0.05;
 
-    activeClips.forEach(({ player, adjustedTrimStart, remainingDuration, clip }) => {
+    clipsBySample.forEach(({ player, adjustedTrimStart, remainingDuration, clip }) => {
       player.start(startTime, adjustedTrimStart, remainingDuration);
       logger.audio('startActiveClip', {
         sampleId: clip.sampleId,
