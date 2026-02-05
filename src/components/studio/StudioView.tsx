@@ -187,11 +187,21 @@ export function StudioView() {
           handleDuplicate();
         }
       }
+
+      // Space to toggle play/pause
+      if (e.code === 'Space') {
+        e.preventDefault(); // Prevent page scroll
+        if (isPlaying) {
+          handlePause();
+        } else {
+          handlePlay();
+        }
+      }
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedClipData, handleDuplicate]);
+  }, [selectedClipData, handleDuplicate, isPlaying, handlePlay, handlePause]);
 
   return (
     <div className="min-h-screen flex flex-col bg-studio-bg md:bg-bg-app">
