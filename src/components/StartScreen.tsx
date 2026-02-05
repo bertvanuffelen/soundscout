@@ -4,13 +4,14 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Info, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
+import { FolderOpen, Info, HelpCircle, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
 import { useGameStore } from '../stores/gameStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useAudioEngine } from '../hooks/useAudioEngine';
 import { storageService } from '../services/StorageService';
 import { Button, Modal } from './ui';
+import { FeedbackModal } from './feedback';
 import { logger } from '../utils/logger';
 
 export function StartScreen() {
@@ -25,6 +26,7 @@ export function StartScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
+  const [showFeedback, setShowFeedback] = useState(false);
   const [hasCompositions, setHasCompositions] = useState(false);
 
   // Check if there are saved compositions
@@ -131,6 +133,13 @@ export function StartScreen() {
         >
           <Info className="w-4 h-4" />
         </button>
+        <button
+          onClick={() => setShowFeedback(true)}
+          className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+          title={t('feedback.helpButton')}
+        >
+          <HelpCircle className="w-4 h-4" />
+        </button>
         <div className="w-px h-4 bg-brand-700 md:bg-neutral-300" />
         <div className="flex items-center gap-2">
           <a
@@ -226,6 +235,13 @@ export function StartScreen() {
           {t('start.closeTutorial')}
         </Button>
       </Modal>
+
+      {/* Feedback modal */}
+      <FeedbackModal
+        isOpen={showFeedback}
+        onClose={() => setShowFeedback(false)}
+        mode="feedback"
+      />
     </div>
   );
 }

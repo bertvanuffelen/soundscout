@@ -205,5 +205,53 @@
     "klaslokaal-schilderen": "Schilderen",
     "klaslokaal-tekenen": "Tekenen",
     "klaslokaal-vallende-bouten": "Bouten"
+  },
+  "feedback": {
+    "helpButton": "Hulp nodig?",
+    "errorButton": "Stuur foutmelding",
+    "titleError": "Foutmelding versturen",
+    "titleFeedback": "Hulp nodig?",
+    "errorIntro": "Er is een fout opgetreden. Wil je deze melden zodat we het kunnen oplossen?",
+    "feedbackIntro": "Wat voor probleem heb je?",
+    "errorCodeLabel": "Foutcode (klik om te bekijken)",
+    "whatHappened": "Wat deed je toen dit gebeurde?",
+    "whatHappenedPlaceholder": "Bijv. ik klikte op de play knop en toen...",
+    "descriptionLabel": "Beschrijf je probleem",
+    "descriptionPlaceholder": "Vertel wat er mis gaat...",
+    "descriptionHint": "Minimaal 10 karakters",
+    "emailLabel": "Email (optioneel)",
+    "emailPlaceholder": "Voor eventuele follow-up vragen",
+    "submitError": "Stuur foutmelding",
+    "submitFeedback": "Verstuur",
+    "submitting": "Versturen...",
+    "successTitle": "Bedankt!",
+    "successMessage": "We hebben je bericht ontvangen en kijken er zo snel mogelijk naar.",
+    "close": "Sluiten",
+    "rateLimitMessage": "Je kunt over {{seconds}} seconden opnieuw feedback sturen.",
+    "categories": {
+      "bug": {
+        "label": "Iets werkt niet",
+        "desc": "Er gaat iets fout"
+      },
+      "confusion": {
+        "label": "Ik snap het niet",
+        "desc": "Iets is onduidelijk"
+      },
+      "other": {
+        "label": "Anders",
+        "desc": "Andere feedback"
+      }
+    },
+    "validation": {
+      "categoryRequired": "Kies een categorie",
+      "messageRequired": "Beschrijf je probleem",
+      "messageTooShort": "Minimaal 10 karakters",
+      "emailInvalid": "Ongeldig email adres"
+    },
+    "error": {
+      "sendFailed": "Versturen mislukt. Probeer het later opnieuw.",
+      "networkError": "Geen internetverbinding",
+      "notConfigured": "Feedback systeem is niet geconfigureerd"
+    }
   }
 }

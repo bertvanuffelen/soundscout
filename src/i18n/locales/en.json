@@ -205,5 +205,53 @@
     "klaslokaal-schilderen": "Painting",
     "klaslokaal-tekenen": "Drawing",
     "klaslokaal-vallende-bouten": "Bolts"
+  },
+  "feedback": {
+    "helpButton": "Need help?",
+    "errorButton": "Report error",
+    "titleError": "Report Error",
+    "titleFeedback": "Need help?",
+    "errorIntro": "An error occurred. Would you like to report it so we can fix it?",
+    "feedbackIntro": "What kind of problem do you have?",
+    "errorCodeLabel": "Error code (click to view)",
+    "whatHappened": "What were you doing when this happened?",
+    "whatHappenedPlaceholder": "E.g. I clicked the play button and then...",
+    "descriptionLabel": "Describe your problem",
+    "descriptionPlaceholder": "Tell us what's going wrong...",
+    "descriptionHint": "Minimum 10 characters",
+    "emailLabel": "Email (optional)",
+    "emailPlaceholder": "For follow-up questions",
+    "submitError": "Report error",
+    "submitFeedback": "Send",
+    "submitting": "Sending...",
+    "successTitle": "Thank you!",
+    "successMessage": "We received your message and will look into it as soon as possible.",
+    "close": "Close",
+    "rateLimitMessage": "You can send feedback again in {{seconds}} seconds.",
+    "categories": {
+      "bug": {
+        "label": "Something broken",
+        "desc": "Something isn't working"
+      },
+      "confusion": {
+        "label": "I don't understand",
+        "desc": "Something is unclear"
+      },
+      "other": {
+        "label": "Other",
+        "desc": "Other feedback"
+      }
+    },
+    "validation": {
+      "categoryRequired": "Please select a category",
+      "messageRequired": "Please describe your problem",
+      "messageTooShort": "Minimum 10 characters",
+      "emailInvalid": "Invalid email address"
+    },
+    "error": {
+      "sendFailed": "Failed to send. Please try again later.",
+      "networkError": "No internet connection",
+      "notConfigured": "Feedback system is not configured"
+    }
   }
 }
