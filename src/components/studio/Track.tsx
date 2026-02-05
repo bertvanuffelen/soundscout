@@ -10,7 +10,6 @@ interface TrackProps {
   trackIndex: number;
   bpm: number;
   totalBeats: number;
-  onRemoveClip: (trackIndex: number, clipId: string) => void;
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
   readOnly?: boolean;
   samples?: Sample[];  // Optional: for read-only mode with custom samples
@@ -21,7 +20,6 @@ export const Track = memo(function Track({
   trackIndex,
   bpm,
   totalBeats,
-  onRemoveClip,
   snapPreview,
   readOnly = false,
   samples,
@@ -88,7 +86,6 @@ export const Track = memo(function Track({
               trackIndex={trackIndex}
               bpm={bpm}
               totalBeats={totalBeats}
-              onRemove={(clipId) => onRemoveClip(trackIndex, clipId)}
               readOnly={readOnly}
             />
           );

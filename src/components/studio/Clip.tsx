@@ -2,7 +2,6 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { X } from 'lucide-react';
 import type { Clip as ClipType, Sample } from '../../types';
 import { getClipDurationBeats } from '../../utils/audio';
 import { CLIP_MIN_WIDTH_PX } from '../../constants/config';
@@ -15,7 +14,6 @@ interface ClipProps {
   trackIndex: number;
   bpm: number;
   totalBeats: number;
-  onRemove: (clipId: string) => void;
   readOnly?: boolean;
 }
 
@@ -25,7 +23,6 @@ export const Clip = memo(function Clip({
   trackIndex,
   bpm,
   totalBeats,
-  onRemove,
   readOnly = false,
 }: ClipProps) {
   const { t } = useTranslation();
@@ -66,7 +63,7 @@ export const Clip = memo(function Clip({
       onClick={handleClick}
       className={`
         absolute top-1 bottom-1 rounded-lg flex items-center gap-1 px-1.5 overflow-hidden
-        ${readOnly ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} group transition-all select-none
+        ${readOnly ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} transition-all select-none
         ${isDragging ? 'opacity-0' : ''}
         ${isSelected ? 'ring-2 ring-white ring-offset-1 ring-offset-black/20 shadow-lg z-20' : 'hover:shadow-md'}
       `}
@@ -86,20 +83,6 @@ export const Clip = memo(function Clip({
       <span className="text-[10px] font-semibold text-white truncate leading-tight">
         {t(sample.name)}
       </span>
-      {/* Remove button - always visible on touch, hover on desktop, hidden in readOnly */}
-      {!readOnly && (
-        <button
-          onPointerDown={(e) => e.stopPropagation()}
-          onClick={(e) => {
-            e.stopPropagation();
-            onRemove(clip.id);
-          }}
-          className="absolute top-0 right-0 w-6 h-6 sm:w-8 sm:h-8 flex items-center justify-center bg-black/40 sm:bg-black/30 hover:bg-error-500 active:bg-error-600 text-white text-xs rounded-bl-lg sm:opacity-0 sm:group-hover:opacity-100 transition-all cursor-pointer z-20"
-          title={t('recorder.eject')}
-        >
-          <X size={10} className="sm:w-3 sm:h-3" />
-        </button>
-      )}
     </div>
   );
 });

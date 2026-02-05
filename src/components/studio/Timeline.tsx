@@ -12,7 +12,6 @@ interface TimelineProps {
   totalBeats: number;
   currentBeat: number;
   isPlaying: boolean;
-  onRemoveClip: (trackIndex: number, clipId: string) => void;
   onSeek?: (beat: number) => void;
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
   readOnly?: boolean;
@@ -25,7 +24,6 @@ export const Timeline = memo(function Timeline({
   totalBeats,
   currentBeat,
   isPlaying,
-  onRemoveClip,
   onSeek,
   snapPreview,
   readOnly = false,
@@ -150,7 +148,6 @@ export const Timeline = memo(function Timeline({
                 trackIndex={i}
                 bpm={bpm}
                 totalBeats={totalBeats}
-                onRemoveClip={onRemoveClip}
                 snapPreview={snapPreview?.trackId === track.id ? snapPreview : null}
                 readOnly={readOnly}
                 samples={samples}

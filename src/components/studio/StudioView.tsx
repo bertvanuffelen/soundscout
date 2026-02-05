@@ -254,7 +254,6 @@ export function StudioView() {
           totalBeats={totalBeats}
           currentBeat={currentBeat}
           isPlaying={isPlaying}
-          onRemoveClip={handleRemoveClip}
           onSeek={handleSeek}
           snapPreview={snapPreview}
         />

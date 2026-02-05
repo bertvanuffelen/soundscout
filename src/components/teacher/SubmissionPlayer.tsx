@@ -261,7 +261,6 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
                 totalBeats={totalBeats}
                 currentBeat={currentBeat}
                 isPlaying={isPlaying}
-                onRemoveClip={() => {}}
                 snapPreview={null}
                 readOnly={true}
                 samples={samples}
