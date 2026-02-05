@@ -15,9 +15,10 @@
 5. [Tone.Player](#5-toneplayer)
 6. [Timing & Tempo](#6-timing--tempo)
 7. [Best Practices](#7-best-practices)
-8. [Bekende Issues & Workarounds](#8-bekende-issues--workarounds)
-9. [SoundScout Specifieke Implementatie](#9-soundscout-specifieke-implementatie)
-10. [Bronnen](#10-bronnen)
+8. [**KRITIEK: Seeking naar Midden van Actieve Clips**](#8-kritiek-seeking-naar-midden-van-actieve-clips) ⚠️
+9. [Bekende Issues & Workarounds (Tone.js GitHub)](#9-bekende-issues--workarounds-tonejs-github)
+10. [SoundScout Specifieke Implementatie](#10-soundscout-specifieke-implementatie)
+11. [Bronnen](#11-bronnen)
 
 ---
 
@@ -384,7 +385,137 @@ class AudioService {
 
 ---
 
-## 8. Bekende Issues & Workarounds
+## 8. KRITIEK: Seeking naar Midden van Actieve Clips
+
+### Het probleem
+
+Dit is een **kritieke beperking** van Tone.Part + transport offset die niet direct uit de documentatie blijkt.
+
+**Scenario:**
+```
+Timeline:
+Beat:  0    1    2    3    4    5    6    7    8
+       |----[===CLIP A (4 beats)===]----|----[==CLIP B==]
+            ↑ start=1                         ↑ start=6
+                      ↑ seek naar beat 3
+```
+
+**Wat gebeurt bij `transport.start("+0.05", 1.5s)` (seek naar beat 3):**
+1. Transport positie wordt 1.5 seconden (= beat 3 bij 120 BPM)
+2. Tone.Part kijkt: "welke events hebben time >= 1.5s?"
+3. Clip A event (time=0.5s, beat 1) → **OVERGESLAGEN** (0.5s < 1.5s)
+4. Clip B event (time=3s, beat 6) → Wordt getriggerd (3s > 1.5s)
+
+**Het probleem:** Clip A is nog ACTIEF op beat 3 (loopt van beat 1-5), maar wordt niet afgespeeld omdat het event in het "verleden" ligt.
+
+### Waarom dit gebeurt
+
+Tone.Part events worden gepland op het **startmoment** van de audio, niet op de volledige range waarin ze actief zijn. Als de transport voorbij het startmoment springt, wordt het event overgeslagen - ongeacht of de audio nog zou moeten klinken.
+
+```typescript
+// Hoe events worden gepland:
+events.push({
+  time: 0.5,        // Start van clip (beat 1)
+  sampleId: "A",
+  trimStart: 0,
+  duration: 2.0     // Duration wordt NIET gebruikt voor scheduling
+});
+
+// De duration bepaalt hoelang de audio speelt NADAT het event triggert,
+// maar heeft GEEN invloed op WANNEER het event triggert.
+```
+
+### De oplossing: Hybride Aanpak
+
+**Stap 1:** Bij seek, identificeer clips die "actief" zijn op de seek positie:
+```typescript
+function isClipActiveAtBeat(clip: Clip, sample: Sample, beat: number, bpm: number): boolean {
+  const clipEndBeat = getClipEndBeat(clip, sample, bpm);
+  return clip.startBeat <= beat && beat < clipEndBeat;
+}
+```
+
+**Stap 2:** Voor actieve clips, bereken aangepaste parameters:
+```typescript
+// Clip A: startBeat=1, duration=4 beats, trimStart=0
+// Seek naar beat 3
+const elapsedBeats = 3 - 1; // = 2 beats
+const elapsedSeconds = beatsToSeconds(2, 120); // = 1 seconde
+
+// Nieuwe parameters voor directe playback:
+const adjustedTrimStart = originalTrimStart + elapsedSeconds; // 0 + 1 = 1s
+const remainingDuration = originalDuration - elapsedSeconds;  // 2 - 1 = 1s
+```
+
+**Stap 3:** Start actieve clips DIRECT (niet via Part):
+```typescript
+// Start direct met Tone.now() + kleine buffer
+player.start(Tone.now() + 0.05, adjustedTrimStart, remainingDuration);
+```
+
+**Stap 4:** Laat Tone.Part de toekomstige clips afhandelen:
+```typescript
+transport.start("+0.05", offsetSeconds);
+```
+
+### Waarom dit werkt
+
+```
+Seek naar beat 3:
+
+DIRECT gestart (actieve clips):
+  - Clip A: player.start(now+0.05, 1.0s, 1.0s)
+    → Speelt sample vanaf seconde 1, voor 1 seconde
+    → Dit is het resterende deel van Clip A
+
+VIA TONE.PART (toekomstige clips):
+  - Clip B: getriggerd door Part wanneer transport beat 6 bereikt
+    → Normaal afgespeeld
+```
+
+### Implementatie in AudioService
+
+```typescript
+play(fromBeat: number = 0): void {
+  const transport = Tone.getTransport();
+  const offsetSeconds = beatsToSeconds(fromBeat, DEFAULT_BPM);
+
+  // STAP 1: Start actieve clips direct
+  this.startActiveClipsAtPosition(fromBeat);
+
+  // STAP 2: Start transport voor toekomstige clips
+  transport.start('+0.05', offsetSeconds);
+  this.startPlayheadUpdates();
+}
+
+private startActiveClipsAtPosition(seekBeat: number): void {
+  // Vereist toegang tot tracks en samples
+  // → Moet via scheduleTimeline beschikbaar zijn of apart opgeslagen
+}
+```
+
+### Vereiste data voor hybride aanpak
+
+De `play()` methode heeft toegang nodig tot:
+1. **Tracks met clips** - om te bepalen welke clips actief zijn
+2. **Samples** - om clip duration te berekenen
+3. **Players** - om audio direct te starten
+
+**Optie A:** Sla tracks/samples op als class properties na `scheduleTimeline()`
+**Optie B:** Geef tracks/samples mee aan `play(fromBeat, tracks, samples)`
+**Optie C:** Bouw een index van "clip time ranges" in `scheduleTimeline()`
+
+### Randgevallen
+
+1. **Seek naar exact begin van clip:** Clip begint net, moet volledig afspelen via directe start (niet dubbel via Part)
+2. **Seek naar exact eind van clip:** Clip is net afgelopen, niet actief
+3. **Getrimde clips:** Moet rekening houden met trim in alle berekeningen
+4. **Lege timeline:** Geen actieve clips, alleen transport starten
+5. **Looping:** Bij loop reset moeten alle clips correct resetten
+
+---
+
+## 9. Bekende Issues & Workarounds (Tone.js GitHub)
 
 ### Issue #154: Source.sync() en Transport seeking
 **Probleem:** Synced sources starten niet correct bij transport seek/resume.
@@ -411,13 +542,17 @@ button.addEventListener('click', async () => {
 
 ---
 
-## 9. SoundScout Specifieke Implementatie
+## 10. SoundScout Specifieke Implementatie
+
+> **Status:** ✅ Volledig geïmplementeerd (2026-02-04)
 
 ### AudioService architectuur
 ```
 AudioService (singleton)
 ├── players: Map<sampleId, Tone.Player>
 ├── timelinePart: Tone.Part | null
+├── scheduledTracks: Track[]           ← NIEUW (voor seek)
+├── scheduledSamples: Sample[]         ← NIEUW (voor seek)
 ├── waveformCache: Map<sampleId, WaveformData>
 └── ambientPlayer: Tone.Player | null
 ```
@@ -429,25 +564,66 @@ scheduleTimeline(tracks: Track[], samples: Sample[]): void {
   transport.cancel();
   this.timelinePart?.dispose();
 
-  // 2. Build events array van clips
+  // 2. Store timeline data voor seek (NIEUW)
+  this.scheduledTracks = tracks;
+  this.scheduledSamples = samples;
+
+  // 3. Build events array van clips
   const events = tracks.flatMap(track =>
-    track.clips.map(clip => [
-      beatsToSeconds(clip.startBeat, BPM),
-      { sampleId, trimStart, duration }
-    ])
+    track.clips.map(clip => ({
+      time: beatsToSeconds(clip.startBeat, BPM),
+      sampleId: clip.sampleId,
+      trimStart: getClipTrimStart(clip),
+      duration: getClipDuration(clip, sample)
+    }))
   );
 
-  // 3. Create nieuwe Part
+  // 4. Create nieuwe Part
   this.timelinePart = new Tone.Part(callback, events);
   this.timelinePart.start(0);
 }
 ```
 
-### Play met seek offset
+### Play met hybride seek aanpak (GEÏMPLEMENTEERD)
 ```typescript
 play(fromBeat: number = 0): void {
-  const offset = beatsToSeconds(fromBeat, BPM);
-  transport.start("+0.05", offset);
+  const transport = Tone.getTransport();
+  const offsetSeconds = beatsToSeconds(fromBeat, DEFAULT_BPM);
+
+  // HYBRIDE AANPAK: Start actieve clips direct
+  if (fromBeat > 0) {
+    this.startActiveClips(fromBeat);
+  }
+
+  // Transport voor toekomstige clips
+  transport.start('+0.05', offsetSeconds);
+  this.startPlayheadUpdates();
+}
+```
+
+### Actieve clips detectie en playback (NIEUW)
+```typescript
+// Check of clip actief is op bepaalde beat
+private isClipActiveAtBeat(clip: Clip, sample: Sample, beat: number): boolean {
+  const clipEndBeat = getClipEndBeat(clip, sample, DEFAULT_BPM);
+  return clip.startBeat <= beat && beat < clipEndBeat;
+}
+
+// Vind alle actieve clips met berekende parameters
+private getActiveClipsAtBeat(beat: number): ActiveClipInfo[] {
+  // Filtert clips waar startBeat <= beat < endBeat
+  // Berekent adjustedTrimStart en remainingDuration
+  // Retourneert array met player references
+}
+
+// Start actieve clips direct
+private startActiveClips(seekBeat: number): void {
+  const activeClips = this.getActiveClipsAtBeat(seekBeat);
+  const startTime = Tone.now() + 0.05;
+
+  activeClips.forEach(({ player, adjustedTrimStart, remainingDuration }) => {
+    player.start(startTime, adjustedTrimStart, remainingDuration);
+  });
 }
 ```
 
@@ -464,7 +640,7 @@ getClipDuration(clip, sample)  // Effectieve duur
 
 ---
 
-## 10. Bronnen
+## 11. Bronnen
 
 ### Officiële documentatie
 - [Tone.js Docs](https://tonejs.github.io/docs/)
@@ -494,3 +670,5 @@ getClipDuration(clip, sample)  // Effectieve duur
 |-------|-----------|
 | 2026-02-04 | Document aangemaakt met basis Tone.js kennis |
 | 2026-02-04 | Tone.Part sectie toegevoegd voor Playhead Seeking feature |
+| 2026-02-04 | **KRITIEK:** Sectie 8 toegevoegd - Seeking naar midden van actieve clips probleem + hybride oplossing |
+| 2026-02-04 | ✅ Sectie 10 bijgewerkt - Hybride aanpak volledig geïmplementeerd en werkend |

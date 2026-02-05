@@ -7,7 +7,7 @@
  * - Cleanup (useAudioCleanup)
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
 import { useGameStore } from '../../stores/gameStore';
@@ -38,6 +38,7 @@ export function StudioView() {
   const totalBeats = useTimelineStore((s) => s.totalBeats);
   const removeClip = useTimelineStore((s) => s.removeClip);
   const updateClipTrim = useTimelineStore((s) => s.updateClipTrim);
+  const duplicateClip = useTimelineStore((s) => s.duplicateClip);
 
   // Audio state
   const isPlaying = useAudioStore((s) => s.isPlaying);
@@ -46,6 +47,7 @@ export function StudioView() {
   // Selection state
   const selectedClipId = useSelectionStore((s) => s.selectedClipId);
   const selectedTrackIndex = useSelectionStore((s) => s.selectedTrackIndex);
+  const selectClip = useSelectionStore((s) => s.selectClip);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
 
   // Trim modal state
@@ -58,9 +60,9 @@ export function StudioView() {
     handlePlay,
     handlePause,
     handleStop,
+    handleRewind,
     handleToggleLoop,
     handlePreview,
-    handleClearAll,
     handleSeek,
   } = useStudioPlayback();
 
@@ -131,6 +133,22 @@ export function StudioView() {
     }
   }, [selectedClipData, handleRemoveClip]);
 
+  // Handle duplicate clip
+  const handleDuplicate = useCallback(() => {
+    if (selectedClipData) {
+      const result = duplicateClip(
+        selectedClipData.trackIndex,
+        selectedClipData.clip.id,
+        selectedClipData.sample,
+        librarySamples
+      );
+      // Select the new clip if duplication was successful
+      if (result.reason !== 'rejected' && result.newClipId) {
+        selectClip(result.newClipId, result.trackIndex);
+      }
+    }
+  }, [selectedClipData, duplicateClip, librarySamples, selectClip]);
+
   // Handle trim apply from modal
   const handleTrimApply = useCallback(
     (trimStart: number, trimEnd: number) => {
@@ -150,6 +168,30 @@ export function StudioView() {
   const handleTrimModalClose = useCallback(() => {
     setIsTrimModalOpen(false);
   }, []);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Don't trigger shortcuts when typing in input fields
+      if (
+        e.target instanceof HTMLInputElement ||
+        e.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      // Ctrl+D or Cmd+D to duplicate selected clip
+      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+        e.preventDefault(); // Prevent browser bookmark dialog
+        if (selectedClipData) {
+          handleDuplicate();
+        }
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedClipData, handleDuplicate]);
 
   return (
     <div className="min-h-screen flex flex-col bg-studio-bg md:bg-bg-app">
@@ -190,6 +232,7 @@ export function StudioView() {
               sample={selectedClipData.sample}
               onTrim={handleTrimClick}
               onDelete={handleDeleteClick}
+              onDuplicate={handleDuplicate}
             />
           </div>
         )}
@@ -241,9 +284,8 @@ export function StudioView() {
         hasClips={hasClips}
         onPlay={handlePlay}
         onPause={handlePause}
-        onStop={handleStop}
+        onRewind={handleRewind}
         onToggleLoop={handleToggleLoop}
-        onClearAll={handleClearAll}
       />
 
       {/* Trim Modal */}

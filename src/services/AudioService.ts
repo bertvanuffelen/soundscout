@@ -9,8 +9,8 @@
  */
 
 import * as Tone from 'tone';
-import type { Sample, Track } from '../types';
-import { beatsToSeconds, getClipTrimStart, getClipDuration } from '../utils/audio';
+import type { Clip, Sample, Track } from '../types';
+import { beatsToSeconds, getClipTrimStart, getClipDuration, getClipEndBeat } from '../utils/audio';
 import { createWaveformData, type WaveformData } from '../utils/waveform';
 import {
   DEFAULT_BPM,
@@ -45,6 +45,13 @@ class AudioService {
   private ambientPlayer: Tone.Player | null = null;
   private ambientVolume: Tone.Volume | null = null;
   private isAmbientPlaying = false;
+
+  // Timeline Part (for seek support)
+  private timelinePart: Tone.Part | null = null;
+
+  // Timeline data (for active clip detection during seek)
+  private scheduledTracks: Track[] = [];
+  private scheduledSamples: Sample[] = [];
 
   private constructor() {
     // Private constructor for singleton
@@ -107,20 +114,28 @@ class AudioService {
    * - Parallel loading with controlled concurrency (max 3 at a time)
    * - Automatic retry on failure (up to 2 retries with exponential backoff)
    * - Timeout protection (15 seconds per sample)
+   * - AbortSignal support for cancellation (e.g., when navigating away)
    */
   async loadSamples(
     samples: Sample[],
-    onProgress?: LoadingProgressCallback
+    onProgress?: LoadingProgressCallback,
+    signal?: AbortSignal
   ): Promise<SampleLoadResult[]> {
     const results: SampleLoadResult[] = [];
     let loaded = 0;
 
     // Process in batches for controlled concurrency
     for (let i = 0; i < samples.length; i += AUDIO_LOAD_CONCURRENCY) {
+      // Check if aborted before processing next batch
+      if (signal?.aborted) {
+        logger.info('Sample loading aborted');
+        break;
+      }
+
       const batch = samples.slice(i, i + AUDIO_LOAD_CONCURRENCY);
 
       const batchResults = await Promise.allSettled(
-        batch.map((sample) => this.loadSampleWithRetry(sample))
+        batch.map((sample) => this.loadSampleWithRetry(sample, AUDIO_LOAD_MAX_RETRIES, signal))
       );
 
       batchResults.forEach((result, idx) => {
@@ -147,9 +162,15 @@ class AudioService {
    */
   private async loadSampleWithRetry(
     sample: Sample,
-    maxRetries = AUDIO_LOAD_MAX_RETRIES
+    maxRetries = AUDIO_LOAD_MAX_RETRIES,
+    signal?: AbortSignal
   ): Promise<SampleLoadResult> {
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
+      // Check if aborted before each attempt
+      if (signal?.aborted) {
+        return { sampleId: sample.id, success: false, error: 'Aborted' };
+      }
+
       const result = await this.loadSampleWithTimeout(sample);
       if (result.success) return result;
 
@@ -309,8 +330,29 @@ class AudioService {
     transport.cancel(); // Clear previous schedule
     transport.bpm.value = DEFAULT_BPM;
 
+    // Store timeline data for active clip detection during seek
+    this.scheduledTracks = tracks;
+    this.scheduledSamples = samples;
+
+    // Dispose previous Part (important for memory)
+    if (this.timelinePart) {
+      this.timelinePart.dispose();
+      this.timelinePart = null;
+    }
+
     // Build lookup map for quick sample access
     const sampleMap = new Map(samples.map((s) => [s.id, s]));
+
+    // Define event type for Tone.Part (using object format with time property)
+    type ClipEvent = {
+      time: number;
+      sampleId: string;
+      trimStart: number;
+      duration: number;
+    };
+
+    // Build events array for Tone.Part
+    const events: ClipEvent[] = [];
 
     tracks.forEach((track) => {
       track.clips.forEach((clip) => {
@@ -320,22 +362,147 @@ class AudioService {
         if (!player || !player.loaded || !sample) return;
 
         const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
-
-        // Get trim boundaries (respects clip.trimStart/trimEnd)
         const trimStart = getClipTrimStart(clip);
         const trimDuration = getClipDuration(clip, sample);
 
-        transport.schedule((time) => {
-          // Play with offset and duration for trimmed clips
-          player.start(time, trimStart, trimDuration);
-        }, startSeconds);
+        events.push({
+          time: startSeconds,
+          sampleId: clip.sampleId,
+          trimStart,
+          duration: trimDuration,
+        });
+      });
+    });
+
+    // Create Tone.Part with events (object format with time property)
+    this.timelinePart = new Tone.Part<ClipEvent>(
+      (time, event) => {
+        const player = this.players.get(event.sampleId);
+        if (player?.loaded) {
+          player.start(time, event.trimStart, event.duration);
+        }
+      },
+      events
+    );
+
+    // Start Part at transport position 0
+    this.timelinePart.start(0);
+  }
+
+  /**
+   * Check if a clip is active (playing) at a specific beat position.
+   * A clip is active if: startBeat <= beat < endBeat
+   */
+  private isClipActiveAtBeat(clip: Clip, sample: Sample, beat: number): boolean {
+    const clipEndBeat = getClipEndBeat(clip, sample, DEFAULT_BPM);
+    return clip.startBeat <= beat && beat < clipEndBeat;
+  }
+
+  /**
+   * Get all clips that are active at a specific beat position,
+   * with calculated playback parameters for immediate start.
+   *
+   * Returns clips with adjusted trimStart and duration for seek playback.
+   */
+  private getActiveClipsAtBeat(beat: number): Array<{
+    clip: Clip;
+    sample: Sample;
+    player: Tone.Player;
+    adjustedTrimStart: number;
+    remainingDuration: number;
+  }> {
+    const activeClips: Array<{
+      clip: Clip;
+      sample: Sample;
+      player: Tone.Player;
+      adjustedTrimStart: number;
+      remainingDuration: number;
+    }> = [];
+
+    const sampleMap = new Map(this.scheduledSamples.map((s) => [s.id, s]));
+
+    this.scheduledTracks.forEach((track) => {
+      track.clips.forEach((clip) => {
+        const sample = sampleMap.get(clip.sampleId);
+        const player = this.players.get(clip.sampleId);
+
+        if (!sample || !player || !player.loaded) return;
+        if (!this.isClipActiveAtBeat(clip, sample, beat)) return;
+
+        // Calculate how much time has elapsed since clip start
+        const elapsedBeats = beat - clip.startBeat;
+        const elapsedSeconds = beatsToSeconds(elapsedBeats, DEFAULT_BPM);
+
+        // Calculate original trim parameters
+        const originalTrimStart = getClipTrimStart(clip);
+        const originalDuration = getClipDuration(clip, sample);
+
+        // Calculate adjusted parameters for seek playback
+        const adjustedTrimStart = originalTrimStart + elapsedSeconds;
+        const remainingDuration = originalDuration - elapsedSeconds;
+
+        // Only add if there's still something to play (minimum 10ms)
+        if (remainingDuration > 0.01) {
+          activeClips.push({
+            clip,
+            sample,
+            player,
+            adjustedTrimStart,
+            remainingDuration,
+          });
+        }
+      });
+    });
+
+    return activeClips;
+  }
+
+  /**
+   * Start all clips that are active at the given beat position.
+   * These clips have their start moment in the "past" relative to seek position,
+   * so they need to be started immediately with adjusted offset and duration.
+   */
+  private startActiveClips(seekBeat: number): void {
+    const activeClips = this.getActiveClipsAtBeat(seekBeat);
+
+    if (activeClips.length === 0) return;
+
+    // Start all active clips at the same time with small buffer
+    const startTime = Tone.now() + 0.05;
+
+    activeClips.forEach(({ player, adjustedTrimStart, remainingDuration, clip }) => {
+      player.start(startTime, adjustedTrimStart, remainingDuration);
+      logger.audio('startActiveClip', {
+        sampleId: clip.sampleId,
+        seekBeat,
+        adjustedTrimStart,
+        remainingDuration,
       });
     });
   }
 
-  play(): void {
+  /**
+   * Start timeline playback from a specific beat position.
+   * Uses transport.start() with offset to support seeking.
+   *
+   * For clips that are already active at the seek position (started before
+   * but still playing), we start them immediately with adjusted parameters.
+   * Future clips are handled normally by Tone.Part.
+   *
+   * @param fromBeat - Beat position to start from (default: 0)
+   */
+  play(fromBeat: number = 0): void {
     const transport = Tone.getTransport();
-    transport.start();
+    const offsetSeconds = beatsToSeconds(fromBeat, DEFAULT_BPM);
+
+    // Start clips that are already active at the seek position
+    // (their start event is in the "past" but they should still be playing)
+    if (fromBeat > 0) {
+      this.startActiveClips(fromBeat);
+    }
+
+    // Start transport for future clips (handled by Tone.Part)
+    transport.start('+0.05', offsetSeconds);
     this.startPlayheadUpdates();
   }
 
@@ -519,6 +686,16 @@ class AudioService {
     const transport = Tone.getTransport();
     transport.stop();
     transport.cancel();
+
+    // Dispose timeline Part
+    if (this.timelinePart) {
+      this.timelinePart.dispose();
+      this.timelinePart = null;
+    }
+
+    // Clear timeline data
+    this.scheduledTracks = [];
+    this.scheduledSamples = [];
 
     // Dispose sample players
     this.players.forEach((player) => {

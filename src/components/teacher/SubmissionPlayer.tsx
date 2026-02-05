@@ -182,7 +182,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-3 sm:p-4 md:p-6 z-50">
-      <div className="bg-bg-surface rounded-2xl shadow-2xl w-full h-full max-w-6xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div className="bg-bg-surface rounded-2xl shadow-2xl w-full h-full max-w-7xl max-h-[90vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="relative px-4 sm:px-6 py-4 border-b border-border-subtle shrink-0">
           {/* Close button */}

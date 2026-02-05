@@ -62,9 +62,24 @@ export function useLocationAudio({
   // Track samples to retry
   const failedSamplesRef = useRef<Sample[]>([]);
 
+  // Track AbortController for cancellation
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // Stabilize samples reference - only change when content actually changes
+  const prevSampleIdsRef = useRef<string>('');
+  const currentSampleIds = samples.map(s => s.id).sort().join(',');
+  const samplesChanged = prevSampleIdsRef.current !== currentSampleIds;
+  if (samplesChanged) {
+    prevSampleIdsRef.current = currentSampleIds;
+  }
+
   // Load audio samples when location changes
   const loadAllSamples = useCallback(
-    async (samplesToLoad: Sample[]) => {
+    async (samplesToLoad: Sample[], signal?: AbortSignal) => {
+      // CRITICAL: Check abort FIRST before any state updates
+      // This prevents infinite render loops when effect cleanup triggers
+      if (signal?.aborted) return;
+
       if (samplesToLoad.length === 0) {
         setIsLoading(false);
         setLoadingProgress(100);
@@ -78,11 +93,16 @@ export function useLocationAudio({
       failedSamplesRef.current = [];
 
       const results = await loadSamples(samplesToLoad, (loaded, total) => {
+        // Don't update state if aborted
+        if (signal?.aborted) return;
         setLoadingProgress(Math.round((loaded / total) * 100));
-      });
+      }, signal);
 
-      // Check for failures
-      const failed = results.filter((r) => !r.success);
+      // Don't update state if aborted
+      if (signal?.aborted) return;
+
+      // Check for failures (exclude aborted results)
+      const failed = results.filter((r) => !r.success && r.error !== 'Aborted');
       if (failed.length > 0) {
         // Store failed samples for retry
         failedSamplesRef.current = samplesToLoad.filter((s) =>
@@ -98,9 +118,25 @@ export function useLocationAudio({
   );
 
   // Initial load when location changes
+  // Uses currentSampleIds for stable dependency (not samples array reference)
   useEffect(() => {
-    loadAllSamples(samples);
-  }, [locationId, samples, loadAllSamples]);
+    // Abort previous loading operation
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    // Create new AbortController for this load
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    loadAllSamples(samples, controller.signal);
+
+    // Cleanup: abort on unmount or when deps change
+    return () => {
+      controller.abort();
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- Use stable currentSampleIds instead of samples array
+  }, [locationId, currentSampleIds, loadAllSamples]);
 
   // Handle ambient audio
   useEffect(() => {
@@ -129,7 +165,13 @@ export function useLocationAudio({
   // Retry handler
   const retry = useCallback(() => {
     if (failedSamplesRef.current.length > 0) {
-      loadAllSamples(failedSamplesRef.current);
+      // Abort any in-progress loading
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+      const controller = new AbortController();
+      abortControllerRef.current = controller;
+      loadAllSamples(failedSamplesRef.current, controller.signal);
     }
   }, [loadAllSamples]);
 

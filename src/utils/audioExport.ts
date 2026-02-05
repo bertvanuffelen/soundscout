@@ -10,7 +10,7 @@ import toWav from 'audiobuffer-to-wav';
 import { Mp3Encoder } from '@breezystack/lamejs';
 import type { Track, Sample } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
-import { beatsToSeconds } from './audio';
+import { beatsToSeconds, getClipTrimStart, getClipDuration } from './audio';
 import { logger } from './logger';
 
 // =============================================================================
@@ -79,7 +79,9 @@ function calculateTimelineDuration(
       if (!sample) return;
 
       const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
-      const endSeconds = startSeconds + sample.duration;
+      // Use trimmed duration instead of full sample duration
+      const clipDuration = getClipDuration(clip, sample);
+      const endSeconds = startSeconds + clipDuration;
       maxEndTime = Math.max(maxEndTime, endSeconds);
     });
   });
@@ -141,8 +143,13 @@ async function renderOffline(
 
           const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
 
+          // Apply clip trimming: offset into buffer and trimmed duration
+          const trimStart = getClipTrimStart(clip);
+          const clipDuration = getClipDuration(clip, sample);
+
           transport.schedule((time) => {
-            player.start(time);
+            // player.start(when, offset, duration)
+            player.start(time, trimStart, clipDuration);
           }, startSeconds);
         });
       });

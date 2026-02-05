@@ -43,9 +43,10 @@ export function useAudioEngine() {
   const loadSamples = useCallback(
     async (
       samples: Sample[],
-      onProgress?: (loaded: number, total: number) => void
+      onProgress?: (loaded: number, total: number) => void,
+      signal?: AbortSignal
     ) => {
-      return audioService.loadSamples(samples, onProgress);
+      return audioService.loadSamples(samples, onProgress, signal);
     },
     []
   );
@@ -74,8 +75,8 @@ export function useAudioEngine() {
     audioService.scheduleTimeline(tracks, samples);
   }, []);
 
-  const playTimeline = useCallback(() => {
-    audioService.play();
+  const playTimeline = useCallback((fromBeat: number = 0) => {
+    audioService.play(fromBeat);
     setIsPlaying(true);
   }, [setIsPlaying]);
 

@@ -20,6 +20,30 @@
     "test-metro": {
       "name": "Metro (Test)",
       "description": "Test thema met metrostation"
+    },
+    "winterspelen": {
+      "name": "Winterspelen",
+      "description": "Winter thema met sneeuw en ijs",
+      "locations": {
+        "winterdorp": "Winterdorp",
+        "winterdorp_desc": "Een gezellig winterdorp",
+        "bobsleebaan": "Bobsleebaan",
+        "bobsleebaan_desc": "De snelste baan",
+        "skipiste": "Skipiste",
+        "skipiste_desc": "De bergen in!",
+        "ijsarena": "IJsarena",
+        "ijsarena_desc": "Schaatsen op het ijs"
+      },
+      "samples": {
+        "placeholder1": "Geluid 1",
+        "placeholder2": "Geluid 2",
+        "skipiste-publiek": "Publiek",
+        "skipiste-robot-beeps": "Beeps",
+        "skipiste-snowboard": "Snowboard",
+        "skipiste-stoeltjeslift": "Stoeltjeslift",
+        "skipiste-schans": "Schans",
+        "skipiste-ski-raket": "Raket"
+      }
     }
   },
   "start": {
@@ -80,6 +104,7 @@
     "play": "Afspelen",
     "pause": "Pauze",
     "stop": "Stop",
+    "rewind": "Terug",
     "loop": "Herhalen",
     "clearAll": "Alles wissen",
     "confirmClear": "Weet je het zeker?"

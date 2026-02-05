@@ -278,6 +278,8 @@ All components use Tailwind `sm:` breakpoint (640px) for mobile/desktop distinct
 | `docs/TODO-IMPLEMENTATIE.md` | Fase 4-5 prioritized feature list |
 | `docs/ROADMAP-CLIP-TRIMMING.md` | Clip Trimming & Smart Snap roadmap (✅ voltooid) |
 | `docs/ROADMAP-DRAG-OFFSET.md` | Drag Offset Alignment implementatie log (tijdelijk) |
+| `docs/ROADMAP-PLAYHEAD-SEEKING.md` | Playhead Seeking implementatie roadmap (✅ voltooid) |
+| `docs/TONEJS-KENNISBANK.md` | Tone.js kennis & best practices (incl. kritieke seek beperking) |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Guide for adding locations and themes |
 | `docs/PLAN-EXPORT-MP3.md` | MP3 export implementation plan (voltooid) |
 | `docs/PLAN-KLASCODE-SYSTEEM.md` | Supabase integration plan (gedeeltelijk voltooid) |
@@ -285,7 +287,268 @@ All components use Tailwind `sm:` breakpoint (640px) for mobile/desktop distinct
 | `docs/responsive-design-analysis.md` | Responsive design patterns and implementation |
 | `soundscout-prd.md` | Product requirements document |
 
-## Recent Updates (2026-02-04)
+## Recent Updates (2026-02-05)
+
+### Playhead Seeking (#17) ✅ VOLTOOID
+
+Volledig functionele playhead met seek ondersteuning: audio speelt nu correct vanaf elke positie, inclusief halverwege een clip.
+
+**Roadmap:** `docs/ROADMAP-PLAYHEAD-SEEKING.md`
+**Kennisbank:** `docs/TONEJS-KENNISBANK.md` (sectie 8: kritieke Tone.js beperking)
+
+**Features:**
+- Playhead (rode lijn) altijd zichtbaar in studio
+- Draggable playhead handle in ruler strip (16px boven timeline)
+- 44px touch hitbox voor accessibility
+- Audio speelt vanaf seek positie
+- **Hybride aanpak**: Actieve clips worden direct gestart, toekomstige clips via Tone.Part
+
+**Kritieke ontdekking (gedocumenteerd in kennisbank):**
+`Tone.Part` + `transport.start(time, offset)` overslaat events die vóór de offset liggen. Clips die al begonnen zijn maar nog actief zijn op de seek positie moeten **DIRECT** worden gestart met aangepaste parameters.
+
+**Oplossing - Hybride Aanpak:**
+```typescript
+play(fromBeat: number = 0): void {
+  // STAP 1: Start clips die al actief zijn (direct)
+  if (fromBeat > 0) {
+    this.startActiveClips(fromBeat);  // Berekent adjustedTrimStart & remainingDuration
+  }
+
+  // STAP 2: Start transport voor toekomstige clips (via Tone.Part)
+  transport.start('+0.05', offsetSeconds);
+}
+
+private getActiveClipsAtBeat(beat: number): ActiveClipInfo[] {
+  // Vindt clips waar: startBeat <= beat < endBeat
+  // Berekent: adjustedTrimStart = originalTrimStart + elapsedSeconds
+  // Berekent: remainingDuration = originalDuration - elapsedSeconds
+}
+```
+
+**Nieuwe/gewijzigde bestanden:**
+| Bestand | Wijziging |
+|---------|-----------|
+| `src/services/AudioService.ts` | `scheduledTracks/Samples`, `isClipActiveAtBeat()`, `getActiveClipsAtBeat()`, `startActiveClips()`, `play(fromBeat)` |
+| `src/hooks/useAudioEngine.ts` | `playTimeline(fromBeat)` |
+| `src/hooks/useStudioPlayback.ts` | `currentBeat` integratie |
+| `src/components/studio/Timeline.tsx` | 16px ruler strip |
+| `src/components/studio/Playhead.tsx` | **NIEUW** - Draggable playhead component |
+| `src/components/studio/StudioView.tsx` | Playhead integratie |
+
+**AudioService architectuur (bijgewerkt):**
+```
+AudioService (singleton)
+├── players: Map<sampleId, Tone.Player>
+├── timelinePart: Tone.Part | null
+├── scheduledTracks: Track[]          ← NIEUW
+├── scheduledSamples: Sample[]        ← NIEUW
+├── waveformCache: Map<sampleId, WaveformData>
+└── ambientPlayer: Tone.Player | null
+```
+
+---
+
+### Bug Fixes (2026-02-04)
+
+**CRIT-1: MP3 Export negeerde clip trimming** ✅ GEFIXT
+
+MP3 export gebruikte de volledige sample duration in plaats van de getrimde duration. Clips met `trimStart`/`trimEnd` werden verkeerd geëxporteerd.
+
+**Fix in `src/utils/audioExport.ts`:**
+```typescript
+// calculateTimelineDuration() - Gebruik getrimde duration
+const clipDuration = getClipDuration(clip, sample);
+const endSeconds = startSeconds + clipDuration;
+
+// renderOffline() - Pas trim toe bij player.start()
+const trimStart = getClipTrimStart(clip);
+const clipDuration = getClipDuration(clip, sample);
+player.start(time, trimStart, clipDuration);
+```
+
+**PERF-1: currentBeat veroorzaakte ~20 callback recreaties/sec** ✅ GEFIXT
+
+`useStudioPlayback` subscribed op `currentBeat` en gebruikte het in de `handlePlay` dependency array. Dit veroorzaakte dat `handlePlay` ~20x per seconde opnieuw werd aangemaakt tijdens playback.
+
+**Fix in `src/hooks/useStudioPlayback.ts`:**
+```typescript
+// VOOR: currentBeat als reactive state
+const currentBeat = useAudioStore((s) => s.currentBeat);
+// ... in handlePlay dependency array: [currentBeat, ...]
+
+// NA: currentBeat alleen ophalen wanneer nodig
+const handlePlay = useCallback(() => {
+  // Read at call time, not as a dependency
+  const currentBeat = useAudioStore.getState().currentBeat;
+  playTimeline(currentBeat);
+}, [/* geen currentBeat! */]);
+```
+
+**CRIT-2: Race conditions bij async sample loading** ✅ GEFIXT
+
+Bij snel navigeren tussen locaties konden meerdere load operaties tegelijk lopen, wat kon leiden tot verkeerde state updates of memory leaks.
+
+**Fix:** AbortController pattern toegevoegd:
+```typescript
+// useLocationAudio.ts
+useEffect(() => {
+  const controller = new AbortController();
+  loadAllSamples(samples, controller.signal);
+  return () => controller.abort();  // Cancel bij unmount
+}, [samples]);
+
+// AudioService.ts - check signal voor elke batch
+if (signal?.aborted) break;
+```
+
+**Gewijzigde bestanden:**
+- `src/services/AudioService.ts` - signal parameter in loadSamples/loadSampleWithRetry
+- `src/hooks/useAudioEngine.ts` - signal parameter doorgeven
+- `src/hooks/useLocationAudio.ts` - AbortController bij location change
+
+**CRIT-3: Ambient audio timeout niet opgeruimd** 📝 GEDOCUMENTEERD
+
+Ambient audio wordt gestart na 500ms timeout. Als component unmount tijdens deze delay, wordt de timeout niet gecanceld. Gedocumenteerd in `docs/TODO-IMPLEMENTATIE.md` als P3 prioriteit.
+
+---
+
+### Infinite Render Loop Bug (2026-02-05) ✅ GEFIXT
+
+**Probleem:** App bevroor volledig wanneer op een hotspot werd geklikt. Browser tab crashte met 22.000+ renders.
+
+**Oorzaak:** De AbortController implementatie (CRIT-2 fix) had twee problemen:
+1. `setIsLoading(true)` werd aangeroepen VOORDAT gecontroleerd werd of de operatie al geannuleerd was
+2. De `samples` array creëerde elke render een nieuwe referentie, waardoor de useEffect steeds opnieuw triggerde
+
+**Flow van de bug:**
+```
+1. samples array krijgt nieuwe referentie (maar zelfde inhoud)
+2. useEffect cleanup roept controller.abort() aan
+3. loadAllSamples wordt aangeroepen
+4. setIsLoading(true) veroorzaakt re-render VOORDAT abort check
+5. Nieuwe render → nieuwe samples referentie → terug naar stap 1
+```
+
+**Fix in `src/hooks/useLocationAudio.ts`:**
+```typescript
+// 1. Check abort EERST, voordat enige state wordt bijgewerkt
+const loadAllSamples = useCallback(
+  async (samplesToLoad: Sample[], signal?: AbortSignal) => {
+    // CRITICAL: Check abort FIRST before any state updates
+    if (signal?.aborted) return;
+
+    // Nu pas state updates...
+    setIsLoading(true);
+    // ...
+  },
+  [loadSamples]
+);
+
+// 2. Stabiliseer samples referentie met ID-based vergelijking
+const prevSampleIdsRef = useRef<string>('');
+const currentSampleIds = samples.map(s => s.id).sort().join(',');
+if (prevSampleIdsRef.current !== currentSampleIds) {
+  prevSampleIdsRef.current = currentSampleIds;
+}
+
+// 3. Gebruik stabiele currentSampleIds als dependency
+useEffect(() => {
+  // ...
+}, [locationId, currentSampleIds, loadAllSamples]);
+```
+
+**Lessen geleerd:**
+- Bij async operations met AbortController: ALTIJD abort status checken vóór state updates
+- Array dependencies in useEffect: gebruik stabiele referenties (ID strings) i.p.v. array objecten
+- Console.log render counters zijn effectief voor het opsporen van infinite loops
+
+---
+
+### Vereenvoudigde Transport Controls (#23) ✅ VOLTOOID
+
+Transport controls vereenvoudigd voor betere UX, vooral voor kinderen.
+
+**Oude layout:**
+```
+[Play] [Pause] [Stop] [Loop] | [Alles Wissen]
+```
+
+**Nieuwe layout:**
+```
+[Play/Pause] [Rewind] [Loop]
+```
+
+**Wijzigingen:**
+- Play/Pause was al een toggle (ongewijzigd)
+- Stop → Rewind (SkipBack icoon van lucide-react)
+- "Alles Wissen" knop verwijderd
+
+**Gewijzigde bestanden:**
+| Bestand | Wijziging |
+|---------|-----------|
+| `src/components/studio/TransportControls.tsx` | Stop → Rewind, Clear All verwijderd |
+| `src/hooks/useStudioPlayback.ts` | `handleRewind` toegevoegd |
+| `src/components/studio/StudioView.tsx` | Props aangepast |
+| `src/i18n/locales/nl.json` | `"rewind": "Terug"` |
+| `src/i18n/locales/en.json` | `"rewind": "Rewind"` |
+
+**Implementatie notities:**
+- `handleRewind` = `handleStop` (zelfde gedrag: stop + ga naar beat 0)
+- `handleStop` blijft intern beschikbaar voor navigatie (bijv. terug naar map)
+- Rewind is disabled wanneer geen clips aanwezig zijn (`hasClips`)
+
+---
+
+### Clip Dupliceren (#25) ✅ VOLTOOID
+
+Clips kunnen nu worden gedupliceerd met behoud van alle trim settings.
+
+**Features:**
+- Dupliceer knop in EditToolbar (Copy icoon)
+- Keyboard shortcut: `Ctrl+D` / `Cmd+D`
+- Trim settings (trimStart, trimEnd) worden meegekopieerd
+- Smart snap: duplicaat wordt direct na origineel geplaatst
+- Na duplicatie wordt nieuwe clip automatisch geselecteerd
+
+**Gewijzigde bestanden:**
+| Bestand | Wijziging |
+|---------|-----------|
+| `src/stores/timelineStore.ts` | `duplicateClip()` functie toegevoegd |
+| `src/components/studio/StudioView.tsx` | `handleDuplicate()`, keyboard shortcut, prop |
+
+**Plaatsingsstrategie:**
+```
+Origineel:    [===CLIP===]
+Duplicaat:                  [===CLIP===]  (direct na origineel)
+```
+
+Als geen ruimte op zelfde track → smart snap naar track eronder.
+Als nergens ruimte → geen duplicatie.
+
+**Implementatie:**
+```typescript
+// timelineStore.ts
+duplicateClip: (trackIndex, clipId, sample, allSamples) => {
+  const originalClip = findClip(trackIndex, clipId);
+  const desiredStartBeat = Math.ceil(getClipEndBeat(originalClip, sample, bpm));
+
+  const newClip = {
+    id: generateClipId(),
+    sampleId: originalClip.sampleId,
+    startBeat: desiredStartBeat,
+    trimStart: originalClip.trimStart,
+    trimEnd: originalClip.trimEnd,
+  };
+
+  const result = findSmartSnapPosition(...);
+  if (result.reason !== 'rejected') {
+    addClip(result.trackIndex, newClip);
+  }
+  return { ...result, newClipId };
+}
+```
+
+---
 
 ### Drag Offset Alignment (#16) ✅ VOLTOOID
 

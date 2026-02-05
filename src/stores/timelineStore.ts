@@ -10,6 +10,8 @@ import {
   createSampleMap,
   type SmartSnapResult,
 } from '../utils/clipCollision';
+import { getClipEndBeat } from '../utils/audio';
+import { generateClipId } from '../utils/uuid';
 
 function createEmptyTracks(): Track[] {
   return Array.from({ length: DEFAULT_TRACK_COUNT }, (_, i) => ({
@@ -48,6 +50,14 @@ interface TimelineStore {
     trimStart: number,
     trimEnd: number,
   ) => void;
+
+  // Clip duplicate action
+  duplicateClip: (
+    trackIndex: number,
+    clipId: string,
+    sample: Sample,
+    allSamples: Sample[],
+  ) => SmartSnapResult & { newClipId?: string };
 
   // Track actions
   clearTrack: (trackIndex: number) => void;
@@ -200,6 +210,66 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
           : track,
       ),
     }));
+  },
+
+  duplicateClip: (trackIndex, clipId, sample, allSamples) => {
+    const state = get();
+    const sampleMap = createSampleMap(allSamples);
+
+    // Find the original clip
+    const track = state.tracks[trackIndex];
+    if (!track) {
+      return { trackIndex, startBeat: 0, reason: 'rejected' };
+    }
+
+    const originalClip = track.clips.find((c) => c.id === clipId);
+    if (!originalClip) {
+      return { trackIndex, startBeat: 0, reason: 'rejected' };
+    }
+
+    // Calculate desired position (directly after original clip)
+    const originalEndBeat = getClipEndBeat(originalClip, sample, state.bpm);
+    const desiredStartBeat = Math.ceil(originalEndBeat);
+
+    // Create new clip with same trim settings
+    const newClipId = generateClipId();
+    const newClip: Clip = {
+      id: newClipId,
+      sampleId: originalClip.sampleId,
+      startBeat: desiredStartBeat,
+      trimStart: originalClip.trimStart,
+      trimEnd: originalClip.trimEnd,
+      effects: originalClip.effects,
+    };
+
+    // Use smart snap to find optimal position
+    const result = findSmartSnapPosition(
+      state.tracks,
+      trackIndex,
+      newClip,
+      sample,
+      sampleMap,
+      state.bpm,
+      state.totalBeats,
+    );
+
+    // If rejected, don't add the clip
+    if (result.reason === 'rejected') {
+      return result;
+    }
+
+    // Create the final clip with the snapped position
+    const finalClip: Clip = { ...newClip, startBeat: result.startBeat };
+
+    set((prev) => ({
+      tracks: prev.tracks.map((t, i) =>
+        i === result.trackIndex
+          ? { ...t, clips: [...t.clips, finalClip] }
+          : t,
+      ),
+    }));
+
+    return { ...result, newClipId };
   },
 
   clearTrack: (trackIndex) => {

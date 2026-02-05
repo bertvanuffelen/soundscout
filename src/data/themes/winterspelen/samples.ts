@@ -49,22 +49,58 @@ export const samples: Sample[] = [
 
   // === Skipiste ===
   {
-    id: 'skipiste-placeholder-1',
+    id: 'skipiste-publiek',
     locationId: 'skipiste',
-    name: 'themes.winterspelen.samples.placeholder1',
-    audioUrl: '/audio/themes/winterspelen/skipiste/placeholder1.mp3',
+    name: 'themes.winterspelen.samples.skipiste-publiek',
+    audioUrl: '/audio/themes/winterspelen/skipiste/winterspelen-publiek.mp3',
+    duration: 2.0,
+    icon: 'Users',
+    color: '#60A5FA', // blue-400
+  },
+  {
+    id: 'skipiste-robot-beeps',
+    locationId: 'skipiste',
+    name: 'themes.winterspelen.samples.skipiste-robot-beeps',
+    audioUrl: '/audio/themes/winterspelen/skipiste/winterspelen-robot-beeps.mp3',
+    duration: 2.0,
+    icon: 'Radio',
+    color: '#A78BFA', // violet-400
+  },
+  {
+    id: 'skipiste-snowboard',
+    locationId: 'skipiste',
+    name: 'themes.winterspelen.samples.skipiste-snowboard',
+    audioUrl: '/audio/themes/winterspelen/skipiste/winterspelen-snowboard.mp3',
     duration: 2.0,
     icon: 'Mountain',
+    color: '#34D399', // emerald-400
+  },
+  {
+    id: 'skipiste-stoeltjeslift',
+    locationId: 'skipiste',
+    name: 'themes.winterspelen.samples.skipiste-stoeltjeslift',
+    audioUrl: '/audio/themes/winterspelen/skipiste/winterspelen-stoeltjeslift.mp3',
+    duration: 2.0,
+    icon: 'ArrowUp',
     color: '#FBBF24', // amber-400
   },
   {
-    id: 'skipiste-placeholder-2',
+    id: 'skipiste-schans',
     locationId: 'skipiste',
-    name: 'themes.winterspelen.samples.placeholder2',
-    audioUrl: '/audio/themes/winterspelen/skipiste/placeholder2.mp3',
+    name: 'themes.winterspelen.samples.skipiste-schans',
+    audioUrl: '/audio/themes/winterspelen/skipiste/winterspelen-schans.mp3',
     duration: 2.0,
-    icon: 'Sparkles',
+    icon: 'Zap',
     color: '#FB923C', // orange-400
+  },
+  {
+    id: 'skipiste-ski-raket',
+    locationId: 'skipiste',
+    name: 'themes.winterspelen.samples.skipiste-ski-raket',
+    audioUrl: '/audio/themes/winterspelen/skipiste/winterspelen-ski-raket.mp3',
+    duration: 2.0,
+    icon: 'Rocket',
+    color: '#F472B6', // pink-400
   },
 
   // === IJsarena ===

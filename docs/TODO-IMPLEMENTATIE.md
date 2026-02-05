@@ -1,6 +1,6 @@
 # SoundScout - Implementatie Todo's
 
-**Laatst bijgewerkt**: 2026-02-04 (Drag Offset Alignment #16 voltooid)
+**Laatst bijgewerkt**: 2026-02-05 (Nieuwe issues uit user feedback)
 **Gebaseerd op**: PRD Fase 4 & 5, gebruiker feedback
 
 ---
@@ -280,6 +280,65 @@ AUDIO_LOAD_CONCURRENCY = 3
 **Bron:** Docent feedback (2026-02-03) - leerlingen verward door visuele mismatch
 **Roadmap:** `docs/ROADMAP-DRAG-OFFSET.md`
 
+### 16. Playhead Seeking (#17) ✅
+**Status:** VOLTOOID (2026-02-04)
+**Complexiteit:** ⭐⭐⭐ Medium-Hoog
+**Roadmap:** `docs/ROADMAP-PLAYHEAD-SEEKING.md`
+**Kennisbank:** `docs/TONEJS-KENNISBANK.md`
+
+**Probleem:**
+- Playhead (rode lijn) was niet zichtbaar wanneer niet aan het afspelen
+- Playhead kon niet worden versleept naar een andere positie
+- Audio startte altijd vanaf beat 0, niet vanaf seek positie
+- Bij seek naar midden van een clip speelde de clip niet (kritieke bug)
+
+**Oplossing (Hybride Aanpak):**
+
+**Fase 1-7: Basis Tone.Part implementatie**
+- [x] `timelinePart` property in AudioService
+- [x] `scheduleTimeline()` refactored naar Tone.Part
+- [x] `play(fromBeat)` met transport offset
+- [x] `seek(beat)` methode
+- [x] Playhead component met ruler strip (16px)
+- [x] Draggable playhead handle met 44px touch hitbox
+
+**Fase 8a-8f: Hybride aanpak voor actieve clips**
+- [x] `scheduledTracks` en `scheduledSamples` opslaan
+- [x] `isClipActiveAtBeat()` helper
+- [x] `getActiveClipsAtBeat()` met berekende parameters
+- [x] `startActiveClips()` methode
+- [x] Integratie in `play()` - actieve clips direct starten
+- [x] `dispose()` cleanup
+
+**Kern van de oplossing:**
+```typescript
+play(fromBeat: number = 0): void {
+  // STAP 1: Start clips die al actief zijn (direct)
+  if (fromBeat > 0) {
+    this.startActiveClips(fromBeat);
+  }
+
+  // STAP 2: Start transport voor toekomstige clips (via Tone.Part)
+  transport.start('+0.05', offsetSeconds);
+}
+```
+
+**Kritieke ontdekking:**
+Tone.Part + `transport.start(time, offset)` overslaat events die vóór de offset liggen.
+Clips die al begonnen zijn maar nog actief zijn moeten DIRECT worden gestart met aangepaste `trimStart` en `duration`.
+
+**Gewijzigde bestanden:**
+- `src/services/AudioService.ts` - Hybride seek aanpak
+- `src/hooks/useAudioEngine.ts` - `playTimeline(fromBeat)`
+- `src/hooks/useStudioPlayback.ts` - `currentBeat` integratie
+- `src/components/studio/Timeline.tsx` - Ruler strip
+- `src/components/studio/Playhead.tsx` - Nieuw component
+- `src/components/studio/StudioView.tsx` - Playhead integratie
+
+**Documentatie:**
+- `docs/ROADMAP-PLAYHEAD-SEEKING.md` - Volledige implementatie roadmap
+- `docs/TONEJS-KENNISBANK.md` - Sectie 8: Kritieke uitleg van het probleem
+
 **Probleem:**
 Bij het slepen van een sample/clip naar de timeline waren er meerdere visuele elementen zichtbaar:
 1. **Originele clip** (met opacity-30 en transform)
@@ -351,7 +410,71 @@ const originalClipStartBeat = originalClipStartBeatRef.current; // Eerst opslaan
 
 ## 🔴 P1 - HOOGSTE PRIORITEIT (nu)
 
-*Geen P1 items - alle hoge prioriteit features zijn voltooid*
+### 23. Vereenvoudigde Transport Controls (Play/Rewind) ✅
+**Status:** VOLTOOID (2026-02-05)
+**Complexiteit:** ⭐ Laag
+**Bron:** Gebruiker feedback (2026-02-05)
+
+**Beschrijving:**
+Transport controls vereenvoudigd van `[Play] [Pause] [Stop] [Loop] | [Alles Wissen]` naar `[Play/Pause] [Rewind] [Loop]`.
+
+**Geïmplementeerd:**
+- [x] Play/Pause was al een toggle (bestaande functionaliteit)
+- [x] Stop knop vervangen door Rewind knop (SkipBack icoon)
+- [x] "Alles Wissen" knop verwijderd
+- [x] Vertalingen: `transport.rewind` toegevoegd (NL: "Terug", EN: "Rewind")
+
+**Gewijzigde bestanden:**
+- `src/components/studio/TransportControls.tsx` - UI vereenvoudigd
+- `src/hooks/useStudioPlayback.ts` - `handleRewind` toegevoegd
+- `src/components/studio/StudioView.tsx` - Props aangepast
+- `src/i18n/locales/nl.json` - "rewind": "Terug"
+- `src/i18n/locales/en.json` - "rewind": "Rewind"
+
+**Notities:**
+- `handleStop` blijft intern beschikbaar voor navigatie (bijv. terug naar map)
+- `handleRewind` = `handleStop` (zelfde gedrag: stop + ga naar beat 0)
+
+### 24. Getrimde Clip Visuele Lengte bij Drag
+**Status:** Niet begonnen
+**Complexiteit:** ⭐⭐ Medium
+**Bron:** Gebruiker feedback (2026-02-05)
+
+**Probleem:**
+Wanneer je een getrimde clip sleept, toont de drag preview de volledige originele sample lengte in plaats van de getrimde lengte.
+
+**Te onderzoeken:**
+- [ ] DragOverlay component krijgt getrimde duration mee
+- [ ] Snap preview berekening respecteert trim bounds
+- [ ] Visuele breedte = `getClipDuration()` niet sample duration
+
+**Locatie:** `src/components/studio/StudioView.tsx` (DragOverlay), `src/hooks/useStudioDnD.ts`
+
+### 25. Getrimde Clip Kopiëren/Dupliceren ✅
+**Status:** VOLTOOID (2026-02-05)
+**Complexiteit:** ⭐⭐ Medium
+**Bron:** Gebruiker feedback (2026-02-05)
+
+**Beschrijving:**
+Clips kunnen nu worden gedupliceerd inclusief alle trim settings. De gedupliceerde clip wordt direct na de originele clip geplaatst (of op de volgende beschikbare positie via smart snap).
+
+**Geïmplementeerd:**
+- [x] `duplicateClip()` functie in timelineStore
+- [x] Dupliceert clip inclusief trimStart, trimEnd, effects
+- [x] Smart snap: plaatst na originele clip of op volgende track als geen ruimte
+- [x] Keyboard shortcut: Ctrl+D / Cmd+D
+- [x] Na duplicatie wordt nieuwe clip automatisch geselecteerd
+- [x] Copy knop in EditToolbar (was al voorbereid, nu actief)
+
+**Gewijzigde bestanden:**
+- `src/stores/timelineStore.ts` - `duplicateClip()` functie
+- `src/components/studio/StudioView.tsx` - `handleDuplicate()`, keyboard shortcut, prop doorgeven
+
+**Plaatsingsstrategie:**
+1. Bereken eindpositie van originele clip (startBeat + durationBeats)
+2. Plaats duplicaat direct daarna (afgerond naar boven)
+3. Als overlap: gebruik smart snap (schuif of track eronder)
+4. Als nergens ruimte: geen duplicatie (rejected)
 
 ---
 
@@ -471,11 +594,95 @@ const sensors = useSensors(
 );
 ```
 
+### 22. Real-time Geluiden Toevoegen tijdens Afspelen
+**Status:** Niet begonnen
+**Complexiteit:** ⭐⭐⭐⭐ Hoog
+**Bron:** Gebruiker feedback (2026-02-05)
+
+**Beschrijving:**
+Tijdens het afspelen van de timeline moeten gebruikers nieuwe samples kunnen toevoegen die direct meespelen. Nu moet je eerst stoppen om iets toe te voegen.
+
+**Te implementeren:**
+- [ ] Timeline drag-and-drop actief houden tijdens playback
+- [ ] Nieuwe clip toevoegen zonder transport te stoppen
+- [ ] Clip direct inplannen in lopende Tone.Part
+- [ ] Visuele feedback bij toevoegen tijdens afspelen
+
+**Technische uitdaging:**
+Tone.Part dynamisch updaten of nieuwe events toevoegen terwijl transport loopt. Mogelijk alternatief: alleen preview afspelen van nieuwe clip, daarna stoppen voor plaatsing.
+
 ---
 
 ## 🟡 P3 - MEDIUM PRIORITEIT
 
-### 18. Locatie Editor Verbeteringen (5.8)
+### 21. Template Systeem voor Docenten
+**Status:** Niet begonnen
+**Complexiteit:** ⭐⭐⭐ Medium-Hoog
+**Bron:** Gebruiker feedback (2026-02-05)
+
+**Beschrijving:**
+Docenten kunnen een "template" compositie klaarzetten die leerlingen als startpunt gebruiken. Bijvoorbeeld: drumbeat al op track 1, of bepaalde structuur voorbereid.
+
+**Te implementeren:**
+- [ ] "Opslaan als Template" optie voor docent
+- [ ] Template koppelen aan een klas
+- [ ] Leerling start met template i.p.v. lege timeline
+- [ ] UI in docent dashboard voor template beheer
+- [ ] Template data structuur (apart van submissions)
+
+**Technische overwegingen:**
+- Supabase tabel voor templates (klas_id, composition_data, naam)
+- Leerling flow aanpassen: check of klas een template heeft
+- Kopieer template data naar nieuwe compositie bij start
+
+### 26. Ambient Audio Timeout Cleanup (CRIT-3)
+**Status:** Gedocumenteerd, niet urgent
+**Complexiteit:** ⭐ Laag
+**Bron:** Code analyse (2026-02-04)
+
+**Probleem:**
+In `LocationScene.tsx` wordt ambient audio gestart met een `setTimeout` van 500ms:
+
+```typescript
+// Huidige code (useLocationAudio.ts regel ~80)
+setTimeout(() => {
+  playAmbient();
+}, 500);
+```
+
+Als de component unmount **tijdens** deze 500ms delay (bijv. snelle navigatie), dan:
+1. De timeout callback wordt toch uitgevoerd
+2. `playAmbient()` wordt aangeroepen op een unmounted component
+3. Potentiële memory leak of stale audio
+
+**Oplossing:**
+Timeout cleanup toevoegen in useEffect cleanup:
+
+```typescript
+useEffect(() => {
+  let ambientTimeout: ReturnType<typeof setTimeout> | null = null;
+
+  // ... loading logic ...
+
+  ambientTimeout = setTimeout(() => {
+    playAmbient();
+  }, 500);
+
+  return () => {
+    if (ambientTimeout) {
+      clearTimeout(ambientTimeout);
+    }
+    stopAmbient();
+  };
+}, [/* deps */]);
+```
+
+**Gewijzigde bestanden:**
+- `src/hooks/useLocationAudio.ts`
+
+**Prioriteit:** Laag - alleen probleem bij zeer snelle navigatie (<500ms)
+
+### 27. Locatie Editor Verbeteringen (5.8)
 **Status:** Basis werkend, verbeteringen optioneel
 **Locatie:** `src/pages/LocationEditor.tsx`
 
@@ -500,7 +707,7 @@ const sensors = useSensors(
 - Optie 1: ZIP download met alle assets
 - Optie 2: Copy-paste instructies met file paths
 
-### 19. Eigen Samples Opnemen (5.5)
+### 28. Eigen Samples Opnemen (5.5)
 **Status:** Niet begonnen
 **Complexiteit:** ⭐⭐⭐⭐ Hoog
 
@@ -521,37 +728,29 @@ const sensors = useSensors(
 
 **Aanbeveling:** Implementeer pas na core features stabiel zijn.
 
-### 20. Digibord / Classroom Display Optimalisatie
-**Status:** Niet begonnen
-**Complexiteit:** ⭐⭐ Medium
+### 29. Digibord / Classroom Display Optimalisatie
+**Status:** Kleine verbetering doorgevoerd (2026-02-04)
+**Complexiteit:** ⭐ Laag
 **Bron:** Docent feedback groep 6 (2026-02-03) - "Moest instellingen digibord aanpassen voor alle tracks"
 
-**Probleem:**
-Op digiborden (interactieve schoolborden) zijn niet altijd alle 8 tracks zichtbaar. Docent moest display instellingen aanpassen.
+**Analyse (2026-02-04):**
+Na onderzoek blijkt de huidige weergave prima te werken. Alle 8 tracks zijn zichtbaar in de SubmissionPlayer modal. Waarschijnlijk was het originele probleem een eenmalige setup-issue (verkeerde resolutie, browser zoom, display mirroring).
 
-**Mogelijke oorzaken:**
-- Digiborden hebben vaak 4:3 of 16:10 aspect ratio (niet 16:9)
-- Timeline is geoptimaliseerd voor desktop/tablet, niet voor widescreen classroom displays
-- 8 tracks passen mogelijk niet in viewport
+**Kleine verbetering doorgevoerd:**
+- [x] SubmissionPlayer modal vergroot: `max-w-6xl` → `max-w-7xl` (1152px → 1280px)
 
-**Te onderzoeken:**
-- [ ] Test op verschillende aspect ratios (4:3, 16:10, 21:9)
-- [ ] Test op groot scherm (1920x1080+)
-- [ ] Check of alle tracks zichtbaar zijn in Teacher Dashboard
+**Niet nodig bevonden:**
+- Timeline scrollbaar maken - tracks passen prima
+- Dynamische track hoogte - vaste hoogte is duidelijker
+- Presentatiemodus - huidige modal is voldoende
 
-**Mogelijke oplossingen:**
-- [ ] Timeline scrollbaar maken als tracks niet passen
-- [ ] Compacte track weergave optie voor grote schermen
-- [ ] Auto-detect aspect ratio en layout aanpassen
-- [ ] "Presentatiemodus" met optimale weergave voor digibord
-
-**Notitie:** Digiborden worden vaak via HDMI/VGA aangesloten aan laptop. Resolutie kan afwijken van laptop scherm.
+**Locatie:** `src/components/teacher/SubmissionPlayer.tsx`
 
 ---
 
 ## 🟢 P4 - LAGE PRIORITEIT
 
-### 21. Extra Locaties (5.1 vervolg)
+### 30. Extra Locaties (5.1 vervolg)
 **Status:** Gedeeltelijk - Klaslokaal (≈School) al geïmplementeerd
 
 **Beschikbare locaties (5):**
@@ -573,7 +772,7 @@ Op digiborden (interactieve schoolborden) zijn niet altijd alle 8 tracks zichtba
 3. Hotspot configuratie (LocationEditor)
 4. Vertaling keys (NL + EN)
 
-### 22. Beat Ruler met Cijfers
+### 31. Beat Ruler met Cijfers
 **Status:** Niet begonnen
 **Complexiteit:** ⭐ Laag
 **Gerelateerd aan:** Playhead Scrubbing (#16)
@@ -590,7 +789,7 @@ De ruler strip boven de timeline toont momenteel alleen maatgrens-lijnen (elke 4
 
 **Notitie:** Ruler strip infrastructuur is al aanwezig door Playhead Scrubbing implementatie.
 
-### 23. Multiplayer (5.7)
+### 32. Multiplayer (5.7)
 **Status:** 🔄 GEPARKEERD
 **Complexiteit:** ⭐⭐⭐⭐⭐ Zeer hoog
 
@@ -606,7 +805,7 @@ De ruler strip boven de timeline toont momenteel alleen maatgrens-lijnen (elke 4
 
 ## ⚪ P5 - ZEER LAGE PRIORITEIT / PARKEREN
 
-### 23. Sample Effecten (5.4)
+### 33. Sample Effecten (5.4)
 **Status:** Type definities voorbereid, geen UI/audio implementatie
 **Gerelateerd aan:** Clip Trimming (P1 #12) - samen "Clip Editor" feature set
 
@@ -663,7 +862,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 
 ## Volgende Stappen
 
-### ✅ Voltooid (1-15)
+### ✅ Voltooid (1-16)
 1. ~~Locaties & Stadskaart~~ ✅
 2. ~~MP3 Export~~ ✅
 3. ~~Lokaal Opslaan + Beheren~~ ✅
@@ -679,24 +878,33 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 13. ~~Audio Loading Robuuster~~ ✅
 14. ~~Ambient Audio~~ ✅
 15. ~~Drag Offset Alignment~~ ✅
+16. ~~Playhead Seeking~~ ✅
+17. ~~Vereenvoudigde Transport Controls~~ ✅
+18. ~~Getrimde Clip Kopiëren/Dupliceren~~ ✅
 
 ### 🔴 Nu: P1
-*Geen P1 items - alle hoge prioriteit features zijn voltooid*
+- ~~Vereenvoudigde Transport Controls (#23)~~ ✅
+- Getrimde Clip Visuele Lengte bij Drag (#24)
+- ~~Getrimde Clip Kopiëren/Dupliceren (#25)~~ ✅
 
 ### 🟠 Daarna: P2
 - Thema Dropdown in UI (#13)
 - Delen met Link (#14)
 - Emergency Knop bij Foutmeldingen (#15)
 - Touch Gevoeligheid & Autoplay Issues (#16)
+- Real-time Geluiden Toevoegen tijdens Afspelen (#22) ← NIEUW
 
 ### 🟡 Later: P3
-- Locatie Editor Verbeteringen (#18)
-- Eigen Samples Opnemen (#19)
-- Digibord/Classroom Display Optimalisatie (#20)
+- Template Systeem voor Docenten (#21) ← NIEUW
+- Ambient Audio Timeout Cleanup (#26)
+- Locatie Editor Verbeteringen (#27)
+- Eigen Samples Opnemen (#28)
+- Digibord/Classroom Display Optimalisatie (#29)
 
 ### 🟢 Toekomst: P4
-- Extra Locaties (#21)
-- Multiplayer (#22)
+- Extra Locaties (#30)
+- Beat Ruler met Cijfers (#31)
+- Multiplayer (#32)
 
 ### ⚪ Backlog: P5
-- Sample Effecten (#23)
+- Sample Effecten (#33)
