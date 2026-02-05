@@ -543,27 +543,36 @@ CREATE TABLE shares (
 - Compositie data wordt gekopieerd (niet gelinkt aan gebruiker)
 - Automatische cleanup van verlopen shares (cron of on-access check)
 
-### 15. Emergency Knop bij Foutmeldingen
-**Status:** Niet begonnen
+### 15. Emergency/Feedback Systeem ✅
+**Status:** VOLTOOID (2026-02-05)
 **Complexiteit:** ⭐⭐ Medium
 **Bron:** Gebruiker feedback (2026-02-03)
+**Plan:** `docs/PLAN-EMERGENCY-FEEDBACK.md`
 
 **Beschrijving:**
-Wanneer er een foutmelding optreedt (audio laadt niet, netwerk error, etc.) moet er een duidelijke "noodknop" zijn waarmee gebruikers terug kunnen naar een werkende staat.
+Feedback systeem waarmee gebruikers problemen kunnen melden via EmailJS.
 
-**Te implementeren:**
-- [ ] Globale error boundary component
-- [ ] "Opnieuw proberen" knop bij laadfouten
-- [ ] "Terug naar start" emergency knop bij kritieke fouten
-- [ ] Duidelijke foutmeldingen in gebruikersvriendelijke taal
-- [ ] Logging van errors voor debugging
-- [ ] Graceful degradation bij gedeeltelijke failures
+**Geïmplementeerd:**
+- [x] FeedbackModal component met twee modi (error/feedback)
+- [x] ErrorBoundary integratie met "Stuur foutmelding" knop
+- [x] "Hulp nodig?" knop in StartScreen footer
+- [x] Categorie selectie (bug, confusion, other)
+- [x] Beschrijving veld met validatie (min 10 karakters)
+- [x] EmailJS integratie voor email verzending
+- [x] Rate limiting (60 seconden tussen submissions)
+- [x] Automatische context collectie (URL, browser, schermgrootte)
+- [x] i18n support (NL + EN)
 
-**UI/UX:**
-- Rode/oranje waarschuwingskleur voor error states
-- Grote, duidelijk zichtbare knoppen
-- Korte, begrijpelijke foutmeldingen (geen technische jargon)
-- Optie om "door te gaan" waar mogelijk
+**Nieuwe bestanden:**
+- `src/components/feedback/FeedbackService.ts`
+- `src/components/feedback/FeedbackModal.tsx`
+- `src/components/feedback/index.ts`
+
+**Gewijzigde bestanden:**
+- `src/components/common/ErrorBoundary.tsx` - FeedbackModal integratie
+- `src/components/StartScreen.tsx` - "Hulp nodig?" knop
+- `src/i18n/locales/nl.json` - feedback vertalingen
+- `src/i18n/locales/en.json` - feedback vertalingen
 
 ### 16. Touch Gevoeligheid & Autoplay Issues
 **Status:** Niet begonnen
@@ -869,7 +878,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 
 ## Volgende Stappen
 
-### ✅ Voltooid (1-19)
+### ✅ Voltooid (1-20)
 1. ~~Locaties & Stadskaart~~ ✅
 2. ~~MP3 Export~~ ✅
 3. ~~Lokaal Opslaan + Beheren~~ ✅
@@ -889,6 +898,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 17. ~~Vereenvoudigde Transport Controls~~ ✅
 18. ~~Getrimde Clip Kopiëren/Dupliceren~~ ✅
 19. ~~Getrimde Clip Visuele Lengte bij Drag~~ ✅
+20. ~~Emergency/Feedback Systeem~~ ✅
 
 ### 🔴 Nu: P1
 - ~~Vereenvoudigde Transport Controls (#23)~~ ✅
@@ -900,9 +910,9 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 ### 🟠 Daarna: P2
 - Thema Dropdown in UI (#13)
 - Delen met Link (#14)
-- Emergency Knop bij Foutmeldingen (#15)
+- ~~Emergency/Feedback Systeem (#15)~~ ✅
 - Touch Gevoeligheid & Autoplay Issues (#16)
-- Real-time Geluiden Toevoegen tijdens Afspelen (#22) ← NIEUW
+- Real-time Geluiden Toevoegen tijdens Afspelen (#22)
 
 ### 🟡 Later: P3
 - Template Systeem voor Docenten (#21) ← NIEUW

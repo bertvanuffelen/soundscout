@@ -590,6 +590,49 @@ const durationBeats =
 
 ---
 
+### Emergency/Feedback Systeem (#15) ✅ VOLTOOID
+
+Gebruikers kunnen problemen melden via twee modi:
+
+**1. Error Mode (bij crash)**
+- Automatisch getoond wanneer app crasht (via ErrorBoundary)
+- Toont error message, stack trace, component stack
+- "Stuur foutmelding" knop opent FeedbackModal
+- Gebruiker kan beschrijven wat ze deden + optioneel email
+
+**2. Feedback Mode (hulp nodig)**
+- "Hulp nodig?" knop in StartScreen footer (HelpCircle icoon)
+- Categorie selectie: bug, confusion, other
+- Beschrijving veld met validatie (min 10 karakters)
+
+**Features:**
+- EmailJS integratie voor email verzending
+- Rate limiting (60 seconden tussen submissions)
+- Input validatie
+- Automatische context collectie (URL, browser, schermgrootte)
+- i18n support (NL + EN)
+
+**Bestanden:**
+```
+src/components/feedback/
+├── index.ts              # Exports
+├── FeedbackModal.tsx     # Hoofd modal component
+└── FeedbackService.ts    # EmailJS integratie
+```
+
+**Configuratie:**
+```bash
+# .env.local
+VITE_EMAILJS_SERVICE_ID=service_xxx
+VITE_EMAILJS_TEMPLATE_ID=template_xxx
+VITE_EMAILJS_PUBLIC_KEY=xxx
+```
+
+**Belangrijke beperking:**
+React ErrorBoundary vangt alleen errors tijdens **rendering**, niet in event handlers. Errors in onClick handlers worden niet gevangen.
+
+---
+
 ### Drag Offset Alignment (#16) ✅ VOLTOOID
 
 Verbeterde drag-and-drop UX: één duidelijk visueel element tijdens slepen.
