@@ -121,6 +121,7 @@ export function StartScreen() {
             Ben je docent?
           </button>
         </div>
+
       </div>
 
       {/* Footer */}
