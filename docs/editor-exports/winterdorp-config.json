@@ -1,0 +1,161 @@
+{
+  "location": {
+    "id": "winterdorp",
+    "name": "locations.winterdorp.name",
+    "description": "locations.winterdorp.description",
+    "backgroundImage": "/images/themes/winterspelen/winterdorp.jpg",
+    "ambientAudio": "",
+    "hotspots": [
+      {
+        "id": "winterdorp-wakingup",
+        "x": 56,
+        "y": 36.3,
+        "radius": 8,
+        "sampleId": "winterdorp-wakingup",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "winterdorp-jumprope",
+        "x": 16.9,
+        "y": 81.4,
+        "radius": 8,
+        "sampleId": "winterdorp-jumprope",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "winterdorp-hospital",
+        "x": 89.5,
+        "y": 46.6,
+        "radius": 8,
+        "sampleId": "winterdorp-hospital",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "winterdorp-hond",
+        "x": 45.3,
+        "y": 87.1,
+        "radius": 8,
+        "sampleId": "winterdorp-hond",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "winterdorp-electric",
+        "x": 62,
+        "y": 68.9,
+        "radius": 8,
+        "sampleId": "winterdorp-electric",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "winterdorp-eating",
+        "x": 36.7,
+        "y": 38.1,
+        "radius": 8,
+        "sampleId": "winterdorp-eating",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "winterdorp-coffee",
+        "x": 12.1,
+        "y": 56.2,
+        "radius": 8,
+        "sampleId": "winterdorp-coffee",
+        "visualHint": "pulse"
+      }
+    ],
+    "unlocked": true
+  },
+  "i18n": {
+    "nl": {
+      "locations.winterdorp.name": "Winterdorp",
+      "locations.winterdorp.description": "",
+      "samples.winterdorp-wakingup": "Wakker wordne",
+      "samples.winterdorp-jumprope": "Touwtje springen",
+      "samples.winterdorp-hospital": "Zoekenhuis",
+      "samples.winterdorp-hond": "Hond",
+      "samples.winterdorp-electric": "electric",
+      "samples.winterdorp-eating": "eating",
+      "samples.winterdorp-coffee": "coffee"
+    },
+    "en": {
+      "locations.winterdorp.name": " Winter village",
+      "locations.winterdorp.description": "",
+      "samples.winterdorp-wakingup": "wakingup",
+      "samples.winterdorp-jumprope": "jumprope",
+      "samples.winterdorp-hospital": "hospital",
+      "samples.winterdorp-hond": "Dog",
+      "samples.winterdorp-electric": "electric",
+      "samples.winterdorp-eating": "eating",
+      "samples.winterdorp-coffee": "coffee"
+    }
+  },
+  "sampleStubs": [
+    {
+      "id": "winterdorp-wakingup",
+      "name": "samples.winterdorp-wakingup",
+      "locationId": "winterdorp",
+      "audioUrl": "/audio/themes/winterspelen/winterdorp/wakingup.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "winterdorp-jumprope",
+      "name": "samples.winterdorp-jumprope",
+      "locationId": "winterdorp",
+      "audioUrl": "/audio/themes/winterspelen/winterdorp/jumprope.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "winterdorp-hospital",
+      "name": "samples.winterdorp-hospital",
+      "locationId": "winterdorp",
+      "audioUrl": "/audio/themes/winterspelen/winterdorp/hospital.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "winterdorp-hond",
+      "name": "samples.winterdorp-hond",
+      "locationId": "winterdorp",
+      "audioUrl": "/audio/themes/winterspelen/winterdorp/hond.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "winterdorp-electric",
+      "name": "samples.winterdorp-electric",
+      "locationId": "winterdorp",
+      "audioUrl": "/audio/themes/winterspelen/winterdorp/electric.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "winterdorp-eating",
+      "name": "samples.winterdorp-eating",
+      "locationId": "winterdorp",
+      "audioUrl": "/audio/themes/winterspelen/winterdorp/eating.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "winterdorp-coffee",
+      "name": "samples.winterdorp-coffee",
+      "locationId": "winterdorp",
+      "audioUrl": "/audio/themes/winterspelen/winterdorp/coffee.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-10T08:15:40.188Z",
+    "note": "Fill in duration, icon, and color for each sample manually"
+  }
+}

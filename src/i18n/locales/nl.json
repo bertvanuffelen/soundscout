@@ -12,37 +12,57 @@
     "title": "Kies een locatie",
     "selectLocation": "Klik op een locatie om te verkennen"
   },
+  "themeSelection": {
+    "title": "Kies je wereld",
+    "subtitle": "In welke wereld wil je geluiden ontdekken?",
+    "select": "Kiezen"
+  },
   "themes": {
     "basis": {
       "name": "Standaard",
-      "description": "Het basis thema met de boerderij"
-    },
-    "test-metro": {
-      "name": "Metro (Test)",
-      "description": "Test thema met metrostation"
+      "description": "Boerderij, speeltuin, gymzaal en meer"
     },
     "winterspelen": {
       "name": "Winterspelen",
-      "description": "Winter thema met sneeuw en ijs",
+      "description": "Skipiste, bobslee en ijsarena",
       "locations": {
         "winterdorp": "Winterdorp",
         "winterdorp_desc": "Een gezellig winterdorp",
-        "bobsleebaan": "Bobsleebaan",
-        "bobsleebaan_desc": "De snelste baan",
+        "bobslee": "Bobslee baan",
+        "bobslee_desc": "De snelste baan",
         "skipiste": "Skipiste",
         "skipiste_desc": "De bergen in!",
         "ijsarena": "IJsarena",
         "ijsarena_desc": "Schaatsen op het ijs"
       },
       "samples": {
-        "placeholder1": "Geluid 1",
-        "placeholder2": "Geluid 2",
+        "winterdorp-wakingup": "Wakker worden",
+        "winterdorp-jumprope": "Touwtje springen",
+        "winterdorp-hospital": "Ziekenhuis",
+        "winterdorp-hond": "Hond",
+        "winterdorp-electric": "Elektrisch",
+        "winterdorp-eating": "Eten",
+        "winterdorp-coffee": "Koffie",
         "skipiste-publiek": "Publiek",
         "skipiste-robot-beeps": "Beeps",
         "skipiste-snowboard": "Snowboard",
         "skipiste-stoeltjeslift": "Stoeltjeslift",
         "skipiste-schans": "Schans",
-        "skipiste-ski-raket": "Raket"
+        "skipiste-ski-raket": "Raket",
+        "bobslee-kapot": "Kapot",
+        "bobslee-reparatie": "Reparatie",
+        "bobslee-ziekenboeg": "Ziekenboeg",
+        "bobslee-drone": "Drone",
+        "bobslee-curlingisnext": "Curling is next",
+        "bobslee-bobslee": "Bobslee",
+        "ijsarena-go-team-robo": "Robo",
+        "ijsarena-alarm": "Alarm",
+        "ijsarena-brancard": "Brancard",
+        "ijsarena-juichen": "Juichen",
+        "ijsarena-lamp": "Lamp",
+        "ijsarena-werkplaats": "Werkplaats",
+        "ijsarena-puck": "Puck",
+        "ijsarena-wagen": "Wagen"
       }
     }
   },

@@ -8,10 +8,12 @@ import { FolderOpen, Info, HelpCircle, Instagram, Facebook, Linkedin, Youtube } 
 import { useGameStore } from '../stores/gameStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
+import { useThemeStore } from '../stores/themeStore';
 import { useAudioEngine } from '../hooks/useAudioEngine';
 import { storageService } from '../services/StorageService';
 import { Button, Modal } from './ui';
 import { FeedbackModal } from './feedback';
+import { ThemeSelectionModal } from './ThemeSelectionModal';
 import { logger } from '../utils/logger';
 
 export function StartScreen() {
@@ -21,12 +23,14 @@ export function StartScreen() {
   const goToTeacher = useGameStore((s) => s.goToTeacher);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
+  const setTheme = useThemeStore((s) => s.setTheme);
   const { initAudio } = useAudioEngine();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
+  const [showThemeSelection, setShowThemeSelection] = useState(false);
   const [hasCompositions, setHasCompositions] = useState(false);
 
   // Check if there are saved compositions
@@ -35,17 +39,28 @@ export function StartScreen() {
     setHasCompositions(compositions.length > 0);
   }, []);
 
-  const handleNewComposition = async () => {
+  const handleNewComposition = () => {
+    // Show theme selection modal
+    setShowThemeSelection(true);
+  };
+
+  const handleSelectTheme = async (themeId: string) => {
     setIsLoading(true);
+    // Set the selected theme
+    setTheme(themeId);
     // Always start fresh with empty timeline and library
     clearAllTracks();
     clearLibrary();
     try {
       await initAudio();
+      setShowThemeSelection(false);
       goToMap();
     } catch {
       logger.warn('Audio initialization failed, continuing anyway.');
+      setShowThemeSelection(false);
       goToMap();
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -242,6 +257,14 @@ export function StartScreen() {
         isOpen={showFeedback}
         onClose={() => setShowFeedback(false)}
         mode="feedback"
+      />
+
+      {/* Theme selection modal */}
+      <ThemeSelectionModal
+        isOpen={showThemeSelection}
+        onClose={() => setShowThemeSelection(false)}
+        onSelectTheme={handleSelectTheme}
+        isLoading={isLoading}
       />
     </div>
   );

@@ -920,7 +920,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 - Locatie Editor Verbeteringen (#27)
 - Eigen Samples Opnemen (#28)
 - Digibord/Classroom Display Optimalisatie (#29)
-- Sample Wis Knop UI Aanpassen (#34) ← NIEUW
+- ~~Sample Wis Knop UI Aanpassen (#34)~~ ✅
 
 ### 🟢 Toekomst: P4
 - Extra Locaties (#30)

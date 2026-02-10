@@ -13,7 +13,7 @@ export const winterspelenTheme: ThemeConfig = {
   id: 'winterspelen',
   name: 'themes.winterspelen.name',
   description: 'themes.winterspelen.description',
-  isPublic: false, // Set to true when ready for public use
+  isPublic: true,
 
   locations,
   samples,

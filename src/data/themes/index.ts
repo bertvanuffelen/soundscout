@@ -7,7 +7,6 @@
 
 import type { ThemeConfig } from './types';
 import { basisTheme } from './basis';
-import { testMetroTheme } from './test-metro';
 import { winterspelenTheme } from './winterspelen';
 
 // Export types
@@ -19,7 +18,6 @@ export type { ThemeConfig, MapConfig, LocationPosition, ThemeColors } from './ty
  */
 const themes: Record<string, ThemeConfig> = {
   basis: basisTheme,
-  'test-metro': testMetroTheme,
   winterspelen: winterspelenTheme,
 };
 
