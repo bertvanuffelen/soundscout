@@ -487,27 +487,30 @@ Clips kunnen nu worden gedupliceerd inclusief alle trim settings. De gedupliceer
 
 ## 🟠 P2 - HOGE PRIORITEIT
 
-### 13. Thema Dropdown in UI (5.9)
-**Status:** Architectuur gereed, alleen UI mist
-**Complexiteit:** ⭐ Laag (1-2 uur)
+### 13. Thema Selectie Modal ✅
+**Status:** VOLTOOID (2026-02-10)
+**Complexiteit:** ⭐⭐ Medium
 
-**Wat al werkt:**
-- [x] URL parameter `?theme=xxx` volledig functioneel
-- [x] Theme config structuur in `src/data/themes/`
-- [x] 2 themes beschikbaar: `basis`, `test-metro`
-- [x] `getPublicThemes()` functie geëxporteerd
-- [x] Documentatie: `docs/NIEUWE-LOCATIE-THEMA.md`
+**Beschrijving:**
+Bij "Nieuwe compositie" opent nu een modal met visuele kaartjes van alle beschikbare thema's. Gebruiker klikt op een thema om te starten.
 
-**Nog te doen:**
-- [ ] Dropdown/selector toevoegen aan StartScreen
-- [ ] Gebruik `getPublicThemes()` voor opties
-- [ ] URL parameter updaten bij selectie
-- [ ] Huidige theme highlighten in dropdown
+**Geïmplementeerd:**
+- [x] `ThemeSelectionModal.tsx` component
+- [x] Grid layout met kaartjes (map preview + titel + beschrijving)
+- [x] Hover effect met "Kiezen" knop overlay
+- [x] Modal wordt geopend vanuit StartScreen
+- [x] Na selectie: `setTheme()` → `goToMap()`
+- [x] `winterspelen` thema nu publiek (isPublic: true)
+- [x] `test-metro` thema verwijderd
+- [x] Vertalingen NL + EN
 
-**Implementatie notities:**
-- `getPublicThemes()` retourneert array van `{ id, name }` objecten
-- Dropdown kan verborgen blijven als er maar 1 theme is
-- Overweeg: radio buttons i.p.v. dropdown voor betere mobile UX
+**Gewijzigde/nieuwe bestanden:**
+- `src/components/ThemeSelectionModal.tsx` (nieuw)
+- `src/components/StartScreen.tsx` - modal state + trigger
+- `src/data/themes/index.ts` - test-metro verwijderd
+- `src/data/themes/winterspelen/index.ts` - isPublic: true
+- `src/i18n/locales/nl.json` - themeSelection keys
+- `src/i18n/locales/en.json` - themeSelection keys
 
 ### 14. Delen met Link (4.3)
 **Status:** Niet begonnen
@@ -908,7 +911,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 **Alle P1 items voltooid!** 🎉
 
 ### 🟠 Daarna: P2
-- Thema Dropdown in UI (#13)
+- ~~Thema Selectie Modal (#13)~~ ✅
 - Delen met Link (#14)
 - ~~Emergency/Feedback Systeem (#15)~~ ✅
 - Touch Gevoeligheid & Autoplay Issues (#16)
