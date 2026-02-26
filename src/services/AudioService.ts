@@ -527,9 +527,20 @@ class AudioService {
 
   stop(): void {
     const transport = Tone.getTransport();
+    // Cancel all scheduled events FIRST to prevent lookahead-buffered
+    // player.start() calls from firing after transport.stop()
+    transport.cancel();
     transport.stop();
     transport.seconds = 0;
-    this.stopAllSamples();
+    // Force-stop all players regardless of state (covers edge cases
+    // where a player was scheduled but not yet in 'started' state)
+    this.players.forEach((player) => {
+      try {
+        player.stop();
+      } catch {
+        // Player may not be started - ignore
+      }
+    });
     this.stopPlayheadUpdates();
     // Notify listeners that we're back at beat 0
     this.beatUpdateCallbacks.forEach((cb) => cb(0));
