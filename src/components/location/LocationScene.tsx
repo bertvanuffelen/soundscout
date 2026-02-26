@@ -75,13 +75,13 @@ export function LocationScene() {
   // Handlers
   const handleCollect = useCallback(
     (sample: Sample) => {
-      playSample(sample.id);
+      // No playSample() here — hover/touch preview already plays the sound
       const added = addToRecorder(sample);
       if (added && isRecorderFull()) {
         setShowFullModal(true);
       }
     },
-    [playSample, addToRecorder, isRecorderFull]
+    [addToRecorder, isRecorderFull]
   );
 
   const handleEject = useCallback(
