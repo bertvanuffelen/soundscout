@@ -654,52 +654,33 @@ Docenten kunnen een "template" compositie klaarzetten die leerlingen als startpu
 - Leerling flow aanpassen: check of klas een template heeft
 - Kopieer template data naar nieuwe compositie bij start
 
-### 26. Ambient Audio Timeout Cleanup (CRIT-3)
-**Status:** Gedocumenteerd, niet urgent
+### 26. Ambient Audio Cleanup & Pause/Stop Fix (CRIT-3) ✅
+**Status:** VOLTOOID (2026-02-26)
 **Complexiteit:** ⭐ Laag
-**Bron:** Code analyse (2026-02-04)
+**Bron:** Code analyse (2026-02-04) + gebruiker feedback (2026-02-26)
 
-**Probleem:**
-In `LocationScene.tsx` wordt ambient audio gestart met een `setTimeout` van 500ms:
+**Problemen (opgelost):**
+1. Als component unmount terwijl `loadAmbient()` nog bezig was, werd `playAmbient()` toch aangeroepen
+2. Pause knop stopte lopende samples niet — Tone.Players spelen onafhankelijk van transport door
+3. Stop knop had zelfde probleem door lookahead-buffered events
 
-```typescript
-// Huidige code (useLocationAudio.ts regel ~80)
-setTimeout(() => {
-  playAmbient();
-}, 500);
-```
+**Oplossingen:**
 
-Als de component unmount **tijdens** deze 500ms delay (bijv. snelle navigatie), dan:
-1. De timeout callback wordt toch uitgevoerd
-2. `playAmbient()` wordt aangeroepen op een unmounted component
-3. Potentiële memory leak of stale audio
+**Ambient cleanup (`useLocationAudio.ts`):**
+- `cancelled` flag toegevoegd in ambient useEffect
+- `playAmbient()` wordt niet aangeroepen als `cancelled = true`
 
-**Oplossing:**
-Timeout cleanup toevoegen in useEffect cleanup:
+**Pause fix (`AudioService.ts`):**
+- Alle players worden nu gestopt bij `pause()` (net als bij stop)
+- Bij resume: `handlePlay()` doet altijd `scheduleTimeline()` + `startActiveClips()` opnieuw
 
-```typescript
-useEffect(() => {
-  let ambientTimeout: ReturnType<typeof setTimeout> | null = null;
-
-  // ... loading logic ...
-
-  ambientTimeout = setTimeout(() => {
-    playAmbient();
-  }, 500);
-
-  return () => {
-    if (ambientTimeout) {
-      clearTimeout(ambientTimeout);
-    }
-    stopAmbient();
-  };
-}, [/* deps */]);
-```
+**Stop fix (`AudioService.ts`):**
+- `transport.cancel()` vóór `transport.stop()` om lookahead buffer te wissen
+- Force-stop alle players zonder state check
 
 **Gewijzigde bestanden:**
-- `src/hooks/useLocationAudio.ts`
-
-**Prioriteit:** Laag - alleen probleem bij zeer snelle navigatie (<500ms)
+- `src/hooks/useLocationAudio.ts` - cancelled flag in ambient useEffect
+- `src/services/AudioService.ts` - pause() en stop() stoppen nu alle players
 
 ### 27. Locatie Editor Verbeteringen (5.8)
 **Status:** Basis werkend, verbeteringen optioneel
@@ -919,7 +900,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 
 ### 🟡 Later: P3
 - Template Systeem voor Docenten (#21)
-- Ambient Audio Timeout Cleanup (#26)
+- ~~Ambient Audio Cleanup & Pause/Stop Fix (#26)~~ ✅
 - Locatie Editor Verbeteringen (#27)
 - Eigen Samples Opnemen (#28)
 - Digibord/Classroom Display Optimalisatie (#29)

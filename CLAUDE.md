@@ -287,7 +287,41 @@ All components use Tailwind `sm:` breakpoint (640px) for mobile/desktop distinct
 | `docs/responsive-design-analysis.md` | Responsive design patterns and implementation |
 | `soundscout-prd.md` | Product requirements document |
 
-## Recent Updates (2026-02-05)
+## Recent Updates (2026-02-26)
+
+### Theme Selection Modal (#13) ✅ VOLTOOID
+
+Bij "Nieuwe compositie" opent nu een modal met visuele kaartjes van beschikbare thema's.
+
+**Wijzigingen:**
+- `ThemeSelectionModal.tsx` — Grid van thema kaartjes met map preview + titel + beschrijving
+- `StartScreen.tsx` — Modal state, `handleSelectTheme()` roept `setTheme()` → `goToMap()` aan
+- `winterspelen` thema nu publiek (`isPublic: true`)
+- `test-metro` thema verwijderd
+- Vertalingen NL + EN (`themeSelection.*` keys)
+
+**Flow:** StartScreen → "Nieuwe compositie" → ThemeSelectionModal → kies thema → MapView
+
+---
+
+### Ambient Audio Cleanup & Pause/Stop Fix (#26) ✅ VOLTOOID
+
+Drie gerelateerde audio bugs opgelost:
+
+**1. Ambient audio na unmount:**
+`useLocationAudio.ts` — `cancelled` flag in ambient useEffect voorkomt dat `playAmbient()` wordt aangeroepen na component unmount.
+
+**2. Pause stopt samples niet:**
+`AudioService.pause()` — Alle players worden nu gestopt. Bij resume doet `handlePlay()` altijd `scheduleTimeline()` + `startActiveClips()` opnieuw.
+
+**3. Stop lookahead race condition:**
+`AudioService.stop()` — `transport.cancel()` vóór `transport.stop()` wist de lookahead buffer. Force-stop alle players zonder state check.
+
+**Kritieke Tone.js inzicht:** `Tone.Player.start(time, offset, duration)` speelt onafhankelijk van de transport door. `transport.pause()` of `transport.stop()` stopt de klok maar niet de al-gestarte players.
+
+---
+
+## Updates (2026-02-05)
 
 ### Playhead Seeking (#17) ✅ VOLTOOID
 
