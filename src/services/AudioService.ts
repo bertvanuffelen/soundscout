@@ -522,6 +522,16 @@ class AudioService {
   pause(): void {
     const transport = Tone.getTransport();
     transport.pause();
+    // Stop all currently playing samples — they continue independently
+    // of the transport once started. On resume, handlePlay re-schedules
+    // everything and startActiveClips() restarts from the paused position.
+    this.players.forEach((player) => {
+      try {
+        player.stop();
+      } catch {
+        // Player may not be started - ignore
+      }
+    });
     this.stopPlayheadUpdates();
   }
 
