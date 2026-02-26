@@ -142,15 +142,18 @@ export function useLocationAudio({
   useEffect(() => {
     if (!ambientUrl) return;
 
+    let cancelled = false;
+
     // Load and play ambient audio
     loadAmbient(ambientUrl).then((success) => {
-      if (success) {
+      if (success && !cancelled) {
         playAmbient();
       }
     });
 
-    // Cleanup: stop ambient with fade
+    // Cleanup: stop ambient with fade, prevent late playAmbient call
     return () => {
+      cancelled = true;
       stopAmbient();
     };
   }, [ambientUrl, loadAmbient, playAmbient, stopAmbient]);
