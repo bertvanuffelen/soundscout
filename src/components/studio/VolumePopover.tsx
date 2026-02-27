@@ -3,6 +3,10 @@
  *
  * Used for both track-level and clip-level volume control.
  * Renders as a small floating panel with a horizontal slider and mute button.
+ *
+ * The slider operates in PERCENTAGE space (0–200%) for intuitive UX:
+ *   0% = silent, 100% = normal (center), 200% = boosted
+ * Internally, values are stored in dB and converted at the boundary.
  */
 
 import { memo, useRef, useEffect, useCallback } from 'react';
@@ -10,10 +14,27 @@ import { useTranslation } from 'react-i18next';
 import { Volume2, VolumeX } from 'lucide-react';
 import {
   VOLUME_MIN_DB,
-  VOLUME_MAX_DB,
   VOLUME_DEFAULT_DB,
-  VOLUME_STEP_DB,
 } from '../../constants/config';
+
+// --- Conversion helpers ---
+
+/** Convert dB to percentage (0 dB = 100%) */
+function dbToPercent(db: number): number {
+  if (db <= VOLUME_MIN_DB) return 0;
+  return Math.round(Math.pow(10, db / 20) * 100);
+}
+
+/** Convert percentage to dB (100% = 0 dB). Clamps to VOLUME_MIN_DB at 0%. */
+function percentToDb(percent: number): number {
+  if (percent <= 0) return VOLUME_MIN_DB;
+  return 20 * Math.log10(percent / 100);
+}
+
+// Slider constants (in percentage space)
+const SLIDER_MIN = 0;
+const SLIDER_MAX = 200;
+const SLIDER_STEP = 5;
 
 interface VolumePopoverProps {
   /** Current volume in dB */
@@ -67,19 +88,22 @@ export const VolumePopover = memo(function VolumePopover({
     return () => document.removeEventListener('keydown', handleKeyDown);
   }, [onClose]);
 
+  // Convert dB → percentage for the slider
+  const sliderPercent = dbToPercent(volumeDb);
+
+  // Slider change: convert percentage → dB and propagate
   const handleSliderChange = useCallback(
     (e: React.ChangeEvent<HTMLInputElement>) => {
-      onVolumeChange(Number(e.target.value));
+      const percent = Number(e.target.value);
+      onVolumeChange(percentToDb(percent));
     },
     [onVolumeChange],
   );
 
+  // Reset to 100% (0 dB)
   const handleReset = useCallback(() => {
     onVolumeChange(VOLUME_DEFAULT_DB);
   }, [onVolumeChange]);
-
-  // Display as percentage (0 dB = 100%)
-  const displayPercent = Math.round(Math.pow(10, volumeDb / 20) * 100);
 
   return (
     <div
@@ -95,7 +119,7 @@ export const VolumePopover = memo(function VolumePopover({
           {label}
         </span>
         <span className="text-[10px] text-neutral-400 tabular-nums ml-2">
-          {isMuted ? t('studio.muted') : `${displayPercent}%`}
+          {isMuted ? t('studio.muted') : `${sliderPercent}%`}
         </span>
       </div>
 
@@ -118,19 +142,19 @@ export const VolumePopover = memo(function VolumePopover({
           {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
         </button>
 
-        {/* Volume slider */}
+        {/* Volume slider — operates in percentage space (0–200%) */}
         <input
           type="range"
-          min={VOLUME_MIN_DB}
-          max={VOLUME_MAX_DB}
-          step={VOLUME_STEP_DB}
-          value={volumeDb}
+          min={SLIDER_MIN}
+          max={SLIDER_MAX}
+          step={SLIDER_STEP}
+          value={sliderPercent}
           onChange={handleSliderChange}
           onDoubleClick={handleReset}
           aria-label={t('studio.volume')}
-          aria-valuemin={VOLUME_MIN_DB}
-          aria-valuemax={VOLUME_MAX_DB}
-          aria-valuenow={volumeDb}
+          aria-valuemin={SLIDER_MIN}
+          aria-valuemax={SLIDER_MAX}
+          aria-valuenow={sliderPercent}
           className={`
             flex-1 h-1.5 rounded-full appearance-none cursor-pointer
             bg-neutral-200 accent-accent-500
