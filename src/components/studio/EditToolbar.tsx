@@ -54,35 +54,35 @@ export const EditToolbar = memo(function EditToolbar({
         </span>
       </div>
 
-      {/* Action buttons */}
-      <div className="flex items-center gap-0.5">
+      {/* Action buttons — min 44px touch targets (WCAG 2.5.8) */}
+      <div className="flex items-center gap-1">
         {/* Trim button */}
         <button
           onClick={onTrim}
-          className="p-1.5 hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
           title={t('studio.trim')}
         >
-          <Scissors size={16} className="text-neutral-600" />
+          <Scissors size={18} className="text-neutral-600" />
         </button>
 
         {/* Duplicate button (optional) */}
         {onDuplicate && (
           <button
             onClick={onDuplicate}
-            className="p-1.5 hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
             title={t('studio.duplicate')}
           >
-            <Copy size={16} className="text-neutral-600" />
+            <Copy size={18} className="text-neutral-600" />
           </button>
         )}
 
         {/* Delete button */}
         <button
           onClick={onDelete}
-          className="p-1.5 hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors"
+          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors"
           title={t('studio.delete')}
         >
-          <Trash2 size={16} className="text-error-500" />
+          <Trash2 size={18} className="text-error-500" />
         </button>
       </div>
     </div>

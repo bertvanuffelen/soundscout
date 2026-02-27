@@ -19,9 +19,10 @@ i18n.use(initReactI18next).init({
   },
 });
 
-// Save language preference on change
+// Save language preference on change + sync document lang attribute
 i18n.on('languageChanged', (lng) => {
   localStorage.setItem(LANG_KEY, lng);
+  document.documentElement.lang = lng;
 });
 
 export default i18n;

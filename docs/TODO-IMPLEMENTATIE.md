@@ -883,24 +883,10 @@ Geen mocking nodig, puur input → output.
 > **Score: 6.5/10** — Goede flows, maar ontbrekende error prevention en bekrachtiging.
 > Bron: UX/UI analyse rapport (2026-02-27)
 
-#### UX-1. Waarschuwing bij verlaten Studio zonder opslaan ⚠️ KRITIEK
-**Status:** Niet begonnen
-**Effort:** Klein (1-2 uur)
-**Impact:** Data verlies preventie — kind verliest alle arrangementen bij per ongeluk terug klikken
+#### UX-1. Waarschuwing bij verlaten Studio zonder opslaan — ❌ NIET NODIG
+**Status:** Verwijderd (2026-02-27)
 
-**Probleem:** `handleBack()` in StudioView.tsx (lijn 88-91) navigeert direct naar map zonder confirmatie.
-
-**Oplossing:**
-```typescript
-const handleBack = () => {
-  const hasClips = useTimelineStore.getState().tracks.some(t => t.clips.length > 0);
-  if (hasClips) {
-    setShowExitWarning(true); // Modal: "Je muziek gaat verloren! Eerst opslaan?"
-  } else {
-    navigateToMap();
-  }
-};
-```
+**Reden:** Timeline state (Zustand store) blijft bewaard bij navigatie. Kinderen kunnen terug naar de kaart, een locatie bezoeken om meer geluiden te verzamelen, en terugkeren naar de studio zonder hun arrangement te verliezen. State wordt alleen gewist bij expliciet "Nieuwe compositie" starten of een opgeslagen compositie openen.
 
 #### UX-2. Undo/Redo functionaliteit (Ctrl+Z / Ctrl+Shift+Z)
 **Status:** Niet begonnen
@@ -959,23 +945,19 @@ interface TimelineState {
 
 **Oplossing:** Auto-collapse lege tracks, toon initieel 2-3 tracks. Tracks verschijnen automatisch wanneer clips worden toegevoegd.
 
-#### UX-6. StageView knoppen hiërarchie
-**Status:** Niet begonnen
+#### UX-6. StageView knoppen hiërarchie — ❌ VERWIJDERD
+**Status:** Verwijderd (2026-02-27)
+
+**Reden:** Huidige knoppen-layout is voldoende. Geen prioriteit.
+
+#### UX-7. EditToolbar knoppen vergroten ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (30 min)
-**Impact:** Duidelijker primaire actie
 
-**Probleem:** Save, Export, Share Link, Share Teacher zijn allemaal even groot/prominent.
-
-**Oplossing:** "Opslaan" als primaire knop (groter, accent kleur), overige als secondary/ghost.
-
-#### UX-7. EditToolbar knoppen vergroten
-**Status:** Niet begonnen
-**Effort:** Klein (30 min)
-**Impact:** Betere touch targets voor fijne motoriek kinderen
-
-**Probleem:** Icon buttons ~32px (p-1.5 = 6px padding + 16px icon).
-
-**Oplossing:** Vergroot naar minimaal 40-44px clickable area (WCAG minimum).
+- [x] Touch targets vergroot naar 44px minimum (WCAG 2.5.8)
+- [x] Padding `p-1.5` → `p-2.5`, icon size 16 → 18px
+- [x] `min-w-[44px] min-h-[44px]` op alle action buttons
+- [x] Timeline hoogte ongewijzigd
 
 #### UX-8. Klascode projector-modus (docent)
 **Status:** Niet begonnen
@@ -1167,13 +1149,12 @@ build: {
 - [ ] `srcset` voor responsive image loading
 - [ ] Optioneel: blur-up placeholder voor locatie-achtergronden
 
-#### PERF-5. Timeline grid memoization
-**Status:** Niet begonnen
+#### PERF-5. Timeline grid memoization ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (30 min)
 
-**Probleem:** gridLines array + widthMultiplier herberekend elke 50ms (bij elke currentBeat update).
-
-**Oplossing:** `useMemo()` met dependency op `totalBeats` (niet `currentBeat`).
+- [x] `gridLines` array gewrapt in `useMemo()` met dependency `[totalBeats]`
+- [x] Wordt niet meer 20x/sec herberekend tijdens playback
 
 ---
 
@@ -1238,18 +1219,12 @@ build: {
 AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
 ```
 
-#### DEPLOY-4. Fix `<html lang="nl">`
-**Status:** Niet begonnen
+#### DEPLOY-4. Fix `<html lang="nl">` ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (15 min)
 
-**Probleem:** `<html lang="en">` terwijl app standaard Nederlands is.
-
-**Oplossing:** Wijzig naar `lang="nl"` + dynamisch bijwerken bij taalwissel in i18n config:
-```typescript
-i18n.on('languageChanged', (lng) => {
-  document.documentElement.lang = lng;
-});
-```
+- [x] `index.html`: `lang="en"` → `lang="nl"`
+- [x] `i18n/index.ts`: `document.documentElement.lang = lng` bij taalwissel
 
 #### DEPLOY-5. Content Security Policy (CSP)
 **Status:** Niet begonnen

@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect, useCallback } from 'react';
+import { memo, useRef, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Track as TrackType, Sample } from '../../types';
 import { Track } from './Track';
@@ -50,8 +50,11 @@ export const Timeline = memo(function Timeline({
   const widthMultiplier = totalBeats / VISIBLE_BEATS;
   const playheadPercent = (currentBeat / totalBeats) * 100;
 
-  // Generate grid lines (one per beat)
-  const gridLines = Array.from({ length: totalBeats + 1 }, (_, i) => i);
+  // Generate grid lines (one per beat) — memoized since totalBeats rarely changes
+  const gridLines = useMemo(
+    () => Array.from({ length: totalBeats + 1 }, (_, i) => i),
+    [totalBeats],
+  );
 
   // Auto-scroll to follow playhead during playback
   useEffect(() => {
