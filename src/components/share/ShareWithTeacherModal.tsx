@@ -8,6 +8,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Check, Send, PartyPopper, AlertCircle, Bird } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { submitComposition, validateClassCode } from '../../lib/submissions';
@@ -27,6 +28,7 @@ export function ShareWithTeacherModal({
   onClose,
   onSuccess,
 }: ShareWithTeacherModalProps) {
+  const { t } = useTranslation();
   const [step, setStep] = useState<Step>('code');
   const [classCode, setClassCode] = useState('');
   const [className, setClassName] = useState('');
@@ -43,7 +45,7 @@ export function ShareWithTeacherModal({
     // Validatie: 4 cijfers
     const cleanCode = classCode.trim();
     if (!/^\d{4}$/.test(cleanCode)) {
-      setError('Voer een geldige 4-cijferige code in');
+      setError(t('teacher.shareWithTeacher.invalidCode'));
       return;
     }
 
@@ -52,7 +54,7 @@ export function ShareWithTeacherModal({
       const classInfo = await validateClassCode(cleanCode);
 
       if (!classInfo) {
-        setError('Deze klas-code bestaat niet. Controleer de code en probeer opnieuw.');
+        setError(t('teacher.shareWithTeacher.classNotFound'));
         return;
       }
 
@@ -60,7 +62,7 @@ export function ShareWithTeacherModal({
       setTeacherName(classInfo.teacher_name);
       setStep('name');
     } catch (err) {
-      setError('Kon klas niet controleren. Probeer opnieuw.');
+      setError(t('teacher.shareWithTeacher.sendError'));
     }
   };
 
@@ -86,7 +88,7 @@ export function ShareWithTeacherModal({
         onSuccess();
       }, 3000);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Er ging iets mis');
+      setError(err instanceof Error ? err.message : t('teacher.validation.genericError'));
       setStep('error');
     }
   };
@@ -103,7 +105,7 @@ export function ShareWithTeacherModal({
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-800">
-            Deel met docent
+            {t('teacher.shareWithTeacher.title')}
           </h2>
           {step !== 'sending' && (
             <button
@@ -118,8 +120,9 @@ export function ShareWithTeacherModal({
         {/* Step 1: Code invoeren */}
         {step === 'code' && (
           <form onSubmit={handleCodeSubmit}>
+            <h3 className="font-medium text-gray-800 mb-2">{t('teacher.shareWithTeacher.step1Title')}</h3>
             <p className="text-gray-600 mb-4">
-              Voer de klas-code in die je van je docent hebt gekregen.
+              {t('teacher.shareWithTeacher.step1Description')}
             </p>
 
             {error && (
@@ -130,7 +133,7 @@ export function ShareWithTeacherModal({
 
             <div className="mb-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
-                Klas-code (4 cijfers)
+                {t('teacher.shareWithTeacher.codePlaceholder')}
               </label>
               <input
                 type="text"
@@ -151,7 +154,7 @@ export function ShareWithTeacherModal({
                 onClick={onClose}
                 className="flex-1"
               >
-                Annuleren
+                {t('common.cancel')}
               </Button>
               <Button
                 type="submit"
@@ -160,7 +163,7 @@ export function ShareWithTeacherModal({
                 disabled={classCode.length !== 4}
                 className="flex-1"
               >
-                Volgende
+                {t('teacher.shareWithTeacher.next')}
               </Button>
             </div>
           </form>
@@ -169,16 +172,18 @@ export function ShareWithTeacherModal({
         {/* Step 2: Naam invoeren */}
         {step === 'name' && (
           <form onSubmit={handleNameSubmit}>
+            <h3 className="font-medium text-gray-800 mb-2">{t('teacher.shareWithTeacher.step2Title')}</h3>
             <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
               <p className="font-medium flex items-center gap-1">
                 <Check className="w-4 h-4" />
-                Klas gevonden!
+                {t('teacher.shareWithTeacher.step2Title')}
               </p>
-              <p className="text-sm">{className} van {teacherName}</p>
+              <p className="text-sm">{t('teacher.shareWithTeacher.className')}: {className}</p>
+              <p className="text-sm">{t('teacher.shareWithTeacher.teacherName')}: {teacherName}</p>
             </div>
 
             <p className="text-gray-600 mb-4">
-              Hoe heet je? (niet verplicht)
+              {t('teacher.shareWithTeacher.yourName')}
             </p>
 
             <div className="mb-2">
@@ -186,14 +191,14 @@ export function ShareWithTeacherModal({
                 type="text"
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
-                placeholder="Je naam..."
+                placeholder={t('teacher.shareWithTeacher.namePlaceholder')}
                 className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all text-gray-900 placeholder:text-gray-400"
                 autoFocus
               />
             </div>
 
             <p className="text-gray-400 text-sm mb-6 flex items-center gap-1 flex-wrap">
-              Geen naam invullen? Dan krijg je een grappige naam zoals "Vrolijke Papegaai"
+              {t('teacher.shareWithTeacher.namePlaceholder')}
               <Bird className="w-4 h-4 text-amber-500" />
             </p>
 
@@ -205,7 +210,7 @@ export function ShareWithTeacherModal({
                 onClick={() => setStep('code')}
                 className="flex-1"
               >
-                Terug
+                {t('common.back')}
               </Button>
               <Button
                 type="submit"
@@ -213,7 +218,7 @@ export function ShareWithTeacherModal({
                 size="md"
                 className="flex-1"
               >
-                Versturen
+                {t('teacher.shareWithTeacher.send')}
               </Button>
             </div>
           </form>
@@ -224,7 +229,7 @@ export function ShareWithTeacherModal({
           <div className="text-center py-8">
             <Send className="w-12 h-12 text-amber-500 mx-auto mb-4 animate-bounce" />
             <p className="text-gray-600">
-              Je compositie wordt verstuurd...
+              {t('teacher.shareWithTeacher.sending')}
             </p>
           </div>
         )}
@@ -234,13 +239,13 @@ export function ShareWithTeacherModal({
           <div className="text-center py-4">
             <PartyPopper className="w-16 h-16 text-amber-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Verstuurd!
+              {t('teacher.shareWithTeacher.step3Title')}
             </h3>
             <p className="text-gray-600 mb-2">
-              Je compositie "<strong>{compositionName}</strong>" is gedeeld met je docent.
+              {t('teacher.shareWithTeacher.step3Description')}
             </p>
             <p className="text-gray-500 text-sm">
-              Je naam: <strong>{finalStudentName}</strong>
+              {t('common.by')} <strong>{finalStudentName}</strong>
             </p>
           </div>
         )}
@@ -250,7 +255,7 @@ export function ShareWithTeacherModal({
           <div className="text-center py-4">
             <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
             <h3 className="text-xl font-bold text-gray-800 mb-2">
-              Oeps!
+              {t('error.title')}
             </h3>
             <p className="text-red-600 mb-4">
               {error}
@@ -262,7 +267,7 @@ export function ShareWithTeacherModal({
                 onClick={() => setStep('code')}
                 className="flex-1"
               >
-                Probeer opnieuw
+                {t('common.retry')}
               </Button>
               <Button
                 variant="primary"
@@ -270,7 +275,7 @@ export function ShareWithTeacherModal({
                 onClick={onClose}
                 className="flex-1"
               >
-                Sluiten
+                {t('common.close')}
               </Button>
             </div>
           </div>

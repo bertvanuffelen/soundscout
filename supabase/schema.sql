@@ -31,11 +31,15 @@ CREATE TABLE IF NOT EXISTS public.classes (
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  class_id UUID NOT NULL REFERENCES public.classes(id) ON DELETE CASCADE,
+  class_id UUID REFERENCES public.classes(id) ON DELETE SET NULL,
   student_name TEXT NOT NULL,
   composition_name TEXT NOT NULL,
   composition_data JSONB NOT NULL,
-  created_at TIMESTAMPTZ DEFAULT NOW()
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  -- Delen met Link (#14)
+  share_code VARCHAR(8) UNIQUE,
+  expires_at TIMESTAMPTZ,
+  view_count INT DEFAULT 0
 );
 
 -- ============================================
@@ -45,6 +49,7 @@ CREATE INDEX IF NOT EXISTS idx_classes_teacher ON public.classes(teacher_id);
 CREATE INDEX IF NOT EXISTS idx_classes_code ON public.classes(code);
 CREATE INDEX IF NOT EXISTS idx_submissions_class ON public.submissions(class_id);
 CREATE INDEX IF NOT EXISTS idx_submissions_created ON public.submissions(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_submissions_share_code ON public.submissions(share_code) WHERE share_code IS NOT NULL;
 
 -- ============================================
 -- 5. ROW LEVEL SECURITY (RLS)
@@ -112,6 +117,14 @@ CREATE POLICY "Teachers can delete submissions of own classes"
       WHERE classes.id = submissions.class_id
       AND classes.teacher_id = auth.uid()
     )
+  );
+
+-- Publiek leesbaar voor gedeelde composities (Delen met Link #14)
+CREATE POLICY "Anyone can read shared compositions"
+  ON public.submissions FOR SELECT
+  USING (
+    share_code IS NOT NULL
+    AND (expires_at IS NULL OR expires_at > NOW())
   );
 
 -- ============================================
@@ -214,6 +227,94 @@ DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
 CREATE TRIGGER on_auth_user_created
   AFTER INSERT ON auth.users
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- ============================================
+-- 8. DELEN MET LINK (#14)
+-- ============================================
+
+-- Genereer unieke 8-karakter share code
+CREATE OR REPLACE FUNCTION generate_share_code()
+RETURNS VARCHAR(8) AS $$
+DECLARE
+  chars TEXT := 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  new_code VARCHAR(8) := '';
+  code_exists BOOLEAN;
+  i INT;
+BEGIN
+  LOOP
+    new_code := '';
+    FOR i IN 1..8 LOOP
+      new_code := new_code || substr(chars, floor(random() * length(chars) + 1)::int, 1);
+    END LOOP;
+    SELECT EXISTS(SELECT 1 FROM public.submissions WHERE share_code = new_code) INTO code_exists;
+    IF NOT code_exists THEN
+      RETURN new_code;
+    END IF;
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Deel een compositie (maakt submission met share_code, geen class_id nodig)
+CREATE OR REPLACE FUNCTION share_composition(
+  p_student_name TEXT,
+  p_composition_name TEXT,
+  p_composition_data JSONB
+)
+RETURNS TEXT AS $$
+DECLARE
+  v_code VARCHAR(8);
+  v_expires TIMESTAMPTZ;
+BEGIN
+  v_code := generate_share_code();
+  v_expires := NOW() + INTERVAL '30 days';
+
+  INSERT INTO public.submissions (
+    class_id, student_name, composition_name,
+    composition_data, share_code, expires_at, view_count
+  )
+  VALUES (
+    NULL, p_student_name, p_composition_name,
+    p_composition_data, v_code, v_expires, 0
+  );
+
+  RETURN v_code;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION share_composition TO anon;
+GRANT EXECUTE ON FUNCTION share_composition TO authenticated;
+
+-- Haal gedeelde compositie op (en verhoog view_count)
+CREATE OR REPLACE FUNCTION get_shared_composition(p_code VARCHAR)
+RETURNS TABLE (
+  id UUID,
+  student_name TEXT,
+  composition_name TEXT,
+  composition_data JSONB,
+  created_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ,
+  view_count INT
+) AS $$
+BEGIN
+  -- Verhoog view_count
+  UPDATE public.submissions
+  SET view_count = submissions.view_count + 1
+  WHERE share_code = UPPER(TRIM(p_code))
+    AND (submissions.expires_at IS NULL OR submissions.expires_at > NOW());
+
+  -- Retourneer data
+  RETURN QUERY
+  SELECT
+    s.id, s.student_name, s.composition_name,
+    s.composition_data, s.created_at, s.expires_at, s.view_count
+  FROM public.submissions s
+  WHERE s.share_code = UPPER(TRIM(p_code))
+    AND (s.expires_at IS NULL OR s.expires_at > NOW());
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION get_shared_composition TO anon;
+GRANT EXECUTE ON FUNCTION get_shared_composition TO authenticated;
 
 -- ============================================
 -- KLAAR!
