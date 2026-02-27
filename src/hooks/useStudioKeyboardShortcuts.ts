@@ -4,6 +4,8 @@
  * Shortcuts:
  * - Space: Toggle play/pause
  * - Ctrl+D / Cmd+D: Duplicate geselecteerde clip
+ * - Ctrl+Z / Cmd+Z: Undo
+ * - Ctrl+Shift+Z / Cmd+Shift+Z: Redo
  */
 
 import { useEffect } from 'react';
@@ -14,6 +16,8 @@ interface UseStudioKeyboardShortcutsOptions {
   onPlay: () => void;
   onPause: () => void;
   onDuplicate: () => void;
+  onUndo: () => void;
+  onRedo: () => void;
 }
 
 export function useStudioKeyboardShortcuts({
@@ -22,6 +26,8 @@ export function useStudioKeyboardShortcuts({
   onPlay,
   onPause,
   onDuplicate,
+  onUndo,
+  onRedo,
 }: UseStudioKeyboardShortcutsOptions): void {
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -33,12 +39,26 @@ export function useStudioKeyboardShortcuts({
         return;
       }
 
+      const isModifier = e.ctrlKey || e.metaKey;
+
+      // Ctrl+Z / Cmd+Z = Undo, Ctrl+Shift+Z / Cmd+Shift+Z = Redo
+      if (isModifier && e.key === 'z') {
+        e.preventDefault();
+        if (e.shiftKey) {
+          onRedo();
+        } else {
+          onUndo();
+        }
+        return;
+      }
+
       // Ctrl+D or Cmd+D to duplicate selected clip
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
+      if (isModifier && e.key === 'd') {
         e.preventDefault();
         if (hasSelectedClip) {
           onDuplicate();
         }
+        return;
       }
 
       // Space to toggle play/pause
@@ -54,5 +74,5 @@ export function useStudioKeyboardShortcuts({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [hasSelectedClip, onDuplicate, isPlaying, onPlay, onPause]);
+  }, [hasSelectedClip, onDuplicate, isPlaying, onPlay, onPause, onUndo, onRedo]);
 }

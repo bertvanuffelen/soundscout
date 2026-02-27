@@ -888,27 +888,16 @@ Geen mocking nodig, puur input → output.
 
 **Reden:** Timeline state (Zustand store) blijft bewaard bij navigatie. Kinderen kunnen terug naar de kaart, een locatie bezoeken om meer geluiden te verzamelen, en terugkeren naar de studio zonder hun arrangement te verliezen. State wordt alleen gewist bij expliciet "Nieuwe compositie" starten of een opgeslagen compositie openen.
 
-#### UX-2. Undo/Redo functionaliteit (Ctrl+Z / Ctrl+Shift+Z)
-**Status:** Niet begonnen
-**Effort:** Groot (1-2 dagen)
-**Impact:** Foutherstel — kinderen maken fouten en kunnen niet terug
+#### UX-2. Undo/Redo functionaliteit (Ctrl+Z / Ctrl+Shift+Z) ✅
+**Status:** Voltooid (2026-02-27)
+**Effort:** Medium (1 uur)
 
-**Probleem:** Alleen Space (play/pause) en Ctrl+D (duplicate) als keyboard shortcuts. Geen undo.
-
-**Oplossing:** Undo stack in timelineStore (minimaal 10 stappen):
-```typescript
-// timelineStore uitbreiden
-interface TimelineState {
-  // ... bestaande velden
-  history: TimelineSnapshot[];     // max 10
-  historyIndex: number;
-  pushHistory: () => void;         // voor elke mutatie
-  undo: () => void;
-  redo: () => void;
-}
-```
-
-**Risico:** Elke timeline-mutatie (addClip, moveClip, removeClip, duplicateClip, trim) moet `pushHistory()` aanroepen. Vergeten = inconsistente undo stack.
+- [x] `useUndoRedoTimeline` hook met snapshot-based history (max 50 stappen)
+- [x] Luistert automatisch naar alle track-wijzigingen via Zustand subscribe
+- [x] Ctrl+Z / Cmd+Z = undo, Ctrl+Shift+Z / Cmd+Shift+Z = redo
+- [x] timelineStore ongewijzigd — hook werkt extern via `loadTimeline()`
+- [x] History reset bij laden opgeslagen compositie
+- [x] Alle 7 acties undoable: add, remove, move, trim, duplicate, clear track, clear all
 
 #### UX-3. Succes-animatie bij sample verzamelen ✅
 **Status:** Voltooid (2026-02-27)

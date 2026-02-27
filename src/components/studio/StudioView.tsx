@@ -18,6 +18,7 @@ import { useStudioDnD } from '../../hooks/useStudioDnD';
 import { useStudioPlayback } from '../../hooks/useStudioPlayback';
 import { useAudioCleanup } from '../../hooks/useAudioCleanup';
 import { useStudioKeyboardShortcuts } from '../../hooks/useStudioKeyboardShortcuts';
+import { useUndoRedoTimeline } from '../../hooks/useUndoRedoTimeline';
 import { SampleLibrary } from './SampleLibrary';
 import { Timeline } from './Timeline';
 import { TransportControls } from './TransportControls';
@@ -81,6 +82,9 @@ export function StudioView() {
 
   // Cleanup on unmount
   useAudioCleanup();
+
+  // Undo/Redo
+  const { undo, redo } = useUndoRedoTimeline();
 
   // Navigation handlers
   const handleBack = useCallback(() => {
@@ -172,6 +176,8 @@ export function StudioView() {
     onPlay: handlePlay,
     onPause: handlePause,
     onDuplicate: handleDuplicate,
+    onUndo: undo,
+    onRedo: redo,
   });
 
   return (
