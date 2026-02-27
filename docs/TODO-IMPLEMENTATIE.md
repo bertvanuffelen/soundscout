@@ -1,7 +1,7 @@
 # SoundScout - Implementatie Todo's
 
-**Laatst bijgewerkt**: 2026-02-05 (Nieuwe issues uit user feedback)
-**Gebaseerd op**: PRD Fase 4 & 5, gebruiker feedback
+**Laatst bijgewerkt**: 2026-02-27 (Architectuur verbeterpunten + educatieve features)
+**Gebaseerd op**: PRD Fase 4 & 5, gebruiker feedback, architectuur analyse rapport (2026-02-27)
 
 ---
 
@@ -408,6 +408,945 @@ const originalClipStartBeat = originalClipStartBeatRef.current; // Eerst opslaan
 
 ---
 
+## 🛠️ TECHNISCHE SCHULD & ARCHITECTUUR VERBETERINGEN
+
+**Bron:** Uitgebreid architectuur analyserapport (2026-02-27) — twee analyses gecombineerd
+**Overall score:** 5.3/10 — "Functioneel maar onvolwassen voor productie"
+**Doel:** Technische basis versterken vóórdat nieuwe educatieve features (#21, #39, #40, #41) worden gebouwd
+
+### Overzicht Scores per Domein
+
+| Domein | Score | Status |
+|--------|-------|--------|
+| State Management (Zustand) | 7.0/10 | Solide basis, verbeterpunten |
+| Component Architectuur | 7.1/10 | Goed, enkele god-components |
+| Services & Hooks | 6.5/10 | Riskant: singleton, error handling |
+| Type Systeem & Data | 5.5/10 | Kritiek: `any` types, geen validatie |
+| Security | 6.5/10 | Goede basis, gaps in rate limiting |
+| Testing | 2.0/10 | Vrijwel afwezig |
+| UX/UI (kindvriendelijkheid) | 6.5/10 | Goede flows, ontbrekende error prevention |
+| Accessibility (WCAG 2.1 AA) | 3.5/10 | Kritiek: keyboard, screen reader, DnD |
+| Performance | 5.0/10 | Geen code splitting, 20Hz re-renders |
+| SEO & Deployment | 2.5/10 | Geen meta tags, geen PWA, geen caching |
+
+---
+
+### TP0 - KRITIEK (veiligheid & data-integriteit)
+
+> **Deze items MOETEN worden opgepakt vóór nieuwe features.**
+> Geschatte totale effort: **1-2 dagen**
+
+#### TP0-1. Vervang `any` types door `CompositionData` interface
+**Status:** Niet begonnen
+**Effort:** Klein (2-3 uur)
+**Impact:** Data safety — voorkomt runtime crashes door ongetypeerde data
+
+**Probleem:**
+Het meest kritieke datatype (composities) is overal `any`:
+
+| Bestand | Lijn | Type |
+|---------|------|------|
+| `src/hooks/useSubmissions.ts` | 15 | `composition_data: any` |
+| `src/lib/submissions.ts` | 17, 96, 102 | `compositionData: any` |
+| `src/components/share/ShareWithTeacherModal.tsx` | 18 | `compositionData: any` |
+| `src/components/share/SharedPlayer.tsx` | 200, 202 | `(t: any)` filter |
+| `src/components/share/ShareLinkModal.tsx` | 19 | `compositionData: any` |
+| `src/components/teacher/SubmissionPlayer.tsx` | 52, 54 | `(t: any)` filter |
+| `src/hooks/useClasses.ts` | 84 | `(c: any)` map casting |
+
+**Oplossing:**
+```typescript
+// src/types/index.ts — Nieuw type
+interface CompositionData {
+  tracks: Track[];
+  bpm: number;
+  totalBeats: number;
+  name: string;
+  themeId: string;
+}
+```
+Vervang alle `any` door `CompositionData` in bovenstaande bestanden.
+
+**Waarom nu:** Templates (#21) en Volume per Track (#39) breiden het compositie-datamodel uit. Zonder sterk type worden fouten pas in de UI ontdekt.
+
+#### TP0-2. Rate limiting op anonieme submissions
+**Status:** Niet begonnen
+**Effort:** Klein-Medium (3-4 uur)
+**Impact:** DoS preventie — voorkomt spam naar klas-submissions
+
+**Probleem:**
+```sql
+-- Huidige policy: volledig open!
+CREATE POLICY "Anyone can submit compositions"
+  ON public.submissions FOR INSERT
+  WITH CHECK (TRUE);
+```
+Iedereen kan onbeperkt composities indienen naar elke klas.
+
+**Oplossing:**
+Rate limit via Supabase RPC functie (max 50 submissions per klas per uur):
+```sql
+CREATE OR REPLACE FUNCTION submit_composition_rate_limited(
+  p_class_id UUID,
+  p_student_name TEXT,
+  p_composition_name TEXT,
+  p_composition_data JSONB
+) RETURNS UUID AS $$
+DECLARE
+  recent_count INT;
+  new_id UUID;
+BEGIN
+  -- Check rate limit: max 50 per class per hour
+  SELECT COUNT(*) INTO recent_count
+  FROM submissions
+  WHERE class_id = p_class_id
+    AND created_at > NOW() - INTERVAL '1 hour';
+
+  IF recent_count >= 50 THEN
+    RAISE EXCEPTION 'Rate limit exceeded for this class';
+  END IF;
+
+  INSERT INTO submissions (class_id, student_name, composition_name, composition_data)
+  VALUES (p_class_id, p_student_name, p_composition_name, p_composition_data)
+  RETURNING id INTO new_id;
+
+  RETURN new_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+**Waarom nu:** Zodra de app in meer scholen wordt gebruikt, is dit een reëel risico.
+
+#### TP0-3. CHECK constraints op Supabase tabellen
+**Status:** Niet begonnen
+**Effort:** Klein (1-2 uur)
+**Impact:** Data validatie — voorkomt corrupte/oversized data
+
+**Probleem:** Geen validatie op grootte of structuur van data in Supabase.
+
+**Oplossing:**
+```sql
+-- Compositie data grootte limiet (1MB max)
+ALTER TABLE public.submissions
+ADD CONSTRAINT valid_composition_size
+CHECK (octet_length(composition_data::text) <= 1048576);
+
+-- Minimale/maximale lengte op tekstvelden
+ALTER TABLE public.submissions
+ADD CONSTRAINT valid_student_name
+CHECK (char_length(student_name) BETWEEN 1 AND 100);
+
+ALTER TABLE public.submissions
+ADD CONSTRAINT valid_composition_name
+CHECK (char_length(composition_name) BETWEEN 1 AND 200);
+
+-- Classes tabel
+ALTER TABLE public.classes
+ADD CONSTRAINT valid_class_name
+CHECK (char_length(name) BETWEEN 1 AND 100);
+```
+
+#### TP0-4. max_classes afdwinging in database
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+**Impact:** Business rule enforcement — nu alleen in code, niet in DB
+
+**Probleem:** CLAUDE.md vermeldt max 8 klassen per docent, maar er is geen constraint in het schema. Code-level check kan worden omzeild.
+
+**Oplossing:**
+```sql
+-- Trigger functie voor max classes enforcement
+CREATE OR REPLACE FUNCTION check_max_classes()
+RETURNS TRIGGER AS $$
+DECLARE
+  current_count INT;
+  max_allowed INT;
+BEGIN
+  SELECT COUNT(*) INTO current_count
+  FROM classes WHERE teacher_id = NEW.teacher_id;
+
+  SELECT COALESCE(max_classes, 8) INTO max_allowed
+  FROM teachers WHERE id = NEW.teacher_id;
+
+  IF current_count >= max_allowed THEN
+    RAISE EXCEPTION 'Maximum number of classes (%) reached', max_allowed;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER enforce_max_classes
+  BEFORE INSERT ON classes
+  FOR EACH ROW EXECUTE FUNCTION check_max_classes();
+```
+
+---
+
+### TP1 - HOOG (architectuur stabiliteit)
+
+> **Deze items versterken de basis voor de nieuwe features.**
+> Geschatte totale effort: **2-3 dagen**
+
+#### TP1-1. Split StageView.tsx (god-component, 506 regels)
+**Status:** Niet begonnen
+**Effort:** Medium (4-6 uur)
+**Impact:** Onderhoudbaarheid — 7 useState hooks, 3 modals, complexe save flow
+
+**Probleem:**
+StageView combineert: playback UI, save logica, export logica, share modals. Te veel verantwoordelijkheden in één component.
+
+**Oplossing — split in drie:**
+```
+StageView.tsx (nu 506 regels) →
+├── StageView.tsx (~150 regels) — layout + orkestratie
+├── StagePlayback.tsx (~120 regels) — playback UI only
+├── useStageModals.ts (~60 regels) — modal state management
+└── useStageSave.ts (~80 regels) — save/warning logica
+```
+
+**Waarom nu:** StageView groeit met elke feature (share link, export, etc.). Zonder split wordt elke toevoeging moeilijker.
+
+#### TP1-2. Fix ambient audio fade timeout leak
+**Status:** Niet begonnen
+**Effort:** Klein (30 min)
+**Impact:** Resource management — timeout kan lekken bij unmount
+
+**Probleem:** `setTimeout` handle in `AudioService.stopAmbient()` (lijn 683-689) wordt niet bijgehouden.
+
+**Oplossing:**
+```typescript
+private ambientFadeTimeout: ReturnType<typeof setTimeout> | null = null;
+
+stopAmbient(fade = true): void {
+  if (this.ambientFadeTimeout) {
+    clearTimeout(this.ambientFadeTimeout);
+    this.ambientFadeTimeout = null;
+  }
+  if (fade) {
+    this.ambientFadeTimeout = setTimeout(() => {
+      this.ambientPlayer?.stop();
+      this.ambientFadeTimeout = null;
+    }, AMBIENT_AUDIO_FADE_SECONDS * 1000);
+  }
+}
+
+dispose(): void {
+  if (this.ambientFadeTimeout) clearTimeout(this.ambientFadeTimeout);
+  // ... rest van cleanup
+}
+```
+
+#### TP1-3. Error handling op async hooks
+**Status:** Niet begonnen
+**Effort:** Medium (3-4 uur)
+**Impact:** Crash preventie — async operaties missen try-catch
+
+**Probleem:**
+`useAudioEngine`, `useClasses`, `useSubmissions` hebben incomplete error handling. Gefaalde async operaties kunnen leiden tot inconsistente UI state.
+
+**Te doen:**
+- [ ] `useAudioEngine.ts` — try-catch rond `loadSamples()`, `playSample()`
+- [ ] `useClasses.ts` — error state + type safety (verwijder `any` casts)
+- [ ] `useSubmissions.ts` — error state + type safety
+- [ ] Gebruikersvriendelijke foutmeldingen bij network errors
+
+#### TP1-4. Feature-level Error Boundaries
+**Status:** Niet begonnen
+**Effort:** Klein (2-3 uur)
+**Impact:** Gebruikerservaring — nu crasht de hele app bij een fout in één onderdeel
+
+**Probleem:**
+Alleen root-level ErrorBoundary. Als Studio crasht, is de hele app weg.
+
+**Oplossing:**
+Voeg ErrorBoundary wrappers toe rond:
+- [ ] StudioView (meest complexe component)
+- [ ] StageView (export/save kan falen)
+- [ ] MapView (theme loading kan falen)
+- [ ] TeacherDashboard (Supabase calls)
+
+Gebruik bestaand `ErrorBoundary` component met fallback UI per feature.
+
+#### TP1-5. Orchestratie-functie voor compositie-initialisatie
+**Status:** Niet begonnen
+**Effort:** Klein (1-2 uur)
+**Impact:** State consistentie — nu 5 losse store-calls zonder error recovery
+
+**Probleem:**
+```typescript
+// StartScreen.tsx — huidige flow:
+setTheme(id)        // themeStore
+clearAllTracks()    // timelineStore
+clearLibrary()      // libraryStore
+await initAudio()   // audioService (async!)
+goToMap()           // appStore
+// Als initAudio faalt: thema is al gezet, tracks zijn al gewist
+```
+
+**Oplossing:**
+```typescript
+// Nieuwe functie in een utility of hook
+async function initializeNewComposition(themeId: string): Promise<boolean> {
+  try {
+    useThemeStore.getState().setTheme(themeId);
+    useTimelineStore.getState().clearAllTracks();
+    useLibraryStore.getState().clearLibrary();
+    await audioService.init();
+    useAppStore.getState().goToMap();
+    return true;
+  } catch (error) {
+    // Rollback: ga terug naar start, toon foutmelding
+    useAppStore.getState().goToStart();
+    logger.error('Failed to initialize composition:', error);
+    return false;
+  }
+}
+```
+
+**Waarom nu:** Templates (#21) voegen een tweede initialisatie-flow toe. Zonder orchestratie krijg je dubbele logica.
+
+---
+
+### TP2 - MEDIUM (code kwaliteit)
+
+> **Deze items verbeteren de developer experience en voorkomen bugs.**
+> Geschatte totale effort: **2-3 dagen**
+
+#### TP2-1. Voltooi gameStore → appStore migratie
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+**Impact:** Duidelijkheid — twee namen voor dezelfde store is verwarrend
+
+**Probleem:** `appStore.ts` + `gameStore.ts` (re-export). TODO comment op lijn 69.
+
+**Oplossing:**
+- [ ] Verwijder `src/stores/gameStore.ts`
+- [ ] Vervang alle `useGameStore` imports door `useAppStore`
+- [ ] Update CLAUDE.md
+
+#### TP2-2. Verwijder libraryStore redundante state
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+**Impact:** Single source of truth — `collectedSampleIds[]` dupliceert `librarySamples[].id`
+
+**Oplossing:**
+Verwijder `collectedSampleIds`, voeg computed getter toe:
+```typescript
+// In libraryStore
+getCollectedSampleIds: () => get().librarySamples.map(s => s.id)
+```
+
+#### TP2-3. Error context voor SmartSnapResult
+**Status:** Niet begonnen
+**Effort:** Klein (30 min)
+**Impact:** UX verbetering — gebruiker weet nu niet waarom plaatsing mislukte
+
+**Oplossing:**
+```typescript
+type SmartSnapResult =
+  | { reason: 'original' | 'snapped'; trackIndex: number; startBeat: number }
+  | { reason: 'rejected'; error: 'no_space' | 'invalid_track' | 'out_of_bounds' }
+```
+
+#### TP2-4. Extraheer usePanZoom() uit ZoomableView
+**Status:** Niet begonnen
+**Effort:** Medium (2-3 uur)
+**Impact:** Component grootte — ZoomableView is 352 regels met duplicate touch/mouse handlers
+
+**Oplossing:**
+Extraheer pan/zoom logica (3 refs, event handlers) naar `usePanZoom()` hook. ZoomableView wordt dan ~100 regels render-only.
+
+#### TP2-5. Extraheer useStudioKeyboardShortcuts()
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+**Impact:** Scheiding van verantwoordelijkheden
+
+**Probleem:** Keyboard shortcuts staan inline in StudioView useEffect.
+
+**Oplossing:** Verplaats naar eigen hook `useStudioKeyboardShortcuts()`.
+
+#### TP2-6. timelineStore parameter bloat reduceren
+**Status:** Niet begonnen
+**Effort:** Medium (2-3 uur)
+**Impact:** API cleanliness — `addClip()`, `moveClip()`, `duplicateClip()` hebben elk 6 parameters
+
+**Probleem:** Store heeft geen toegang tot themeStore, dus components moeten sample data ophalen en doorgeven.
+
+**Oplossing:** Store roept intern `useThemeStore.getState()` aan:
+```typescript
+// NU:  moveClip(from, to, clipId, beat, sample, allSamples) — 6 params
+// NA:  moveClip(from, to, clipId, beat) — 4 params, samples intern opgehaald
+```
+
+**Waarom nu:** Volume per Track (#39) en Scène-markering (#40) voegen meer parameters toe. Zonder reductie wordt de API onwerkbaar.
+
+#### TP2-7. Voeg data validatie toe met zod
+**Status:** Niet begonnen
+**Effort:** Medium (3-4 uur)
+**Impact:** Data integriteit — geen validatie bij localStorage reads of Supabase responses
+
+**Probleem:** Geen runtime validatie bij:
+- Theme data laden (locations, samples)
+- Composities lezen uit localStorage
+- Composities ontvangen van Supabase
+
+**Oplossing:**
+```bash
+npm install zod  # ~4KB gzipped
+```
+```typescript
+import { z } from 'zod';
+
+const CompositionDataSchema = z.object({
+  tracks: z.array(TrackSchema),
+  bpm: z.number(),
+  totalBeats: z.number(),
+  name: z.string(),
+  themeId: z.string(),
+});
+
+// Gebruik op systeemgrenzen:
+const parsed = CompositionDataSchema.safeParse(rawData);
+if (!parsed.success) {
+  logger.warn('Invalid composition data:', parsed.error);
+  return null;
+}
+```
+
+---
+
+### TP3 - LAAG (optimalisatie & developer experience)
+
+> **Nice-to-haves die de codebase schoner maken.**
+> Geschatte totale effort: **2-3 dagen**
+
+#### TP3-1. Memoized selectors voor timelineStore
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** `hasClips`, `clipCount`, `selectedClip` worden herhaald berekend in components.
+
+**Oplossing:** Voeg toe aan timelineStore:
+```typescript
+selectHasClips: () => get().tracks.some(t => t.clips.length > 0),
+selectClipCount: () => get().tracks.reduce((sum, t) => sum + t.clips.length, 0),
+```
+
+#### TP3-2. Player cache opschoning (memory leak)
+**Status:** Niet begonnen
+**Effort:** Klein (1-2 uur)
+
+**Probleem:** `Map<sampleId, Tone.Player>` in AudioService groeit onbeperkt. Bij veel theme-wissels lekt geheugen.
+
+**Oplossing:** LRU-achtige opschoning of dispose bij theme-wissel.
+
+#### TP3-3. StorageService faal-feedback
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** `set()` logt error maar caller weet niet dat save faalde. Gebruiker verliest werk zonder melding.
+
+**Oplossing:** Return `boolean` uit `set()`, toon toast/melding bij falen.
+
+#### TP3-4. Alfanumerieke klas-codes
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** CHAR(4) numeriek = 10.000 mogelijke codes. Bij groei onvoldoende.
+
+**Oplossing:** Alfanumeriek 4 chars (bijv. ABC1) = 46.656 combinaties. Of 6-karakter codes.
+
+#### TP3-5. Gevoelige data uit console.error
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** `src/lib/submissions.ts`, `src/lib/auth.ts`, `src/contexts/AuthContext.tsx` loggen Supabase error objecten die schema-informatie kunnen bevatten.
+
+**Oplossing:** Sanitize error objects, log alleen `message` + `code`.
+
+---
+
+### TP4 - TOEKOMSTIG (bij significante groei)
+
+> **Grotere refactors, alleen nodig als de app significant schaalt.**
+
+#### TP4-1. Split AudioService in sub-services
+**Effort:** Groot (2-3 dagen)
+
+AudioService is een god-object (loading, caching, playback, scheduling, ambient, waveform). Split in:
+- `AudioLoader` — sample loading met retry/timeout
+- `AudioPlayer` — playback control
+- `TimelineScheduler` — clip scheduling via Tone.Part
+- `AmbientAudioManager` — ambient audio
+
+**Waarom later:** Werkt nu, maar wordt onhoudbaar als Volume per Track (#39) en effecten (#33) worden toegevoegd.
+
+#### TP4-2. Factory pattern i.p.v. singleton voor AudioService
+**Effort:** Groot (1-2 dagen)
+
+Singleton maakt unit testing onmogelijk. Factory pattern met dependency injection:
+```typescript
+// NU:  export const audioService = AudioService.getInstance()
+// NA:  export function createAudioService(config?: AudioConfig): AudioService
+```
+
+#### TP4-3. Tier 1 tests: pure utility functies
+**Effort:** Medium (1-2 dagen)
+
+Laagst hangend fruit voor testing:
+- [ ] `src/utils/audio.ts` — beat/seconde conversies
+- [ ] `src/utils/clipCollision.ts` — smart snap algoritme
+- [ ] `src/utils/waveform.ts` — peak extractie
+- [ ] Store actions die geen audio raken
+
+Geen mocking nodig, puur input → output.
+
+#### TP4-4. Tier 2 tests: services met Tone.js mock
+**Effort:** Groot (2-3 dagen)
+
+- [ ] AudioService methodes met gemockte Tone.js
+- [ ] Scheduling logica, play/pause/stop state machine
+- [ ] Error handling (failed loads, timeouts)
+- [ ] Dependency: `standardized-audio-context-mock`
+
+#### TP4-5. Tier 3 tests: component integratie
+**Effort:** Groot (3-5 dagen)
+
+- [ ] UI componenten met gemockte useAudioEngine
+- [ ] StudioView interacties met gemockte DnD
+- [ ] TeacherDashboard met gemockte Supabase
+
+---
+
+### UX - KINDVRIENDELIJKHEID VERBETERINGEN
+
+> **Score: 6.5/10** — Goede flows, maar ontbrekende error prevention en bekrachtiging.
+> Bron: UX/UI analyse rapport (2026-02-27)
+
+#### UX-1. Waarschuwing bij verlaten Studio zonder opslaan ⚠️ KRITIEK
+**Status:** Niet begonnen
+**Effort:** Klein (1-2 uur)
+**Impact:** Data verlies preventie — kind verliest alle arrangementen bij per ongeluk terug klikken
+
+**Probleem:** `handleBack()` in StudioView.tsx (lijn 88-91) navigeert direct naar map zonder confirmatie.
+
+**Oplossing:**
+```typescript
+const handleBack = () => {
+  const hasClips = useTimelineStore.getState().tracks.some(t => t.clips.length > 0);
+  if (hasClips) {
+    setShowExitWarning(true); // Modal: "Je muziek gaat verloren! Eerst opslaan?"
+  } else {
+    navigateToMap();
+  }
+};
+```
+
+#### UX-2. Undo/Redo functionaliteit (Ctrl+Z / Ctrl+Shift+Z)
+**Status:** Niet begonnen
+**Effort:** Groot (1-2 dagen)
+**Impact:** Foutherstel — kinderen maken fouten en kunnen niet terug
+
+**Probleem:** Alleen Space (play/pause) en Ctrl+D (duplicate) als keyboard shortcuts. Geen undo.
+
+**Oplossing:** Undo stack in timelineStore (minimaal 10 stappen):
+```typescript
+// timelineStore uitbreiden
+interface TimelineState {
+  // ... bestaande velden
+  history: TimelineSnapshot[];     // max 10
+  historyIndex: number;
+  pushHistory: () => void;         // voor elke mutatie
+  undo: () => void;
+  redo: () => void;
+}
+```
+
+**Risico:** Elke timeline-mutatie (addClip, moveClip, removeClip, duplicateClip, trim) moet `pushHistory()` aanroepen. Vergeten = inconsistente undo stack.
+
+#### UX-3. Succes-animatie bij sample verzamelen
+**Status:** Niet begonnen
+**Effort:** Medium (3-4 uur)
+**Impact:** Positieve bekrachtiging — hotspot verdwijnt nu zonder viering
+
+**Probleem:** Kind klikt op hotspot, geluid speelt, hotspot verdwijnt. Geen visuele bevestiging dat iets goed is gegaan.
+
+**Oplossing:** Korte animatie-sequence:
+1. Hotspot schaalt op (scale 1.3) met glow
+2. Geluid speelt + korte "pling" bevestiging
+3. Hotspot animeert richting recorder bar
+4. Recorder slot bounced bij ontvangst
+
+#### UX-4. Kindvriendelijker vocabulaire
+**Status:** Niet begonnen
+**Effort:** Klein (1-2 uur)
+**Impact:** Begrijpelijkheid voor 6-8 jarigen
+
+| Huidig | Probleem | Beter |
+|--------|----------|-------|
+| "Compositie" | Abstract muziekterm | "Mijn muziek" of "Mijn nummer" |
+| "Bibliotheek" | Kinderen denken: boeken | "Mijn geluiden" |
+| "Samples" | Engels jargon | "Geluiden" |
+
+**Aanpak:** Wijzig i18n keys in `nl.json` en `en.json`. Geen code-wijzigingen nodig.
+
+#### UX-5. Studio cognitive load verminderen
+**Status:** Niet begonnen
+**Effort:** Medium (3-4 uur)
+**Impact:** Minder overweldigend voor 6-8 jarigen
+
+**Probleem:** 8 lege tracks zichtbaar + SampleLibrary + Timeline + EditToolbar + Transport.
+
+**Oplossing:** Auto-collapse lege tracks, toon initieel 2-3 tracks. Tracks verschijnen automatisch wanneer clips worden toegevoegd.
+
+#### UX-6. StageView knoppen hiërarchie
+**Status:** Niet begonnen
+**Effort:** Klein (30 min)
+**Impact:** Duidelijker primaire actie
+
+**Probleem:** Save, Export, Share Link, Share Teacher zijn allemaal even groot/prominent.
+
+**Oplossing:** "Opslaan" als primaire knop (groter, accent kleur), overige als secondary/ghost.
+
+#### UX-7. EditToolbar knoppen vergroten
+**Status:** Niet begonnen
+**Effort:** Klein (30 min)
+**Impact:** Betere touch targets voor fijne motoriek kinderen
+
+**Probleem:** Icon buttons ~32px (p-1.5 = 6px padding + 16px icon).
+
+**Oplossing:** Vergroot naar minimaal 40-44px clickable area (WCAG minimum).
+
+#### UX-8. Klascode projector-modus (docent)
+**Status:** Niet begonnen
+**Effort:** Klein (1-2 uur)
+**Impact:** Klasgebruik — docent moet nu code mondeling delen
+
+**Oplossing:** "Toon op scherm" knop in ClassDetail die 4-cijferige code groot toont (fullscreen overlay, grote letters, duidelijk leesbaar op digibord).
+
+---
+
+### ACCESSIBILITY (WCAG 2.1 AA)
+
+> **Score: 3.5/10** — Kritiek: keyboard navigatie, screen reader support, DnD toegankelijkheid.
+> **38 issues gevonden:** 6 Critical, 24 Major, 8 Minor
+> Bron: Accessibility analyse rapport (2026-02-27)
+
+#### A11Y-CRITICAL: Fundamentele toegankelijkheidsproblemen
+
+##### A11Y-1. DnD zonder keyboard alternatief ⚠️ WCAG 2.1.1 (Level A)
+**Status:** Niet begonnen
+**Effort:** Groot (1-2 dagen)
+**Impact:** Kinderen met motorische beperkingen kunnen geen composities maken
+
+**Probleem:** DnD-kit dragging alleen via muis/touch. Geen keyboard alternatief.
+
+**Oplossing:** Button-based plaatsing als alternatief:
+- "Voeg toe aan track 1/2/3..." dropdown bij elke library sample
+- Keyboard navigatie: Tab door samples, Enter om track te kiezen
+- Clip verplaatsen via keyboard: pijltjestoetsen voor beat-positie
+
+##### A11Y-2. Playhead niet toegankelijk ⚠️ WCAG 1.3.1 (Level A)
+**Status:** Niet begonnen
+**Effort:** Medium (2-3 uur)
+
+**Probleem:** Drag handle is `<div>` zonder `role="slider"`, geen keyboard, geen ARIA.
+
+**Oplossing:**
+```html
+<div
+  role="slider"
+  tabIndex={0}
+  aria-valuenow={currentBeat}
+  aria-valuemin={0}
+  aria-valuemax={totalBeats}
+  aria-label={t('studio.playhead')}
+  onKeyDown={handleArrowKeys}  // ← → voor seek
+/>
+```
+
+##### A11Y-3. Timeline niet leesbaar voor screen readers ⚠️ WCAG 1.3.1 (Level A)
+**Status:** Niet begonnen
+**Effort:** Groot (1-2 dagen)
+
+**Probleem:** Tracks en clips zijn pure divs met style positioning. Screen reader begrijpt niets.
+
+**Oplossing:** Semantische structuur:
+- Track: `role="list"`, `aria-label="Track 1"`
+- Clip: `role="listitem"`, `aria-label="Park Birds, start beat 4, duur 2 beats"`
+- Live region voor playback status updates
+
+##### A11Y-4. Clips zijn divs met onClick ⚠️ WCAG 2.1.1 (Level A)
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** Clip.tsx lijn 59-86: geen `role="button"`, `aria-selected`, keyboard Enter/Space.
+
+**Oplossing:** Voeg toe: `role="button"`, `tabIndex={0}`, `aria-selected`, `onKeyDown` voor Enter/Space.
+
+##### A11Y-5. ZoomableView alleen pointer events ⚠️ WCAG 2.1.1 (Level A)
+**Status:** Niet begonnen
+**Effort:** Medium (2-3 uur)
+
+**Probleem:** Geen pijltjestoetsen voor pannen, geen +/- voor zoom.
+
+**Oplossing:** Keyboard handlers: pijltjestoetsen voor pan, +/- voor zoom, Home voor reset.
+
+##### A11Y-6. Audio zonder visueel alternatief ⚠️ WCAG 1.2.1 (Level A)
+**Status:** Niet begonnen
+**Effort:** Groot (1-2 dagen)
+
+**Probleem:** Dove/slechthorende leerlingen zien alleen gekleurde blokken, geen waveforms in timeline.
+
+**Oplossing:** Waveform miniatures in clips tonen (data al beschikbaar via `AudioService.getWaveform()`). Gerelateerd aan toekomstig TP4 item "visueel alternatief voor audio".
+
+#### A11Y-MAJOR: Significante barrières
+
+##### A11Y-7. Quick wins (klein effort, grote impact)
+**Status:** Niet begonnen
+**Effort:** Klein-Medium (3-4 uur totaal)
+
+Batch van snelle fixes:
+- [ ] `aria-label` op alle icon buttons (EditToolbar, TransportControls, Hotspot)
+- [ ] Focus trap in Modal component (`Modal.tsx`)
+- [ ] `<label>` koppelen aan form inputs (`ShareCodeInput.tsx`)
+- [ ] `prefers-reduced-motion` support (stop animaties bij voorkeur)
+- [ ] Focus indicators op EditToolbar buttons
+- [ ] Focus management bij modal open/close
+- [ ] `aria-describedby` op Modal body
+- [ ] Form errors in `aria-live` regio (FeedbackModal)
+- [ ] Dynamische `<title>` per scherm (App.tsx)
+- [ ] Heading hiërarchie corrigeren (h3 zonder h2 in Timeline)
+
+##### A11Y-8. Kleur-onafhankelijke status indicatie
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** Locatie voortgang alleen via kleur (LocationMarker). Contrast te laag op disabled states.
+
+**Oplossing:** Voeg iconen/tekst toe naast kleur-indicatie. Verhoog contrast op disabled states.
+
+---
+
+### PERFORMANCE VERBETERINGEN
+
+> **Score: 5.0/10** — Geen code splitting, 20Hz re-renders, geen image optimalisatie.
+> Bron: Performance analyse rapport (2026-02-27)
+
+#### PERF-1. Route-level code splitting ⚠️ KRITIEK
+**Status:** Niet begonnen
+**Effort:** Medium (3-4 uur)
+**Impact:** Bundle -50%, eerste paint -500ms
+
+**Probleem:** ALLE schermen statisch geïmporteerd in App.tsx. Studenten laden teacher dashboard, shared player, etc.
+
+**Geschatte bundle (gzipped):**
+```
+tone@15          ~100-150 KB
+react+react-dom  ~80 KB
+@dnd-kit         ~60 KB
+i18next          ~40 KB
+@supabase        ~30 KB
+lamejs           ~40 KB
+app code         ~50 KB
+─────────────────────────
+Totaal:          ~250-300 KB + audio assets
+```
+
+**Oplossing:**
+```typescript
+// App.tsx
+const StudioView = React.lazy(() => import('./components/studio/StudioView'));
+const StageView = React.lazy(() => import('./components/stage/StageView'));
+const TeacherDashboard = React.lazy(() => import('./components/teacher/TeacherDashboard'));
+const SharedPlayer = React.lazy(() => import('./components/share/SharedPlayer'));
+
+// + Suspense wrapper met loading spinner
+```
+
+#### PERF-2. currentBeat re-render cascade
+**Status:** Niet begonnen
+**Effort:** Medium (3-4 uur)
+**Impact:** 20x minder re-renders tijdens playback
+
+**Probleem:** `setCurrentBeat()` elke 50ms triggert Zustand subscribers. Timeline + StudioView + alle children renderen ~20x/sec.
+
+**Oplossing:** Gebruik `useRef` + `requestAnimationFrame` voor playhead positie. Playhead leest direct uit ref, geen store update nodig voor pure visuele update. Alleen bij seek/stop de store updaten.
+
+#### PERF-3. Vite build optimalisatie
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** `vite.config.ts` is 7 regels, geen manualChunks.
+
+**Oplossing:**
+```typescript
+build: {
+  rollupOptions: {
+    output: {
+      manualChunks: {
+        'tone': ['tone'],
+        'dnd-kit': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
+        'audio-export': ['@breezystack/lamejs'],
+        'supabase': ['@supabase/supabase-js'],
+      }
+    }
+  }
+}
+```
+
+#### PERF-4. Image optimalisatie
+**Status:** Niet begonnen
+**Effort:** Medium (2-3 uur)
+
+**Probleem:** Geen srcset, geen lazy loading, geen WebP, geen blur-up placeholder. Mobiel laadt full-resolution images.
+
+**Oplossing:**
+- [ ] Lazy loading op map/location afbeeldingen (`loading="lazy"`)
+- [ ] WebP versies genereren van alle PNG achtergronden
+- [ ] `srcset` voor responsive image loading
+- [ ] Optioneel: blur-up placeholder voor locatie-achtergronden
+
+#### PERF-5. Timeline grid memoization
+**Status:** Niet begonnen
+**Effort:** Klein (30 min)
+
+**Probleem:** gridLines array + widthMultiplier herberekend elke 50ms (bij elke currentBeat update).
+
+**Oplossing:** `useMemo()` met dependency op `totalBeats` (niet `currentBeat`).
+
+---
+
+### SEO & DEPLOYMENT VERBETERINGEN
+
+> **Score: 2.5/10** — Geen meta tags, geen PWA, geen caching strategie.
+> Bron: SEO & Deployment analyse rapport (2026-02-27)
+
+#### DEPLOY-1. SEO meta tags + Open Graph ⚠️ KRITIEK
+**Status:** Niet begonnen
+**Effort:** Klein (1 uur)
+
+**Probleem:** index.html mist: `<meta name="description">`, Open Graph tags, Twitter Card tags, `<meta name="theme-color">`, `<link rel="canonical">`.
+
+**Impact:** Geen rich previews bij social media delen (belangrijk voor share links!), geen SEO.
+
+**Oplossing:**
+```html
+<meta name="description" content="SoundScout - Leer muziek maken door geluiden te ontdekken en te combineren">
+<meta name="theme-color" content="#0f172a">
+<meta property="og:title" content="SoundScout">
+<meta property="og:description" content="Muziek maken door geluiden te ontdekken">
+<meta property="og:image" content="/images/og-image.png">
+<meta property="og:type" content="website">
+<link rel="canonical" href="https://soundscout.nl">
+```
+
+#### DEPLOY-2. PWA manifest (installeerbaar op tablet)
+**Status:** Niet begonnen
+**Effort:** Klein (1-2 uur)
+
+**Probleem:** Geen manifest.json, app niet installeerbaar. Geen offline support.
+
+**Impact:** Leerlingen kunnen app niet "installeren" op tablet/Chromebook. Problematisch bij slecht school-internet.
+
+**Oplossing:**
+- [ ] `manifest.json` aanmaken (name, icons, theme_color, display: standalone)
+- [ ] Link in index.html
+- [ ] Apple-touch-icon correct configureren
+
+**Notitie:** Service worker voor offline gebruik is P3 (complexer, vereist audio caching strategie).
+
+#### DEPLOY-3. Caching headers voor audio assets
+**Status:** Niet begonnen
+**Effort:** Klein (30 min)
+
+**Probleem:** 62+ MP3's worden elke keer opnieuw geladen. Geen Cache-Control headers.
+
+**Oplossing (.htaccess):**
+```apache
+# Audio + afbeeldingen: 1 jaar cache (versioned via Vite hash)
+<FilesMatch "\.(mp3|jpg|png|svg|webp|woff2?)$">
+  Header set Cache-Control "max-age=31536000, immutable"
+</FilesMatch>
+
+# HTML: 1 uur cache
+<FilesMatch "\.html$">
+  Header set Cache-Control "max-age=3600, must-revalidate"
+</FilesMatch>
+
+# Compressie
+AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
+```
+
+#### DEPLOY-4. Fix `<html lang="nl">`
+**Status:** Niet begonnen
+**Effort:** Klein (15 min)
+
+**Probleem:** `<html lang="en">` terwijl app standaard Nederlands is.
+
+**Oplossing:** Wijzig naar `lang="nl"` + dynamisch bijwerken bij taalwissel in i18n config:
+```typescript
+i18n.on('languageChanged', (lng) => {
+  document.documentElement.lang = lng;
+});
+```
+
+#### DEPLOY-5. Content Security Policy (CSP)
+**Status:** Niet begonnen
+**Effort:** Medium (2-3 uur)
+
+**Probleem:** Geen CSP headers. XSS niet geblokkeerd op server-niveau.
+
+**Oplossing:** CSP in .htaccess met whitelists voor Supabase, EmailJS, Google Fonts.
+
+#### DEPLOY-6. Favicon pad fix
+**Status:** Niet begonnen
+**Effort:** Klein (15 min)
+
+**Probleem:** index.html lijn 8 verwijst naar `/images/overige/logo-soundscout.svg` — pad mogelijk incorrect.
+
+#### DEPLOY-7. Environment-specifieke builds
+**Status:** Niet begonnen
+**Effort:** Medium (1-2 uur)
+
+**Probleem:** Alleen `.env.local`. Geen `.env.production`, `.env.staging`. Geen error tracking (Sentry), geen analytics.
+
+---
+
+### Implementatie Volgorde (aanbevolen)
+
+```
+Week 1: TP0 (alle 4 items) + TP1-2 (fade timeout fix)
+         + UX-1 (exit warning) + DEPLOY-4 (lang fix) + DEPLOY-6 (favicon)
+         → Veilige, stabiele basis + quick wins
+
+Week 2: TP1-1 (StageView split) + TP1-5 (orchestratie)
+         + DEPLOY-1 (meta tags) + DEPLOY-2 (PWA manifest) + DEPLOY-3 (caching)
+         → Klaar voor Template Systeem (#21) + deployment kwaliteit
+
+Week 3: TP1-3 (error handling) + TP1-4 (error boundaries)
+         + UX-7 (EditToolbar buttons) + UX-6 (StageView knoppen)
+         + A11Y-7 (quick wins batch)
+         → Robuuste foutafhandeling + basis accessibility
+
+Week 4: PERF-1 (code splitting) + PERF-3 (Vite build) + PERF-5 (memoization)
+         → Performance optimalisatie
+
+Daarna: TP2 items + UX items oppakken als onderdeel van feature-werk
+        (bijv. UX-4 vocabulaire samen met i18n review #38)
+        (bijv. PERF-2 currentBeat samen met Volume per Track #39)
+
+Later:  A11Y-1 t/m A11Y-6 (grote accessibility items)
+        UX-2 (undo/redo) — groot maar zeer waardevol
+        PERF-4 (image optimalisatie)
+        DEPLOY-5 (CSP) + DEPLOY-7 (environments)
+
+TP3/TP4: Oppakken wanneer relevant of bij beschikbare tijd
+```
+
+---
+
 ## 🔴 P1 - HOOGSTE PRIORITEIT (nu)
 
 ### 23. Vereenvoudigde Transport Controls (Play/Rewind) ✅
@@ -512,39 +1451,61 @@ Bij "Nieuwe compositie" opent nu een modal met visuele kaartjes van alle beschik
 - `src/i18n/locales/nl.json` - themeSelection keys
 - `src/i18n/locales/en.json` - themeSelection keys
 
-### 14. Delen met Link (4.3)
-**Status:** Niet begonnen
+### 14. Delen met Link (4.3) ✅
+**Status:** VOLTOOID (2026-02-27)
 **Complexiteit:** ⭐⭐⭐ Medium-Hoog
-**Vereist:** Supabase (al geconfigureerd)
+**Documentatie:** `docs/PLAN-DELEN-MET-LINK.md`
 
-**Belangrijk:** Dit is ANDERS dan "Deel met Docent" (wat al werkt). Dit is voor publieke links die iedereen kan openen.
+**Beschrijving:**
+Leerlingen kunnen een publieke luisterlink genereren voor hun compositie. Iedereen met de link of code kan de compositie beluisteren in een read-only player. Links verlopen na 30 dagen.
 
-**Te implementeren:**
-- [ ] `shares` tabel in Supabase aanmaken
-- [ ] Share code generatie (bijv. `PARK-7X3K`)
-- [ ] "Deel" knop in Stage-scherm naast "Download MP3"
-- [ ] Modal met gegenereerde link + kopieer knop
-- [ ] Publieke luisterpagina (`/luister/:shareCode` of query param)
-- [ ] Read-only compositie player (hergebruik SubmissionPlayer logica)
-- [ ] Link verloopt na 30 dagen (of configureerbaar)
+**Aanpak:** Bestaande `submissions` tabel uitgebreid (Optie A) i.p.v. aparte tabel, om duplicatie te voorkomen.
 
-**Database schema:**
-```sql
-CREATE TABLE shares (
-  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-  code VARCHAR(8) UNIQUE NOT NULL,
-  composition_data JSONB NOT NULL,
-  composition_name TEXT NOT NULL,
-  created_at TIMESTAMP DEFAULT NOW(),
-  expires_at TIMESTAMP DEFAULT (NOW() + INTERVAL '30 days'),
-  view_count INT DEFAULT 0
-);
-```
+**Database wijzigingen:**
+- [x] `share_code` (VARCHAR 8, UNIQUE), `expires_at` (TIMESTAMPTZ), `view_count` (INT) kolommen toegevoegd
+- [x] `class_id` nullable gemaakt (publieke shares hebben geen klas)
+- [x] Foreign key gewijzigd van CASCADE naar SET NULL (composities overleven klas-verwijdering)
+- [x] Partial index op `share_code`
+- [x] RLS policy voor publiek lezen van gedeelde composities
+- [x] `generate_share_code()` functie (8-karakter, charset zonder I/O/0/1)
+- [x] `share_composition()` RPC (SECURITY DEFINER, anon + authenticated)
+- [x] `get_shared_composition()` RPC (verhoogt view_count)
 
-**Privacy overwegingen:**
-- Geen account nodig om te luisteren
-- Compositie data wordt gekopieerd (niet gelinkt aan gebruiker)
-- Automatische cleanup van verlopen shares (cron of on-access check)
+**Frontend:**
+- [x] "Deel link" knop in StageView (tussen "Download MP3" en "Deel met docent")
+- [x] ShareLinkModal met bevestigingsstap (voorkomt zinloze records)
+- [x] Twee-staps flow: uitleg → "Link aanmaken" → link + code + kopieerknop
+- [x] SharedPlayer: fullscreen read-only player met audio playback
+- [x] ShareCodeInput op StartScreen voor code-invoer
+- [x] URL-based toegang: `?share=CODE` wordt gedetecteerd in App.tsx
+- [x] Clipboard API met fallback voor link kopiëren
+- [x] Vertalingen NL + EN (share.* keys)
+
+**Nieuwe bestanden:**
+- `supabase/migration-delen-met-link.sql` — SQL migratiescript (8 stappen)
+- `docs/PLAN-DELEN-MET-LINK.md` — Implementatieplan
+- `src/components/share/ShareLinkModal.tsx` — Modal met bevestiging + link generatie
+- `src/components/share/SharedPlayer.tsx` — Read-only player voor gedeelde composities
+- `src/components/share/ShareCodeInput.tsx` — Code-invoerveld voor StartScreen
+
+**Gewijzigde bestanden:**
+- `supabase/schema.sql` — Bijgewerkt met nieuwe kolommen, index, RLS, functies
+- `src/lib/submissions.ts` — `shareComposition()`, `getSharedComposition()`
+- `src/stores/appStore.ts` — `shareCode` state, `goToShared()` action
+- `src/types/index.ts` — `'shared'` toegevoegd aan `GameScreen`
+- `src/components/stage/StageView.tsx` — "Deel link" knop
+- `src/App.tsx` — `?share=` detectie, `'shared'` screen case
+- `src/components/StartScreen.tsx` — ShareCodeInput integratie
+- `src/i18n/locales/nl.json` — share.* vertalingen
+- `src/i18n/locales/en.json` — share.* vertalingen
+
+**Aandachtspunten:**
+- SQL migratie moet handmatig uitgevoerd worden in Supabase SQL Editor (8 stappen)
+- Links verlopen na 30 dagen (check at query time, geen cron nodig)
+- Bevestigingsstap in ShareLinkModal voorkomt dat er records worden aangemaakt bij per ongeluk openen
+- Share codes zijn 8 karakters lang, charset `ABCDEFGHJKLMNPQRSTUVWXYZ23456789` (geen I, O, 0, 1 om verwarring te voorkomen)
+- Bestaande submissions (met class_id) blijven onaangetast door de migratie
+- Bij klas-verwijdering worden gekoppelde submissions niet meer verwijderd (SET NULL i.p.v. CASCADE)
 
 ### 15. Emergency/Feedback Systeem ✅
 **Status:** VOLTOOID (2026-02-05)
@@ -613,6 +1574,136 @@ const sensors = useSensors(
 );
 ```
 
+### 35. Tweetalig Systeem Grondig Implementeren (i18n Audit) ✅
+**Status:** VOLTOOID (2026-02-27)
+**Complexiteit:** ⭐⭐ Medium
+**Terugkerend:** Zie P5 #38 voor periodieke review
+
+**Beschrijving:**
+Grondig gecontroleerd en aangevuld: het tweetalige systeem (Nederlands + Engels). Alle UI-teksten, error messages, placeholders en modals zijn nu volledig vertaald. Taalswitcher toegevoegd op het startscherm.
+
+**Geïmplementeerd:**
+
+**Locale bestanden (~150 nieuwe keys):**
+- [x] `language` sectie (NL/EN labels)
+- [x] `common` uitgebreid (cancel, delete, tracks, clips, samples, play, pause, stop, by)
+- [x] `start` uitgebreid (teacherLink, createdBy, aboutButton, aboutTitle, aboutText1-3)
+- [x] `map` uitgebreid (loadingTheme, studioShort, cityMapAlt)
+- [x] `stage` uitgebreid (subtitle, shareWithTeacher, defaultName)
+- [x] `share` uitgebreid (loadingSamples)
+- [x] `error` sectie (title, description, retryButton, sendReportButton, technicalDetails)
+- [x] `auth` sectie (8 foutmeldingen)
+- [x] `submissions` sectie (5 foutmeldingen)
+- [x] `teacher` sectie met 10+ subsecties (common, validation, login, register, forgotPassword, dashboard, classDetail, createClassModal, submissionPlayer, classCard, submissionCard, shareWithTeacher)
+
+**i18n configuratie:**
+- [x] localStorage persistentie voor taalvoorkeur (`soundscout-lang` key)
+- [x] `i18n.on('languageChanged')` event listener voor opslaan
+
+**LanguageSwitcher component:**
+- [x] `src/components/ui/LanguageSwitcher.tsx` (nieuw)
+- [x] Compacte pill-vorm: `NL | EN` toggle
+- [x] Twee varianten: `dark` (mobile) en `light` (desktop)
+- [x] Geplaatst op StartScreen boven footer
+
+**17+ componenten geüpdatet met t() calls:**
+- [x] StartScreen.tsx — 6 hardcoded strings + taalswitcher
+- [x] StageView.tsx — 4 hardcoded strings (subtitle, shareWithTeacher, defaultName)
+- [x] MapView.tsx — 3 hardcoded strings (loadingTheme, studioShort, cityMapAlt)
+- [x] ErrorBoundary.tsx — 5 hardcoded strings (via `i18n.t()`, class component)
+- [x] ShareWithTeacherModal.tsx — 21 hardcoded strings
+- [x] TeacherLogin.tsx — 8 hardcoded strings
+- [x] TeacherRegister.tsx — 14 hardcoded strings
+- [x] TeacherForgotPassword.tsx — 11 hardcoded strings
+- [x] TeacherDashboard.tsx — 12 hardcoded strings
+- [x] ClassDetail.tsx — 9 hardcoded strings
+- [x] CreateClassModal.tsx — 7 hardcoded strings
+- [x] SubmissionPlayer.tsx — 8 hardcoded strings
+- [x] ClassCard.tsx — 3 hardcoded strings
+- [x] SubmissionCard.tsx — 3 hardcoded strings
+- [x] lib/auth.ts — 8 error messages
+- [x] lib/submissions.ts — 5 error messages
+- [x] App.tsx — 1 laadtekst
+
+**Nieuwe/gewijzigde bestanden:**
+- `src/components/ui/LanguageSwitcher.tsx` (nieuw)
+- `src/components/ui/index.ts` — export toegevoegd
+- `src/i18n/index.ts` — localStorage persistentie
+- `src/i18n/locales/nl.json` — ~150 nieuwe keys
+- `src/i18n/locales/en.json` — ~150 nieuwe keys (volledige pariteit met NL)
+- Alle bovengenoemde componenten
+
+**Restpunten (niet-blokkerend):**
+- `console.error` berichten in `lib/auth.ts` zijn nog in het Nederlands (developer-only, niet user-facing)
+- `LocationEditor.tsx` (~25 strings) niet vertaald — admin-only tool, lage prioriteit
+
+### 36. Playhead Seeking in Docenten Compositie Viewer ✅
+**Status:** VOLTOOID (2026-02-27)
+**Complexiteit:** ⭐ Laag (hergebruik bestaand Playhead component)
+**Gerelateerd aan:** Playhead Seeking (#16), Teacher Dashboard (#8)
+
+**Beschrijving:**
+Docenten kunnen nu de playhead in de read-only timeline viewer (SubmissionPlayer) verslepen om snel naar een specifiek punt in de compositie te navigeren. Audio speelt correct vanaf de seek positie, inclusief halverwege een clip.
+
+**Geïmplementeerd:**
+- [x] Bestaand Playhead component hergebruikt in read-only modus
+- [x] Drag-functionaliteit voor playhead (44px touch hitbox, pointer events)
+- [x] Audio seek integratie via `Tone.Transport.seconds`
+- [x] Ruler strip met klikbare positionering
+- [x] Touch support voor tablet gebruik (was al ingebouwd in Playhead)
+- [x] Play/Pause respecteert seek positie (altijd reschedule + play from currentBeat)
+
+**Aanpak (minimale wijzigingen):**
+De oplossing bestond uit twee kleine wijzigingen:
+
+1. **Timeline.tsx** — Verwijder `!readOnly` guard van Playhead rendering:
+```typescript
+// VOOR: Playhead alleen in edit mode
+{!readOnly && onSeek && (<Playhead .../>)}
+
+// NA: Playhead wanneer onSeek beschikbaar is, ongeacht readOnly
+{onSeek && (<Playhead .../>)}
+```
+
+2. **SubmissionPlayer.tsx** — Voeg seek handler + aangepaste play logica toe:
+```typescript
+const handleSeek = useCallback((beat: number) => {
+  setCurrentBeat(beat);
+  const transport = Tone.getTransport();
+  transport.seconds = beatsToSeconds(beat, bpm);
+}, [bpm]);
+
+// handlePlayPause: altijd reschedule zodat seek positie gerespecteerd wordt
+audioService.scheduleTimeline(tracks, samples);
+audioService.setLoop(isLooping, totalBeats);
+audioService.play(currentBeat);
+```
+
+**Gewijzigde bestanden (3):**
+- `src/components/studio/Timeline.tsx` — Verwijder `!readOnly` conditie voor Playhead, update fallback line conditie
+- `src/components/teacher/SubmissionPlayer.tsx` — `handleSeek` callback, `beatsToSeconds` import, `onSeek` prop naar Timeline
+- (Playhead.tsx ongewijzigd — werkte al correct in read-only context)
+
+### 37. Grijs Leeg Gedeelte onder Timeline Tracks Verwijderen ✅
+**Status:** VOLTOOID (2026-02-27)
+**Complexiteit:** ⭐ Laag
+**Bron:** Visuele inspectie (2026-02-27)
+
+**Probleem:**
+De studio view scrollde verticaal voorbij de 8 tracks. Bij scrollen verscheen een grijs leeg gedeelte (`bg-studio-bg` achtergrond) onder de TransportControls.
+
+**Oorzaak:**
+`min-h-screen` (= `min-height: 100vh`) op de StudioView outer div. Op mobile browsers is `100vh` groter dan het daadwerkelijke zichtbare scherm (inclusief address bar), waardoor de container groter werd dan het viewport en de browser scrollbaar was.
+
+**Oplossing:**
+- `min-h-screen` vervangen door `h-dvh overflow-hidden`
+- `h-dvh` = dynamic viewport height, past zich aan aan het daadwerkelijke zichtbare viewport
+- `overflow-hidden` voorkomt dat de pagina zelf scrollt
+- Interne scroll (SampleLibrary verticaal, Timeline horizontaal) blijft werken
+
+**Gewijzigde bestanden:**
+- `src/components/studio/StudioView.tsx` — `min-h-screen` → `h-dvh overflow-hidden`
+
 ### 22. Real-time Geluiden Toevoegen tijdens Afspelen
 **Status:** Niet begonnen
 **Complexiteit:** ⭐⭐⭐⭐ Hoog
@@ -630,29 +1721,153 @@ Tijdens het afspelen van de timeline moeten gebruikers nieuwe samples kunnen toe
 **Technische uitdaging:**
 Tone.Part dynamisch updaten of nieuwe events toevoegen terwijl transport loopt. Mogelijk alternatief: alleen preview afspelen van nieuwe clip, daarna stoppen voor plaatsing.
 
+### 21. Template Systeem voor Docenten
+**Status:** Niet begonnen
+**Complexiteit:** ⭐ Laag
+**Risico:** Laag
+**Geschatte tijd:** 2-3 dagen
+**Bron:** Gebruiker feedback (2026-02-05) + brainstorm educatieve features (2026-02-27)
+
+**Beschrijving:**
+Docenten kunnen een "template" compositie klaarzetten die leerlingen als startpunt gebruiken. Bijvoorbeeld: drumbeat al op track 1, of bepaalde structuur voorbereid. Combineert goed met scène-markering (#40): docent kan template mét scène-indeling klaarzetten.
+
+**Waarom lage complexiteit:**
+De infrastructuur bestaat al grotendeels:
+- `loadTimeline()` in timelineStore kan bestaande compositie laden
+- `ThemeSelectionModal.tsx` is een kant-en-klaar UI-patroon
+- Een template is in feite een `SavedComposition` met extra metadata
+
+**Te implementeren:**
+- [ ] Template type uitbreiden: `SavedComposition` + categorie, beschrijving, moeilijkheidsgraad
+- [ ] "Opslaan als Template" optie in studio (docent-only)
+- [ ] Template koppelen aan een klas (Supabase tabel `templates`)
+- [ ] Leerling start met template i.p.v. lege timeline
+- [ ] TemplateSelectionModal (kopie van ThemeSelectionModal patroon)
+- [ ] UI in docent dashboard voor template beheer
+
+**Technische aanpak:**
+```typescript
+// Template is SavedComposition + metadata
+interface CompositionTemplate extends SavedComposition {
+  category: string;
+  difficulty: 'easy' | 'medium' | 'hard';
+  description: string;
+  classId?: string; // gekoppeld aan specifieke klas
+}
+```
+- Opslag: Supabase `templates` tabel OF JSON bundled in app
+- Laden: hergebruik `loadTimeline()` met template data
+- Docent-flow: Studio → "Opslaan als template" → koppel aan klas
+- Leerling-flow: Klas openen → template kiezen → voorgevulde timeline
+
+### 39. Volume per Track (Mixer)
+**Status:** Niet begonnen
+**Complexiteit:** ⭐⭐⭐ Medium-Hoog
+**Risico:** Medium
+**Geschatte tijd:** 3-4 dagen
+**Bron:** Brainstorm educatieve features (2026-02-27)
+
+**Beschrijving:**
+Kinderen kunnen per track het volume aanpassen, zoals een eenvoudig mengpaneel. Dit leert over dynamiek en balans in een compositie. Start met per-track volume (niet per clip) — dat is begrijpelijker en visueel helderder.
+
+**Huidige architectuur (probleem):**
+AudioService routeert elke `Tone.Player` direct naar `Tone.Destination`. Er is geen tussenliggende laag per track.
+
+**Te implementeren:**
+- [ ] `volume` field toevoegen aan `Track` type (default: 0dB)
+- [ ] Per-track `Tone.Gain` nodes aanmaken in `AudioService.scheduleTimeline()`
+- [ ] Audio routing: `Player → Gain → Destination` (i.p.v. `Player → Destination`)
+- [ ] Gain nodes synchroniseren met pause/resume/seek
+- [ ] Volume slider UI links van elke track (20-30px breed)
+- [ ] Track volume opslaan in composities (StorageService)
+- [ ] Volume meenemen in MP3 export (`audioExport.ts`)
+
+**Technische aanpak:**
+```typescript
+// Track type uitbreiden
+interface Track {
+  id: string;
+  clips: Clip[];
+  volume?: number;  // dB, default 0
+  muted?: boolean;  // optioneel: mute toggle
+}
+
+// AudioService: gain nodes per track
+private trackGains: Map<number, Tone.Gain> = new Map();
+
+scheduleTimeline(tracks, samples) {
+  // Maak gain node per track
+  tracks.forEach((track, i) => {
+    const gain = new Tone.Gain(dbToGain(track.volume ?? 0)).toDestination();
+    this.trackGains.set(i, gain);
+  });
+  // Route players door juiste gain node
+  player.connect(this.trackGains.get(trackIndex)!);
+}
+```
+
+**Risico's:**
+- Audio routing wijziging raakt hele pipeline (seeking, looping, pause/resume)
+- Track UI heeft weinig ruimte — slider moet compact zijn
+- MP3 export moet gain-levels respecteren
+
+### 40. Scène-markering op Timeline
+**Status:** Niet begonnen
+**Complexiteit:** ⭐⭐ Medium
+**Risico:** Laag
+**Geschatte tijd:** 2-3 dagen
+**Bron:** Brainstorm educatieve features (2026-02-27)
+**Gerelateerd aan:** Template Systeem (#21)
+
+**Beschrijving:**
+De timeline kan worden ingedeeld in gekleurde secties (scènes) die muzikale vorm zichtbaar maken. Bijvoorbeeld: geel = deel A (maat 1-8), oranje = deel B (maat 9-16), geel = deel A (maat 17-24). Dit leert kinderen over muzikale structuur (ABA, ABAB, rondo) zonder die termen te hoeven kennen.
+
+Scènes zijn globaal (over alle tracks heen), niet per track — dat sluit aan bij hoe muzikale vorm werkt.
+
+**Te implementeren:**
+- [ ] `Scene` type toevoegen: `{ id, startBeat, endBeat, name, color }`
+- [ ] `scenes: Scene[]` toevoegen aan `TimelineState`
+- [ ] Gekleurde achtergrond-divs renderen in Timeline (achter tracks, onder clips)
+- [ ] Scène-markering UI: klik op ruler om markeerpunt te plaatsen
+- [ ] Scène naam/kleur bewerkbaar (simpele modal of inline)
+- [ ] Scroll-synchronisatie met timeline content
+- [ ] Scènes opslaan in composities (StorageService)
+- [ ] Docent kan scène-indeling meegeven in templates (#21)
+
+**Technische aanpak:**
+```typescript
+interface Scene {
+  id: string;
+  startBeat: number;
+  endBeat: number;
+  name: string;       // "A", "B", "C" of vrije tekst
+  color: string;       // Tailwind kleur of hex
+}
+
+// TimelineState uitbreiden
+interface TimelineState {
+  // ... bestaande velden
+  scenes: Scene[];
+}
+```
+
+**Visueel:**
+```
+Ruler:    |1   |2   |3   |4   |5   |6   |7   |8   |
+Scènes:   [====== A (geel) ======][==== B (oranje) ====]
+Track 1:  [clip][clip]              [clip]
+Track 2:       [clip]         [clip][clip]
+```
+
+**Risico's:**
+- Z-index management: scène-achtergronden mogen clips niet verbergen
+- Scroll-sync moet correct werken bij horizontaal scrollen
+
 ---
 
 ## 🟡 P3 - MEDIUM PRIORITEIT
 
-### 21. Template Systeem voor Docenten
-**Status:** Niet begonnen
-**Complexiteit:** ⭐⭐⭐ Medium-Hoog
-**Bron:** Gebruiker feedback (2026-02-05)
-
-**Beschrijving:**
-Docenten kunnen een "template" compositie klaarzetten die leerlingen als startpunt gebruiken. Bijvoorbeeld: drumbeat al op track 1, of bepaalde structuur voorbereid.
-
-**Te implementeren:**
-- [ ] "Opslaan als Template" optie voor docent
-- [ ] Template koppelen aan een klas
-- [ ] Leerling start met template i.p.v. lege timeline
-- [ ] UI in docent dashboard voor template beheer
-- [ ] Template data structuur (apart van submissions)
-
-**Technische overwegingen:**
-- Supabase tabel voor templates (klas_id, composition_data, naam)
-- Leerling flow aanpassen: check of klas een template heeft
-- Kopieer template data naar nieuwe compositie bij start
+### 21. Template Systeem voor Docenten → verplaatst naar P2 (zie #21 onder P2)
 
 ### 26. Ambient Audio Cleanup & Pause/Stop Fix (CRIT-3) ✅
 **Status:** VOLTOOID (2026-02-26)
@@ -681,6 +1896,44 @@ Docenten kunnen een "template" compositie klaarzetten die leerlingen als startpu
 **Gewijzigde bestanden:**
 - `src/hooks/useLocationAudio.ts` - cancelled flag in ambient useEffect
 - `src/services/AudioService.ts` - pause() en stop() stoppen nu alle players
+
+### 41. Soundscape Storytelling (Beeld bij Compositie)
+**Status:** Niet begonnen
+**Complexiteit:** ⭐⭐⭐⭐ Hoog
+**Risico:** Medium-Hoog
+**Geschatte tijd:** 5-8 dagen
+**Bron:** Brainstorm educatieve features (2026-02-27)
+**Afhankelijk van:** Scène-markering (#40)
+
+**Beschrijving:**
+Kinderen maken een soundtrack bij visuele scenes. Afbeeldingen of slides worden gekoppeld aan scènes op de timeline, zodat ze een soundscape componeren bij een verhaal. Dit verbindt muziek aan emotie en narratief.
+
+Twee varianten:
+1. **Stripverhaal-modus**: Reeks afbeeldingen als slides, elke slide gekoppeld aan een scène
+2. **Achtergrond-modus**: Eén afbeelding als visuele context boven de timeline
+
+**Te implementeren:**
+- [ ] Image gallery panel in studio (tabbed interface of sidebar)
+- [ ] `CompositionImage` type: `{ id, url, startBeat, endBeat, name }`
+- [ ] Afbeeldingen koppelen aan scènes (#40)
+- [ ] Afbeelding upload mechanisme (drag & drop of file input)
+- [ ] Afbeelding opslag: Supabase Storage (localStorage te klein)
+- [ ] Slide-weergave boven timeline, synchroon met playback
+- [ ] Docent kan afbeeldingen meegeven in templates (#21)
+
+**Technische uitdagingen:**
+- **UI layout**: Huidige 3-panel layout (`h-dvh`) laat weinig ruimte voor afbeeldingen. Opties:
+  - Tabbed interface: wisselen tussen "Samples" en "Beeld" tab
+  - Collapsible panel boven timeline
+  - Slides als overlay/modal tijdens playback
+- **Opslag**: localStorage max 5MB, ongeschikt voor afbeeldingen → Supabase Storage nodig
+- **Performance**: Grote afbeeldingen kunnen timeline-rendering vertragen
+- **Compressie**: Client-side image resize/compress voor upload
+
+**Risico's:**
+- Layout-wijziging kan responsive design breken
+- Supabase Storage is nieuw terrein (nog niet gebruikt in app)
+- Scope creep: "afbeeldingen" kan veel richtingen op
 
 ### 27. Locatie Editor Verbeteringen (5.8)
 **Status:** Basis werkend, verbeteringen optioneel
@@ -772,38 +2025,144 @@ Na onderzoek blijkt de huidige weergave prima te werken. Alle 8 tracks zijn zich
 3. Hotspot configuratie (LocationEditor)
 4. Vertaling keys (NL + EN)
 
-### 31. Beat Ruler met Cijfers
-**Status:** Niet begonnen
+### 31. Beat Ruler met Maatnummers ✅
+**Status:** VOLTOOID (2026-02-27)
 **Complexiteit:** ⭐ Laag
 **Gerelateerd aan:** Playhead Scrubbing (#16)
 
 **Beschrijving:**
-De ruler strip boven de timeline toont momenteel alleen maatgrens-lijnen (elke 4 beats). Een toekomstige verbetering is het toevoegen van beat/maat cijfers.
+Maatnummers (1-32) toegevoegd aan de ruler strip boven de timeline. Elke maatgrens (elke 4 beats) toont nu een subtiel nummer.
 
-**Te implementeren:**
-- [ ] Beat nummers tonen in ruler (1, 2, 3, 4 of maatnummers)
-- [ ] Responsive tekst grootte (kleiner op mobile)
-- [ ] Alleen major beats labelen (elke 4 of elke 8)
+**Geïmplementeerd:**
+- [x] Maatnummers (1-32) bij elke maatgrens-lijn in ruler
+- [x] Responsive tekst grootte (8px mobile, 9px desktop)
+- [x] Subtiele styling (`text-neutral-400`, `pointer-events-none`)
+- [x] Playhead blijft volledig functioneel (nummers blokkeren niet)
+- [x] Zichtbaar in zowel edit als read-only mode
 
-**Locatie:** `src/components/studio/Timeline.tsx` - ruler strip sectie
+**Gewijzigde bestanden:**
+- `src/components/studio/Timeline.tsx` - `<span>` met maatnummer toegevoegd in ruler measure lines loop
 
-**Notitie:** Ruler strip infrastructuur is al aanwezig door Playhead Scrubbing implementatie.
+### 42. Samenspel / Ensemble-modus
+**Status:** 🔄 GEPARKEERD (conceptfase)
+**Complexiteit:** ⭐⭐⭐⭐⭐ Zeer Hoog
+**Risico:** Hoog
+**Geschatte tijd:** 4-6 weken (als apart project)
+**Bron:** Brainstorm educatieve features (2026-02-27)
+**Vervangt:** Multiplayer (#32) — dit is een concrete, educatief onderbouwde variant
 
-### 32. Multiplayer (5.7)
-**Status:** 🔄 GEPARKEERD
-**Complexiteit:** ⭐⭐⭐⭐⭐ Zeer hoog
+**Beschrijving:**
+Meerdere kinderen werken op eigen device aan dezelfde compositie, elk op toegewezen tracks. Na individueel werken drukken ze op "Samenvoegen" en horen ze voor het eerst het totaal. Dit simuleert een echt ensemble: je moet ruimte laten en vertrouwen dat het geheel meer wordt dan de delen.
 
-- [ ] Real-time samenwerken
-- [ ] Room systeem
-- [ ] Chat/emoji
+**Waarom zeer hoog:**
+De hele app is single-user:
+- Alle state is localStorage-based en lokaal
+- Zustand stores gaan uit van één gebruiker
+- AudioService is een singleton zonder netwerk-sync
+- Geen real-time infrastructuur aanwezig
 
-**Technisch:** Vereist WebSocket server (Supabase Realtime of eigen backend). Significante architectuur wijzigingen nodig.
+**Te implementeren (grote lijnen):**
+- [ ] Real-time sync via Supabase Realtime (WebSocket)
+- [ ] Server-side composition document model met versie-beheer
+- [ ] Conflict resolution (twee kinderen plaatsen clip op zelfde beat)
+- [ ] Session management (wie zit waar, welke tracks zijn van wie)
+- [ ] Track-toewijzing per deelnemer (bijv. leerling A = track 1-2, leerling B = 3-4)
+- [ ] "Samenvoegen" functie: combineer alle tracks tot één compositie
+- [ ] Offline fallback voor lokale edits
+- [ ] Audio playback sync over netwerk (moeilijk door latency)
 
-**Aanbeveling:** Alleen overwegen als er concrete vraag naar is.
+**Open vragen (nog te brainstormen):**
+- Werkt het met de huidige samples of zijn andere geluiden nodig?
+- Hoe voorkom je out-of-sync plaatsingen? (bijv. A plaatst drum op beat 1, B op beat 1.5)
+- Is het verrassingselement (pas horen bij samenvoegen) de kern, of willen we ook live meeluisteren?
+- Alternatief: asynchrone samenwerking (geen realtime sync nodig, leerlingen werken om de beurt)
+
+**Aanbeveling:**
+Behandel als apart "Fase 2" project, niet als incrementele feature. Overweeg eerst een simpelere variant: asynchrone ensemble (leerling A maakt tracks 1-2, uploadt, leerling B downloadt en vult tracks 3-4 aan).
 
 ---
 
 ## ⚪ P5 - ZEER LAGE PRIORITEIT / PARKEREN
+
+### 38. i18n Review (Terugkerend)
+**Status:** Periodiek nalopen
+**Complexiteit:** ⭐ Laag
+**Gerelateerd aan:** i18n Audit (#35) ✅
+
+**Beschrijving:**
+Na elke grotere feature-implementatie controleren of alle nieuwe teksten vertaald zijn in zowel NL als EN. Dit voorkomt dat er geleidelijk weer hardcoded teksten insluipen.
+
+**Checklist bij review:**
+- [ ] Grep op hardcoded Nederlandse teksten in `src/components/` en `src/lib/`
+- [ ] Vergelijk `nl.json` en `en.json` op ontbrekende keys (alle keys moeten in beide bestaan)
+- [ ] Test app in EN modus: zijn er onvertaalde teksten zichtbaar?
+- [ ] Nieuwe componenten: gebruiken ze `useTranslation()` + `t()` calls?
+
+**Wanneer nalopen:**
+- Na implementatie van elke P1/P2 feature
+- Bij toevoeging van nieuwe componenten of schermen
+- Bij toevoeging van nieuwe error handling
+
+**Niet in scope:** LocationEditor.tsx (admin-only, ~25 strings), console.error berichten (developer-only)
+
+---
+
+### 43. Lesbrieven & Werkvormen (buiten de app)
+**Status:** Niet begonnen
+**Complexiteit:** ⭐ Laag (content-creatie, geen code)
+**Risico:** Geen
+**Geschatte tijd:** Doorlopend, parallel aan development
+**Bron:** Brainstorm educatieve features (2026-02-27)
+
+**Beschrijving:**
+Lesbrieven met concrete werkvormen voor gebruik van SoundScout in de klas. Kan parallel aan alle development. Bevat didactische activiteiten die niet per se in de app hoeven maar de educatieve waarde enorm versterken.
+
+**Te maken:**
+- [ ] Lesbrief 1: Muzikale uitdagingen met beperkingen
+  - "Gebruik maximaal 4 samples"
+  - "Begin zacht en eindig luid"
+  - "Combineer geluiden uit twee locaties"
+  - "Maak een stuk van precies 8 maten"
+- [ ] Lesbrief 2: Reflectie na het componeren
+  - "Welk gevoel wilde je overbrengen?"
+  - "Welk geluid is het belangrijkst?"
+  - "Wat zou je anders doen?"
+  - Peer feedback formulier
+- [ ] Lesbrief 3: Luisteropdrachten
+  - Actief luisteren naar elkaars composities
+  - Instrumenten/geluiden herkennen
+  - Emotie/sfeer beschrijven
+- [ ] Lesbrief 4: Soundscape storytelling (zonder app-feature)
+  - Verhaal voorlezen, kinderen maken soundtrack
+  - Kan met bestaande app-functionaliteit
+- [ ] Format: PDF of Word, met leerdoelen, tijdsindicatie, materiaallijst
+
+**Doelgroepen:**
+- Groep 3-4 (eenvoudige opdrachten, weinig tekst)
+- Groep 5-6 (meer zelfstandig, complexere opdrachten)
+- Groep 7-8 (reflectie, peer feedback, muzikale vorm)
+
+### 44. Luister-en-Reageer Modus (Omgekeerd Spel)
+**Status:** 🔄 GEPARKEERD (concept)
+**Complexiteit:** ⭐⭐⭐⭐ Hoog
+**Risico:** Medium
+**Geschatte tijd:** 2-3 weken
+**Bron:** Brainstorm educatieve features (2026-02-27)
+
+**Beschrijving:**
+Omgekeerde versie van het huidige spel: kinderen horen een geluid en moeten het op de juiste plek in de locatieplaat plaatsen (i.p.v. geluiden uit de locatie halen). Dit traint actief luisteren en auditieve herkenning.
+
+**Waarom geparkeerd:**
+Dit is een geheel nieuwe game-modus die de huidige locatie-flow fundamenteel verandert. De locatie-componenten (Hotspot, LocationScene) zijn gebouwd voor "klik = hoor geluid", niet voor "hoor geluid = sleep naar plek". Vereist nieuw interactiemodel.
+
+**Concept:**
+1. Kind komt op locatie
+2. Geluid wordt afgespeeld (zonder visuele hint)
+3. Kind sleept geluid-icoon naar juiste hotspot in de plaat
+4. Correcte plaatsing: geluid wordt "verzameld"
+5. Fout: visuele feedback, opnieuw proberen
+
+**Aanbeveling:** Leuk idee voor toekomstige versie. Kan als aparte game-modus naast de huidige "verken & verzamel" modus.
 
 ### 33. Sample Effecten (5.4)
 **Status:** Type definities voorbereid, geen UI/audio implementatie
@@ -857,12 +2216,15 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 | `Location.ambientAudio` | ✅ | Ambient audio |
 | Theme system | ✅ | Thema pakketten |
 | RLS policies | ✅ | Database security |
+| `loadTimeline()` | ✅ | Template systeem |
+| `ThemeSelectionModal` patroon | ✅ | Template/scène selectie UI |
+| `ClipEffects.volume` | ✅ | Volume per track (type basis) |
 
 ---
 
 ## Volgende Stappen
 
-### ✅ Voltooid (1-20)
+### ✅ Voltooid (1-24)
 1. ~~Locaties & Stadskaart~~ ✅
 2. ~~MP3 Export~~ ✅
 3. ~~Lokaal Opslaan + Beheren~~ ✅
@@ -883,33 +2245,65 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 18. ~~Getrimde Clip Kopiëren/Dupliceren~~ ✅
 19. ~~Getrimde Clip Visuele Lengte bij Drag~~ ✅
 20. ~~Emergency/Feedback Systeem~~ ✅
+21. ~~Beat Ruler met Maatnummers~~ ✅
+22. ~~Delen met Link~~ ✅
+23. ~~i18n Audit~~ ✅
+24. ~~Playhead Seeking Docenten Viewer~~ ✅
 
-### 🔴 Nu: P1
-- ~~Vereenvoudigde Transport Controls (#23)~~ ✅
-- ~~Getrimde Clip Visuele Lengte bij Drag (#24)~~ ✅
-- ~~Getrimde Clip Kopiëren/Dupliceren (#25)~~ ✅
+### 🔴 Nu: P1 — Features voltooid, technische basis versterken
 
-**Alle P1 items voltooid!** 🎉
+**Alle P1 feature-items voltooid!** 🎉
 
-### 🟠 Daarna: P2
+**Volgende stap: Technische schuld aanpakken vóór nieuwe features:**
+
+Week 1 — Kritieke veiligheid + quick wins:
+- TP0-1: `CompositionData` interface (vervangt alle `any`)
+- TP0-2: Rate limiting op submissions
+- TP0-3: CHECK constraints op Supabase
+- TP0-4: max_classes enforcement in DB
+- TP1-2: Ambient audio fade timeout fix
+
+Week 2 — Architectuur stabiliteit:
+- TP1-1: StageView.tsx split (506 → 4 bestanden)
+- TP1-5: Orchestratie-functie compositie-initialisatie
+- TP2-1: gameStore → appStore migratie
+
+Week 3 — Robuustheid:
+- TP1-3: Error handling async hooks
+- TP1-4: Feature-level Error Boundaries
+- TP2-2: libraryStore redundante state
+
+### 🟠 Daarna: P2 (educatieve features + bestaand)
 - ~~Thema Selectie Modal (#13)~~ ✅
-- Delen met Link (#14)
+- ~~Delen met Link (#14)~~ ✅
 - ~~Emergency/Feedback Systeem (#15)~~ ✅
 - Touch Gevoeligheid & Autoplay Issues (#16)
+- **Template Systeem voor Docenten (#21)** ← geüpgraded van P3 (voorwaarde: TP1-5 orchestratie)
 - Real-time Geluiden Toevoegen tijdens Afspelen (#22)
+- ~~Tweetalig Systeem Grondig Implementeren (#35)~~ ✅
+- ~~Playhead Seeking in Docenten Compositie Viewer (#36)~~ ✅
+- ~~Grijs Leeg Gedeelte onder Timeline Tracks Verwijderen (#37)~~ ✅
+- **Volume per Track / Mixer (#39)** ← nieuw (voorwaarde: TP0-1 types, combineer met TP2-6 parameter bloat)
+- **Scène-markering op Timeline (#40)** ← nieuw
+
+Aanbevolen volgorde P2: Templates (#21) → Scènes (#40) → Volume (#39)
 
 ### 🟡 Later: P3
-- Template Systeem voor Docenten (#21)
 - ~~Ambient Audio Cleanup & Pause/Stop Fix (#26)~~ ✅
-- Locatie Editor Verbeteringen (#27)
 - Eigen Samples Opnemen (#28)
 - Digibord/Classroom Display Optimalisatie (#29)
 - ~~Sample Wis Knop UI Aanpassen (#34)~~ ✅
+- **Soundscape Storytelling (#41)** ← nieuw (afhankelijk van #40)
 
 ### 🟢 Toekomst: P4
 - Extra Locaties (#30)
-- Beat Ruler met Cijfers (#31)
-- Multiplayer (#32)
+- ~~Beat Ruler met Maatnummers (#31)~~ ✅
+- Locatie Editor Verbeteringen (#27)
+- **Samenspel / Ensemble-modus (#42)** ← vervangt Multiplayer (#32)
+- TP4 technische items (AudioService split, factory pattern, test suites)
 
 ### ⚪ Backlog: P5
+- i18n Review — terugkerend (#38)
 - Sample Effecten (#33)
+- **Lesbrieven & Werkvormen (#43)** ← nieuw, parallel aan development
+- **Luister-en-Reageer Modus (#44)** ← nieuw, geparkeerd

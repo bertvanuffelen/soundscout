@@ -594,6 +594,39 @@ Zie: `docs/ROADMAP-CLIP-TRIMMING.md`
 
 ---
 
+---
+
+## Stap 17: Beat Ruler met Maatnummers (#31)
+Status: **VOLTOOID** (27-02-2026)
+
+- [x] Maatnummers (1-32) toegevoegd aan ruler strip boven timeline (27-02-2026)
+- [x] Responsive tekst grootte: 8px mobile, 9px desktop (27-02-2026)
+- [x] Subtiele styling: `text-neutral-400`, `pointer-events-none`, `select-none` (27-02-2026)
+- [x] Playhead interactie niet beïnvloed (nummers zijn non-interactive) (27-02-2026)
+- [x] Werkt in zowel edit als read-only mode (27-02-2026)
+- [x] Test: TypeScript + build zonder errors (27-02-2026)
+- [x] Test: ESLint Timeline.tsx 0 errors (27-02-2026)
+
+### Bestanden gewijzigd
+| Bestand | Wijziging |
+|---------|-----------|
+| `src/components/studio/Timeline.tsx` | `<span>` met maatnummer in ruler measure lines loop |
+
+### Implementatie
+Binnen de bestaande `.filter((b) => b % 4 === 0).map()` loop werd een `<span>` toegevoegd als kind van de bestaande maatlijn `<div>`:
+
+```typescript
+const measureNumber = beat / 4 + 1;
+// ...
+<span className="absolute left-0.5 top-0 text-[8px] sm:text-[9px] leading-4 text-neutral-400 select-none pointer-events-none">
+  {measureNumber}
+</span>
+```
+
+Geen bestaande code gewijzigd — alleen toevoeging.
+
+---
+
 ### Volgende stappen (buiten scope MVP)
 - Echte MP3 audio bestanden toevoegen
 - Meerdere locaties (haven, markt, bos)

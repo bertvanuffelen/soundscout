@@ -10,7 +10,8 @@
       "Bash(done)",
       "Bash(ffprobe:*)",
       "Bash(ls:*)",
-      "Bash(for f in /Users/bertvanuffelen/Documents/gebouwde-apps/SoundScout/public/audio/themes/winterspelen/winterdorp/*.mp3)"
+      "Bash(for f in /Users/bertvanuffelen/Documents/gebouwde-apps/SoundScout/public/audio/themes/winterspelen/winterdorp/*.mp3)",
+      "Bash(wc:*)"
     ]
   }
 }
