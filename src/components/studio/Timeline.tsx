@@ -6,12 +6,13 @@ import { Playhead } from './Playhead';
 import { VISIBLE_BEATS } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
+import { useAudioStore } from '../../stores/audioStore';
 
 interface TimelineProps {
   tracks: TrackType[];
   bpm: number;
   totalBeats: number;
-  currentBeat: number;
+  currentBeat?: number;  // Optional: uses store subscription if not provided
   isPlaying: boolean;
   onSeek?: (beat: number) => void;
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
@@ -23,7 +24,7 @@ export const Timeline = memo(function Timeline({
   tracks,
   bpm,
   totalBeats,
-  currentBeat,
+  currentBeat: propCurrentBeat,
   isPlaying,
   onSeek,
   snapPreview,
@@ -34,6 +35,11 @@ export const Timeline = memo(function Timeline({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
+
+  // Subscribe to currentBeat from store (for StudioView)
+  // or use prop (for SubmissionPlayer with local state)
+  const storeCurrentBeat = useAudioStore((s) => s.currentBeat);
+  const currentBeat = propCurrentBeat ?? storeCurrentBeat;
 
   // Handle click on timeline background to clear selection
   const handleTimelineClick = useCallback(

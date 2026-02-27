@@ -44,7 +44,6 @@ export function StudioView() {
 
   // Audio state
   const isPlaying = useAudioStore((s) => s.isPlaying);
-  const currentBeat = useAudioStore((s) => s.currentBeat);
 
   // Selection state
   const selectedClipId = useSelectionStore((s) => s.selectedClipId);
@@ -224,7 +223,6 @@ export function StudioView() {
           tracks={tracks}
           bpm={bpm}
           totalBeats={totalBeats}
-          currentBeat={currentBeat}
           isPlaying={isPlaying}
           onSeek={handleSeek}
           snapPreview={snapPreview}

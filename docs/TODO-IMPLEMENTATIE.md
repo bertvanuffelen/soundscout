@@ -959,6 +959,14 @@ interface TimelineState {
 - [x] ESC om te sluiten, focus trap
 - [x] Vertalingen NL + EN
 
+#### UX-9. Studio pagina indeling herbekijken (layout brainstorm)
+**Status:** Niet begonnen — Later oppakken
+**Effort:** Medium (brainstorm + implementatie)
+
+**Probleem:** De bewerkingsbalk (EditToolbar) neemt relatief veel ruimte in beslag, terwijl de sample-bibliotheek te klein is. De verhoudingen op de Studio pagina moeten opnieuw bekeken worden.
+
+**Aanpak:** Brainstormsessie over de ideale indeling van de Studio pagina: EditToolbar, Timeline, en SampleLibrary. Pas daarna implementeren.
+
 ---
 
 ### ACCESSIBILITY (WCAG 2.1 AA)
@@ -1076,14 +1084,15 @@ Bestaande implementatie voldoet aan WCAG 1.4.1 (Use of Color).
 - [x] Default exports toegevoegd waar nodig
 - [x] `FeatureErrorBoundary` wrapping behouden per lazy component
 
-#### PERF-2. currentBeat re-render cascade
-**Status:** Niet begonnen
-**Effort:** Medium (3-4 uur)
-**Impact:** 20x minder re-renders tijdens playback
+#### PERF-2. currentBeat re-render cascade ✅
+**Status:** Voltooid (2026-02-27)
+**Effort:** Klein (30 min)
+**Impact:** ~20x minder re-renders tijdens playback
 
-**Probleem:** `setCurrentBeat()` elke 50ms triggert Zustand subscribers. Timeline + StudioView + alle children renderen ~20x/sec.
-
-**Oplossing:** Gebruik `useRef` + `requestAnimationFrame` voor playhead positie. Playhead leest direct uit ref, geen store update nodig voor pure visuele update. Alleen bij seek/stop de store updaten.
+- [x] `currentBeat` subscription verwijderd uit StudioView (renderde ~20x/sec)
+- [x] Timeline luistert nu zelf naar audioStore voor currentBeat
+- [x] `currentBeat` prop optioneel gemaakt (backward compatible met SubmissionPlayer)
+- [x] StudioView rendert nu alleen bij echte interacties (play/pause, DnD, etc.)
 
 #### PERF-3. Vite build optimalisatie ✅
 **Status:** Voltooid (2026-02-27)
@@ -1092,13 +1101,13 @@ Bestaande implementatie voldoet aan WCAG 1.4.1 (Use of Color).
 - [x] `manualChunks` in vite.config.ts: tone (235KB), dnd-kit (54KB), audio-export (169KB), supabase (168KB)
 - [x] Libraries worden apart gecached door browser — app-updates herdownloaden ze niet
 
-#### PERF-4. Image optimalisatie
-**Status:** Niet begonnen
+#### PERF-4. Image optimalisatie — ⏸️ P5 (niet essentieel)
+**Status:** Uitgesteld — geen merkbare laadproblemen in de praktijk (ook niet op tablets in de klas).
 **Effort:** Medium (2-3 uur)
 
 **Probleem:** Geen srcset, geen lazy loading, geen WebP, geen blur-up placeholder. Mobiel laadt full-resolution images.
 
-**Oplossing:**
+**Oplossing (indien ooit nodig):**
 - [ ] Lazy loading op map/location afbeeldingen (`loading="lazy"`)
 - [ ] WebP versies genereren van alle PNG achtergronden
 - [ ] `srcset` voor responsive image loading
@@ -1157,13 +1166,16 @@ Bestaande implementatie voldoet aan WCAG 1.4.1 (Use of Color).
 - [x] `index.html`: `lang="en"` → `lang="nl"`
 - [x] `i18n/index.ts`: `document.documentElement.lang = lng` bij taalwissel
 
-#### DEPLOY-5. Content Security Policy (CSP)
-**Status:** Niet begonnen
-**Effort:** Medium (2-3 uur)
+#### DEPLOY-5. Content Security Policy (CSP) ✅
+**Status:** Voltooid (2026-02-27)
+**Effort:** Klein (30 min)
 
-**Probleem:** Geen CSP headers. XSS niet geblokkeerd op server-niveau.
-
-**Oplossing:** CSP in .htaccess met whitelists voor Supabase, EmailJS, Google Fonts.
+- [x] CSP header toegevoegd aan `public/.htaccess`
+- [x] `default-src 'self'` — alles geblokkeerd tenzij expliciet toegestaan
+- [x] Whitelists: Supabase, EmailJS API, Google Fonts
+- [x] `img-src` + `media-src` + `worker-src` met blob: support (Tone.js)
+- [x] `frame-src 'none'` + `object-src 'none'` — geen iframes/plugins
+- [x] `upgrade-insecure-requests` — automatisch HTTP → HTTPS
 
 #### DEPLOY-6. Favicon pad fix ✅
 **Status:** Voltooid (2026-02-27) — Gecontroleerd, paden kloppen.
