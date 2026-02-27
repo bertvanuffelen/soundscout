@@ -78,8 +78,8 @@ export const VolumePopover = memo(function VolumePopover({
     onVolumeChange(VOLUME_DEFAULT_DB);
   }, [onVolumeChange]);
 
-  // Display value
-  const displayDb = volumeDb > 0 ? `+${volumeDb}` : `${volumeDb}`;
+  // Display as percentage (0 dB = 100%)
+  const displayPercent = Math.round(Math.pow(10, volumeDb / 20) * 100);
 
   return (
     <div
@@ -95,7 +95,7 @@ export const VolumePopover = memo(function VolumePopover({
           {label}
         </span>
         <span className="text-[10px] text-neutral-400 tabular-nums ml-2">
-          {isMuted ? t('studio.muted') : `${displayDb} dB`}
+          {isMuted ? t('studio.muted') : `${displayPercent}%`}
         </span>
       </div>
 
