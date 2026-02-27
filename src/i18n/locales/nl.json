@@ -126,6 +126,8 @@
   },
   "studio": {
     "title": "Studio",
+    "undo": "Ongedaan maken",
+    "redo": "Opnieuw",
     "library": "Bibliotheek",
     "timeline": "Tijdlijn",
     "backToLocation": "Terug naar Stad",

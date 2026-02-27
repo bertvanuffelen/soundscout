@@ -126,6 +126,8 @@
   },
   "studio": {
     "title": "Studio",
+    "undo": "Undo",
+    "redo": "Redo",
     "library": "Library",
     "timeline": "Timeline",
     "backToLocation": "Back to City",

@@ -8,7 +8,7 @@
  * History wordt gereset bij het laden van een opgeslagen compositie.
  */
 
-import { useEffect, useRef, useCallback } from 'react';
+import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTimelineStore } from '../stores/timelineStore';
 import type { Track } from '../types';
 
@@ -52,6 +52,14 @@ export function useUndoRedoTimeline() {
   const indexRef = useRef(-1);
   // Flag om eigen wijzigingen (undo/redo) te negeren
   const isRestoringRef = useRef(false);
+  // Reactive state voor UI knoppen
+  const [canUndo, setCanUndo] = useState(false);
+  const [canRedo, setCanRedo] = useState(false);
+
+  const updateCanFlags = useCallback(() => {
+    setCanUndo(indexRef.current > 0);
+    setCanRedo(indexRef.current < historyRef.current.length - 1);
+  }, []);
 
   // Initialiseer met huidige state
   useEffect(() => {
@@ -92,10 +100,11 @@ export function useUndoRedoTimeline() {
 
         historyRef.current = newHistory;
         indexRef.current = newHistory.length - 1;
+        updateCanFlags();
       }
     );
     return unsubscribe;
-  }, []);
+  }, [updateCanFlags]);
 
   const undo = useCallback(() => {
     const index = indexRef.current;
@@ -115,7 +124,8 @@ export function useUndoRedoTimeline() {
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;
-  }, []);
+    updateCanFlags();
+  }, [updateCanFlags]);
 
   const redo = useCallback(() => {
     const index = indexRef.current;
@@ -136,10 +146,8 @@ export function useUndoRedoTimeline() {
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;
-  }, []);
-
-  const canUndo = indexRef.current > 0;
-  const canRedo = indexRef.current < historyRef.current.length - 1;
+    updateCanFlags();
+  }, [updateCanFlags]);
 
   return { undo, redo, canUndo, canRedo };
 }
