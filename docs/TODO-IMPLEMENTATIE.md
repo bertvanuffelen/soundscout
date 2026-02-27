@@ -910,18 +910,14 @@ interface TimelineState {
 
 **Risico:** Elke timeline-mutatie (addClip, moveClip, removeClip, duplicateClip, trim) moet `pushHistory()` aanroepen. Vergeten = inconsistente undo stack.
 
-#### UX-3. Succes-animatie bij sample verzamelen
-**Status:** Niet begonnen
-**Effort:** Medium (3-4 uur)
-**Impact:** Positieve bekrachtiging — hotspot verdwijnt nu zonder viering
+#### UX-3. Succes-animatie bij sample verzamelen ✅
+**Status:** Voltooid (2026-02-27)
+**Effort:** Klein (30 min)
 
-**Probleem:** Kind klikt op hotspot, geluid speelt, hotspot verdwijnt. Geen visuele bevestiging dat iets goed is gegaan.
-
-**Oplossing:** Korte animatie-sequence:
-1. Hotspot schaalt op (scale 1.3) met glow
-2. Geluid speelt + korte "pling" bevestiging
-3. Hotspot animeert richting recorder bar
-4. Recorder slot bounced bij ontvangst
+- [x] Glow + schaaleffect animatie (scale 1.4 → 1.6 + fade out, 500ms)
+- [x] Verhoogde box-shadow glow bij verzamelen
+- [x] `pointer-events-none` tijdens animatie (voorkomt dubbel-klikken)
+- [x] Respecteert `prefers-reduced-motion` (via globale CSS regel)
 
 #### UX-4. Kindvriendelijker vocabulaire — 📋 WOORDENLIJST AANGEMAAKT
 **Status:** Wacht op review door product owner

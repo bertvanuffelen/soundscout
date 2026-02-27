@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Hotspot as HotspotType, Sample } from '../../types';
 import { DEFAULT_HOTSPOT_RADIUS } from '../../constants/config';
@@ -13,26 +14,33 @@ interface HotspotProps {
 
 export function Hotspot({ hotspot, sample, disabled, onCollect, onHoverStart, onHoverEnd }: HotspotProps) {
   const { t } = useTranslation();
+  const [collected, setCollected] = useState(false);
 
   const handleClick = () => {
-    if (disabled) return;
+    if (disabled || collected) return;
+    setCollected(true);
     onCollect(sample);
   };
 
   return (
     <button
       onClick={handleClick}
-      onMouseEnter={() => !disabled && onHoverStart(sample.id)}
+      onMouseEnter={() => !disabled && !collected && onHoverStart(sample.id)}
       onMouseLeave={() => onHoverEnd(sample.id)}
-      onTouchStart={() => !disabled && onHoverStart(sample.id)}
+      onTouchStart={() => !disabled && !collected && onHoverStart(sample.id)}
       onTouchEnd={() => onHoverEnd(sample.id)}
       disabled={disabled}
       aria-label={t(sample.name)}
       title={t(sample.name)}
       className={`
         hotspot
-        absolute rounded-full transition-transform
-        ${disabled ? 'opacity-20 cursor-not-allowed' : 'cursor-pointer hover:scale-110 active:scale-95'}
+        absolute rounded-full
+        ${collected
+          ? 'animate-hotspot-collect pointer-events-none'
+          : disabled
+            ? 'opacity-20 cursor-not-allowed transition-transform'
+            : 'cursor-pointer transition-transform hover:scale-110 active:scale-95'
+        }
       `}
       style={{
         left: `${hotspot.x}%`,
@@ -46,7 +54,11 @@ export function Hotspot({ hotspot, sample, disabled, onCollect, onHoverStart, on
         borderColor: sample.color,
         borderWidth: '2px',
         borderStyle: 'solid',
-        boxShadow: disabled ? 'none' : `0 0 8px 2px ${sample.color}40`,
+        boxShadow: collected
+          ? `0 0 24px 8px ${sample.color}80`
+          : disabled
+            ? 'none'
+            : `0 0 8px 2px ${sample.color}40`,
       }}
     />
   );
