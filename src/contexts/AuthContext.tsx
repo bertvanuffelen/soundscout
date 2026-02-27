@@ -10,6 +10,8 @@ import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { supabase } from '../lib/supabase';
+import { sanitizeError } from '../utils/errorSanitize';
+import { logger } from '../utils/logger';
 
 // Types
 interface AuthContextType {
@@ -43,7 +45,7 @@ export function AuthProvider({ children }: AuthProviderProps) {
         setSession(session);
         setUser(session?.user ?? null);
       } catch (error) {
-        console.error('Fout bij laden sessie:', error);
+        logger.error('Fout bij laden sessie:', sanitizeError(error));
       } finally {
         setLoading(false);
       }

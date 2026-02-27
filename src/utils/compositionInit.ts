@@ -43,6 +43,11 @@ export async function initializeNewComposition(
   useTimelineStore.getState().clearAllTracks();
   useLibraryStore.getState().clearLibrary();
 
+  // Stap 2b: Schoon ongebruikte audio players op (voorkom memory leak bij theme-wissel)
+  const activeSamples = useThemeStore.getState().getSamples();
+  const activeSampleIds = new Set(activeSamples.map((s: { id: string }) => s.id));
+  audioService.disposeUnusedPlayers(activeSampleIds);
+
   // Stap 3: Audio initialiseren (async, niet kritiek)
   let audioSuccess = true;
   try {

@@ -70,12 +70,13 @@ class StorageServiceImpl {
 
   /**
    * Save a new composition
+   * @returns The saved composition, or null if save failed
    */
   saveComposition(
     name: string,
     timeline: TimelineState,
     samples: Sample[]
-  ): SavedComposition {
+  ): SavedComposition | null {
     const compositions = this.getCompositions();
 
     // Check max limit
@@ -101,7 +102,12 @@ class StorageServiceImpl {
     };
 
     compositions.push(newComposition);
-    this.set('soundscout:compositions', compositions);
+    const saved = this.set('soundscout:compositions', compositions);
+
+    if (!saved) {
+      logger.error('Failed to save new composition', { name });
+      return null;
+    }
 
     logger.info('Composition saved', { id: newComposition.id, name });
     return newComposition;
@@ -109,6 +115,7 @@ class StorageServiceImpl {
 
   /**
    * Update an existing composition
+   * @returns The updated composition, or null if update/save failed
    */
   updateComposition(
     id: string,
@@ -134,7 +141,12 @@ class StorageServiceImpl {
     };
 
     compositions[index] = updated;
-    this.set('soundscout:compositions', compositions);
+    const saved = this.set('soundscout:compositions', compositions);
+
+    if (!saved) {
+      logger.error('Failed to save updated composition', { id });
+      return null;
+    }
 
     logger.info('Composition updated', { id });
     return updated;
@@ -142,28 +154,37 @@ class StorageServiceImpl {
 
   /**
    * Delete a composition
+   * @returns true if deleted, false if not found or save failed
    */
   deleteComposition(id: string): boolean {
     const compositions = this.getCompositions();
     const filtered = compositions.filter((c) => c.id !== id);
 
     if (filtered.length === compositions.length) {
+      logger.warn('Composition not found for deletion', { id });
       return false;
     }
 
-    this.set('soundscout:compositions', filtered);
+    const saved = this.set('soundscout:compositions', filtered);
+    if (!saved) {
+      logger.error('Failed to save after deleting composition', { id });
+      return false;
+    }
+
     logger.info('Composition deleted', { id });
     return true;
   }
 
   /**
    * Generate and attach a share code to a composition
+   * @returns The share code (new or existing), or null if composition not found or save failed
    */
   shareComposition(id: string): string | null {
     const compositions = this.getCompositions();
     const index = compositions.findIndex((c) => c.id === id);
 
     if (index === -1) {
+      logger.warn('Composition not found for sharing', { id });
       return null;
     }
 
@@ -179,7 +200,12 @@ class StorageServiceImpl {
       sharedAt: new Date().toISOString(),
     };
 
-    this.set('soundscout:compositions', compositions);
+    const saved = this.set('soundscout:compositions', compositions);
+    if (!saved) {
+      logger.error('Failed to save share code', { id, shareCode });
+      return null;
+    }
+
     logger.info('Composition shared', { id, shareCode });
     return shareCode;
   }
@@ -202,9 +228,14 @@ class StorageServiceImpl {
 
   /**
    * Save library state
+   * @returns true if saved successfully, false if save failed
    */
-  saveLibrary(library: LibraryState): void {
-    this.set('soundscout:library', library);
+  saveLibrary(library: LibraryState): boolean {
+    const saved = this.set('soundscout:library', library);
+    if (!saved) {
+      logger.error('Failed to save library state');
+    }
+    return saved;
   }
 
   // --- Preferences ---
@@ -221,10 +252,15 @@ class StorageServiceImpl {
 
   /**
    * Save user preferences
+   * @returns true if saved successfully, false if save failed
    */
-  savePreferences(preferences: Partial<UserPreferences>): void {
+  savePreferences(preferences: Partial<UserPreferences>): boolean {
     const current = this.getPreferences();
-    this.set('soundscout:preferences', { ...current, ...preferences });
+    const saved = this.set('soundscout:preferences', { ...current, ...preferences });
+    if (!saved) {
+      logger.error('Failed to save preferences');
+    }
+    return saved;
   }
 
   // --- Utilities ---
@@ -279,11 +315,13 @@ class StorageServiceImpl {
     }
   }
 
-  private set<T>(key: StorageKey, value: T): void {
+  private set<T>(key: StorageKey, value: T): boolean {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      return true;
     } catch (error) {
       logger.error('Failed to save to localStorage', { key, error });
+      return false;
     }
   }
 

@@ -40,6 +40,7 @@ export function StudioView() {
   const removeClip = useTimelineStore((s) => s.removeClip);
   const updateClipTrim = useTimelineStore((s) => s.updateClipTrim);
   const duplicateClip = useTimelineStore((s) => s.duplicateClip);
+  const hasClips = useTimelineStore((s) => s.selectHasClips());
 
   // Audio state
   const isPlaying = useAudioStore((s) => s.isPlaying);
@@ -81,9 +82,6 @@ export function StudioView() {
 
   // Cleanup on unmount
   useAudioCleanup();
-
-  // Track whether any clips exist on the timeline
-  const hasClips = tracks.some((track) => track.clips.length > 0);
 
   // Navigation handlers
   const handleBack = useCallback(() => {

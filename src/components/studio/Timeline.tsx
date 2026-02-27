@@ -5,6 +5,7 @@ import { Track } from './Track';
 import { Playhead } from './Playhead';
 import { VISIBLE_BEATS } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
+import { useTimelineStore } from '../../stores/timelineStore';
 
 interface TimelineProps {
   tracks: TrackType[];
@@ -32,6 +33,7 @@ export const Timeline = memo(function Timeline({
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
+  const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
 
   // Handle click on timeline background to clear selection
   const handleTimelineClick = useCallback(
@@ -174,7 +176,7 @@ export const Timeline = memo(function Timeline({
           )}
 
           {/* Empty state hint - only show in edit mode */}
-          {!readOnly && tracks.every((tr) => tr.clips.length === 0) && (
+          {!readOnly && hasNoClips && (
             <div className="absolute inset-0 top-4 flex items-center justify-center pointer-events-none">
               <p className="text-xs sm:text-sm text-text-muted italic">
                 {t('studio.dragHint')}

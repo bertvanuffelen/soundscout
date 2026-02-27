@@ -49,19 +49,25 @@ export function useStageSave() {
       currentBeat: 0,
     };
 
+    let result: ReturnType<typeof storageService.saveComposition | typeof storageService.updateComposition>;
+
     if (currentCompositionId) {
-      storageService.updateComposition(currentCompositionId, {
+      result = storageService.updateComposition(currentCompositionId, {
         name: compositionName.trim(),
         timeline: timelineState,
         samples: librarySamples,
       });
     } else {
-      storageService.saveComposition(compositionName.trim(), timelineState, librarySamples);
+      result = storageService.saveComposition(compositionName.trim(), timelineState, librarySamples);
     }
 
-    setShowSaveWarning(false);
-    setSaveSuccess(true);
-    setTimeout(() => setSaveSuccess(false), 3000);
+    // Only show success if save succeeded (result is not null)
+    if (result) {
+      setShowSaveWarning(false);
+      setSaveSuccess(true);
+      setTimeout(() => setSaveSuccess(false), 3000);
+    }
+    // If save failed (result is null), let the logger handle error reporting
   }, [compositionName, tracks, bpm, totalBeats, isLooping, librarySamples, currentCompositionId]);
 
   const handleSaveClick = useCallback(() => {

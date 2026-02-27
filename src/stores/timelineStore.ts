@@ -66,6 +66,11 @@ interface TimelineStore {
 
   // Get current state as TimelineState
   getTimelineState: () => TimelineState;
+
+  // Selectors
+  selectHasClips: () => boolean;
+  selectClipCount: () => number;
+  selectHasNoClips: () => boolean;
 }
 
 export const useTimelineStore = create<TimelineStore>()((set, get) => ({
@@ -326,5 +331,17 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       isLooping: state.isLooping,
       currentBeat: 0,
     };
+  },
+
+  selectHasClips: () => {
+    return get().tracks.some((track) => track.clips.length > 0);
+  },
+
+  selectClipCount: () => {
+    return get().tracks.reduce((sum, track) => sum + track.clips.length, 0);
+  },
+
+  selectHasNoClips: () => {
+    return get().tracks.every((track) => track.clips.length === 0);
   },
 }));

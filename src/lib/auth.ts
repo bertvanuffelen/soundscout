@@ -9,6 +9,8 @@
  */
 
 import { supabase } from './supabase';
+import { sanitizeError } from '../utils/errorSanitize';
+import { logger } from '../utils/logger';
 import i18n from '../i18n';
 
 /**
@@ -98,7 +100,7 @@ export async function getCurrentUser() {
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
-    console.error('Fout bij ophalen gebruiker:', error);
+    logger.error('Fout bij ophalen gebruiker:', sanitizeError(error));
     return null;
   }
 
@@ -114,7 +116,7 @@ export async function getCurrentSession() {
   const { data, error } = await supabase.auth.getSession();
 
   if (error) {
-    console.error('Fout bij ophalen sessie:', error);
+    logger.error('Fout bij ophalen sessie:', sanitizeError(error));
     return null;
   }
 

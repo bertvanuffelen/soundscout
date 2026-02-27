@@ -8,6 +8,8 @@
 
 import { supabase } from './supabase';
 import { generateRandomDutchName } from '../utils/randomNames';
+import { sanitizeError } from '../utils/errorSanitize';
+import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
 
@@ -39,7 +41,7 @@ export async function validateClassCode(code: string): Promise<{
   });
 
   if (error) {
-    console.error('Fout bij valideren klas-code:', error);
+    logger.error('Fout bij valideren klas-code:', sanitizeError(error));
     throw new Error(i18n.t('submissions.validateClassCodeError'));
   }
 
@@ -73,7 +75,7 @@ export async function submitComposition(
   });
 
   if (error) {
-    console.error('Fout bij versturen compositie:', error);
+    logger.error('Fout bij versturen compositie:', sanitizeError(error));
 
     // Vertaal bekende fouten
     if (error.message.includes('niet gevonden')) {
@@ -125,7 +127,7 @@ export async function shareComposition(
   });
 
   if (error) {
-    console.error('Fout bij delen compositie:', error);
+    logger.error('Fout bij delen compositie:', sanitizeError(error));
     throw new Error(i18n.t('submissions.shareLinkError'));
   }
 
@@ -146,7 +148,7 @@ export async function getSharedComposition(
   });
 
   if (error) {
-    console.error('Fout bij ophalen gedeelde compositie:', error);
+    logger.error('Fout bij ophalen gedeelde compositie:', sanitizeError(error));
     throw new Error(i18n.t('submissions.loadError'));
   }
 

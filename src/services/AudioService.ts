@@ -722,6 +722,27 @@ class AudioService {
   // CLEANUP
   // ==========================================================================
 
+  /**
+   * Dispose players that are no longer needed.
+   * Call during theme switches to prevent unbounded memory growth.
+   *
+   * @param activeSampleIds - IDs of samples that should be kept loaded
+   */
+  disposeUnusedPlayers(activeSampleIds: Set<string>): void {
+    let disposedCount = 0;
+    for (const [sampleId, player] of this.players) {
+      if (!activeSampleIds.has(sampleId)) {
+        player.dispose();
+        this.players.delete(sampleId);
+        this.waveformCache.delete(sampleId);
+        disposedCount++;
+      }
+    }
+    if (disposedCount > 0) {
+      logger.info(`Disposed ${disposedCount} unused audio players`);
+    }
+  }
+
   dispose(): void {
     this.stopPlayheadUpdates();
 

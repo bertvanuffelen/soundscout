@@ -74,8 +74,12 @@ export function CompositionsView() {
   );
 
   const handleDeleteComposition = useCallback((id: string) => {
-    storageService.deleteComposition(id);
-    setCompositions((prev) => prev.filter((c) => c.id !== id));
+    const deleted = storageService.deleteComposition(id);
+    // Only update UI if deletion succeeded
+    if (deleted) {
+      setCompositions((prev) => prev.filter((c) => c.id !== id));
+    }
+    // If deletion failed, logger will have recorded the error
   }, []);
 
   const handleNewComposition = useCallback(() => {
