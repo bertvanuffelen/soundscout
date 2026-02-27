@@ -1,4 +1,5 @@
 import { memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import type { Track as TrackType, Sample } from '../../types';
 import { useThemeStore } from '../../stores/themeStore';
@@ -24,6 +25,7 @@ export const Track = memo(function Track({
   readOnly = false,
   samples,
 }: TrackProps) {
+  const { t } = useTranslation();
   const themeGetSampleById = useThemeStore((s) => s.getSampleById);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
 
@@ -52,10 +54,15 @@ export const Track = memo(function Track({
     disabled: readOnly,
   });
 
+  const clipCount = track.clips.length;
+  const trackLabel = `${t('common.tracks')} ${trackIndex + 1}, ${clipCount} ${t('common.clips').toLowerCase()}`;
+
   return (
     <div
       ref={setNodeRef}
       id={track.id}
+      role="list"
+      aria-label={trackLabel}
       onClick={handleTrackClick}
       className={`
         relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150
@@ -64,7 +71,7 @@ export const Track = memo(function Track({
     >
       {/* Track label */}
       <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 flex items-center justify-center bg-neutral-100/80 border-r border-neutral-200 z-10">
-        <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400">
+        <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400" aria-hidden="true">
           {trackIndex + 1}
         </span>
       </div>

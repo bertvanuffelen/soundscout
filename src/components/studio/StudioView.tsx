@@ -26,6 +26,7 @@ import { EditToolbar } from './EditToolbar';
 import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
+import { generateClipId } from '../../utils/uuid';
 
 export function StudioView() {
   const { t } = useTranslation();
@@ -54,6 +55,9 @@ export function StudioView() {
 
   // Trim modal state
   const [isTrimModalOpen, setIsTrimModalOpen] = useState(false);
+
+  // A11Y-1: Library sample selection for keyboard add-to-track
+  const [selectedLibrarySampleId, setSelectedLibrarySampleId] = useState<string | null>(null);
 
   // Custom hooks - get playback first so we have samples for DnD
   const {
@@ -169,6 +173,31 @@ export function StudioView() {
     setIsTrimModalOpen(false);
   }, []);
 
+  // A11Y-1: Add selected library sample to first available track position
+  const addClip = useTimelineStore((s) => s.addClip);
+  const handleAddToTrack = useCallback(() => {
+    if (!selectedLibrarySampleId) return;
+
+    const clip = {
+      id: generateClipId(),
+      sampleId: selectedLibrarySampleId,
+      startBeat: 0,
+    };
+
+    // Try track 0 first — smart snap will find the best position
+    addClip(0, clip);
+
+    // Clear selection after adding
+    setSelectedLibrarySampleId(null);
+  }, [selectedLibrarySampleId, addClip]);
+
+  // Get translated name of selected library sample for the "+" button aria-label
+  const selectedLibrarySampleName = useMemo(() => {
+    if (!selectedLibrarySampleId) return null;
+    const sample = librarySamples.find((s) => s.id === selectedLibrarySampleId);
+    return sample ? t(sample.name) : null;
+  }, [selectedLibrarySampleId, librarySamples, t]);
+
   // Keyboard shortcuts (extracted hook)
   useStudioKeyboardShortcuts({
     isPlaying,
@@ -209,7 +238,12 @@ export function StudioView() {
         onDragCancel={handleDragCancel}
       >
         {/* Sample Library - fills available space */}
-        <SampleLibrary samples={librarySamples} onPreview={handlePreview} />
+        <SampleLibrary
+          samples={librarySamples}
+          onPreview={handlePreview}
+          selectedSampleId={selectedLibrarySampleId}
+          onSelectSample={setSelectedLibrarySampleId}
+        />
 
         {/* Edit Toolbar - appears above timeline when clip is selected */}
         {selectedClipData && (
@@ -236,6 +270,8 @@ export function StudioView() {
           onRedo={redo}
           canUndo={canUndo}
           canRedo={canRedo}
+          selectedLibrarySampleName={selectedLibrarySampleName}
+          onAddToTrack={handleAddToTrack}
         />
 
         {/* Drag Overlay - hidden when snap preview is visible (only snap preview shows drop location) */}

@@ -1,4 +1,5 @@
 import { memo, useCallback, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { cn } from '../../utils/cn';
 
 interface PlayheadProps {
@@ -23,6 +24,7 @@ export const Playhead = memo(function Playhead({
   onSeek,
   containerRef,
 }: PlayheadProps) {
+  const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
   const playheadPercent = (currentBeat / totalBeats) * 100;
 
@@ -86,24 +88,67 @@ export const Playhead = memo(function Playhead({
     [isDragging, calculateBeatFromPointer, onSeek]
   );
 
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent) => {
+      if (isPlaying) return;
+
+      const step = 1; // Move by 1 beat per key press
+      let newBeat = currentBeat;
+
+      switch (e.key) {
+        case 'ArrowLeft':
+          e.preventDefault();
+          newBeat = Math.max(0, currentBeat - step);
+          onSeek(newBeat);
+          break;
+        case 'ArrowRight':
+          e.preventDefault();
+          newBeat = Math.min(totalBeats, currentBeat + step);
+          onSeek(newBeat);
+          break;
+        case 'Home':
+          e.preventDefault();
+          onSeek(0);
+          break;
+        case 'End':
+          e.preventDefault();
+          onSeek(totalBeats);
+          break;
+        default:
+          break;
+      }
+    },
+    [isPlaying, currentBeat, totalBeats, onSeek]
+  );
+
   const canDrag = !isPlaying;
 
   return (
     <>
       {/* Handle in ruler strip - interactive */}
       <div
+        role="slider"
+        tabIndex={canDrag ? 0 : -1}
+        aria-label={t('studio.playhead')}
+        aria-valuenow={Math.round(currentBeat)}
+        aria-valuemin={0}
+        aria-valuemax={totalBeats}
+        aria-disabled={isPlaying}
         className={cn(
           // Large touch hitbox (44px wide)
           'absolute top-0 h-4 w-11 -translate-x-1/2 z-30',
           'flex items-center justify-center',
+          'rounded-full',
           canDrag && 'cursor-ew-resize',
-          isDragging && 'touch-none'
+          isDragging && 'touch-none',
+          'focus-visible:ring-2 focus-visible:ring-error-500 focus-visible:ring-offset-1'
         )}
         style={{ left: `${playheadPercent}%` }}
         onPointerDown={canDrag ? handlePointerDown : undefined}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
+        onKeyDown={canDrag ? handleKeyDown : undefined}
       >
         {/* Visual handle - circle */}
         <div

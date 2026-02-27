@@ -9,14 +9,20 @@ import { SampleIcon } from '../../utils/iconMap';
 interface SampleLibraryProps {
   samples: Sample[];
   onPreview: (sampleId: string) => void;
+  selectedSampleId?: string | null;
+  onSelectSample?: (sampleId: string | null) => void;
 }
 
 const DraggableSample = memo(function DraggableSample({
   sample,
   onPreview,
+  isSelected,
+  onSelect,
 }: {
   sample: Sample;
   onPreview: (sampleId: string) => void;
+  isSelected?: boolean;
+  onSelect?: (sampleId: string) => void;
 }) {
   const { t } = useTranslation();
   const { attributes, listeners, setNodeRef, transform, isDragging } =
@@ -29,14 +35,22 @@ const DraggableSample = memo(function DraggableSample({
     ? { transform: CSS.Translate.toString(transform) }
     : undefined;
 
+  const handleSampleClick = () => {
+    if (onSelect) {
+      onSelect(sample.id);
+    }
+  };
+
   return (
     <div
       ref={setNodeRef}
       style={style}
+      onClick={handleSampleClick}
       className={`
         flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-2 rounded-md sm:rounded-xl border sm:border-2
-        transition-opacity duration-150 select-none shrink-0
+        transition-all duration-150 select-none shrink-0 cursor-pointer
         ${isDragging ? 'opacity-30 scale-95' : 'hover:shadow-md active:shadow-sm'}
+        ${isSelected ? 'ring-2 ring-accent-400 border-accent-400 bg-accent-50' : ''}
       `}
     >
       {/* Drag handle - only this element triggers drag */}
@@ -86,7 +100,12 @@ const DraggableSample = memo(function DraggableSample({
   );
 });
 
-export const SampleLibrary = memo(function SampleLibrary({ samples, onPreview }: SampleLibraryProps) {
+export const SampleLibrary = memo(function SampleLibrary({
+  samples,
+  onPreview,
+  selectedSampleId,
+  onSelectSample,
+}: SampleLibraryProps) {
   const { t } = useTranslation();
 
   if (samples.length === 0) {
@@ -102,12 +121,14 @@ export const SampleLibrary = memo(function SampleLibrary({ samples, onPreview }:
       <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide mb-1.5 sm:mb-2">
         {t('studio.library')}
       </h2>
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto">
+      <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto" role="listbox" aria-label={t('studio.library')}>
         {samples.map((sample) => (
           <DraggableSample
             key={sample.id}
             sample={sample}
             onPreview={onPreview}
+            isSelected={selectedSampleId === sample.id}
+            onSelect={onSelectSample ? (id) => onSelectSample(selectedSampleId === id ? null : id) : undefined}
           />
         ))}
       </div>

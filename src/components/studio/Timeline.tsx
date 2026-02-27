@@ -7,7 +7,7 @@ import { VISIBLE_BEATS } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
-import { Undo2, Redo2 } from 'lucide-react';
+import { Undo2, Redo2, Plus } from 'lucide-react';
 
 interface TimelineProps {
   tracks: TrackType[];
@@ -23,6 +23,9 @@ interface TimelineProps {
   onRedo?: () => void;
   canUndo?: boolean;
   canRedo?: boolean;
+  // A11Y-1: Keyboard add-to-track
+  selectedLibrarySampleName?: string | null;
+  onAddToTrack?: () => void;
 }
 
 export const Timeline = memo(function Timeline({
@@ -39,6 +42,8 @@ export const Timeline = memo(function Timeline({
   onRedo,
   canUndo = false,
   canRedo = false,
+  selectedLibrarySampleName,
+  onAddToTrack,
 }: TimelineProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -93,31 +98,43 @@ export const Timeline = memo(function Timeline({
   }, [currentBeat, totalBeats, isPlaying]);
 
   return (
-    <div className="flex flex-col shrink-0">
+    <div className="flex flex-col shrink-0" role="region" aria-label={t('studio.timeline')}>
       <div className="flex items-center justify-between px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
         <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide">
           {t('studio.timeline')}
         </h2>
-        {onUndo && onRedo && (
-          <div className="flex items-center gap-0.5">
+        <div className="flex items-center gap-0.5">
+          {/* A11Y-1: Add selected sample to track (keyboard alternative for DnD) */}
+          {onAddToTrack && selectedLibrarySampleName && (
             <button
-              onClick={onUndo}
-              disabled={!canUndo}
-              aria-label={t('studio.undo')}
-              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              onClick={onAddToTrack}
+              aria-label={t('studio.addToTrack', { name: selectedLibrarySampleName })}
+              className="p-1 rounded text-accent-600 hover:text-accent-700 hover:bg-accent-100/60 transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
             >
-              <Undo2 size={14} />
+              <Plus size={16} />
             </button>
-            <button
-              onClick={onRedo}
-              disabled={!canRedo}
-              aria-label={t('studio.redo')}
-              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
-            >
-              <Redo2 size={14} />
-            </button>
-          </div>
-        )}
+          )}
+          {onUndo && onRedo && (
+            <>
+              <button
+                onClick={onUndo}
+                disabled={!canUndo}
+                aria-label={t('studio.undo')}
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              >
+                <Undo2 size={14} />
+              </button>
+              <button
+                onClick={onRedo}
+                disabled={!canRedo}
+                aria-label={t('studio.redo')}
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              >
+                <Redo2 size={14} />
+              </button>
+            </>
+          )}
+        </div>
       </div>
 
       <div

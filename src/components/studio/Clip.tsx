@@ -86,7 +86,7 @@ export const Clip = memo(function Clip({
       {...attributes}
       onClick={handleClick}
       onKeyDown={handleKeyDown}
-      role="button"
+      role="listitem"
       tabIndex={readOnly ? -1 : 0}
       aria-label={ariaLabel}
       aria-selected={isSelected}

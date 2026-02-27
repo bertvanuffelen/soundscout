@@ -962,72 +962,62 @@ Geen mocking nodig, puur input → output.
 
 #### A11Y-CRITICAL: Fundamentele toegankelijkheidsproblemen
 
-##### A11Y-1. DnD zonder keyboard alternatief ⚠️ WCAG 2.1.1 (Level A)
-**Status:** Niet begonnen
-**Effort:** Groot (1-2 dagen)
-**Impact:** Kinderen met motorische beperkingen kunnen geen composities maken
+##### A11Y-1. DnD zonder keyboard alternatief ⚠️ WCAG 2.1.1 (Level A) ✅
+**Status:** Voltooid (2026-02-27)
+**Effort:** Medium (2-3 uur)
+**Impact:** Kinderen met motorische beperkingen kunnen nu composities maken
 
-**Probleem:** DnD-kit dragging alleen via muis/touch. Geen keyboard alternatief.
+- [x] Sample selectie in bibliotheek (klik = highlight met accent ring)
+- [x] "+" knop verschijnt in Timeline-balk wanneer sample geselecteerd is
+- [x] Klik op "+" plaatst sample op eerste beschikbare positie (smart snap)
+- [x] Selectie wordt gewist na plaatsing
+- [x] Vertaling NL + EN voor aria-label (`studio.addToTrack`)
 
-**Oplossing:** Button-based plaatsing als alternatief:
-- "Voeg toe aan track 1/2/3..." dropdown bij elke library sample
-- Keyboard navigatie: Tab door samples, Enter om track te kiezen
-- Clip verplaatsen via keyboard: pijltjestoetsen voor beat-positie
+##### A11Y-2. Playhead niet toegankelijk ⚠️ WCAG 1.3.1 (Level A) ✅
+**Status:** Voltooid (2026-02-27)
+**Effort:** Klein (1 uur)
 
-##### A11Y-2. Playhead niet toegankelijk ⚠️ WCAG 1.3.1 (Level A)
-**Status:** Niet begonnen
+- [x] `role="slider"` met `aria-valuenow`, `aria-valuemin`, `aria-valuemax`
+- [x] `tabIndex={0}` wanneer niet aan het afspelen (focusbaar via Tab)
+- [x] `aria-label` met vertaalde tekst ("Afspeelpositie" / "Playback position")
+- [x] `onKeyDown`: pijltjestoetsen (←/→ = ±1 beat), Home/End voor begin/einde
+- [x] `focus-visible:ring-2` voor zichtbare focus indicator
+- [x] `aria-disabled` tijdens afspelen
+
+##### A11Y-3. Timeline niet leesbaar voor screen readers ⚠️ WCAG 1.3.1 (Level A) ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Medium (2-3 uur)
 
-**Probleem:** Drag handle is `<div>` zonder `role="slider"`, geen keyboard, geen ARIA.
-
-**Oplossing:**
-```html
-<div
-  role="slider"
-  tabIndex={0}
-  aria-valuenow={currentBeat}
-  aria-valuemin={0}
-  aria-valuemax={totalBeats}
-  aria-label={t('studio.playhead')}
-  onKeyDown={handleArrowKeys}  // ← → voor seek
-/>
-```
-
-##### A11Y-3. Timeline niet leesbaar voor screen readers ⚠️ WCAG 1.3.1 (Level A)
-**Status:** Niet begonnen
-**Effort:** Groot (1-2 dagen)
-
-**Probleem:** Tracks en clips zijn pure divs met style positioning. Screen reader begrijpt niets.
-
-**Oplossing:** Semantische structuur:
-- Track: `role="list"`, `aria-label="Track 1"`
-- Clip: `role="listitem"`, `aria-label="Park Birds, start beat 4, duur 2 beats"`
-- Live region voor playback status updates
+- [x] Timeline: `role="region"` met `aria-label`
+- [x] Track: `role="list"` met `aria-label="Tracks 1, 3 clips"`
+- [x] Clip: `role="listitem"` (was `role="button"`) met beschrijvend `aria-label`
+- [x] Bibliotheek: `role="listbox"` met `aria-label`
+- [x] Track nummer label: `aria-hidden="true"` (al beschreven via aria-label)
 
 ##### A11Y-4. Clips zijn divs met onClick ⚠️ WCAG 2.1.1 (Level A) ✅
 **Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
 
-- [x] `role="button"` en `tabIndex={0}` toegevoegd aan Clip.tsx
+- [x] `role="listitem"` (gewijzigd van `role="button"`) en `tabIndex={0}` toegevoegd aan Clip.tsx
 - [x] `aria-selected` voor geselecteerde clip
 - [x] `onKeyDown` handler voor Enter/Space (selectie)
 - [x] Beschrijvend `aria-label` met sample naam, startbeat en duur
 
-##### A11Y-5. ZoomableView alleen pointer events ⚠️ WCAG 2.1.1 (Level A)
-**Status:** Niet begonnen
+##### A11Y-5. ZoomableView alleen pointer events — ⏸️ P5 (niet essentieel)
+**Status:** Uitgesteld — ZoomableView is alleen voor kleine schermen (telefoon). Geen prioriteit.
 **Effort:** Medium (2-3 uur)
 
 **Probleem:** Geen pijltjestoetsen voor pannen, geen +/- voor zoom.
 
-**Oplossing:** Keyboard handlers: pijltjestoetsen voor pan, +/- voor zoom, Home voor reset.
+**Oplossing (indien ooit nodig):** Keyboard handlers: pijltjestoetsen voor pan, +/- voor zoom, Home voor reset.
 
-##### A11Y-6. Audio zonder visueel alternatief ⚠️ WCAG 1.2.1 (Level A)
-**Status:** Niet begonnen
+##### A11Y-6. Audio zonder visueel alternatief — ⏸️ P5 (niet essentieel)
+**Status:** Uitgesteld — binnen deze app nu niet geschikt. Eventueel later oppakken.
 **Effort:** Groot (1-2 dagen)
 
 **Probleem:** Dove/slechthorende leerlingen zien alleen gekleurde blokken, geen waveforms in timeline.
 
-**Oplossing:** Waveform miniatures in clips tonen (data al beschikbaar via `AudioService.getWaveform()`). Gerelateerd aan toekomstig TP4 item "visueel alternatief voor audio".
+**Oplossing (indien ooit nodig):** Waveform miniatures in clips tonen (data al beschikbaar via `AudioService.getWaveform()`). Gerelateerd aan toekomstig TP4 item "visueel alternatief voor audio".
 
 #### A11Y-MAJOR: Significante barrières
 
