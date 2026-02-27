@@ -204,7 +204,7 @@ export function StudioView() {
   }, [selectedClipData, handleDuplicate, isPlaying, handlePlay, handlePause]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-studio-bg md:bg-bg-app">
+    <div className="h-dvh flex flex-col overflow-hidden bg-studio-bg md:bg-bg-app">
       {/* Navigation bar */}
       <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
         <Button variant="secondary" size="sm" onClick={handleBack}>

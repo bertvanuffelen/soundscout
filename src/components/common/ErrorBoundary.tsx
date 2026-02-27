@@ -6,6 +6,7 @@
  */
 
 import { Component, type ReactNode } from 'react';
+import i18n from '../../i18n';
 import { logger } from '../../utils/logger';
 import { FeedbackModal } from '../feedback';
 
@@ -77,10 +78,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               <span className="text-3xl">😵</span>
             </div>
             <h2 className="text-xl font-bold text-red-700 mb-2">
-              Oeps! Er ging iets mis
+              {i18n.t('error.title')}
             </h2>
             <p className="text-gray-600 mb-6 text-sm">
-              Er is een onverwachte fout opgetreden.
+              {i18n.t('error.description')}
             </p>
 
             {/* Action buttons */}
@@ -89,13 +90,13 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
                 onClick={this.handleRetry}
                 className="px-6 py-3 bg-neutral-200 hover:bg-neutral-300 text-neutral-800 font-bold rounded-xl transition-colors cursor-pointer"
               >
-                Probeer opnieuw
+                {i18n.t('error.retryButton')}
               </button>
               <button
                 onClick={this.handleOpenFeedback}
                 className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors cursor-pointer"
               >
-                Stuur foutmelding
+                {i18n.t('error.sendReportButton')}
               </button>
             </div>
 
@@ -103,7 +104,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             {import.meta.env.DEV && this.state.error && (
               <details className="mt-6 text-left">
                 <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
-                  Technische details
+                  {i18n.t('error.technicalDetails')}
                 </summary>
                 <pre className="mt-2 p-3 bg-gray-100 rounded-lg text-xs text-red-600 overflow-auto max-h-40">
                   {this.state.error.message}

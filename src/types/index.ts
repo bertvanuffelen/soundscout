@@ -15,7 +15,8 @@ export type GameScreen =
   | 'studio'
   | 'stage'
   | 'compositions'
-  | 'teacher';
+  | 'teacher'
+  | 'shared';
 
 export type VisualHint = 'glow' | 'pulse' | 'none';
 

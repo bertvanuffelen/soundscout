@@ -2,6 +2,7 @@
  * SubmissionCard - Kaart voor een compositie van een leerling
  */
 
+import { useTranslation } from 'react-i18next';
 import { Play, Trash2 } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 
@@ -12,6 +13,7 @@ interface SubmissionCardProps {
 }
 
 export function SubmissionCard({ submission, onPlay, onDelete }: SubmissionCardProps) {
+  const { t } = useTranslation();
   const { student_name, composition_name, created_at } = submission;
 
   // Format datum
@@ -28,7 +30,7 @@ export function SubmissionCard({ submission, onPlay, onDelete }: SubmissionCardP
       <button
         onClick={onPlay}
         className="w-12 h-12 sm:w-14 sm:h-14 bg-amber-400 hover:bg-amber-500 active:bg-amber-600 rounded-full flex items-center justify-center text-white transition-colors shrink-0"
-        title="Afspelen"
+        title={t('teacher.submissionCard.play')}
       >
         <Play className="w-5 h-5 sm:w-6 sm:h-6" />
       </button>
@@ -39,7 +41,7 @@ export function SubmissionCard({ submission, onPlay, onDelete }: SubmissionCardP
           {composition_name}
         </h3>
         <p className="text-gray-500 text-sm">
-          Door: <span className="font-medium text-gray-700">{student_name}</span>
+          {t('teacher.submissionCard.by')} <span className="font-medium text-gray-700">{student_name}</span>
         </p>
         <p className="text-gray-400 text-xs">
           {formattedDate}
@@ -50,7 +52,7 @@ export function SubmissionCard({ submission, onPlay, onDelete }: SubmissionCardP
       <button
         onClick={onDelete}
         className="text-gray-400 hover:text-red-500 p-2 transition-colors shrink-0"
-        title="Verwijderen"
+        title={t('teacher.submissionCard.delete')}
       >
         <Trash2 className="w-5 h-5" />
       </button>

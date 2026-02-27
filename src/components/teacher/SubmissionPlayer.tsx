@@ -8,10 +8,12 @@
  */
 
 import { useState, useEffect, useCallback, useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Music, AlertCircle, Play, Pause, Square } from 'lucide-react';
 import * as Tone from 'tone';
 import type { Submission } from '../../hooks/useSubmissions';
 import { audioService } from '../../services/AudioService';
+import { beatsToSeconds } from '../../utils/audio';
 import { Timeline } from '../studio/Timeline';
 import { DEFAULT_BPM } from '../../constants/config';
 
@@ -23,6 +25,7 @@ interface SubmissionPlayerProps {
 type PlayerState = 'loading' | 'ready' | 'playing' | 'paused' | 'error';
 
 export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps) {
+  const { t } = useTranslation();
   const { student_name, composition_name, composition_data, created_at } = submission;
   const [playerState, setPlayerState] = useState<PlayerState>('loading');
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -105,7 +108,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
         if (!isMounted) return;
 
         if (samples.length === 0) {
-          setErrorMessage('Geen samples gevonden in deze compositie');
+          setErrorMessage(t('teacher.submissionPlayer.noSamplesError'));
           setPlayerState('error');
           return;
         }
@@ -122,13 +125,13 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
         // Check for errors
         const failedSamples = results.filter(r => !r.success);
         if (failedSamples.length > 0) {
-          console.warn('Sommige samples konden niet worden geladen:', failedSamples);
+          console.warn(t('teacher.submissionPlayer.loadWarning'), failedSamples);
         }
 
         setPlayerState('ready');
       } catch (err) {
         if (isMounted) {
-          setErrorMessage(err instanceof Error ? err.message : 'Kon audio niet laden');
+          setErrorMessage(err instanceof Error ? err.message : t('teacher.submissionPlayer.audioLoadError'));
           setPlayerState('error');
         }
       }
@@ -149,19 +152,14 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
       audioService.pause();
       setPlayerState('paused');
     } else {
-      // Play or resume
-      if (playerState === 'paused') {
-        // Resume from current position
-        audioService.play();
-      } else {
-        // Start fresh
-        audioService.scheduleTimeline(tracks, samples);
-        audioService.setLoop(isLooping, totalBeats);
-        audioService.play();
-      }
+      // Play or resume - always reschedule and play from currentBeat
+      // This ensures seek position is respected
+      audioService.scheduleTimeline(tracks, samples);
+      audioService.setLoop(isLooping, totalBeats);
+      audioService.play(currentBeat);
       setPlayerState('playing');
     }
-  }, [playerState, tracks, samples, isLooping, totalBeats]);
+  }, [playerState, tracks, samples, isLooping, totalBeats, currentBeat]);
 
   // Stop handler
   const handleStop = useCallback(() => {
@@ -169,6 +167,15 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
     setCurrentBeat(0);
     setPlayerState('ready');
   }, []);
+
+  // Seek handler - for playhead scrubbing
+  const handleSeek = useCallback((beat: number) => {
+    setCurrentBeat(beat);
+    // Update transport position so play resumes from here
+    const transport = Tone.getTransport();
+    const seconds = beatsToSeconds(beat, bpm);
+    transport.seconds = seconds;
+  }, [bpm]);
 
   // Close handler - stop audio first
   const handleClose = useCallback(() => {
@@ -198,7 +205,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
             {composition_name}
           </h2>
           <p className="text-text-muted mt-1">
-            Door: <span className="font-medium text-text-main">{student_name}</span>
+            {t('teacher.submissionPlayer.by')} <span className="font-medium text-text-main">{student_name}</span>
             <span className="mx-2">•</span>
             {formattedDate}
           </p>
@@ -207,15 +214,15 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
           <div className="flex gap-4 sm:gap-6 mt-3">
             <div className="flex items-center gap-1.5">
               <span className="text-lg sm:text-xl font-bold text-accent-600">{trackCount}</span>
-              <span className="text-text-muted text-sm">Tracks</span>
+              <span className="text-text-muted text-sm">{t('common.tracks')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-lg sm:text-xl font-bold text-accent-600">{clipCount}</span>
-              <span className="text-text-muted text-sm">Clips</span>
+              <span className="text-text-muted text-sm">{t('common.clips')}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <span className="text-lg sm:text-xl font-bold text-accent-600">{samples.length}</span>
-              <span className="text-text-muted text-sm">Samples</span>
+              <span className="text-text-muted text-sm">{t('common.samples')}</span>
             </div>
           </div>
         </div>
@@ -227,7 +234,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center max-w-xs">
                 <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" />
-                <p className="text-text-main font-medium mb-3">Samples laden...</p>
+                <p className="text-text-main font-medium mb-3">{t('teacher.submissionPlayer.loading')}</p>
                 <div className="w-full bg-neutral-200 rounded-full h-2">
                   <div
                     className="bg-accent-500 h-2 rounded-full transition-all duration-300"
@@ -246,7 +253,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
                 <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" />
                 <p className="text-error-600 font-medium mb-2">{errorMessage}</p>
                 <p className="text-text-muted text-sm">
-                  Probeer de pagina te verversen.
+                  {t('teacher.submissionPlayer.errorHint')}
                 </p>
               </div>
             </div>
@@ -261,6 +268,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
                 totalBeats={totalBeats}
                 currentBeat={currentBeat}
                 isPlaying={isPlaying}
+                onSeek={handleSeek}
                 snapPreview={null}
                 readOnly={true}
                 samples={samples}
@@ -277,7 +285,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
               <button
                 onClick={handlePlayPause}
                 className="w-16 h-16 sm:w-20 sm:h-20 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95"
-                title={isPlaying ? 'Pauzeren' : 'Afspelen'}
+                title={isPlaying ? t('common.pause') : t('common.play')}
               >
                 {isPlaying ? (
                   <Pause className="w-8 h-8 sm:w-10 sm:h-10" />
@@ -290,7 +298,7 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
               <button
                 onClick={handleStop}
                 className="w-16 h-16 sm:w-20 sm:h-20 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95"
-                title="Stoppen"
+                title={t('common.stop')}
               >
                 <Square className="w-7 h-7 sm:w-8 sm:h-8" />
               </button>

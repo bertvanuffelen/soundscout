@@ -18,6 +18,8 @@ interface AppStore {
   currentLocationId: string | null;
   // Track which composition is being edited (null = new composition)
   currentCompositionId: string | null;
+  // Share code for viewing shared compositions (null = not viewing)
+  shareCode: string | null;
 
   // Navigation actions
   setScreen: (screen: GameScreen) => void;
@@ -30,12 +32,14 @@ interface AppStore {
   goToStage: () => void;
   goToCompositions: () => void;
   goToTeacher: () => void;
+  goToShared: (code: string) => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
   currentScreen: 'start',
   currentLocationId: null,
   currentCompositionId: null,
+  shareCode: null,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -43,7 +47,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -57,6 +61,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToCompositions: () => set({ currentScreen: 'compositions' }),
 
   goToTeacher: () => set({ currentScreen: 'teacher' }),
+
+  goToShared: (code) => set({ currentScreen: 'shared', shareCode: code }),
 }));
 
 // Re-export for backwards compatibility during migration

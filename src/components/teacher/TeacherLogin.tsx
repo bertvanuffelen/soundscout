@@ -3,6 +3,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { ArrowLeft } from 'lucide-react';
 import { signInTeacher } from '../../lib/auth';
 import { Button } from '../ui/Button';
@@ -15,6 +16,7 @@ interface TeacherLoginProps {
 }
 
 export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, onBack }: TeacherLoginProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -26,11 +28,11 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
 
     // Validatie
     if (!email.trim()) {
-      setError('Voer je e-mailadres in');
+      setError(t('teacher.validation.emailRequired'));
       return;
     }
     if (!password) {
-      setError('Voer je wachtwoord in');
+      setError(t('teacher.validation.passwordRequired'));
       return;
     }
 
@@ -39,7 +41,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
       await signInTeacher(email, password);
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Er ging iets mis');
+      setError(err instanceof Error ? err.message : t('teacher.validation.genericError'));
     } finally {
       setLoading(false);
     }
@@ -56,7 +58,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
             </h1>
           </div>
           <p className="text-text-muted">
-            Docenten Login
+            {t('teacher.login.subtitle')}
           </p>
         </div>
 
@@ -71,14 +73,14 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-text-main mb-1">
-              E-mailadres
+              {t('teacher.login.emailLabel')}
             </label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="docent@school.nl"
+              placeholder={t('teacher.login.emailPlaceholder')}
               className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="email"
@@ -88,7 +90,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
           <div>
             <div className="flex items-center justify-between mb-1">
               <label htmlFor="password" className="block text-sm font-medium text-text-main">
-                Wachtwoord
+                {t('teacher.login.passwordLabel')}
               </label>
               <button
                 type="button"
@@ -96,7 +98,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
                 className="text-sm text-primary-600 hover:text-primary-700"
                 disabled={loading}
               >
-                Wachtwoord vergeten?
+                {t('teacher.login.forgotPassword')}
               </button>
             </div>
             <input
@@ -118,21 +120,21 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
             className="w-full"
             disabled={loading}
           >
-            {loading ? 'Inloggen...' : 'Inloggen'}
+            {loading ? t('teacher.login.submitLoading') : t('teacher.login.submit')}
           </Button>
         </form>
 
         {/* Switch to register */}
         <div className="mt-6 text-center">
           <p className="text-text-muted text-sm">
-            Nog geen account?{' '}
+            {t('teacher.login.noAccount')}{' '}
             <button
               type="button"
               onClick={onSwitchToRegister}
               className="text-primary-600 hover:text-primary-700 font-medium"
               disabled={loading}
             >
-              Registreer hier
+              {t('teacher.login.registerLink')}
             </button>
           </p>
         </div>
@@ -146,7 +148,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
             disabled={loading}
           >
             <ArrowLeft className="w-4 h-4" />
-            Terug naar SoundScout
+            {t('teacher.common.backToSoundScout')}
           </button>
         </div>
       </div>

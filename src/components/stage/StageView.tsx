@@ -22,6 +22,7 @@ import {
   Save,
   Check,
   Send,
+  Link2,
   ArrowLeft,
   type LucideIcon,
 } from 'lucide-react';
@@ -34,7 +35,7 @@ import { useAudioCleanup } from '../../hooks/useAudioCleanup';
 import { useAudioExport } from '../../hooks/useAudioExport';
 import { storageService } from '../../services/StorageService';
 import { Button, Modal } from '../ui';
-import { ShareWithTeacherModal } from '../share';
+import { ShareWithTeacherModal, ShareLinkModal } from '../share';
 import { cn } from '../../utils/cn';
 
 interface AudienceMember {
@@ -85,6 +86,7 @@ export function StageView() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [showSaveWarning, setShowSaveWarning] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
+  const [showShareLinkModal, setShowShareLinkModal] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [dontShowWarningAgain, setDontShowWarningAgain] = useState(() => {
     return localStorage.getItem('soundscout:hideSaveWarning') === 'true';
@@ -243,7 +245,7 @@ export function StageView() {
           {/* Title */}
           <div className="text-center">
             <h2 className="text-2xl sm:text-3xl font-extrabold text-text-main tracking-tight">
-              Your SoundScout Song
+              {t('stage.subtitle')}
             </h2>
             <p className="text-sm sm:text-base text-text-muted mt-1">
               {t('stage.nameComposition')}
@@ -340,13 +342,25 @@ export function StageView() {
             <Button
               variant="secondary"
               size="lg"
+              onClick={() => setShowShareLinkModal(true)}
+              disabled={!compositionName.trim()}
+              className="w-full"
+              title={!compositionName.trim() ? t('stage.nameRequired') : ''}
+            >
+              <Link2 size={20} className="mr-2" />
+              {t('share.shareLink')}
+            </Button>
+
+            <Button
+              variant="secondary"
+              size="lg"
               onClick={() => setShowShareModal(true)}
               disabled={!compositionName.trim()}
               className="w-full"
-              title={!compositionName.trim() ? 'Geef eerst een naam aan je compositie' : ''}
+              title={!compositionName.trim() ? t('stage.nameRequired') : ''}
             >
               <Send size={20} className="mr-2" />
-              Deel met docent
+              {t('stage.shareWithTeacher')}
             </Button>
 
             <Button
@@ -452,10 +466,27 @@ export function StageView() {
         </div>
       </Modal>
 
+      {/* Share link modal */}
+      {showShareLinkModal && (
+        <ShareLinkModal
+          compositionName={compositionName.trim() || t('stage.defaultName')}
+          compositionData={{
+            tracks,
+            bpm,
+            totalBeats,
+            isPlaying: false,
+            isLooping,
+            currentBeat: 0,
+            samples: librarySamples,
+          }}
+          onClose={() => setShowShareLinkModal(false)}
+        />
+      )}
+
       {/* Share with teacher modal */}
       {showShareModal && (
         <ShareWithTeacherModal
-          compositionName={compositionName.trim() || 'Mijn compositie'}
+          compositionName={compositionName.trim() || t('stage.defaultName')}
           compositionData={{
             tracks,
             bpm,

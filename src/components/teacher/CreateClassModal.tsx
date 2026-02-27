@@ -3,6 +3,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X } from 'lucide-react';
 import { Button } from '../ui/Button';
 
@@ -12,6 +13,7 @@ interface CreateClassModalProps {
 }
 
 export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
+  const { t } = useTranslation();
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -22,12 +24,12 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
 
     // Validatie
     if (!name.trim()) {
-      setError('Voer een klasnaam in');
+      setError(t('teacher.createClassModal.nameRequired'));
       return;
     }
 
     if (name.trim().length < 2) {
-      setError('Klasnaam moet minimaal 2 tekens zijn');
+      setError(t('teacher.createClassModal.nameMinLength'));
       return;
     }
 
@@ -35,7 +37,7 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
       setLoading(true);
       await onCreate(name.trim());
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Er ging iets mis');
+      setError(err instanceof Error ? err.message : t('teacher.validation.genericError'));
       setLoading(false);
     }
   };
@@ -46,7 +48,7 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-gray-800">
-            Nieuwe Klas Aanmaken
+            {t('teacher.createClassModal.title')}
           </h2>
           <button
             onClick={onClose}
@@ -68,14 +70,14 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             <label htmlFor="className" className="block text-sm font-medium text-gray-700 mb-1">
-              Klasnaam
+              {t('teacher.createClassModal.nameLabel')}
             </label>
             <input
               id="className"
               type="text"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Bijv. Groep 5B of Muziekles 2025"
+              placeholder={t('teacher.createClassModal.namePlaceholder')}
               className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all text-gray-900 placeholder:text-gray-400"
               disabled={loading}
               autoFocus
@@ -83,7 +85,7 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
           </div>
 
           <p className="text-gray-500 text-sm mb-4">
-            Na het aanmaken krijg je een unieke 4-cijferige code die je met je leerlingen kunt delen.
+            {t('teacher.createClassModal.codeInfo')}
           </p>
 
           {/* Buttons */}
@@ -96,7 +98,7 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
               disabled={loading}
               className="flex-1"
             >
-              Annuleren
+              {t('common.cancel')}
             </Button>
             <Button
               type="submit"
@@ -105,7 +107,7 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
               disabled={loading}
               className="flex-1"
             >
-              {loading ? 'Aanmaken...' : 'Aanmaken'}
+              {loading ? t('teacher.createClassModal.submitLoading') : t('teacher.createClassModal.submit')}
             </Button>
           </div>
         </form>

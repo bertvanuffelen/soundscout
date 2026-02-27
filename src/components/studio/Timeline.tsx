@@ -99,17 +99,25 @@ export const Timeline = memo(function Timeline({
                 .filter((b) => b % 4 === 0)
                 .map((beat) => {
                   const leftPercent = (beat / totalBeats) * 100;
+                  const measureNumber = beat / 4 + 1;
                   return (
                     <div
                       key={beat}
                       className="absolute top-0 bottom-0 border-l border-neutral-300"
                       style={{ left: `${leftPercent}%` }}
-                    />
+                    >
+                      {/* Measure number label */}
+                      <span
+                        className="absolute left-0.5 top-0 text-[8px] sm:text-[9px] leading-4 text-neutral-400 select-none pointer-events-none"
+                      >
+                        {measureNumber}
+                      </span>
+                    </div>
                   );
                 })}
 
               {/* Playhead (handle in ruler + line through tracks) */}
-              {!readOnly && onSeek && (
+              {onSeek && (
                 <Playhead
                   currentBeat={currentBeat}
                   totalBeats={totalBeats}
@@ -155,8 +163,8 @@ export const Timeline = memo(function Timeline({
             ))}
           </div>
 
-          {/* Playhead line for read-only mode (no seeking) */}
-          {readOnly && (
+          {/* Playhead line fallback for read-only mode without seek */}
+          {readOnly && !onSeek && (
             <div className="absolute top-4 inset-x-0 bottom-0 left-5 sm:left-6 pointer-events-none z-20">
               <div
                 className="absolute top-0 bottom-0 w-0.5 bg-error-500 -translate-x-1/2"

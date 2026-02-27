@@ -3,6 +3,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { KeyRound, Mail, Lightbulb, ArrowLeft } from 'lucide-react';
 import { resetPassword } from '../../lib/auth';
 import { Button } from '../ui/Button';
@@ -13,6 +14,7 @@ interface TeacherForgotPasswordProps {
 }
 
 export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgotPasswordProps) {
+  const { t } = useTranslation();
   const [email, setEmail] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -24,7 +26,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
 
     // Validatie
     if (!email.trim()) {
-      setError('Voer je e-mailadres in');
+      setError(t('teacher.validation.emailRequired'));
       return;
     }
 
@@ -33,7 +35,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
       await resetPassword(email);
       setSuccess(true);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Er ging iets mis');
+      setError(err instanceof Error ? err.message : t('teacher.validation.genericError'));
     } finally {
       setLoading(false);
     }
@@ -48,19 +50,19 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
             <Mail className="w-16 h-16 text-primary-500" />
           </div>
           <h2 className="text-2xl font-bold text-text-main mb-2">
-            Check je inbox!
+            {t('teacher.forgotPassword.successTitle')}
           </h2>
           <p className="text-text-muted mb-4">
-            We hebben een reset-link gestuurd naar <strong className="text-text-main">{email}</strong>
+            {t('teacher.forgotPassword.successMessage')} <strong className="text-text-main">{email}</strong>
           </p>
           <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-4">
             <p className="text-primary-800 text-sm flex items-center justify-center gap-2">
               <Lightbulb className="w-4 h-4 shrink-0" />
-              <span><strong>Tip:</strong> Controleer ook je spam/ongewenste mail folder als je de mail niet ziet.</span>
+              <span><strong>{t('teacher.forgotPassword.tipLabel')}</strong> {t('teacher.forgotPassword.successHint')}</span>
             </p>
           </div>
           <p className="text-text-muted text-sm mb-6">
-            Klik op de link in de mail om een nieuw wachtwoord in te stellen.
+            {t('teacher.forgotPassword.resetInfo')}
           </p>
           <Button
             variant="primary"
@@ -68,7 +70,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
             onClick={onSwitchToLogin}
             className="w-full"
           >
-            Terug naar inloggen
+            {t('teacher.forgotPassword.backToLogin')}
           </Button>
         </div>
       </div>
@@ -83,11 +85,11 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
           <div className="flex items-center justify-center gap-2 mb-2">
             <KeyRound className="w-7 h-7 sm:w-8 sm:h-8 text-primary-500" />
             <h1 className="text-2xl sm:text-3xl font-bold text-text-main">
-              Wachtwoord vergeten?
+              {t('teacher.forgotPassword.title')}
             </h1>
           </div>
           <p className="text-text-muted">
-            Geen probleem! We sturen je een reset-link.
+            {t('teacher.forgotPassword.subtitle')}
           </p>
         </div>
 
@@ -102,14 +104,14 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-text-main mb-1">
-              E-mailadres
+              {t('teacher.forgotPassword.emailLabel')}
             </label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="docent@school.nl"
+              placeholder={t('teacher.forgotPassword.emailPlaceholder')}
               className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="email"
@@ -124,7 +126,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
             className="w-full"
             disabled={loading}
           >
-            {loading ? 'Versturen...' : 'Verstuur reset-link'}
+            {loading ? t('teacher.forgotPassword.submitLoading') : t('teacher.forgotPassword.submit')}
           </Button>
         </form>
 
@@ -137,7 +139,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
             disabled={loading}
           >
             <ArrowLeft className="w-4 h-4" />
-            Terug naar inloggen
+            {t('teacher.forgotPassword.backToLogin')}
           </button>
         </div>
 
@@ -150,7 +152,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
             disabled={loading}
           >
             <ArrowLeft className="w-4 h-4" />
-            Terug naar SoundScout
+            {t('teacher.common.backToSoundScout')}
           </button>
         </div>
       </div>

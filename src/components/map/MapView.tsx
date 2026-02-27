@@ -45,7 +45,7 @@ export function MapView() {
   if (!theme || !mapConfig) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-brand-900">
-        <div className="text-brand-300">Thema laden...</div>
+        <div className="text-brand-300">{t('map.loadingTheme')}</div>
       </div>
     );
   }
@@ -65,7 +65,7 @@ export function MapView() {
         <Button variant="primary" size="sm" onClick={goToStudio}>
 
           <span className="hidden sm:inline">{t('studio.title')}</span>
-          <span className="sm:hidden">Studio</span>
+          <span className="sm:hidden">{t('map.studioShort')}</span>
         </Button>
       </div>
 
@@ -79,7 +79,7 @@ export function MapView() {
             {mapConfig.backgroundImage ? (
               <img
                 src={mapConfig.backgroundImage}
-                alt="Stadskaart"
+                alt={t('map.cityMapAlt')}
                 className="absolute inset-0 w-full h-full object-cover"
               />
             ) : (

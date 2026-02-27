@@ -8,6 +8,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useClasses } from '../../hooks/useClasses';
@@ -24,6 +25,7 @@ interface TeacherDashboardProps {
 }
 
 export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDashboardProps) {
+  const { t } = useTranslation();
   const { user } = useAuth();
   const { classes, loading, error, createClass, deleteClass, refetch } = useClasses();
   const [showCreateModal, setShowCreateModal] = useState(false);
@@ -47,12 +49,12 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
       await createClass(name);
       setShowCreateModal(false);
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Kon klas niet aanmaken');
+      setActionError(err instanceof Error ? err.message : t('teacher.dashboard.createClassError'));
     }
   };
 
   const handleDeleteClass = async (id: string) => {
-    if (!confirm('Weet je zeker dat je deze klas wilt verwijderen?\n\nAlle composities van leerlingen worden ook verwijderd!')) {
+    if (!confirm(t('teacher.dashboard.deleteClassConfirm'))) {
       return;
     }
 
@@ -60,7 +62,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
       setActionError(null);
       await deleteClass(id);
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : 'Kon klas niet verwijderen');
+      setActionError(err instanceof Error ? err.message : t('teacher.dashboard.deleteClassError'));
     }
   };
 
@@ -76,16 +78,16 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                 className="text-brand-300 hover:text-white text-sm mb-2 flex items-center gap-1"
               >
                 <ArrowLeft className="w-4 h-4" />
-                Terug naar SoundScout
+                {t('teacher.common.backToSoundScout')}
               </button>
             )}
             <div className="flex items-center gap-2">
               <h1 className="text-xl sm:text-2xl font-bold text-white">
-                Docenten Dashboard
+                {t('teacher.dashboard.title')}
               </h1>
             </div>
             <p className="text-sm text-brand-300">
-              Welkom, {displayName}
+              {t('teacher.dashboard.welcome', { name: displayName })}
             </p>
           </div>
           <button
@@ -93,7 +95,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
             className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
           >
             <LogOut className="w-4 h-4" />
-            Uitloggen
+            {t('teacher.dashboard.logout')}
           </button>
         </div>
       </header>
@@ -103,7 +105,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         {/* Title + Create button */}
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-lg sm:text-xl font-semibold text-text-main">
-            Mijn Klassen
+            {t('teacher.dashboard.myClasses')}
           </h2>
           <Button
             variant="primary"
@@ -112,7 +114,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
             className="inline-flex items-center gap-1"
           >
             <Plus className="w-4 h-4" />
-            Nieuwe Klas
+            {t('teacher.dashboard.newClass')}
           </Button>
         </div>
 
@@ -124,7 +126,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               onClick={() => { setActionError(null); refetch(); }}
               className="ml-2 underline"
             >
-              Probeer opnieuw
+              {t('common.retry')}
             </button>
           </div>
         )}
@@ -133,7 +135,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         {loading && (
           <div className="text-center py-12">
             <Loader2 className="w-10 h-10 text-primary-500 animate-spin mx-auto mb-4" />
-            <p className="text-text-muted">Klassen laden...</p>
+            <p className="text-text-muted">{t('teacher.dashboard.loading')}</p>
           </div>
         )}
 
@@ -142,10 +144,10 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
             <BookOpen className="w-16 h-16 text-primary-500 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-text-main mb-2">
-              Nog geen klassen
+              {t('teacher.dashboard.emptyTitle')}
             </h3>
             <p className="text-text-muted mb-6">
-              Maak je eerste klas aan om composities van leerlingen te ontvangen.
+              {t('teacher.dashboard.emptyDescription')}
             </p>
             <Button
               variant="primary"
@@ -154,7 +156,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               className="inline-flex items-center gap-1"
             >
               <Plus className="w-4 h-4" />
-              Eerste Klas Aanmaken
+              {t('teacher.dashboard.createFirstClass')}
             </Button>
           </div>
         )}
@@ -177,13 +179,13 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         <div className="mt-8 bg-primary-50 border border-primary-200 rounded-xl p-4">
           <h4 className="font-medium text-primary-800 mb-2 flex items-center gap-2">
             <Lightbulb className="w-5 h-5" />
-            Hoe werkt het?
+            {t('teacher.dashboard.howItWorks')}
           </h4>
           <ol className="text-primary-700 text-sm space-y-1">
-            <li>1. Maak een klas aan en krijg een 4-cijferige code</li>
-            <li>2. Deel de code met je leerlingen</li>
-            <li>3. Leerlingen maken een compositie en voeren de code in bij "Delen"</li>
-            <li>4. Bekijk alle composities hier in je dashboard</li>
+            <li>{t('teacher.dashboard.step1')}</li>
+            <li>{t('teacher.dashboard.step2')}</li>
+            <li>{t('teacher.dashboard.step3')}</li>
+            <li>{t('teacher.dashboard.step4')}</li>
           </ol>
         </div>
       </main>

@@ -9,6 +9,7 @@
  */
 
 import { supabase } from './supabase';
+import i18n from '../i18n';
 
 /**
  * Registreer een nieuwe docent
@@ -36,13 +37,13 @@ export async function signUpTeacher(
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
     if (error.message.includes('already registered')) {
-      throw new Error('Dit e-mailadres is al geregistreerd');
+      throw new Error(i18n.t('auth.emailAlreadyRegistered'));
     }
     if (error.message.includes('valid email')) {
-      throw new Error('Voer een geldig e-mailadres in');
+      throw new Error(i18n.t('auth.invalidEmail'));
     }
     if (error.message.includes('at least 6 characters')) {
-      throw new Error('Wachtwoord moet minimaal 6 tekens zijn');
+      throw new Error(i18n.t('auth.passwordTooShort'));
     }
     throw new Error(error.message);
   }
@@ -66,10 +67,10 @@ export async function signInTeacher(email: string, password: string) {
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
     if (error.message.includes('Invalid login credentials')) {
-      throw new Error('Onjuist e-mailadres of wachtwoord');
+      throw new Error(i18n.t('auth.invalidCredentials'));
     }
     if (error.message.includes('Email not confirmed')) {
-      throw new Error('Bevestig eerst je e-mailadres');
+      throw new Error(i18n.t('auth.emailNotConfirmed'));
     }
     throw new Error(error.message);
   }
@@ -84,7 +85,7 @@ export async function signOut() {
   const { error } = await supabase.auth.signOut();
 
   if (error) {
-    throw new Error('Fout bij uitloggen: ' + error.message);
+    throw new Error(i18n.t('auth.logoutError'));
   }
 }
 
@@ -133,8 +134,8 @@ export async function resetPassword(email: string) {
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
     if (error.message.includes('rate limit')) {
-      throw new Error('Te veel verzoeken. Probeer het later opnieuw.');
+      throw new Error(i18n.t('auth.rateLimited'));
     }
-    throw new Error('Kon reset-email niet versturen. Probeer het opnieuw.');
+    throw new Error(i18n.t('auth.resetEmailFailed'));
   }
 }

@@ -11,9 +11,10 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useThemeStore } from '../stores/themeStore';
 import { useAudioEngine } from '../hooks/useAudioEngine';
 import { storageService } from '../services/StorageService';
-import { Button, Modal } from './ui';
+import { Button, Modal, LanguageSwitcher } from './ui';
 import { FeedbackModal } from './feedback';
 import { ThemeSelectionModal } from './ThemeSelectionModal';
+import { ShareCodeInput } from './share';
 import { logger } from '../utils/logger';
 
 export function StartScreen() {
@@ -21,6 +22,7 @@ export function StartScreen() {
   const goToMap = useGameStore((s) => s.goToMap);
   const goToCompositions = useGameStore((s) => s.goToCompositions);
   const goToTeacher = useGameStore((s) => s.goToTeacher);
+  const goToShared = useGameStore((s) => s.goToShared);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
   const setTheme = useThemeStore((s) => s.setTheme);
@@ -117,35 +119,47 @@ export function StartScreen() {
             </Button>
           )}
 
-          <Button
-            onClick={() => setShowTutorial(true)}
-            variant="ghost"
-            size="lg"
-            className="w-full text-brand-300 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100"
-          >
-            {t('start.howItWorks')}
-          </Button>
         </div>
 
+        {/* Share code input */}
+        <div className="mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
+          <ShareCodeInput onSubmit={goToShared} />
+        </div>
+
+        <Button
+          onClick={() => setShowTutorial(true)}
+          variant="ghost"
+          size="lg"
+          className="mt-3 sm:mt-4 w-full max-w-[280px] sm:max-w-xs text-brand-300 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100"
+        >
+          {t('start.howItWorks')}
+        </Button>
+
         {/* Teacher link - subtle at bottom */}
-        <div className="mt-8 sm:mt-10">
+        <div className="mt-6 sm:mt-8">
           <button
             onClick={goToTeacher}
             className="text-brand-400 hover:text-white md:text-text-muted md:hover:text-text-main text-sm underline underline-offset-2 transition-colors"
           >
-            Ben je docent?
+            {t('start.teacherLink')}
           </button>
         </div>
 
       </div>
 
+      {/* Language switcher */}
+      <div className="mt-6">
+        <LanguageSwitcher variant="dark" className="md:hidden" />
+        <LanguageSwitcher variant="light" className="hidden md:inline-flex" />
+      </div>
+
       {/* Footer */}
-      <footer className="mt-8 flex items-center gap-3 text-brand-400 md:text-text-muted">
-        <span className="text-sm">Gemaakt door Bert van Uffelen</span>
+      <footer className="mt-4 flex items-center gap-3 text-brand-400 md:text-text-muted">
+        <span className="text-sm">{t('start.createdBy')}</span>
         <button
           onClick={() => setShowAbout(true)}
           className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-          title="Over deze app"
+          title={t('start.aboutButton')}
         >
           <Info className="w-4 h-4" />
         </button>
@@ -201,17 +215,17 @@ export function StartScreen() {
       <Modal
         isOpen={showAbout}
         onClose={() => setShowAbout(false)}
-        title="Over deze app"
+        title={t('start.aboutTitle')}
       >
         <div className="space-y-4 text-text-main">
           <p>
-            SoundScout is gemaakt door Bert van Uffelen, muziekdocent en ontwikkelaar van creatieve digitale tools voor het onderwijs.
+            {t('start.aboutText1')}
           </p>
           <p>
-            Benieuwd naar meer apps, workshops of muzikale ideeën? Of wil je een training waarin je leert hoe je technologie effectief inzet in de muziekles?
+            {t('start.aboutText2')}
           </p>
           <p>
-            Neem een kijkje op mijn LinkedIn-profiel:
+            {t('start.aboutText3')}
           </p>
           <a
             href="https://www.linkedin.com/in/bvanuffelen/"

@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useGameStore } from './stores/gameStore';
 import { useThemeStore } from './stores/themeStore';
 import { AuthProvider } from './contexts/AuthContext';
@@ -9,6 +10,7 @@ import { LocationScene } from './components/location/LocationScene';
 import { StudioView } from './components/studio/StudioView';
 import { StageView } from './components/stage/StageView';
 import { CompositionsView } from './components/compositions';
+import { SharedPlayer } from './components/share';
 import { LocationEditor } from './pages/LocationEditor';
 import { TeacherPage } from './pages/TeacherPage';
 
@@ -18,7 +20,11 @@ function isEditorRoute(): boolean {
 }
 
 function AppContent() {
+  const { t } = useTranslation();
   const currentScreen = useGameStore((s) => s.currentScreen);
+  const shareCode = useGameStore((s) => s.shareCode);
+  const goToShared = useGameStore((s) => s.goToShared);
+  const goToStart = useGameStore((s) => s.goToStart);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
 
@@ -27,11 +33,24 @@ function AppContent() {
     initTheme();
   }, [initTheme]);
 
+  // Check for ?share= query parameter on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const code = params.get('share');
+    if (code) {
+      goToShared(code);
+      // Clean URL without reloading
+      const url = new URL(window.location.href);
+      url.searchParams.delete('share');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, [goToShared]);
+
   // Wait for theme to load
   if (!isThemeInitialized) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-sky-50">
-        <div className="text-sky-600 text-lg font-medium">Laden...</div>
+        <div className="text-sky-600 text-lg font-medium">{t('common.loading')}</div>
       </div>
     );
   }
@@ -57,6 +76,13 @@ function AppContent() {
 
     case 'teacher':
       return <TeacherPage />;
+
+    case 'shared':
+      return shareCode ? (
+        <SharedPlayer code={shareCode} onBack={goToStart} />
+      ) : (
+        <StartScreen />
+      );
 
     default:
       return <StartScreen />;

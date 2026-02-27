@@ -6,11 +6,27 @@
     "back": "Terug",
     "close": "Sluiten",
     "loading": "Laden...",
-    "retry": "Opnieuw proberen"
+    "retry": "Opnieuw proberen",
+    "cancel": "Annuleren",
+    "delete": "Verwijderen",
+    "tracks": "Tracks",
+    "clips": "Clips",
+    "samples": "Samples",
+    "play": "Afspelen",
+    "pause": "Pauzeren",
+    "stop": "Stoppen",
+    "by": "Door"
+  },
+  "language": {
+    "nl": "Nederlands",
+    "en": "English"
   },
   "map": {
     "title": "Kies een locatie",
-    "selectLocation": "Klik op een locatie om te verkennen"
+    "selectLocation": "Klik op een locatie om te verkennen",
+    "loadingTheme": "Thema laden...",
+    "studioShort": "Studio",
+    "cityMapAlt": "Stadskaart"
   },
   "themeSelection": {
     "title": "Kies je wereld",
@@ -80,7 +96,14 @@
       "Ga naar de studio en sleep je geluiden op de tijdlijn",
       "Combineer geluiden tot je eigen compositie!"
     ],
-    "closeTutorial": "Begrepen!"
+    "closeTutorial": "Begrepen!",
+    "teacherLink": "Ben je docent?",
+    "createdBy": "Gemaakt door Bert van Uffelen",
+    "aboutButton": "Over deze app",
+    "aboutTitle": "Over deze app",
+    "aboutText1": "SoundScout is gemaakt door Bert van Uffelen, muziekdocent en ontwikkelaar van creatieve digitale tools voor het onderwijs.",
+    "aboutText2": "Benieuwd naar meer apps, workshops of muzikale ideeën? Of wil je een training waarin je leert hoe je technologie effectief inzet in de muziekles?",
+    "aboutText3": "Neem een kijkje op mijn LinkedIn-profiel:"
   },
   "location": {
     "backToMap": "Terug",
@@ -148,7 +171,10 @@
     "download": "Download MP3",
     "exporting": "Exporteren...",
     "exportSuccess": "Gelukt! Je MP3 wordt gedownload.",
-    "exportError": "Export mislukt. Probeer opnieuw."
+    "exportError": "Export mislukt. Probeer opnieuw.",
+    "subtitle": "Jouw SoundScout compositie",
+    "shareWithTeacher": "Deel met docent",
+    "defaultName": "Mijn compositie"
   },
   "compositions": {
     "title": "Mijn Composities",
@@ -272,6 +298,195 @@
       "sendFailed": "Versturen mislukt. Probeer het later opnieuw.",
       "networkError": "Geen internetverbinding",
       "notConfigured": "Feedback systeem is niet geconfigureerd"
+    }
+  },
+  "share": {
+    "shareLink": "Deel link",
+    "confirmDescription": "Er wordt een publieke luisterlink aangemaakt die 30 dagen geldig is. Iedereen met de link of code kan je compositie beluisteren.",
+    "generateLink": "Link aanmaken",
+    "generating": "Link wordt aangemaakt...",
+    "linkReady": "Je link is klaar!",
+    "copyLink": "Kopieer link",
+    "copied": "Gekopieerd!",
+    "expiresIn": "Link verloopt na 30 dagen",
+    "code": "Code",
+    "codeDescription": "Of deel deze code — de ontvanger kan deze invoeren op het startscherm",
+    "expired": "Deze link is verlopen",
+    "notFound": "Compositie niet gevonden",
+    "loading": "Compositie laden...",
+    "listenTitle": "Heb je een compositie code?",
+    "listenPlaceholder": "Voer code in",
+    "listen": "Beluister",
+    "invalidCode": "Voer een geldige code in",
+    "backToStart": "Terug naar SoundScout",
+    "viewCount": "{{count}}x beluisterd",
+    "by": "Door",
+    "errorGeneric": "Er ging iets mis. Probeer opnieuw.",
+    "loadingSamples": "Samples laden..."
+  },
+  "error": {
+    "title": "Oeps! Er ging iets mis",
+    "description": "Er is een onverwachte fout opgetreden.",
+    "retryButton": "Probeer opnieuw",
+    "sendReportButton": "Stuur foutmelding",
+    "technicalDetails": "Technische details"
+  },
+  "auth": {
+    "emailAlreadyRegistered": "Dit e-mailadres is al geregistreerd",
+    "invalidEmail": "Voer een geldig e-mailadres in",
+    "passwordTooShort": "Wachtwoord moet minimaal 6 tekens zijn",
+    "invalidCredentials": "Onjuist e-mailadres of wachtwoord",
+    "emailNotConfirmed": "Bevestig eerst je e-mailadres",
+    "logoutError": "Fout bij uitloggen",
+    "rateLimited": "Te veel verzoeken. Probeer het later opnieuw.",
+    "resetEmailFailed": "Kon reset-email niet versturen. Probeer het opnieuw."
+  },
+  "submissions": {
+    "validateClassCodeError": "Kon klas niet controleren",
+    "classCodeNotFound": "Klas-code niet gevonden. Controleer de code en probeer opnieuw.",
+    "submitError": "Kon compositie niet versturen. Probeer opnieuw.",
+    "shareLinkError": "Kon link niet aanmaken. Probeer opnieuw.",
+    "loadError": "Kon compositie niet laden."
+  },
+  "teacher": {
+    "common": {
+      "backToSoundScout": "Terug naar SoundScout"
+    },
+    "validation": {
+      "emailRequired": "Voer je e-mailadres in",
+      "passwordRequired": "Voer je wachtwoord in",
+      "nameRequired": "Voer je naam in",
+      "passwordMinLength": "Wachtwoord moet minimaal 6 tekens zijn",
+      "passwordMismatch": "Wachtwoorden komen niet overeen",
+      "genericError": "Er ging iets mis"
+    },
+    "login": {
+      "subtitle": "Docenten Login",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "docent@school.nl",
+      "passwordLabel": "Wachtwoord",
+      "forgotPassword": "Wachtwoord vergeten?",
+      "submit": "Inloggen",
+      "submitLoading": "Inloggen...",
+      "noAccount": "Nog geen account?",
+      "registerLink": "Registreer hier"
+    },
+    "register": {
+      "subtitle": "Docent Account Aanmaken",
+      "nameLabel": "Naam",
+      "namePlaceholder": "Juf Marieke",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "docent@school.nl",
+      "passwordLabel": "Wachtwoord",
+      "passwordPlaceholder": "Minimaal 6 tekens",
+      "confirmPasswordLabel": "Bevestig wachtwoord",
+      "confirmPasswordPlaceholder": "Herhaal je wachtwoord",
+      "submit": "Account aanmaken",
+      "submitLoading": "Account aanmaken...",
+      "hasAccount": "Al een account?",
+      "loginLink": "Log hier in",
+      "successTitle": "Bijna klaar!",
+      "successMessage": "We hebben een bevestigingsmail gestuurd naar",
+      "successHint": "Controleer ook je spam/ongewenste mail folder als je de mail niet ziet.",
+      "tipLabel": "Tip:",
+      "activationInfo": "Klik op de link in de mail om je account te activeren."
+    },
+    "forgotPassword": {
+      "title": "Wachtwoord vergeten?",
+      "subtitle": "Geen probleem! We sturen je een reset-link.",
+      "emailLabel": "E-mailadres",
+      "emailPlaceholder": "docent@school.nl",
+      "submit": "Verstuur reset-link",
+      "submitLoading": "Versturen...",
+      "backToLogin": "Terug naar inloggen",
+      "successTitle": "Check je inbox!",
+      "successMessage": "We hebben een reset-link gestuurd naar",
+      "successHint": "Controleer ook je spam/ongewenste mail folder als je de mail niet ziet.",
+      "tipLabel": "Tip:",
+      "resetInfo": "Klik op de link in de mail om een nieuw wachtwoord in te stellen."
+    },
+    "dashboard": {
+      "title": "Docenten Dashboard",
+      "welcome": "Welkom, {{name}}",
+      "logout": "Uitloggen",
+      "myClasses": "Mijn Klassen",
+      "newClass": "Nieuwe Klas",
+      "loading": "Klassen laden...",
+      "emptyTitle": "Nog geen klassen",
+      "emptyDescription": "Maak je eerste klas aan om composities van leerlingen te ontvangen.",
+      "createFirstClass": "Eerste Klas Aanmaken",
+      "createClassError": "Kon klas niet aanmaken",
+      "deleteClassConfirm": "Weet je zeker dat je deze klas wilt verwijderen?\n\nAlle composities van leerlingen worden ook verwijderd!",
+      "deleteClassError": "Kon klas niet verwijderen",
+      "howItWorks": "Hoe werkt het?",
+      "step1": "1. Maak een klas aan en krijg een 4-cijferige code",
+      "step2": "2. Deel de code met je leerlingen",
+      "step3": "3. Leerlingen maken een compositie en voeren de code in bij \"Delen\"",
+      "step4": "4. Bekijk alle composities hier in je dashboard"
+    },
+    "classDetail": {
+      "back": "Terug naar overzicht",
+      "compositionCount": "{{count}} compositie",
+      "compositionCount_plural": "{{count}} composities",
+      "refreshTitle": "Ververs composities",
+      "classCodeLabel": "Klas-code",
+      "loading": "Composities laden...",
+      "emptyTitle": "Nog geen composities",
+      "emptyDescription": "Deel de klas-code {{code}} met je leerlingen. Zodra leerlingen hun compositie delen, verschijnen ze hier.",
+      "deleteConfirm": "Weet je zeker dat je deze compositie wilt verwijderen?",
+      "deleteError": "Kon niet verwijderen",
+      "instruction": "Leerlingen kunnen hun compositie delen via Podium → Opslaan → Deel met docent en de code {{code}} invoeren."
+    },
+    "createClassModal": {
+      "title": "Nieuwe Klas Aanmaken",
+      "nameLabel": "Klasnaam",
+      "namePlaceholder": "Bijv. Groep 5B of Muziekles 2025",
+      "nameRequired": "Voer een klasnaam in",
+      "nameMinLength": "Klasnaam moet minimaal 2 tekens zijn",
+      "codeInfo": "Na het aanmaken krijg je een unieke 4-cijferige code die je met je leerlingen kunt delen.",
+      "cancel": "Annuleren",
+      "submit": "Aanmaken",
+      "submitLoading": "Aanmaken..."
+    },
+    "submissionPlayer": {
+      "by": "Door:",
+      "loading": "Samples laden...",
+      "noSamplesError": "Geen samples gevonden in deze compositie",
+      "loadWarning": "Sommige samples konden niet worden geladen:",
+      "audioLoadError": "Kon audio niet laden",
+      "errorHint": "Probeer de pagina te verversen."
+    },
+    "classCard": {
+      "createdOn": "Aangemaakt op {{date}}",
+      "compositionCount": "{{count}} compositie",
+      "compositionCount_plural": "{{count}} composities",
+      "view": "Bekijken"
+    },
+    "submissionCard": {
+      "play": "Afspelen",
+      "by": "Door:",
+      "delete": "Verwijderen"
+    },
+    "shareWithTeacher": {
+      "title": "Deel met docent",
+      "step1Title": "Klas-code",
+      "step1Description": "Voer de code in die je van je docent hebt gekregen",
+      "codePlaceholder": "4-cijferige code",
+      "step2Title": "Gevonden!",
+      "className": "Klas:",
+      "teacherName": "Docent:",
+      "yourName": "Jouw naam (optioneel)",
+      "namePlaceholder": "Of we verzinnen een grappige naam",
+      "step3Title": "Verstuurd!",
+      "step3Description": "Je docent kan je compositie nu bekijken.",
+      "next": "Volgende",
+      "send": "Versturen",
+      "sending": "Versturen...",
+      "done": "Klaar",
+      "invalidCode": "Voer een 4-cijferige code in",
+      "classNotFound": "Klas niet gevonden. Controleer de code.",
+      "checkingCode": "Code controleren...",
+      "sendError": "Versturen mislukt. Probeer opnieuw."
     }
   }
 }

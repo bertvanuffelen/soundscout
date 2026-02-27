@@ -2,6 +2,7 @@
  * ClassCard - Kaart voor een klas in het dashboard
  */
 
+import { useTranslation } from 'react-i18next';
 import { Music, Trash2 } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { Button } from '../ui/Button';
@@ -13,6 +14,7 @@ interface ClassCardProps {
 }
 
 export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
+  const { t } = useTranslation();
   const { name, code, submission_count = 0, created_at } = classData;
 
   // Format datum
@@ -31,7 +33,7 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
             {name}
           </h3>
           <p className="text-gray-500 text-sm">
-            Aangemaakt op {formattedDate}
+            {t('teacher.classCard.createdOn', { date: formattedDate })}
           </p>
         </div>
 
@@ -45,7 +47,7 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
       <div className="flex items-center gap-2 mb-4">
         <Music className="w-6 h-6 text-amber-500" />
         <span className="text-gray-700">
-          <strong>{submission_count}</strong> {submission_count === 1 ? 'compositie' : 'composities'}
+          <strong>{submission_count}</strong> {t('teacher.classCard.compositionCount', { count: submission_count })}
         </span>
       </div>
 
@@ -57,7 +59,7 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
           onClick={onOpen}
           className="flex-1"
         >
-          Bekijken
+          {t('teacher.classCard.view')}
         </Button>
         <Button
           variant="ghost"

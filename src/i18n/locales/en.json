@@ -6,11 +6,27 @@
     "back": "Back",
     "close": "Close",
     "loading": "Loading...",
-    "retry": "Try again"
+    "retry": "Try again",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "tracks": "Tracks",
+    "clips": "Clips",
+    "samples": "Samples",
+    "play": "Play",
+    "pause": "Pause",
+    "stop": "Stop",
+    "by": "By"
+  },
+  "language": {
+    "nl": "Nederlands",
+    "en": "English"
   },
   "map": {
     "title": "Choose a location",
-    "selectLocation": "Click on a location to explore"
+    "selectLocation": "Click on a location to explore",
+    "loadingTheme": "Loading theme...",
+    "studioShort": "Studio",
+    "cityMapAlt": "City map"
   },
   "themeSelection": {
     "title": "Choose your world",
@@ -80,7 +96,14 @@
       "Go to the studio and drag your sounds onto the timeline",
       "Combine sounds into your own composition!"
     ],
-    "closeTutorial": "Got it!"
+    "closeTutorial": "Got it!",
+    "teacherLink": "Are you a teacher?",
+    "createdBy": "Created by Bert van Uffelen",
+    "aboutButton": "About this app",
+    "aboutTitle": "About this app",
+    "aboutText1": "SoundScout was created by Bert van Uffelen, music teacher and developer of creative digital tools for education.",
+    "aboutText2": "Curious about more apps, workshops or musical ideas? Or would you like training on how to effectively use technology in music class?",
+    "aboutText3": "Take a look at my LinkedIn profile:"
   },
   "location": {
     "backToMap": "Back",
@@ -148,7 +171,10 @@
     "download": "Download MP3",
     "exporting": "Exporting...",
     "exportSuccess": "Success! Your MP3 is downloading.",
-    "exportError": "Export failed. Please try again."
+    "exportError": "Export failed. Please try again.",
+    "subtitle": "Your SoundScout composition",
+    "shareWithTeacher": "Share with teacher",
+    "defaultName": "My composition"
   },
   "compositions": {
     "title": "My Compositions",
@@ -272,6 +298,195 @@
       "sendFailed": "Failed to send. Please try again later.",
       "networkError": "No internet connection",
       "notConfigured": "Feedback system is not configured"
+    }
+  },
+  "share": {
+    "shareLink": "Share link",
+    "confirmDescription": "A public listening link will be created that is valid for 30 days. Anyone with the link or code can listen to your composition.",
+    "generateLink": "Create link",
+    "generating": "Creating link...",
+    "linkReady": "Your link is ready!",
+    "copyLink": "Copy link",
+    "copied": "Copied!",
+    "expiresIn": "Link expires in 30 days",
+    "code": "Code",
+    "codeDescription": "Or share this code — the recipient can enter it on the start screen",
+    "expired": "This link has expired",
+    "notFound": "Composition not found",
+    "loading": "Loading composition...",
+    "listenTitle": "Got a composition code?",
+    "listenPlaceholder": "Enter code",
+    "listen": "Listen",
+    "invalidCode": "Please enter a valid code",
+    "backToStart": "Back to SoundScout",
+    "viewCount": "Listened {{count}} times",
+    "by": "By",
+    "errorGeneric": "Something went wrong. Please try again.",
+    "loadingSamples": "Loading samples..."
+  },
+  "error": {
+    "title": "Oops! Something went wrong",
+    "description": "An unexpected error occurred.",
+    "retryButton": "Try again",
+    "sendReportButton": "Send error report",
+    "technicalDetails": "Technical details"
+  },
+  "auth": {
+    "emailAlreadyRegistered": "This email address is already registered",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 6 characters",
+    "invalidCredentials": "Incorrect email address or password",
+    "emailNotConfirmed": "Please confirm your email address first",
+    "logoutError": "Error logging out",
+    "rateLimited": "Too many requests. Please try again later.",
+    "resetEmailFailed": "Could not send reset email. Please try again."
+  },
+  "submissions": {
+    "validateClassCodeError": "Could not verify class",
+    "classCodeNotFound": "Class code not found. Check the code and try again.",
+    "submitError": "Could not submit composition. Please try again.",
+    "shareLinkError": "Could not create link. Please try again.",
+    "loadError": "Could not load composition."
+  },
+  "teacher": {
+    "common": {
+      "backToSoundScout": "Back to SoundScout"
+    },
+    "validation": {
+      "emailRequired": "Please enter your email address",
+      "passwordRequired": "Please enter your password",
+      "nameRequired": "Please enter your name",
+      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordMismatch": "Passwords do not match",
+      "genericError": "Something went wrong"
+    },
+    "login": {
+      "subtitle": "Teacher Login",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "teacher@school.com",
+      "passwordLabel": "Password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Log in",
+      "submitLoading": "Logging in...",
+      "noAccount": "Don't have an account?",
+      "registerLink": "Register here"
+    },
+    "register": {
+      "subtitle": "Create Teacher Account",
+      "nameLabel": "Name",
+      "namePlaceholder": "Ms. Smith",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "teacher@school.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "At least 6 characters",
+      "confirmPasswordLabel": "Confirm password",
+      "confirmPasswordPlaceholder": "Repeat your password",
+      "submit": "Create account",
+      "submitLoading": "Creating account...",
+      "hasAccount": "Already have an account?",
+      "loginLink": "Log in here",
+      "successTitle": "Almost there!",
+      "successMessage": "We've sent a confirmation email to",
+      "successHint": "Also check your spam/junk folder if you don't see the email.",
+      "tipLabel": "Tip:",
+      "activationInfo": "Click the link in the email to activate your account."
+    },
+    "forgotPassword": {
+      "title": "Forgot password?",
+      "subtitle": "No problem! We'll send you a reset link.",
+      "emailLabel": "Email address",
+      "emailPlaceholder": "teacher@school.com",
+      "submit": "Send reset link",
+      "submitLoading": "Sending...",
+      "backToLogin": "Back to login",
+      "successTitle": "Check your inbox!",
+      "successMessage": "We've sent a reset link to",
+      "successHint": "Also check your spam/junk folder if you don't see the email.",
+      "tipLabel": "Tip:",
+      "resetInfo": "Click the link in the email to set a new password."
+    },
+    "dashboard": {
+      "title": "Teacher Dashboard",
+      "welcome": "Welcome, {{name}}",
+      "logout": "Log out",
+      "myClasses": "My Classes",
+      "newClass": "New Class",
+      "loading": "Loading classes...",
+      "emptyTitle": "No classes yet",
+      "emptyDescription": "Create your first class to receive student compositions.",
+      "createFirstClass": "Create First Class",
+      "createClassError": "Could not create class",
+      "deleteClassConfirm": "Are you sure you want to delete this class?\n\nAll student compositions will also be deleted!",
+      "deleteClassError": "Could not delete class",
+      "howItWorks": "How does it work?",
+      "step1": "1. Create a class and get a 4-digit code",
+      "step2": "2. Share the code with your students",
+      "step3": "3. Students create a composition and enter the code under \"Share\"",
+      "step4": "4. View all compositions here in your dashboard"
+    },
+    "classDetail": {
+      "back": "Back to overview",
+      "compositionCount": "{{count}} composition",
+      "compositionCount_plural": "{{count}} compositions",
+      "refreshTitle": "Refresh compositions",
+      "classCodeLabel": "Class code",
+      "loading": "Loading compositions...",
+      "emptyTitle": "No compositions yet",
+      "emptyDescription": "Share the class code {{code}} with your students. Once students share their composition, they will appear here.",
+      "deleteConfirm": "Are you sure you want to delete this composition?",
+      "deleteError": "Could not delete",
+      "instruction": "Students can share their composition via Stage → Save → Share with teacher and enter the code {{code}}."
+    },
+    "createClassModal": {
+      "title": "Create New Class",
+      "nameLabel": "Class name",
+      "namePlaceholder": "E.g. Grade 5B or Music Class 2025",
+      "nameRequired": "Please enter a class name",
+      "nameMinLength": "Class name must be at least 2 characters",
+      "codeInfo": "After creating, you'll get a unique 4-digit code that you can share with your students.",
+      "cancel": "Cancel",
+      "submit": "Create",
+      "submitLoading": "Creating..."
+    },
+    "submissionPlayer": {
+      "by": "By:",
+      "loading": "Loading samples...",
+      "noSamplesError": "No samples found in this composition",
+      "loadWarning": "Some samples could not be loaded:",
+      "audioLoadError": "Could not load audio",
+      "errorHint": "Try refreshing the page."
+    },
+    "classCard": {
+      "createdOn": "Created on {{date}}",
+      "compositionCount": "{{count}} composition",
+      "compositionCount_plural": "{{count}} compositions",
+      "view": "View"
+    },
+    "submissionCard": {
+      "play": "Play",
+      "by": "By:",
+      "delete": "Delete"
+    },
+    "shareWithTeacher": {
+      "title": "Share with teacher",
+      "step1Title": "Class code",
+      "step1Description": "Enter the code you received from your teacher",
+      "codePlaceholder": "4-digit code",
+      "step2Title": "Found!",
+      "className": "Class:",
+      "teacherName": "Teacher:",
+      "yourName": "Your name (optional)",
+      "namePlaceholder": "Or we'll make up a fun name",
+      "step3Title": "Sent!",
+      "step3Description": "Your teacher can now view your composition.",
+      "next": "Next",
+      "send": "Send",
+      "sending": "Sending...",
+      "done": "Done",
+      "invalidCode": "Please enter a 4-digit code",
+      "classNotFound": "Class not found. Check the code.",
+      "checkingCode": "Checking code...",
+      "sendError": "Failed to send. Please try again."
     }
   }
 }

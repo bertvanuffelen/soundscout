@@ -3,6 +3,7 @@
  */
 
 import { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Music, Mail, Lightbulb, ArrowLeft } from 'lucide-react';
 import { signUpTeacher } from '../../lib/auth';
 import { Button } from '../ui/Button';
@@ -14,6 +15,7 @@ interface TeacherRegisterProps {
 }
 
 export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack }: TeacherRegisterProps) {
+  const { t } = useTranslation();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -28,19 +30,19 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
 
     // Validatie
     if (!displayName.trim()) {
-      setError('Voer je naam in');
+      setError(t('teacher.validation.nameRequired'));
       return;
     }
     if (!email.trim()) {
-      setError('Voer je e-mailadres in');
+      setError(t('teacher.validation.emailRequired'));
       return;
     }
     if (password.length < 6) {
-      setError('Wachtwoord moet minimaal 6 tekens zijn');
+      setError(t('teacher.validation.passwordMinLength'));
       return;
     }
     if (password !== confirmPassword) {
-      setError('Wachtwoorden komen niet overeen');
+      setError(t('teacher.validation.passwordMismatch'));
       return;
     }
 
@@ -50,7 +52,7 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
       setSuccess(true);
       // Niet automatisch doorsturen - gebruiker moet eerst email bevestigen
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Er ging iets mis');
+      setError(err instanceof Error ? err.message : t('teacher.validation.genericError'));
     } finally {
       setLoading(false);
     }
@@ -65,19 +67,19 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
             <Mail className="w-16 h-16 text-primary-500" />
           </div>
           <h2 className="text-2xl font-bold text-text-main mb-2">
-            Bijna klaar!
+            {t('teacher.register.successTitle')}
           </h2>
           <p className="text-text-muted mb-4">
-            We hebben een bevestigingsmail gestuurd naar <strong className="text-text-main">{email}</strong>
+            {t('teacher.register.successMessage')} <strong className="text-text-main">{email}</strong>
           </p>
           <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-4">
             <p className="text-primary-800 text-sm flex items-center justify-center gap-2">
               <Lightbulb className="w-4 h-4 shrink-0" />
-              <span><strong>Tip:</strong> Controleer ook je spam/ongewenste mail folder als je de mail niet ziet.</span>
+              <span><strong>{t('teacher.register.tipLabel')}</strong> {t('teacher.register.successHint')}</span>
             </p>
           </div>
           <p className="text-text-muted text-sm mb-6">
-            Klik op de link in de mail om je account te activeren.
+            {t('teacher.register.activationInfo')}
           </p>
           <Button
             variant="primary"
@@ -85,7 +87,7 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
             onClick={onSwitchToLogin}
             className="w-full"
           >
-            Ga naar inloggen
+            {t('teacher.register.hasAccount')} {t('teacher.register.loginLink')}
           </Button>
         </div>
       </div>
@@ -104,7 +106,7 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
             </h1>
           </div>
           <p className="text-text-muted">
-            Docent Account Aanmaken
+            {t('teacher.register.subtitle')}
           </p>
         </div>
 
@@ -119,14 +121,14 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label htmlFor="displayName" className="block text-sm font-medium text-text-main mb-1">
-              Naam
+              {t('teacher.register.nameLabel')}
             </label>
             <input
               id="displayName"
               type="text"
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
-              placeholder="Juf Marieke"
+              placeholder={t('teacher.register.namePlaceholder')}
               className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="name"
@@ -135,14 +137,14 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
 
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-text-main mb-1">
-              E-mailadres
+              {t('teacher.register.emailLabel')}
             </label>
             <input
               id="email"
               type="email"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
-              placeholder="docent@school.nl"
+              placeholder={t('teacher.register.emailPlaceholder')}
               className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="email"
@@ -151,14 +153,14 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
 
           <div>
             <label htmlFor="password" className="block text-sm font-medium text-text-main mb-1">
-              Wachtwoord
+              {t('teacher.register.passwordLabel')}
             </label>
             <input
               id="password"
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              placeholder="Minimaal 6 tekens"
+              placeholder={t('teacher.register.passwordPlaceholder')}
               className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="new-password"
@@ -167,14 +169,14 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
 
           <div>
             <label htmlFor="confirmPassword" className="block text-sm font-medium text-text-main mb-1">
-              Bevestig wachtwoord
+              {t('teacher.register.confirmPasswordLabel')}
             </label>
             <input
               id="confirmPassword"
               type="password"
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
-              placeholder="Herhaal je wachtwoord"
+              placeholder={t('teacher.register.confirmPasswordPlaceholder')}
               className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="new-password"
@@ -188,21 +190,21 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
             className="w-full"
             disabled={loading}
           >
-            {loading ? 'Account aanmaken...' : 'Account aanmaken'}
+            {loading ? t('teacher.register.submitLoading') : t('teacher.register.submit')}
           </Button>
         </form>
 
         {/* Switch to login */}
         <div className="mt-6 text-center">
           <p className="text-text-muted text-sm">
-            Al een account?{' '}
+            {t('teacher.register.hasAccount')}{' '}
             <button
               type="button"
               onClick={onSwitchToLogin}
               className="text-primary-600 hover:text-primary-700 font-medium"
               disabled={loading}
             >
-              Log hier in
+              {t('teacher.register.loginLink')}
             </button>
           </p>
         </div>
@@ -216,7 +218,7 @@ export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack
             disabled={loading}
           >
             <ArrowLeft className="w-4 h-4" />
-            Terug naar SoundScout
+            {t('teacher.common.backToSoundScout')}
           </button>
         </div>
       </div>
