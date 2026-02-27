@@ -26,7 +26,6 @@ import { EditToolbar } from './EditToolbar';
 import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
-import { Undo2, Redo2 } from 'lucide-react';
 
 export function StudioView() {
   const { t } = useTranslation();
@@ -189,25 +188,7 @@ export function StudioView() {
           <span className="hidden sm:inline">{t('studio.backToLocation')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
-        <div className="flex items-center gap-1">
-          <button
-            onClick={undo}
-            disabled={!canUndo}
-            aria-label={t('studio.undo')}
-            className="p-1.5 rounded-md text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
-          >
-            <Undo2 size={16} />
-          </button>
-          <h1 className="text-base sm:text-lg font-bold text-text-main mx-1">{t('studio.title')}</h1>
-          <button
-            onClick={redo}
-            disabled={!canRedo}
-            aria-label={t('studio.redo')}
-            className="p-1.5 rounded-md text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[36px] min-h-[36px] flex items-center justify-center"
-          >
-            <Redo2 size={16} />
-          </button>
-        </div>
+        <h1 className="text-base sm:text-lg font-bold text-text-main">{t('studio.title')}</h1>
         <Button
           variant="primary"
           size="sm"
@@ -251,6 +232,10 @@ export function StudioView() {
           isPlaying={isPlaying}
           onSeek={handleSeek}
           snapPreview={snapPreview}
+          onUndo={undo}
+          onRedo={redo}
+          canUndo={canUndo}
+          canRedo={canRedo}
         />
 
         {/* Drag Overlay - hidden when snap preview is visible (only snap preview shows drop location) */}

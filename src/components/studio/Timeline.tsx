@@ -7,6 +7,7 @@ import { VISIBLE_BEATS } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
+import { Undo2, Redo2 } from 'lucide-react';
 
 interface TimelineProps {
   tracks: TrackType[];
@@ -18,6 +19,10 @@ interface TimelineProps {
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
   readOnly?: boolean;
   samples?: Sample[];  // Optional: for read-only mode with custom samples
+  onUndo?: () => void;
+  onRedo?: () => void;
+  canUndo?: boolean;
+  canRedo?: boolean;
 }
 
 export const Timeline = memo(function Timeline({
@@ -30,6 +35,10 @@ export const Timeline = memo(function Timeline({
   snapPreview,
   readOnly = false,
   samples,
+  onUndo,
+  onRedo,
+  canUndo = false,
+  canRedo = false,
 }: TimelineProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -85,9 +94,31 @@ export const Timeline = memo(function Timeline({
 
   return (
     <div className="flex flex-col shrink-0">
-      <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide px-2 sm:px-4 py-1.5 sm:py-2 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
-        {t('studio.timeline')}
-      </h2>
+      <div className="flex items-center justify-between px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
+        <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide">
+          {t('studio.timeline')}
+        </h2>
+        {onUndo && onRedo && (
+          <div className="flex items-center gap-0.5">
+            <button
+              onClick={onUndo}
+              disabled={!canUndo}
+              aria-label={t('studio.undo')}
+              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+            >
+              <Undo2 size={14} />
+            </button>
+            <button
+              onClick={onRedo}
+              disabled={!canRedo}
+              aria-label={t('studio.redo')}
+              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+            >
+              <Redo2 size={14} />
+            </button>
+          </div>
+        )}
+      </div>
 
       <div
         ref={scrollContainerRef}
