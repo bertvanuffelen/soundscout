@@ -27,6 +27,7 @@ export function Hotspot({ hotspot, sample, disabled, onCollect, onHoverStart, on
       onTouchStart={() => !disabled && onHoverStart(sample.id)}
       onTouchEnd={() => onHoverEnd(sample.id)}
       disabled={disabled}
+      aria-label={t(sample.name)}
       title={t(sample.name)}
       className={`
         hotspot

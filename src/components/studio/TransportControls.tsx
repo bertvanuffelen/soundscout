@@ -30,6 +30,7 @@ export const TransportControls = memo(function TransportControls({
       <button
         onClick={isPlaying ? onPause : onPlay}
         disabled={!hasClips}
+        aria-label={isPlaying ? t('transport.pause') : t('transport.play')}
         className={cn(
           'w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer',
           'bg-primary-500 hover:bg-primary-600 active:bg-primary-700 active:scale-95 text-white',
@@ -44,6 +45,7 @@ export const TransportControls = memo(function TransportControls({
       <button
         onClick={onRewind}
         disabled={!hasClips}
+        aria-label={t('transport.rewind')}
         className={cn(
           'w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer',
           'bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 active:scale-95 text-neutral-600',
@@ -57,6 +59,7 @@ export const TransportControls = memo(function TransportControls({
       {/* Loop */}
       <button
         onClick={onToggleLoop}
+        aria-label={t('transport.loop')}
         className={cn(
           'w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer active:scale-95',
           isLooping

@@ -79,9 +79,9 @@ export const Timeline = memo(function Timeline({
 
   return (
     <div className="flex flex-col shrink-0">
-      <h3 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide px-2 sm:px-4 py-1.5 sm:py-2 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
+      <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide px-2 sm:px-4 py-1.5 sm:py-2 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
         {t('studio.timeline')}
-      </h3>
+      </h2>
 
       <div
         ref={scrollContainerRef}

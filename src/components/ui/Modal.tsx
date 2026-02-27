@@ -4,11 +4,12 @@
  * Features:
  * - Backdrop click to close
  * - Escape key to close
- * - Focus trap (basic)
+ * - Focus trap (automatic Tab cycling)
+ * - Auto-focus first focusable element
  * - Animations
  */
 
-import { useEffect, useCallback, type ReactNode } from 'react';
+import { useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { cn } from '../../utils/cn';
 
 export interface ModalProps {
@@ -42,6 +43,9 @@ export function Modal({
   closeOnEscape = true,
   className,
 }: ModalProps) {
+  const modalRef = useRef<HTMLDivElement>(null);
+  const previouslyFocusedRef = useRef<HTMLElement | null>(null);
+
   // Handle escape key
   const handleEscape = useCallback(
     (e: KeyboardEvent) => {
@@ -52,18 +56,73 @@ export function Modal({
     [onClose, closeOnEscape]
   );
 
+  // Focus trap handler
+  const handleKeyDown = useCallback(
+    (e: KeyboardEvent) => {
+      if (e.key !== 'Tab') return;
+
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      ) as NodeListOf<HTMLElement> | undefined;
+
+      if (!focusableElements || focusableElements.length === 0) return;
+
+      const firstElement = focusableElements[0];
+      const lastElement = focusableElements[focusableElements.length - 1];
+      const activeElement = document.activeElement as HTMLElement;
+
+      if (e.shiftKey) {
+        // Shift+Tab: move backwards
+        if (activeElement === firstElement) {
+          e.preventDefault();
+          lastElement.focus();
+        }
+      } else {
+        // Tab: move forwards
+        if (activeElement === lastElement) {
+          e.preventDefault();
+          firstElement.focus();
+        }
+      }
+    },
+    []
+  );
+
   useEffect(() => {
     if (isOpen) {
+      // Store previously focused element
+      previouslyFocusedRef.current = document.activeElement as HTMLElement;
+
+      // Add event listeners
       document.addEventListener('keydown', handleEscape);
+      document.addEventListener('keydown', handleKeyDown);
+
       // Prevent body scroll when modal is open
       document.body.style.overflow = 'hidden';
+
+      // Auto-focus first focusable element
+      setTimeout(() => {
+        const focusableElements = modalRef.current?.querySelectorAll(
+          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        ) as NodeListOf<HTMLElement> | undefined;
+
+        if (focusableElements && focusableElements.length > 0) {
+          focusableElements[0].focus();
+        }
+      }, 0);
     }
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
+      document.removeEventListener('keydown', handleKeyDown);
       document.body.style.overflow = '';
+
+      // Restore focus to previously focused element
+      if (previouslyFocusedRef.current) {
+        previouslyFocusedRef.current.focus();
+      }
     };
-  }, [isOpen, handleEscape]);
+  }, [isOpen, handleEscape, handleKeyDown]);
 
   if (!isOpen) return null;
 
@@ -78,6 +137,7 @@ export function Modal({
 
       {/* Modal content */}
       <div
+        ref={modalRef}
         className={cn(
           'relative w-full bg-white rounded-2xl shadow-2xl',
           'transform transition-all',
@@ -88,6 +148,7 @@ export function Modal({
         role="dialog"
         aria-modal="true"
         aria-labelledby={title ? 'modal-title' : undefined}
+        aria-describedby="modal-body"
       >
         {title && (
           <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-1 sm:pb-2">
@@ -100,7 +161,7 @@ export function Modal({
           </div>
         )}
 
-        <div className={cn(title ? 'px-4 sm:px-6 pb-4 sm:pb-6' : 'p-4 sm:p-6')}>{children}</div>
+        <div id="modal-body" className={cn(title ? 'px-4 sm:px-6 pb-4 sm:pb-6' : 'p-4 sm:p-6')}>{children}</div>
       </div>
     </div>
   );

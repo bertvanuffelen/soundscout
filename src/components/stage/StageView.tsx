@@ -323,3 +323,5 @@ export function StageView() {
     </div>
   );
 }
+
+export default StageView;

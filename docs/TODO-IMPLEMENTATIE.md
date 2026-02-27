@@ -923,27 +923,18 @@ interface TimelineState {
 3. Hotspot animeert richting recorder bar
 4. Recorder slot bounced bij ontvangst
 
-#### UX-4. Kindvriendelijker vocabulaire
-**Status:** Niet begonnen
-**Effort:** Klein (1-2 uur)
-**Impact:** Begrijpelijkheid voor 6-8 jarigen
+#### UX-4. Kindvriendelijker vocabulaire — 📋 WOORDENLIJST AANGEMAAKT
+**Status:** Wacht op review door product owner
+**Effort:** Klein (1-2 uur na beslissing)
 
-| Huidig | Probleem | Beter |
-|--------|----------|-------|
-| "Compositie" | Abstract muziekterm | "Mijn muziek" of "Mijn nummer" |
-| "Bibliotheek" | Kinderen denken: boeken | "Mijn geluiden" |
-| "Samples" | Engels jargon | "Geluiden" |
+**Document:** `docs/WOORDENLIJST-VOCABULAIRE.md` — overzicht van alle UI-termen met suggesties voor kindvriendelijkere alternatieven. Bevat 4 hoge-prioriteit suggesties (Compositie, Bibliotheek, Samples, Dupliceren) en medium-prioriteit items.
 
-**Aanpak:** Wijzig i18n keys in `nl.json` en `en.json`. Geen code-wijzigingen nodig.
+**Aanpak:** Na review: wijzig i18n keys in `nl.json` en `en.json`. Geen code-wijzigingen nodig.
 
-#### UX-5. Studio cognitive load verminderen
-**Status:** Niet begonnen
-**Effort:** Medium (3-4 uur)
-**Impact:** Minder overweldigend voor 6-8 jarigen
+#### UX-5. Studio cognitive load verminderen — ❌ NIET NODIG
+**Status:** Verwijderd (2026-02-27)
 
-**Probleem:** 8 lege tracks zichtbaar + SampleLibrary + Timeline + EditToolbar + Transport.
-
-**Oplossing:** Auto-collapse lege tracks, toon initieel 2-3 tracks. Tracks verschijnen automatisch wanneer clips worden toegevoegd.
+**Reden:** 8 zichtbare tracks zijn gewenst — leerlingen moeten meteen zien dat ze meerstemmig kunnen werken. Auto-collapse zou dit verbergen.
 
 #### UX-6. StageView knoppen hiërarchie — ❌ VERWIJDERD
 **Status:** Verwijderd (2026-02-27)
@@ -1044,21 +1035,20 @@ interface TimelineState {
 
 #### A11Y-MAJOR: Significante barrières
 
-##### A11Y-7. Quick wins (klein effort, grote impact)
-**Status:** Niet begonnen
+##### A11Y-7. Quick wins (klein effort, grote impact) ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein-Medium (3-4 uur totaal)
 
-Batch van snelle fixes:
-- [ ] `aria-label` op alle icon buttons (EditToolbar, TransportControls, Hotspot)
-- [ ] Focus trap in Modal component (`Modal.tsx`)
-- [ ] `<label>` koppelen aan form inputs (`ShareCodeInput.tsx`)
-- [ ] `prefers-reduced-motion` support (stop animaties bij voorkeur)
-- [ ] Focus indicators op EditToolbar buttons
-- [ ] Focus management bij modal open/close
-- [ ] `aria-describedby` op Modal body
-- [ ] Form errors in `aria-live` regio (FeedbackModal)
-- [ ] Dynamische `<title>` per scherm (App.tsx)
-- [ ] Heading hiërarchie corrigeren (h3 zonder h2 in Timeline)
+- [x] `aria-label` op alle icon buttons (EditToolbar, TransportControls, Hotspot, ShareCodeInput)
+- [x] Focus trap in Modal component (Tab/Shift+Tab cycled binnen modal)
+- [x] `<label>` koppelen aan form inputs (ShareCodeInput met sr-only label)
+- [x] `prefers-reduced-motion` support (animaties uitgeschakeld bij voorkeur)
+- [x] Focus indicators op EditToolbar buttons (focus-visible:ring-2)
+- [x] Focus management bij modal open/close (opslaan + herstellen van focus)
+- [x] `aria-describedby` op Modal body
+- [x] Form errors in `aria-live` regio (FeedbackModal, ShareCodeInput)
+- [x] Dynamische `<title>` per scherm (App.tsx)
+- [x] Heading hiërarchie gecorrigeerd (h3 → h2 in Timeline en SampleLibrary)
 
 ##### A11Y-8. Kleur-onafhankelijke status indicatie
 **Status:** Niet begonnen
@@ -1075,36 +1065,16 @@ Batch van snelle fixes:
 > **Score: 5.0/10** — Geen code splitting, 20Hz re-renders, geen image optimalisatie.
 > Bron: Performance analyse rapport (2026-02-27)
 
-#### PERF-1. Route-level code splitting ⚠️ KRITIEK
-**Status:** Niet begonnen
+#### PERF-1. Route-level code splitting ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Medium (3-4 uur)
-**Impact:** Bundle -50%, eerste paint -500ms
+**Impact:** Main bundle van 1.2MB → 479KB gzip
 
-**Probleem:** ALLE schermen statisch geïmporteerd in App.tsx. Studenten laden teacher dashboard, shared player, etc.
-
-**Geschatte bundle (gzipped):**
-```
-tone@15          ~100-150 KB
-react+react-dom  ~80 KB
-@dnd-kit         ~60 KB
-i18next          ~40 KB
-@supabase        ~30 KB
-lamejs           ~40 KB
-app code         ~50 KB
-─────────────────────────
-Totaal:          ~250-300 KB + audio assets
-```
-
-**Oplossing:**
-```typescript
-// App.tsx
-const StudioView = React.lazy(() => import('./components/studio/StudioView'));
-const StageView = React.lazy(() => import('./components/stage/StageView'));
-const TeacherDashboard = React.lazy(() => import('./components/teacher/TeacherDashboard'));
-const SharedPlayer = React.lazy(() => import('./components/share/SharedPlayer'));
-
-// + Suspense wrapper met loading spinner
-```
+- [x] `React.lazy()` voor StudioView, StageView, CompositionsView, SharedPlayer, TeacherPage
+- [x] StartScreen, MapView, LocationScene blijven statisch (eerste schermen)
+- [x] `Suspense` fallback met "Laden..." tekst
+- [x] Default exports toegevoegd waar nodig
+- [x] `FeatureErrorBoundary` wrapping behouden per lazy component
 
 #### PERF-2. currentBeat re-render cascade
 **Status:** Niet begonnen
@@ -1115,27 +1085,12 @@ const SharedPlayer = React.lazy(() => import('./components/share/SharedPlayer'))
 
 **Oplossing:** Gebruik `useRef` + `requestAnimationFrame` voor playhead positie. Playhead leest direct uit ref, geen store update nodig voor pure visuele update. Alleen bij seek/stop de store updaten.
 
-#### PERF-3. Vite build optimalisatie
-**Status:** Niet begonnen
+#### PERF-3. Vite build optimalisatie ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
 
-**Probleem:** `vite.config.ts` is 7 regels, geen manualChunks.
-
-**Oplossing:**
-```typescript
-build: {
-  rollupOptions: {
-    output: {
-      manualChunks: {
-        'tone': ['tone'],
-        'dnd-kit': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
-        'audio-export': ['@breezystack/lamejs'],
-        'supabase': ['@supabase/supabase-js'],
-      }
-    }
-  }
-}
-```
+- [x] `manualChunks` in vite.config.ts: tone (235KB), dnd-kit (54KB), audio-export (169KB), supabase (168KB)
+- [x] Libraries worden apart gecached door browser — app-updates herdownloaden ze niet
 
 #### PERF-4. Image optimalisatie
 **Status:** Niet begonnen
@@ -1163,24 +1118,16 @@ build: {
 > **Score: 2.5/10** — Geen meta tags, geen PWA, geen caching strategie.
 > Bron: SEO & Deployment analyse rapport (2026-02-27)
 
-#### DEPLOY-1. SEO meta tags + Open Graph ⚠️ KRITIEK
-**Status:** Niet begonnen
+#### DEPLOY-1. SEO meta tags + Open Graph ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
 
-**Probleem:** index.html mist: `<meta name="description">`, Open Graph tags, Twitter Card tags, `<meta name="theme-color">`, `<link rel="canonical">`.
-
-**Impact:** Geen rich previews bij social media delen (belangrijk voor share links!), geen SEO.
-
-**Oplossing:**
-```html
-<meta name="description" content="SoundScout - Leer muziek maken door geluiden te ontdekken en te combineren">
-<meta name="theme-color" content="#0f172a">
-<meta property="og:title" content="SoundScout">
-<meta property="og:description" content="Muziek maken door geluiden te ontdekken">
-<meta property="og:image" content="/images/og-image.png">
-<meta property="og:type" content="website">
-<link rel="canonical" href="https://soundscout.nl">
-```
+- [x] `<meta name="description">` met Nederlandse beschrijving
+- [x] `<meta name="theme-color" content="#0f172a">`
+- [x] `<link rel="canonical" href="https://soundscout.nl">`
+- [x] Open Graph tags (title, description, image, url, type, locale)
+- [x] Twitter Card tags (summary card met logo als preview)
+- [x] Logo gebruikt als og:image (bestaande logo-soundscout.png)
 
 #### DEPLOY-2. PWA manifest (installeerbaar op tablet)
 **Status:** Niet begonnen
@@ -1197,27 +1144,16 @@ build: {
 
 **Notitie:** Service worker voor offline gebruik is P3 (complexer, vereist audio caching strategie).
 
-#### DEPLOY-3. Caching headers voor audio assets
-**Status:** Niet begonnen
+#### DEPLOY-3. Caching headers voor audio assets ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (30 min)
 
-**Probleem:** 62+ MP3's worden elke keer opnieuw geladen. Geen Cache-Control headers.
-
-**Oplossing (.htaccess):**
-```apache
-# Audio + afbeeldingen: 1 jaar cache (versioned via Vite hash)
-<FilesMatch "\.(mp3|jpg|png|svg|webp|woff2?)$">
-  Header set Cache-Control "max-age=31536000, immutable"
-</FilesMatch>
-
-# HTML: 1 uur cache
-<FilesMatch "\.html$">
-  Header set Cache-Control "max-age=3600, must-revalidate"
-</FilesMatch>
-
-# Compressie
-AddOutputFilterByType DEFLATE text/html text/css application/javascript application/json
-```
+- [x] `public/.htaccess` uitgebreid met Cache-Control headers
+- [x] Audio + images: 1 jaar cache (immutable, Vite hashed filenames)
+- [x] JS + CSS bundles: 1 jaar cache (immutable)
+- [x] HTML: 1 uur cache met revalidatie
+- [x] DEFLATE compressie voor text-based bestanden
+- [x] Geconfigureerd voor Strato/Apache hosting
 
 #### DEPLOY-4. Fix `<html lang="nl">` ✅
 **Status:** Voltooid (2026-02-27)

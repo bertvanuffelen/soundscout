@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from './stores/appStore';
 import { useThemeStore } from './stores/themeStore';
@@ -8,16 +8,30 @@ import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
 import { StartScreen } from './components/StartScreen';
 import { MapView } from './components/map/MapView';
 import { LocationScene } from './components/location/LocationScene';
-import { StudioView } from './components/studio/StudioView';
-import { StageView } from './components/stage/StageView';
-import { CompositionsView } from './components/compositions';
-import { SharedPlayer } from './components/share';
 import { LocationEditor } from './pages/LocationEditor';
-import { TeacherPage } from './pages/TeacherPage';
+
+// Lazy-loaded screen components for code splitting
+const StudioView = lazy(() => import('./components/studio/StudioView'));
+const StageView = lazy(() => import('./components/stage/StageView'));
+const CompositionsView = lazy(() => import('./components/compositions/CompositionsView'));
+const SharedPlayer = lazy(() => import('./components/share/SharedPlayer'));
+const TeacherPage = lazy(() => import('./pages/TeacherPage'));
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
   return window.location.pathname === '/editor';
+}
+
+// Loading fallback for lazy-loaded components
+function LoadingFallback() {
+  const { t } = useTranslation();
+  return (
+    <div className="min-h-screen flex items-center justify-center bg-bg-app text-text-muted">
+      <div className="text-center">
+        <div className="text-lg font-medium">{t('common.loading')}</div>
+      </div>
+    </div>
+  );
 }
 
 function AppContent() {
@@ -28,6 +42,23 @@ function AppContent() {
   const goToStart = useAppStore((s) => s.goToStart);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
+
+  // Update document title based on current screen
+  useEffect(() => {
+    const screenTitles: Record<string, string> = {
+      start: t('start.startGame'),
+      map: t('map.title'),
+      location: t('location.backToMap'),
+      studio: t('studio.title'),
+      stage: t('stage.title'),
+      compositions: t('compositions.title'),
+      teacher: 'Teacher Dashboard',
+      shared: 'SoundScout',
+    };
+
+    const screenTitle = screenTitles[currentScreen] || 'SoundScout';
+    document.title = `${screenTitle} — SoundScout`;
+  }, [currentScreen, t]);
 
   // Initialize theme on mount (reads URL param)
   useEffect(() => {
@@ -77,35 +108,45 @@ function AppContent() {
     case 'studio':
       return (
         <FeatureErrorBoundary featureName="Studio">
-          <StudioView />
+          <Suspense fallback={<LoadingFallback />}>
+            <StudioView />
+          </Suspense>
         </FeatureErrorBoundary>
       );
 
     case 'stage':
       return (
         <FeatureErrorBoundary featureName="Stage">
-          <StageView />
+          <Suspense fallback={<LoadingFallback />}>
+            <StageView />
+          </Suspense>
         </FeatureErrorBoundary>
       );
 
     case 'compositions':
       return (
         <FeatureErrorBoundary featureName="Compositions">
-          <CompositionsView />
+          <Suspense fallback={<LoadingFallback />}>
+            <CompositionsView />
+          </Suspense>
         </FeatureErrorBoundary>
       );
 
     case 'teacher':
       return (
         <FeatureErrorBoundary featureName="Teacher">
-          <TeacherPage />
+          <Suspense fallback={<LoadingFallback />}>
+            <TeacherPage />
+          </Suspense>
         </FeatureErrorBoundary>
       );
 
     case 'shared':
       return shareCode ? (
         <FeatureErrorBoundary featureName="Player">
-          <SharedPlayer code={shareCode} onBack={goToStart} />
+          <Suspense fallback={<LoadingFallback />}>
+            <SharedPlayer code={shareCode} onBack={goToStart} />
+          </Suspense>
         </FeatureErrorBoundary>
       ) : (
         <StartScreen />

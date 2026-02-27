@@ -46,7 +46,11 @@ export function ShareCodeInput({ onSubmit }: ShareCodeInputProps) {
         {t('share.listenTitle')}
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
+        <label htmlFor="share-code-input" className="sr-only">
+          {t('share.listenPlaceholder')}
+        </label>
         <input
+          id="share-code-input"
           type="text"
           value={code}
           onChange={(e) => handleChange(e.target.value)}
@@ -58,6 +62,7 @@ export function ShareCodeInput({ onSubmit }: ShareCodeInputProps) {
           variant="secondary"
           size="sm"
           disabled={code.length < 4}
+          aria-label={t('share.listen')}
           className="shrink-0"
         >
           <Headphones className="w-4 h-4 sm:mr-1.5" />
@@ -65,7 +70,9 @@ export function ShareCodeInput({ onSubmit }: ShareCodeInputProps) {
         </Button>
       </form>
       {error && (
-        <p className="text-red-400 text-xs text-center mt-1">{error}</p>
+        <p role="alert" aria-live="polite" className="text-red-400 text-xs text-center mt-1">
+          {error}
+        </p>
       )}
     </div>
   );

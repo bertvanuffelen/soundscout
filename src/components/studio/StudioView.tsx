@@ -282,3 +282,5 @@ export function StudioView() {
     </div>
   );
 }
+
+export default StudioView;

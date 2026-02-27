@@ -272,9 +272,13 @@ export function FeedbackModal({ isOpen, onClose, mode, errorData }: FeedbackModa
           </div>
         )}
 
-        {/* Error message */}
+        {/* Error message - announced to screen readers */}
         {errorMessage && (
-          <div className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2">
+          <div
+            role="alert"
+            aria-live="polite"
+            className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2"
+          >
             <X className="w-4 h-4 flex-shrink-0" />
             {errorMessage}
           </div>

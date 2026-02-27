@@ -59,7 +59,8 @@ export const EditToolbar = memo(function EditToolbar({
         {/* Trim button */}
         <button
           onClick={onTrim}
-          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+          aria-label={t('studio.trim')}
+          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-1"
           title={t('studio.trim')}
         >
           <Scissors size={18} className="text-neutral-600" />
@@ -69,7 +70,8 @@ export const EditToolbar = memo(function EditToolbar({
         {onDuplicate && (
           <button
             onClick={onDuplicate}
-            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+            aria-label={t('studio.duplicate')}
+            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-1"
             title={t('studio.duplicate')}
           >
             <Copy size={18} className="text-neutral-600" />
@@ -79,7 +81,8 @@ export const EditToolbar = memo(function EditToolbar({
         {/* Delete button */}
         <button
           onClick={onDelete}
-          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors"
+          aria-label={t('studio.delete')}
+          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-1"
           title={t('studio.delete')}
         >
           <Trash2 size={18} className="text-error-500" />

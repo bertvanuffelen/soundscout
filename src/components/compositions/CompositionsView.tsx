@@ -163,3 +163,5 @@ export function CompositionsView() {
     </div>
   );
 }
+
+export default CompositionsView;
