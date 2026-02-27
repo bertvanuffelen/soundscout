@@ -1,4 +1,5 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useState, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import { Volume2, VolumeX } from 'lucide-react';
@@ -36,6 +37,7 @@ export const Track = memo(function Track({
 
   // Volume popover state
   const [showVolumePopover, setShowVolumePopover] = useState(false);
+  const volumeBtnRef = useRef<HTMLButtonElement>(null);
 
   const trackVolume = track.volume ?? 0;
   const trackMuted = track.mute ?? false;
@@ -107,6 +109,7 @@ export const Track = memo(function Track({
         {/* Volume icon — only in edit mode */}
         {!readOnly && (
           <button
+            ref={volumeBtnRef}
             onClick={handleVolumeIconClick}
             aria-label={t('studio.trackVolume', { track: trackIndex + 1 })}
             className={`
@@ -123,9 +126,16 @@ export const Track = memo(function Track({
         )}
       </div>
 
-      {/* Volume popover */}
-      {showVolumePopover && (
-        <div className="absolute left-6 sm:left-7 top-0 z-50">
+      {/* Volume popover — rendered via portal to escape overflow clipping */}
+      {showVolumePopover && volumeBtnRef.current && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: volumeBtnRef.current.getBoundingClientRect().right + 4,
+            top: volumeBtnRef.current.getBoundingClientRect().top,
+            zIndex: 9999,
+          }}
+        >
           <VolumePopover
             volumeDb={trackVolume}
             isMuted={trackMuted}
@@ -134,7 +144,8 @@ export const Track = memo(function Track({
             onClose={handleClosePopover}
             label={`${t('common.tracks')} ${trackIndex + 1}`}
           />
-        </div>
+        </div>,
+        document.body,
       )}
 
       {/* Clips area */}

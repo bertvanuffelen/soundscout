@@ -5,7 +5,8 @@
  * Provides quick access to trim, delete, duplicate, and volume/mute operations.
  */
 
-import { memo, useState, useCallback } from 'react';
+import { memo, useState, useCallback, useRef } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Scissors, Trash2, Copy, Volume2, VolumeX } from 'lucide-react';
 import type { Clip, Sample } from '../../types';
@@ -34,6 +35,7 @@ export const EditToolbar = memo(function EditToolbar({
 }: EditToolbarProps) {
   const { t } = useTranslation();
   const [showVolumePopover, setShowVolumePopover] = useState(false);
+  const volumeBtnRef = useRef<HTMLButtonElement>(null);
 
   // Calculate current clip duration (respects trim)
   const duration = getClipDuration(clip, sample);
@@ -98,6 +100,7 @@ export const EditToolbar = memo(function EditToolbar({
         {/* Volume button */}
         {onClipVolumeChange && onClipMuteToggle && (
           <button
+            ref={volumeBtnRef}
             onClick={handleVolumeClick}
             aria-label={t('studio.clipVolume')}
             className={`
@@ -128,9 +131,17 @@ export const EditToolbar = memo(function EditToolbar({
         </button>
       </div>
 
-      {/* Volume popover for clip */}
-      {showVolumePopover && onClipVolumeChange && onClipMuteToggle && (
-        <div className="absolute left-0 top-full mt-1 z-50">
+      {/* Volume popover for clip — portal to escape overflow clipping */}
+      {showVolumePopover && onClipVolumeChange && onClipMuteToggle && volumeBtnRef.current && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: volumeBtnRef.current.getBoundingClientRect().left,
+            top: volumeBtnRef.current.getBoundingClientRect().top - 8,
+            transform: 'translateY(-100%)',
+            zIndex: 9999,
+          }}
+        >
           <VolumePopover
             volumeDb={clipVolume}
             isMuted={clipMuted}
@@ -139,7 +150,8 @@ export const EditToolbar = memo(function EditToolbar({
             onClose={handleClosePopover}
             label={t(sample.name)}
           />
-        </div>
+        </div>,
+        document.body,
       )}
     </div>
   );
