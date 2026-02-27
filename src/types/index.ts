@@ -87,6 +87,8 @@ export interface LibraryState {
 export interface ClipEffects {
   /** Volume adjustment in dB (-60 to +6, default 0) */
   volume: number;
+  /** Whether this clip is muted (default false) */
+  mute?: boolean;
   /** Pitch shift in semitones (-12 to +12, default 0) */
   pitch: number;
   /** Reverb wet mix percentage (0-100, default 0) */
@@ -119,6 +121,10 @@ export interface TimelineState {
 export interface Track {
   id: string;
   clips: Clip[];
+  /** Track volume in dB (-60 to +6, default 0) */
+  volume?: number;
+  /** Whether the entire track is muted (default false) */
+  mute?: boolean;
 }
 
 export interface Clip {

@@ -4,6 +4,8 @@ import {
   DEFAULT_BPM,
   DEFAULT_TOTAL_BEATS,
   DEFAULT_TRACK_COUNT,
+  VOLUME_MIN_DB,
+  VOLUME_MAX_DB,
 } from '../constants/config';
 import {
   findSmartSnapPosition,
@@ -53,6 +55,14 @@ interface TimelineStore {
     trackIndex: number,
     clipId: string,
   ) => SmartSnapResult & { newClipId?: string };
+
+  // Track volume/mute actions
+  updateTrackVolume: (trackIndex: number, volumeDb: number) => void;
+  setTrackMute: (trackIndex: number, muted: boolean) => void;
+
+  // Clip volume/mute actions
+  updateClipVolume: (trackIndex: number, clipId: string, volumeDb: number) => void;
+  setClipMute: (trackIndex: number, clipId: string, muted: boolean) => void;
 
   // Track actions
   clearTrack: (trackIndex: number) => void;
@@ -294,6 +304,70 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     }));
 
     return { ...result, newClipId };
+  },
+
+  updateTrackVolume: (trackIndex, volumeDb) => {
+    const clamped = Math.max(VOLUME_MIN_DB, Math.min(VOLUME_MAX_DB, volumeDb));
+    set((prev) => ({
+      tracks: prev.tracks.map((t, i) =>
+        i === trackIndex ? { ...t, volume: clamped } : t,
+      ),
+    }));
+  },
+
+  setTrackMute: (trackIndex, muted) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((t, i) =>
+        i === trackIndex ? { ...t, mute: muted } : t,
+      ),
+    }));
+  },
+
+  updateClipVolume: (trackIndex, clipId, volumeDb) => {
+    const clamped = Math.max(VOLUME_MIN_DB, Math.min(VOLUME_MAX_DB, volumeDb));
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? {
+                      ...clip,
+                      effects: {
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        volume: clamped,
+                      },
+                    }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+    }));
+  },
+
+  setClipMute: (trackIndex, clipId, muted) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? {
+                      ...clip,
+                      effects: {
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        mute: muted,
+                      },
+                    }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+    }));
   },
 
   clearTrack: (trackIndex) => {

@@ -132,14 +132,26 @@ async function renderOffline(
 
       // Schedule all clips
       tracks.forEach((track) => {
+        const trackVolume = track.volume ?? 0;
+        const trackMuted = track.mute ?? false;
+
         track.clips.forEach((clip) => {
           const buffer = bufferMap.get(clip.sampleId);
           const sample = sampleMap.get(clip.sampleId);
 
           if (!buffer || !sample) return;
 
-          // Create player with the loaded buffer
-          const player = new Tone.Player(buffer).toDestination();
+          // Skip muted clips/tracks
+          const clipMuted = clip.effects?.mute ?? false;
+          if (trackMuted || clipMuted) return;
+
+          // Calculate combined volume (track + clip)
+          const clipVolume = clip.effects?.volume ?? 0;
+          const totalVolumeDb = trackVolume + clipVolume;
+
+          // Create player with the loaded buffer and volume node
+          const volume = new Tone.Volume(totalVolumeDb).toDestination();
+          const player = new Tone.Player(buffer).connect(volume);
 
           const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
 

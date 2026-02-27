@@ -350,12 +350,17 @@ class AudioService {
       sampleId: string;
       trimStart: number;
       duration: number;
+      volumeDb: number;  // Combined track + clip volume
+      isMuted: boolean;  // Track or clip muted
     };
 
     // Build events array for Tone.Part
     const events: ClipEvent[] = [];
 
     tracks.forEach((track) => {
+      const trackVolume = track.volume ?? 0;
+      const trackMuted = track.mute ?? false;
+
       track.clips.forEach((clip) => {
         const player = this.players.get(clip.sampleId);
         const sample = sampleMap.get(clip.sampleId);
@@ -366,11 +371,16 @@ class AudioService {
         const trimStart = getClipTrimStart(clip);
         const trimDuration = getClipDuration(clip, sample);
 
+        const clipVolume = clip.effects?.volume ?? 0;
+        const clipMuted = clip.effects?.mute ?? false;
+
         events.push({
           time: startSeconds,
           sampleId: clip.sampleId,
           trimStart,
           duration: trimDuration,
+          volumeDb: trackVolume + clipVolume,
+          isMuted: trackMuted || clipMuted,
         });
       });
     });
@@ -378,8 +388,11 @@ class AudioService {
     // Create Tone.Part with events (object format with time property)
     this.timelinePart = new Tone.Part<ClipEvent>(
       (time, event) => {
+        if (event.isMuted) return; // Skip muted clips/tracks
+
         const player = this.players.get(event.sampleId);
         if (player?.loaded) {
+          player.volume.setValueAtTime(event.volumeDb, time);
           player.start(time, event.trimStart, event.duration);
         }
       },
@@ -411,6 +424,8 @@ class AudioService {
     player: Tone.Player;
     adjustedTrimStart: number;
     remainingDuration: number;
+    volumeDb: number;
+    isMuted: boolean;
   }> {
     const activeClips: Array<{
       clip: Clip;
@@ -418,17 +433,25 @@ class AudioService {
       player: Tone.Player;
       adjustedTrimStart: number;
       remainingDuration: number;
+      volumeDb: number;
+      isMuted: boolean;
     }> = [];
 
     const sampleMap = new Map(this.scheduledSamples.map((s) => [s.id, s]));
 
     this.scheduledTracks.forEach((track) => {
+      const trackVolume = track.volume ?? 0;
+      const trackMuted = track.mute ?? false;
+
       track.clips.forEach((clip) => {
         const sample = sampleMap.get(clip.sampleId);
         const player = this.players.get(clip.sampleId);
 
         if (!sample || !player || !player.loaded) return;
         if (!this.isClipActiveAtBeat(clip, sample, beat)) return;
+
+        const clipVolume = clip.effects?.volume ?? 0;
+        const clipMuted = clip.effects?.mute ?? false;
 
         // Calculate how much time has elapsed since clip start
         const elapsedBeats = beat - clip.startBeat;
@@ -450,6 +473,8 @@ class AudioService {
             player,
             adjustedTrimStart,
             remainingDuration,
+            volumeDb: trackVolume + clipVolume,
+            isMuted: trackMuted || clipMuted,
           });
         }
       });
@@ -484,13 +509,17 @@ class AudioService {
     // Start all unique clips at the same time with small buffer
     const startTime = Tone.now() + 0.05;
 
-    clipsBySample.forEach(({ player, adjustedTrimStart, remainingDuration, clip }) => {
+    clipsBySample.forEach(({ player, adjustedTrimStart, remainingDuration, clip, volumeDb, isMuted }) => {
+      if (isMuted) return; // Skip muted clips/tracks
+
+      player.volume.setValueAtTime(volumeDb, startTime);
       player.start(startTime, adjustedTrimStart, remainingDuration);
       logger.audio('startActiveClip', {
         sampleId: clip.sampleId,
         seekBeat,
         adjustedTrimStart,
         remainingDuration,
+        volumeDb,
       });
     });
   }

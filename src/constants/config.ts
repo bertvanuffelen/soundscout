@@ -89,3 +89,19 @@ export const WAVEFORM_BAR_WIDTH_PX = 3;
 
 /** Waveform gap between bars in pixels */
 export const WAVEFORM_GAP_PX = 1;
+
+// =============================================================================
+// VOLUME
+// =============================================================================
+
+/** Minimum volume in dB (essentially silent) */
+export const VOLUME_MIN_DB = -60;
+
+/** Maximum volume in dB (slight boost allowed) */
+export const VOLUME_MAX_DB = 6;
+
+/** Default volume in dB (unity gain) */
+export const VOLUME_DEFAULT_DB = 0;
+
+/** Volume slider step size in dB */
+export const VOLUME_STEP_DB = 1;

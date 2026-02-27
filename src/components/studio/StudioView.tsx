@@ -42,6 +42,8 @@ export function StudioView() {
   const removeClip = useTimelineStore((s) => s.removeClip);
   const updateClipTrim = useTimelineStore((s) => s.updateClipTrim);
   const duplicateClip = useTimelineStore((s) => s.duplicateClip);
+  const updateClipVolume = useTimelineStore((s) => s.updateClipVolume);
+  const setClipMute = useTimelineStore((s) => s.setClipMute);
   const hasClips = useTimelineStore((s) => s.selectHasClips());
 
   // Audio state
@@ -173,6 +175,26 @@ export function StudioView() {
     setIsTrimModalOpen(false);
   }, []);
 
+  // Handle clip volume change
+  const handleClipVolumeChange = useCallback(
+    (db: number) => {
+      if (selectedClipData) {
+        updateClipVolume(selectedClipData.trackIndex, selectedClipData.clip.id, db);
+      }
+    },
+    [selectedClipData, updateClipVolume],
+  );
+
+  // Handle clip mute toggle
+  const handleClipMuteToggle = useCallback(
+    (muted: boolean) => {
+      if (selectedClipData) {
+        setClipMute(selectedClipData.trackIndex, selectedClipData.clip.id, muted);
+      }
+    },
+    [selectedClipData, setClipMute],
+  );
+
   // A11Y-1: Add selected library sample to first available track position
   const addClip = useTimelineStore((s) => s.addClip);
   const handleAddToTrack = useCallback(() => {
@@ -254,6 +276,8 @@ export function StudioView() {
               onTrim={handleTrimClick}
               onDelete={handleDeleteClick}
               onDuplicate={handleDuplicate}
+              onClipVolumeChange={handleClipVolumeChange}
+              onClipMuteToggle={handleClipMuteToggle}
             />
           </div>
         )}

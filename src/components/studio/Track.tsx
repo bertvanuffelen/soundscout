@@ -1,10 +1,13 @@
-import { memo, useCallback } from 'react';
+import { memo, useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
+import { Volume2, VolumeX } from 'lucide-react';
 import type { Track as TrackType, Sample } from '../../types';
 import { useThemeStore } from '../../stores/themeStore';
 import { useSelectionStore } from '../../stores/selectionStore';
+import { useTimelineStore } from '../../stores/timelineStore';
 import { Clip } from './Clip';
+import { VolumePopover } from './VolumePopover';
 
 interface TrackProps {
   track: TrackType;
@@ -28,6 +31,14 @@ export const Track = memo(function Track({
   const { t } = useTranslation();
   const themeGetSampleById = useThemeStore((s) => s.getSampleById);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
+  const updateTrackVolume = useTimelineStore((s) => s.updateTrackVolume);
+  const setTrackMute = useTimelineStore((s) => s.setTrackMute);
+
+  // Volume popover state
+  const [showVolumePopover, setShowVolumePopover] = useState(false);
+
+  const trackVolume = track.volume ?? 0;
+  const trackMuted = track.mute ?? false;
 
   // Use provided samples array if available, otherwise fall back to theme store
   const getSampleById = useCallback((id: string): Sample | undefined => {
@@ -47,6 +58,25 @@ export const Track = memo(function Track({
     },
     [clearSelection],
   );
+
+  const handleVolumeIconClick = useCallback((e: React.MouseEvent) => {
+    e.stopPropagation();
+    setShowVolumePopover((prev) => !prev);
+  }, []);
+
+  const handleVolumeChange = useCallback(
+    (db: number) => updateTrackVolume(trackIndex, db),
+    [trackIndex, updateTrackVolume],
+  );
+
+  const handleMuteToggle = useCallback(
+    (muted: boolean) => setTrackMute(trackIndex, muted),
+    [trackIndex, setTrackMute],
+  );
+
+  const handleClosePopover = useCallback(() => {
+    setShowVolumePopover(false);
+  }, []);
 
   const { setNodeRef, isOver } = useDroppable({
     id: track.id,
@@ -69,12 +99,43 @@ export const Track = memo(function Track({
         ${isOver && !readOnly ? 'bg-primary-100/60' : 'bg-white/40'}
       `}
     >
-      {/* Track label */}
-      <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 flex items-center justify-center bg-neutral-100/80 border-r border-neutral-200 z-10">
+      {/* Track label with volume icon */}
+      <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 flex flex-col items-center justify-center bg-neutral-100/80 border-r border-neutral-200 z-10 gap-0.5">
         <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400" aria-hidden="true">
           {trackIndex + 1}
         </span>
+        {/* Volume icon — only in edit mode */}
+        {!readOnly && (
+          <button
+            onClick={handleVolumeIconClick}
+            aria-label={t('studio.trackVolume', { track: trackIndex + 1 })}
+            className={`
+              w-4 h-4 flex items-center justify-center rounded transition-colors cursor-pointer
+              ${trackMuted
+                ? 'text-error-500 hover:text-error-600'
+                : 'text-neutral-400 hover:text-neutral-600'
+              }
+            `}
+            title={trackMuted ? t('studio.muted') : t('studio.trackVolume', { track: trackIndex + 1 })}
+          >
+            {trackMuted ? <VolumeX size={10} /> : <Volume2 size={10} />}
+          </button>
+        )}
       </div>
+
+      {/* Volume popover */}
+      {showVolumePopover && (
+        <div className="absolute left-6 sm:left-7 top-0 z-50">
+          <VolumePopover
+            volumeDb={trackVolume}
+            isMuted={trackMuted}
+            onVolumeChange={handleVolumeChange}
+            onMuteToggle={handleMuteToggle}
+            onClose={handleClosePopover}
+            label={`${t('common.tracks')} ${trackIndex + 1}`}
+          />
+        </div>
+      )}
 
       {/* Clips area */}
       <div

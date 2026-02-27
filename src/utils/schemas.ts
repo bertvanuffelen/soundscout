@@ -17,6 +17,7 @@ import { z } from 'zod';
 
 export const ClipEffectsSchema = z.object({
   volume: z.number(),
+  mute: z.boolean().optional(),
   pitch: z.number(),
   reverb: z.number(),
   pan: z.number(),
@@ -34,6 +35,8 @@ export const ClipSchema = z.object({
 export const TrackSchema = z.object({
   id: z.string(),
   clips: z.array(ClipSchema),
+  volume: z.number().optional(),
+  mute: z.boolean().optional(),
 });
 
 export const SampleSchema = z.object({
