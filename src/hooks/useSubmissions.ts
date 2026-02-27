@@ -6,6 +6,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { logger } from '../utils/logger';
 import type { CompositionData } from '../types';
 
 // Types
@@ -21,6 +22,7 @@ interface UseSubmissionsReturn {
   submissions: Submission[];
   loading: boolean;
   error: string | null;
+  operationError: string | null;
   deleteSubmission: (id: string) => Promise<void>;
   refetch: () => Promise<void>;
 }
@@ -34,6 +36,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
   const [submissions, setSubmissions] = useState<Submission[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [operationError, setOperationError] = useState<string | null>(null);
 
   // Fetch submissions
   const fetchSubmissions = useCallback(async () => {
@@ -56,7 +59,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
 
       setSubmissions(data || []);
     } catch (err) {
-      console.error('Fout bij ophalen composities:', err);
+      logger.error('Fout bij ophalen composities:', err);
       setError(err instanceof Error ? err.message : 'Kon composities niet laden');
     } finally {
       setLoading(false);
@@ -65,17 +68,26 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
 
   // Verwijder submission
   const deleteSubmission = async (id: string): Promise<void> => {
-    const { error: deleteError } = await supabase
-      .from('submissions')
-      .delete()
-      .eq('id', id);
+    try {
+      setOperationError(null);
 
-    if (deleteError) {
-      throw new Error('Kon compositie niet verwijderen: ' + deleteError.message);
+      const { error: deleteErr } = await supabase
+        .from('submissions')
+        .delete()
+        .eq('id', id);
+
+      if (deleteErr) {
+        throw new Error('Kon compositie niet verwijderen: ' + deleteErr.message);
+      }
+
+      // Verwijder uit lokale state
+      setSubmissions(prev => prev.filter(s => s.id !== id));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Onbekende fout bij verwijderen';
+      setOperationError(msg);
+      logger.error('deleteSubmission failed:', err);
+      throw err;
     }
-
-    // Verwijder uit lokale state
-    setSubmissions(prev => prev.filter(s => s.id !== id));
   };
 
   // Initial fetch
@@ -87,6 +99,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
     submissions,
     loading,
     error,
+    operationError,
     deleteSubmission,
     refetch: fetchSubmissions,
   };

@@ -6,27 +6,18 @@ import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FolderOpen, Info, HelpCircle, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
 import { useGameStore } from '../stores/gameStore';
-import { useTimelineStore } from '../stores/timelineStore';
-import { useLibraryStore } from '../stores/libraryStore';
-import { useThemeStore } from '../stores/themeStore';
-import { useAudioEngine } from '../hooks/useAudioEngine';
 import { storageService } from '../services/StorageService';
+import { initializeNewComposition } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
 import { FeedbackModal } from './feedback';
 import { ThemeSelectionModal } from './ThemeSelectionModal';
 import { ShareCodeInput } from './share';
-import { logger } from '../utils/logger';
 
 export function StartScreen() {
   const { t } = useTranslation();
-  const goToMap = useGameStore((s) => s.goToMap);
   const goToCompositions = useGameStore((s) => s.goToCompositions);
   const goToTeacher = useGameStore((s) => s.goToTeacher);
   const goToShared = useGameStore((s) => s.goToShared);
-  const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
-  const clearLibrary = useLibraryStore((s) => s.clearLibrary);
-  const setTheme = useThemeStore((s) => s.setTheme);
-  const { initAudio } = useAudioEngine();
 
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
@@ -48,19 +39,9 @@ export function StartScreen() {
 
   const handleSelectTheme = async (themeId: string) => {
     setIsLoading(true);
-    // Set the selected theme
-    setTheme(themeId);
-    // Always start fresh with empty timeline and library
-    clearAllTracks();
-    clearLibrary();
     try {
-      await initAudio();
+      await initializeNewComposition({ themeId });
       setShowThemeSelection(false);
-      goToMap();
-    } catch {
-      logger.warn('Audio initialization failed, continuing anyway.');
-      setShowThemeSelection(false);
-      goToMap();
     } finally {
       setIsLoading(false);
     }

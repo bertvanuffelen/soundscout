@@ -45,6 +45,7 @@ class AudioService {
   private ambientPlayer: Tone.Player | null = null;
   private ambientVolume: Tone.Volume | null = null;
   private isAmbientPlaying = false;
+  private ambientFadeTimeout: ReturnType<typeof setTimeout> | null = null;
 
   // Timeline Part (for seek support)
   private timelinePart: Tone.Part | null = null;
@@ -678,14 +679,21 @@ class AudioService {
    * Stop ambient audio with optional fade out.
    */
   stopAmbient(fade = true): void {
+    // Always clear any pending fade timeout first
+    if (this.ambientFadeTimeout) {
+      clearTimeout(this.ambientFadeTimeout);
+      this.ambientFadeTimeout = null;
+    }
+
     if (!this.ambientPlayer || !this.isAmbientPlaying) return;
 
     if (fade && this.ambientVolume) {
       // Fade out then stop
       this.ambientVolume.volume.rampTo(-60, AMBIENT_AUDIO_FADE_SECONDS);
-      setTimeout(() => {
+      this.ambientFadeTimeout = setTimeout(() => {
         this.ambientPlayer?.stop();
         this.isAmbientPlaying = false;
+        this.ambientFadeTimeout = null;
       }, AMBIENT_AUDIO_FADE_SECONDS * 1000);
     } else {
       this.ambientPlayer.stop();
@@ -738,7 +746,11 @@ class AudioService {
     this.players.clear();
     this.waveformCache.clear();
 
-    // Dispose ambient audio
+    // Dispose ambient audio (clear fade timeout first)
+    if (this.ambientFadeTimeout) {
+      clearTimeout(this.ambientFadeTimeout);
+      this.ambientFadeTimeout = null;
+    }
     this.stopAmbient(false);
     this.ambientPlayer?.dispose();
     this.ambientPlayer = null;

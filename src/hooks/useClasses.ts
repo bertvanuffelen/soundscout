@@ -7,6 +7,7 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import { logger } from '../utils/logger';
 
 // Types
 export interface TeacherClass {
@@ -22,11 +23,22 @@ interface UseClassesReturn {
   classes: TeacherClass[];
   loading: boolean;
   error: string | null;
+  operationError: string | null;
   maxClasses: number | null; // null = onbeperkt
   canCreateClass: boolean;
   createClass: (name: string) => Promise<TeacherClass>;
   deleteClass: (id: string) => Promise<void>;
   refetch: () => Promise<void>;
+}
+
+/** Row shape returned from Supabase classes query with submission count */
+interface ClassRow {
+  id: string;
+  name: string;
+  code: string;
+  created_at: string;
+  is_active: boolean;
+  submissions?: { count: number }[];
 }
 
 /**
@@ -39,6 +51,7 @@ export function useClasses(): UseClassesReturn {
   const [classes, setClasses] = useState<TeacherClass[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [operationError, setOperationError] = useState<string | null>(null);
   const [maxClasses, setMaxClasses] = useState<number | null>(DEFAULT_MAX_CLASSES);
 
   // Fetch alle klassen van de ingelogde docent + max_classes limiet
@@ -81,7 +94,7 @@ export function useClasses(): UseClassesReturn {
       if (fetchError) throw fetchError;
 
       // Transform data: voeg submission_count toe
-      const classesWithCount = (data || []).map((c: { id: string; name: string; code: string; created_at: string; is_active: boolean; submissions?: { count: number }[] }) => ({
+      const classesWithCount = (data || []).map((c: ClassRow) => ({
         id: c.id,
         name: c.name,
         code: c.code,
@@ -92,7 +105,7 @@ export function useClasses(): UseClassesReturn {
 
       setClasses(classesWithCount);
     } catch (err) {
-      console.error('Fout bij ophalen klassen:', err);
+      logger.error('Fout bij ophalen klassen:', err);
       setError(err instanceof Error ? err.message : 'Kon klassen niet laden');
     } finally {
       setLoading(false);
@@ -101,73 +114,95 @@ export function useClasses(): UseClassesReturn {
 
   // Maak nieuwe klas aan
   const createClass = async (name: string): Promise<TeacherClass> => {
-    // Check klassen limiet (null = onbeperkt)
-    if (maxClasses !== null && classes.length >= maxClasses) {
-      throw new Error(
-        `Je hebt het maximum van ${maxClasses} klassen bereikt. ` +
-        `Verwijder een bestaande klas om een nieuwe aan te maken.`
-      );
+    try {
+      setOperationError(null);
+
+      // Check klassen limiet (null = onbeperkt)
+      if (maxClasses !== null && classes.length >= maxClasses) {
+        throw new Error(
+          `Je hebt het maximum van ${maxClasses} klassen bereikt. ` +
+          `Verwijder een bestaande klas om een nieuwe aan te maken.`
+        );
+      }
+
+      // Genereer unieke code via database functie
+      const { data: codeData, error: codeError } = await supabase.rpc('generate_class_code');
+
+      if (codeError) {
+        throw new Error('Kon klas-code niet genereren');
+      }
+
+      if (typeof codeData !== 'string' || !codeData) {
+        throw new Error('Ongeldige klas-code ontvangen van server');
+      }
+
+      const code = codeData;
+
+      // Haal huidige user op
+      const { data: { user } } = await supabase.auth.getUser();
+
+      if (!user) {
+        throw new Error('Je moet ingelogd zijn om een klas aan te maken');
+      }
+
+      // Maak klas aan
+      const { data, error: insertError } = await supabase
+        .from('classes')
+        .insert({
+          teacher_id: user.id,
+          name: name.trim(),
+          code,
+        })
+        .select()
+        .single();
+
+      if (insertError) {
+        throw new Error('Kon klas niet aanmaken: ' + insertError.message);
+      }
+
+      // Voeg toe aan lokale state
+      const newClass: TeacherClass = {
+        id: data.id,
+        name: data.name,
+        code: data.code,
+        created_at: data.created_at,
+        is_active: data.is_active,
+        submission_count: 0,
+      };
+
+      setClasses(prev => [newClass, ...prev]);
+
+      return newClass;
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Onbekende fout bij aanmaken klas';
+      setOperationError(msg);
+      logger.error('createClass failed:', err);
+      throw err;
     }
-
-    // Genereer unieke code via database functie
-    const { data: codeData, error: codeError } = await supabase.rpc('generate_class_code');
-
-    if (codeError) {
-      throw new Error('Kon klas-code niet genereren');
-    }
-
-    const code = codeData as string;
-
-    // Haal huidige user op
-    const { data: { user } } = await supabase.auth.getUser();
-
-    if (!user) {
-      throw new Error('Je moet ingelogd zijn om een klas aan te maken');
-    }
-
-    // Maak klas aan
-    const { data, error: insertError } = await supabase
-      .from('classes')
-      .insert({
-        teacher_id: user.id,
-        name: name.trim(),
-        code,
-      })
-      .select()
-      .single();
-
-    if (insertError) {
-      throw new Error('Kon klas niet aanmaken: ' + insertError.message);
-    }
-
-    // Voeg toe aan lokale state
-    const newClass: TeacherClass = {
-      id: data.id,
-      name: data.name,
-      code: data.code,
-      created_at: data.created_at,
-      is_active: data.is_active,
-      submission_count: 0,
-    };
-
-    setClasses(prev => [newClass, ...prev]);
-
-    return newClass;
   };
 
   // Verwijder klas
   const deleteClass = async (id: string): Promise<void> => {
-    const { error: deleteError } = await supabase
-      .from('classes')
-      .delete()
-      .eq('id', id);
+    try {
+      setOperationError(null);
 
-    if (deleteError) {
-      throw new Error('Kon klas niet verwijderen: ' + deleteError.message);
+      const { error: deleteErr } = await supabase
+        .from('classes')
+        .delete()
+        .eq('id', id);
+
+      if (deleteErr) {
+        throw new Error('Kon klas niet verwijderen: ' + deleteErr.message);
+      }
+
+      // Verwijder uit lokale state
+      setClasses(prev => prev.filter(c => c.id !== id));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Onbekende fout bij verwijderen klas';
+      setOperationError(msg);
+      logger.error('deleteClass failed:', err);
+      throw err;
     }
-
-    // Verwijder uit lokale state
-    setClasses(prev => prev.filter(c => c.id !== id));
   };
 
   // Initial fetch
@@ -182,6 +217,7 @@ export function useClasses(): UseClassesReturn {
     classes,
     loading,
     error,
+    operationError,
     maxClasses,
     canCreateClass,
     createClass,

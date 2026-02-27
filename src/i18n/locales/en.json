@@ -329,7 +329,9 @@
     "description": "An unexpected error occurred.",
     "retryButton": "Try again",
     "sendReportButton": "Send error report",
-    "technicalDetails": "Technical details"
+    "technicalDetails": "Technical details",
+    "featureError": "{{feature}} could not be loaded",
+    "featureDescription": "This section encountered an error. You can try again."
   },
   "auth": {
     "emailAlreadyRegistered": "This email address is already registered",

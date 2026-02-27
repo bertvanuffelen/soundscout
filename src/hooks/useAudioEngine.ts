@@ -11,10 +11,12 @@
 import { useCallback, useEffect, useState } from 'react';
 import { audioService } from '../services/AudioService';
 import { useAudioStore } from '../stores/audioStore';
+import { logger } from '../utils/logger';
 import type { Sample, Track } from '../types';
 
 export function useAudioEngine() {
   const [isAudioReady, setIsAudioReady] = useState(audioService.isReady());
+  const [audioError, setAudioError] = useState<string | null>(null);
 
   const setCurrentBeat = useAudioStore((s) => s.setCurrentBeat);
   const setIsPlaying = useAudioStore((s) => s.setIsPlaying);
@@ -30,8 +32,16 @@ export function useAudioEngine() {
   // --- Initialization ---
 
   const initAudio = useCallback(async () => {
-    await audioService.initialize();
-    setIsAudioReady(true);
+    try {
+      setAudioError(null);
+      await audioService.initialize();
+      setIsAudioReady(true);
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Failed to initialize audio';
+      setAudioError(msg);
+      logger.error('Audio initialization failed', { error: msg });
+      throw err;
+    }
   }, []);
 
   // --- Sample Loading ---
@@ -58,7 +68,11 @@ export function useAudioEngine() {
   // --- Sample Playback (Preview) ---
 
   const playSample = useCallback((sampleId: string) => {
-    audioService.playSample(sampleId);
+    try {
+      audioService.playSample(sampleId);
+    } catch (err) {
+      logger.warn('Failed to play sample', { sampleId, error: err });
+    }
   }, []);
 
   const stopSample = useCallback((sampleId: string) => {
@@ -124,6 +138,7 @@ export function useAudioEngine() {
     // Audio context
     initAudio,
     isAudioReady,
+    audioError,
 
     // Sample loading
     loadSample,

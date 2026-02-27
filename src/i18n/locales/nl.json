@@ -329,7 +329,9 @@
     "description": "Er is een onverwachte fout opgetreden.",
     "retryButton": "Probeer opnieuw",
     "sendReportButton": "Stuur foutmelding",
-    "technicalDetails": "Technische details"
+    "technicalDetails": "Technische details",
+    "featureError": "{{feature}} kon niet geladen worden",
+    "featureDescription": "Dit onderdeel heeft een fout. Je kunt het opnieuw proberen."
   },
   "auth": {
     "emailAlreadyRegistered": "Dit e-mailadres is al geregistreerd",

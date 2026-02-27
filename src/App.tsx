@@ -4,6 +4,7 @@ import { useGameStore } from './stores/gameStore';
 import { useThemeStore } from './stores/themeStore';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
+import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
 import { StartScreen } from './components/StartScreen';
 import { MapView } from './components/map/MapView';
 import { LocationScene } from './components/location/LocationScene';
@@ -60,26 +61,52 @@ function AppContent() {
       return <StartScreen />;
 
     case 'map':
-      return <MapView />;
+      return (
+        <FeatureErrorBoundary featureName="Map">
+          <MapView />
+        </FeatureErrorBoundary>
+      );
 
     case 'location':
-      return <LocationScene />;
+      return (
+        <FeatureErrorBoundary featureName="Location">
+          <LocationScene />
+        </FeatureErrorBoundary>
+      );
 
     case 'studio':
-      return <StudioView />;
+      return (
+        <FeatureErrorBoundary featureName="Studio">
+          <StudioView />
+        </FeatureErrorBoundary>
+      );
 
     case 'stage':
-      return <StageView />;
+      return (
+        <FeatureErrorBoundary featureName="Stage">
+          <StageView />
+        </FeatureErrorBoundary>
+      );
 
     case 'compositions':
-      return <CompositionsView />;
+      return (
+        <FeatureErrorBoundary featureName="Compositions">
+          <CompositionsView />
+        </FeatureErrorBoundary>
+      );
 
     case 'teacher':
-      return <TeacherPage />;
+      return (
+        <FeatureErrorBoundary featureName="Teacher">
+          <TeacherPage />
+        </FeatureErrorBoundary>
+      );
 
     case 'shared':
       return shareCode ? (
-        <SharedPlayer code={shareCode} onBack={goToStart} />
+        <FeatureErrorBoundary featureName="Player">
+          <SharedPlayer code={shareCode} onBack={goToStart} />
+        </FeatureErrorBoundary>
       ) : (
         <StartScreen />
       );
