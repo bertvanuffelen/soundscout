@@ -583,7 +583,7 @@ CREATE TRIGGER enforce_max_classes
 
 ---
 
-### TP1 - HOOG (architectuur stabiliteit)
+### TP1 - HOOG (architectuur stabiliteit) ✅ VOLTOOID
 
 > **Deze items versterken de basis voor de nieuwe features.**
 > Geschatte totale effort: **2-3 dagen**
@@ -708,7 +708,7 @@ async function initializeNewComposition(themeId: string): Promise<boolean> {
 
 ---
 
-### TP2 - MEDIUM (code kwaliteit)
+### TP2 - MEDIUM (code kwaliteit) ✅ VOLTOOID
 
 > **Deze items verbeteren de developer experience en voorkomen bugs.**
 > Geschatte totale effort: **2-3 dagen**
@@ -816,7 +816,7 @@ if (!parsed.success) {
 
 ---
 
-### TP3 - LAAG (optimalisatie & developer experience)
+### TP3 - LAAG (optimalisatie & developer experience) ✅ GROTENDEELS VOLTOOID
 
 > **Nice-to-haves die de codebase schoner maken.**
 > Geschatte totale effort: **2-3 dagen**
@@ -850,12 +850,18 @@ selectClipCount: () => get().tracks.reduce((sum, t) => sum + t.clips.length, 0),
 **Oplossing:** Return `boolean` uit `set()`, toon toast/melding bij falen.
 
 #### TP3-4. Alfanumerieke klas-codes
-**Status:** Niet begonnen
-**Effort:** Klein (1 uur)
+**Status:** Geparkeerd (P3) — vereist Supabase database-migratie
+**Effort:** Klein (1 uur code + database migratie)
 
 **Probleem:** CHAR(4) numeriek = 10.000 mogelijke codes. Bij groei onvoldoende.
 
-**Oplossing:** Alfanumeriek 4 chars (bijv. ABC1) = 46.656 combinaties. Of 6-karakter codes.
+**Oplossing:** Alfanumeriek 4 chars (bijv. AB3K) = ~30.000 combinaties (zonder verwarrende tekens O/0/I/1/L).
+Vereist:
+1. `ALTER TABLE classes ALTER COLUMN code TYPE VARCHAR(6);`
+2. `generate_class_code()` functie vervangen (alfanumeriek, zonder O/0/I/1/L)
+3. Frontend validatie aanpassen (regex van `\d{4}` naar `[A-Z0-9]{4}`)
+
+**Wanneer:** Pas nodig bij >1.000 actieve klassen. Codes worden hergebruikt bij verwijdering.
 
 #### TP3-5. Gevoelige data uit console.error
 **Status:** Niet begonnen
@@ -891,14 +897,15 @@ Singleton maakt unit testing onmogelijk. Factory pattern met dependency injectio
 // NA:  export function createAudioService(config?: AudioConfig): AudioService
 ```
 
-#### TP4-3. Tier 1 tests: pure utility functies
+#### TP4-3. Tier 1 tests: pure utility functies ✅ VOLTOOID
 **Effort:** Medium (1-2 dagen)
+**Status:** Voltooid — 209 tests, 5 test bestanden
 
-Laagst hangend fruit voor testing:
-- [ ] `src/utils/audio.ts` — beat/seconde conversies
-- [ ] `src/utils/clipCollision.ts` — smart snap algoritme
-- [ ] `src/utils/waveform.ts` — peak extractie
-- [ ] Store actions die geen audio raken
+- [x] `src/utils/audio.ts` — beat/seconde conversies (59 tests)
+- [x] `src/utils/clipCollision.ts` — smart snap algoritme (50 tests)
+- [x] `src/utils/waveform.ts` — peak extractie (29 tests)
+- [x] `src/utils/schemas.ts` — zod validatie (53 tests)
+- [x] `src/stores/timelineStore.ts` — store actions (18 tests, reeds bestaand)
 
 Geen mocking nodig, puur input → output.
 
