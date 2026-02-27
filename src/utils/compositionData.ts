@@ -3,26 +3,19 @@
  *
  * Nodig omdat data uit Supabase (JSONB) als `unknown` binnenkomt.
  * TypeScript types beschermen alleen compile-time, niet runtime.
+ *
+ * Gebruikt zod schemas uit schemas.ts voor deep validation.
  */
 
 import type { CompositionData } from '../types';
+import { CompositionDataSchema } from './schemas';
 
 /**
  * Type guard die controleert of data een geldige CompositionData structuur heeft.
- * Controleert alleen top-level structuur — geen deep validation van tracks/samples.
+ * Valideert de volledige structuur inclusief tracks, clips, en samples.
  */
 export function isValidCompositionData(data: unknown): data is CompositionData {
-  if (!data || typeof data !== 'object') return false;
-
-  const d = data as Record<string, unknown>;
-
-  return (
-    Array.isArray(d.tracks) &&
-    typeof d.bpm === 'number' &&
-    typeof d.totalBeats === 'number' &&
-    typeof d.isLooping === 'boolean' &&
-    Array.isArray(d.samples)
-  );
+  return CompositionDataSchema.safeParse(data).success;
 }
 
 /**
@@ -30,8 +23,6 @@ export function isValidCompositionData(data: unknown): data is CompositionData {
  * Retourneert null als de data niet geldig is.
  */
 export function parseCompositionData(data: unknown): CompositionData | null {
-  if (isValidCompositionData(data)) {
-    return data;
-  }
-  return null;
+  const result = CompositionDataSchema.safeParse(data);
+  return result.success ? (result.data as CompositionData) : null;
 }

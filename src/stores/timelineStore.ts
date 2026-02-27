@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Clip, Sample, Track, TimelineState } from '../types';
+import type { Clip, Track, TimelineState } from '../types';
 import {
   DEFAULT_BPM,
   DEFAULT_TOTAL_BEATS,
@@ -12,6 +12,7 @@ import {
 } from '../utils/clipCollision';
 import { getClipEndBeat } from '../utils/audio';
 import { generateClipId } from '../utils/uuid';
+import { useLibraryStore } from './libraryStore';
 
 function createEmptyTracks(): Track[] {
   return Array.from({ length: DEFAULT_TRACK_COUNT }, (_, i) => ({
@@ -30,8 +31,6 @@ interface TimelineStore {
   addClip: (
     trackIndex: number,
     clip: Clip,
-    sample: Sample,
-    allSamples: Sample[],
   ) => SmartSnapResult;
   removeClip: (trackIndex: number, clipId: string) => void;
   moveClip: (
@@ -39,8 +38,6 @@ interface TimelineStore {
     toTrackIndex: number,
     clipId: string,
     newStartBeat: number,
-    sample: Sample,
-    allSamples: Sample[],
   ) => SmartSnapResult;
 
   // Clip trim action
@@ -55,8 +52,6 @@ interface TimelineStore {
   duplicateClip: (
     trackIndex: number,
     clipId: string,
-    sample: Sample,
-    allSamples: Sample[],
   ) => SmartSnapResult & { newClipId?: string };
 
   // Track actions
@@ -79,14 +74,22 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   totalBeats: DEFAULT_TOTAL_BEATS,
   isLooping: false,
 
-  addClip: (trackIndex, clip, sample, allSamples) => {
+  addClip: (trackIndex, clip) => {
     const state = get();
-    const sampleMap = createSampleMap(allSamples);
+    const allSamples = useLibraryStore.getState().librarySamples;
+    const sample = allSamples.find((s) => s.id === clip.sampleId);
 
     // Validate track index
     if (trackIndex < 0 || trackIndex >= state.tracks.length) {
-      return { trackIndex, startBeat: clip.startBeat, reason: 'rejected' };
+      return { trackIndex, startBeat: clip.startBeat, reason: 'rejected', rejectReason: 'invalid_track' };
     }
+
+    // Validate sample exists
+    if (!sample) {
+      return { trackIndex, startBeat: clip.startBeat, reason: 'rejected', rejectReason: 'invalid_track' };
+    }
+
+    const sampleMap = createSampleMap(allSamples);
 
     // Use smart snap to find optimal position
     const result = findSmartSnapPosition(
@@ -126,9 +129,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     }));
   },
 
-  moveClip: (fromTrackIndex, toTrackIndex, clipId, newStartBeat, sample, allSamples) => {
+  moveClip: (fromTrackIndex, toTrackIndex, clipId, newStartBeat) => {
     const state = get();
-    const sampleMap = createSampleMap(allSamples);
+    const allSamples = useLibraryStore.getState().librarySamples;
 
     // Validate track indices
     if (
@@ -137,7 +140,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       toTrackIndex < 0 ||
       toTrackIndex >= state.tracks.length
     ) {
-      return { trackIndex: toTrackIndex, startBeat: newStartBeat, reason: 'rejected' };
+      return { trackIndex: toTrackIndex, startBeat: newStartBeat, reason: 'rejected', rejectReason: 'invalid_track' };
     }
 
     // Find the clip being moved
@@ -145,8 +148,16 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       (c) => c.id === clipId,
     );
     if (!existingClip) {
-      return { trackIndex: toTrackIndex, startBeat: newStartBeat, reason: 'rejected' };
+      return { trackIndex: toTrackIndex, startBeat: newStartBeat, reason: 'rejected', rejectReason: 'invalid_track' };
     }
+
+    // Get the sample for the clip being moved
+    const sample = allSamples.find((s) => s.id === existingClip.sampleId);
+    if (!sample) {
+      return { trackIndex: toTrackIndex, startBeat: newStartBeat, reason: 'rejected', rejectReason: 'invalid_track' };
+    }
+
+    const sampleMap = createSampleMap(allSamples);
 
     // Create a temporary clip with the desired new position
     const tempClip: Clip = { ...existingClip, startBeat: newStartBeat };
@@ -212,20 +223,28 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     }));
   },
 
-  duplicateClip: (trackIndex, clipId, sample, allSamples) => {
+  duplicateClip: (trackIndex, clipId) => {
     const state = get();
-    const sampleMap = createSampleMap(allSamples);
+    const allSamples = useLibraryStore.getState().librarySamples;
 
     // Find the original clip
     const track = state.tracks[trackIndex];
     if (!track) {
-      return { trackIndex, startBeat: 0, reason: 'rejected' };
+      return { trackIndex, startBeat: 0, reason: 'rejected', rejectReason: 'invalid_track' };
     }
 
     const originalClip = track.clips.find((c) => c.id === clipId);
     if (!originalClip) {
-      return { trackIndex, startBeat: 0, reason: 'rejected' };
+      return { trackIndex, startBeat: 0, reason: 'rejected', rejectReason: 'invalid_track' };
     }
+
+    // Get the sample for the clip being duplicated
+    const sample = allSamples.find((s) => s.id === originalClip.sampleId);
+    if (!sample) {
+      return { trackIndex, startBeat: 0, reason: 'rejected', rejectReason: 'invalid_track' };
+    }
+
+    const sampleMap = createSampleMap(allSamples);
 
     // Calculate desired position (directly after original clip)
     const originalEndBeat = getClipEndBeat(originalClip, sample, state.bpm);

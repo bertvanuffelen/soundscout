@@ -9,13 +9,13 @@
  */
 
 import { useState, useCallback, useEffect } from 'react';
-import { useGameStore } from '../stores/gameStore';
+import { useAppStore } from '../stores/appStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
 
 export function useStageSave() {
-  const currentCompositionId = useGameStore((s) => s.currentCompositionId);
+  const currentCompositionId = useAppStore((s) => s.currentCompositionId);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
   const bpm = useTimelineStore((s) => s.bpm);

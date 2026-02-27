@@ -13,11 +13,11 @@
  * Currently shown on mobile portrait only, but built for all screen sizes
  */
 
-import { useState, useRef, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Search, X } from 'lucide-react';
 import type { Location, Sample } from '../../types';
 import { Hotspot } from './Hotspot';
+import { usePanZoom } from '../../hooks/usePanZoom';
 
 interface ZoomableViewProps {
   location: Location;
@@ -51,177 +51,17 @@ export function ZoomableView({
 }: ZoomableViewProps) {
   const { t } = useTranslation();
 
-  // Zoom mode state
-  const [isZoomed, setIsZoomed] = useState(false);
-  const [panOffset, setPanOffset] = useState({ x: 0, y: 0 });
-  const [isDragging, setIsDragging] = useState(false);
-  const [canvasDimensions, setCanvasDimensions] = useState({ width: 0, height: 0 });
-
-  // Refs for touch handling
-  const containerRef = useRef<HTMLDivElement>(null);
-  const dragStartRef = useRef({ x: 0, y: 0 });
-  const panStartRef = useRef({ x: 0, y: 0 });
-
-  // Calculate the 16:9 canvas dimensions that fit within the viewport
-  const calculateCanvasDimensions = useCallback(() => {
-    if (typeof window === 'undefined') return { width: 0, height: 0 };
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-    const viewportRatio = viewportWidth / viewportHeight;
-
-    let canvasWidth: number;
-    let canvasHeight: number;
-
-    if (viewportRatio > ASPECT_RATIO) {
-      // Viewport is wider than 16:9 - fit to height
-      canvasHeight = viewportHeight;
-      canvasWidth = canvasHeight * ASPECT_RATIO;
-    } else {
-      // Viewport is taller than 16:9 - fit to width
-      canvasWidth = viewportWidth;
-      canvasHeight = canvasWidth / ASPECT_RATIO;
-    }
-
-    return { width: canvasWidth, height: canvasHeight };
-  }, []);
-
-  // Calculate pan bounds based on scaled canvas vs viewport
-  const calculateBounds = useCallback(() => {
-    if (typeof window === 'undefined') return { minX: 0, maxX: 0, minY: 0, maxY: 0 };
-
-    const viewportWidth = window.innerWidth;
-    const viewportHeight = window.innerHeight;
-
-    // Scaled canvas dimensions
-    const scaledWidth = canvasDimensions.width * ZOOM_SCALE;
-    const scaledHeight = canvasDimensions.height * ZOOM_SCALE;
-
-    // How much the scaled canvas extends beyond the viewport
-    const extraWidth = Math.max(0, (scaledWidth - viewportWidth) / 2);
-    const extraHeight = Math.max(0, (scaledHeight - viewportHeight) / 2);
-
-    return {
-      minX: -extraWidth,
-      maxX: extraWidth,
-      minY: -extraHeight,
-      maxY: extraHeight,
-    };
-  }, [canvasDimensions]);
-
-  // Clamp pan offset within bounds
-  const clampPan = useCallback((x: number, y: number) => {
-    const bounds = calculateBounds();
-    return {
-      x: Math.max(bounds.minX, Math.min(bounds.maxX, x)),
-      y: Math.max(bounds.minY, Math.min(bounds.maxY, y)),
-    };
-  }, [calculateBounds]);
-
-  // Touch/Mouse handlers
-  const handleDragStart = useCallback((clientX: number, clientY: number) => {
-    setIsDragging(true);
-    dragStartRef.current = { x: clientX, y: clientY };
-    panStartRef.current = { ...panOffset };
-  }, [panOffset]);
-
-  const handleDragMove = useCallback((clientX: number, clientY: number) => {
-    if (!isDragging) return;
-
-    const deltaX = clientX - dragStartRef.current.x;
-    const deltaY = clientY - dragStartRef.current.y;
-
-    const newPan = clampPan(
-      panStartRef.current.x + deltaX,
-      panStartRef.current.y + deltaY
-    );
-
-    setPanOffset(newPan);
-  }, [isDragging, clampPan]);
-
-  const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
-  }, []);
-
-  // Touch event handlers
-  const handleTouchStart = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      handleDragStart(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  }, [handleDragStart]);
-
-  const handleTouchMove = useCallback((e: React.TouchEvent) => {
-    if (e.touches.length === 1) {
-      // Note: We don't call e.preventDefault() here because:
-      // 1. The container has touchAction: 'none' which already prevents scrolling
-      // 2. Calling preventDefault on passive touch events causes console errors
-      handleDragMove(e.touches[0].clientX, e.touches[0].clientY);
-    }
-  }, [handleDragMove]);
-
-  const handleTouchEnd = useCallback(() => {
-    handleDragEnd();
-  }, [handleDragEnd]);
-
-  // Mouse event handlers (for desktop testing)
-  const handleMouseDown = useCallback((e: React.MouseEvent) => {
-    e.preventDefault();
-    handleDragStart(e.clientX, e.clientY);
-  }, [handleDragStart]);
-
-  const handleMouseMove = useCallback((e: React.MouseEvent) => {
-    handleDragMove(e.clientX, e.clientY);
-  }, [handleDragMove]);
-
-  const handleMouseUp = useCallback(() => {
-    handleDragEnd();
-  }, [handleDragEnd]);
-
-  const handleMouseLeave = useCallback(() => {
-    handleDragEnd();
-  }, [handleDragEnd]);
-
-  // Open zoom mode
-  const openZoom = useCallback(() => {
-    // Calculate dimensions before opening
-    const dims = calculateCanvasDimensions();
-    setCanvasDimensions(dims);
-    // Reset pan to center
-    setPanOffset({ x: 0, y: 0 });
-    setIsZoomed(true);
-  }, [calculateCanvasDimensions]);
-
-  // Close zoom mode
-  const closeZoom = useCallback(() => {
-    setIsZoomed(false);
-  }, []);
-
-  // Update dimensions on resize
-  useEffect(() => {
-    if (!isZoomed) return;
-
-    const handleResize = () => {
-      const dims = calculateCanvasDimensions();
-      setCanvasDimensions(dims);
-      // Re-clamp pan offset with new bounds
-      setPanOffset(prev => clampPan(prev.x, prev.y));
-    };
-
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [isZoomed, calculateCanvasDimensions, clampPan]);
-
-  // Prevent body scroll when zoomed
-  useEffect(() => {
-    if (isZoomed) {
-      document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
-    }
-    return () => {
-      document.body.style.overflow = '';
-    };
-  }, [isZoomed]);
+  // Pan/zoom logic
+  const {
+    isZoomed,
+    panOffset,
+    isDragging,
+    canvasDimensions,
+    containerRef,
+    openZoom,
+    closeZoom,
+    handlers,
+  } = usePanZoom({ zoomScale: ZOOM_SCALE, aspectRatio: ASPECT_RATIO });
 
   // Determine zoom button visibility class
   const getZoomButtonClass = () => {
@@ -262,13 +102,13 @@ export function ZoomableView({
         <div
           className="fixed inset-0 z-50 bg-black overflow-hidden"
           ref={containerRef}
-          onTouchStart={handleTouchStart}
-          onTouchMove={handleTouchMove}
-          onTouchEnd={handleTouchEnd}
-          onMouseDown={handleMouseDown}
-          onMouseMove={handleMouseMove}
-          onMouseUp={handleMouseUp}
-          onMouseLeave={handleMouseLeave}
+          onTouchStart={handlers.onTouchStart}
+          onTouchMove={handlers.onTouchMove}
+          onTouchEnd={handlers.onTouchEnd}
+          onMouseDown={handlers.onMouseDown}
+          onMouseMove={handlers.onMouseMove}
+          onMouseUp={handlers.onMouseUp}
+          onMouseLeave={handlers.onMouseLeave}
           style={{ touchAction: 'none' }}
         >
           {/* Centered, scaled 16:9 canvas container */}

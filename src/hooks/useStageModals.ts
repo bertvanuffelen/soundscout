@@ -8,15 +8,15 @@
  */
 
 import { useState, useCallback } from 'react';
-import { useGameStore } from '../stores/gameStore';
+import { useAppStore } from '../stores/appStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useAudioEngine } from './useAudioEngine';
 
 export function useStageModals() {
-  const currentLocationId = useGameStore((s) => s.currentLocationId);
-  const setScreen = useGameStore((s) => s.setScreen);
-  const goToLocation = useGameStore((s) => s.goToLocation);
+  const currentLocationId = useAppStore((s) => s.currentLocationId);
+  const setScreen = useAppStore((s) => s.setScreen);
+  const goToLocation = useAppStore((s) => s.goToLocation);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const { stopAll } = useAudioEngine();

@@ -76,7 +76,6 @@ export interface RecorderState {
 
 export interface LibraryState {
   samples: Sample[]; // all collected samples
-  collectedSampleIds: string[]; // tracks which sample IDs have been collected (for duplicate prevention)
 }
 
 // --- Clip Effects (Fase 5) ---

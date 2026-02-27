@@ -11,7 +11,7 @@
 import { useThemeStore } from '../stores/themeStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
-import { useGameStore } from '../stores/gameStore';
+import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
 import { logger } from './logger';
 
@@ -54,7 +54,7 @@ export async function initializeNewComposition(
   }
 
   // Stap 4: Navigeer naar map (altijd, ook als audio faalt)
-  useGameStore.getState().goToMap();
+  useAppStore.getState().goToMap();
 
   return audioSuccess;
 }

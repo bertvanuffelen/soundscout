@@ -5,7 +5,7 @@
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FolderOpen, Info, HelpCircle, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
-import { useGameStore } from '../stores/gameStore';
+import { useAppStore } from '../stores/appStore';
 import { storageService } from '../services/StorageService';
 import { initializeNewComposition } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
@@ -15,9 +15,9 @@ import { ShareCodeInput } from './share';
 
 export function StartScreen() {
   const { t } = useTranslation();
-  const goToCompositions = useGameStore((s) => s.goToCompositions);
-  const goToTeacher = useGameStore((s) => s.goToTeacher);
-  const goToShared = useGameStore((s) => s.goToShared);
+  const goToCompositions = useAppStore((s) => s.goToCompositions);
+  const goToTeacher = useAppStore((s) => s.goToTeacher);
+  const goToShared = useAppStore((s) => s.goToShared);
 
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);

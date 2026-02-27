@@ -9,7 +9,7 @@
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle } from 'lucide-react';
-import { useGameStore } from '../../stores/gameStore';
+import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useLocationAudio } from '../../hooks/useLocationAudio';
@@ -24,9 +24,9 @@ export function LocationScene() {
   const { t } = useTranslation();
 
   // Navigation
-  const currentLocationId = useGameStore((s) => s.currentLocationId);
-  const goToStudio = useGameStore((s) => s.goToStudio);
-  const goToMap = useGameStore((s) => s.goToMap);
+  const currentLocationId = useAppStore((s) => s.currentLocationId);
+  const goToStudio = useAppStore((s) => s.goToStudio);
+  const goToMap = useAppStore((s) => s.goToMap);
 
   // Theme store
   const getLocationById = useThemeStore((s) => s.getLocationById);

@@ -17,11 +17,11 @@ export interface ClipBounds {
   endBeat: number;
 }
 
-export interface SmartSnapResult {
-  trackIndex: number;
-  startBeat: number;
-  reason: 'original' | 'shifted' | 'track_below' | 'rejected';
-}
+export type SmartSnapResult =
+  | { trackIndex: number; startBeat: number; reason: 'original' | 'shifted' | 'track_below' }
+  | { trackIndex: number; startBeat: number; reason: 'rejected'; rejectReason: SmartSnapRejectReason };
+
+export type SmartSnapRejectReason = 'no_space' | 'out_of_bounds' | 'invalid_track';
 
 // =============================================================================
 // CORE COLLISION FUNCTIONS
@@ -168,11 +168,15 @@ export function findSmartSnapPosition(
     }
   }
 
-  // Strategy 4: No valid position found
+  // Strategy 4: No valid position found — determine reason
+  const rejectReason: SmartSnapRejectReason =
+    newClip.startBeat + clipDurationBeats > totalBeats ? 'out_of_bounds' : 'no_space';
+
   return {
     trackIndex: targetTrackIndex,
     startBeat: newClip.startBeat,
     reason: 'rejected',
+    rejectReason,
   };
 }
 

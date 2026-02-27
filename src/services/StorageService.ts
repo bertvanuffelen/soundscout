@@ -21,6 +21,11 @@ import { DEFAULT_USER_PREFERENCES } from '../types';
 import { generateId, generateShareCode } from '../utils/uuid';
 import { logger } from '../utils/logger';
 import { beatsToSeconds, getClipEndBeat } from '../utils/audio';
+import {
+  parseSavedCompositions,
+  parseUserPreferences,
+  parseLibraryState,
+} from '../utils/schemas';
 
 // Current storage version for migrations (reserved for future use)
 // const STORAGE_VERSION = 1;
@@ -34,8 +39,13 @@ class StorageServiceImpl {
    */
   getCompositions(): SavedComposition[] {
     try {
-      const data = this.get<SavedComposition[]>('soundscout:compositions');
-      return data || [];
+      const raw = this.getRaw('soundscout:compositions');
+      if (!raw) return [];
+      const validated = parseSavedCompositions(raw);
+      if (validated.length !== (raw as unknown[]).length) {
+        logger.warn('Some compositions failed validation, filtered out invalid entries');
+      }
+      return validated as SavedComposition[];
     } catch (error) {
       logger.error('Failed to get compositions', error);
       return [];
@@ -180,7 +190,14 @@ class StorageServiceImpl {
    * Get saved library state
    */
   getLibrary(): LibraryState | null {
-    return this.get<LibraryState>('soundscout:library');
+    const raw = this.getRaw('soundscout:library');
+    if (!raw) return null;
+    const validated = parseLibraryState(raw);
+    if (!validated) {
+      logger.warn('Library state failed validation');
+      return null;
+    }
+    return validated as LibraryState;
   }
 
   /**
@@ -196,7 +213,10 @@ class StorageServiceImpl {
    * Get user preferences
    */
   getPreferences(): UserPreferences {
-    return this.get<UserPreferences>('soundscout:preferences') || DEFAULT_USER_PREFERENCES;
+    const raw = this.getRaw('soundscout:preferences');
+    if (!raw) return DEFAULT_USER_PREFERENCES;
+    const validated = parseUserPreferences(raw);
+    return validated ? (validated as UserPreferences) : DEFAULT_USER_PREFERENCES;
   }
 
   /**
@@ -250,7 +270,7 @@ class StorageServiceImpl {
 
   // --- Private helpers ---
 
-  private get<T>(key: StorageKey): T | null {
+  private getRaw(key: StorageKey): unknown {
     try {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : null;

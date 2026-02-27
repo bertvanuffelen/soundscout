@@ -7,16 +7,17 @@
  * - Cleanup (useAudioCleanup)
  */
 
-import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
-import { useGameStore } from '../../stores/gameStore';
+import { useAppStore } from '../../stores/appStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useStudioDnD } from '../../hooks/useStudioDnD';
 import { useStudioPlayback } from '../../hooks/useStudioPlayback';
 import { useAudioCleanup } from '../../hooks/useAudioCleanup';
+import { useStudioKeyboardShortcuts } from '../../hooks/useStudioKeyboardShortcuts';
 import { SampleLibrary } from './SampleLibrary';
 import { Timeline } from './Timeline';
 import { TransportControls } from './TransportControls';
@@ -29,8 +30,8 @@ export function StudioView() {
   const { t } = useTranslation();
 
   // Navigation
-  const goToMap = useGameStore((s) => s.goToMap);
-  const goToStage = useGameStore((s) => s.goToStage);
+  const goToMap = useAppStore((s) => s.goToMap);
+  const goToStage = useAppStore((s) => s.goToStage);
 
   // Timeline state
   const tracks = useTimelineStore((s) => s.tracks);
@@ -139,15 +140,13 @@ export function StudioView() {
       const result = duplicateClip(
         selectedClipData.trackIndex,
         selectedClipData.clip.id,
-        selectedClipData.sample,
-        librarySamples
       );
       // Select the new clip if duplication was successful
       if (result.reason !== 'rejected' && result.newClipId) {
         selectClip(result.newClipId, result.trackIndex);
       }
     }
-  }, [selectedClipData, duplicateClip, librarySamples, selectClip]);
+  }, [selectedClipData, duplicateClip, selectClip]);
 
   // Handle trim apply from modal
   const handleTrimApply = useCallback(
@@ -169,39 +168,14 @@ export function StudioView() {
     setIsTrimModalOpen(false);
   }, []);
 
-  // Keyboard shortcuts
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      // Don't trigger shortcuts when typing in input fields
-      if (
-        e.target instanceof HTMLInputElement ||
-        e.target instanceof HTMLTextAreaElement
-      ) {
-        return;
-      }
-
-      // Ctrl+D or Cmd+D to duplicate selected clip
-      if ((e.ctrlKey || e.metaKey) && e.key === 'd') {
-        e.preventDefault(); // Prevent browser bookmark dialog
-        if (selectedClipData) {
-          handleDuplicate();
-        }
-      }
-
-      // Space to toggle play/pause
-      if (e.code === 'Space') {
-        e.preventDefault(); // Prevent page scroll
-        if (isPlaying) {
-          handlePause();
-        } else {
-          handlePlay();
-        }
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedClipData, handleDuplicate, isPlaying, handlePlay, handlePause]);
+  // Keyboard shortcuts (extracted hook)
+  useStudioKeyboardShortcuts({
+    isPlaying,
+    hasSelectedClip: !!selectedClipData,
+    onPlay: handlePlay,
+    onPause: handlePause,
+    onDuplicate: handleDuplicate,
+  });
 
   return (
     <div className="h-dvh flex flex-col overflow-hidden bg-studio-bg md:bg-bg-app">

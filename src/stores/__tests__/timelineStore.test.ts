@@ -1,5 +1,6 @@
 import { describe, it, expect, beforeEach } from 'vitest';
 import { useTimelineStore } from '../timelineStore';
+import { useLibraryStore } from '../libraryStore';
 import type { Clip, Sample } from '../../types';
 
 // Mock samples for testing
@@ -33,11 +34,6 @@ const mockSamples: Sample[] = [
   },
 ];
 
-// Helper to get sample by ID
-function getSample(sampleId: string): Sample {
-  return mockSamples.find((s) => s.id === sampleId) ?? mockSamples[0];
-}
-
 // Helper to create a clip
 function createClip(sampleId: string, startBeat: number): Clip {
   return {
@@ -61,15 +57,20 @@ describe('timelineStore', () => {
       totalBeats: 32,
       isLooping: false,
     });
+
+    // Set up library samples for the store to access
+    useLibraryStore.setState({
+      librarySamples: mockSamples,
+      recorderSlots: Array(6).fill(null),
+    });
   });
 
   describe('addClip', () => {
     it('should add a clip to the specified track', () => {
       const store = useTimelineStore.getState();
       const clip = createClip('sample-1', 0);
-      const sample = getSample('sample-1');
 
-      const result = store.addClip(0, clip, sample, mockSamples);
+      const result = store.addClip(0, clip);
 
       expect(result.reason).toBe('original');
       const tracks = useTimelineStore.getState().tracks;
@@ -83,9 +84,9 @@ describe('timelineStore', () => {
     it('should add clips to different tracks', () => {
       const store = useTimelineStore.getState();
 
-      store.addClip(0, createClip('sample-1', 0), getSample('sample-1'), mockSamples);
-      store.addClip(1, createClip('sample-2', 4), getSample('sample-2'), mockSamples);
-      store.addClip(2, createClip('sample-3', 8), getSample('sample-3'), mockSamples);
+      store.addClip(0, createClip('sample-1', 0));
+      store.addClip(1, createClip('sample-2', 4));
+      store.addClip(2, createClip('sample-3', 8));
 
       const tracks = useTimelineStore.getState().tracks;
       expect(tracks[0].clips).toHaveLength(1);
@@ -97,15 +98,13 @@ describe('timelineStore', () => {
       const store = useTimelineStore.getState();
 
       // Add first clip at beat 0 (duration 4 beats)
-      store.addClip(0, createClip('sample-1', 0), getSample('sample-1'), mockSamples);
+      store.addClip(0, createClip('sample-1', 0));
 
       // Try to add second clip at beat 2 (would overlap)
       // Smart snap should shift it to beat 4 (after first clip)
       const result = store.addClip(
         0,
         createClip('sample-2', 2),
-        getSample('sample-2'),
-        mockSamples,
       );
 
       expect(result.reason).toBe('shifted');
@@ -120,17 +119,15 @@ describe('timelineStore', () => {
       const store = useTimelineStore.getState();
 
       // Fill track 0 with a long clip
-      store.addClip(0, createClip('sample-3', 0), getSample('sample-3'), mockSamples);
-      store.addClip(0, createClip('sample-3', 8), getSample('sample-3'), mockSamples);
-      store.addClip(0, createClip('sample-3', 16), getSample('sample-3'), mockSamples);
-      store.addClip(0, createClip('sample-3', 24), getSample('sample-3'), mockSamples);
+      store.addClip(0, createClip('sample-3', 0));
+      store.addClip(0, createClip('sample-3', 8));
+      store.addClip(0, createClip('sample-3', 16));
+      store.addClip(0, createClip('sample-3', 24));
 
       // Try to add clip at beat 4 - should go to track 1
       const result = store.addClip(
         0,
         createClip('sample-1', 4),
-        getSample('sample-1'),
-        mockSamples,
       );
 
       expect(result.reason).toBe('track_below');
@@ -147,8 +144,17 @@ describe('timelineStore', () => {
       const result = store.addClip(
         10,
         createClip('sample-1', 0),
-        getSample('sample-1'),
-        mockSamples,
+      );
+
+      expect(result.reason).toBe('rejected');
+    });
+
+    it('should return rejected for unknown sample', () => {
+      const store = useTimelineStore.getState();
+
+      const result = store.addClip(
+        0,
+        createClip('unknown-sample', 0),
       );
 
       expect(result.reason).toBe('rejected');
@@ -160,7 +166,7 @@ describe('timelineStore', () => {
       const store = useTimelineStore.getState();
       const clip = createClip('sample-1', 0);
 
-      store.addClip(0, clip, getSample('sample-1'), mockSamples);
+      store.addClip(0, clip);
       store.removeClip(0, clip.id);
 
       const tracks = useTimelineStore.getState().tracks;
@@ -172,8 +178,8 @@ describe('timelineStore', () => {
       const clip1 = createClip('sample-1', 0);
       const clip2 = createClip('sample-2', 8);
 
-      store.addClip(0, clip1, getSample('sample-1'), mockSamples);
-      store.addClip(0, clip2, getSample('sample-2'), mockSamples);
+      store.addClip(0, clip1);
+      store.addClip(0, clip2);
       store.removeClip(0, clip1.id);
 
       const clips = useTimelineStore.getState().tracks[0].clips;
@@ -186,10 +192,9 @@ describe('timelineStore', () => {
     it('should move a clip to a new position on the same track', () => {
       const store = useTimelineStore.getState();
       const clip = createClip('sample-1', 0);
-      const sample = getSample('sample-1');
 
-      store.addClip(0, clip, sample, mockSamples);
-      const result = store.moveClip(0, 0, clip.id, 8, sample, mockSamples);
+      store.addClip(0, clip);
+      const result = store.moveClip(0, 0, clip.id, 8);
 
       expect(result.reason).toBe('original');
       const movedClip = useTimelineStore.getState().tracks[0].clips[0];
@@ -199,10 +204,9 @@ describe('timelineStore', () => {
     it('should move a clip to a different track', () => {
       const store = useTimelineStore.getState();
       const clip = createClip('sample-1', 0);
-      const sample = getSample('sample-1');
 
-      store.addClip(0, clip, sample, mockSamples);
-      const result = store.moveClip(0, 2, clip.id, 4, sample, mockSamples);
+      store.addClip(0, clip);
+      const result = store.moveClip(0, 2, clip.id, 4);
 
       expect(result.reason).toBe('original');
       const tracks = useTimelineStore.getState().tracks;
@@ -215,14 +219,12 @@ describe('timelineStore', () => {
       const store = useTimelineStore.getState();
       const clip1 = createClip('sample-1', 0);
       const clip2 = createClip('sample-2', 8);
-      const sample1 = getSample('sample-1');
-      const sample2 = getSample('sample-2');
 
-      store.addClip(0, clip1, sample1, mockSamples);
-      store.addClip(0, clip2, sample2, mockSamples);
+      store.addClip(0, clip1);
+      store.addClip(0, clip2);
 
       // Try to move clip2 to beat 2 (would overlap with clip1 at beats 0-4)
-      const result = store.moveClip(0, 0, clip2.id, 2, sample2, mockSamples);
+      const result = store.moveClip(0, 0, clip2.id, 2);
 
       // Should be shifted to beat 4 (after clip1)
       expect(result.reason).toBe('shifted');
@@ -232,6 +234,60 @@ describe('timelineStore', () => {
       const movedClip = clips.find((c) => c.id === clip2.id);
       expect(movedClip?.startBeat).toBe(4);
     });
+
+    it('should return rejected for unknown sample', () => {
+      const store = useTimelineStore.getState();
+      const clip = createClip('sample-1', 0);
+
+      store.addClip(0, clip);
+
+      // Remove the sample from library to simulate unknown sample
+      useLibraryStore.setState({ librarySamples: [] });
+
+      const result = store.moveClip(0, 0, clip.id, 8);
+
+      expect(result.reason).toBe('rejected');
+    });
+  });
+
+  describe('duplicateClip', () => {
+    it('should duplicate a clip with same sample and trim settings', () => {
+      const store = useTimelineStore.getState();
+      const clip = createClip('sample-1', 0);
+
+      store.addClip(0, clip);
+      const result = store.duplicateClip(0, clip.id);
+
+      expect(result.reason).toBe('original');
+      expect(result.newClipId).toBeDefined();
+
+      const clips = useTimelineStore.getState().tracks[0].clips;
+      expect(clips).toHaveLength(2);
+      expect(clips[1].sampleId).toBe('sample-1');
+      expect(clips[1].id).toBe(result.newClipId);
+    });
+
+    it('should return rejected for unknown clip', () => {
+      const store = useTimelineStore.getState();
+
+      const result = store.duplicateClip(0, 'unknown-clip-id');
+
+      expect(result.reason).toBe('rejected');
+    });
+
+    it('should return rejected for unknown sample', () => {
+      const store = useTimelineStore.getState();
+      const clip = createClip('sample-1', 0);
+
+      store.addClip(0, clip);
+
+      // Remove the sample from library
+      useLibraryStore.setState({ librarySamples: [] });
+
+      const result = store.duplicateClip(0, clip.id);
+
+      expect(result.reason).toBe('rejected');
+    });
   });
 
   describe('updateClipTrim', () => {
@@ -239,7 +295,7 @@ describe('timelineStore', () => {
       const store = useTimelineStore.getState();
       const clip = createClip('sample-1', 0);
 
-      store.addClip(0, clip, getSample('sample-1'), mockSamples);
+      store.addClip(0, clip);
       store.updateClipTrim(0, clip.id, 0.5, 1.5);
 
       const updatedClip = useTimelineStore.getState().tracks[0].clips[0];
@@ -252,9 +308,9 @@ describe('timelineStore', () => {
     it('should remove all clips from all tracks', () => {
       const store = useTimelineStore.getState();
 
-      store.addClip(0, createClip('sample-1', 0), getSample('sample-1'), mockSamples);
-      store.addClip(1, createClip('sample-2', 4), getSample('sample-2'), mockSamples);
-      store.addClip(2, createClip('sample-3', 8), getSample('sample-3'), mockSamples);
+      store.addClip(0, createClip('sample-1', 0));
+      store.addClip(1, createClip('sample-2', 4));
+      store.addClip(2, createClip('sample-3', 8));
 
       store.clearAllTracks();
 

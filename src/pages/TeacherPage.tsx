@@ -10,7 +10,7 @@
 
 import { useState } from 'react';
 import { useAuth } from '../contexts/AuthContext';
-import { useGameStore } from '../stores/gameStore';
+import { useAppStore } from '../stores/appStore';
 import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
 import type { TeacherClass } from '../hooks/useClasses';
 
@@ -18,7 +18,7 @@ type TeacherView = 'login' | 'register' | 'forgot-password' | 'dashboard' | 'cla
 
 export function TeacherPage() {
   const { user, loading } = useAuth();
-  const goToStart = useGameStore((s) => s.goToStart);
+  const goToStart = useAppStore((s) => s.goToStart);
 
   // Bepaal welke view te tonen
   const [view, setView] = useState<TeacherView>(user ? 'dashboard' : 'login');

@@ -11,7 +11,7 @@
 import { useCallback, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Music, AlertTriangle } from 'lucide-react';
-import { useGameStore } from '../../stores/gameStore';
+import { useAppStore } from '../../stores/appStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { storageService } from '../../services/StorageService';
@@ -21,11 +21,11 @@ import { CompositionCard } from './CompositionCard';
 
 export function CompositionsView() {
   const { t } = useTranslation();
-  const goToStart = useGameStore((s) => s.goToStart);
-  const goToStudio = useGameStore((s) => s.goToStudio);
-  const goToStage = useGameStore((s) => s.goToStage);
-  const goToMap = useGameStore((s) => s.goToMap);
-  const setCurrentCompositionId = useGameStore((s) => s.setCurrentCompositionId);
+  const goToStart = useAppStore((s) => s.goToStart);
+  const goToStudio = useAppStore((s) => s.goToStudio);
+  const goToStage = useAppStore((s) => s.goToStage);
+  const goToMap = useAppStore((s) => s.goToMap);
+  const setCurrentCompositionId = useAppStore((s) => s.setCurrentCompositionId);
 
   const loadTimeline = useTimelineStore((s) => s.loadTimeline);
   const loadLibrary = useLibraryStore((s) => s.loadLibrary);

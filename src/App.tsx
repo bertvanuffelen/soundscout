@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useGameStore } from './stores/gameStore';
+import { useAppStore } from './stores/appStore';
 import { useThemeStore } from './stores/themeStore';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
@@ -22,10 +22,10 @@ function isEditorRoute(): boolean {
 
 function AppContent() {
   const { t } = useTranslation();
-  const currentScreen = useGameStore((s) => s.currentScreen);
-  const shareCode = useGameStore((s) => s.shareCode);
-  const goToShared = useGameStore((s) => s.goToShared);
-  const goToStart = useGameStore((s) => s.goToStart);
+  const currentScreen = useAppStore((s) => s.currentScreen);
+  const shareCode = useAppStore((s) => s.shareCode);
+  const goToShared = useAppStore((s) => s.goToShared);
+  const goToStart = useAppStore((s) => s.goToStart);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
 

@@ -19,7 +19,7 @@ import {
   Link2,
   ArrowLeft,
 } from 'lucide-react';
-import { useGameStore } from '../../stores/gameStore';
+import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioEngine } from '../../hooks/useAudioEngine';
@@ -33,7 +33,7 @@ import { StagePlayback, StageAudience } from './StagePlayback';
 
 export function StageView() {
   const { t } = useTranslation();
-  const setScreen = useGameStore((s) => s.setScreen);
+  const setScreen = useAppStore((s) => s.setScreen);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
   const bpm = useTimelineStore((s) => s.bpm);

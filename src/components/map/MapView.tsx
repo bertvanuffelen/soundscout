@@ -7,7 +7,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { MapPin, ArrowLeft } from 'lucide-react';
-import { useGameStore } from '../../stores/gameStore';
+import { useAppStore } from '../../stores/appStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { Button } from '../ui';
@@ -15,15 +15,15 @@ import { LocationMarker } from './LocationMarker';
 
 export function MapView() {
   const { t } = useTranslation();
-  const goToStart = useGameStore((s) => s.goToStart);
-  const goToLocation = useGameStore((s) => s.goToLocation);
-  const goToStudio = useGameStore((s) => s.goToStudio);
+  const goToStart = useAppStore((s) => s.goToStart);
+  const goToLocation = useAppStore((s) => s.goToLocation);
+  const goToStudio = useAppStore((s) => s.goToStudio);
 
   const theme = useThemeStore((s) => s.theme);
   const mapConfig = useThemeStore((s) => s.getMapConfig());
   const locations = useThemeStore((s) => s.getLocations());
 
-  const collectedSampleIds = useLibraryStore((s) => s.collectedSampleIds);
+  const isSampleCollected = useLibraryStore((s) => s.isSampleCollected);
 
   // Get collected sample count per location
   const getCollectedCountForLocation = (locationId: string) => {
@@ -32,7 +32,7 @@ export function MapView() {
 
     const totalSamples = location.hotspots.length;
     const collectedSamples = location.hotspots.filter((h) =>
-      collectedSampleIds.includes(h.sampleId)
+      isSampleCollected(h.sampleId)
     ).length;
 
     return { collected: collectedSamples, total: totalSamples };

@@ -8,7 +8,6 @@ interface LibraryStore {
 
   // Library: persistent collection across sessions
   librarySamples: Sample[];
-  collectedSampleIds: string[];
 
   // Recorder actions
   addToRecorder: (sample: Sample) => boolean;
@@ -29,12 +28,12 @@ interface LibraryStore {
   isSampleInRecorder: (sampleId: string) => boolean;
   isRecorderFull: () => boolean;
   getRecorderCount: () => number;
+  getCollectedSampleIds: () => string[];
 }
 
 export const useLibraryStore = create<LibraryStore>()((set, get) => ({
   recorderSlots: Array(MAX_RECORDER_SLOTS).fill(null) as (Sample | null)[],
   librarySamples: [],
-  collectedSampleIds: [],
 
   addToRecorder: (sample) => {
     const state = get();
@@ -78,7 +77,7 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => ({
     // Collect non-null samples from recorder that aren't already in library
     const newSamples = state.recorderSlots.filter(
       (slot): slot is Sample =>
-        slot !== null && !state.collectedSampleIds.includes(slot.id),
+        slot !== null && !state.isSampleCollected(slot.id),
     );
 
     if (newSamples.length === 0) {
@@ -91,10 +90,6 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => ({
 
     set((prev) => ({
       librarySamples: [...prev.librarySamples, ...newSamples],
-      collectedSampleIds: [
-        ...prev.collectedSampleIds,
-        ...newSamples.map((s) => s.id),
-      ],
       recorderSlots: Array(MAX_RECORDER_SLOTS).fill(null) as (Sample | null)[],
     }));
   },
@@ -103,7 +98,6 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => ({
     set({
       recorderSlots: Array(MAX_RECORDER_SLOTS).fill(null) as (Sample | null)[],
       librarySamples: [],
-      collectedSampleIds: [],
     });
   },
 
@@ -111,12 +105,12 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => ({
     set({
       recorderSlots: Array(MAX_RECORDER_SLOTS).fill(null) as (Sample | null)[],
       librarySamples: samples,
-      collectedSampleIds: samples.map((s) => s.id),
     });
   },
 
+  // Derived from librarySamples — single source of truth
   isSampleCollected: (sampleId) => {
-    return get().collectedSampleIds.includes(sampleId);
+    return get().librarySamples.some((s) => s.id === sampleId);
   },
 
   isSampleInRecorder: (sampleId) => {
@@ -129,5 +123,9 @@ export const useLibraryStore = create<LibraryStore>()((set, get) => ({
 
   getRecorderCount: () => {
     return get().recorderSlots.filter((slot) => slot !== null).length;
+  },
+
+  getCollectedSampleIds: () => {
+    return get().librarySamples.map((s) => s.id);
   },
 }));

@@ -250,13 +250,10 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
       if (dragType === 'clip') {
         // Moving an existing clip
         const clip = active.data.current?.clip as Clip;
-        const sample = active.data.current?.sample as Sample;
         const fromTrackIndex = active.data.current?.trackIndex as number;
 
-        if (!sample) return;
-
         // Smart snap will find the best position
-        moveClip(fromTrackIndex, toTrackIndex, clip.id, startBeat, sample, samples);
+        moveClip(fromTrackIndex, toTrackIndex, clip.id, startBeat);
       } else {
         // Adding new clip from library
         const sample = active.data.current?.sample as Sample | undefined;
@@ -270,8 +267,6 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
             sampleId: sample.id,
             startBeat,
           },
-          sample,
-          samples,
         );
       }
     },
