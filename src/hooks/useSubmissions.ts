@@ -6,13 +6,14 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '../lib/supabase';
+import type { CompositionData } from '../types';
 
 // Types
 export interface Submission {
   id: string;
   student_name: string;
   composition_name: string;
-  composition_data: any; // Dit is de volledige compositie JSON
+  composition_data: CompositionData;
   created_at: string;
 }
 

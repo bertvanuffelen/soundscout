@@ -186,6 +186,26 @@ export interface SavedComposition {
   sharedAt?: string;
 }
 
+// --- Composition Data Transfer Object ---
+
+/**
+ * Data format voor compositie-overdracht tussen systemen.
+ * Gebruikt bij: submissions naar docent, publieke luisterlinks, en Supabase opslag.
+ * Bevat alle informatie die nodig is om een compositie af te spelen.
+ */
+export interface CompositionData {
+  /** All tracks with their clips */
+  tracks: Track[];
+  /** BPM (beats per minute) */
+  bpm: number;
+  /** Total timeline length in beats */
+  totalBeats: number;
+  /** Whether looping was enabled */
+  isLooping: boolean;
+  /** Snapshot of all samples used in the composition */
+  samples: Sample[];
+}
+
 // --- Legacy Composition (deprecated) ---
 
 /**

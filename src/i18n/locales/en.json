@@ -346,7 +346,8 @@
     "classCodeNotFound": "Class code not found. Check the code and try again.",
     "submitError": "Could not submit composition. Please try again.",
     "shareLinkError": "Could not create link. Please try again.",
-    "loadError": "Could not load composition."
+    "loadError": "Could not load composition.",
+    "cooldown": "Please wait! {{seconds}} seconds before you can submit again."
   },
   "teacher": {
     "common": {

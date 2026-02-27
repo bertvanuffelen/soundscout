@@ -474,9 +474,7 @@ export function StageView() {
             tracks,
             bpm,
             totalBeats,
-            isPlaying: false,
             isLooping,
-            currentBeat: 0,
             samples: librarySamples,
           }}
           onClose={() => setShowShareLinkModal(false)}
@@ -491,9 +489,7 @@ export function StageView() {
             tracks,
             bpm,
             totalBeats,
-            isPlaying: false,
             isLooping,
-            currentBeat: 0,
             samples: librarySamples,
           }}
           onClose={() => setShowShareModal(false)}

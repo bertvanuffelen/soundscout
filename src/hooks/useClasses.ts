@@ -81,7 +81,7 @@ export function useClasses(): UseClassesReturn {
       if (fetchError) throw fetchError;
 
       // Transform data: voeg submission_count toe
-      const classesWithCount = (data || []).map((c: any) => ({
+      const classesWithCount = (data || []).map((c: { id: string; name: string; code: string; created_at: string; is_active: boolean; submissions?: { count: number }[] }) => ({
         id: c.id,
         name: c.name,
         code: c.code,

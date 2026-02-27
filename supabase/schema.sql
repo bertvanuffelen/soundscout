@@ -8,9 +8,10 @@
 -- ============================================
 CREATE TABLE IF NOT EXISTS public.teachers (
   id UUID PRIMARY KEY REFERENCES auth.users(id) ON DELETE CASCADE,
-  email TEXT UNIQUE NOT NULL,
-  display_name TEXT NOT NULL,
-  school_name TEXT,
+  email TEXT UNIQUE NOT NULL CONSTRAINT chk_teacher_email_length CHECK (char_length(email) BETWEEN 5 AND 255),
+  display_name TEXT NOT NULL CONSTRAINT chk_teacher_display_name_length CHECK (char_length(display_name) BETWEEN 1 AND 100),
+  school_name TEXT CONSTRAINT chk_teacher_school_name_length CHECK (school_name IS NULL OR char_length(school_name) BETWEEN 1 AND 200),
+  max_classes INT DEFAULT 8,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
@@ -20,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public.teachers (
 CREATE TABLE IF NOT EXISTS public.classes (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   teacher_id UUID NOT NULL REFERENCES public.teachers(id) ON DELETE CASCADE,
-  name TEXT NOT NULL,
+  name TEXT NOT NULL CONSTRAINT chk_class_name_length CHECK (char_length(name) BETWEEN 1 AND 100),
   code CHAR(4) UNIQUE NOT NULL,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   is_active BOOLEAN DEFAULT TRUE
@@ -32,14 +33,14 @@ CREATE TABLE IF NOT EXISTS public.classes (
 CREATE TABLE IF NOT EXISTS public.submissions (
   id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
   class_id UUID REFERENCES public.classes(id) ON DELETE SET NULL,
-  student_name TEXT NOT NULL,
-  composition_name TEXT NOT NULL,
-  composition_data JSONB NOT NULL,
+  student_name TEXT NOT NULL CONSTRAINT chk_student_name_length CHECK (char_length(student_name) BETWEEN 1 AND 100),
+  composition_name TEXT NOT NULL CONSTRAINT chk_composition_name_length CHECK (char_length(composition_name) BETWEEN 1 AND 200),
+  composition_data JSONB NOT NULL CONSTRAINT chk_composition_data_size CHECK (octet_length(composition_data::text) <= 1048576),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   -- Delen met Link (#14)
   share_code VARCHAR(8) UNIQUE,
   expires_at TIMESTAMPTZ,
-  view_count INT DEFAULT 0
+  view_count INT DEFAULT 0 CONSTRAINT chk_view_count_positive CHECK (view_count >= 0)
 );
 
 -- ============================================
@@ -229,7 +230,37 @@ CREATE TRIGGER on_auth_user_created
   FOR EACH ROW EXECUTE FUNCTION handle_new_user();
 
 -- ============================================
--- 8. DELEN MET LINK (#14)
+-- 8. MAX CLASSES ENFORCEMENT (TP0-4)
+-- ============================================
+
+-- Trigger functie: voorkom meer klassen dan max_classes limiet
+CREATE OR REPLACE FUNCTION check_max_classes()
+RETURNS TRIGGER AS $$
+DECLARE
+  current_count INT;
+  max_allowed INT;
+BEGIN
+  SELECT COUNT(*) INTO current_count
+  FROM public.classes WHERE teacher_id = NEW.teacher_id;
+
+  SELECT COALESCE(max_classes, 8) INTO max_allowed
+  FROM public.teachers WHERE id = NEW.teacher_id;
+
+  IF current_count >= max_allowed THEN
+    RAISE EXCEPTION 'Maximum number of classes (%) reached', max_allowed;
+  END IF;
+
+  RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+DROP TRIGGER IF EXISTS enforce_max_classes ON public.classes;
+CREATE TRIGGER enforce_max_classes
+  BEFORE INSERT ON public.classes
+  FOR EACH ROW EXECUTE FUNCTION check_max_classes();
+
+-- ============================================
+-- 9. DELEN MET LINK (#14)
 -- ============================================
 
 -- Genereer unieke 8-karakter share code

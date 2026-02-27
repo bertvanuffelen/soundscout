@@ -8,15 +8,17 @@
  * 4. Error → Foutmelding + opnieuw proberen
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Link2, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { shareComposition } from '../../lib/submissions';
+import { canShare, markShare, getShareCooldownRemaining } from '../../utils/rateLimit';
+import type { CompositionData } from '../../types';
 
 interface ShareLinkModalProps {
   compositionName: string;
-  compositionData: any;
+  compositionData: CompositionData;
   studentName?: string;
   onClose: () => void;
 }
@@ -34,9 +36,28 @@ export function ShareLinkModal({
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
 
-  // Generate share link — only called on user confirmation
+  // Rate limit countdown timer
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const timer = setInterval(() => {
+      const remaining = Math.ceil(getShareCooldownRemaining() / 1000);
+      setCooldownSeconds(remaining);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownSeconds]);
+
+  // Generate share link — only called on user confirmation (with rate limiting)
   const generateLink = useCallback(async () => {
+    // Rate limit check
+    if (!canShare()) {
+      const remaining = Math.ceil(getShareCooldownRemaining() / 1000);
+      setCooldownSeconds(remaining);
+      setError(t('submissions.cooldown', { seconds: remaining }));
+      return;
+    }
+
     setState('generating');
     setError(null);
 
@@ -46,6 +67,7 @@ export function ShareLinkModal({
         compositionName,
         compositionData,
       });
+      markShare(); // Markeer succesvolle share voor rate limiting
       setShareCode(code);
       setState('ready');
     } catch (err) {
@@ -114,10 +136,13 @@ export function ShareLinkModal({
               <Button
                 variant="primary"
                 onClick={generateLink}
+                disabled={cooldownSeconds > 0}
                 className="flex-1"
               >
                 <Link2 className="w-4 h-4 mr-1.5" />
-                {t('share.generateLink')}
+                {cooldownSeconds > 0
+                  ? `${t('share.generateLink')} (${cooldownSeconds}s)`
+                  : t('share.generateLink')}
               </Button>
             </div>
           </div>

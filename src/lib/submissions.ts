@@ -9,12 +9,13 @@
 import { supabase } from './supabase';
 import { generateRandomDutchName } from '../utils/randomNames';
 import i18n from '../i18n';
+import type { CompositionData } from '../types';
 
 interface SubmitCompositionParams {
   classCode: string;
   studentName?: string;
   compositionName: string;
-  compositionData: any;
+  compositionData: CompositionData;
 }
 
 interface SubmitCompositionResult {
@@ -93,13 +94,13 @@ export async function submitComposition(
 interface ShareCompositionParams {
   studentName?: string;
   compositionName: string;
-  compositionData: any;
+  compositionData: CompositionData;
 }
 
 interface SharedComposition {
   composition_name: string;
   student_name: string;
-  composition_data: any;
+  composition_data: CompositionData;
   created_at: string;
   view_count: number;
 }

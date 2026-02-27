@@ -7,15 +7,17 @@
  * 3. Compositie wordt verzonden naar docent
  */
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Check, Send, PartyPopper, AlertCircle, Bird } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { submitComposition, validateClassCode } from '../../lib/submissions';
+import { canSubmit, markSubmission, getSubmitCooldownRemaining } from '../../utils/rateLimit';
+import type { CompositionData } from '../../types';
 
 interface ShareWithTeacherModalProps {
   compositionName: string;
-  compositionData: any;
+  compositionData: CompositionData;
   onClose: () => void;
   onSuccess: () => void;
 }
@@ -36,6 +38,17 @@ export function ShareWithTeacherModal({
   const [studentName, setStudentName] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [finalStudentName, setFinalStudentName] = useState('');
+  const [cooldownSeconds, setCooldownSeconds] = useState(0);
+
+  // Rate limit countdown timer
+  useEffect(() => {
+    if (cooldownSeconds <= 0) return;
+    const timer = setInterval(() => {
+      const remaining = Math.ceil(getSubmitCooldownRemaining() / 1000);
+      setCooldownSeconds(remaining);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [cooldownSeconds]);
 
   // Valideer klas-code en ga naar volgende stap
   const handleCodeSubmit = async (e: React.FormEvent) => {
@@ -66,10 +79,19 @@ export function ShareWithTeacherModal({
     }
   };
 
-  // Verzend compositie
+  // Verzend compositie (met rate limiting)
   const handleNameSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Rate limit check
+    if (!canSubmit()) {
+      const remaining = Math.ceil(getSubmitCooldownRemaining() / 1000);
+      setCooldownSeconds(remaining);
+      setError(t('submissions.cooldown', { seconds: remaining }));
+      return;
+    }
+
     setStep('sending');
 
     try {
@@ -80,6 +102,7 @@ export function ShareWithTeacherModal({
         compositionData,
       });
 
+      markSubmission(); // Markeer succesvolle submission voor rate limiting
       setFinalStudentName(result.studentName);
       setStep('success');
 
@@ -216,9 +239,12 @@ export function ShareWithTeacherModal({
                 type="submit"
                 variant="primary"
                 size="md"
+                disabled={cooldownSeconds > 0}
                 className="flex-1"
               >
-                {t('teacher.shareWithTeacher.send')}
+                {cooldownSeconds > 0
+                  ? `${t('teacher.shareWithTeacher.send')} (${cooldownSeconds}s)`
+                  : t('teacher.shareWithTeacher.send')}
               </Button>
             </div>
           </form>

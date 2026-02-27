@@ -49,9 +49,9 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
   const bpm = composition_data?.bpm || DEFAULT_BPM;
   const isLooping = composition_data?.isLooping || false;
 
-  const trackCount = tracks.filter((t: any) => t.clips?.length > 0).length;
+  const trackCount = tracks.filter((t) => t.clips?.length > 0).length;
   const clipCount = tracks.reduce(
-    (total: number, track: any) => total + (track.clips?.length || 0),
+    (total, track) => total + (track.clips?.length || 0),
     0
   );
 

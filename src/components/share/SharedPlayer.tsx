@@ -23,9 +23,11 @@ import {
 import * as Tone from 'tone';
 import { audioService } from '../../services/AudioService';
 import { getSharedComposition } from '../../lib/submissions';
+import { isValidCompositionData } from '../../utils/compositionData';
 import { Timeline } from '../studio/Timeline';
 import { Button } from '../ui';
 import { DEFAULT_BPM } from '../../constants/config';
+import type { Track, Sample } from '../../types';
 
 interface SharedPlayerProps {
   code: string;
@@ -47,8 +49,8 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   const [studentName, setStudentName] = useState('');
   const [createdAt, setCreatedAt] = useState('');
   const [viewCount, setViewCount] = useState(0);
-  const [tracks, setTracks] = useState<any[]>([]);
-  const [samples, setSamples] = useState<any[]>([]);
+  const [tracks, setTracks] = useState<Track[]>([]);
+  const [samples, setSamples] = useState<Sample[]>([]);
   const [totalBeats, setTotalBeats] = useState(16);
   const [bpm, setBpm] = useState(DEFAULT_BPM);
   const [isLooping, setIsLooping] = useState(false);
@@ -86,11 +88,19 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         setViewCount(result.view_count);
 
         const data = result.composition_data;
-        setTracks(data?.tracks || []);
-        setSamples(data?.samples || []);
-        setTotalBeats(data?.totalBeats || 16);
-        setBpm(data?.bpm || DEFAULT_BPM);
-        setIsLooping(data?.isLooping || false);
+
+        // Runtime validatie van compositie data uit Supabase
+        if (!isValidCompositionData(data)) {
+          setErrorMessage(t('share.notFound'));
+          setPlayerState('error');
+          return;
+        }
+
+        setTracks(data.tracks);
+        setSamples(data.samples);
+        setTotalBeats(data.totalBeats);
+        setBpm(data.bpm);
+        setIsLooping(data.isLooping);
 
         // Now load audio samples
         setPlayerState('loading-audio');
@@ -98,7 +108,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         await audioService.initialize();
         if (!isMounted) return;
 
-        const loadedSamples = data?.samples || [];
+        const loadedSamples = data.samples;
         if (loadedSamples.length === 0) {
           setErrorMessage(t('share.notFound'));
           setPlayerState('error');
@@ -197,9 +207,9 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   const showTimeline = playerState === 'ready' || playerState === 'playing' || playerState === 'paused';
   const isPlaying = playerState === 'playing';
 
-  const trackCount = tracks.filter((t: any) => t.clips?.length > 0).length;
+  const trackCount = tracks.filter((t) => t.clips?.length > 0).length;
   const clipCount = tracks.reduce(
-    (total: number, track: any) => total + (track.clips?.length || 0),
+    (total, track) => total + (track.clips?.length || 0),
     0
   );
 

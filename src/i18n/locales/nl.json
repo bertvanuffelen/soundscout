@@ -346,7 +346,8 @@
     "classCodeNotFound": "Klas-code niet gevonden. Controleer de code en probeer opnieuw.",
     "submitError": "Kon compositie niet versturen. Probeer opnieuw.",
     "shareLinkError": "Kon link niet aanmaken. Probeer opnieuw.",
-    "loadError": "Kon compositie niet laden."
+    "loadError": "Kon compositie niet laden.",
+    "cooldown": "Even geduld! Wacht {{seconds}} seconden voordat je opnieuw kunt versturen."
   },
   "teacher": {
     "common": {
