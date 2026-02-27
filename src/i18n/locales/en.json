@@ -15,7 +15,8 @@
     "play": "Play",
     "pause": "Pause",
     "stop": "Stop",
-    "by": "By"
+    "by": "By",
+    "location": "Location"
   },
   "language": {
     "nl": "Nederlands",

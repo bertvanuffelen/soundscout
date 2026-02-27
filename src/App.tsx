@@ -48,7 +48,7 @@ function AppContent() {
     const screenTitles: Record<string, string> = {
       start: t('start.startGame'),
       map: t('map.title'),
-      location: t('location.backToMap'),
+      location: t('common.location'),
       studio: t('studio.title'),
       stage: t('stage.title'),
       compositions: t('compositions.title'),

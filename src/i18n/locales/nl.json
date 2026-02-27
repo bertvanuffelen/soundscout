@@ -15,7 +15,8 @@
     "play": "Afspelen",
     "pause": "Pauzeren",
     "stop": "Stoppen",
-    "by": "Door"
+    "by": "Door",
+    "location": "Locatie"
   },
   "language": {
     "nl": "Nederlands",
