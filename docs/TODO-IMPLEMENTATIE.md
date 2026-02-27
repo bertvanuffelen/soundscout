@@ -1181,11 +1181,21 @@ Beide favicon bestanden bestaan op de juiste locatie:
 - `/public/images/overige/logo-soundscout.svg` ✓
 - `/public/images/overige/logo-soundscout.png` ✓
 
-#### DEPLOY-7. Environment-specifieke builds
-**Status:** Niet begonnen
-**Effort:** Medium (1-2 uur)
+#### DEPLOY-7. Environment-specifieke builds ✅
+**Status:** Voltooid (2026-02-27)
+**Effort:** Klein (30 min)
 
-**Probleem:** Alleen `.env.local`. Geen `.env.production`, `.env.staging`. Geen error tracking (Sentry), geen analytics.
+- [x] `.env.example` aangemaakt (template met alle variabelen, zonder echte keys)
+- [x] `.env.production` toegevoegd aan `.gitignore`
+- [x] Documentatie: welk bestand wanneer wordt geladen (Vite convention)
+- [x] `VITE_APP_URL` variabele toegevoegd voor Open Graph URL
+
+**Gebruik:**
+- `.env.local` → lokaal (`npm run dev`)
+- `.env.production` → productie (`npm run build`)
+- `.env.example` → template (gecommit, zonder secrets)
+
+**Notitie:** Sentry/analytics is P5 — toevoegen wanneer daar behoefte aan is.
 
 ---
 
