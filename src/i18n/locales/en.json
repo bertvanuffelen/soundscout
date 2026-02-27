@@ -464,7 +464,12 @@
       "createdOn": "Created on {{date}}",
       "compositionCount": "{{count}} composition",
       "compositionCount_plural": "{{count}} compositions",
-      "view": "View"
+      "view": "View",
+      "showOnScreen": "Show on screen"
+    },
+    "classCodeOverlay": {
+      "label": "Class Code",
+      "escapeHint": "Press ESC to close"
     },
     "submissionCard": {
       "play": "Play",

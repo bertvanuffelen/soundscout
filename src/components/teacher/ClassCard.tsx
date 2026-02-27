@@ -2,10 +2,12 @@
  * ClassCard - Kaart voor een klas in het dashboard
  */
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Music, Trash2 } from 'lucide-react';
+import { Music, Trash2, Monitor } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { Button } from '../ui/Button';
+import { ClassCodeOverlay } from './ClassCodeOverlay';
 
 interface ClassCardProps {
   classData: TeacherClass;
@@ -16,6 +18,7 @@ interface ClassCardProps {
 export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
   const { t } = useTranslation();
   const { name, code, submission_count = 0, created_at } = classData;
+  const [showCodeOverlay, setShowCodeOverlay] = useState(false);
 
   // Format datum
   const formattedDate = new Date(created_at).toLocaleDateString('nl-NL', {
@@ -25,23 +28,34 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
   });
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
-      {/* Header met naam en code */}
-      <div className="flex items-start justify-between mb-3">
-        <div>
-          <h3 className="font-semibold text-gray-800 text-lg">
-            {name}
-          </h3>
-          <p className="text-gray-500 text-sm">
-            {t('teacher.classCard.createdOn', { date: formattedDate })}
-          </p>
-        </div>
+    <>
+      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
+        {/* Header met naam en code */}
+        <div className="flex items-start justify-between mb-3">
+          <div>
+            <h3 className="font-semibold text-gray-800 text-lg">
+              {name}
+            </h3>
+            <p className="text-gray-500 text-sm">
+              {t('teacher.classCard.createdOn', { date: formattedDate })}
+            </p>
+          </div>
 
-        {/* Klas-code badge */}
-        <div className="bg-amber-100 text-amber-800 px-3 py-1 rounded-lg font-mono font-bold text-lg">
-          {code}
+          {/* Klas-code badge with show button */}
+          <div className="flex items-center gap-2">
+            <div className="bg-amber-100 text-amber-800 px-3 py-1 rounded-lg font-mono font-bold text-lg">
+              {code}
+            </div>
+            <button
+              onClick={() => setShowCodeOverlay(true)}
+              className="flex-shrink-0 p-2 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+              title={t('teacher.classCard.showOnScreen')}
+              aria-label={t('teacher.classCard.showOnScreen')}
+            >
+              <Monitor className="w-5 h-5" />
+            </button>
+          </div>
         </div>
-      </div>
 
       {/* Aantal composities */}
       <div className="flex items-center gap-2 mb-4">
@@ -71,6 +85,15 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
         </Button>
       </div>
     </div>
+
+    {/* Code Overlay Modal */}
+    {showCodeOverlay && (
+      <ClassCodeOverlay
+        code={code}
+        onClose={() => setShowCodeOverlay(false)}
+      />
+    )}
+    </>
   );
 }
 

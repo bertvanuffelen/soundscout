@@ -950,12 +950,14 @@ interface TimelineState {
 - [x] `min-w-[44px] min-h-[44px]` op alle action buttons
 - [x] Timeline hoogte ongewijzigd
 
-#### UX-8. Klascode projector-modus (docent)
-**Status:** Niet begonnen
+#### UX-8. Klascode projector-modus (docent) ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1-2 uur)
-**Impact:** Klasgebruik — docent moet nu code mondeling delen
 
-**Oplossing:** "Toon op scherm" knop in ClassDetail die 4-cijferige code groot toont (fullscreen overlay, grote letters, duidelijk leesbaar op digibord).
+- [x] `ClassCodeOverlay.tsx` component met fullscreen weergave (text-9xl / text-[200px])
+- [x] Monitor-icoon knop in `ClassCard.tsx`
+- [x] ESC om te sluiten, focus trap
+- [x] Vertalingen NL + EN
 
 ---
 
@@ -1009,13 +1011,14 @@ interface TimelineState {
 - Clip: `role="listitem"`, `aria-label="Park Birds, start beat 4, duur 2 beats"`
 - Live region voor playback status updates
 
-##### A11Y-4. Clips zijn divs met onClick ⚠️ WCAG 2.1.1 (Level A)
-**Status:** Niet begonnen
+##### A11Y-4. Clips zijn divs met onClick ⚠️ WCAG 2.1.1 (Level A) ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
 
-**Probleem:** Clip.tsx lijn 59-86: geen `role="button"`, `aria-selected`, keyboard Enter/Space.
-
-**Oplossing:** Voeg toe: `role="button"`, `tabIndex={0}`, `aria-selected`, `onKeyDown` voor Enter/Space.
+- [x] `role="button"` en `tabIndex={0}` toegevoegd aan Clip.tsx
+- [x] `aria-selected` voor geselecteerde clip
+- [x] `onKeyDown` handler voor Enter/Space (selectie)
+- [x] Beschrijvend `aria-label` met sample naam, startbeat en duur
 
 ##### A11Y-5. ZoomableView alleen pointer events ⚠️ WCAG 2.1.1 (Level A)
 **Status:** Niet begonnen
@@ -1050,13 +1053,10 @@ interface TimelineState {
 - [x] Dynamische `<title>` per scherm (App.tsx)
 - [x] Heading hiërarchie gecorrigeerd (h3 → h2 in Timeline en SampleLibrary)
 
-##### A11Y-8. Kleur-onafhankelijke status indicatie
-**Status:** Niet begonnen
-**Effort:** Klein (1 uur)
+##### A11Y-8. Kleur-onafhankelijke status indicatie ❌ NIET NODIG
+**Status:** Niet nodig — LocationMarker toont al tekst-indicator (bijv. "0/6") naast kleur.
 
-**Probleem:** Locatie voortgang alleen via kleur (LocationMarker). Contrast te laag op disabled states.
-
-**Oplossing:** Voeg iconen/tekst toe naast kleur-indicatie. Verhoog contrast op disabled states.
+Bestaande implementatie voldoet aan WCAG 1.4.1 (Use of Color).
 
 ---
 
@@ -1129,18 +1129,13 @@ interface TimelineState {
 - [x] Twitter Card tags (summary card met logo als preview)
 - [x] Logo gebruikt als og:image (bestaande logo-soundscout.png)
 
-#### DEPLOY-2. PWA manifest (installeerbaar op tablet)
-**Status:** Niet begonnen
+#### DEPLOY-2. PWA manifest (installeerbaar op tablet) ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1-2 uur)
 
-**Probleem:** Geen manifest.json, app niet installeerbaar. Geen offline support.
-
-**Impact:** Leerlingen kunnen app niet "installeren" op tablet/Chromebook. Problematisch bij slecht school-internet.
-
-**Oplossing:**
-- [ ] `manifest.json` aanmaken (name, icons, theme_color, display: standalone)
-- [ ] Link in index.html
-- [ ] Apple-touch-icon correct configureren
+- [x] `public/manifest.json` aangemaakt (name, icons, theme_color, display: standalone)
+- [x] `<link rel="manifest">` in index.html
+- [x] Apple-touch-icon correct geconfigureerd
 
 **Notitie:** Service worker voor offline gebruik is P3 (complexer, vereist audio caching strategie).
 
@@ -1170,11 +1165,13 @@ interface TimelineState {
 
 **Oplossing:** CSP in .htaccess met whitelists voor Supabase, EmailJS, Google Fonts.
 
-#### DEPLOY-6. Favicon pad fix
-**Status:** Niet begonnen
+#### DEPLOY-6. Favicon pad fix ✅
+**Status:** Voltooid (2026-02-27) — Gecontroleerd, paden kloppen.
 **Effort:** Klein (15 min)
 
-**Probleem:** index.html lijn 8 verwijst naar `/images/overige/logo-soundscout.svg` — pad mogelijk incorrect.
+Beide favicon bestanden bestaan op de juiste locatie:
+- `/public/images/overige/logo-soundscout.svg` ✓
+- `/public/images/overige/logo-soundscout.png` ✓
 
 #### DEPLOY-7. Environment-specifieke builds
 **Status:** Niet begonnen

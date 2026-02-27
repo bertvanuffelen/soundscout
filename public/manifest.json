@@ -1,0 +1,23 @@
+{
+  "name": "SoundScout",
+  "short_name": "SoundScout",
+  "description": "Leer muziek maken door geluiden te ontdekken en te combineren",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#F4F6F8",
+  "theme_color": "#0f172a",
+  "orientation": "any",
+  "icons": [
+    {
+      "src": "/images/overige/logo-soundscout.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/images/overige/logo-soundscout.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

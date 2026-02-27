@@ -464,7 +464,12 @@
       "createdOn": "Aangemaakt op {{date}}",
       "compositionCount": "{{count}} compositie",
       "compositionCount_plural": "{{count}} composities",
-      "view": "Bekijken"
+      "view": "Bekijken",
+      "showOnScreen": "Toon op scherm"
+    },
+    "classCodeOverlay": {
+      "label": "Klascode",
+      "escapeHint": "Druk op ESC om te sluiten"
     },
     "submissionCard": {
       "play": "Afspelen",
