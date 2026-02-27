@@ -431,13 +431,13 @@ const originalClipStartBeat = originalClipStartBeatRef.current; // Eerst opslaan
 
 ---
 
-### TP0 - KRITIEK (veiligheid & data-integriteit)
+### TP0 - KRITIEK (veiligheid & data-integriteit) ✅ VOLTOOID
 
 > **Deze items MOETEN worden opgepakt vóór nieuwe features.**
 > Geschatte totale effort: **1-2 dagen**
 
-#### TP0-1. Vervang `any` types door `CompositionData` interface
-**Status:** Niet begonnen
+#### TP0-1. Vervang `any` types door `CompositionData` interface ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (2-3 uur)
 **Impact:** Data safety — voorkomt runtime crashes door ongetypeerde data
 
@@ -469,8 +469,8 @@ Vervang alle `any` door `CompositionData` in bovenstaande bestanden.
 
 **Waarom nu:** Templates (#21) en Volume per Track (#39) breiden het compositie-datamodel uit. Zonder sterk type worden fouten pas in de UI ontdekt.
 
-#### TP0-2. Rate limiting op anonieme submissions
-**Status:** Niet begonnen
+#### TP0-2. Rate limiting op anonieme submissions ✅
+**Status:** Voltooid (2026-02-27) — SQL functie + frontend error handling
 **Effort:** Klein-Medium (3-4 uur)
 **Impact:** DoS preventie — voorkomt spam naar klas-submissions
 
@@ -517,8 +517,8 @@ $$ LANGUAGE plpgsql SECURITY DEFINER;
 
 **Waarom nu:** Zodra de app in meer scholen wordt gebruikt, is dit een reëel risico.
 
-#### TP0-3. CHECK constraints op Supabase tabellen
-**Status:** Niet begonnen
+#### TP0-3. CHECK constraints op Supabase tabellen ✅
+**Status:** Voltooid (2026-02-27) — SQL constraints gedocumenteerd, handmatig toe te passen
 **Effort:** Klein (1-2 uur)
 **Impact:** Data validatie — voorkomt corrupte/oversized data
 
@@ -546,8 +546,8 @@ ADD CONSTRAINT valid_class_name
 CHECK (char_length(name) BETWEEN 1 AND 100);
 ```
 
-#### TP0-4. max_classes afdwinging in database
-**Status:** Niet begonnen
+#### TP0-4. max_classes afdwinging in database ✅
+**Status:** Voltooid (2026-02-27) — Code-level + SQL trigger gedocumenteerd
 **Effort:** Klein (1 uur)
 **Impact:** Business rule enforcement — nu alleen in code, niet in DB
 
@@ -588,8 +588,8 @@ CREATE TRIGGER enforce_max_classes
 > **Deze items versterken de basis voor de nieuwe features.**
 > Geschatte totale effort: **2-3 dagen**
 
-#### TP1-1. Split StageView.tsx (god-component, 506 regels)
-**Status:** Niet begonnen
+#### TP1-1. Split StageView.tsx (god-component, 506 regels) ✅
+**Status:** Voltooid (2026-02-27) — StagePlayback.tsx, useStageSave.ts, useStageModals.ts
 **Effort:** Medium (4-6 uur)
 **Impact:** Onderhoudbaarheid — 7 useState hooks, 3 modals, complexe save flow
 
@@ -607,8 +607,8 @@ StageView.tsx (nu 506 regels) →
 
 **Waarom nu:** StageView groeit met elke feature (share link, export, etc.). Zonder split wordt elke toevoeging moeilijker.
 
-#### TP1-2. Fix ambient audio fade timeout leak
-**Status:** Niet begonnen
+#### TP1-2. Fix ambient audio fade timeout leak ✅
+**Status:** Voltooid (2026-02-27) — ambientFadeTimeout tracking + cleanup in dispose()
 **Effort:** Klein (30 min)
 **Impact:** Resource management — timeout kan lekken bij unmount
 
@@ -637,8 +637,8 @@ dispose(): void {
 }
 ```
 
-#### TP1-3. Error handling op async hooks
-**Status:** Niet begonnen
+#### TP1-3. Error handling op async hooks ✅
+**Status:** Voltooid (2026-02-27) — try-catch + error state in useAudioEngine, useClasses, useSubmissions
 **Effort:** Medium (3-4 uur)
 **Impact:** Crash preventie — async operaties missen try-catch
 
@@ -651,8 +651,8 @@ dispose(): void {
 - [ ] `useSubmissions.ts` — error state + type safety
 - [ ] Gebruikersvriendelijke foutmeldingen bij network errors
 
-#### TP1-4. Feature-level Error Boundaries
-**Status:** Niet begonnen
+#### TP1-4. Feature-level Error Boundaries ✅
+**Status:** Voltooid (2026-02-27) — FeatureErrorBoundary component rond alle schermen in App.tsx
 **Effort:** Klein (2-3 uur)
 **Impact:** Gebruikerservaring — nu crasht de hele app bij een fout in één onderdeel
 
@@ -668,8 +668,8 @@ Voeg ErrorBoundary wrappers toe rond:
 
 Gebruik bestaand `ErrorBoundary` component met fallback UI per feature.
 
-#### TP1-5. Orchestratie-functie voor compositie-initialisatie
-**Status:** Niet begonnen
+#### TP1-5. Orchestratie-functie voor compositie-initialisatie ✅
+**Status:** Voltooid (2026-02-27) — initializeNewComposition() in src/utils/compositionInit.ts
 **Effort:** Klein (1-2 uur)
 **Impact:** State consistentie — nu 5 losse store-calls zonder error recovery
 
@@ -713,106 +713,63 @@ async function initializeNewComposition(themeId: string): Promise<boolean> {
 > **Deze items verbeteren de developer experience en voorkomen bugs.**
 > Geschatte totale effort: **2-3 dagen**
 
-#### TP2-1. Voltooi gameStore → appStore migratie
-**Status:** Niet begonnen
+#### TP2-1. Voltooi gameStore → appStore migratie ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
-**Impact:** Duidelijkheid — twee namen voor dezelfde store is verwarrend
 
-**Probleem:** `appStore.ts` + `gameStore.ts` (re-export). TODO comment op lijn 69.
+- [x] `gameStore.ts` verwijderd
+- [x] Alle `useGameStore` imports vervangen door `useAppStore`
+- [x] CLAUDE.md bijgewerkt
 
-**Oplossing:**
-- [ ] Verwijder `src/stores/gameStore.ts`
-- [ ] Vervang alle `useGameStore` imports door `useAppStore`
-- [ ] Update CLAUDE.md
-
-#### TP2-2. Verwijder libraryStore redundante state
-**Status:** Niet begonnen
+#### TP2-2. Verwijder libraryStore redundante state ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
-**Impact:** Single source of truth — `collectedSampleIds[]` dupliceert `librarySamples[].id`
 
-**Oplossing:**
-Verwijder `collectedSampleIds`, voeg computed getter toe:
-```typescript
-// In libraryStore
-getCollectedSampleIds: () => get().librarySamples.map(s => s.id)
-```
+- [x] `collectedSampleIds` array verwijderd
+- [x] Computed getter `getCollectedSampleIds()` toegevoegd
+- [x] Alle consumers bijgewerkt
 
-#### TP2-3. Error context voor SmartSnapResult
-**Status:** Niet begonnen
+#### TP2-3. Error context voor SmartSnapResult ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (30 min)
-**Impact:** UX verbetering — gebruiker weet nu niet waarom plaatsing mislukte
 
-**Oplossing:**
-```typescript
-type SmartSnapResult =
-  | { reason: 'original' | 'snapped'; trackIndex: number; startBeat: number }
-  | { reason: 'rejected'; error: 'no_space' | 'invalid_track' | 'out_of_bounds' }
-```
+- [x] `SmartSnapResult` uitgebreid met `rejectReason: 'no_space' | 'invalid_track' | 'out_of_bounds'`
+- [x] Discriminated union type: success (`reason: 'original' | 'snapped'`) vs rejected
 
-#### TP2-4. Extraheer usePanZoom() uit ZoomableView
-**Status:** Niet begonnen
+#### TP2-4. Extraheer usePanZoom() uit ZoomableView ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Medium (2-3 uur)
-**Impact:** Component grootte — ZoomableView is 352 regels met duplicate touch/mouse handlers
 
-**Oplossing:**
-Extraheer pan/zoom logica (3 refs, event handlers) naar `usePanZoom()` hook. ZoomableView wordt dan ~100 regels render-only.
+- [x] `src/hooks/usePanZoom.ts` aangemaakt met alle pan/zoom logica
+- [x] ZoomableView gereduceerd van 352 naar ~191 regels (render-only)
 
-#### TP2-5. Extraheer useStudioKeyboardShortcuts()
-**Status:** Niet begonnen
+#### TP2-5. Extraheer useStudioKeyboardShortcuts() ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
-**Impact:** Scheiding van verantwoordelijkheden
 
-**Probleem:** Keyboard shortcuts staan inline in StudioView useEffect.
+- [x] `src/hooks/useStudioKeyboardShortcuts.ts` aangemaakt
+- [x] Keyboard shortcuts (Space, Ctrl+D) uit StudioView useEffect verplaatst
 
-**Oplossing:** Verplaats naar eigen hook `useStudioKeyboardShortcuts()`.
-
-#### TP2-6. timelineStore parameter bloat reduceren
-**Status:** Niet begonnen
+#### TP2-6. timelineStore parameter bloat reduceren ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Medium (2-3 uur)
-**Impact:** API cleanliness — `addClip()`, `moveClip()`, `duplicateClip()` hebben elk 6 parameters
 
-**Probleem:** Store heeft geen toegang tot themeStore, dus components moeten sample data ophalen en doorgeven.
+- [x] Store haalt samples intern op via `useLibraryStore.getState()`
+- [x] `addClip(trackIndex, clip)` — van 6 naar 2 params
+- [x] `moveClip(from, to, clipId, beat)` — van 6 naar 4 params
+- [x] `duplicateClip(trackIndex, clipId)` — van 5 naar 2 params
+- [x] Alle callers bijgewerkt (StudioView, useStudioDnD)
 
-**Oplossing:** Store roept intern `useThemeStore.getState()` aan:
-```typescript
-// NU:  moveClip(from, to, clipId, beat, sample, allSamples) — 6 params
-// NA:  moveClip(from, to, clipId, beat) — 4 params, samples intern opgehaald
-```
-
-**Waarom nu:** Volume per Track (#39) en Scène-markering (#40) voegen meer parameters toe. Zonder reductie wordt de API onwerkbaar.
-
-#### TP2-7. Voeg data validatie toe met zod
-**Status:** Niet begonnen
+#### TP2-7. Voeg data validatie toe met zod ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Medium (3-4 uur)
-**Impact:** Data integriteit — geen validatie bij localStorage reads of Supabase responses
 
-**Probleem:** Geen runtime validatie bij:
-- Theme data laden (locations, samples)
-- Composities lezen uit localStorage
-- Composities ontvangen van Supabase
-
-**Oplossing:**
-```bash
-npm install zod  # ~4KB gzipped
-```
-```typescript
-import { z } from 'zod';
-
-const CompositionDataSchema = z.object({
-  tracks: z.array(TrackSchema),
-  bpm: z.number(),
-  totalBeats: z.number(),
-  name: z.string(),
-  themeId: z.string(),
-});
-
-// Gebruik op systeemgrenzen:
-const parsed = CompositionDataSchema.safeParse(rawData);
-if (!parsed.success) {
-  logger.warn('Invalid composition data:', parsed.error);
-  return null;
-}
-```
+- [x] `src/utils/schemas.ts` aangemaakt met alle zod schemas
+- [x] Schemas: ClipSchema, TrackSchema, SampleSchema, CompositionDataSchema, SavedCompositionSchema, UserPreferencesSchema, LibraryStateSchema
+- [x] Parse helpers: `parseCompositionData()`, `parseSavedCompositions()`, `parseUserPreferences()`, `parseLibraryState()`
+- [x] StorageService gebruikt nu zod validatie bij alle reads
+- [x] `isValidCompositionData()` herschreven met zod schema
+- [x] 53 unit tests voor alle schemas
 
 ---
 
@@ -821,33 +778,28 @@ if (!parsed.success) {
 > **Nice-to-haves die de codebase schoner maken.**
 > Geschatte totale effort: **2-3 dagen**
 
-#### TP3-1. Memoized selectors voor timelineStore
-**Status:** Niet begonnen
+#### TP3-1. Memoized selectors voor timelineStore ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
 
-**Probleem:** `hasClips`, `clipCount`, `selectedClip` worden herhaald berekend in components.
+- [x] `selectHasClips()`, `selectClipCount()`, `selectHasNoClips()` toegevoegd aan timelineStore
+- [x] StudioView en Timeline gebruiken nu store selectors i.p.v. inline berekeningen
 
-**Oplossing:** Voeg toe aan timelineStore:
-```typescript
-selectHasClips: () => get().tracks.some(t => t.clips.length > 0),
-selectClipCount: () => get().tracks.reduce((sum, t) => sum + t.clips.length, 0),
-```
-
-#### TP3-2. Player cache opschoning (memory leak)
-**Status:** Niet begonnen
+#### TP3-2. Player cache opschoning (memory leak) ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1-2 uur)
 
-**Probleem:** `Map<sampleId, Tone.Player>` in AudioService groeit onbeperkt. Bij veel theme-wissels lekt geheugen.
+- [x] `disposeUnusedPlayers(activeSampleIds)` methode toegevoegd aan AudioService
+- [x] Aangeroepen bij theme-wissel via `compositionInit.ts` (stap 2b)
+- [x] Waveform cache wordt mee opgeschoond
 
-**Oplossing:** LRU-achtige opschoning of dispose bij theme-wissel.
-
-#### TP3-3. StorageService faal-feedback
-**Status:** Niet begonnen
+#### TP3-3. StorageService faal-feedback ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
 
-**Probleem:** `set()` logt error maar caller weet niet dat save faalde. Gebruiker verliest werk zonder melding.
-
-**Oplossing:** Return `boolean` uit `set()`, toon toast/melding bij falen.
+- [x] `private set<T>()` retourneert nu `boolean`
+- [x] Alle publieke write methoden retourneren success/failure
+- [x] `useStageSave` en `CompositionsView` tonen foutmelding bij mislukte save
 
 #### TP3-4. Alfanumerieke klas-codes
 **Status:** Geparkeerd (P3) — vereist Supabase database-migratie
@@ -863,13 +815,13 @@ Vereist:
 
 **Wanneer:** Pas nodig bij >1.000 actieve klassen. Codes worden hergebruikt bij verwijdering.
 
-#### TP3-5. Gevoelige data uit console.error
-**Status:** Niet begonnen
+#### TP3-5. Gevoelige data uit console.error ✅
+**Status:** Voltooid (2026-02-27)
 **Effort:** Klein (1 uur)
 
-**Probleem:** `src/lib/submissions.ts`, `src/lib/auth.ts`, `src/contexts/AuthContext.tsx` loggen Supabase error objecten die schema-informatie kunnen bevatten.
-
-**Oplossing:** Sanitize error objects, log alleen `message` + `code`.
+- [x] `src/utils/errorSanitize.ts` aangemaakt met `sanitizeError()` utility
+- [x] `submissions.ts`, `auth.ts`, `AuthContext.tsx` gebruiken nu `sanitizeError()`
+- [x] Alleen `message` + `code` worden gelogd, geen schema-informatie
 
 ---
 
