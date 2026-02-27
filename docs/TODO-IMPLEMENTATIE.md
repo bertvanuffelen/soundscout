@@ -1197,6 +1197,17 @@ Beide favicon bestanden bestaan op de juiste locatie:
 
 **Notitie:** Sentry/analytics is P5 — toevoegen wanneer daar behoefte aan is.
 
+#### DEPLOY-8. Eerste deploy naar Strato uitvoeren 🔧 ACTIE VOOR PRODUCT OWNER
+**Status:** Niet begonnen — handmatige actie
+**Instructies:** `docs/DEPLOY-INSTRUCTIES.md`
+
+**Te doen:**
+- [ ] `npm run build` draaien op eigen computer
+- [ ] Inhoud van `dist/` uploaden naar Strato (inclusief verborgen `.htaccess`)
+- [ ] Testen: website laden, door locaties navigeren, geluid afspelen
+- [ ] Testen: F12 → Console openen, controleren op CSP-fouten (rode meldingen)
+- [ ] Testen: op tablet openen, "Toevoegen aan startscherm" proberen
+
 ---
 
 ### Implementatie Volgorde (aanbevolen)
