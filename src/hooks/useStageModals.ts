@@ -14,9 +14,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import { useAudioEngine } from './useAudioEngine';
 
 export function useStageModals() {
-  const currentLocationId = useAppStore((s) => s.currentLocationId);
-  const setScreen = useAppStore((s) => s.setScreen);
-  const goToLocation = useAppStore((s) => s.goToLocation);
+  const goToStart = useAppStore((s) => s.goToStart);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const { stopAll } = useAudioEngine();
@@ -30,12 +28,9 @@ export function useStageModals() {
     clearAllTracks();
     clearLibrary();
     setShowNewModal(false);
-    if (currentLocationId) {
-      goToLocation(currentLocationId);
-    } else {
-      setScreen('start');
-    }
-  }, [stopAll, clearAllTracks, clearLibrary, currentLocationId, goToLocation, setScreen]);
+    // Always go to start screen so the user can choose a theme
+    goToStart();
+  }, [stopAll, clearAllTracks, clearLibrary, goToStart]);
 
   return {
     showNewModal,
