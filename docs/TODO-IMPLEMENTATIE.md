@@ -1,6 +1,6 @@
 # SoundScout - Implementatie Todo's
 
-**Laatst bijgewerkt**: 2026-02-27 (Architectuur verbeterpunten + educatieve features)
+**Laatst bijgewerkt**: 2026-02-28 (Templates #21 + Secties #40 voltooid, auto-stop playback)
 **Gebaseerd op**: PRD Fase 4 & 5, gebruiker feedback, architectuur analyse rapport (2026-02-27)
 
 ---
@@ -1596,44 +1596,50 @@ Tijdens het afspelen van de timeline moeten gebruikers nieuwe samples kunnen toe
 **Technische uitdaging:**
 Tone.Part dynamisch updaten of nieuwe events toevoegen terwijl transport loopt. Mogelijk alternatief: alleen preview afspelen van nieuwe clip, daarna stoppen voor plaatsing.
 
-### 21. Template Systeem voor Docenten
-**Status:** Niet begonnen
-**Complexiteit:** ⭐ Laag
-**Risico:** Laag
-**Geschatte tijd:** 2-3 dagen
+### 21. Template Systeem voor Docenten ✅
+**Status:** VOLTOOID (2026-02-28)
+**Complexiteit:** ⭐⭐ Medium
 **Bron:** Gebruiker feedback (2026-02-05) + brainstorm educatieve features (2026-02-27)
 
 **Beschrijving:**
-Docenten kunnen een "template" compositie klaarzetten die leerlingen als startpunt gebruiken. Bijvoorbeeld: drumbeat al op track 1, of bepaalde structuur voorbereid. Combineert goed met scène-markering (#40): docent kan template mét scène-indeling klaarzetten.
+Docenten kunnen een "template" compositie klaarzetten die leerlingen als startpunt gebruiken. Templates worden gedeeld via een unieke 8-karakter code. Leerlingen voeren de code in op het startscherm en krijgen een voorgevulde timeline met optioneel vergrendelde clips en secties.
 
-**Waarom lage complexiteit:**
-De infrastructuur bestaat al grotendeels:
-- `loadTimeline()` in timelineStore kan bestaande compositie laden
-- `ThemeSelectionModal.tsx` is een kant-en-klaar UI-patroon
-- Een template is in feite een `SavedComposition` met extra metadata
+**Geïmplementeerd:**
+- [x] `Template` interface in types/index.ts met compositionData, share_code, clips_locked, available_sample_ids
+- [x] Supabase `templates` tabel met RLS policies (docent CRUD eigen templates, iedereen SELECT via share_code)
+- [x] `src/lib/templates.ts` — CRUD service (createTemplate, getTemplateByCode, listTeacherTemplates, updateTemplate, deleteTemplate)
+- [x] `initializeFromTemplate()` in compositionInit.ts — laadt template data, markeert clips als `fromTemplate: true`
+- [x] Universele code input op StartScreen: probeert eerst template, dan shared composition
+- [x] Per-clip vergrendeling: alleen template-clips worden vergrendeld (niet student-toegevoegde clips)
+- [x] `fromTemplate?: boolean` veld op Clip interface voor granulaire lock
+- [x] Template aanmaken vanuit Stage (docent-only): "Maak Template" knop
+- [x] TemplatesView in docenten dashboard met lijst, aanmaken, verwijderen
+- [x] TemplateEditor met sample toggles, clip lock toggle, preview
+- [x] Templates tab in TeacherDashboard
+- [x] AppStore uitgebreid: activeTemplate, templateClipsLocked, loadTemplate, clearTemplate
+- [x] Secties (#40) worden meegenomen in templates
+- [x] Auto-stop playback wanneer alle clips zijn afgespeeld
+- [x] i18n support (NL + EN)
 
-**Te implementeren:**
-- [ ] Template type uitbreiden: `SavedComposition` + categorie, beschrijving, moeilijkheidsgraad
-- [ ] "Opslaan als Template" optie in studio (docent-only)
-- [ ] Template koppelen aan een klas (Supabase tabel `templates`)
-- [ ] Leerling start met template i.p.v. lege timeline
-- [ ] TemplateSelectionModal (kopie van ThemeSelectionModal patroon)
-- [ ] UI in docent dashboard voor template beheer
+**Nieuwe bestanden:**
+- `src/lib/templates.ts`
+- `src/components/teacher/TemplatesView.tsx`
+- `src/components/teacher/TemplateEditor.tsx`
+- `supabase/migration-templates.sql`
 
-**Technische aanpak:**
-```typescript
-// Template is SavedComposition + metadata
-interface CompositionTemplate extends SavedComposition {
-  category: string;
-  difficulty: 'easy' | 'medium' | 'hard';
-  description: string;
-  classId?: string; // gekoppeld aan specifieke klas
-}
-```
-- Opslag: Supabase `templates` tabel OF JSON bundled in app
-- Laden: hergebruik `loadTimeline()` met template data
-- Docent-flow: Studio → "Opslaan als template" → koppel aan klas
-- Leerling-flow: Klas openen → template kiezen → voorgevulde timeline
+**Gewijzigde bestanden:**
+- `src/types/index.ts` — Template interface, fromTemplate op Clip
+- `src/utils/schemas.ts` — TemplateSchema, fromTemplate in ClipSchema
+- `src/utils/compositionInit.ts` — initializeFromTemplate()
+- `src/stores/appStore.ts` — template state management
+- `src/components/StartScreen.tsx` — universele code input
+- `src/components/studio/Track.tsx` — per-clip lock
+- `src/components/studio/StudioView.tsx` — per-clip lock in EditToolbar
+- `src/components/studio/Clip.tsx` — locked prop
+- `src/components/stage/StageView.tsx` — "Maak Template" knop
+- `src/pages/TeacherPage.tsx` — Templates tab
+- `src/components/teacher/TeacherDashboard.tsx` — Templates sectie
+- `src/i18n/locales/{nl,en}.json` — template vertalingen
 
 ### 39. Volume per Track + Clip Volume/Mute ✅ VOLTOOID
 **Status:** Voltooid (2026-02-27)
@@ -1668,55 +1674,55 @@ Geen `Tone.Gain` nodes per track. In plaats daarvan wordt volume per clip-event 
 - `src/services/AudioService.ts`, `src/utils/audioExport.ts`
 - `src/i18n/locales/{nl,en}.json`
 
-### 40. Scène-markering op Timeline
-**Status:** Niet begonnen
+### 40. Scène-markering op Timeline ✅
+**Status:** VOLTOOID (2026-02-28)
 **Complexiteit:** ⭐⭐ Medium
-**Risico:** Laag
-**Geschatte tijd:** 2-3 dagen
 **Bron:** Brainstorm educatieve features (2026-02-27)
 **Gerelateerd aan:** Template Systeem (#21)
 
 **Beschrijving:**
-De timeline kan worden ingedeeld in gekleurde secties (scènes) die muzikale vorm zichtbaar maken. Bijvoorbeeld: geel = deel A (maat 1-8), oranje = deel B (maat 9-16), geel = deel A (maat 17-24). Dit leert kinderen over muzikale structuur (ABA, ABAB, rondo) zonder die termen te hoeven kennen.
+De timeline kan worden ingedeeld in gekleurde secties die muzikale vorm zichtbaar maken. Secties worden gemarkeerd via een vlag-knop op de huidige playhead-positie. Elke sectie heeft een kleur (uit vast palet van 8) en een optioneel label. Secties zijn globaal over alle tracks.
 
-Scènes zijn globaal (over alle tracks heen), niet per track — dat sluit aan bij hoe muzikale vorm werkt.
+**Geïmplementeerd:**
+- [x] `Section` interface: `{ id, endBeat, color, label?, title?, description?, imageUrl? }` (laatste 3 voorbereid voor #41 Storytelling)
+- [x] `SECTION_COLORS` constante (8 kleuren)
+- [x] `sections: Section[]` in TimelineState + CompositionData
+- [x] Zod schema: `SectionSchema` + updates in TimelineStateSchema en CompositionDataSchema
+- [x] Timeline store acties: `addSection`, `removeSection`, `updateSection`, `clearSections`
+- [x] `SectionBar` component: gekleurde segmenten boven de ruler, klikbaar voor edit
+- [x] `SectionPopover` component: kleurswatches, label tekstveld, verwijder-knop (portal-based)
+- [x] Markeerknop (Flag icoon) in Timeline header op playhead-positie
+- [x] Gekleurde achtergrond-overlays op tracks per sectie (opacity 0.07)
+- [x] Secties opgeslagen in composities (localStorage + Supabase)
+- [x] Secties meegenomen in templates (#21)
+- [x] Secties zichtbaar in docenten dashboard (read-only via SubmissionPlayer)
+- [x] Undo/redo werkt automatisch mee (sections in TimelineState snapshot)
+- [x] MAX_SECTIONS = 16 limiet
+- [x] i18n support (NL + EN)
+- [x] Beschikbaar voor alle gebruikers (geen dev flag meer nodig)
 
-**Te implementeren:**
-- [ ] `Scene` type toevoegen: `{ id, startBeat, endBeat, name, color }`
-- [ ] `scenes: Scene[]` toevoegen aan `TimelineState`
-- [ ] Gekleurde achtergrond-divs renderen in Timeline (achter tracks, onder clips)
-- [ ] Scène-markering UI: klik op ruler om markeerpunt te plaatsen
-- [ ] Scène naam/kleur bewerkbaar (simpele modal of inline)
-- [ ] Scroll-synchronisatie met timeline content
-- [ ] Scènes opslaan in composities (StorageService)
-- [ ] Docent kan scène-indeling meegeven in templates (#21)
+**Nieuwe bestanden:**
+- `src/components/studio/SectionBar.tsx`
+- `src/components/studio/SectionPopover.tsx`
 
-**Technische aanpak:**
-```typescript
-interface Scene {
-  id: string;
-  startBeat: number;
-  endBeat: number;
-  name: string;       // "A", "B", "C" of vrije tekst
-  color: string;       // Tailwind kleur of hex
-}
-
-// TimelineState uitbreiden
-interface TimelineState {
-  // ... bestaande velden
-  scenes: Scene[];
-}
-```
+**Gewijzigde bestanden:**
+- `src/types/index.ts` — Section interface, SECTION_COLORS
+- `src/utils/schemas.ts` — SectionSchema + updates
+- `src/stores/timelineStore.ts` — sections state + 4 acties
+- `src/components/studio/Timeline.tsx` — markeerknop + SectionBar
+- `src/components/studio/Track.tsx` — achtergrondkleur overlay per sectie
+- `src/constants/config.ts` — MAX_SECTIONS, SECTION_LABEL_MAX_LENGTH
+- `src/i18n/locales/{nl,en}.json` — sectie vertalingen
 
 **Visueel:**
 ```
 Ruler:    |1   |2   |3   |4   |5   |6   |7   |8   |
-Scènes:   [====== A (geel) ======][==== B (oranje) ====]
+Secties:  [====== A (rood) ======][==== B (teal) ====]
 Track 1:  [clip][clip]              [clip]
 Track 2:       [clip]         [clip][clip]
 ```
 
-**Risico's:**
+**Risico's (gemitigeerd):**
 - Z-index management: scène-achtergronden mogen clips niet verbergen
 - Scroll-sync moet correct werken bij horizontaal scrollen
 
@@ -1724,7 +1730,7 @@ Track 2:       [clip]         [clip][clip]
 
 ## 🟡 P3 - MEDIUM PRIORITEIT
 
-### 21. Template Systeem voor Docenten → verplaatst naar P2 (zie #21 onder P2)
+### 21. Template Systeem voor Docenten ✅ → zie #21 onder P2 (VOLTOOID)
 
 ### 26. Ambient Audio Cleanup & Pause/Stop Fix (CRIT-3) ✅
 **Status:** VOLTOOID (2026-02-26)
@@ -2081,7 +2087,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 
 ## Volgende Stappen
 
-### ✅ Voltooid (1-24)
+### ✅ Voltooid (1-24 + educatieve features)
 1. ~~Locaties & Stadskaart~~ ✅
 2. ~~MP3 Export~~ ✅
 3. ~~Lokaal Opslaan + Beheren~~ ✅
@@ -2106,6 +2112,9 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 22. ~~Delen met Link~~ ✅
 23. ~~i18n Audit~~ ✅
 24. ~~Playhead Seeking Docenten Viewer~~ ✅
+25. ~~Template Systeem voor Docenten (#21)~~ ✅
+26. ~~Scène-markering op Timeline (#40)~~ ✅
+27. ~~Auto-stop Playback~~ ✅
 
 ### 🔴 P1 — Technische basis ✅ VOLTOOID
 
@@ -2128,16 +2137,15 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 - ~~Delen met Link (#14)~~ ✅
 - ~~Emergency/Feedback Systeem (#15)~~ ✅
 - Touch Gevoeligheid & Autoplay Issues (#16) ← testen
-- **Template Systeem voor Docenten (#21)** ← volgende prioriteit
+- ~~Template Systeem voor Docenten (#21)~~ ✅
 - ~~Tweetalig Systeem Grondig Implementeren (#35)~~ ✅
 - ~~Playhead Seeking in Docenten Compositie Viewer (#36)~~ ✅
 - ~~Grijs Leeg Gedeelte onder Timeline Tracks Verwijderen (#37)~~ ✅
 - ~~Volume per Track / Mixer (#39)~~ ✅
-- **Scène-markering op Timeline (#40)** ← samen met #21
-- **Soundscape Storytelling (#41)** ← afhankelijk van #40
+- ~~Scène-markering op Timeline (#40)~~ ✅
+- **Soundscape Storytelling (#41)** ← volgende prioriteit (afhankelijk van #40 ✅)
 
-Aanbevolen volgorde P2: Templates (#21) + Scènes (#40) → Storytelling (#41)
-Strategie: ontwikkelen achter feature flag (alleen developer/docent-rol), later breder beschikbaar maken.
+Aanbevolen volgorde P2 restant: Storytelling (#41) → Touch issues (#16)
 
 ### 🟡 Later: P3
 - ~~Ambient Audio Cleanup & Pause/Stop Fix (#26)~~ ✅
