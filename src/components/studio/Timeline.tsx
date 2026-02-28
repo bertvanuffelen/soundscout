@@ -1,14 +1,31 @@
-import { memo, useRef, useEffect, useCallback, useMemo } from 'react';
+import { memo, useRef, useEffect, useCallback, useMemo, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import type { Track as TrackType, Sample } from '../../types';
+import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX } from 'lucide-react';
+import type { Track as TrackType, Sample, Clip } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
 import { SectionBar } from './SectionBar';
+import { VolumePopover } from './VolumePopover';
+import { SampleIcon } from '../../utils/iconMap';
+import { getClipDuration } from '../../utils/audio';
 import { VISIBLE_BEATS, MAX_SECTIONS } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
-import { Undo2, Redo2, Plus, Flag } from 'lucide-react';
+import { useAppStore } from '../../stores/appStore';
+
+// --- Clip edit props (inline in header bar) ---
+interface ClipEditProps {
+  clip: Clip;
+  sample: Sample;
+  onTrim: () => void;
+  onDelete: () => void;
+  onDuplicate?: () => void;
+  onClipVolumeChange?: (db: number) => void;
+  onClipMuteToggle?: (muted: boolean) => void;
+  locked?: boolean;
+}
 
 interface TimelineProps {
   tracks: TrackType[];
@@ -27,6 +44,8 @@ interface TimelineProps {
   // A11Y-1: Keyboard add-to-track
   selectedLibrarySampleName?: string | null;
   onAddToTrack?: () => void;
+  // Clip editing (inline in header bar)
+  clipEdit?: ClipEditProps | null;
 }
 
 export const Timeline = memo(function Timeline({
@@ -45,6 +64,7 @@ export const Timeline = memo(function Timeline({
   canRedo = false,
   selectedLibrarySampleName,
   onAddToTrack,
+  clipEdit,
 }: TimelineProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -57,10 +77,31 @@ export const Timeline = memo(function Timeline({
   const updateSection = useTimelineStore((s) => s.updateSection);
   const removeSection = useTimelineStore((s) => s.removeSection);
 
+  // Template: lock sections when a template is active
+  const activeTemplate = useAppStore((s) => s.activeTemplate);
+  const sectionsLocked = activeTemplate !== null;
+
   // Subscribe to currentBeat from store (for StudioView)
   // or use prop (for SubmissionPlayer with local state)
   const storeCurrentBeat = useAudioStore((s) => s.currentBeat);
   const currentBeat = propCurrentBeat ?? storeCurrentBeat;
+
+  // --- Clip edit: volume popover state ---
+  const [showClipVolumePopover, setShowClipVolumePopover] = useState(false);
+  const clipVolumeBtnRef = useRef<HTMLButtonElement>(null);
+
+  const handleClipVolumeClick = useCallback(() => {
+    setShowClipVolumePopover((prev) => !prev);
+  }, []);
+
+  const handleCloseClipVolumePopover = useCallback(() => {
+    setShowClipVolumePopover(false);
+  }, []);
+
+  // Close clip volume popover when selection changes
+  useEffect(() => {
+    if (!clipEdit) setShowClipVolumePopover(false);
+  }, [clipEdit]);
 
   // Handle click on timeline background to clear selection
   const handleTimelineClick = useCallback(
@@ -114,12 +155,100 @@ export const Timeline = memo(function Timeline({
   }, [currentBeat, totalBeats, isPlaying]);
 
   return (
-    <div className="flex flex-col shrink-0" role="region" aria-label={t('studio.timeline')}>
-      <div className="flex items-center justify-between px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
-        <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide">
+    <div className="flex flex-col shrink-0 max-h-[50dvh]" role="region" aria-label={t('studio.timeline')}>
+      {/* --- Header bar: label | clip edit (center) | tools (right) --- */}
+      <div className="flex items-center px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
+        {/* Left: timeline label */}
+        <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide shrink-0">
           {t('studio.timeline')}
         </h2>
-        <div className="flex items-center gap-0.5">
+
+        {/* Center: clip edit actions (only when clip selected) */}
+        <div className="flex-1 flex items-center justify-center min-w-0">
+          {clipEdit && (
+            <div
+              className="flex items-center gap-0.5 sm:gap-1"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {/* Sample info pill */}
+              <div className="flex items-center gap-1 px-1.5 sm:px-2 mr-0.5">
+                <div
+                  className="w-2.5 h-2.5 rounded-full shrink-0"
+                  style={{ backgroundColor: clipEdit.sample.color }}
+                />
+                <SampleIcon name={clipEdit.sample.icon} size={12} className="text-neutral-600 shrink-0 hidden sm:block" />
+                <span className="text-[10px] sm:text-xs font-medium text-neutral-700 max-w-20 sm:max-w-28 truncate">
+                  {t(clipEdit.sample.name)}
+                </span>
+                <span className="text-[9px] sm:text-[10px] text-neutral-400">
+                  {getClipDuration(clipEdit.clip, clipEdit.sample).toFixed(1)}s
+                  {(clipEdit.clip.trimStart !== undefined || clipEdit.clip.trimEnd !== undefined) && ' ✂'}
+                </span>
+              </div>
+
+              {/* Trim — hidden for locked clips */}
+              {!clipEdit.locked && (
+                <button
+                  onClick={clipEdit.onTrim}
+                  aria-label={t('studio.trim')}
+                  title={t('studio.trim')}
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+                >
+                  <Scissors size={14} className="text-neutral-600" />
+                </button>
+              )}
+
+              {/* Duplicate — hidden for locked clips */}
+              {!clipEdit.locked && clipEdit.onDuplicate && (
+                <button
+                  onClick={clipEdit.onDuplicate}
+                  aria-label={t('studio.duplicate')}
+                  title={t('studio.duplicate')}
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+                >
+                  <Copy size={14} className="text-neutral-600" />
+                </button>
+              )}
+
+              {/* Volume */}
+              {clipEdit.onClipVolumeChange && clipEdit.onClipMuteToggle && (
+                <button
+                  ref={clipVolumeBtnRef}
+                  onClick={handleClipVolumeClick}
+                  aria-label={t('studio.clipVolume')}
+                  title={(clipEdit.clip.effects?.mute ?? false) ? t('studio.muted') : t('studio.clipVolume')}
+                  className={`
+                    p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded-lg transition-colors
+                    ${(clipEdit.clip.effects?.mute ?? false)
+                      ? 'bg-error-50 hover:bg-error-100'
+                      : 'hover:bg-neutral-100 active:bg-neutral-200'
+                    }
+                  `}
+                >
+                  {(clipEdit.clip.effects?.mute ?? false)
+                    ? <VolumeX size={14} className="text-error-500" />
+                    : <Volume2 size={14} className="text-neutral-600" />
+                  }
+                </button>
+              )}
+
+              {/* Delete — hidden for locked clips */}
+              {!clipEdit.locked && (
+                <button
+                  onClick={clipEdit.onDelete}
+                  aria-label={t('studio.delete')}
+                  title={t('studio.delete')}
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors"
+                >
+                  <Trash2 size={14} className="text-error-500" />
+                </button>
+              )}
+            </div>
+          )}
+        </div>
+
+        {/* Right: tools (section mark, undo/redo, add-to-track) */}
+        <div className="flex items-center gap-0.5 shrink-0">
           {/* A11Y-1: Add selected sample to track (keyboard alternative for DnD) */}
           {onAddToTrack && selectedLibrarySampleName && (
             <button
@@ -130,8 +259,8 @@ export const Timeline = memo(function Timeline({
               <Plus size={16} />
             </button>
           )}
-          {/* Mark section button — only in edit mode with feature flag */}
-          {!readOnly && (
+          {/* Mark section button — only in edit mode, hidden when template sections locked */}
+          {!readOnly && !sectionsLocked && (
             <button
               onClick={handleMarkSection}
               disabled={sections.length >= MAX_SECTIONS}
@@ -168,9 +297,32 @@ export const Timeline = memo(function Timeline({
         </div>
       </div>
 
+      {/* Clip volume popover — portal to escape overflow */}
+      {showClipVolumePopover && clipEdit?.onClipVolumeChange && clipEdit?.onClipMuteToggle && clipVolumeBtnRef.current && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: clipVolumeBtnRef.current.getBoundingClientRect().left,
+            top: clipVolumeBtnRef.current.getBoundingClientRect().top - 8,
+            transform: 'translateY(-100%)',
+            zIndex: 9999,
+          }}
+        >
+          <VolumePopover
+            volumeDb={clipEdit.clip.effects?.volume ?? 0}
+            isMuted={clipEdit.clip.effects?.mute ?? false}
+            onVolumeChange={clipEdit.onClipVolumeChange}
+            onMuteToggle={clipEdit.onClipMuteToggle}
+            onClose={handleCloseClipVolumePopover}
+            label={t(clipEdit.sample.name)}
+          />
+        </div>,
+        document.body,
+      )}
+
       <div
         ref={scrollContainerRef}
-        className="relative overflow-x-auto bg-neutral-50/50 md:bg-neutral-100/50"
+        className="relative overflow-x-auto overflow-y-auto min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
         onClick={handleTimelineClick}
       >
         {/* Scrollable content wrapper */}
@@ -189,6 +341,7 @@ export const Timeline = memo(function Timeline({
                   totalBeats={totalBeats}
                   onUpdate={updateSection}
                   onDelete={removeSection}
+                  readOnly={readOnly || sectionsLocked}
                 />
               </div>
             </div>

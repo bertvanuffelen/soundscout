@@ -16,6 +16,7 @@ interface SectionBarProps {
   totalBeats: number;
   onUpdate: (sectionId: string, updates: Partial<Pick<Section, 'color' | 'label'>>) => void;
   onDelete: (sectionId: string) => void;
+  readOnly?: boolean;
 }
 
 export const SectionBar = memo(function SectionBar({
@@ -23,6 +24,7 @@ export const SectionBar = memo(function SectionBar({
   totalBeats,
   onUpdate,
   onDelete,
+  readOnly = false,
 }: SectionBarProps) {
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const segmentRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
@@ -54,6 +56,31 @@ export const SectionBar = memo(function SectionBar({
         const leftPercent = (startBeat / totalBeats) * 100;
         const widthPercent = ((endBeat - startBeat) / totalBeats) * 100;
 
+        const segmentStyle = {
+          left: `${leftPercent}%`,
+          width: `${widthPercent}%`,
+          backgroundColor: `${section.color}40`,
+        };
+
+        // Read-only: non-interactive div
+        if (readOnly) {
+          return (
+            <div
+              key={section.id}
+              className="absolute top-0 bottom-0 flex items-center justify-center
+                         border-r-2 border-white/60 overflow-hidden"
+              style={segmentStyle}
+              title={section.label || undefined}
+            >
+              {section.label && (
+                <span className="text-[9px] font-bold text-neutral-700 truncate px-1 select-none">
+                  {section.label}
+                </span>
+              )}
+            </div>
+          );
+        }
+
         return (
           <button
             key={section.id}
@@ -65,11 +92,7 @@ export const SectionBar = memo(function SectionBar({
             className="absolute top-0 bottom-0 flex items-center justify-center
                        border-r-2 border-white/60 cursor-pointer transition-opacity
                        hover:opacity-80 overflow-hidden"
-            style={{
-              left: `${leftPercent}%`,
-              width: `${widthPercent}%`,
-              backgroundColor: `${section.color}40`,
-            }}
+            style={segmentStyle}
             title={section.label || undefined}
           >
             {section.label && (

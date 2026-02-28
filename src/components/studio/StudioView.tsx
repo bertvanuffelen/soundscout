@@ -22,7 +22,7 @@ import { useUndoRedoTimeline } from '../../hooks/useUndoRedoTimeline';
 import { SampleLibrary } from './SampleLibrary';
 import { Timeline } from './Timeline';
 import { TransportControls } from './TransportControls';
-import { EditToolbar } from './EditToolbar';
+// EditToolbar is now integrated into Timeline header bar
 import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
@@ -282,22 +282,6 @@ export function StudioView() {
           onSelectSample={setSelectedLibrarySampleId}
         />
 
-        {/* Edit Toolbar - appears above timeline when clip is selected */}
-        {selectedClipData && (
-          <div className="flex items-center justify-center px-2 sm:px-4 py-2 bg-neutral-50/80 md:bg-neutral-100/50 border-t border-border-subtle">
-            <EditToolbar
-              clip={selectedClipData.clip}
-              sample={selectedClipData.sample}
-              onTrim={handleTrimClick}
-              onDelete={handleDeleteClick}
-              onDuplicate={handleDuplicate}
-              onClipVolumeChange={handleClipVolumeChange}
-              onClipMuteToggle={handleClipMuteToggle}
-              locked={templateClipsLocked && (selectedClipData.clip.fromTemplate === true)}
-            />
-          </div>
-        )}
-
         {/* Timeline - fixed at bottom above transport controls */}
         <Timeline
           tracks={tracks}
@@ -312,6 +296,16 @@ export function StudioView() {
           canRedo={canRedo}
           selectedLibrarySampleName={selectedLibrarySampleName}
           onAddToTrack={handleAddToTrack}
+          clipEdit={selectedClipData ? {
+            clip: selectedClipData.clip,
+            sample: selectedClipData.sample,
+            onTrim: handleTrimClick,
+            onDelete: handleDeleteClick,
+            onDuplicate: handleDuplicate,
+            onClipVolumeChange: handleClipVolumeChange,
+            onClipMuteToggle: handleClipMuteToggle,
+            locked: templateClipsLocked && (selectedClipData.clip.fromTemplate === true),
+          } : null}
         />
 
         {/* Drag Overlay - hidden when snap preview is visible (only snap preview shows drop location) */}
