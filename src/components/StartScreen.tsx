@@ -17,8 +17,6 @@ export function StartScreen() {
   const { t } = useTranslation();
   const goToCompositions = useAppStore((s) => s.goToCompositions);
   const goToTeacher = useAppStore((s) => s.goToTeacher);
-  const goToShared = useAppStore((s) => s.goToShared);
-
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -104,7 +102,7 @@ export function StartScreen() {
 
         {/* Share code input */}
         <div className="mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
-          <ShareCodeInput onSubmit={goToShared} />
+          <ShareCodeInput />
         </div>
 
         <Button

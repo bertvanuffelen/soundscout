@@ -22,6 +22,8 @@ interface EditToolbarProps {
   onDuplicate?: () => void;
   onClipVolumeChange?: (db: number) => void;
   onClipMuteToggle?: (muted: boolean) => void;
+  /** Locked clips (from template) — hide destructive actions */
+  locked?: boolean;
 }
 
 export const EditToolbar = memo(function EditToolbar({
@@ -32,6 +34,7 @@ export const EditToolbar = memo(function EditToolbar({
   onDuplicate,
   onClipVolumeChange,
   onClipMuteToggle,
+  locked = false,
 }: EditToolbarProps) {
   const { t } = useTranslation();
   const [showVolumePopover, setShowVolumePopover] = useState(false);
@@ -75,18 +78,20 @@ export const EditToolbar = memo(function EditToolbar({
 
       {/* Action buttons — min 44px touch targets (WCAG 2.5.8) */}
       <div className="flex items-center gap-1">
-        {/* Trim button */}
-        <button
-          onClick={onTrim}
-          aria-label={t('studio.trim')}
-          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-1"
-          title={t('studio.trim')}
-        >
-          <Scissors size={18} className="text-neutral-600" />
-        </button>
+        {/* Trim button — hidden for locked clips */}
+        {!locked && (
+          <button
+            onClick={onTrim}
+            aria-label={t('studio.trim')}
+            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-1"
+            title={t('studio.trim')}
+          >
+            <Scissors size={18} className="text-neutral-600" />
+          </button>
+        )}
 
-        {/* Duplicate button (optional) */}
-        {onDuplicate && (
+        {/* Duplicate button (optional) — hidden for locked clips */}
+        {!locked && onDuplicate && (
           <button
             onClick={onDuplicate}
             aria-label={t('studio.duplicate')}
@@ -120,15 +125,17 @@ export const EditToolbar = memo(function EditToolbar({
           </button>
         )}
 
-        {/* Delete button */}
-        <button
-          onClick={onDelete}
-          aria-label={t('studio.delete')}
-          className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-1"
-          title={t('studio.delete')}
-        >
-          <Trash2 size={18} className="text-error-500" />
-        </button>
+        {/* Delete button — hidden for locked clips */}
+        {!locked && (
+          <button
+            onClick={onDelete}
+            aria-label={t('studio.delete')}
+            className="p-2.5 min-w-[44px] min-h-[44px] flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors focus-visible:ring-2 focus-visible:ring-accent-400 focus-visible:ring-offset-1"
+            title={t('studio.delete')}
+          >
+            <Trash2 size={18} className="text-error-500" />
+          </button>
+        )}
       </div>
 
       {/* Volume popover for clip — portal to escape overflow clipping */}

@@ -9,14 +9,16 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft } from 'lucide-react';
+import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useClasses } from '../../hooks/useClasses';
+import { useTemplates } from '../../hooks/useTemplates';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { signOut } from '../../lib/auth';
 import { Button } from '../ui/Button';
 import { CreateClassModal } from './CreateClassModal';
 import { ClassCard } from './ClassCard';
+import { TemplateCard } from './TemplateCard';
 
 interface TeacherDashboardProps {
   onSelectClass: (classData: TeacherClass) => void;
@@ -28,6 +30,10 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const { t } = useTranslation();
   const { user } = useAuth();
   const { classes, loading, error, createClass, deleteClass, refetch } = useClasses();
+  const {
+    templates, loading: templatesLoading, error: templatesError,
+    remove: removeTemplate, toggle: toggleTemplate, refetch: refetchTemplates,
+  } = useTemplates();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -63,6 +69,25 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
       await deleteClass(id);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('teacher.dashboard.deleteClassError'));
+    }
+  };
+
+  const handleDeleteTemplate = async (id: string) => {
+    if (!confirm(t('templates.deleteConfirm'))) return;
+    try {
+      setActionError(null);
+      await removeTemplate(id);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('templates.deleteError'));
+    }
+  };
+
+  const handleToggleTemplate = async (id: string, isActive: boolean) => {
+    try {
+      setActionError(null);
+      await toggleTemplate(id, isActive);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('templates.toggleError'));
     }
   };
 
@@ -188,6 +213,61 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
             <li>{t('teacher.dashboard.step4')}</li>
           </ol>
         </div>
+
+        {/* --- Templates sectie --- */}
+        <div className="mt-10">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg sm:text-xl font-semibold text-text-main flex items-center gap-2">
+                <FileText className="w-5 h-5" />
+                {t('templates.dashboardTitle')}
+              </h2>
+            </div>
+
+            <p className="text-text-muted text-sm mb-4">
+              {t('templates.dashboardDescription')}
+            </p>
+
+            {/* Templates error */}
+            {templatesError && (
+              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
+                {templatesError}
+                <button onClick={refetchTemplates} className="ml-2 underline">
+                  {t('common.retry')}
+                </button>
+              </div>
+            )}
+
+            {/* Templates loading */}
+            {templatesLoading && (
+              <div className="text-center py-8">
+                <Loader2 className="w-8 h-8 text-primary-500 animate-spin mx-auto mb-2" />
+              </div>
+            )}
+
+            {/* Templates empty state */}
+            {!templatesLoading && templates.length === 0 && (
+              <div className="bg-bg-surface rounded-xl shadow p-6 text-center">
+                <FileText className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
+                <p className="text-text-muted text-sm">
+                  {t('templates.emptyState')}
+                </p>
+              </div>
+            )}
+
+            {/* Templates grid */}
+            {!templatesLoading && templates.length > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {templates.map((tmpl) => (
+                  <TemplateCard
+                    key={tmpl.id}
+                    template={tmpl}
+                    onDelete={() => handleDeleteTemplate(tmpl.id)}
+                    onToggle={(active) => handleToggleTemplate(tmpl.id, active)}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
       </main>
 
       {/* Create class modal */}

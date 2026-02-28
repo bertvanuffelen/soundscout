@@ -96,6 +96,15 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
     };
   }, [playerState]);
 
+  // Auto-stop: listen for playback end from AudioService
+  useEffect(() => {
+    const unsubscribe = audioService.onPlaybackEnd(() => {
+      setCurrentBeat(0);
+      setPlayerState('ready');
+    });
+    return unsubscribe;
+  }, []);
+
   // Initialize audio en laad samples
   useEffect(() => {
     let isMounted = true;

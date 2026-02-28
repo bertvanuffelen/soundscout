@@ -29,6 +29,14 @@ export function useAudioEngine() {
     return unsubscribe;
   }, [setCurrentBeat]);
 
+  // Subscribe to playback end events (auto-stop when all clips finished)
+  useEffect(() => {
+    const unsubscribe = audioService.onPlaybackEnd(() => {
+      setIsPlaying(false);
+    });
+    return unsubscribe;
+  }, [setIsPlaying]);
+
   // --- Initialization ---
 
   const initAudio = useCallback(async () => {

@@ -107,6 +107,40 @@ export const DEFAULT_CLIP_EFFECTS: ClipEffects = {
   pan: 0,
 };
 
+// --- Sections (Fase 5 - Vormschema / Musical Form) ---
+
+/**
+ * A section divides the timeline into labeled parts (e.g. Intro, A, B).
+ * Sections are defined by their end beat; the first section starts at beat 0,
+ * subsequent sections start where the previous one ended.
+ */
+export interface Section {
+  /** Unique identifier (UUID) */
+  id: string;
+  /** Beat where this section ends */
+  endBeat: number;
+  /** Color from SECTION_COLORS palette */
+  color: string;
+  /** Optional label (e.g. "A", "Intro", "Refrein") */
+  label?: string;
+  // Prepared for #41 Storytelling (not yet in UI):
+  /** Section title for storytelling mode */
+  title?: string;
+  /** Section description for storytelling mode */
+  description?: string;
+  /** Image URL for storytelling mode */
+  imageUrl?: string;
+}
+
+/**
+ * Fixed color palette for sections.
+ * 8 distinct, accessible colors for timeline visualization.
+ */
+export const SECTION_COLORS = [
+  '#FF6B6B', '#4ECDC4', '#FFE66D', '#95E1D3',
+  '#C7CEEA', '#F38181', '#AA96DA', '#FCBAD3',
+] as const;
+
 // --- Timeline (internal beat-based, visual is time-agnostic) ---
 
 export interface TimelineState {
@@ -116,6 +150,8 @@ export interface TimelineState {
   isPlaying: boolean;
   isLooping: boolean;
   currentBeat: number; // current playback position in beats
+  /** Optional sections for musical form (vormschema) */
+  sections?: Section[];
 }
 
 export interface Track {
@@ -139,6 +175,9 @@ export interface Clip {
   trimStart?: number;
   /** Eind positie van trim in seconden (undefined = eind sample) */
   trimEnd?: number;
+
+  /** Whether this clip originated from a template (locked when templateClipsLocked = true) */
+  fromTemplate?: boolean;
 }
 
 // --- Game State ---
@@ -209,6 +248,33 @@ export interface CompositionData {
   isLooping: boolean;
   /** Snapshot of all samples used in the composition */
   samples: Sample[];
+  /** Optional sections for musical form (vormschema) */
+  sections?: Section[];
+}
+
+// --- Template (Fase 5 - Docent-aangemaakt sjabloon) ---
+
+/**
+ * A template created by a teacher for students to work with.
+ * Contains pre-filled clips, samples, sections, and optional instructions.
+ */
+export interface Template {
+  /** Unique identifier (Supabase UUID) */
+  id: string;
+  /** Template name */
+  name: string;
+  /** Optional description */
+  description?: string;
+  /** Teacher who created the template */
+  teacherName: string;
+  /** Full composition data (tracks, samples, sections) */
+  compositionData: CompositionData;
+  /** Optional instructions for the student (Markdown) */
+  instructions?: string;
+  /** Whether template clips are locked (not movable/deletable by student) */
+  clipsLocked: boolean;
+  /** ISO timestamp of creation */
+  createdAt: string;
 }
 
 // --- Legacy Composition (deprecated) ---

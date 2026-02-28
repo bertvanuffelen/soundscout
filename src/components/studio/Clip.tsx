@@ -2,6 +2,7 @@ import { memo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
+import { Lock } from 'lucide-react';
 import type { Clip as ClipType, Sample } from '../../types';
 import { getClipDurationBeats, beatsToSeconds } from '../../utils/audio';
 import { CLIP_MIN_WIDTH_PX } from '../../constants/config';
@@ -15,6 +16,9 @@ interface ClipProps {
   bpm: number;
   totalBeats: number;
   readOnly?: boolean;
+  isMuted?: boolean;
+  /** Locked clips (from template) can't be dragged or deleted */
+  locked?: boolean;
 }
 
 export const Clip = memo(function Clip({
@@ -24,6 +28,8 @@ export const Clip = memo(function Clip({
   bpm,
   totalBeats,
   readOnly = false,
+  isMuted = false,
+  locked = false,
 }: ClipProps) {
   const { t } = useTranslation();
 
@@ -38,11 +44,14 @@ export const Clip = memo(function Clip({
   const leftPercent = (clip.startBeat / totalBeats) * 100;
   const widthPercent = (durationBeats / totalBeats) * 100;
 
+  // Locked clips (from template) can't be dragged, but can still be selected
+  const dragDisabled = readOnly || locked;
+
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `clip-${clip.id}`,
       data: { type: 'clip', clip, sample, trackIndex },
-      disabled: readOnly,
+      disabled: dragDisabled,
     });
 
   const dragStyle = transform
@@ -92,8 +101,10 @@ export const Clip = memo(function Clip({
       aria-selected={isSelected}
       className={`
         absolute top-1 bottom-1 rounded-lg flex items-center gap-1 px-1.5 overflow-hidden
-        ${readOnly ? 'cursor-default' : 'cursor-grab active:cursor-grabbing'} transition-all select-none
+        ${readOnly ? 'cursor-default' : locked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing'} transition-all select-none
         ${isDragging ? 'opacity-0' : ''}
+        ${isMuted ? 'grayscale opacity-40' : ''}
+        ${locked ? 'opacity-75' : ''}
         ${isSelected ? 'ring-2 ring-white ring-offset-1 ring-offset-black/20 shadow-lg z-20' : 'hover:shadow-md'}
       `}
       style={{
@@ -108,7 +119,11 @@ export const Clip = memo(function Clip({
       }}
       title={t(sample.name)}
     >
-      <SampleIcon name={sample.icon} size={14} className="shrink-0 text-white" />
+      {locked ? (
+        <Lock size={10} className="shrink-0 text-white/70" />
+      ) : (
+        <SampleIcon name={sample.icon} size={14} className="shrink-0 text-white" />
+      )}
       <span className="text-[10px] font-semibold text-white truncate leading-tight">
         {t(sample.name)}
       </span>

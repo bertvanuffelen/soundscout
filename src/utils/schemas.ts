@@ -30,6 +30,7 @@ export const ClipSchema = z.object({
   effects: ClipEffectsSchema.optional(),
   trimStart: z.number().min(0).optional(),
   trimEnd: z.number().min(0).optional(),
+  fromTemplate: z.boolean().optional(),
 });
 
 export const TrackSchema = z.object({
@@ -50,6 +51,21 @@ export const SampleSchema = z.object({
 });
 
 // =============================================================================
+// SECTIONS (Musical Form / Vormschema)
+// =============================================================================
+
+export const SectionSchema = z.object({
+  id: z.string(),
+  endBeat: z.number().min(0),
+  color: z.string(),
+  label: z.string().max(50).optional(),
+  // Storytelling fields (#41) — optional, not yet in UI
+  title: z.string().optional(),
+  description: z.string().optional(),
+  imageUrl: z.string().optional(),
+});
+
+// =============================================================================
 // COMPOSITION DATA (Supabase JSONB)
 // =============================================================================
 
@@ -59,6 +75,7 @@ export const CompositionDataSchema = z.object({
   totalBeats: z.number().positive(),
   isLooping: z.boolean(),
   samples: z.array(SampleSchema),
+  sections: z.array(SectionSchema).optional(),
 });
 
 // =============================================================================
@@ -72,6 +89,7 @@ export const TimelineStateSchema = z.object({
   isPlaying: z.boolean(),
   isLooping: z.boolean(),
   currentBeat: z.number().min(0),
+  sections: z.array(SectionSchema).optional(),
 });
 
 // =============================================================================

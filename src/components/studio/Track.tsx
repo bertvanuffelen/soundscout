@@ -7,6 +7,7 @@ import type { Track as TrackType, Sample } from '../../types';
 import { useThemeStore } from '../../stores/themeStore';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
+import { useAppStore } from '../../stores/appStore';
 import { Clip } from './Clip';
 import { VolumePopover } from './VolumePopover';
 
@@ -34,6 +35,12 @@ export const Track = memo(function Track({
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const updateTrackVolume = useTimelineStore((s) => s.updateTrackVolume);
   const setTrackMute = useTimelineStore((s) => s.setTrackMute);
+
+  // Section state (for background colors)
+  const sections = useTimelineStore((s) => s.sections);
+
+  // Template clip lock
+  const templateClipsLocked = useAppStore((s) => s.templateClipsLocked);
 
   // Volume popover state
   const [showVolumePopover, setShowVolumePopover] = useState(false);
@@ -153,9 +160,34 @@ export const Track = memo(function Track({
         className="absolute left-5 sm:left-6 right-0 top-0 bottom-0"
         onClick={handleTrackClick}
       >
+        {/* Section background colors */}
+        {sections.length > 0 && (() => {
+          let prevEnd = 0;
+          return sections.map((section) => {
+            const startBeat = prevEnd;
+            prevEnd = section.endBeat;
+            const leftPct = (startBeat / totalBeats) * 100;
+            const widthPct = ((section.endBeat - startBeat) / totalBeats) * 100;
+            return (
+              <div
+                key={section.id}
+                className="absolute top-0 bottom-0 pointer-events-none z-0"
+                style={{
+                  left: `${leftPct}%`,
+                  width: `${widthPct}%`,
+                  backgroundColor: section.color,
+                  opacity: 0.07,
+                }}
+              />
+            );
+          });
+        })()}
+
         {track.clips.map((clip) => {
           const sample = getSampleById(clip.sampleId) as Sample;
           if (!sample) return null;
+
+          const isClipMuted = trackMuted || (clip.effects?.mute ?? false);
 
           return (
             <Clip
@@ -166,6 +198,8 @@ export const Track = memo(function Track({
               bpm={bpm}
               totalBeats={totalBeats}
               readOnly={readOnly}
+              isMuted={isClipMuted}
+              locked={templateClipsLocked && (clip.fromTemplate === true)}
             />
           );
         })}

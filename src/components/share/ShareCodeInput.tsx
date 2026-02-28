@@ -1,23 +1,28 @@
 /**
- * ShareCodeInput - Invoerveld voor share codes op het startscherm
+ * ShareCodeInput - Universele code-invoer op het startscherm
  *
- * Leerlingen kunnen hier een 8-karakter code invoeren
- * om een gedeelde compositie te beluisteren.
+ * Accepteert zowel template-codes als share-codes.
+ * Probeert eerst als template, dan als gedeelde compositie.
+ * Bij match: respectieve flow wordt getriggerd.
  */
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Headphones } from 'lucide-react';
+import { Headphones, Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { getTemplateByCode } from '../../lib/templates';
+import { getSharedComposition } from '../../lib/submissions';
+import { useAppStore } from '../../stores/appStore';
+import { initializeFromTemplate } from '../../utils/compositionInit';
+import { logger } from '../../utils/logger';
 
-interface ShareCodeInputProps {
-  onSubmit: (code: string) => void;
-}
-
-export function ShareCodeInput({ onSubmit }: ShareCodeInputProps) {
+export function ShareCodeInput() {
   const { t } = useTranslation();
+  const goToShared = useAppStore((s) => s.goToShared);
+
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   // Only allow alphanumeric characters, convert to uppercase
   const handleChange = useCallback((value: string) => {
@@ -27,7 +32,7 @@ export function ShareCodeInput({ onSubmit }: ShareCodeInputProps) {
   }, []);
 
   const handleSubmit = useCallback(
-    (e: React.FormEvent) => {
+    async (e: React.FormEvent) => {
       e.preventDefault();
 
       if (code.length < 4) {
@@ -35,9 +40,40 @@ export function ShareCodeInput({ onSubmit }: ShareCodeInputProps) {
         return;
       }
 
-      onSubmit(code);
+      setIsLoading(true);
+      setError(null);
+
+      try {
+        // 1. Probeer als template-code
+        const template = await getTemplateByCode(code);
+        if (template) {
+          await initializeFromTemplate(template);
+          setCode('');
+          return;
+        }
+
+        // 2. Niet gevonden als template → probeer als share-code
+        try {
+          const shared = await getSharedComposition(code);
+          if (shared) {
+            goToShared(code);
+            setCode('');
+            return;
+          }
+        } catch {
+          // getSharedComposition throws on error, fall through to "not found"
+        }
+
+        // 3. Geen match gevonden
+        setError(t('share.codeNotFound'));
+      } catch (err) {
+        logger.error('Code lookup mislukt:', err);
+        setError(t('share.lookupError'));
+      } finally {
+        setIsLoading(false);
+      }
     },
-    [code, onSubmit, t]
+    [code, t, goToShared]
   );
 
   return (
@@ -55,18 +91,25 @@ export function ShareCodeInput({ onSubmit }: ShareCodeInputProps) {
           value={code}
           onChange={(e) => handleChange(e.target.value)}
           placeholder={t('share.listenPlaceholder')}
-          className="flex-1 px-3 py-2 bg-white/10 md:bg-neutral-100 border border-white/20 md:border-neutral-300 rounded-lg text-center text-white md:text-text-main font-mono text-sm tracking-wider placeholder:text-white/30 md:placeholder:text-neutral-400 focus:outline-none focus:border-accent-400 transition-colors"
+          disabled={isLoading}
+          className="flex-1 px-3 py-2 bg-white/10 md:bg-neutral-100 border border-white/20 md:border-neutral-300 rounded-lg text-center text-white md:text-text-main font-mono text-sm tracking-wider placeholder:text-white/30 md:placeholder:text-neutral-400 focus:outline-none focus:border-accent-400 transition-colors disabled:opacity-50"
         />
         <Button
           type="submit"
           variant="secondary"
           size="sm"
-          disabled={code.length < 4}
+          disabled={code.length < 4 || isLoading}
           aria-label={t('share.listen')}
           className="shrink-0"
         >
-          <Headphones className="w-4 h-4 sm:mr-1.5" />
-          <span className="hidden sm:inline">{t('share.listen')}</span>
+          {isLoading ? (
+            <Loader2 className="w-4 h-4 animate-spin" />
+          ) : (
+            <>
+              <Headphones className="w-4 h-4 sm:mr-1.5" />
+              <span className="hidden sm:inline">{t('share.listen')}</span>
+            </>
+          )}
         </Button>
       </form>
       {error && (

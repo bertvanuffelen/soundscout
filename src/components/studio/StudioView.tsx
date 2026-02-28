@@ -35,6 +35,10 @@ export function StudioView() {
   const goToMap = useAppStore((s) => s.goToMap);
   const goToStage = useAppStore((s) => s.goToStage);
 
+  // Template state
+  const activeTemplate = useAppStore((s) => s.activeTemplate);
+  const templateClipsLocked = useAppStore((s) => s.templateClipsLocked);
+
   // Timeline state
   const tracks = useTimelineStore((s) => s.tracks);
   const bpm = useTimelineStore((s) => s.bpm);
@@ -250,6 +254,17 @@ export function StudioView() {
         </Button>
       </div>
 
+      {/* Template info banner */}
+      {activeTemplate && (
+        <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 bg-accent-50 border-b border-accent-200 text-xs sm:text-sm text-accent-800">
+          <span className="font-semibold">{t('templates.activeBanner')}</span>
+          <span className="truncate">{activeTemplate.name}</span>
+          {activeTemplate.instructions && (
+            <span className="text-accent-600 italic truncate hidden sm:inline">— {activeTemplate.instructions}</span>
+          )}
+        </div>
+      )}
+
       {/* DnD Context wrapping Library + Timeline */}
       <DndContext
         sensors={sensors}
@@ -278,6 +293,7 @@ export function StudioView() {
               onDuplicate={handleDuplicate}
               onClipVolumeChange={handleClipVolumeChange}
               onClipMuteToggle={handleClipMuteToggle}
+              locked={templateClipsLocked && (selectedClipData.clip.fromTemplate === true)}
             />
           </div>
         )}

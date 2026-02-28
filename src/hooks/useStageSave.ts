@@ -17,10 +17,7 @@ import { storageService } from '../services/StorageService';
 export function useStageSave() {
   const currentCompositionId = useAppStore((s) => s.currentCompositionId);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
-  const tracks = useTimelineStore((s) => s.tracks);
-  const bpm = useTimelineStore((s) => s.bpm);
-  const totalBeats = useTimelineStore((s) => s.totalBeats);
-  const isLooping = useTimelineStore((s) => s.isLooping);
+  const getTimelineState = useTimelineStore((s) => s.getTimelineState);
 
   const [compositionName, setCompositionName] = useState('');
   const [showSaveWarning, setShowSaveWarning] = useState(false);
@@ -40,14 +37,7 @@ export function useStageSave() {
   }, [currentCompositionId]);
 
   const performSave = useCallback(() => {
-    const timelineState = {
-      tracks,
-      bpm,
-      totalBeats,
-      isPlaying: false,
-      isLooping,
-      currentBeat: 0,
-    };
+    const timelineState = getTimelineState();
 
     let result: ReturnType<typeof storageService.saveComposition | typeof storageService.updateComposition>;
 
@@ -68,7 +58,7 @@ export function useStageSave() {
       setTimeout(() => setSaveSuccess(false), 3000);
     }
     // If save failed (result is null), let the logger handle error reporting
-  }, [compositionName, tracks, bpm, totalBeats, isLooping, librarySamples, currentCompositionId]);
+  }, [compositionName, getTimelineState, librarySamples, currentCompositionId]);
 
   const handleSaveClick = useCallback(() => {
     if (!compositionName.trim()) {

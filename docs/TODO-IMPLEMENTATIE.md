@@ -1635,56 +1635,38 @@ interface CompositionTemplate extends SavedComposition {
 - Docent-flow: Studio → "Opslaan als template" → koppel aan klas
 - Leerling-flow: Klas openen → template kiezen → voorgevulde timeline
 
-### 39. Volume per Track (Mixer)
-**Status:** Niet begonnen
+### 39. Volume per Track + Clip Volume/Mute ✅ VOLTOOID
+**Status:** Voltooid (2026-02-27)
 **Complexiteit:** ⭐⭐⭐ Medium-Hoog
-**Risico:** Medium
-**Geschatte tijd:** 3-4 dagen
-**Bron:** Brainstorm educatieve features (2026-02-27)
 
 **Beschrijving:**
-Kinderen kunnen per track het volume aanpassen, zoals een eenvoudig mengpaneel. Dit leert over dynamiek en balans in een compositie. Start met per-track volume (niet per clip) — dat is begrijpelijker en visueel helderder.
+Track-level en clip-level volume (0–200%, intern -60 tot +6 dB) met mute toggle. Speaker-icoon bij elke track opent een popover met slider en mute-knop. Clip volume via EditToolbar.
 
-**Huidige architectuur (probleem):**
-AudioService routeert elke `Tone.Player` direct naar `Tone.Destination`. Er is geen tussenliggende laag per track.
+**Geïmplementeerd:**
+- [x] `Track.volume` en `Track.mute` fields
+- [x] `ClipEffects.mute` field
+- [x] 4 store actions: `updateTrackVolume`, `setTrackMute`, `updateClipVolume`, `setClipMute`
+- [x] `VolumePopover` component (percentage slider 0–200%, mute toggle)
+- [x] Portal-based rendering (voorkomt overflow clipping)
+- [x] Track UI: speaker icoon → popover
+- [x] EditToolbar: clip volume knop → popover
+- [x] AudioService: `player.volume.setValueAtTime(db, time)` per clip event
+- [x] Muted clips/tracks overgeslagen bij playback
+- [x] Seek/resume respecteert volume en mute
+- [x] MP3 export met `Tone.Volume` node per clip
+- [x] Docenten dashboard: volume/mute correct afgespeeld via SubmissionPlayer
+- [x] i18n (NL + EN)
 
-**Te implementeren:**
-- [ ] `volume` field toevoegen aan `Track` type (default: 0dB)
-- [ ] Per-track `Tone.Gain` nodes aanmaken in `AudioService.scheduleTimeline()`
-- [ ] Audio routing: `Player → Gain → Destination` (i.p.v. `Player → Destination`)
-- [ ] Gain nodes synchroniseren met pause/resume/seek
-- [ ] Volume slider UI links van elke track (20-30px breed)
-- [ ] Track volume opslaan in composities (StorageService)
-- [ ] Volume meenemen in MP3 export (`audioExport.ts`)
+**Technische aanpak (afwijking van origineel plan):**
+Geen `Tone.Gain` nodes per track. In plaats daarvan wordt volume per clip-event berekend als `trackVolume + clipVolume` en toegepast via `player.volume.setValueAtTime()` direct voor elke `player.start()`. Dit vermijdt complexe routing-wijzigingen.
 
-**Technische aanpak:**
-```typescript
-// Track type uitbreiden
-interface Track {
-  id: string;
-  clips: Clip[];
-  volume?: number;  // dB, default 0
-  muted?: boolean;  // optioneel: mute toggle
-}
-
-// AudioService: gain nodes per track
-private trackGains: Map<number, Tone.Gain> = new Map();
-
-scheduleTimeline(tracks, samples) {
-  // Maak gain node per track
-  tracks.forEach((track, i) => {
-    const gain = new Tone.Gain(dbToGain(track.volume ?? 0)).toDestination();
-    this.trackGains.set(i, gain);
-  });
-  // Route players door juiste gain node
-  player.connect(this.trackGains.get(trackIndex)!);
-}
-```
-
-**Risico's:**
-- Audio routing wijziging raakt hele pipeline (seeking, looping, pause/resume)
-- Track UI heeft weinig ruimte — slider moet compact zijn
-- MP3 export moet gain-levels respecteren
+**Bestanden:**
+- `src/components/studio/VolumePopover.tsx` (nieuw)
+- `src/types/index.ts`, `src/constants/config.ts`, `src/utils/schemas.ts`
+- `src/stores/timelineStore.ts`, `src/stores/selectionStore.ts`
+- `src/components/studio/Track.tsx`, `EditToolbar.tsx`, `StudioView.tsx`
+- `src/services/AudioService.ts`, `src/utils/audioExport.ts`
+- `src/i18n/locales/{nl,en}.json`
 
 ### 40. Scène-markering op Timeline
 **Status:** Niet begonnen
@@ -2125,50 +2107,45 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 23. ~~i18n Audit~~ ✅
 24. ~~Playhead Seeking Docenten Viewer~~ ✅
 
-### 🔴 Nu: P1 — Features voltooid, technische basis versterken
+### 🔴 P1 — Technische basis ✅ VOLTOOID
 
-**Alle P1 feature-items voltooid!** 🎉
+**Alle P1 items afgerond!** 🎉
 
-**Volgende stap: Technische schuld aanpakken vóór nieuwe features:**
-
-Week 1 — Kritieke veiligheid + quick wins:
-- TP0-1: `CompositionData` interface (vervangt alle `any`)
-- TP0-2: Rate limiting op submissions
-- TP0-3: CHECK constraints op Supabase
-- TP0-4: max_classes enforcement in DB
-- TP1-2: Ambient audio fade timeout fix
-
-Week 2 — Architectuur stabiliteit:
-- TP1-1: StageView.tsx split (506 → 4 bestanden)
-- TP1-5: Orchestratie-functie compositie-initialisatie
-- TP2-1: gameStore → appStore migratie
-
-Week 3 — Robuustheid:
-- TP1-3: Error handling async hooks
-- TP1-4: Feature-level Error Boundaries
-- TP2-2: libraryStore redundante state
+- ~~TP0-1: `CompositionData` interface (vervangt alle `any`)~~ ✅ — interface + Zod schema + type guards
+- ~~TP0-2: Rate limiting op submissions~~ ✅ — 30s cooldown submissions, 15s share links
+- ~~TP0-3: CHECK constraints op Supabase~~ ✅ — migration file met constraints op alle tabellen
+- ~~TP0-4: max_classes enforcement in DB~~ ✅ — DB trigger + code-level check
+- ~~TP1-1: StageView.tsx split~~ ✅ — 327 regels + extracted hooks (useStageSave, useStageModals, useAudioCleanup)
+- ~~TP1-2: Ambient audio fade timeout fix~~ ✅ — `cancelled` flag in useEffect
+- ~~TP1-3: Error handling async hooks~~ ✅ — try-catch in alle async hooks; useStudioPlayback/useStageSave delegeren naar onderliggende services die al defensief zijn
+- ~~TP1-4: Feature-level Error Boundaries~~ ✅ — `FeatureErrorBoundary` op alle screens in App.tsx
+- ~~TP1-5: Orchestratie-functie compositie-initialisatie~~ ✅ — `initializeNewComposition()` met graceful degradation
+- ~~TP2-1: gameStore → appStore migratie~~ ✅ — `useAppStore` primair, `useGameStore` alias voor backward compat
+- ~~TP2-2: libraryStore redundante state~~ ✅ — onderzocht, geen redundantie gevonden; dual-collection (recorder/library) is correct
 
 ### 🟠 Daarna: P2 (educatieve features + bestaand)
 - ~~Thema Selectie Modal (#13)~~ ✅
 - ~~Delen met Link (#14)~~ ✅
 - ~~Emergency/Feedback Systeem (#15)~~ ✅
-- Touch Gevoeligheid & Autoplay Issues (#16)
-- **Template Systeem voor Docenten (#21)** ← geüpgraded van P3 (voorwaarde: TP1-5 orchestratie)
-- Real-time Geluiden Toevoegen tijdens Afspelen (#22)
+- Touch Gevoeligheid & Autoplay Issues (#16) ← testen
+- **Template Systeem voor Docenten (#21)** ← volgende prioriteit
 - ~~Tweetalig Systeem Grondig Implementeren (#35)~~ ✅
 - ~~Playhead Seeking in Docenten Compositie Viewer (#36)~~ ✅
 - ~~Grijs Leeg Gedeelte onder Timeline Tracks Verwijderen (#37)~~ ✅
-- **Volume per Track / Mixer (#39)** ← nieuw (voorwaarde: TP0-1 types, combineer met TP2-6 parameter bloat)
-- **Scène-markering op Timeline (#40)** ← nieuw
+- ~~Volume per Track / Mixer (#39)~~ ✅
+- **Scène-markering op Timeline (#40)** ← samen met #21
+- **Soundscape Storytelling (#41)** ← afhankelijk van #40
 
-Aanbevolen volgorde P2: Templates (#21) → Scènes (#40) → Volume (#39)
+Aanbevolen volgorde P2: Templates (#21) + Scènes (#40) → Storytelling (#41)
+Strategie: ontwikkelen achter feature flag (alleen developer/docent-rol), later breder beschikbaar maken.
 
 ### 🟡 Later: P3
 - ~~Ambient Audio Cleanup & Pause/Stop Fix (#26)~~ ✅
+- Real-time Geluiden Toevoegen tijdens Afspelen (#22) ← verplaatst van P2
 - Eigen Samples Opnemen (#28)
 - Digibord/Classroom Display Optimalisatie (#29)
 - ~~Sample Wis Knop UI Aanpassen (#34)~~ ✅
-- **Soundscape Storytelling (#41)** ← nieuw (afhankelijk van #40)
+- Sample Effecten (#33) ← verplaatst van P5
 
 ### 🟢 Toekomst: P4
 - Extra Locaties (#30)
@@ -2179,6 +2156,5 @@ Aanbevolen volgorde P2: Templates (#21) → Scènes (#40) → Volume (#39)
 
 ### ⚪ Backlog: P5
 - i18n Review — terugkerend (#38)
-- Sample Effecten (#33)
 - **Lesbrieven & Werkvormen (#43)** ← nieuw, parallel aan development
 - **Luister-en-Reageer Modus (#44)** ← nieuw, geparkeerd

@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen } from '../types';
+import type { GameScreen, Template } from '../types';
 
 interface AppStore {
   // Navigation state
@@ -20,6 +20,10 @@ interface AppStore {
   currentCompositionId: string | null;
   // Share code for viewing shared compositions (null = not viewing)
   shareCode: string | null;
+  // Active template (null = no template loaded)
+  activeTemplate: Template | null;
+  // Whether template clips are locked (not movable/deletable)
+  templateClipsLocked: boolean;
 
   // Navigation actions
   setScreen: (screen: GameScreen) => void;
@@ -33,6 +37,10 @@ interface AppStore {
   goToCompositions: () => void;
   goToTeacher: () => void;
   goToShared: (code: string) => void;
+  // Template actions
+  loadTemplate: (template: Template) => void;
+  clearTemplate: () => void;
+  setTemplateClipsLocked: (locked: boolean) => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -40,6 +48,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   currentLocationId: null,
   currentCompositionId: null,
   shareCode: null,
+  activeTemplate: null,
+  templateClipsLocked: false,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -47,7 +57,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateClipsLocked: false }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -63,6 +73,11 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToTeacher: () => set({ currentScreen: 'teacher' }),
 
   goToShared: (code) => set({ currentScreen: 'shared', shareCode: code }),
+
+  // Template actions
+  loadTemplate: (template) => set({ activeTemplate: template, templateClipsLocked: template.clipsLocked }),
+  clearTemplate: () => set({ activeTemplate: null, templateClipsLocked: false }),
+  setTemplateClipsLocked: (locked) => set({ templateClipsLocked: locked }),
 }));
 
 // Re-export for backwards compatibility during migration

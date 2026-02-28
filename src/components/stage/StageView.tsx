@@ -8,7 +8,7 @@
  * - useAudioCleanup — audio cleanup on unmount
  */
 
-import { useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Download,
@@ -18,10 +18,12 @@ import {
   Send,
   Link2,
   ArrowLeft,
+  FileText,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useTimelineStore } from '../../stores/timelineStore';
+import { useAuth } from '../../contexts/AuthContext';
 import { useAudioEngine } from '../../hooks/useAudioEngine';
 import { useAudioCleanup } from '../../hooks/useAudioCleanup';
 import { useAudioExport } from '../../hooks/useAudioExport';
@@ -29,6 +31,7 @@ import { useStageSave } from '../../hooks/useStageSave';
 import { useStageModals } from '../../hooks/useStageModals';
 import { Button, Modal } from '../ui';
 import { ShareWithTeacherModal, ShareLinkModal } from '../share';
+import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { StagePlayback, StageAudience } from './StagePlayback';
 
 export function StageView() {
@@ -39,7 +42,13 @@ export function StageView() {
   const bpm = useTimelineStore((s) => s.bpm);
   const totalBeats = useTimelineStore((s) => s.totalBeats);
   const isLooping = useTimelineStore((s) => s.isLooping);
+  const sections = useTimelineStore((s) => s.sections);
   const { stopAll } = useAudioEngine();
+
+  // Template feature: only for logged-in teachers
+  const { isTeacher } = useAuth();
+  const showTemplateOption = isTeacher;
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
 
   // Audio export hook
   const { exportState, progress, error, exportMp3 } = useAudioExport();
@@ -202,6 +211,21 @@ export function StageView() {
               {t('stage.shareWithTeacher')}
             </Button>
 
+            {/* Opslaan als template — alleen voor docenten met dev flag */}
+            {showTemplateOption && (
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => setShowTemplateModal(true)}
+                disabled={!compositionName.trim()}
+                className="w-full"
+                title={!compositionName.trim() ? t('stage.nameRequired') : ''}
+              >
+                <FileText size={20} className="mr-2" />
+                {t('templates.saveAsTemplate')}
+              </Button>
+            )}
+
             <Button
               variant="ghost"
               size="lg"
@@ -300,8 +324,25 @@ export function StageView() {
             totalBeats,
             isLooping,
             samples: librarySamples,
+            sections: sections.length > 0 ? sections : undefined,
           }}
           onClose={() => setShowShareLinkModal(false)}
+        />
+      )}
+
+      {/* Save as template modal */}
+      {showTemplateModal && (
+        <SaveAsTemplateModal
+          compositionData={{
+            tracks,
+            bpm,
+            totalBeats,
+            isLooping,
+            samples: librarySamples,
+            sections: sections.length > 0 ? sections : undefined,
+          }}
+          defaultName={compositionName.trim() || t('stage.defaultName')}
+          onClose={() => setShowTemplateModal(false)}
         />
       )}
 
@@ -315,6 +356,7 @@ export function StageView() {
             totalBeats,
             isLooping,
             samples: librarySamples,
+            sections: sections.length > 0 ? sections : undefined,
           }}
           onClose={() => setShowShareModal(false)}
           onSuccess={() => setShowShareModal(false)}

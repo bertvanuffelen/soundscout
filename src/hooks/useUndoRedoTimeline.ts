@@ -1,7 +1,7 @@
 /**
  * useUndoRedoTimeline - Undo/Redo voor timeline bewerkingen
  *
- * Snapshot-based: bij elke track-wijziging wordt een kopie opgeslagen.
+ * Snapshot-based: bij elke track/section-wijziging wordt een kopie opgeslagen.
  * Undo herstelt de vorige snapshot, redo gaat weer vooruit.
  *
  * Max 50 snapshots (~250KB geheugen).
@@ -10,9 +10,15 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTimelineStore } from '../stores/timelineStore';
-import type { Track } from '../types';
+import type { Track, Section } from '../types';
 
 const MAX_HISTORY = 50;
+
+/** A snapshot of the timeline state that can be undone/redone */
+interface TimelineSnapshot {
+  tracks: Track[];
+  sections: Section[];
+}
 
 /** Deep clone tracks array (clips zijn shallow-safe: alleen primitieven) */
 function cloneTracks(tracks: Track[]): Track[] {
@@ -22,7 +28,20 @@ function cloneTracks(tracks: Track[]): Track[] {
   }));
 }
 
-/** Check of twee track-arrays identiek zijn (snelle vergelijking via JSON) */
+/** Deep clone sections array (shallow-safe: alleen primitieven) */
+function cloneSections(sections: Section[]): Section[] {
+  return sections.map((s) => ({ ...s }));
+}
+
+/** Create a snapshot from current state */
+function createSnapshot(tracks: Track[], sections: Section[]): TimelineSnapshot {
+  return {
+    tracks: cloneTracks(tracks),
+    sections: cloneSections(sections),
+  };
+}
+
+/** Check of twee track-arrays identiek zijn (snelle vergelijking) */
 function tracksEqual(a: Track[], b: Track[]): boolean {
   if (a === b) return true;
   if (a.length !== b.length) return false;
@@ -45,9 +64,31 @@ function tracksEqual(a: Track[], b: Track[]): boolean {
   return true;
 }
 
+/** Check of twee section-arrays identiek zijn */
+function sectionsEqual(a: Section[], b: Section[]): boolean {
+  if (a === b) return true;
+  if (a.length !== b.length) return false;
+  for (let i = 0; i < a.length; i++) {
+    if (
+      a[i].id !== b[i].id ||
+      a[i].endBeat !== b[i].endBeat ||
+      a[i].color !== b[i].color ||
+      a[i].label !== b[i].label
+    ) {
+      return false;
+    }
+  }
+  return true;
+}
+
+/** Check of twee snapshots identiek zijn */
+function snapshotsEqual(a: TimelineSnapshot, b: TimelineSnapshot): boolean {
+  return tracksEqual(a.tracks, b.tracks) && sectionsEqual(a.sections, b.sections);
+}
+
 export function useUndoRedoTimeline() {
-  // History stack: array of track snapshots
-  const historyRef = useRef<Track[][]>([]);
+  // History stack: array of timeline snapshots
+  const historyRef = useRef<TimelineSnapshot[]>([]);
   // Current position in history (-1 = niet geïnitialiseerd)
   const indexRef = useRef(-1);
   // Flag om eigen wijzigingen (undo/redo) te negeren
@@ -63,27 +104,27 @@ export function useUndoRedoTimeline() {
 
   // Initialiseer met huidige state
   useEffect(() => {
-    const currentTracks = useTimelineStore.getState().tracks;
-    historyRef.current = [cloneTracks(currentTracks)];
+    const state = useTimelineStore.getState();
+    historyRef.current = [createSnapshot(state.tracks, state.sections)];
     indexRef.current = 0;
   }, []);
 
-  // Luister naar track-wijzigingen in de store
+  // Luister naar track/section-wijzigingen in de store
   useEffect(() => {
     const unsubscribe = useTimelineStore.subscribe(
       (state, prevState) => {
         // Negeer als wij zelf aan het herstellen zijn
         if (isRestoringRef.current) return;
 
-        // Negeer als tracks niet veranderd zijn
-        if (state.tracks === prevState.tracks) return;
+        // Negeer als tracks EN sections niet veranderd zijn
+        if (state.tracks === prevState.tracks && state.sections === prevState.sections) return;
 
-        const newTracks = state.tracks;
         const currentIndex = indexRef.current;
         const history = historyRef.current;
+        const newSnapshot = createSnapshot(state.tracks, state.sections);
 
         // Negeer als snapshot identiek is aan huidige positie
-        if (currentIndex >= 0 && tracksEqual(newTracks, history[currentIndex])) {
+        if (currentIndex >= 0 && snapshotsEqual(newSnapshot, history[currentIndex])) {
           return;
         }
 
@@ -91,7 +132,7 @@ export function useUndoRedoTimeline() {
         const newHistory = history.slice(0, currentIndex + 1);
 
         // Voeg nieuwe snapshot toe
-        newHistory.push(cloneTracks(newTracks));
+        newHistory.push(newSnapshot);
 
         // Beperk tot MAX_HISTORY
         if (newHistory.length > MAX_HISTORY) {
@@ -115,12 +156,13 @@ export function useUndoRedoTimeline() {
 
     isRestoringRef.current = true;
     useTimelineStore.getState().loadTimeline({
-      tracks: cloneTracks(snapshot),
+      tracks: cloneTracks(snapshot.tracks),
       bpm: useTimelineStore.getState().bpm,
       totalBeats: useTimelineStore.getState().totalBeats,
       isPlaying: false,
       isLooping: useTimelineStore.getState().isLooping,
       currentBeat: 0,
+      sections: cloneSections(snapshot.sections),
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;
@@ -137,12 +179,13 @@ export function useUndoRedoTimeline() {
 
     isRestoringRef.current = true;
     useTimelineStore.getState().loadTimeline({
-      tracks: cloneTracks(snapshot),
+      tracks: cloneTracks(snapshot.tracks),
       bpm: useTimelineStore.getState().bpm,
       totalBeats: useTimelineStore.getState().totalBeats,
       isPlaying: false,
       isLooping: useTimelineStore.getState().isLooping,
       currentBeat: 0,
+      sections: cloneSections(snapshot.sections),
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;

@@ -12,3 +12,4 @@ export { ClassDetail } from './ClassDetail';
 export { CreateClassModal } from './CreateClassModal';
 export { SubmissionCard } from './SubmissionCard';
 export { SubmissionPlayer } from './SubmissionPlayer';
+export { TemplateCard } from './TemplateCard';

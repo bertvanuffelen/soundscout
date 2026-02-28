@@ -1,11 +1,13 @@
 import { create } from 'zustand';
-import type { Clip, Track, TimelineState } from '../types';
+import type { Clip, Track, Section, TimelineState } from '../types';
+import { SECTION_COLORS } from '../types';
 import {
   DEFAULT_BPM,
   DEFAULT_TOTAL_BEATS,
   DEFAULT_TRACK_COUNT,
   VOLUME_MIN_DB,
   VOLUME_MAX_DB,
+  MAX_SECTIONS,
 } from '../constants/config';
 import {
   findSmartSnapPosition,
@@ -28,6 +30,13 @@ interface TimelineStore {
   bpm: number;
   totalBeats: number;
   isLooping: boolean;
+  sections: Section[];
+
+  // Section actions (musical form / vormschema)
+  addSection: (endBeat: number, color?: string, label?: string) => boolean;
+  removeSection: (sectionId: string) => void;
+  updateSection: (sectionId: string, updates: Partial<Pick<Section, 'color' | 'label'>>) => void;
+  clearSections: () => void;
 
   // Clip actions (with smart snap support)
   addClip: (
@@ -88,6 +97,55 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   bpm: DEFAULT_BPM,
   totalBeats: DEFAULT_TOTAL_BEATS,
   isLooping: false,
+  sections: [],
+
+  // --- Section Actions ---
+
+  addSection: (endBeat, color, label) => {
+    const state = get();
+
+    // Validate limits
+    if (state.sections.length >= MAX_SECTIONS) return false;
+    if (endBeat <= 0 || endBeat > state.totalBeats) return false;
+
+    // Reject duplicate endBeat
+    if (state.sections.some((s) => s.endBeat === endBeat)) return false;
+
+    // Auto-pick next color from palette if not provided
+    const nextColor = color ?? SECTION_COLORS[state.sections.length % SECTION_COLORS.length];
+
+    const newSection: Section = {
+      id: crypto.randomUUID(),
+      endBeat,
+      color: nextColor,
+      label,
+    };
+
+    set((prev) => ({
+      sections: [...prev.sections, newSection].sort((a, b) => a.endBeat - b.endBeat),
+    }));
+    return true;
+  },
+
+  removeSection: (sectionId) => {
+    set((prev) => ({
+      sections: prev.sections.filter((s) => s.id !== sectionId),
+    }));
+  },
+
+  updateSection: (sectionId, updates) => {
+    set((prev) => ({
+      sections: prev.sections.map((s) =>
+        s.id === sectionId ? { ...s, ...updates } : s,
+      ),
+    }));
+  },
+
+  clearSections: () => {
+    set({ sections: [] });
+  },
+
+  // --- Clip Actions ---
 
   addClip: (trackIndex, clip) => {
     const state = get();
@@ -379,7 +437,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   },
 
   clearAllTracks: () => {
-    set({ tracks: createEmptyTracks() });
+    set({ tracks: createEmptyTracks(), sections: [] });
   },
 
   setLooping: (looping) => {
@@ -392,6 +450,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       bpm: timeline.bpm,
       totalBeats: timeline.totalBeats,
       isLooping: timeline.isLooping,
+      sections: timeline.sections ?? [],
     });
   },
 
@@ -404,6 +463,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       isPlaying: false, // Always false when saving
       isLooping: state.isLooping,
       currentBeat: 0,
+      sections: state.sections.length > 0 ? state.sections : undefined,
     };
   },
 

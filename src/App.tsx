@@ -2,6 +2,7 @@ import { useEffect, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useAppStore } from './stores/appStore';
 import { useThemeStore } from './stores/themeStore';
+import { useDevFlagsStore } from './stores/devFlagsStore';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
@@ -64,6 +65,25 @@ function AppContent() {
   useEffect(() => {
     initTheme();
   }, [initTheme]);
+
+  // Initialize dev flags: ?dev=true activates, persisted in localStorage
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const devParam = params.get('dev');
+    const { hydrate, setAllFlags } = useDevFlagsStore.getState();
+
+    // Always hydrate from localStorage first
+    hydrate();
+
+    // If ?dev=true is explicitly set, enable all flags
+    if (devParam === 'true') {
+      setAllFlags(true);
+      // Clean URL without reloading
+      const url = new URL(window.location.href);
+      url.searchParams.delete('dev');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, []);
 
   // Check for ?share= query parameter on mount
   useEffect(() => {

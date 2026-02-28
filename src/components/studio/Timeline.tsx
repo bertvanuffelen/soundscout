@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import type { Track as TrackType, Sample } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
-import { VISIBLE_BEATS } from '../../constants/config';
+import { SectionBar } from './SectionBar';
+import { VISIBLE_BEATS, MAX_SECTIONS } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
-import { Undo2, Redo2, Plus } from 'lucide-react';
+import { Undo2, Redo2, Plus, Flag } from 'lucide-react';
 
 interface TimelineProps {
   tracks: TrackType[];
@@ -50,6 +51,12 @@ export const Timeline = memo(function Timeline({
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
 
+  // Section state
+  const sections = useTimelineStore((s) => s.sections);
+  const addSection = useTimelineStore((s) => s.addSection);
+  const updateSection = useTimelineStore((s) => s.updateSection);
+  const removeSection = useTimelineStore((s) => s.removeSection);
+
   // Subscribe to currentBeat from store (for StudioView)
   // or use prop (for SubmissionPlayer with local state)
   const storeCurrentBeat = useAudioStore((s) => s.currentBeat);
@@ -65,6 +72,15 @@ export const Timeline = memo(function Timeline({
     },
     [clearSelection],
   );
+
+  // Mark section at current playhead position
+  const handleMarkSection = useCallback(() => {
+    // Read currentBeat imperatively to avoid dependency on fast-updating value
+    const beat = Math.round(useAudioStore.getState().currentBeat);
+    if (beat > 0 && beat <= totalBeats) {
+      addSection(beat);
+    }
+  }, [totalBeats, addSection]);
 
   // Calculate width multiplier for scrollable content
   const widthMultiplier = totalBeats / VISIBLE_BEATS;
@@ -114,6 +130,21 @@ export const Timeline = memo(function Timeline({
               <Plus size={16} />
             </button>
           )}
+          {/* Mark section button — only in edit mode with feature flag */}
+          {!readOnly && (
+            <button
+              onClick={handleMarkSection}
+              disabled={sections.length >= MAX_SECTIONS}
+              aria-label={t('studio.sections.markSection')}
+              title={sections.length >= MAX_SECTIONS
+                ? t('studio.sections.maxReached')
+                : t('studio.sections.markSection')
+              }
+              className="p-1 rounded text-neutral-400 hover:text-accent-600 hover:bg-accent-100/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+            >
+              <Flag size={14} />
+            </button>
+          )}
           {onUndo && onRedo && (
             <>
               <button
@@ -147,6 +178,22 @@ export const Timeline = memo(function Timeline({
           className="relative"
           style={{ width: `${widthMultiplier * 100}%`, minWidth: '100%' }}
         >
+          {/* Section bar — shown when sections exist (dev flag or template) */}
+          {sections.length > 0 && (
+            <div className="relative border-b border-border-subtle">
+              {/* Track label spacer */}
+              <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 bg-neutral-200/50 z-10" />
+              <div className="ml-5 sm:ml-6">
+                <SectionBar
+                  sections={sections}
+                  totalBeats={totalBeats}
+                  onUpdate={updateSection}
+                  onDelete={removeSection}
+                />
+              </div>
+            </div>
+          )}
+
           {/* Ruler strip - 16px with measure lines */}
           <div className="relative h-4 border-b border-border-subtle bg-neutral-100/80">
             {/* Track label spacer */}

@@ -24,6 +24,7 @@ import {
 import { logger } from '../utils/logger';
 
 type BeatUpdateCallback = (beat: number) => void;
+type PlaybackEndCallback = () => void;
 type LoadingProgressCallback = (loaded: number, total: number) => void;
 
 export interface SampleLoadResult {
@@ -40,6 +41,10 @@ class AudioService {
   private isInitialized = false;
   private playheadIntervalId: number | null = null;
   private beatUpdateCallbacks: Set<BeatUpdateCallback> = new Set();
+  private playbackEndCallbacks: Set<PlaybackEndCallback> = new Set();
+
+  // Auto-stop: beat position where the last clip finishes (0 = not calculated)
+  private lastActiveBeat: number = 0;
 
   // Ambient audio
   private ambientPlayer: Tone.Player | null = null;
@@ -385,6 +390,20 @@ class AudioService {
       });
     });
 
+    // Calculate lastActiveBeat: the beat where the last clip finishes playing
+    // Used for auto-stop when not looping
+    this.lastActiveBeat = 0;
+    tracks.forEach((track) => {
+      track.clips.forEach((clip) => {
+        const sample = sampleMap.get(clip.sampleId);
+        if (!sample) return;
+        const endBeat = getClipEndBeat(clip, sample, DEFAULT_BPM);
+        if (endBeat > this.lastActiveBeat) {
+          this.lastActiveBeat = endBeat;
+        }
+      });
+    });
+
     // Create Tone.Part with events (object format with time property)
     this.timelinePart = new Tone.Part<ClipEvent>(
       (time, event) => {
@@ -610,6 +629,12 @@ class AudioService {
       const seconds = transport.seconds;
       const currentBeat = (seconds / 60) * DEFAULT_BPM;
       this.beatUpdateCallbacks.forEach((cb) => cb(currentBeat));
+
+      // Auto-stop: when not looping and playhead passed last clip end
+      if (!transport.loop && this.lastActiveBeat > 0 && currentBeat >= this.lastActiveBeat) {
+        this.stop();
+        this.playbackEndCallbacks.forEach((cb) => cb());
+      }
     }, PLAYHEAD_UPDATE_INTERVAL_MS);
   }
 
@@ -627,6 +652,17 @@ class AudioService {
     this.beatUpdateCallbacks.add(callback);
     return () => {
       this.beatUpdateCallbacks.delete(callback);
+    };
+  }
+
+  /**
+   * Subscribe to playback end events (auto-stop when all clips finished).
+   * Returns unsubscribe function.
+   */
+  onPlaybackEnd(callback: PlaybackEndCallback): () => void {
+    this.playbackEndCallbacks.add(callback);
+    return () => {
+      this.playbackEndCallbacks.delete(callback);
     };
   }
 
@@ -808,6 +844,8 @@ class AudioService {
     this.ambientVolume = null;
 
     this.beatUpdateCallbacks.clear();
+    this.playbackEndCallbacks.clear();
+    this.lastActiveBeat = 0;
     this.isInitialized = false;
   }
 

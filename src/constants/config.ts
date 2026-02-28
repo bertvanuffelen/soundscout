@@ -91,6 +91,16 @@ export const WAVEFORM_BAR_WIDTH_PX = 3;
 export const WAVEFORM_GAP_PX = 1;
 
 // =============================================================================
+// SECTIONS (Musical Form)
+// =============================================================================
+
+/** Maximum number of sections on the timeline */
+export const MAX_SECTIONS = 16;
+
+/** Maximum length of a section label */
+export const SECTION_LABEL_MAX_LENGTH = 50;
+
+// =============================================================================
 // VOLUME
 // =============================================================================
 
