@@ -26,9 +26,12 @@ export const SectionPopover = memo(function SectionPopover({
   onDelete,
   onClose,
 }: SectionPopoverProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const popoverRef = useRef<HTMLDivElement>(null);
-  const [label, setLabel] = useState(section.label ?? '');
+
+  // Translate i18n keys (storyboard labels) for display
+  const displayLabel = section.label && i18n.exists(section.label) ? t(section.label) : (section.label ?? '');
+  const [label, setLabel] = useState(displayLabel);
 
   // Keep a ref to the latest label so we can save it on unmount
   const labelRef = useRef(label);
@@ -142,9 +145,10 @@ export const SectionPopover = memo(function SectionPopover({
           onKeyDown={handleLabelKeyDown}
           placeholder={t('studio.sections.labelPlaceholder')}
           maxLength={SECTION_LABEL_MAX_LENGTH}
-          className="w-full text-sm px-2 py-1.5 rounded-lg border border-neutral-200 bg-neutral-50
+          readOnly={section.fromStoryboard}
+          className={`w-full text-sm px-2 py-1.5 rounded-lg border border-neutral-200 bg-neutral-50
                      focus:outline-none focus:ring-2 focus:ring-accent-400 focus:border-transparent
-                     placeholder:text-neutral-400"
+                     placeholder:text-neutral-400 ${section.fromStoryboard ? 'text-text-muted cursor-default' : ''}`}
         />
       </div>
 

@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Info, HelpCircle, Instagram, Facebook, Linkedin, Youtube } from 'lucide-react';
+import { FolderOpen, Info, HelpCircle, Instagram, Facebook, Linkedin, Youtube, BookOpen } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { storageService } from '../services/StorageService';
 import { initializeNewComposition } from '../utils/compositionInit';
@@ -186,6 +186,14 @@ export function StartScreen() {
             title="YouTube"
           >
             <Youtube className="w-4 h-4" />
+          </a>
+          <div className="w-px h-4 bg-brand-700 md:bg-neutral-300" />
+          <a
+            href="?storytelling=true"
+            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+            title="Storytelling mode"
+          >
+            <BookOpen className="w-4 h-4" />
           </a>
         </div>
       </footer>
