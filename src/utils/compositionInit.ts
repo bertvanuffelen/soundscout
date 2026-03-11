@@ -65,6 +65,10 @@ export async function initializeNewComposition(
   const storyboards = getThemeStoryboards(themeId);
   const hasStoryboards = storyboards && storyboards.length > 0;
 
+  if (import.meta.env.DEV) {
+    logger.info(`[compositionInit] storytellingEnabled=${storytellingEnabled}, themeId=${themeId}, storyboards=${storyboards?.length ?? 0}, hasStoryboards=${hasStoryboards}`);
+  }
+
   if (storytellingEnabled && hasStoryboards) {
     goToComposeMode();
   } else {

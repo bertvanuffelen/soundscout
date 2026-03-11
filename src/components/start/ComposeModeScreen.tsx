@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { Music, Image, Film, ArrowLeft, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useThemeStore } from '../../stores/themeStore';
+import { useTimelineStore } from '../../stores/timelineStore';
 import { getThemeStoryboards } from '../../data/themes';
 import type { Storyboard, ComposeMode } from '../../types';
 
@@ -49,6 +50,20 @@ export default function ComposeModeScreen() {
     const mode: ComposeMode = sb.images.length === 1 ? 'image' : 'storyboard';
     setComposeMode(mode);
     setActiveStoryboard(sb);
+
+    // Auto-create sections for storyboards with multiple images
+    // E.g. 3 images, 32 beats → sections at beat 11, 22 (third runs to end)
+    if (sb.images.length > 1) {
+      const { totalBeats, clearSections, addSection } = useTimelineStore.getState();
+      clearSections();
+      const beatsPerImage = Math.floor(totalBeats / sb.images.length);
+      for (let i = 1; i < sb.images.length; i++) {
+        const endBeat = beatsPerImage * i;
+        const label = sb.images[i - 1].label;
+        addSection(endBeat, undefined, label);
+      }
+    }
+
     goToMap();
   }, [setComposeMode, setActiveStoryboard, goToMap]);
 

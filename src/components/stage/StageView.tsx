@@ -330,6 +330,7 @@ export function StageView() {
             isLooping,
             samples: librarySamples,
             sections: sections.length > 0 ? sections : undefined,
+            storyboardId: activeStoryboard?.id,
           }}
           onClose={() => setShowShareLinkModal(false)}
         />
@@ -345,6 +346,7 @@ export function StageView() {
             isLooping,
             samples: librarySamples,
             sections: sections.length > 0 ? sections : undefined,
+            storyboardId: activeStoryboard?.id,
           }}
           defaultName={compositionName.trim() || t('stage.defaultName')}
           onClose={() => setShowTemplateModal(false)}
@@ -362,6 +364,7 @@ export function StageView() {
             isLooping,
             samples: librarySamples,
             sections: sections.length > 0 ? sections : undefined,
+            storyboardId: activeStoryboard?.id,
           }}
           onClose={() => setShowShareModal(false)}
           onSuccess={() => setShowShareModal(false)}

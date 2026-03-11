@@ -16,6 +16,7 @@ import { storageService } from '../services/StorageService';
 
 export function useStageSave() {
   const currentCompositionId = useAppStore((s) => s.currentCompositionId);
+  const activeStoryboard = useAppStore((s) => s.activeStoryboard);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const getTimelineState = useTimelineStore((s) => s.getTimelineState);
 
@@ -48,7 +49,12 @@ export function useStageSave() {
         samples: librarySamples,
       });
     } else {
-      result = storageService.saveComposition(compositionName.trim(), timelineState, librarySamples);
+      result = storageService.saveComposition(
+        compositionName.trim(),
+        timelineState,
+        librarySamples,
+        activeStoryboard?.id,
+      );
     }
 
     // Only show success if save succeeded (result is not null)
@@ -58,7 +64,7 @@ export function useStageSave() {
       setTimeout(() => setSaveSuccess(false), 3000);
     }
     // If save failed (result is null), let the logger handle error reporting
-  }, [compositionName, getTimelineState, librarySamples, currentCompositionId]);
+  }, [compositionName, getTimelineState, librarySamples, currentCompositionId, activeStoryboard]);
 
   const handleSaveClick = useCallback(() => {
     if (!compositionName.trim()) {

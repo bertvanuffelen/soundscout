@@ -93,6 +93,7 @@ function AppContent() {
     const storytellingParam = params.get('storytelling');
 
     if (storytellingParam === 'true') {
+      console.log('[App] Storytelling enabled via URL param');
       useAppStore.getState().setStorytellingEnabled(true);
       // Clean URL without reloading
       const url = new URL(window.location.href);

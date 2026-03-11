@@ -76,6 +76,7 @@ export const CompositionDataSchema = z.object({
   isLooping: z.boolean(),
   samples: z.array(SampleSchema),
   sections: z.array(SectionSchema).optional(),
+  storyboardId: z.string().optional(),
 });
 
 // =============================================================================
@@ -113,6 +114,7 @@ export const SavedCompositionSchema = z.object({
   metadata: CompositionMetadataSchema,
   shareCode: z.string().optional(),
   sharedAt: z.string().optional(),
+  storyboardId: z.string().optional(),
 });
 
 // =============================================================================

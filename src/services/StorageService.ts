@@ -75,7 +75,8 @@ class StorageServiceImpl {
   saveComposition(
     name: string,
     timeline: TimelineState,
-    samples: Sample[]
+    samples: Sample[],
+    storyboardId?: string
   ): SavedComposition | null {
     const compositions = this.getCompositions();
 
@@ -99,6 +100,7 @@ class StorageServiceImpl {
       timeline,
       samples,
       metadata: this.computeMetadata(timeline, samples),
+      ...(storyboardId ? { storyboardId } : {}),
     };
 
     compositions.push(newComposition);
