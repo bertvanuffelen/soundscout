@@ -1596,6 +1596,27 @@ Tijdens het afspelen van de timeline moeten gebruikers nieuwe samples kunnen toe
 **Technische uitdaging:**
 Tone.Part dynamisch updaten of nieuwe events toevoegen terwijl transport loopt. Mogelijk alternatief: alleen preview afspelen van nieuwe clip, daarna stoppen voor plaatsing.
 
+### 45. Wis Tijdlijn Knop ✅
+**Status:** VOLTOOID (2026-03-11)
+**Complexiteit:** ⭐ Laag
+**Bron:** Developer todo (todo.md)
+
+**Beschrijving:**
+Een knop waarmee de gebruiker de volledige tijdlijn in één keer kan wissen.
+
+**Geïmplementeerd:**
+- [x] Eraser-icoon knop in Timeline header bar (rechts, naast vlaggetje en undo/redo)
+- [x] Inline bevestiging ("Alles wissen?" + Verwijderen / Annuleren) — geen modal nodig
+- [x] `clearAllTracks()` + `clearSelection()` na bevestiging
+- [x] Knop disabled wanneer er geen clips zijn (`selectHasNoClips`)
+- [x] Verborgen in readOnly-modus (docenten dashboard)
+- [x] i18n (NL + EN): `studio.clearTimeline`, `studio.clearConfirm`
+
+**Gewijzigde bestanden:**
+- `src/components/studio/Timeline.tsx` — Eraser knop + inline confirm state
+- `src/i18n/locales/nl.json` — clearTimeline, clearConfirm keys
+- `src/i18n/locales/en.json` — clearTimeline, clearConfirm keys
+
 ### 21. Template Systeem voor Docenten ✅
 **Status:** VOLTOOID (2026-02-28)
 **Complexiteit:** ⭐⭐ Medium
@@ -1943,6 +1964,32 @@ De hele app is single-user:
 **Aanbeveling:**
 Behandel als apart "Fase 2" project, niet als incrementele feature. Overweeg eerst een simpelere variant: asynchrone ensemble (leerling A maakt tracks 1-2, uploadt, leerling B downloadt en vult tracks 3-4 aan).
 
+### 46. Virtual Reality / 360-graden Locaties
+**Status:** Niet begonnen — onderzoeksfase
+**Complexiteit:** ⭐⭐⭐⭐⭐ Zeer Hoog
+**Risico:** Hoog (onbekend terrein, browser support, performance)
+**Geschatte tijd:** Onderzoek 2-3 dagen, implementatie onbekend
+**Bron:** Developer todo (todo.md)
+
+**Beschrijving:**
+Onderzoek naar de mogelijkheid om locaties als 360-graden panorama's of VR-beelden weer te geven. In plaats van een platte achtergrondafbeelding met hotspots, kan de speler rondkijken in een immersieve omgeving en geluiden "ontdekken" in de ruimte.
+
+**Te onderzoeken:**
+- [ ] Welke 360°/VR bibliotheken zijn beschikbaar voor React? (bijv. A-Frame, Three.js, react-360)
+- [ ] Browser support: werkt het op Chromebooks/tablets die scholen gebruiken?
+- [ ] Performance: kunnen 360°-beelden naast Tone.js audio draaien zonder problemen?
+- [ ] Content-creatie: hoe maak je 360°-beelden van locaties? (camera's, kosten, tools)
+- [ ] Interactiemodel: hoe koppel je hotspots aan posities in een 360°-omgeving?
+- [ ] Toegankelijkheid: alternatief voor leerlingen met motion sickness of zonder gyroscoop
+
+**Mogelijke aanpak:**
+- **Optie A: Echte VR** — A-Frame/Three.js met gyroscoop/muis navigatie, spatial audio (Tone.js Panner3D)
+- **Optie B: 360° panorama** — Simpeler, statische panoramafoto met pannen via drag/swipe, hotspots als overlay
+- **Optie C: Interactief 2.5D** — Parallax-lagen die bewegen bij muisbeweging, geen echte 360° maar wel immersief gevoel
+
+**Aanbeveling:**
+Begin met desk research naar haalbaarheid en kosten. Als het haalbaar is, probeer eerst Optie B (360° panorama) als proof of concept met één locatie.
+
 ---
 
 ## ⚪ P5 - ZEER LAGE PRIORITEIT / PARKEREN
@@ -2144,6 +2191,7 @@ Deze types/services zijn al voorbereid voor toekomstige implementatie:
 - ~~Volume per Track / Mixer (#39)~~ ✅
 - ~~Scène-markering op Timeline (#40)~~ ✅
 - **Soundscape Storytelling (#41)** ← volgende prioriteit (afhankelijk van #40 ✅)
+- ~~Wis Tijdlijn Knop (#45)~~ ✅
 
 Aanbevolen volgorde P2 restant: Storytelling (#41) → Touch issues (#16)
 
@@ -2160,6 +2208,7 @@ Aanbevolen volgorde P2 restant: Storytelling (#41) → Touch issues (#16)
 - ~~Beat Ruler met Maatnummers (#31)~~ ✅
 - Locatie Editor Verbeteringen (#27)
 - **Samenspel / Ensemble-modus (#42)** ← vervangt Multiplayer (#32)
+- **Virtual Reality / 360° Locaties (#46)** ← nieuw, onderzoeksfase
 - TP4 technische items (AudioService split, factory pattern, test suites)
 
 ### ⚪ Backlog: P5

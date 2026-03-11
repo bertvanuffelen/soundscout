@@ -55,11 +55,11 @@ Seven independent stores in `src/stores/`:
 |---|---|
 | `appStore` (alias: `gameStore`) | Current screen, active location ID, current composition ID |
 | `audioStore` | Playback state (isPlaying, currentBeat) |
-| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute |
+| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute, sections, clearAllTracks |
 | `libraryStore` | Recorder slots (max 6), collected samples, transfer to library |
 | `userStore` | User session, role (guest/student/teacher), class code |
 | `themeStore` | Active theme, locations, samples, map config (loaded from `?theme=` URL param) |
-| `selectionStore` | Selected clip ID + track index for edit toolbar |
+| `selectionStore` | Selected clip ID + track index for inline clip edit |
 
 **Pattern**: Direct selectors `useStore((s) => s.field)`. For non-reactive reads in callbacks, use `useStore.getState().field` to avoid unnecessary re-renders (see Tone.js Pitfalls below).
 
@@ -89,6 +89,17 @@ AudioService (singleton)
 **Volume**: No persistent `Tone.Gain` nodes. Volume is calculated per clip event as `trackVolume + clipVolume` (dB) and applied via `player.volume.setValueAtTime()` before each `player.start()`. Muted clips/tracks are skipped entirely.
 
 **MP3 export**: `src/utils/audioExport.ts` uses `Tone.Offline()` for offline rendering + `@breezystack/lamejs` for MP3 encoding. Output: 128kbps stereo.
+
+### Timeline Header & Studio Layout
+
+The Timeline component (`Timeline.tsx`) has a header bar with three zones:
+- **Left**: Timeline label
+- **Center**: Inline clip edit actions (trim, duplicate, volume, delete) — only visible when a clip is selected. These were previously in a separate `EditToolbar` component.
+- **Right**: Flag (section mark), Eraser (clear timeline with inline confirm), Undo/Redo
+
+The Timeline has `max-h-[50dvh]` to guarantee the sample library gets enough space. Tracks scroll vertically within `overflow-y-auto min-h-0 flex-1`.
+
+**Template locking**: When `activeTemplate !== null`, section mark button is hidden and `SectionBar` gets `readOnly` prop. Template clips are locked per-clip via `clip.fromTemplate === true`.
 
 ### Drag-and-Drop
 
