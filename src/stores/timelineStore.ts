@@ -441,7 +441,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   },
 
   clearAllTracks: () => {
-    set({ tracks: createEmptyTracks(), sections: [] });
+    set({ tracks: createEmptyTracks() });
   },
 
   setLooping: (looping) => {

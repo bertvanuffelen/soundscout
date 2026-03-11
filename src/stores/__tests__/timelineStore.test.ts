@@ -319,6 +319,24 @@ describe('timelineStore', () => {
         expect(track.clips).toHaveLength(0);
       });
     });
+
+    it('should preserve sections when clearing tracks', () => {
+      const store = useTimelineStore.getState();
+
+      store.addSection(8);
+      store.addSection(16);
+      expect(useTimelineStore.getState().sections).toHaveLength(2);
+
+      store.addClip(0, createClip('sample-1', 0));
+      store.clearAllTracks();
+
+      // Sections must survive clear
+      expect(useTimelineStore.getState().sections).toHaveLength(2);
+      // But clips are gone
+      useTimelineStore.getState().tracks.forEach((track) => {
+        expect(track.clips).toHaveLength(0);
+      });
+    });
   });
 
   describe('setLooping', () => {
