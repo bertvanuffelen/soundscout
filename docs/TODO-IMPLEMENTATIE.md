@@ -1782,42 +1782,128 @@ Track 2:       [clip]         [clip][clip]
 - `src/services/AudioService.ts` - pause() en stop() stoppen nu alle players
 
 ### 41. Soundscape Storytelling (Beeld bij Compositie)
-**Status:** Niet begonnen
+**Status:** Ontwerp afgerond, niet begonnen met implementatie
 **Complexiteit:** ⭐⭐⭐⭐ Hoog
-**Risico:** Medium-Hoog
+**Risico:** Medium
 **Geschatte tijd:** 5-8 dagen
 **Bron:** Brainstorm educatieve features (2026-02-27)
-**Afhankelijk van:** Scène-markering (#40)
+**Afhankelijk van:** Scène-markering (#40) ✅
 
 **Beschrijving:**
-Kinderen maken een soundtrack bij visuele scenes. Afbeeldingen of slides worden gekoppeld aan scènes op de timeline, zodat ze een soundscape componeren bij een verhaal. Dit verbindt muziek aan emotie en narratief.
+Kinderen maken een soundtrack bij visuele scenes. Afbeeldingen worden als storyboard voorgebouwd in het thema (net als samples) — gebruikers uploaden GEEN eigen afbeeldingen. De gebruiker kiest op het startscherm een modus: vrij componeren, componeren bij één afbeelding, of componeren bij een storyboard (meerdere afbeeldingen in vaste volgorde).
 
-Twee varianten:
-1. **Stripverhaal-modus**: Reeks afbeeldingen als slides, elke slide gekoppeld aan een scène
-2. **Achtergrond-modus**: Eén afbeelding als visuele context boven de timeline
+#### Gebruikersflow
+
+1. **Startscherm**: Na thema-selectie krijgt de gebruiker een tussenscherm:
+   - "Vrij componeren" → huidige flow, geen afbeeldingen
+   - "Componeer bij een afbeelding" → kies één afbeelding uit het thema
+   - "Componeer bij een storyboard" → kies een storyboard (reeks afbeeldingen, vaste volgorde)
+2. **Kaart + Locatie**: Ongewijzigd — gebruiker verzamelt geluiden
+3. **Studio**: Split-view library:
+   - Toggle om te schakelen tussen: alleen library | library + afbeelding | alleen afbeelding
+   - Desktop: links samples, rechts afbeelding met pijltjes links/rechts
+   - Mobile (< 640px): tab-systeem (tab "Geluiden" / tab "Beeld")
+   - Bij storyboard: secties worden automatisch aangemaakt (1 per afbeelding)
+4. **Podium**: Afbeelding(en) prominent tonen tijdens playback met fade-transitie
+
+#### Data-structuur
+
+Storyboards als onderdeel van thema-data (zelfde patroon als locations/samples):
+
+```
+src/data/themes/{themaId}/storyboards.ts
+public/images/themes/{themaId}/storyboards/
+
+Storyboard {
+  id: string
+  name: string              // i18n key
+  description: string       // i18n key
+  images: StoryboardImage[] // vaste volgorde
+}
+
+StoryboardImage {
+  id: string
+  url: string               // pad naar afbeelding in /public/
+  label: string             // i18n key (bijv. "Ochtend", "Middag")
+}
+```
+
+Storyboards zijn per thema gekoppeld: storyboard "Een dag in de stad" hoort bij thema "basis" (De Stad).
+
+#### Te implementeren
+
+- [ ] `Storyboard` en `StoryboardImage` types in `src/types/index.ts`
+- [ ] Storyboard data-bestanden per thema (`src/data/themes/{id}/storyboards.ts`)
+- [ ] Tussenscherm na thema-selectie: modus-keuze (vrij / afbeelding / storyboard)
+- [ ] `storyboardStore` of uitbreiding van `appStore` met actief storyboard + huidige afbeelding index
+- [ ] Studio split-view: library + afbeelding panel met toggle (3 standen)
+- [ ] Afbeelding-panel: huidige afbeelding, pijltjes links/rechts navigatie
+- [ ] Mobile: tab-systeem i.p.v. split-view
+- [ ] Auto-creatie van secties bij storyboard (1 per afbeelding, gelijke verdeling)
+- [ ] Podium: grote afbeelding-weergave synchroon met playback
+- [ ] `storyboardId` meenemen in `SavedComposition` + `SharedComposition`
+- [ ] Template-integratie: docent kan storyboard meegeven in template
+- [ ] i18n (NL + EN)
+
+#### Toekomstige uitbreidingen (aparte issues)
+
+- **Sectie ↔ storyboard-afbeelding koppeling (#47)**: gebruiker bepaalt lengte per slide via secties
+- **Video-storyboard (#48)**: video i.p.v. stilstaande afbeeldingen
+
+#### Technische aanpak ("veilige modus")
+
+- Alles achter feature check: `if (activeStoryboard)` — bestaande code ongewijzigd
+- Nieuwe componenten in `src/components/studio/storytelling/`
+- Storyboard-data als uitbreiding van thema-systeem (geen database nodig)
+- Toggle alleen zichtbaar als thema storyboards bevat
+- Geen gebruikers-upload, geen Supabase Storage, geen compressie
+
+#### Risico's
+
+- Layout split-view kan responsive design compliceren (mitigatie: mobile tabs)
+- Scope creep (mitigatie: strikte fasering, geen upload-functie)
+- Storyboard-data moet handmatig aangemaakt worden per thema
+
+### 47. Sectie ↔ Storyboard-afbeelding Koppeling
+**Status:** Niet begonnen
+**Complexiteit:** ⭐⭐ Medium
+**Risico:** Laag
+**Geschatte tijd:** 1-2 dagen
+**Bron:** Brainstorm storytelling (2026-03-11)
+**Afhankelijk van:** Storytelling (#41), Scène-markering (#40) ✅
+
+**Beschrijving:**
+Gebruiker kan de lengte van storyboard-afbeeldingen bepalen door de sectie-indeling op de tijdlijn aan te passen. Verplaats je de sectiegrens, dan wordt de ene afbeelding langer en de andere korter. Hierdoor kan de gebruiker het verhaal ritmisch vormgeven.
 
 **Te implementeren:**
-- [ ] Image gallery panel in studio (tabbed interface of sidebar)
-- [ ] `CompositionImage` type: `{ id, url, startBeat, endBeat, name }`
-- [ ] Afbeeldingen koppelen aan scènes (#40)
-- [ ] Afbeelding upload mechanisme (drag & drop of file input)
-- [ ] Afbeelding opslag: Supabase Storage (localStorage te klein)
-- [ ] Slide-weergave boven timeline, synchroon met playback
-- [ ] Docent kan afbeeldingen meegeven in templates (#21)
+- [ ] Bidirectionele koppeling: sectie-positie ↔ afbeelding-wisselpunt
+- [ ] Drag-to-resize op sectiegrens om afbeelding-duur aan te passen
+- [ ] Visuele feedback: afbeelding-thumbnail in SectionBar
+- [ ] Afbeelding in panel wisselt mee met sectie-navigatie
 
-**Technische uitdagingen:**
-- **UI layout**: Huidige 3-panel layout (`h-dvh`) laat weinig ruimte voor afbeeldingen. Opties:
-  - Tabbed interface: wisselen tussen "Samples" en "Beeld" tab
-  - Collapsible panel boven timeline
-  - Slides als overlay/modal tijdens playback
-- **Opslag**: localStorage max 5MB, ongeschikt voor afbeeldingen → Supabase Storage nodig
-- **Performance**: Grote afbeeldingen kunnen timeline-rendering vertragen
-- **Compressie**: Client-side image resize/compress voor upload
+**Technische aanpak:**
+Bestaande `Section.endBeat` bepaalt al waar secties scheiden. De koppeling is: sectie N toont afbeelding N. Bij storyboard-modus worden secties gesynchroniseerd met afbeeldingen. Verplaatsen van sectiegrenzen wijzigt alleen de timing, niet de volgorde.
 
-**Risico's:**
-- Layout-wijziging kan responsive design breken
-- Supabase Storage is nieuw terrein (nog niet gebruikt in app)
-- Scope creep: "afbeeldingen" kan veel richtingen op
+### 48. Video-Storyboard (Compositie bij Video)
+**Status:** Niet begonnen (onderzoeksfase)
+**Complexiteit:** ⭐⭐⭐⭐ Hoog
+**Risico:** Hoog
+**Geschatte tijd:** 5-10 dagen
+**Bron:** Aantekening gebruiker (2026-03-11)
+
+**Beschrijving:**
+Uitbreiding van het storyboard-systeem (#41) waarbij een video wordt afgespeeld in plaats van stilstaande afbeeldingen. De gebruiker componeert een soundscape bij een video. De video speelt synchroon met de tijdlijn af.
+
+**Te onderzoeken:**
+- [ ] HTML5 `<video>` synchronisatie met Tone.js transport
+- [ ] Video hosting: lokaal in /public/ (groot), Supabase Storage, of externe URL
+- [ ] Performance: video + audio playback tegelijk
+- [ ] Seek-synchronisatie: video.currentTime koppelen aan playhead
+- [ ] Mobile support: autoplay restricties, geheugengebruik
+- [ ] Bestandsgrootte: video's zijn veel groter dan afbeeldingen
+
+**Mogelijke aanpak:**
+Video als uitbreiding van `Storyboard` type: `type: 'video'` met één `videoUrl` i.p.v. meerdere images. Hergebruik dezelfde UI-slot (afbeelding-panel) maar dan met video-element. Synchronisatie via `requestAnimationFrame` loop die `video.currentTime` koppelt aan `Tone.Transport.seconds`.
 
 ### 27. Locatie Editor Verbeteringen (5.8)
 **Status:** Basis werkend, verbeteringen optioneel
@@ -2203,12 +2289,16 @@ Aanbevolen volgorde P2 restant: Storytelling (#41) → Touch issues (#16)
 - ~~Sample Wis Knop UI Aanpassen (#34)~~ ✅
 - Sample Effecten (#33) ← verplaatst van P5
 
+### 🟡 Later: P3 (vervolg na storytelling)
+- **Sectie ↔ Storyboard-afbeelding Koppeling (#47)** ← uitbreiding op #41
+
 ### 🟢 Toekomst: P4
 - Extra Locaties (#30)
 - ~~Beat Ruler met Maatnummers (#31)~~ ✅
 - Locatie Editor Verbeteringen (#27)
 - **Samenspel / Ensemble-modus (#42)** ← vervangt Multiplayer (#32)
 - **Virtual Reality / 360° Locaties (#46)** ← nieuw, onderzoeksfase
+- **Video-Storyboard (#48)** ← uitbreiding op #41, onderzoeksfase
 - TP4 technische items (AudioService split, factory pattern, test suites)
 
 ### ⚪ Backlog: P5
