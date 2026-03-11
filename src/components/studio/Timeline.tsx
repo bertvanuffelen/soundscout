@@ -1,7 +1,7 @@
 import { memo, useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX } from 'lucide-react';
+import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser } from 'lucide-react';
 import type { Track as TrackType, Sample, Clip } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
@@ -70,6 +70,24 @@ export const Timeline = memo(function Timeline({
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
+  const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
+
+  // Clear timeline confirmation state
+  const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  const handleClearClick = useCallback(() => {
+    setShowClearConfirm(true);
+  }, []);
+
+  const handleClearConfirm = useCallback(() => {
+    clearAllTracks();
+    clearSelection();
+    setShowClearConfirm(false);
+  }, [clearAllTracks, clearSelection]);
+
+  const handleClearCancel = useCallback(() => {
+    setShowClearConfirm(false);
+  }, []);
 
   // Section state
   const sections = useTimelineStore((s) => s.sections);
@@ -273,6 +291,40 @@ export const Timeline = memo(function Timeline({
             >
               <Flag size={14} />
             </button>
+          )}
+          {/* Clear timeline button — only in edit mode */}
+          {!readOnly && (
+            showClearConfirm ? (
+              <div className="flex items-center gap-1 px-1">
+                <span className="text-[10px] text-error-500 font-medium whitespace-nowrap">
+                  {t('studio.clearConfirm')}
+                </span>
+                <button
+                  onClick={handleClearConfirm}
+                  aria-label={t('common.delete')}
+                  className="px-1.5 py-0.5 text-[10px] font-bold text-white bg-error-500 hover:bg-error-600 rounded transition-colors"
+                >
+                  {t('common.delete')}
+                </button>
+                <button
+                  onClick={handleClearCancel}
+                  aria-label={t('common.cancel')}
+                  className="px-1.5 py-0.5 text-[10px] font-medium text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
+                >
+                  {t('common.cancel')}
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={handleClearClick}
+                disabled={hasNoClips}
+                aria-label={t('studio.clearTimeline')}
+                title={t('studio.clearTimeline')}
+                className="p-1 rounded text-neutral-400 hover:text-error-500 hover:bg-error-50 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              >
+                <Eraser size={14} />
+              </button>
+            )
           )}
           {onUndo && onRedo && (
             <>

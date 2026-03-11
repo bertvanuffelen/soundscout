@@ -148,6 +148,8 @@
     "mute": "Dempen",
     "unmute": "Dempen opheffen",
     "muted": "Gedempt",
+    "clearTimeline": "Wis tijdlijn",
+    "clearConfirm": "Alles wissen?",
     "trimModal": {
       "title": "Sample inkorten",
       "preview": "Voorbeeld",

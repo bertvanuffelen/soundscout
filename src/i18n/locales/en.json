@@ -148,6 +148,8 @@
     "mute": "Mute",
     "unmute": "Unmute",
     "muted": "Muted",
+    "clearTimeline": "Clear timeline",
+    "clearConfirm": "Clear all?",
     "trimModal": {
       "title": "Trim sample",
       "preview": "Preview",
