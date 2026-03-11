@@ -35,7 +35,7 @@ interface TimelineStore {
   // Section actions (musical form / vormschema)
   addSection: (endBeat: number, color?: string, label?: string, fromStoryboard?: boolean) => boolean;
   removeSection: (sectionId: string) => void;
-  updateSection: (sectionId: string, updates: Partial<Pick<Section, 'color' | 'label'>>) => void;
+  updateSection: (sectionId: string, updates: Partial<Pick<Section, 'color' | 'label' | 'endBeat'>>) => void;
   clearSections: () => void;
 
   // Clip actions (with smart snap support)
@@ -138,11 +138,16 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   },
 
   updateSection: (sectionId, updates) => {
-    set((prev) => ({
-      sections: prev.sections.map((s) =>
+    set((prev) => {
+      const updated = prev.sections.map((s) =>
         s.id === sectionId ? { ...s, ...updates } : s,
-      ),
-    }));
+      );
+      // Re-sort when endBeat changes to maintain order
+      if (updates.endBeat !== undefined) {
+        updated.sort((a, b) => a.endBeat - b.endBeat);
+      }
+      return { sections: updated };
+    });
   },
 
   clearSections: () => {

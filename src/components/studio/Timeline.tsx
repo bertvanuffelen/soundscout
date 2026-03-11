@@ -99,6 +99,8 @@ export const Timeline = memo(function Timeline({
   const activeTemplate = useAppStore((s) => s.activeTemplate);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
   const sectionsLocked = activeTemplate !== null || activeStoryboard !== null;
+  // Storyboard sections can be resized but not added/deleted/edited
+  const sectionsResizable = activeStoryboard !== null;
 
   // Subscribe to currentBeat from store (for StudioView)
   // or use prop (for SubmissionPlayer with local state)
@@ -141,6 +143,11 @@ export const Timeline = memo(function Timeline({
       addSection(beat);
     }
   }, [totalBeats, addSection]);
+
+  // Resize a section's endBeat (drag handle in SectionBar)
+  const handleResizeSection = useCallback((sectionId: string, newEndBeat: number) => {
+    updateSection(sectionId, { endBeat: newEndBeat });
+  }, [updateSection]);
 
   // Calculate width multiplier for scrollable content
   const widthMultiplier = totalBeats / VISIBLE_BEATS;
@@ -393,8 +400,10 @@ export const Timeline = memo(function Timeline({
                   sections={sections}
                   totalBeats={totalBeats}
                   onUpdate={updateSection}
+                  onResize={handleResizeSection}
                   onDelete={removeSection}
                   readOnly={readOnly || sectionsLocked}
+                  resizable={!readOnly && sectionsResizable}
                 />
               </div>
             </div>
