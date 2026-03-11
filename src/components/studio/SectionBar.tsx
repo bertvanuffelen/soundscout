@@ -8,6 +8,7 @@
 
 import { memo, useState, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
+import { useTranslation } from 'react-i18next';
 import type { Section } from '../../types';
 import { SectionPopover } from './SectionPopover';
 
@@ -26,8 +27,16 @@ export const SectionBar = memo(function SectionBar({
   onDelete,
   readOnly = false,
 }: SectionBarProps) {
+  const { t, i18n } = useTranslation();
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const segmentRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
+
+  // Translate label if it's an i18n key, otherwise return as-is
+  const translateLabel = useCallback((label?: string) => {
+    if (!label) return undefined;
+    // If the key exists in i18n, translate it; otherwise show raw text
+    return i18n.exists(label) ? t(label) : label;
+  }, [t, i18n]);
 
   const handleSegmentClick = useCallback((sectionId: string) => {
     setActivePopover((prev) => (prev === sectionId ? null : sectionId));
@@ -70,11 +79,11 @@ export const SectionBar = memo(function SectionBar({
               className="absolute top-0 bottom-0 flex items-center justify-center
                          border-r-2 border-white/60 overflow-hidden"
               style={segmentStyle}
-              title={section.label || undefined}
+              title={translateLabel(section.label) || undefined}
             >
               {section.label && (
                 <span className="text-[9px] font-bold text-neutral-700 truncate px-1 select-none">
-                  {section.label}
+                  {translateLabel(section.label)}
                 </span>
               )}
             </div>
@@ -93,11 +102,11 @@ export const SectionBar = memo(function SectionBar({
                        border-r-2 border-white/60 cursor-pointer transition-opacity
                        hover:opacity-80 overflow-hidden"
             style={segmentStyle}
-            title={section.label || undefined}
+            title={translateLabel(section.label) || undefined}
           >
             {section.label && (
               <span className="text-[9px] font-bold text-neutral-700 truncate px-1 select-none">
-                {section.label}
+                {translateLabel(section.label)}
               </span>
             )}
           </button>

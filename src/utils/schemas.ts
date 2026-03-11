@@ -59,6 +59,7 @@ export const SectionSchema = z.object({
   endBeat: z.number().min(0),
   color: z.string(),
   label: z.string().max(50).optional(),
+  fromStoryboard: z.boolean().optional(),
   // Storytelling fields (#41) — optional, not yet in UI
   title: z.string().optional(),
   description: z.string().optional(),

@@ -162,6 +162,7 @@
       "sectionLabel": "Section {{number}}",
       "editSection": "Edit section",
       "deleteSection": "Delete section",
+      "lockedStoryboard": "Linked to storyboard",
       "colorLabel": "Color",
       "labelPlaceholder": "Label (e.g. Intro, A, B)",
       "maxReached": "Maximum number of sections reached"

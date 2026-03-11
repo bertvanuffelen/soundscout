@@ -27,8 +27,8 @@ function getActiveImageIndex(
 ): number {
   if (imageCount <= 1) return 0;
 
-  // If we have sections that match image count, use section boundaries
-  if (sections.length === imageCount - 1) {
+  // If sections match image count (1 per slide) or imageCount - 1 (legacy)
+  if (sections.length === imageCount || sections.length === imageCount - 1) {
     for (let i = 0; i < sections.length; i++) {
       if (currentBeat < sections[i].endBeat) {
         return i;
@@ -119,15 +119,31 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
     return unsub;
   }, []);
 
-  // --- Manual navigation (wrapped to update local state too) ---
+  // --- Manual navigation (wrapped to update local state too + seek timeline) ---
+
+  /** Move playhead to the start beat of the given image/section index */
+  const seekToSection = useCallback((imageIndex: number) => {
+    if (!isStoryboard) return;
+    const { sections } = useTimelineStore.getState();
+    // Section i starts at sections[i-1].endBeat (or 0 for first)
+    const startBeat = imageIndex > 0 && sections[imageIndex - 1]
+      ? sections[imageIndex - 1].endBeat
+      : 0;
+    useAudioStore.getState().setCurrentBeat(startBeat);
+  }, [isStoryboard]);
 
   const handlePrev = useCallback(() => {
     prevImage();
-  }, [prevImage]);
+    // After prevImage, store.currentImageIndex is updated — read it
+    const newIndex = useAppStore.getState().currentImageIndex;
+    seekToSection(newIndex);
+  }, [prevImage, seekToSection]);
 
   const handleNext = useCallback(() => {
     nextImage();
-  }, [nextImage]);
+    const newIndex = useAppStore.getState().currentImageIndex;
+    seekToSection(newIndex);
+  }, [nextImage, seekToSection]);
 
   const currentImage = activeStoryboard.images[displayIndex];
   if (!currentImage) return null;

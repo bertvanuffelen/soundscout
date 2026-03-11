@@ -162,6 +162,7 @@
       "sectionLabel": "Deel {{number}}",
       "editSection": "Deel bewerken",
       "deleteSection": "Deel verwijderen",
+      "lockedStoryboard": "Gekoppeld aan storyboard",
       "colorLabel": "Kleur",
       "labelPlaceholder": "Label (bijv. Intro, A, B)",
       "maxReached": "Maximum aantal delen bereikt"

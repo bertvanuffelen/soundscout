@@ -8,7 +8,7 @@
 
 import { memo, useRef, useEffect, useState, useCallback, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Lock } from 'lucide-react';
 import type { Section } from '../../types';
 import { SECTION_COLORS } from '../../types';
 import { SECTION_LABEL_MAX_LENGTH } from '../../constants/config';
@@ -148,15 +148,22 @@ export const SectionPopover = memo(function SectionPopover({
         />
       </div>
 
-      {/* Delete button */}
-      <button
-        onClick={handleDelete}
-        className="flex items-center gap-1.5 text-xs text-error-500 hover:text-error-600
-                   hover:bg-error-50 rounded-lg px-2 py-1.5 transition-colors w-full cursor-pointer"
-      >
-        <Trash2 size={12} />
-        {t('studio.sections.deleteSection')}
-      </button>
+      {/* Delete button (hidden for storyboard-linked sections) */}
+      {section.fromStoryboard ? (
+        <div className="flex items-center gap-1.5 text-xs text-text-muted px-2 py-1.5">
+          <Lock size={12} />
+          {t('studio.sections.lockedStoryboard')}
+        </div>
+      ) : (
+        <button
+          onClick={handleDelete}
+          className="flex items-center gap-1.5 text-xs text-error-500 hover:text-error-600
+                     hover:bg-error-50 rounded-lg px-2 py-1.5 transition-colors w-full cursor-pointer"
+        >
+          <Trash2 size={12} />
+          {t('studio.sections.deleteSection')}
+        </button>
+      )}
     </div>
   );
 });

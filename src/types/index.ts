@@ -155,6 +155,8 @@ export interface Section {
   color: string;
   /** Optional label (e.g. "A", "Intro", "Refrein") */
   label?: string;
+  /** If true, section was auto-created for a storyboard slide — cannot be deleted (#41) */
+  fromStoryboard?: boolean;
   // Prepared for #41 Storytelling (not yet in UI):
   /** Section title for storytelling mode */
   title?: string;

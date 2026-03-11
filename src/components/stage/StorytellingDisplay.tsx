@@ -28,9 +28,9 @@ function getActiveImageIndex(
 ): number {
   if (imageCount <= 1) return 0;
 
-  // If we have sections that match image count, use section boundaries
-  // Sections define boundaries: image 0 = start..section[0].endBeat, image 1 = section[0].endBeat..section[1].endBeat, etc.
-  if (sections.length === imageCount - 1) {
+  // If sections match image count (1 section per slide) or image count - 1
+  // (legacy: last slide has no section), use section boundaries
+  if (sections.length === imageCount || sections.length === imageCount - 1) {
     for (let i = 0; i < sections.length; i++) {
       if (currentBeat < sections[i].endBeat) {
         return i;

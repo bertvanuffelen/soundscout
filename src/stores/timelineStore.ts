@@ -33,7 +33,7 @@ interface TimelineStore {
   sections: Section[];
 
   // Section actions (musical form / vormschema)
-  addSection: (endBeat: number, color?: string, label?: string) => boolean;
+  addSection: (endBeat: number, color?: string, label?: string, fromStoryboard?: boolean) => boolean;
   removeSection: (sectionId: string) => void;
   updateSection: (sectionId: string, updates: Partial<Pick<Section, 'color' | 'label'>>) => void;
   clearSections: () => void;
@@ -101,7 +101,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
 
   // --- Section Actions ---
 
-  addSection: (endBeat, color, label) => {
+  addSection: (endBeat, color, label, fromStoryboard) => {
     const state = get();
 
     // Validate limits
@@ -119,6 +119,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       endBeat,
       color: nextColor,
       label,
+      ...(fromStoryboard ? { fromStoryboard: true } : {}),
     };
 
     set((prev) => ({
@@ -128,6 +129,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   },
 
   removeSection: (sectionId) => {
+    const section = get().sections.find((s) => s.id === sectionId);
+    // Protect storyboard-linked sections from deletion (#41)
+    if (section?.fromStoryboard) return;
     set((prev) => ({
       sections: prev.sections.filter((s) => s.id !== sectionId),
     }));

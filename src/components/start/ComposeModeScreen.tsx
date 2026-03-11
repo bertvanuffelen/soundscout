@@ -52,15 +52,18 @@ export default function ComposeModeScreen() {
     setActiveStoryboard(sb);
 
     // Auto-create sections for storyboards with multiple images
-    // E.g. 3 images, 32 beats → sections at beat 11, 22 (third runs to end)
+    // E.g. 3 images, 32 beats → sections at beat 11, 22, 32
+    // Each section represents one slide with its label
     if (sb.images.length > 1) {
       const { totalBeats, clearSections, addSection } = useTimelineStore.getState();
       clearSections();
       const beatsPerImage = Math.floor(totalBeats / sb.images.length);
-      for (let i = 1; i < sb.images.length; i++) {
-        const endBeat = beatsPerImage * i;
-        const label = sb.images[i - 1].label;
-        addSection(endBeat, undefined, label);
+      for (let i = 0; i < sb.images.length; i++) {
+        const endBeat = i < sb.images.length - 1
+          ? beatsPerImage * (i + 1)
+          : totalBeats;
+        const label = sb.images[i].label;
+        addSection(endBeat, undefined, label, true);
       }
     }
 
