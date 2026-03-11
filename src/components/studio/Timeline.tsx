@@ -95,9 +95,10 @@ export const Timeline = memo(function Timeline({
   const updateSection = useTimelineStore((s) => s.updateSection);
   const removeSection = useTimelineStore((s) => s.removeSection);
 
-  // Template: lock sections when a template is active
+  // Lock sections when a template or storyboard is active
   const activeTemplate = useAppStore((s) => s.activeTemplate);
-  const sectionsLocked = activeTemplate !== null;
+  const activeStoryboard = useAppStore((s) => s.activeStoryboard);
+  const sectionsLocked = activeTemplate !== null || activeStoryboard !== null;
 
   // Subscribe to currentBeat from store (for StudioView)
   // or use prop (for SubmissionPlayer with local state)
