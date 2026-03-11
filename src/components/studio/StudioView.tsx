@@ -10,6 +10,7 @@
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
+import { Music, Image } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
@@ -22,6 +23,8 @@ import { useUndoRedoTimeline } from '../../hooks/useUndoRedoTimeline';
 import { SampleLibrary } from './SampleLibrary';
 import { Timeline } from './Timeline';
 import { TransportControls } from './TransportControls';
+import { StorytellingPanel, StorytellingToggle } from './storytelling';
+import type { StudioViewMode } from './storytelling';
 // EditToolbar is now integrated into Timeline header bar
 import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
@@ -38,6 +41,13 @@ export function StudioView() {
   // Template state
   const activeTemplate = useAppStore((s) => s.activeTemplate);
   const templateClipsLocked = useAppStore((s) => s.templateClipsLocked);
+
+  // Storytelling state (#41)
+  const activeStoryboard = useAppStore((s) => s.activeStoryboard);
+  const hasStorytelling = activeStoryboard !== null;
+  const [viewMode, setViewMode] = useState<StudioViewMode>('split');
+  // Mobile tab: only 'library' or 'image' (no split on small screens)
+  const [mobileTab, setMobileTab] = useState<'library' | 'image'>('library');
 
   // Timeline state
   const tracks = useTimelineStore((s) => s.tracks);
@@ -243,7 +253,15 @@ export function StudioView() {
           <span className="hidden sm:inline">{t('studio.backToLocation')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
-        <h1 className="text-base sm:text-lg font-bold text-text-main">{t('studio.title')}</h1>
+        <div className="flex items-center gap-2">
+          {/* Desktop storytelling toggle (hidden on mobile — mobile uses tab bar below) */}
+          {hasStorytelling && (
+            <div className="hidden sm:block">
+              <StorytellingToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+            </div>
+          )}
+          <h1 className="text-base sm:text-lg font-bold text-text-main">{t('studio.title')}</h1>
+        </div>
         <Button
           variant="primary"
           size="sm"
@@ -253,6 +271,34 @@ export function StudioView() {
           {t('studio.toStage')}
         </Button>
       </div>
+
+      {/* Mobile tab bar for storytelling (visible only on mobile when storytelling active) */}
+      {hasStorytelling && (
+        <div className="flex sm:hidden border-b border-border-subtle bg-white/90">
+          <button
+            onClick={() => setMobileTab('library')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-colors ${
+              mobileTab === 'library'
+                ? 'text-brand-700 border-b-2 border-brand-700'
+                : 'text-text-muted'
+            }`}
+          >
+            <Music size={14} />
+            {t('composeMode.viewLibrary')}
+          </button>
+          <button
+            onClick={() => setMobileTab('image')}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 text-xs font-semibold transition-colors ${
+              mobileTab === 'image'
+                ? 'text-brand-700 border-b-2 border-brand-700'
+                : 'text-text-muted'
+            }`}
+          >
+            <Image size={14} />
+            {t('composeMode.viewImage')}
+          </button>
+        </div>
+      )}
 
       {/* Template info banner */}
       {activeTemplate && (
@@ -274,13 +320,47 @@ export function StudioView() {
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        {/* Sample Library - fills available space */}
-        <SampleLibrary
-          samples={librarySamples}
-          onPreview={handlePreview}
-          selectedSampleId={selectedLibrarySampleId}
-          onSelectSample={setSelectedLibrarySampleId}
-        />
+        {/* Content area: Library, Split, or Image — depends on storytelling state */}
+        {!hasStorytelling ? (
+          /* No storytelling: library only (existing behavior) */
+          <SampleLibrary
+            samples={librarySamples}
+            onPreview={handlePreview}
+            selectedSampleId={selectedLibrarySampleId}
+            onSelectSample={setSelectedLibrarySampleId}
+          />
+        ) : (
+          <>
+            {/* Desktop layout (sm+) */}
+            <div className="hidden sm:flex flex-1 min-h-0">
+              {viewMode !== 'image' && (
+                <SampleLibrary
+                  samples={librarySamples}
+                  onPreview={handlePreview}
+                  selectedSampleId={selectedLibrarySampleId}
+                  onSelectSample={setSelectedLibrarySampleId}
+                />
+              )}
+              {viewMode !== 'library' && (
+                <StorytellingPanel className={viewMode === 'split' ? 'flex-1 min-w-0 border-l border-border-subtle bg-white/90 md:bg-bg-surface' : 'flex-1'} />
+              )}
+            </div>
+
+            {/* Mobile layout (<sm): tabs */}
+            <div className="flex sm:hidden flex-1 min-h-0">
+              {mobileTab === 'library' ? (
+                <SampleLibrary
+                  samples={librarySamples}
+                  onPreview={handlePreview}
+                  selectedSampleId={selectedLibrarySampleId}
+                  onSelectSample={setSelectedLibrarySampleId}
+                />
+              ) : (
+                <StorytellingPanel className="flex-1" />
+              )}
+            </div>
+          </>
+        )}
 
         {/* Timeline - fixed at bottom above transport controls */}
         <Timeline

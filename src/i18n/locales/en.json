@@ -567,7 +567,13 @@
     "pickStoryboard": "Choose a storyboard",
     "images_one": "{{count}} image",
     "images_other": "{{count}} images",
-    "back": "Back"
+    "back": "Back",
+    "viewMode": "View mode",
+    "viewLibrary": "Sounds",
+    "viewSplit": "Sounds & Image",
+    "viewImage": "Image",
+    "prevImage": "Previous image",
+    "nextImage": "Next image"
   },
   "storyboards": {
     "basis": {

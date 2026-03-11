@@ -567,7 +567,13 @@
     "pickStoryboard": "Kies een storyboard",
     "images_one": "{{count}} afbeelding",
     "images_other": "{{count}} afbeeldingen",
-    "back": "Terug"
+    "back": "Terug",
+    "viewMode": "Weergave",
+    "viewLibrary": "Geluiden",
+    "viewSplit": "Geluiden & Beeld",
+    "viewImage": "Beeld",
+    "prevImage": "Vorige afbeelding",
+    "nextImage": "Volgende afbeelding"
   },
   "storyboards": {
     "basis": {
