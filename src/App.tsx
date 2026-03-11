@@ -17,6 +17,7 @@ const StageView = lazy(() => import('./components/stage/StageView'));
 const CompositionsView = lazy(() => import('./components/compositions/CompositionsView'));
 const SharedPlayer = lazy(() => import('./components/share/SharedPlayer'));
 const TeacherPage = lazy(() => import('./pages/TeacherPage'));
+const ComposeModeScreen = lazy(() => import('./components/start/ComposeModeScreen'));
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
@@ -52,6 +53,7 @@ function AppContent() {
       location: t('common.location'),
       studio: t('studio.title'),
       stage: t('stage.title'),
+      'compose-mode': t('composeMode.title'),
       compositions: t('compositions.title'),
       teacher: 'Teacher Dashboard',
       shared: 'SoundScout',
@@ -85,6 +87,20 @@ function AppContent() {
     }
   }, []);
 
+  // Initialize storytelling flag: ?storytelling=true activates compose mode selection
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const storytellingParam = params.get('storytelling');
+
+    if (storytellingParam === 'true') {
+      useAppStore.getState().setStorytellingEnabled(true);
+      // Clean URL without reloading
+      const url = new URL(window.location.href);
+      url.searchParams.delete('storytelling');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, []);
+
   // Check for ?share= query parameter on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -110,6 +126,15 @@ function AppContent() {
   switch (currentScreen) {
     case 'start':
       return <StartScreen />;
+
+    case 'compose-mode':
+      return (
+        <FeatureErrorBoundary featureName="ComposeMode">
+          <Suspense fallback={<LoadingFallback />}>
+            <ComposeModeScreen />
+          </Suspense>
+        </FeatureErrorBoundary>
+      );
 
     case 'map':
       return (

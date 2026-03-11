@@ -553,5 +553,36 @@
       "checkingCode": "Checking code...",
       "sendError": "Failed to send. Please try again."
     }
+  },
+  "composeMode": {
+    "title": "How do you want to compose?",
+    "subtitle": "Choose a way to create your composition",
+    "free": "Free compose",
+    "freeDescription": "Create your own composition without images",
+    "image": "With an image",
+    "imageDescription": "Create a soundscape for a single image",
+    "storyboard": "With a storyboard",
+    "storyboardDescription": "Create a soundscape for a series of images",
+    "pickImage": "Choose an image",
+    "pickStoryboard": "Choose a storyboard",
+    "images_one": "{{count}} image",
+    "images_other": "{{count}} images",
+    "back": "Back"
+  },
+  "storyboards": {
+    "basis": {
+      "stad-dag": {
+        "name": "A day in the city",
+        "description": "Create sounds for a day in the city: from morning to evening",
+        "ochtend": "Morning",
+        "middag": "Afternoon",
+        "avond": "Evening"
+      },
+      "stad-markt": {
+        "name": "The Market",
+        "description": "Create sounds for a busy market square",
+        "markt": "Market Square"
+      }
+    }
   }
 }

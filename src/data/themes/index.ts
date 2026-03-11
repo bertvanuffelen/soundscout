@@ -73,3 +73,10 @@ export function getPublicThemes(): ThemeConfig[] {
 export function isValidTheme(id: string): boolean {
   return id in themes;
 }
+
+/**
+ * Get storyboards for a theme (empty array if none).
+ */
+export function getThemeStoryboards(themeId: string): ThemeConfig['storyboards'] {
+  return themes[themeId]?.storyboards ?? [];
+}

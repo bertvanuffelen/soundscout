@@ -10,6 +10,7 @@
  */
 export type GameScreen =
   | 'start'
+  | 'compose-mode'
   | 'map'
   | 'location'
   | 'studio'
@@ -17,6 +18,37 @@ export type GameScreen =
   | 'compositions'
   | 'teacher'
   | 'shared';
+
+// --- Storytelling (#41) ---
+
+/** Composition mode selected after theme choice */
+export type ComposeMode = 'free' | 'image' | 'storyboard';
+
+/** A single image within a storyboard */
+export interface StoryboardImage {
+  /** Unique identifier within storyboard */
+  id: string;
+  /** Path to image in /public/images/themes/{themeId}/storyboards/ */
+  url: string;
+  /** i18n key for the image label (e.g. "Ochtend") */
+  label: string;
+}
+
+/** A storyboard: a sequence of images (or a single image) tied to a theme */
+export interface Storyboard {
+  /** Unique identifier within theme (e.g. 'stad-dag') */
+  id: string;
+  /** Theme this storyboard belongs to */
+  themeId: string;
+  /** i18n key for storyboard name */
+  name: string;
+  /** i18n key for storyboard description */
+  description: string;
+  /** Thumbnail image for selection screen */
+  coverImage: string;
+  /** Images in fixed order. 1 image = single image mode, 2+ = slideshow */
+  images: StoryboardImage[];
+}
 
 export type VisualHint = 'glow' | 'pulse' | 'none';
 
@@ -228,6 +260,8 @@ export interface SavedComposition {
   shareCode?: string;
   /** ISO timestamp when shared */
   sharedAt?: string;
+  /** Storyboard ID if composed with storytelling (#41) */
+  storyboardId?: string;
 }
 
 // --- Composition Data Transfer Object ---
@@ -250,6 +284,8 @@ export interface CompositionData {
   samples: Sample[];
   /** Optional sections for musical form (vormschema) */
   sections?: Section[];
+  /** Storyboard ID if composed with storytelling (#41) */
+  storyboardId?: string;
 }
 
 // --- Template (Fase 5 - Docent-aangemaakt sjabloon) ---

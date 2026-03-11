@@ -553,5 +553,36 @@
       "checkingCode": "Code controleren...",
       "sendError": "Versturen mislukt. Probeer opnieuw."
     }
+  },
+  "composeMode": {
+    "title": "Hoe wil je componeren?",
+    "subtitle": "Kies een manier om je compositie te maken",
+    "free": "Vrij componeren",
+    "freeDescription": "Maak je eigen compositie zonder afbeeldingen",
+    "image": "Bij een afbeelding",
+    "imageDescription": "Maak een soundscape bij één afbeelding",
+    "storyboard": "Bij een storyboard",
+    "storyboardDescription": "Maak een soundscape bij een reeks afbeeldingen",
+    "pickImage": "Kies een afbeelding",
+    "pickStoryboard": "Kies een storyboard",
+    "images_one": "{{count}} afbeelding",
+    "images_other": "{{count}} afbeeldingen",
+    "back": "Terug"
+  },
+  "storyboards": {
+    "basis": {
+      "stad-dag": {
+        "name": "Een dag in de stad",
+        "description": "Maak geluid bij een dag in de stad: van ochtend tot avond",
+        "ochtend": "Ochtend",
+        "middag": "Middag",
+        "avond": "Avond"
+      },
+      "stad-markt": {
+        "name": "De Markt",
+        "description": "Maak geluid bij een druk marktplein",
+        "markt": "Marktplein"
+      }
+    }
   }
 }

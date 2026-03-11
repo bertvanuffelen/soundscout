@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen, Template } from '../types';
+import type { GameScreen, Template, ComposeMode, Storyboard } from '../types';
 
 interface AppStore {
   // Navigation state
@@ -24,6 +24,12 @@ interface AppStore {
   activeTemplate: Template | null;
   // Whether template clips are locked (not movable/deletable)
   templateClipsLocked: boolean;
+
+  // Storytelling (#41)
+  composeMode: ComposeMode;
+  activeStoryboard: Storyboard | null;
+  currentImageIndex: number;
+  storytellingEnabled: boolean;  // URL flag: ?storytelling=true
 
   // Navigation actions
   setScreen: (screen: GameScreen) => void;
@@ -41,6 +47,16 @@ interface AppStore {
   loadTemplate: (template: Template) => void;
   clearTemplate: () => void;
   setTemplateClipsLocked: (locked: boolean) => void;
+
+  // Storytelling actions (#41)
+  setComposeMode: (mode: ComposeMode) => void;
+  setActiveStoryboard: (sb: Storyboard | null) => void;
+  setCurrentImageIndex: (index: number) => void;
+  nextImage: () => void;
+  prevImage: () => void;
+  clearStoryboard: () => void;
+  setStorytellingEnabled: (enabled: boolean) => void;
+  goToComposeMode: () => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -50,6 +66,10 @@ export const useAppStore = create<AppStore>()((set) => ({
   shareCode: null,
   activeTemplate: null,
   templateClipsLocked: false,
+  composeMode: 'free',
+  activeStoryboard: null,
+  currentImageIndex: 0,
+  storytellingEnabled: false,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -57,7 +77,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateClipsLocked: false }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateClipsLocked: false, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0 }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -78,6 +98,22 @@ export const useAppStore = create<AppStore>()((set) => ({
   loadTemplate: (template) => set({ activeTemplate: template, templateClipsLocked: template.clipsLocked }),
   clearTemplate: () => set({ activeTemplate: null, templateClipsLocked: false }),
   setTemplateClipsLocked: (locked) => set({ templateClipsLocked: locked }),
+
+  // Storytelling actions (#41)
+  setComposeMode: (mode) => set({ composeMode: mode }),
+  setActiveStoryboard: (sb) => set({ activeStoryboard: sb, currentImageIndex: 0 }),
+  setCurrentImageIndex: (index) => set({ currentImageIndex: index }),
+  nextImage: () => set((state) => {
+    if (!state.activeStoryboard) return {};
+    const maxIndex = state.activeStoryboard.images.length - 1;
+    return { currentImageIndex: Math.min(state.currentImageIndex + 1, maxIndex) };
+  }),
+  prevImage: () => set((state) => ({
+    currentImageIndex: Math.max(state.currentImageIndex - 1, 0),
+  })),
+  clearStoryboard: () => set({ composeMode: 'free', activeStoryboard: null, currentImageIndex: 0 }),
+  setStorytellingEnabled: (enabled) => set({ storytellingEnabled: enabled }),
+  goToComposeMode: () => set({ currentScreen: 'compose-mode' }),
 }));
 
 // Re-export for backwards compatibility during migration

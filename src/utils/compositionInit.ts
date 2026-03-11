@@ -13,6 +13,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
+import { getThemeStoryboards } from '../data/themes';
 import { logger } from './logger';
 import type { Template } from '../types';
 
@@ -59,8 +60,16 @@ export async function initializeNewComposition(
     onAudioInitFailed?.(error);
   }
 
-  // Stap 4: Navigeer naar map (altijd, ook als audio faalt)
-  useAppStore.getState().goToMap();
+  // Stap 4: Navigeer — naar compose-mode als storytelling actief, anders naar map
+  const { storytellingEnabled, goToComposeMode, goToMap } = useAppStore.getState();
+  const storyboards = getThemeStoryboards(themeId);
+  const hasStoryboards = storyboards && storyboards.length > 0;
+
+  if (storytellingEnabled && hasStoryboards) {
+    goToComposeMode();
+  } else {
+    goToMap();
+  }
 
   return audioSuccess;
 }
