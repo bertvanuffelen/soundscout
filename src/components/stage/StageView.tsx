@@ -33,10 +33,12 @@ import { Button, Modal } from '../ui';
 import { ShareWithTeacherModal, ShareLinkModal } from '../share';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { StagePlayback, StageAudience } from './StagePlayback';
+import { StorytellingDisplay } from './StorytellingDisplay';
 
 export function StageView() {
   const { t } = useTranslation();
   const setScreen = useAppStore((s) => s.setScreen);
+  const activeStoryboard = useAppStore((s) => s.activeStoryboard);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
   const bpm = useTimelineStore((s) => s.bpm);
@@ -141,6 +143,9 @@ export function StageView() {
               className="w-full px-4 py-3 bg-neutral-50 border-2 border-border-subtle rounded-xl text-center text-text-main text-lg font-semibold placeholder:text-text-muted/50 focus:outline-none focus:border-primary-400 transition-colors"
             />
           </div>
+
+          {/* Storytelling image display (#41) */}
+          {activeStoryboard && <StorytellingDisplay />}
 
           {/* Playback controls (extracted component) */}
           <StagePlayback />
