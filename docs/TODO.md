@@ -39,6 +39,11 @@ Resterende items uit Fase D:
 
 Video afspelen i.p.v. stilstaande afbeeldingen in het storyboard-systeem. Vereist onderzoek naar HTML5 video sync met Tone.js, hosting, performance en mobile support.
 
+#### #49 — Storyboard/Afbeelding in Docentenviewer
+**Complexiteit:** Medium · **Afhankelijk van:** #41 ✅, #21 ✅
+
+Docent kan storyboard/afbeelding-composities bekijken in het dashboard met de afbeeldingen erbij, zodat projectie in de klas mogelijk is. `storyboardId` wordt al meegestuurd bij delen; de viewer moet dit laden en tonen naast de read-only timeline.
+
 ---
 
 ### P3 — Middel prioriteit
@@ -62,6 +67,16 @@ Microfoon opname in de app: permissions, real-time waveform, max 5 seconden, enc
 **Complexiteit:** Laag (types voorbereid) → Medium (UI + audio)
 
 Per-clip effecten: volume, pitch shift, reverb, pan, filter. Types zijn voorbereid in `ClipEffects`, maar nog geen UI of Tone.js nodes.
+
+#### #50 — Export Storyboard als Video (MP4)
+**Complexiteit:** Hoog · **Afhankelijk van:** #41 ✅, #2 ✅
+
+Storyboard-compositie exporteren als video: afbeeldingen wisselen op section-tijden + audio = MP4. Naast bestaande MP3-export. Vereist client-side video encoding (bijv. MediaRecorder + Canvas of ffmpeg.wasm).
+
+#### #51 — Feedback-knop Prominenter op Startscherm
+**Complexiteit:** Laag
+
+Onder "Hoe werkt het" een vergelijkbare stijl tekst "Hulp nodig of bug melden?" die verwijst naar de feedback-modal. Vervangt niet het kleine icoontje onderaan, maar maakt de feedback-optie zichtbaarder.
 
 ---
 
