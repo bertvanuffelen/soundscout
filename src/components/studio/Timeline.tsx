@@ -95,12 +95,14 @@ export const Timeline = memo(function Timeline({
   const updateSection = useTimelineStore((s) => s.updateSection);
   const removeSection = useTimelineStore((s) => s.removeSection);
 
-  // Lock sections when a template or storyboard is active
+  // Lock sections when a template or multi-image storyboard is active
   const activeTemplate = useAppStore((s) => s.activeTemplate);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
-  const sectionsLocked = activeTemplate !== null || activeStoryboard !== null;
+  const composeMode = useAppStore((s) => s.composeMode);
+  const isMultiImageStoryboard = activeStoryboard !== null && composeMode === 'storyboard';
+  const sectionsLocked = activeTemplate !== null || isMultiImageStoryboard;
   // Storyboard sections can be resized but not added/deleted/edited
-  const sectionsResizable = activeStoryboard !== null;
+  const sectionsResizable = isMultiImageStoryboard;
 
   // Subscribe to currentBeat from store (for StudioView)
   // or use prop (for SubmissionPlayer with local state)
@@ -181,7 +183,7 @@ export const Timeline = memo(function Timeline({
   }, [currentBeat, totalBeats, isPlaying]);
 
   return (
-    <div className="flex flex-col shrink-0 max-h-[50dvh]" role="region" aria-label={t('studio.timeline')}>
+    <div className={`flex flex-col shrink-0 ${composeMode === 'free' ? 'max-h-[50dvh]' : 'max-h-[40dvh]'}`} role="region" aria-label={t('studio.timeline')}>
       {/* --- Header bar: label | clip edit (center) | tools (right) --- */}
       <div className="flex items-center px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
         {/* Left: timeline label */}

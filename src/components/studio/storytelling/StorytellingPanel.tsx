@@ -150,8 +150,8 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
 
   return (
     <div className={`flex flex-col min-h-0 ${className}`}>
-      {/* Image container — fills available space */}
-      <div className="flex-1 min-h-0 relative flex items-center justify-center bg-neutral-900/5 rounded-lg overflow-hidden mx-2 sm:mx-3 mt-2 sm:mt-3">
+      {/* Image container — fills all available space */}
+      <div className="flex-1 min-h-0 relative flex items-center justify-center bg-neutral-900/5 rounded-lg overflow-hidden m-2 sm:m-3">
         <img
           src={currentImage.url}
           alt={t(currentImage.label)}
@@ -177,19 +177,11 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
             >
               <ChevronRight size={18} />
             </button>
+            {/* Position indicator overlay */}
+            <span className="absolute bottom-1.5 right-1.5 text-[10px] text-white/70 bg-black/30 rounded-full px-2 py-0.5 backdrop-blur-sm">
+              {displayIndex + 1} / {imageCount}
+            </span>
           </>
-        )}
-      </div>
-
-      {/* Footer: label + position indicator */}
-      <div className="flex items-center justify-between px-3 sm:px-4 py-1.5 sm:py-2">
-        <span className="text-xs sm:text-sm font-medium text-text-main truncate">
-          {t(currentImage.label)}
-        </span>
-        {isStoryboard && (
-          <span className="text-xs text-text-muted ml-2 whitespace-nowrap">
-            {displayIndex + 1} / {imageCount}
-          </span>
         )}
       </div>
     </div>

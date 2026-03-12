@@ -55,13 +55,14 @@ export default function ComposeModeScreen() {
     setComposeMode(mode);
     setActiveStoryboard(sb);
 
-    // Reset timeline and create sections for storyboards with multiple images
+    // Always reset timeline when selecting a storyboard/image
+    const { totalBeats, clearAllTracks, clearSections, addSection } = useTimelineStore.getState();
+    clearAllTracks();
+    clearSections();
+
+    // Auto-create sections for storyboards with multiple images
     // E.g. 3 images, 32 beats → sections at beat 11, 22, 32
-    // Each section represents one slide with its label
     if (sb.images.length > 1) {
-      const { totalBeats, clearAllTracks, clearSections, addSection } = useTimelineStore.getState();
-      clearAllTracks();
-      clearSections();
       const beatsPerImage = Math.floor(totalBeats / sb.images.length);
       for (let i = 0; i < sb.images.length; i++) {
         const endBeat = i < sb.images.length - 1
