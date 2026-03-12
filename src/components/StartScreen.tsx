@@ -116,7 +116,7 @@ export function StartScreen() {
           </Button>
           <button
             onClick={() => setShowFeedback(true)}
-            className="flex items-center gap-1.5 text-sm text-brand-400 hover:text-white md:text-text-muted md:hover:text-text-main transition-colors py-1"
+            className="flex items-center gap-1.5 text-sm text-brand-400 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100 rounded-lg px-3 py-1.5 transition-colors"
           >
             <MessageCircleQuestion className="w-4 h-4" />
             {t('start.feedbackHint')}
