@@ -41,8 +41,16 @@ interface PendingHotspot {
 
 export function LocationEditor() {
   // Theme store for loading existing locations
+  const initTheme = useThemeStore((s) => s.initTheme);
+  const isInitialized = useThemeStore((s) => s.isInitialized);
   const getLocationById = useThemeStore((s) => s.getLocationById);
   const getLocations = useThemeStore((s) => s.getLocations);
+
+  // Editor lives outside AppContent, so theme may not be initialized yet
+  useEffect(() => {
+    if (!isInitialized) initTheme();
+  }, [isInitialized, initTheme]);
+
   const locations = getLocations();
 
   // Form state
