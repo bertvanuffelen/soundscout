@@ -34,16 +34,6 @@ useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
 useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } })
 ```
 
-#### #27 — Locatie Editor Verbeteringen
-**Complexiteit:** Laag · **Status:** Basisfunctionaliteit bestaat
-
-MP3 upload direct koppelen aan samples + drag-and-drop hotspot herpositionering.
-
-#### #51 — Feedback-knop Prominenter op Startscherm
-**Complexiteit:** Laag
-
-Onder "Hoe werkt het" een vergelijkbare stijl tekst "Hulp nodig of bug melden?" die verwijst naar de feedback-modal. Vervangt niet het kleine icoontje onderaan, maar maakt de feedback-optie zichtbaarder.
-
 #### DEPLOY-8 — Eerste deploy naar Strato
 **Status:** Handmatige actie product owner · **Instructies:** `docs/DEPLOY-INSTRUCTIES.md`
 
@@ -211,6 +201,8 @@ Omgekeerd spel: kind hoort geluid, plaatst het op de juiste locatie op de kaart.
 | #41 | Soundscape Storytelling (Fase A–D) | 2026-03-11 | URL flag, compose-mode, split-view, podium sync, persistence. Docs: `PLAN-41-STORYTELLING.md` |
 | #45 | Wis Tijdlijn Knop | 2026-03-11 | Eraser icon, inline confirm |
 | #47 | Sectie Drag Resize | 2026-03-12 | Drag handles op sectie-grenzen, vrij slepen (0.5 beat snap), min 2 beats, werkt in storyboard- én vrije modus |
+| #51 | Feedback-knop Prominenter | 2026-03-12 | "Hulp nodig of bug melden?" link onder "Hoe werkt het" op startscherm |
+| #27 | Locatie Editor Verbeteringen | 2026-03-12 | MP3 upload per hotspot met auto-duration, drag-and-drop herpositionering, audio preview |
 
 ### Technische schuld (afgerond)
 
