@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-03-11
+**Laatst bijgewerkt**: 2026-03-12
 
 ---
 
@@ -8,7 +8,6 @@
 
 > Plaats hier ideeën, bugs of verzoeken. Claude verwerkt ze later naar de juiste prioriteit.
 
-- [ ] Scènelengte aanpassen door de scheidingslijn tussen twee scènes te verslepen (#47)
 - [ ] Onderzoek hoe complex het is om met virtual reality / 360° beelden te werken (#46)
 
 ---
@@ -34,11 +33,6 @@ useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } })
 Resterende items uit Fase D:
 - [ ] D.4 — Docent template-integratie (docent kan storyboard meegeven bij template)
 - [ ] D.7 — Edge cases testen: thema zonder storyboards, storyboard met 1 afbeelding, resize
-
-#### #47 — Sectie ↔ Storyboard-afbeelding Koppeling (drag resize)
-**Complexiteit:** Medium · **Afhankelijk van:** #41 ✅, #40 ✅
-
-Gebruiker kan de scheidingslijn tussen twee scènes op de timeline verslepen om scènelengte aan te passen. Visuele feedback: highlight van sectie-grens + tooltip met beatnummer. Minimale sectielengte: 4 beats (1 maat).
 
 #### #48 — Video-Storyboard (Compositie bij Video)
 **Complexiteit:** Zeer Hoog · **Afhankelijk van:** #41 ✅ · **Status:** Onderzoeksfase
@@ -196,6 +190,7 @@ Verhoudingen op de Studio pagina herbekijken: EditToolbar, Timeline, SampleLibra
 | #40 | Scène-markering op Timeline | 2026-02-28 | SectionBar, flags, labels, kleuren |
 | #41 | Soundscape Storytelling (Fase A–D) | 2026-03-11 | URL flag, compose-mode, split-view, podium sync, persistence. Docs: `PLAN-41-STORYTELLING.md` |
 | #45 | Wis Tijdlijn Knop | 2026-03-11 | Eraser icon, inline confirm |
+| #47 | Sectie Drag Resize | 2026-03-12 | Drag handles op sectie-grenzen, vrij slepen (0.5 beat snap), min 2 beats, werkt in storyboard- én vrije modus |
 
 ### Technische schuld (afgerond)
 
