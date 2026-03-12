@@ -8,13 +8,20 @@
 
 > Plaats hier ideeën, bugs of verzoeken. Claude verwerkt ze later naar de juiste prioriteit.
 
-- [ ] Onderzoek hoe complex het is om met virtual reality / 360° beelden te werken (#46)
+_(leeg)_
 
 ---
 
 ## Open issues
 
-### P2 — Hoge prioriteit
+### P1 — Hoogste prioriteit
+
+#### #41 — Soundscape Storytelling — restpunten
+**Status:** Fase A–D ✅ afgerond (2026-03-11) · **Plan:** `docs/PLAN-41-STORYTELLING.md`
+
+Resterende items uit Fase D:
+- [ ] D.4 — Docent template-integratie (docent kan storyboard meegeven bij template)
+- [ ] D.7 — Edge cases testen: thema zonder storyboards, storyboard met 1 afbeelding, resize
 
 #### #16 — Touch Gevoeligheid & Autoplay Issues
 **Complexiteit:** Medium-Hoog · **Bron:** Docent feedback (2026-02-03)
@@ -27,61 +34,71 @@ useSensor(PointerSensor, { activationConstraint: { distance: 8 } })
 useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } })
 ```
 
-#### #41 — Soundscape Storytelling — restpunten
-**Status:** Fase A–D ✅ afgerond (2026-03-11) · **Plan:** `docs/PLAN-41-STORYTELLING.md`
-
-Resterende items uit Fase D:
-- [ ] D.4 — Docent template-integratie (docent kan storyboard meegeven bij template)
-- [ ] D.7 — Edge cases testen: thema zonder storyboards, storyboard met 1 afbeelding, resize
-
-#### #48 — Video-Storyboard (Compositie bij Video)
-**Complexiteit:** Zeer Hoog · **Afhankelijk van:** #41 ✅ · **Status:** Onderzoeksfase
-
-Video afspelen i.p.v. stilstaande afbeeldingen in het storyboard-systeem. Vereist onderzoek naar HTML5 video sync met Tone.js, hosting, performance en mobile support.
-
-#### #49 — Storyboard/Afbeelding in Docentenviewer
-**Complexiteit:** Medium · **Afhankelijk van:** #41 ✅, #21 ✅
-
-Docent kan storyboard/afbeelding-composities bekijken in het dashboard met de afbeeldingen erbij, zodat projectie in de klas mogelijk is. `storyboardId` wordt al meegestuurd bij delen; de viewer moet dit laden en tonen naast de read-only timeline.
-
----
-
-### P3 — Middel prioriteit
-
-#### #22 — Real-time Geluiden Toevoegen tijdens Afspelen
-**Complexiteit:** Zeer Hoog · **Bron:** Gebruiker feedback (2026-02-05)
-
-Tijdens playback nieuwe samples op de timeline kunnen slepen die direct meespelen. Technische uitdaging: Tone.Part dynamisch updaten terwijl transport loopt.
-
 #### #27 — Locatie Editor Verbeteringen
 **Complexiteit:** Laag · **Status:** Basisfunctionaliteit bestaat
 
 MP3 upload direct koppelen aan samples + drag-and-drop hotspot herpositionering.
-
-#### #28 — Eigen Samples Opnemen
-**Complexiteit:** Zeer Hoog
-
-Microfoon opname in de app: permissions, real-time waveform, max 5 seconden, encode naar MP3/WAV. Vereist MediaRecorder API.
-
-#### #33 — Sample Effecten
-**Complexiteit:** Laag (types voorbereid) → Medium (UI + audio)
-
-Per-clip effecten: volume, pitch shift, reverb, pan, filter. Types zijn voorbereid in `ClipEffects`, maar nog geen UI of Tone.js nodes.
-
-#### #50 — Export Storyboard als Video (MP4)
-**Complexiteit:** Hoog · **Afhankelijk van:** #41 ✅, #2 ✅
-
-Storyboard-compositie exporteren als video: afbeeldingen wisselen op section-tijden + audio = MP4. Naast bestaande MP3-export. Vereist client-side video encoding (bijv. MediaRecorder + Canvas of ffmpeg.wasm).
 
 #### #51 — Feedback-knop Prominenter op Startscherm
 **Complexiteit:** Laag
 
 Onder "Hoe werkt het" een vergelijkbare stijl tekst "Hulp nodig of bug melden?" die verwijst naar de feedback-modal. Vervangt niet het kleine icoontje onderaan, maar maakt de feedback-optie zichtbaarder.
 
+#### DEPLOY-8 — Eerste deploy naar Strato
+**Status:** Handmatige actie product owner · **Instructies:** `docs/DEPLOY-INSTRUCTIES.md`
+
+---
+
+### P2 — Hoge prioriteit
+
+#### #49 — Storyboard/Afbeelding in Docentenviewer
+**Complexiteit:** Medium · **Afhankelijk van:** #41 ✅, #21 ✅
+
+Docent kan storyboard/afbeelding-composities bekijken in het dashboard met de afbeeldingen erbij, zodat projectie in de klas mogelijk is. `storyboardId` wordt al meegestuurd bij delen; de viewer moet dit laden en tonen naast de read-only timeline.
+
+#### #28 — Eigen Samples Opnemen
+**Complexiteit:** Zeer Hoog
+
+Microfoon opname in de app: permissions, real-time waveform, max 5 seconden, encode naar MP3/WAV. Vereist MediaRecorder API.
+
+#### #50 — Export Storyboard als Video (MP4)
+**Complexiteit:** Hoog · **Afhankelijk van:** #41 ✅, #2 ✅
+
+Storyboard-compositie exporteren als video: afbeeldingen wisselen op section-tijden + audio = MP4. Naast bestaande MP3-export. Vereist client-side video encoding (bijv. MediaRecorder + Canvas of ffmpeg.wasm).
+
 #### #52 — Compositie Overdracht / Verder Werken op Ander Apparaat
 **Complexiteit:** Medium-Hoog · **Status:** Nog niet uitgedacht
 
 Leerlingen moeten thuis of op een andere computer verder kunnen werken aan hun compositie. Huidige opslag is localStorage (device-gebonden). Mogelijke richtingen: export/import bestand, QR-code, Supabase cloud sync, of koppeling via klascode. Nog brainstormen over de juiste aanpak.
+
+---
+
+### P3 — Middel prioriteit
+
+#### #48 — Video-Storyboard (Compositie bij Video)
+**Complexiteit:** Zeer Hoog · **Afhankelijk van:** #41 ✅ · **Status:** Onderzoeksfase
+
+Video afspelen i.p.v. stilstaande afbeeldingen in het storyboard-systeem. Vereist onderzoek naar HTML5 video sync met Tone.js, hosting, performance en mobile support.
+
+#### #22 — Real-time Geluiden Toevoegen tijdens Afspelen
+**Complexiteit:** Zeer Hoog · **Bron:** Gebruiker feedback (2026-02-05)
+
+Tijdens playback nieuwe samples op de timeline kunnen slepen die direct meespelen. Technische uitdaging: Tone.Part dynamisch updaten terwijl transport loopt.
+
+#### #33 — Sample Effecten
+**Complexiteit:** Laag (types voorbereid) → Medium (UI + audio)
+
+Per-clip effecten: volume, pitch shift, reverb, pan, filter. Types zijn voorbereid in `ClipEffects`, maar nog geen UI of Tone.js nodes.
+
+#### UX-4 — Kindvriendelijker vocabulaire
+**Status:** Wacht op review · **Document:** `docs/WOORDENLIJST-VOCABULAIRE.md`
+
+4 hoge-prioriteit suggesties: Compositie, Bibliotheek, Samples, Dupliceren → kindvriendelijkere alternatieven. Alleen i18n keys wijzigen, geen code.
+
+#### UX-9 — Studio pagina indeling herbekijken
+**Status:** Deels afgerond (timeline hoogte + image padding geoptimaliseerd, 2026-03-12)
+
+Resterende optimalisaties: verdere verhouding-verbeteringen op kleine schermen.
 
 ---
 
@@ -114,23 +131,6 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 **Status:** Geparkeerd (concept) · **Complexiteit:** Zeer Hoog
 
 Omgekeerd spel: kind hoort geluid, plaatst het op de juiste locatie op de kaart. Traint actief luisteren. Vereist nieuw interactiemodel.
-
----
-
-### Overig openstaand
-
-#### UX-4 — Kindvriendelijker vocabulaire
-**Status:** Wacht op review · **Document:** `docs/WOORDENLIJST-VOCABULAIRE.md`
-
-4 hoge-prioriteit suggesties: Compositie, Bibliotheek, Samples, Dupliceren → kindvriendelijkere alternatieven. Alleen i18n keys wijzigen, geen code.
-
-#### UX-9 — Studio pagina indeling herbekijken
-**Status:** Niet begonnen
-
-Verhoudingen op de Studio pagina herbekijken: EditToolbar, Timeline, SampleLibrary.
-
-#### DEPLOY-8 — Eerste deploy naar Strato
-**Status:** Handmatige actie product owner · **Instructies:** `docs/DEPLOY-INSTRUCTIES.md`
 
 #### TP3-4 — Alfanumerieke klas-codes
 **Status:** Geparkeerd — pas nodig bij >1.000 actieve klassen. Vereist DB migratie.
