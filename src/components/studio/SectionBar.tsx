@@ -172,8 +172,8 @@ export const SectionBar = memo(function SectionBar({
               </div>
             )}
 
-            {/* Drag handle on right edge (not on last section — its end is totalBeats) */}
-            {canDrag && !isLast && (
+            {/* Drag handle on right edge of each section */}
+            {canDrag && (
               <div
                 className={`absolute top-0 bottom-0 w-2 -translate-x-1/2 z-20
                            cursor-col-resize touch-none
