@@ -151,7 +151,7 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
   return (
     <div className={`flex flex-col min-h-0 ${className}`}>
       {/* Image container — fills all available space */}
-      <div className="flex-1 min-h-0 relative flex items-center justify-center bg-neutral-900/5 rounded-lg overflow-hidden m-2 sm:m-3">
+      <div className="flex-1 min-h-0 relative flex items-center justify-center bg-neutral-900/5 rounded overflow-hidden m-1 sm:m-1.5">
         <img
           src={currentImage.url}
           alt={t(currentImage.label)}
