@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Info, HelpCircle, Instagram, Facebook, Linkedin, Youtube, BookOpen } from 'lucide-react';
+import { FolderOpen, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, BookOpen } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { storageService } from '../services/StorageService';
 import { initializeNewComposition } from '../utils/compositionInit';
@@ -105,14 +105,23 @@ export function StartScreen() {
           <ShareCodeInput />
         </div>
 
-        <Button
-          onClick={() => setShowTutorial(true)}
-          variant="ghost"
-          size="lg"
-          className="mt-3 sm:mt-4 w-full max-w-[280px] sm:max-w-xs text-brand-300 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100"
-        >
-          {t('start.howItWorks')}
-        </Button>
+        <div className="flex flex-col items-center gap-1 mt-3 sm:mt-4 w-full max-w-[280px] sm:max-w-xs">
+          <Button
+            onClick={() => setShowTutorial(true)}
+            variant="ghost"
+            size="lg"
+            className="w-full text-brand-300 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100"
+          >
+            {t('start.howItWorks')}
+          </Button>
+          <button
+            onClick={() => setShowFeedback(true)}
+            className="flex items-center gap-1.5 text-sm text-brand-400 hover:text-white md:text-text-muted md:hover:text-text-main transition-colors py-1"
+          >
+            <MessageCircleQuestion className="w-4 h-4" />
+            {t('start.feedbackHint')}
+          </button>
+        </div>
 
         {/* Teacher link - subtle at bottom */}
         <div className="mt-6 sm:mt-8">

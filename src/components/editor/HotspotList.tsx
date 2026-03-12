@@ -1,8 +1,8 @@
 /**
- * HotspotList - List of placed hotspots with delete functionality
+ * HotspotList - List of placed hotspots with audio info and delete functionality
  */
 
-import { Trash2 } from 'lucide-react';
+import { Trash2, Music } from 'lucide-react';
 import type { EditorHotspot } from '../../pages/LocationEditor';
 
 interface HotspotListProps {
@@ -28,25 +28,39 @@ export function HotspotList({ hotspots, onDelete }: HotspotListProps) {
           key={hotspot.id}
           className="flex items-center justify-between bg-slate-700/50 rounded-lg px-3 py-2 group"
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 min-w-0">
             {/* Index number */}
-            <span className="w-6 h-6 flex items-center justify-center bg-amber-400 text-slate-900 text-xs font-bold rounded-full">
+            <span
+              className={`w-6 h-6 flex items-center justify-center text-xs font-bold rounded-full flex-shrink-0 ${
+                hotspot.audioFile
+                  ? 'bg-emerald-400 text-slate-900'
+                  : 'bg-amber-400 text-slate-900'
+              }`}
+            >
               {index + 1}
             </span>
 
-            {/* Sample ID */}
-            <div>
-              <p className="text-sm font-mono text-white">{hotspot.sampleId}</p>
-              <p className="text-xs text-slate-500">
-                x: {hotspot.x.toFixed(1)}% &nbsp; y: {hotspot.y.toFixed(1)}%
-              </p>
+            {/* Sample info */}
+            <div className="min-w-0">
+              <p className="text-sm font-mono text-white truncate">{hotspot.sampleId}</p>
+              <div className="flex items-center gap-2 text-xs text-slate-500">
+                <span>
+                  x: {hotspot.x.toFixed(1)}% &nbsp; y: {hotspot.y.toFixed(1)}%
+                </span>
+                {hotspot.audioFile && (
+                  <span className="flex items-center gap-1 text-emerald-400">
+                    <Music size={10} />
+                    {hotspot.duration ? `${hotspot.duration}s` : 'mp3'}
+                  </span>
+                )}
+              </div>
             </div>
           </div>
 
           {/* Delete button */}
           <button
             onClick={() => onDelete(hotspot.id)}
-            className="p-1.5 rounded hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100"
+            className="p-1.5 rounded hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
             title="Verwijderen"
           >
             <Trash2 size={16} />

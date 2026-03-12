@@ -27,6 +27,9 @@ export interface EditorHotspot {
   sampleId: string;
   x: number;
   y: number;
+  audioFile?: File;
+  audioUrl?: string;
+  duration?: number;
 }
 
 interface PendingHotspot {
@@ -93,7 +96,7 @@ export function LocationEditor() {
     setIsModalOpen(true);
   }, [backgroundImage]);
 
-  const handleModalConfirm = useCallback((sampleId: string) => {
+  const handleModalConfirm = useCallback((sampleId: string, audioFile?: File, audioUrl?: string, duration?: number) => {
     if (!pendingHotspot) return;
 
     const fullSampleId = locationId ? `${locationId}-${sampleId}` : sampleId;
@@ -103,12 +106,21 @@ export function LocationEditor() {
       sampleId: fullSampleId,
       x: pendingHotspot.x,
       y: pendingHotspot.y,
+      audioFile,
+      audioUrl,
+      duration,
     };
 
     setHotspots((prev) => [...prev, newHotspot]);
     setPendingHotspot(null);
     setIsModalOpen(false);
   }, [pendingHotspot, locationId]);
+
+  const handleMoveHotspot = useCallback((id: string, x: number, y: number) => {
+    setHotspots((prev) =>
+      prev.map((h) => (h.id === id ? { ...h, x, y } : h)),
+    );
+  }, []);
 
   const handleModalCancel = useCallback(() => {
     setPendingHotspot(null);
@@ -197,7 +209,7 @@ export function LocationEditor() {
         name: `samples.${h.sampleId}`,
         locationId: locationId,
         audioUrl: `/audio/themes/${themeId}/${locationId}/${h.sampleId.replace(`${locationId}-`, '')}.mp3`,
-        duration: 0,
+        duration: h.duration ?? 0,
         icon: '?',
         color: '#000000',
       })),
@@ -370,6 +382,7 @@ export function LocationEditor() {
                 hotspots={hotspots}
                 pendingHotspot={pendingHotspot}
                 onCanvasClick={handleCanvasClick}
+                onMoveHotspot={handleMoveHotspot}
               />
             </section>
           </div>
