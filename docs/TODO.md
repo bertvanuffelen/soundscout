@@ -78,6 +78,11 @@ Storyboard-compositie exporteren als video: afbeeldingen wisselen op section-tij
 
 Onder "Hoe werkt het" een vergelijkbare stijl tekst "Hulp nodig of bug melden?" die verwijst naar de feedback-modal. Vervangt niet het kleine icoontje onderaan, maar maakt de feedback-optie zichtbaarder.
 
+#### #52 — Compositie Overdracht / Verder Werken op Ander Apparaat
+**Complexiteit:** Medium-Hoog · **Status:** Nog niet uitgedacht
+
+Leerlingen moeten thuis of op een andere computer verder kunnen werken aan hun compositie. Huidige opslag is localStorage (device-gebonden). Mogelijke richtingen: export/import bestand, QR-code, Supabase cloud sync, of koppeling via klascode. Nog brainstormen over de juiste aanpak.
+
 ---
 
 ### P4 — Lage prioriteit
