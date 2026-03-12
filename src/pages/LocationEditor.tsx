@@ -6,11 +6,14 @@
  * - Upload background image
  * - Click to place hotspots with x/y coordinates
  * - Enter sample IDs for each hotspot
+ * - MP3 upload per hotspot with auto-duration detection
+ * - Drag-and-drop hotspot repositioning
  * - Export as JSON for use in codebase
- * - Load existing location to edit
+ * - Load existing location to edit (all themes)
  */
 
-import { useState, useCallback, useEffect, useRef } from 'react';
+import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useThemeStore } from '../stores/themeStore';
 import { getAllLocationsByTheme } from '../data/themes';
 import { EditorCanvas } from '../components/editor/EditorCanvas';
@@ -40,19 +43,20 @@ interface PendingHotspot {
 // --- Component ---
 
 export function LocationEditor() {
-  // Theme store for loading existing locations
+  const { t, i18n } = useTranslation();
+
+  // Theme store — init required since editor lives outside AppContent
   const initTheme = useThemeStore((s) => s.initTheme);
   const isInitialized = useThemeStore((s) => s.isInitialized);
 
-  // Editor lives outside AppContent, so theme may not be initialized yet
   useEffect(() => {
     if (!isInitialized) initTheme();
   }, [isInitialized, initTheme]);
 
-  // All locations across all themes (for dropdown)
+  // All locations across all themes
   const allThemeLocations = getAllLocationsByTheme();
 
-  // Form state
+  // --- Form state ---
   const [themeId, setThemeId] = useState('basis');
   const [locationId, setLocationId] = useState('');
   const [nameNl, setNameNl] = useState('');
@@ -70,6 +74,12 @@ export function LocationEditor() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHotspotId, setEditingHotspotId] = useState<string | null>(null);
 
+  // Locations for the selected theme (derived)
+  const themeLocations = useMemo(
+    () => allThemeLocations.find((g) => g.themeId === themeId)?.locations ?? [],
+    [allThemeLocations, themeId],
+  );
+
   // Load location from URL param on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -81,6 +91,21 @@ export function LocationEditor() {
 
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // --- Helpers ---
+
+  /** Translate an i18n key, falling back to the raw key if not found */
+  const translateKey = useCallback(
+    (key: string, lang?: string): string => {
+      if (!key) return '';
+      const translation = lang
+        ? i18n.getFixedT(lang)(key)
+        : t(key);
+      // If the translation is the same as the key, it wasn't found
+      return translation === key ? '' : translation;
+    },
+    [t, i18n],
+  );
 
   // --- Handlers ---
 
@@ -172,46 +197,45 @@ export function LocationEditor() {
     setHotspots([]);
   }, []);
 
-  const loadExistingLocation = useCallback((compositeId: string) => {
-    // compositeId format: "themeId:locationId"
-    const [tid, locId] = compositeId.includes(':')
-      ? compositeId.split(':')
-      : ['', compositeId];
-
+  const loadExistingLocation = useCallback((locId: string) => {
     // Find location across all themes
-    let foundLocation = null;
-    let foundThemeId = tid;
     for (const group of allThemeLocations) {
-      if (tid && group.themeId !== tid) continue;
       const loc = group.locations.find((l) => l.id === locId);
       if (loc) {
-        foundLocation = loc;
-        foundThemeId = group.themeId;
-        break;
+        setThemeId(group.themeId);
+        setLocationId(loc.id);
+
+        // Translate i18n keys to actual text
+        setNameNl(translateKey(loc.name, 'nl'));
+        setNameEn(translateKey(loc.name, 'en'));
+        setDescriptionNl(translateKey(loc.description, 'nl'));
+        setDescriptionEn(translateKey(loc.description, 'en'));
+
+        setBackgroundImage(loc.backgroundImage);
+        setBackgroundFileName(loc.backgroundImage.split('/').pop() || '');
+
+        // Convert hotspots
+        setHotspots(loc.hotspots.map((h) => ({
+          id: h.id,
+          sampleId: h.sampleId,
+          x: h.x,
+          y: h.y,
+        })));
+        return;
       }
     }
 
-    if (!foundLocation) {
-      alert(`Locatie "${locId}" niet gevonden`);
-      return;
-    }
+    alert(`Locatie "${locId}" niet gevonden`);
+  }, [allThemeLocations, translateKey]);
 
-    setThemeId(foundThemeId);
-    setLocationId(foundLocation.id);
-    setNameNl(foundLocation.name);
-    setDescriptionNl(foundLocation.description);
-    setBackgroundImage(foundLocation.backgroundImage);
-    setBackgroundFileName(foundLocation.backgroundImage.split('/').pop() || '');
+  const handleThemeChange = useCallback((newThemeId: string) => {
+    setThemeId(newThemeId);
+    // Don't reset other fields — user might be creating a new location in this theme
+  }, []);
 
-    // Convert hotspots
-    const editorHotspots: EditorHotspot[] = foundLocation.hotspots.map((h) => ({
-      id: h.id,
-      sampleId: h.sampleId,
-      x: h.x,
-      y: h.y,
-    }));
-    setHotspots(editorHotspots);
-  }, [allThemeLocations]);
+  const handleLocationSelect = useCallback((locId: string) => {
+    if (locId) loadExistingLocation(locId);
+  }, [loadExistingLocation]);
 
   // --- Generate JSON ---
 
@@ -273,28 +297,38 @@ export function LocationEditor() {
       <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
           <h1 className="text-xl font-bold text-amber-400">
-            🗺️ Locatie Editor
+            Locatie Editor
           </h1>
           <div className="flex items-center gap-3">
-            {/* Load existing location dropdown (all themes) */}
+            {/* Theme selector */}
             <select
-              onChange={(e) => e.target.value && loadExistingLocation(e.target.value)}
+              value={themeId}
+              onChange={(e) => handleThemeChange(e.target.value)}
               className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm"
-              defaultValue=""
             >
-              <option value="" disabled>
-                Laad bestaande locatie...
-              </option>
               {allThemeLocations.map((group) => (
-                <optgroup key={group.themeId} label={group.themeId}>
-                  {group.locations.map((loc) => (
-                    <option key={`${group.themeId}:${loc.id}`} value={`${group.themeId}:${loc.id}`}>
-                      {loc.id}
-                    </option>
-                  ))}
-                </optgroup>
+                <option key={group.themeId} value={group.themeId}>
+                  {group.themeId}
+                </option>
               ))}
             </select>
+
+            {/* Location selector (filtered by selected theme) */}
+            <select
+              onChange={(e) => handleLocationSelect(e.target.value)}
+              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm"
+              value=""
+            >
+              <option value="" disabled>
+                Laad locatie...
+              </option>
+              {themeLocations.map((loc) => (
+                <option key={loc.id} value={loc.id}>
+                  {loc.id}
+                </option>
+              ))}
+            </select>
+
             <Button
               variant="ghost"
               size="sm"
