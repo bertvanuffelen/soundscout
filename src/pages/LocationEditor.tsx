@@ -12,7 +12,7 @@
 
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useThemeStore } from '../stores/themeStore';
-import type { Location } from '../types';
+import { getAllLocationsByTheme } from '../data/themes';
 import { EditorCanvas } from '../components/editor/EditorCanvas';
 import { HotspotList } from '../components/editor/HotspotList';
 import { HotspotModal } from '../components/editor/HotspotModal';
@@ -43,15 +43,14 @@ export function LocationEditor() {
   // Theme store for loading existing locations
   const initTheme = useThemeStore((s) => s.initTheme);
   const isInitialized = useThemeStore((s) => s.isInitialized);
-  const getLocationById = useThemeStore((s) => s.getLocationById);
-  const getLocations = useThemeStore((s) => s.getLocations);
 
   // Editor lives outside AppContent, so theme may not be initialized yet
   useEffect(() => {
     if (!isInitialized) initTheme();
   }, [isInitialized, initTheme]);
 
-  const locations = getLocations();
+  // All locations across all themes (for dropdown)
+  const allThemeLocations = getAllLocationsByTheme();
 
   // Form state
   const [themeId, setThemeId] = useState('basis');
@@ -69,6 +68,7 @@ export function LocationEditor() {
   // Modal state
   const [pendingHotspot, setPendingHotspot] = useState<PendingHotspot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [editingHotspotId, setEditingHotspotId] = useState<string | null>(null);
 
   // Load location from URL param on mount
   useEffect(() => {
@@ -130,8 +130,27 @@ export function LocationEditor() {
     );
   }, []);
 
+  const handleEditHotspot = useCallback((id: string) => {
+    setEditingHotspotId(id);
+    setIsModalOpen(true);
+  }, []);
+
+  const handleUpdateHotspot = useCallback((audioFile?: File, audioUrl?: string, duration?: number) => {
+    if (!editingHotspotId) return;
+    setHotspots((prev) =>
+      prev.map((h) =>
+        h.id === editingHotspotId
+          ? { ...h, audioFile, audioUrl, duration }
+          : h,
+      ),
+    );
+    setEditingHotspotId(null);
+    setIsModalOpen(false);
+  }, [editingHotspotId]);
+
   const handleModalCancel = useCallback(() => {
     setPendingHotspot(null);
+    setEditingHotspotId(null);
     setIsModalOpen(false);
   }, []);
 
@@ -153,28 +172,46 @@ export function LocationEditor() {
     setHotspots([]);
   }, []);
 
-  const loadExistingLocation = useCallback((locId: string) => {
-    const location = getLocationById(locId);
-    if (!location) {
+  const loadExistingLocation = useCallback((compositeId: string) => {
+    // compositeId format: "themeId:locationId"
+    const [tid, locId] = compositeId.includes(':')
+      ? compositeId.split(':')
+      : ['', compositeId];
+
+    // Find location across all themes
+    let foundLocation = null;
+    let foundThemeId = tid;
+    for (const group of allThemeLocations) {
+      if (tid && group.themeId !== tid) continue;
+      const loc = group.locations.find((l) => l.id === locId);
+      if (loc) {
+        foundLocation = loc;
+        foundThemeId = group.themeId;
+        break;
+      }
+    }
+
+    if (!foundLocation) {
       alert(`Locatie "${locId}" niet gevonden`);
       return;
     }
 
-    setLocationId(location.id);
-    setNameNl(location.name); // This is the i18n key, we show it as-is
-    setDescriptionNl(location.description);
-    setBackgroundImage(location.backgroundImage);
-    setBackgroundFileName(location.backgroundImage.split('/').pop() || '');
+    setThemeId(foundThemeId);
+    setLocationId(foundLocation.id);
+    setNameNl(foundLocation.name);
+    setDescriptionNl(foundLocation.description);
+    setBackgroundImage(foundLocation.backgroundImage);
+    setBackgroundFileName(foundLocation.backgroundImage.split('/').pop() || '');
 
     // Convert hotspots
-    const editorHotspots: EditorHotspot[] = location.hotspots.map((h) => ({
+    const editorHotspots: EditorHotspot[] = foundLocation.hotspots.map((h) => ({
       id: h.id,
       sampleId: h.sampleId,
       x: h.x,
       y: h.y,
     }));
     setHotspots(editorHotspots);
-  }, [getLocationById]);
+  }, [allThemeLocations]);
 
   // --- Generate JSON ---
 
@@ -239,7 +276,7 @@ export function LocationEditor() {
             🗺️ Locatie Editor
           </h1>
           <div className="flex items-center gap-3">
-            {/* Load existing location dropdown */}
+            {/* Load existing location dropdown (all themes) */}
             <select
               onChange={(e) => e.target.value && loadExistingLocation(e.target.value)}
               className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm"
@@ -248,10 +285,14 @@ export function LocationEditor() {
               <option value="" disabled>
                 Laad bestaande locatie...
               </option>
-              {locations.map((loc: Location) => (
-                <option key={loc.id} value={loc.id}>
-                  {loc.id}
-                </option>
+              {allThemeLocations.map((group) => (
+                <optgroup key={group.themeId} label={group.themeId}>
+                  {group.locations.map((loc) => (
+                    <option key={`${group.themeId}:${loc.id}`} value={`${group.themeId}:${loc.id}`}>
+                      {loc.id}
+                    </option>
+                  ))}
+                </optgroup>
               ))}
             </select>
             <Button
@@ -405,6 +446,7 @@ export function LocationEditor() {
               <HotspotList
                 hotspots={hotspots}
                 onDelete={handleDeleteHotspot}
+                onEdit={handleEditHotspot}
               />
             </section>
 
@@ -423,11 +465,13 @@ export function LocationEditor() {
         </div>
       </main>
 
-      {/* Hotspot modal */}
+      {/* Hotspot modal — new or edit */}
       <HotspotModal
         isOpen={isModalOpen}
         locationId={locationId}
+        editHotspot={editingHotspotId ? hotspots.find((h) => h.id === editingHotspotId) : undefined}
         onConfirm={handleModalConfirm}
+        onUpdate={handleUpdateHotspot}
         onCancel={handleModalCancel}
       />
     </div>

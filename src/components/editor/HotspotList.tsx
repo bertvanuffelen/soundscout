@@ -1,16 +1,17 @@
 /**
- * HotspotList - List of placed hotspots with audio info and delete functionality
+ * HotspotList - List of placed hotspots with audio info, edit and delete
  */
 
-import { Trash2, Music } from 'lucide-react';
+import { Trash2, Music, Pencil } from 'lucide-react';
 import type { EditorHotspot } from '../../pages/LocationEditor';
 
 interface HotspotListProps {
   hotspots: EditorHotspot[];
   onDelete: (id: string) => void;
+  onEdit: (id: string) => void;
 }
 
-export function HotspotList({ hotspots, onDelete }: HotspotListProps) {
+export function HotspotList({ hotspots, onDelete, onEdit }: HotspotListProps) {
   if (hotspots.length === 0) {
     return (
       <div className="text-center py-8 text-slate-500 text-sm">
@@ -57,14 +58,23 @@ export function HotspotList({ hotspots, onDelete }: HotspotListProps) {
             </div>
           </div>
 
-          {/* Delete button */}
-          <button
-            onClick={() => onDelete(hotspot.id)}
-            className="p-1.5 rounded hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-colors opacity-0 group-hover:opacity-100 flex-shrink-0"
-            title="Verwijderen"
-          >
-            <Trash2 size={16} />
-          </button>
+          {/* Action buttons */}
+          <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 flex-shrink-0">
+            <button
+              onClick={() => onEdit(hotspot.id)}
+              className="p-1.5 rounded hover:bg-amber-500/20 text-slate-500 hover:text-amber-400 transition-colors"
+              title="Audio bewerken"
+            >
+              <Pencil size={14} />
+            </button>
+            <button
+              onClick={() => onDelete(hotspot.id)}
+              className="p-1.5 rounded hover:bg-red-500/20 text-slate-500 hover:text-red-400 transition-colors"
+              title="Verwijderen"
+            >
+              <Trash2 size={16} />
+            </button>
+          </div>
         </div>
       ))}
     </div>

@@ -75,6 +75,18 @@ export function isValidTheme(id: string): boolean {
 }
 
 /**
+ * Get all locations across all themes, grouped by theme ID.
+ * Used by LocationEditor to populate the dropdown.
+ */
+export function getAllLocationsByTheme(): Array<{ themeId: string; themeName: string; locations: ThemeConfig['locations'] }> {
+  return Object.entries(themes).map(([id, theme]) => ({
+    themeId: id,
+    themeName: theme.name,
+    locations: theme.locations,
+  }));
+}
+
+/**
  * Get storyboards for a theme (empty array if none).
  */
 export function getThemeStoryboards(themeId: string): ThemeConfig['storyboards'] {
