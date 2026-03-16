@@ -1,5 +1,6 @@
-import { useEffect, Suspense, lazy } from 'react';
+import { useEffect, useRef, Suspense, lazy } from 'react';
 import { useTranslation } from 'react-i18next';
+import { AudioService } from './services/AudioService';
 import { useAppStore } from './stores/appStore';
 import { useThemeStore } from './stores/themeStore';
 import { useDevFlagsStore } from './stores/devFlagsStore';
@@ -204,6 +205,24 @@ function AppContent() {
 }
 
 function App() {
+  // Unlock Web Audio context on first user gesture (tablets, Chromebooks)
+  const audioUnlockedRef = useRef(false);
+  useEffect(() => {
+    const unlock = () => {
+      if (audioUnlockedRef.current) return;
+      audioUnlockedRef.current = true;
+      AudioService.unlockAudioContext();
+      document.removeEventListener('click', unlock, true);
+      document.removeEventListener('touchstart', unlock, true);
+    };
+    document.addEventListener('click', unlock, true);
+    document.addEventListener('touchstart', unlock, true);
+    return () => {
+      document.removeEventListener('click', unlock, true);
+      document.removeEventListener('touchstart', unlock, true);
+    };
+  }, []);
+
   // Render LocationEditor for /editor route (admin tool)
   if (isEditorRoute()) {
     return (

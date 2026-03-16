@@ -5,7 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Lock } from 'lucide-react';
 import type { Clip as ClipType, Sample } from '../../types';
 import { getClipDurationBeats, beatsToSeconds } from '../../utils/audio';
-import { CLIP_MIN_WIDTH_PX } from '../../constants/config';
+// CLIP_MIN_WIDTH_PX removed: clips scale naturally with zoom level
 import { SampleIcon } from '../../utils/iconMap';
 import { useSelectionStore } from '../../stores/selectionStore';
 
@@ -111,7 +111,7 @@ export const Clip = memo(function Clip({
         left: `${leftPercent}%`,
         width: `${Math.min(widthPercent, 100 - leftPercent)}%`,
         backgroundColor: `${sample.color}cc`,
-        minWidth: `${CLIP_MIN_WIDTH_PX}px`,
+        minWidth: 0,
         touchAction: 'none',
         WebkitTouchCallout: 'none',
         userSelect: 'none',

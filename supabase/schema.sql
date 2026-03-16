@@ -348,6 +348,180 @@ GRANT EXECUTE ON FUNCTION get_shared_composition TO anon;
 GRANT EXECUTE ON FUNCTION get_shared_composition TO authenticated;
 
 -- ============================================
+-- 10. SERVER-SIDE RATE LIMITING (SEC-2)
+-- ============================================
+-- Voorkomt misbruik van publieke RPC functies.
+-- Client-side rate limiting (rateLimit.ts) is triviaal te omzeilen.
+
+-- Tabel voor rate limit tracking
+CREATE TABLE IF NOT EXISTS public.rate_limits (
+  id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+  action TEXT NOT NULL,
+  identifier TEXT NOT NULL,
+  created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+CREATE INDEX IF NOT EXISTS idx_rate_limits_lookup
+  ON public.rate_limits(action, identifier, created_at DESC);
+
+-- RLS: geen directe toegang, alleen via SECURITY DEFINER functies
+ALTER TABLE public.rate_limits ENABLE ROW LEVEL SECURITY;
+
+-- Herbruikbare rate limit checker
+-- Gooit een exception als het limiet bereikt is.
+CREATE OR REPLACE FUNCTION check_rate_limit(
+  p_action TEXT,
+  p_identifier TEXT,
+  p_max_requests INT,
+  p_window_seconds INT
+)
+RETURNS VOID AS $$
+DECLARE
+  v_count INT;
+BEGIN
+  -- Tel recente requests
+  SELECT COUNT(*) INTO v_count
+  FROM public.rate_limits
+  WHERE action = p_action
+    AND identifier = p_identifier
+    AND created_at > NOW() - (p_window_seconds || ' seconds')::INTERVAL;
+
+  IF v_count >= p_max_requests THEN
+    RAISE EXCEPTION 'Rate limit exceeded for %', p_action;
+  END IF;
+
+  -- Registreer deze request
+  INSERT INTO public.rate_limits (action, identifier)
+  VALUES (p_action, p_identifier);
+
+  -- Opschonen: verwijder entries ouder dan 1 uur (lazy cleanup)
+  DELETE FROM public.rate_limits
+  WHERE created_at < NOW() - INTERVAL '1 hour'
+    AND action = p_action;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- ============================================
+-- 10b. RPC FUNCTIES MET RATE LIMITING
+-- ============================================
+
+-- submit_composition: max 60 per minuut per klascode
+DROP FUNCTION IF EXISTS submit_composition(character, text, text, jsonb);
+CREATE OR REPLACE FUNCTION submit_composition(
+  p_class_code CHAR(4),
+  p_student_name TEXT,
+  p_composition_name TEXT,
+  p_composition_data JSONB
+)
+RETURNS UUID AS $$
+DECLARE
+  v_class_id UUID;
+  v_submission_id UUID;
+  v_identifier TEXT;
+BEGIN
+  -- Rate limit: max 60 submissions per minuut per klascode
+  -- (een klas van 35 leerlingen moet tegelijk kunnen inleveren)
+  v_identifier := 'class:' || p_class_code;
+  PERFORM check_rate_limit('submit', v_identifier, 60, 60);
+
+  -- Zoek klas
+  SELECT id INTO v_class_id
+  FROM public.classes
+  WHERE code = p_class_code AND is_active = TRUE;
+
+  IF v_class_id IS NULL THEN
+    RAISE EXCEPTION 'Klas-code niet gevonden';
+  END IF;
+
+  -- Insert submission
+  INSERT INTO public.submissions (class_id, student_name, composition_name, composition_data)
+  VALUES (v_class_id, p_student_name, p_composition_name, p_composition_data)
+  RETURNING id INTO v_submission_id;
+
+  RETURN v_submission_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- share_composition: max 10 per minuut per sessie
+DROP FUNCTION IF EXISTS share_composition(text, text, jsonb);
+CREATE OR REPLACE FUNCTION share_composition(
+  p_student_name TEXT,
+  p_composition_name TEXT,
+  p_composition_data JSONB
+)
+RETURNS TEXT AS $$
+DECLARE
+  v_code VARCHAR(8);
+  v_expires TIMESTAMPTZ;
+  v_identifier TEXT;
+BEGIN
+  -- Rate limit: max 10 shares per minuut per sessie/IP
+  -- Gebruik auth.uid() als identifier (voor ingelogde users) of een hash van de naam
+  v_identifier := COALESCE(auth.uid()::TEXT, 'anon:' || md5(p_student_name));
+  PERFORM check_rate_limit('share', v_identifier, 10, 60);
+
+  v_code := generate_share_code();
+  v_expires := NOW() + INTERVAL '30 days';
+
+  INSERT INTO public.submissions (
+    class_id, student_name, composition_name,
+    composition_data, share_code, expires_at, view_count
+  )
+  VALUES (
+    NULL, p_student_name, p_composition_name,
+    p_composition_data, v_code, v_expires, 0
+  );
+
+  RETURN v_code;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- get_shared_composition: max 30 per minuut per share_code
+DROP FUNCTION IF EXISTS get_shared_composition(character varying);
+CREATE OR REPLACE FUNCTION get_shared_composition(p_code VARCHAR)
+RETURNS TABLE (
+  id UUID,
+  student_name TEXT,
+  composition_name TEXT,
+  composition_data JSONB,
+  created_at TIMESTAMPTZ,
+  expires_at TIMESTAMPTZ,
+  view_count INT
+) AS $$
+DECLARE
+  v_normalized_code VARCHAR;
+BEGIN
+  v_normalized_code := UPPER(TRIM(p_code));
+
+  -- Rate limit: max 30 lookups per minuut per code (bruteforce preventie)
+  PERFORM check_rate_limit('get_shared', 'code:' || v_normalized_code, 30, 60);
+
+  -- Verhoog view_count
+  UPDATE public.submissions
+  SET view_count = submissions.view_count + 1
+  WHERE share_code = v_normalized_code
+    AND (submissions.expires_at IS NULL OR submissions.expires_at > NOW());
+
+  -- Retourneer data
+  RETURN QUERY
+  SELECT
+    s.id, s.student_name, s.composition_name,
+    s.composition_data, s.created_at, s.expires_at, s.view_count
+  FROM public.submissions s
+  WHERE s.share_code = v_normalized_code
+    AND (s.expires_at IS NULL OR s.expires_at > NOW());
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Grants (opnieuw, want CREATE OR REPLACE reset ze)
+GRANT EXECUTE ON FUNCTION submit_composition(character, text, text, jsonb) TO anon;
+GRANT EXECUTE ON FUNCTION submit_composition(character, text, text, jsonb) TO authenticated;
+GRANT EXECUTE ON FUNCTION share_composition(text, text, jsonb) TO anon;
+GRANT EXECUTE ON FUNCTION share_composition(text, text, jsonb) TO authenticated;
+GRANT EXECUTE ON FUNCTION get_shared_composition(character varying) TO anon;
+GRANT EXECUTE ON FUNCTION get_shared_composition(character varying) TO authenticated;
+
+-- ============================================
 -- KLAAR!
 -- ============================================
 -- Als je "Success. No rows returned" ziet, is alles goed gegaan.

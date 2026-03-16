@@ -39,7 +39,7 @@ export type ExportProgressCallback = (progress: number) => void;
  * Preload all sample buffers for offline rendering.
  * Buffers must be loaded BEFORE calling Tone.Offline.
  */
-async function preloadBuffers(
+export async function preloadBuffers(
   samples: Sample[],
   onProgress?: ExportProgressCallback
 ): Promise<Map<string, Tone.ToneAudioBuffer>> {
@@ -66,7 +66,7 @@ async function preloadBuffers(
 /**
  * Calculate total duration of timeline in seconds.
  */
-function calculateTimelineDuration(
+export function calculateTimelineDuration(
   tracks: Track[],
   samples: Sample[]
 ): number {
@@ -110,7 +110,7 @@ function floatTo16BitPCM(input: Float32Array): Int16Array {
 /**
  * Render timeline to AudioBuffer using Tone.Offline.
  */
-async function renderOffline(
+export async function renderOffline(
   tracks: Track[],
   samples: Sample[],
   duration: number,

@@ -33,7 +33,7 @@ export interface SampleLoadResult {
   error?: string;
 }
 
-class AudioService {
+export class AudioService {
   private static instance: AudioService | null = null;
 
   private players: Map<string, Tone.Player> = new Map();
@@ -73,6 +73,19 @@ class AudioService {
   // ==========================================================================
   // INITIALIZATION
   // ==========================================================================
+
+  /**
+   * Unlock the Web Audio context on the first user gesture.
+   * Call this once from a top-level click/touch handler so that browsers
+   * with strict autoplay policies (tablets, Chromebooks) allow audio later.
+   * Safe to call multiple times — only acts once.
+   */
+  static unlockAudioContext(): void {
+    if (Tone.getContext().state === 'running') return;
+    Tone.start().catch(() => {
+      // Silently ignore — will retry on next gesture via initialize()
+    });
+  }
 
   async initialize(): Promise<void> {
     if (this.isInitialized) return;

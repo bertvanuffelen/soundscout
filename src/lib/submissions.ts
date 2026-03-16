@@ -78,6 +78,9 @@ export async function submitComposition(
     logger.error('Fout bij versturen compositie:', sanitizeError(error));
 
     // Vertaal bekende fouten
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
     if (error.message.includes('niet gevonden')) {
       throw new Error(i18n.t('submissions.classCodeNotFound'));
     }
@@ -128,6 +131,9 @@ export async function shareComposition(
 
   if (error) {
     logger.error('Fout bij delen compositie:', sanitizeError(error));
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
     throw new Error(i18n.t('submissions.shareLinkError'));
   }
 
@@ -149,6 +155,9 @@ export async function getSharedComposition(
 
   if (error) {
     logger.error('Fout bij ophalen gedeelde compositie:', sanitizeError(error));
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
     throw new Error(i18n.t('submissions.loadError'));
   }
 

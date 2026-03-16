@@ -35,8 +35,23 @@ export const AMBIENT_AUDIO_FADE_SECONDS = 1.5;
 /** Default number of beats in the timeline */
 export const DEFAULT_TOTAL_BEATS = 128;
 
-/** Number of beats visible in viewport (rest is scrollable) */
+/** Number of beats visible in viewport at default zoom (rest is scrollable) */
 export const VISIBLE_BEATS = 64;
+
+/** Zoom: minimum multiplier (most zoomed out — fit all beats) */
+export const ZOOM_MIN = 0.5;
+
+/** Zoom: maximum multiplier (most zoomed in) */
+export const ZOOM_MAX = 4;
+
+/** Zoom: step size for +/- buttons */
+export const ZOOM_STEP = 0.25;
+
+/** Zoom: default for desktop (fit-to-width, multiplier 1.0 = all beats visible) */
+export const ZOOM_DEFAULT_DESKTOP = 1.0;
+
+/** Zoom: default for mobile (zoomed in so beats are workable) */
+export const ZOOM_DEFAULT_MOBILE = 2.0;
 
 /** Default number of tracks in the timeline */
 export const DEFAULT_TRACK_COUNT = 8;
@@ -64,8 +79,8 @@ export const POINTER_ACTIVATION_DISTANCE = 8;
 /** Delay in milliseconds before touch drag activates */
 export const TOUCH_ACTIVATION_DELAY_MS = 200;
 
-/** Tolerance in pixels for touch movement during activation delay */
-export const TOUCH_ACTIVATION_TOLERANCE = 8;
+/** Tolerance in pixels for touch movement during activation delay (higher = more forgiving on tablets) */
+export const TOUCH_ACTIVATION_TOLERANCE = 10;
 
 // =============================================================================
 // HOTSPOTS

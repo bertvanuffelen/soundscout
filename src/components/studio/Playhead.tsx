@@ -13,17 +13,13 @@ interface PlayheadProps {
 /**
  * Playhead component with draggable handle in ruler strip.
  *
- * - Handle is only draggable when not playing
+ * - Clicking anywhere on the ruler seeks to that position
+ * - Handle is draggable (also during playback)
  * - 44px touch hitbox for accessibility
  * - Visual handle is 12px circle
  */
-export const Playhead = memo(function Playhead({
-  currentBeat,
-  totalBeats,
-  isPlaying,
-  onSeek,
-  containerRef,
-}: PlayheadProps) {
+export const Playhead = memo(function Playhead(props: PlayheadProps) {
+  const { currentBeat, totalBeats, onSeek, containerRef } = props;
   const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
   const playheadPercent = (currentBeat / totalBeats) * 100;
@@ -53,15 +49,33 @@ export const Playhead = memo(function Playhead({
     [containerRef, currentBeat, totalBeats]
   );
 
+  // --- Ruler click: seek to clicked position ---
+  const handleRulerClick = useCallback(
+    (e: React.MouseEvent) => {
+      // Don't process if this was the end of a drag
+      if (isDragging) return;
+      // Only respond to clicks on the ruler background, not on the handle
+      if ((e.target as HTMLElement).closest('[role="slider"]')) return;
+
+      const beat = calculateBeatFromPointer(e.clientX);
+      onSeek(Math.round(beat));
+    },
+    [isDragging, calculateBeatFromPointer, onSeek]
+  );
+
+  // --- Handle drag: start ---
   const handlePointerDown = useCallback(
     (e: React.PointerEvent) => {
-      if (isPlaying) return;
-
       e.preventDefault();
+      e.stopPropagation(); // Prevent ruler click from firing
       e.currentTarget.setPointerCapture(e.pointerId);
       setIsDragging(true);
+
+      // Immediately seek to pointer position
+      const beat = calculateBeatFromPointer(e.clientX);
+      onSeek(beat);
     },
-    [isPlaying]
+    [calculateBeatFromPointer, onSeek]
   );
 
   const handlePointerMove = useCallback(
@@ -81,17 +95,15 @@ export const Playhead = memo(function Playhead({
       e.currentTarget.releasePointerCapture(e.pointerId);
       setIsDragging(false);
 
-      // Final position
+      // Final position — snap to nearest beat on release
       const beat = calculateBeatFromPointer(e.clientX);
-      onSeek(Math.round(beat)); // Snap to nearest beat on release
+      onSeek(Math.round(beat));
     },
     [isDragging, calculateBeatFromPointer, onSeek]
   );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
-      if (isPlaying) return;
-
       const step = 1; // Move by 1 beat per key press
       let newBeat = currentBeat;
 
@@ -118,45 +130,46 @@ export const Playhead = memo(function Playhead({
           break;
       }
     },
-    [isPlaying, currentBeat, totalBeats, onSeek]
+    [currentBeat, totalBeats, onSeek]
   );
-
-  const canDrag = !isPlaying;
 
   return (
     <>
-      {/* Handle in ruler strip - interactive */}
+      {/* Ruler click zone — covers entire ruler, behind the handle */}
+      <div
+        className="absolute inset-0 z-20 cursor-pointer"
+        onClick={handleRulerClick}
+      />
+
+      {/* Handle in ruler strip - interactive, draggable */}
       <div
         role="slider"
-        tabIndex={canDrag ? 0 : -1}
+        tabIndex={0}
         aria-label={t('studio.playhead')}
         aria-valuenow={Math.round(currentBeat)}
         aria-valuemin={0}
         aria-valuemax={totalBeats}
-        aria-disabled={isPlaying}
         className={cn(
           // Large touch hitbox (44px wide)
           'absolute top-0 h-4 w-11 -translate-x-1/2 z-30',
           'flex items-center justify-center',
-          'rounded-full',
-          canDrag && 'cursor-ew-resize',
+          'rounded-full cursor-ew-resize',
           isDragging && 'touch-none',
           'focus-visible:ring-2 focus-visible:ring-error-500 focus-visible:ring-offset-1'
         )}
         style={{ left: `${playheadPercent}%` }}
-        onPointerDown={canDrag ? handlePointerDown : undefined}
+        onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}
         onPointerCancel={handlePointerUp}
-        onKeyDown={canDrag ? handleKeyDown : undefined}
+        onKeyDown={handleKeyDown}
       >
         {/* Visual handle - circle */}
         <div
           className={cn(
             'w-3 h-3 rounded-full border-2 border-white shadow-sm transition-transform',
             'bg-error-500',
-            isDragging && 'scale-125',
-            !canDrag && 'opacity-60'
+            isDragging && 'scale-125'
           )}
         />
       </div>

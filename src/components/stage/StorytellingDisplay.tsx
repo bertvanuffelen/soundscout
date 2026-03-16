@@ -11,48 +11,26 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useAudioStore } from '../../stores/audioStore';
 import { useTimelineStore } from '../../stores/timelineStore';
-
-/**
- * Determine which image to show based on currentBeat.
- * Uses sections if available, otherwise divides beats evenly.
- */
-function getActiveImageIndex(
-  currentBeat: number,
-  totalBeats: number,
-  imageCount: number,
-  sections: { endBeat: number }[],
-): number {
-  if (imageCount <= 1) return 0;
-
-  // If sections match image count (1 section per slide) or image count - 1
-  // (legacy: last slide has no section), use section boundaries
-  if (sections.length === imageCount || sections.length === imageCount - 1) {
-    for (let i = 0; i < sections.length; i++) {
-      if (currentBeat < sections[i].endBeat) {
-        return i;
-      }
-    }
-    return imageCount - 1;
-  }
-
-  // Fallback: divide beats evenly
-  const beatsPerImage = totalBeats / imageCount;
-  const index = Math.floor(currentBeat / beatsPerImage);
-  return Math.min(index, imageCount - 1);
-}
+import { useLibraryStore } from '../../stores/libraryStore';
+import { getActiveImageIndex } from '../../utils/storytelling';
+import { audioService } from '../../services/AudioService';
+import { ImageLightbox } from '../ui/ImageLightbox';
+import { CrossfadeImage } from '../ui/CrossfadeImage';
 
 export function StorytellingDisplay() {
   const { t } = useTranslation();
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
   const composeMode = useAppStore((s) => s.composeMode);
   const setCurrentImageIndex = useAppStore((s) => s.setCurrentImageIndex);
+  const isPlaying = useAudioStore((s) => s.isPlaying);
 
   // Local display index (driven by playback sync or manual navigation)
   const [displayIndex, setDisplayIndex] = useState(() => useAppStore.getState().currentImageIndex);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const rafRef = useRef<number | null>(null);
 
   if (!activeStoryboard) return null;
@@ -110,6 +88,26 @@ export function StorytellingDisplay() {
     };
   }, [isStoryboard, syncWithPlayback]);
 
+  // Sync image when seeking while NOT playing (scrubbing playhead)
+  useEffect(() => {
+    if (!isStoryboard) return;
+
+    const unsub = useAudioStore.subscribe((state, prevState) => {
+      if (!state.isPlaying && state.currentBeat !== prevState.currentBeat && activeStoryboard) {
+        const { totalBeats, sections } = useTimelineStore.getState();
+        const newIndex = getActiveImageIndex(state.currentBeat, totalBeats, activeStoryboard.images.length, sections);
+        setDisplayIndex((prev) => {
+          if (prev !== newIndex) {
+            useAppStore.getState().setCurrentImageIndex(newIndex);
+            return newIndex;
+          }
+          return prev;
+        });
+      }
+    });
+    return unsub;
+  }, [isStoryboard, activeStoryboard]);
+
   // Manual navigation (only when not playing)
   const handlePrev = useCallback(() => {
     setDisplayIndex((prev) => {
@@ -128,6 +126,30 @@ export function StorytellingDisplay() {
     });
   }, [activeStoryboard, setCurrentImageIndex]);
 
+  // --- Transport controls for lightbox ---
+
+  const handleLightboxPlayPause = useCallback(() => {
+    const { isPlaying: playing } = useAudioStore.getState();
+    if (playing) {
+      audioService.pause();
+      useAudioStore.getState().setIsPlaying(false);
+    } else {
+      const { tracks, totalBeats, isLooping } = useTimelineStore.getState();
+      const { currentBeat } = useAudioStore.getState();
+      const { librarySamples } = useLibraryStore.getState();
+      audioService.scheduleTimeline(tracks, librarySamples);
+      audioService.setLoop(isLooping, totalBeats);
+      audioService.play(currentBeat);
+      useAudioStore.getState().setIsPlaying(true);
+    }
+  }, []);
+
+  const handleLightboxStop = useCallback(() => {
+    audioService.stop();
+    useAudioStore.getState().setIsPlaying(false);
+    useAudioStore.getState().setCurrentBeat(0);
+  }, []);
+
   const currentImage = activeStoryboard.images[displayIndex];
   if (!currentImage) return null;
 
@@ -138,11 +160,20 @@ export function StorytellingDisplay() {
     <div className="w-full max-w-lg">
       {/* Image container */}
       <div className="relative rounded-xl overflow-hidden bg-black/20 shadow-lg">
-        <img
+        <CrossfadeImage
           src={currentImage.url}
           alt={t(currentImage.label)}
-          className="w-full aspect-video object-cover transition-opacity duration-500"
+          className="w-full aspect-video object-cover"
         />
+
+        {/* Zoom button */}
+        <button
+          onClick={() => setLightboxOpen(true)}
+          className="absolute top-2 right-2 w-9 h-9 flex items-center justify-center rounded-full bg-black/50 text-white/80 hover:text-white hover:bg-black/70 backdrop-blur-sm transition-colors"
+          aria-label={t('common.zoom')}
+        >
+          <ZoomIn className="w-4 h-4" />
+        </button>
 
         {/* Navigation arrows (storyboard with multiple images, only when not playing) */}
         {isStoryboard && (
@@ -180,6 +211,18 @@ export function StorytellingDisplay() {
           </div>
         </div>
       </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && (
+        <ImageLightbox
+          src={currentImage.url}
+          alt={t(currentImage.label)}
+          onClose={() => setLightboxOpen(false)}
+          isPlaying={isPlaying}
+          onPlayPause={handleLightboxPlayPause}
+          onStop={handleLightboxStop}
+        />
+      )}
     </div>
   );
 }

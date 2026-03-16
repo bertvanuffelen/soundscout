@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen, Template, ComposeMode, Storyboard } from '../types';
+import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions } from '../types';
 
 interface AppStore {
   // Navigation state
@@ -22,8 +22,8 @@ interface AppStore {
   shareCode: string | null;
   // Active template (null = no template loaded)
   activeTemplate: Template | null;
-  // Whether template clips are locked (not movable/deletable)
-  templateClipsLocked: boolean;
+  // Granular lock options for active template (#59)
+  templateLockOptions: TemplateLockOptions;
 
   // Storytelling (#41)
   composeMode: ComposeMode;
@@ -46,7 +46,7 @@ interface AppStore {
   // Template actions
   loadTemplate: (template: Template) => void;
   clearTemplate: () => void;
-  setTemplateClipsLocked: (locked: boolean) => void;
+  setTemplateLockOptions: (options: Partial<TemplateLockOptions>) => void;
 
   // Storytelling actions (#41)
   setComposeMode: (mode: ComposeMode) => void;
@@ -65,7 +65,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   currentCompositionId: null,
   shareCode: null,
   activeTemplate: null,
-  templateClipsLocked: false,
+  templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true },
   composeMode: 'free',
   activeStoryboard: null,
   currentImageIndex: 0,
@@ -77,7 +77,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateClipsLocked: false, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0 }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0 }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -95,9 +95,9 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToShared: (code) => set({ currentScreen: 'shared', shareCode: code }),
 
   // Template actions
-  loadTemplate: (template) => set({ activeTemplate: template, templateClipsLocked: template.clipsLocked }),
-  clearTemplate: () => set({ activeTemplate: null, templateClipsLocked: false }),
-  setTemplateClipsLocked: (locked) => set({ templateClipsLocked: locked }),
+  loadTemplate: (template) => set({ activeTemplate: template, templateLockOptions: template.lockOptions }),
+  clearTemplate: () => set({ activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true } }),
+  setTemplateLockOptions: (options) => set((state) => ({ templateLockOptions: { ...state.templateLockOptions, ...options } })),
 
   // Storytelling actions (#41)
   setComposeMode: (mode) => set({ composeMode: mode }),

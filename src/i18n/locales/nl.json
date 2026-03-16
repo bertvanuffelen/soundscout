@@ -16,7 +16,8 @@
     "pause": "Pauzeren",
     "stop": "Stoppen",
     "by": "Door",
-    "location": "Locatie"
+    "location": "Locatie",
+    "zoom": "Vergroten"
   },
   "language": {
     "nl": "Nederlands",
@@ -85,6 +86,7 @@
   },
   "start": {
     "startGame": "Start Spel",
+    "continueComposition": "Ga verder",
     "newComposition": "Nieuwe Compositie",
     "howItWorks": "Hoe werkt het?",
     "myCompositions": "Mijn Composities",
@@ -98,6 +100,9 @@
       "Combineer geluiden tot je eigen compositie!"
     ],
     "closeTutorial": "Begrepen!",
+    "videoTutorials": "Video uitleg",
+    "videoSoundScout": "Uitleg SoundScout",
+    "videoDashboard": "Uitleg docent dashboard",
     "feedbackHint": "Hulp nodig of bug melden?",
     "teacherLink": "Ben je docent?",
     "createdBy": "Gemaakt door Bert van Uffelen",
@@ -129,6 +134,9 @@
     "title": "Studio",
     "undo": "Ongedaan maken",
     "redo": "Opnieuw",
+    "zoomIn": "Inzoomen",
+    "zoomOut": "Uitzoomen",
+    "zoomFit": "Volledige tijdlijn",
     "library": "Bibliotheek",
     "timeline": "Tijdlijn",
     "playhead": "Afspeelpositie",
@@ -198,6 +206,10 @@
     "exporting": "Exporteren...",
     "exportSuccess": "Gelukt! Je MP3 wordt gedownload.",
     "exportError": "Export mislukt. Probeer opnieuw.",
+    "downloadVideo": "Download Video",
+    "exportingVideo": "Video maken...",
+    "videoExportSuccess": "Video is gedownload!",
+    "videoNotSupported": "Video export niet beschikbaar op deze browser",
     "subtitle": "Jouw SoundScout compositie",
     "shareWithTeacher": "Deel met docent",
     "defaultName": "Mijn compositie"
@@ -350,7 +362,8 @@
     "viewCount": "{{count}}x beluisterd",
     "by": "Door",
     "errorGeneric": "Er ging iets mis. Probeer opnieuw.",
-    "loadingSamples": "Samples laden..."
+    "loadingSamples": "Samples laden...",
+    "openComposition": "Open compositie"
   },
   "templates": {
     "activeBanner": "Opdracht:",
@@ -380,8 +393,20 @@
     "descriptionPlaceholder": "Korte beschrijving van de opdracht",
     "instructionsLabel": "Instructies voor leerlingen (optioneel)",
     "instructionsPlaceholder": "Bijv. Voeg minstens 3 eigen samples toe aan de compositie",
+    "lockOptionsTitle": "Vergrendeling",
     "lockClipsLabel": "Clips vergrendelen",
-    "lockClipsDescription": "Leerlingen kunnen de vooraf geplaatste clips niet verplaatsen of verwijderen"
+    "lockClipsDescription": "Leerlingen kunnen de vooraf geplaatste clips niet verplaatsen of verwijderen",
+    "lockClipsShort": "Clips",
+    "lockSectionsLabel": "Secties vergrendelen",
+    "lockSectionsDescription": "Leerlingen kunnen geen secties toevoegen, verwijderen of aanpassen",
+    "lockSectionsShort": "Secties",
+    "lockLibraryLabel": "Bibliotheek vergrendelen",
+    "lockLibraryDescription": "Leerlingen kunnen geen extra geluiden verzamelen op de kaart",
+    "allowNewClipsLabel": "Nieuwe clips toestaan",
+    "allowNewClipsDescription": "Leerlingen mogen eigen clips toevoegen aan de tijdlijn",
+    "libraryLockedBanner": "Geluiden verzamelen is vergrendeld voor deze opdracht",
+    "storyboardIncluded": "Storyboard wordt meegenomen",
+    "storyboardIncludedDescription": "Leerlingen krijgen het actieve storyboard met afbeeldingen bij deze opdracht"
   },
   "error": {
     "title": "Oeps! Er ging iets mis",
@@ -408,7 +433,8 @@
     "submitError": "Kon compositie niet versturen. Probeer opnieuw.",
     "shareLinkError": "Kon link niet aanmaken. Probeer opnieuw.",
     "loadError": "Kon compositie niet laden.",
-    "cooldown": "Even geduld! Wacht {{seconds}} seconden voordat je opnieuw kunt versturen."
+    "cooldown": "Even geduld! Wacht {{seconds}} seconden voordat je opnieuw kunt versturen.",
+    "rateLimitError": "Te veel verzoeken. Wacht even en probeer opnieuw."
   },
   "teacher": {
     "common": {
@@ -516,7 +542,8 @@
       "noSamplesError": "Geen samples gevonden in deze compositie",
       "loadWarning": "Sommige samples konden niet worden geladen:",
       "audioLoadError": "Kon audio niet laden",
-      "errorHint": "Probeer de pagina te verversen."
+      "errorHint": "Probeer de pagina te verversen.",
+      "withStoryboard": "Met storyboard"
     },
     "classCard": {
       "createdOn": "Aangemaakt op {{date}}",
@@ -590,6 +617,13 @@
         "name": "De Markt",
         "description": "Maak geluid bij een druk marktplein",
         "markt": "Marktplein"
+      },
+      "test-locaties": {
+        "name": "Test Locaties",
+        "description": "Tijdelijk test-storyboard met 3 locaties (crossfade test)",
+        "boerderij": "Boerderij",
+        "speeltuin": "Speeltuin",
+        "gymlokaal": "Gymlokaal"
       }
     }
   }

@@ -4,8 +4,9 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, BookOpen } from 'lucide-react';
+import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, BookOpen } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
+import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
 import { initializeNewComposition } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
@@ -16,7 +17,9 @@ import { ShareCodeInput } from './share';
 export function StartScreen() {
   const { t } = useTranslation();
   const goToCompositions = useAppStore((s) => s.goToCompositions);
+  const goToStudio = useAppStore((s) => s.goToStudio);
   const goToTeacher = useAppStore((s) => s.goToTeacher);
+  const hasClipsInProgress = useTimelineStore((s) => s.selectHasClips());
   const [isLoading, setIsLoading] = useState(false);
   const [showTutorial, setShowTutorial] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -77,9 +80,22 @@ export function StartScreen() {
 
         {/* Buttons */}
         <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-[280px] sm:max-w-xs">
+          {/* Continue button — shown when composition in progress (#64) */}
+          {hasClipsInProgress && (
+            <Button
+              onClick={goToStudio}
+              size="lg"
+              className="w-full"
+            >
+              <Play className="w-5 h-5 mr-1.5 sm:mr-2" />
+              {t('start.continueComposition')}
+            </Button>
+          )}
+
           <Button
             onClick={handleNewComposition}
             isLoading={isLoading}
+            variant={hasClipsInProgress ? 'secondary' : 'primary'}
             size="lg"
             className="w-full"
           >
@@ -252,6 +268,31 @@ export function StartScreen() {
             </li>
           ))}
         </ol>
+
+        {/* Video tutorials */}
+        <div className="border-t border-neutral-200 pt-4 mb-6 space-y-2">
+          <p className="text-sm font-semibold text-text-muted mb-2">
+            {t('start.videoTutorials')}
+          </p>
+          <a
+            href="https://youtu.be/WRvXvKsIQfc"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors text-text-main font-medium text-sm"
+          >
+            <Youtube className="w-5 h-5 flex-shrink-0 text-accent-500" />
+            {t('start.videoSoundScout')}
+          </a>
+          <a
+            href="https://youtu.be/clA69CeXXcM"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors text-text-main font-medium text-sm"
+          >
+            <Youtube className="w-5 h-5 flex-shrink-0 text-accent-500" />
+            {t('start.videoDashboard')}
+          </a>
+        </div>
 
         <Button
           onClick={() => setShowTutorial(false)}

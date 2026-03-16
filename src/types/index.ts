@@ -293,6 +293,30 @@ export interface CompositionData {
 // --- Template (Fase 5 - Docent-aangemaakt sjabloon) ---
 
 /**
+ * Granular lock options for a template (#59).
+ * Controls what students can and cannot modify.
+ * Default: all locked (true), new clips allowed (true).
+ */
+export interface TemplateLockOptions {
+  /** Template clips cannot be moved, deleted, trimmed, or duplicated */
+  clipsLocked: boolean;
+  /** Sections cannot be added, deleted, resized, or edited */
+  sectionsLocked: boolean;
+  /** Library is fixed — student cannot collect extra samples from locations */
+  libraryLocked: boolean;
+  /** Student can add new clips from available samples to empty spots */
+  allowNewClips: boolean;
+}
+
+/** Default lock options: everything locked, new clips allowed */
+export const DEFAULT_LOCK_OPTIONS: TemplateLockOptions = {
+  clipsLocked: true,
+  sectionsLocked: true,
+  libraryLocked: true,
+  allowNewClips: true,
+};
+
+/**
  * A template created by a teacher for students to work with.
  * Contains pre-filled clips, samples, sections, and optional instructions.
  */
@@ -309,8 +333,13 @@ export interface Template {
   compositionData: CompositionData;
   /** Optional instructions for the student (Markdown) */
   instructions?: string;
-  /** Whether template clips are locked (not movable/deletable by student) */
-  clipsLocked: boolean;
+  /** Granular lock options (#59) */
+  lockOptions: TemplateLockOptions;
+  /**
+   * @deprecated Use lockOptions.clipsLocked instead.
+   * Kept for backward compatibility with existing Supabase rows.
+   */
+  clipsLocked?: boolean;
   /** ISO timestamp of creation */
   createdAt: string;
 }

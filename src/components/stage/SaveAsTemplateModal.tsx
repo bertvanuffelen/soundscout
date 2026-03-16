@@ -6,10 +6,12 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Copy, Check } from 'lucide-react';
+import { Loader2, Copy, Check, ImageIcon } from 'lucide-react';
 import { Button, Modal } from '../ui';
 import { createTemplate } from '../../lib/templates';
-import type { CompositionData } from '../../types';
+import { useAppStore } from '../../stores/appStore';
+import type { CompositionData, TemplateLockOptions } from '../../types';
+import { DEFAULT_LOCK_OPTIONS } from '../../types';
 import { logger } from '../../utils/logger';
 
 interface SaveAsTemplateModalProps {
@@ -20,11 +22,12 @@ interface SaveAsTemplateModalProps {
 
 export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: SaveAsTemplateModalProps) {
   const { t } = useTranslation();
+  const activeStoryboard = useAppStore((s) => s.activeStoryboard);
 
   const [name, setName] = useState(defaultName);
   const [description, setDescription] = useState('');
   const [instructions, setInstructions] = useState('');
-  const [clipsLocked, setClipsLocked] = useState(false);
+  const [lockOptions, setLockOptions] = useState<TemplateLockOptions>({ ...DEFAULT_LOCK_OPTIONS });
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -45,7 +48,7 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
         description: description.trim() || undefined,
         compositionData,
         instructions: instructions.trim() || undefined,
-        clipsLocked,
+        lockOptions,
       });
 
       setCreatedCode(result.code);
@@ -55,7 +58,7 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
     } finally {
       setSaving(false);
     }
-  }, [name, description, instructions, clipsLocked, compositionData, t]);
+  }, [name, description, instructions, lockOptions, compositionData, t]);
 
   const handleCopyCode = useCallback(async () => {
     if (!createdCode) return;
@@ -149,19 +152,73 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
           />
         </div>
 
-        {/* Clips vergrendeld */}
-        <label className="flex items-center gap-3 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={clipsLocked}
-            onChange={(e) => setClipsLocked(e.target.checked)}
-            className="rounded border-border-subtle w-4 h-4"
-          />
-          <div>
-            <span className="text-sm font-medium text-text-main">{t('templates.lockClipsLabel')}</span>
-            <p className="text-xs text-text-muted">{t('templates.lockClipsDescription')}</p>
+        {/* Vergrendelingsopties (#59) */}
+        <div className="flex flex-col gap-2.5">
+          <p className="text-sm font-medium text-text-main">{t('templates.lockOptionsTitle')}</p>
+
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={lockOptions.clipsLocked}
+              onChange={(e) => setLockOptions((prev) => ({ ...prev, clipsLocked: e.target.checked }))}
+              className="rounded border-border-subtle w-4 h-4"
+            />
+            <div>
+              <span className="text-sm text-text-main">{t('templates.lockClipsLabel')}</span>
+              <p className="text-xs text-text-muted">{t('templates.lockClipsDescription')}</p>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={lockOptions.sectionsLocked}
+              onChange={(e) => setLockOptions((prev) => ({ ...prev, sectionsLocked: e.target.checked }))}
+              className="rounded border-border-subtle w-4 h-4"
+            />
+            <div>
+              <span className="text-sm text-text-main">{t('templates.lockSectionsLabel')}</span>
+              <p className="text-xs text-text-muted">{t('templates.lockSectionsDescription')}</p>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={lockOptions.libraryLocked}
+              onChange={(e) => setLockOptions((prev) => ({ ...prev, libraryLocked: e.target.checked }))}
+              className="rounded border-border-subtle w-4 h-4"
+            />
+            <div>
+              <span className="text-sm text-text-main">{t('templates.lockLibraryLabel')}</span>
+              <p className="text-xs text-text-muted">{t('templates.lockLibraryDescription')}</p>
+            </div>
+          </label>
+
+          <label className="flex items-center gap-3 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={lockOptions.allowNewClips}
+              onChange={(e) => setLockOptions((prev) => ({ ...prev, allowNewClips: e.target.checked }))}
+              className="rounded border-border-subtle w-4 h-4"
+            />
+            <div>
+              <span className="text-sm text-text-main">{t('templates.allowNewClipsLabel')}</span>
+              <p className="text-xs text-text-muted">{t('templates.allowNewClipsDescription')}</p>
+            </div>
+          </label>
+        </div>
+
+        {/* Storyboard indicator (read-only info) */}
+        {activeStoryboard && (
+          <div className="flex items-center gap-3 px-3 py-2.5 bg-accent-50 border border-accent-200 rounded-lg">
+            <ImageIcon className="w-4 h-4 text-accent-600 flex-shrink-0" />
+            <div>
+              <span className="text-sm font-medium text-text-main">{t('templates.storyboardIncluded')}</span>
+              <p className="text-xs text-text-muted">{t('templates.storyboardIncludedDescription')}</p>
+            </div>
           </div>
-        </label>
+        )}
 
         {/* Error */}
         {error && (

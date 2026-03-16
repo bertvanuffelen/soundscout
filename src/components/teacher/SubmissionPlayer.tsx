@@ -9,12 +9,13 @@
 
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Music, AlertCircle, Play, Pause, Square } from 'lucide-react';
+import { X, Music, AlertCircle, Play, Pause, SkipBack, ImageIcon } from 'lucide-react';
 import * as Tone from 'tone';
 import type { Submission } from '../../hooks/useSubmissions';
 import { audioService } from '../../services/AudioService';
-import { beatsToSeconds } from '../../utils/audio';
+import { findStoryboardById } from '../../data/themes';
 import { Timeline } from '../studio/Timeline';
+import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { DEFAULT_BPM } from '../../constants/config';
 
 interface SubmissionPlayerProps {
@@ -48,6 +49,12 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
   const totalBeats = composition_data?.totalBeats || 16;
   const bpm = composition_data?.bpm || DEFAULT_BPM;
   const isLooping = composition_data?.isLooping || false;
+
+  // Resolve storyboard from composition data (if present)
+  const storyboard = composition_data?.storyboardId
+    ? findStoryboardById(composition_data.storyboardId)?.storyboard ?? null
+    : null;
+  const sections = composition_data?.sections ?? [];
 
   const trackCount = tracks.filter((t) => t.clips?.length > 0).length;
   const clipCount = tracks.reduce(
@@ -180,11 +187,9 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
   // Seek handler - for playhead scrubbing
   const handleSeek = useCallback((beat: number) => {
     setCurrentBeat(beat);
-    // Update transport position so play resumes from here
-    const transport = Tone.getTransport();
-    const seconds = beatsToSeconds(beat, bpm);
-    transport.seconds = seconds;
-  }, [bpm]);
+    // Use audioService.seek() to update transport + notify listeners
+    audioService.seek(beat);
+  }, []);
 
   // Close handler - stop audio first
   const handleClose = useCallback(() => {
@@ -233,6 +238,12 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
               <span className="text-lg sm:text-xl font-bold text-accent-600">{samples.length}</span>
               <span className="text-text-muted text-sm">{t('common.samples')}</span>
             </div>
+            {storyboard && (
+              <div className="flex items-center gap-1.5">
+                <ImageIcon className="w-4 h-4 text-accent-600" />
+                <span className="text-text-muted text-sm">{t('teacher.submissionPlayer.withStoryboard')}</span>
+              </div>
+            )}
           </div>
         </div>
 
@@ -268,20 +279,40 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
             </div>
           )}
 
-          {/* Timeline (read-only) */}
+          {/* Storyboard + Timeline */}
           {showTimeline && (
-            <div className="flex-1 overflow-hidden">
-              <Timeline
-                tracks={tracks}
-                bpm={bpm}
-                totalBeats={totalBeats}
-                currentBeat={currentBeat}
-                isPlaying={isPlaying}
-                onSeek={handleSeek}
-                snapPreview={null}
-                readOnly={true}
-                samples={samples}
-              />
+            <div className={`flex-1 flex min-h-0 overflow-hidden ${storyboard ? 'flex-col' : ''}`}>
+              {/* Storyboard image (synced with playhead) */}
+              {storyboard && (
+                <div className="shrink-0 border-b border-border-subtle bg-neutral-50">
+                  <StoryboardViewer
+                    storyboard={storyboard}
+                    currentBeat={currentBeat}
+                    totalBeats={totalBeats}
+                    sections={sections}
+                    compact
+                    isPlaying={isPlaying}
+                    onPlayPause={handlePlayPause}
+                    onStop={handleStop}
+                  />
+                </div>
+              )}
+
+              {/* Timeline (read-only) */}
+              <div className="flex-1 overflow-hidden min-h-0">
+                <Timeline
+                  tracks={tracks}
+                  bpm={bpm}
+                  totalBeats={totalBeats}
+                  currentBeat={currentBeat}
+                  isPlaying={isPlaying}
+                  onSeek={handleSeek}
+                  snapPreview={null}
+                  readOnly={true}
+                  samples={samples}
+                  sections={sections}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -303,13 +334,13 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
                 )}
               </button>
 
-              {/* Stop button */}
+              {/* Rewind button */}
               <button
                 onClick={handleStop}
                 className="w-16 h-16 sm:w-20 sm:h-20 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95"
-                title={t('common.stop')}
+                title={t('transport.rewind')}
               >
-                <Square className="w-7 h-7 sm:w-8 sm:h-8" />
+                <SkipBack className="w-8 h-8 sm:w-10 sm:h-10" />
               </button>
             </div>
           </div>

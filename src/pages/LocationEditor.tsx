@@ -20,8 +20,8 @@ import { EditorCanvas } from '../components/editor/EditorCanvas';
 import { HotspotList } from '../components/editor/HotspotList';
 import { HotspotModal } from '../components/editor/HotspotModal';
 import { JsonExportPanel } from '../components/editor/JsonExportPanel';
-import { Button } from '../components/ui';
-import { Upload, RotateCcw } from 'lucide-react';
+import { Button, Modal } from '../components/ui';
+import { Upload, RotateCcw, HelpCircle } from 'lucide-react';
 
 // --- Types ---
 
@@ -73,6 +73,7 @@ export function LocationEditor() {
   const [pendingHotspot, setPendingHotspot] = useState<PendingHotspot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHotspotId, setEditingHotspotId] = useState<string | null>(null);
+  const [showHelp, setShowHelp] = useState(false);
 
   // Locations for the selected theme (derived)
   const themeLocations = useMemo(
@@ -332,6 +333,15 @@ export function LocationEditor() {
             <Button
               variant="ghost"
               size="sm"
+              onClick={() => setShowHelp(true)}
+              className="text-slate-400 hover:text-amber-400"
+              title="Handleiding"
+            >
+              <HelpCircle size={16} />
+            </Button>
+            <Button
+              variant="ghost"
+              size="sm"
               onClick={handleReset}
               className="text-slate-400 hover:text-white"
             >
@@ -498,6 +508,93 @@ export function LocationEditor() {
           </div>
         </div>
       </main>
+
+      {/* Help modal */}
+      <Modal
+        isOpen={showHelp}
+        onClose={() => setShowHelp(false)}
+        title="Handleiding Locatie Editor"
+        size="lg"
+        className="max-h-[80vh] overflow-y-auto"
+      >
+        <div className="space-y-5 text-sm text-slate-700 leading-relaxed">
+          <section>
+            <h3 className="font-bold text-base text-slate-900 mb-2">Nieuwe locatie aanmaken</h3>
+            <ol className="list-decimal list-inside space-y-1.5">
+              <li>Kies het juiste <strong>thema</strong> in de header dropdown (bijv. "basis" of "winterspelen").</li>
+              <li>Vul een <strong>Location ID</strong> in (lowercase, met koppeltekens, bijv. "strand").</li>
+              <li>Vul de <strong>naam</strong> en <strong>beschrijving</strong> in voor NL en EN.</li>
+              <li>Upload een <strong>achtergrondafbeelding</strong> (PNG/JPG, idealiter 16:9 verhouding).</li>
+              <li><strong>Klik op de afbeelding</strong> om hotspots te plaatsen.</li>
+              <li>Geef elke hotspot een <strong>Sample ID</strong> (wordt automatisch voorafgegaan door de Location ID).</li>
+              <li>Upload optioneel direct een <strong>MP3 bestand</strong> — de duur wordt automatisch gedetecteerd.</li>
+            </ol>
+          </section>
+
+          <section>
+            <h3 className="font-bold text-base text-slate-900 mb-2">Bestaande locatie bewerken</h3>
+            <ol className="list-decimal list-inside space-y-1.5">
+              <li>Selecteer het <strong>thema</strong> in de eerste dropdown.</li>
+              <li>Kies de <strong>locatie</strong> in de tweede dropdown ("Laad locatie...").</li>
+              <li>Alle velden en hotspots worden automatisch ingeladen.</li>
+              <li>Klik op het <strong>potlood-icoon</strong> naast een hotspot om audio toe te voegen of te vervangen.</li>
+              <li><strong>Sleep hotspots</strong> op het canvas om ze te herpositioneren.</li>
+            </ol>
+          </section>
+
+          <section>
+            <h3 className="font-bold text-base text-slate-900 mb-2">Hotspots beheren</h3>
+            <ul className="list-disc list-inside space-y-1.5">
+              <li><strong>Plaatsen</strong>: klik op het canvas → vul Sample ID in → Toevoegen.</li>
+              <li><strong>Verplaatsen</strong>: sleep een hotspot-marker naar een nieuwe positie.</li>
+              <li><strong>Audio bewerken</strong>: klik het potlood-icoon in de hotspot-lijst rechts.</li>
+              <li><strong>Verwijderen</strong>: klik het prullenbak-icoon in de hotspot-lijst.</li>
+              <li>Groene badge = audio gekoppeld, oranje badge = nog geen audio.</li>
+            </ul>
+          </section>
+
+          <section>
+            <h3 className="font-bold text-base text-slate-900 mb-2">Exporteren &amp; verwerken</h3>
+            <ol className="list-decimal list-inside space-y-1.5">
+              <li>Klik op <strong>"Kopieer JSON"</strong> of <strong>"Download JSON"</strong> in het Export-panel.</li>
+              <li>De JSON bevat: locatie-config, i18n-vertalingen, en sample-stubs.</li>
+              <li>Geef de JSON aan Claude om te verwerken in de codebase.</li>
+              <li>Plaats MP3-bestanden handmatig in: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">/public/audio/themes/&#123;themeId&#125;/&#123;locationId&#125;/</code></li>
+              <li>Plaats de achtergrondafbeelding in: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">/public/images/themes/&#123;themeId&#125;/</code></li>
+            </ol>
+          </section>
+
+          <section>
+            <h3 className="font-bold text-base text-slate-900 mb-2">JSON structuur</h3>
+            <ul className="list-disc list-inside space-y-1.5">
+              <li><strong>location</strong>: configuratie voor het locatie-bestand (hotspots, achtergrond, etc.)</li>
+              <li><strong>i18n</strong>: vertalingen voor NL en EN (namen, beschrijvingen, sample labels)</li>
+              <li><strong>sampleStubs</strong>: basis-informatie per sample (vul handmatig icon en color aan)</li>
+              <li><strong>_meta</strong>: tijdstempel en notities</li>
+            </ul>
+          </section>
+
+          <section className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+            <h3 className="font-bold text-base text-amber-800 mb-1">Tips</h3>
+            <ul className="list-disc list-inside space-y-1 text-amber-900">
+              <li>Sample IDs zijn altijd lowercase met koppeltekens (bijv. "strand-golven").</li>
+              <li>De editor slaat niets permanent op — exporteer altijd je JSON voordat je de pagina verlaat.</li>
+              <li>Je kunt de editor openen met een locatie-parameter: <code className="bg-amber-100 px-1 py-0.5 rounded text-xs font-mono">/editor?location=park</code></li>
+              <li>Wanneer je een MP3 uploadt bij een hotspot, wordt de duur automatisch uitgelezen en meegenomen in de export.</li>
+            </ul>
+          </section>
+        </div>
+
+        <div className="mt-6">
+          <Button
+            onClick={() => setShowHelp(false)}
+            variant="secondary"
+            className="w-full"
+          >
+            Sluiten
+          </Button>
+        </div>
+      </Modal>
 
       {/* Hotspot modal — new or edit */}
       <HotspotModal

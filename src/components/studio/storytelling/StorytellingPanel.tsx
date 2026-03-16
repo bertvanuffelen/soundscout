@@ -10,38 +10,15 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
 import { useAppStore } from '../../../stores/appStore';
 import { useAudioStore } from '../../../stores/audioStore';
 import { useTimelineStore } from '../../../stores/timelineStore';
-
-/**
- * Determine which image to show based on currentBeat.
- * Uses sections if available, otherwise divides beats evenly.
- */
-function getActiveImageIndex(
-  currentBeat: number,
-  totalBeats: number,
-  imageCount: number,
-  sections: { endBeat: number }[],
-): number {
-  if (imageCount <= 1) return 0;
-
-  // If sections match image count (1 per slide) or imageCount - 1 (legacy)
-  if (sections.length === imageCount || sections.length === imageCount - 1) {
-    for (let i = 0; i < sections.length; i++) {
-      if (currentBeat < sections[i].endBeat) {
-        return i;
-      }
-    }
-    return imageCount - 1;
-  }
-
-  // Fallback: divide beats evenly
-  const beatsPerImage = totalBeats / imageCount;
-  const index = Math.floor(currentBeat / beatsPerImage);
-  return Math.min(index, imageCount - 1);
-}
+import { useLibraryStore } from '../../../stores/libraryStore';
+import { getActiveImageIndex } from '../../../utils/storytelling';
+import { audioService } from '../../../services/AudioService';
+import { ImageLightbox } from '../../ui/ImageLightbox';
+import { CrossfadeImage } from '../../ui/CrossfadeImage';
 
 export function StorytellingPanel({ className = '' }: { className?: string }) {
   const { t } = useTranslation();
@@ -49,9 +26,11 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
   const composeMode = useAppStore((s) => s.composeMode);
   const nextImage = useAppStore((s) => s.nextImage);
   const prevImage = useAppStore((s) => s.prevImage);
+  const isPlaying = useAudioStore((s) => s.isPlaying);
 
   // Local display index (driven by playback sync or manual navigation)
   const [displayIndex, setDisplayIndex] = useState(() => useAppStore.getState().currentImageIndex);
+  const [lightboxOpen, setLightboxOpen] = useState(false);
   const rafRef = useRef<number | null>(null);
 
   if (!activeStoryboard) return null;
@@ -111,6 +90,26 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
     };
   }, [isStoryboard, syncWithPlayback]);
 
+  // Sync image when seeking while NOT playing (scrubbing playhead)
+  useEffect(() => {
+    if (!isStoryboard) return;
+
+    const unsub = useAudioStore.subscribe((state, prevState) => {
+      if (!state.isPlaying && state.currentBeat !== prevState.currentBeat && activeStoryboard) {
+        const { totalBeats, sections } = useTimelineStore.getState();
+        const newIndex = getActiveImageIndex(state.currentBeat, totalBeats, activeStoryboard.images.length, sections);
+        setDisplayIndex((prev) => {
+          if (prev !== newIndex) {
+            useAppStore.getState().setCurrentImageIndex(newIndex);
+            return newIndex;
+          }
+          return prev;
+        });
+      }
+    });
+    return unsub;
+  }, [isStoryboard, activeStoryboard]);
+
   // Keep local displayIndex in sync when store changes from outside (e.g. manual nav)
   useEffect(() => {
     const unsub = useAppStore.subscribe((state) => {
@@ -145,6 +144,30 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
     seekToSection(newIndex);
   }, [nextImage, seekToSection]);
 
+  // --- Transport controls for lightbox ---
+
+  const handleLightboxPlayPause = useCallback(() => {
+    const { isPlaying: playing } = useAudioStore.getState();
+    if (playing) {
+      audioService.pause();
+      useAudioStore.getState().setIsPlaying(false);
+    } else {
+      const { tracks, totalBeats, isLooping } = useTimelineStore.getState();
+      const { currentBeat } = useAudioStore.getState();
+      const { librarySamples } = useLibraryStore.getState();
+      audioService.scheduleTimeline(tracks, librarySamples);
+      audioService.setLoop(isLooping, totalBeats);
+      audioService.play(currentBeat);
+      useAudioStore.getState().setIsPlaying(true);
+    }
+  }, []);
+
+  const handleLightboxStop = useCallback(() => {
+    audioService.stop();
+    useAudioStore.getState().setIsPlaying(false);
+    useAudioStore.getState().setCurrentBeat(0);
+  }, []);
+
   const currentImage = activeStoryboard.images[displayIndex];
   if (!currentImage) return null;
 
@@ -152,11 +175,20 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
     <div className={`flex flex-col min-h-0 ${className}`}>
       {/* Image container — fills all available space */}
       <div className="flex-1 min-h-0 relative flex items-center justify-center bg-neutral-900/5 rounded overflow-hidden m-1 sm:m-1.5">
-        <img
+        <CrossfadeImage
           src={currentImage.url}
           alt={t(currentImage.label)}
-          className="max-w-full max-h-full object-contain transition-opacity duration-300"
+          className="max-w-full max-h-full object-contain"
         />
+
+        {/* Zoom button */}
+        <button
+          onClick={() => setLightboxOpen(true)}
+          className="absolute top-1.5 right-1.5 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-black/40 text-white/80 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors"
+          aria-label={t('common.zoom')}
+        >
+          <ZoomIn className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        </button>
 
         {/* Navigation arrows (storyboard only) */}
         {isStoryboard && (
@@ -184,6 +216,18 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
           </>
         )}
       </div>
+
+      {/* Lightbox */}
+      {lightboxOpen && currentImage && (
+        <ImageLightbox
+          src={currentImage.url}
+          alt={t(currentImage.label)}
+          onClose={() => setLightboxOpen(false)}
+          isPlaying={isPlaying}
+          onPlayPause={handleLightboxPlayPause}
+          onStop={handleLightboxStop}
+        />
+      )}
     </div>
   );
 }

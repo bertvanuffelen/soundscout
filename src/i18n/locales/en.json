@@ -16,7 +16,8 @@
     "pause": "Pause",
     "stop": "Stop",
     "by": "By",
-    "location": "Location"
+    "location": "Location",
+    "zoom": "Zoom in"
   },
   "language": {
     "nl": "Nederlands",
@@ -85,6 +86,7 @@
   },
   "start": {
     "startGame": "Start Game",
+    "continueComposition": "Continue",
     "newComposition": "New Composition",
     "howItWorks": "How does it work?",
     "myCompositions": "My Compositions",
@@ -98,6 +100,9 @@
       "Combine sounds into your own composition!"
     ],
     "closeTutorial": "Got it!",
+    "videoTutorials": "Video tutorials",
+    "videoSoundScout": "SoundScout tutorial",
+    "videoDashboard": "Teacher dashboard tutorial",
     "feedbackHint": "Need help or found a bug?",
     "teacherLink": "Are you a teacher?",
     "createdBy": "Created by Bert van Uffelen",
@@ -129,6 +134,9 @@
     "title": "Studio",
     "undo": "Undo",
     "redo": "Redo",
+    "zoomIn": "Zoom in",
+    "zoomOut": "Zoom out",
+    "zoomFit": "Fit timeline",
     "library": "Library",
     "timeline": "Timeline",
     "playhead": "Playback position",
@@ -198,6 +206,10 @@
     "exporting": "Exporting...",
     "exportSuccess": "Success! Your MP3 is downloading.",
     "exportError": "Export failed. Please try again.",
+    "downloadVideo": "Download Video",
+    "exportingVideo": "Creating video...",
+    "videoExportSuccess": "Video downloaded!",
+    "videoNotSupported": "Video export not available on this browser",
     "subtitle": "Your SoundScout composition",
     "shareWithTeacher": "Share with teacher",
     "defaultName": "My composition"
@@ -350,7 +362,8 @@
     "viewCount": "Listened {{count}} times",
     "by": "By",
     "errorGeneric": "Something went wrong. Please try again.",
-    "loadingSamples": "Loading samples..."
+    "loadingSamples": "Loading samples...",
+    "openComposition": "Open composition"
   },
   "templates": {
     "activeBanner": "Assignment:",
@@ -380,8 +393,20 @@
     "descriptionPlaceholder": "Brief description of the assignment",
     "instructionsLabel": "Instructions for students (optional)",
     "instructionsPlaceholder": "E.g. Add at least 3 of your own samples to the composition",
+    "lockOptionsTitle": "Lock settings",
     "lockClipsLabel": "Lock clips",
-    "lockClipsDescription": "Students cannot move or delete the pre-placed clips"
+    "lockClipsDescription": "Students cannot move or delete the pre-placed clips",
+    "lockClipsShort": "Clips",
+    "lockSectionsLabel": "Lock sections",
+    "lockSectionsDescription": "Students cannot add, delete, or modify sections",
+    "lockSectionsShort": "Sections",
+    "lockLibraryLabel": "Lock library",
+    "lockLibraryDescription": "Students cannot collect extra sounds from the map",
+    "allowNewClipsLabel": "Allow new clips",
+    "allowNewClipsDescription": "Students can add their own clips to the timeline",
+    "libraryLockedBanner": "Collecting sounds is locked for this assignment",
+    "storyboardIncluded": "Storyboard included",
+    "storyboardIncludedDescription": "Students will receive the active storyboard with images for this assignment"
   },
   "error": {
     "title": "Oops! Something went wrong",
@@ -408,7 +433,8 @@
     "submitError": "Could not submit composition. Please try again.",
     "shareLinkError": "Could not create link. Please try again.",
     "loadError": "Could not load composition.",
-    "cooldown": "Please wait! {{seconds}} seconds before you can submit again."
+    "cooldown": "Please wait! {{seconds}} seconds before you can submit again.",
+    "rateLimitError": "Too many requests. Please wait and try again."
   },
   "teacher": {
     "common": {
@@ -516,7 +542,8 @@
       "noSamplesError": "No samples found in this composition",
       "loadWarning": "Some samples could not be loaded:",
       "audioLoadError": "Could not load audio",
-      "errorHint": "Try refreshing the page."
+      "errorHint": "Try refreshing the page.",
+      "withStoryboard": "With storyboard"
     },
     "classCard": {
       "createdOn": "Created on {{date}}",
@@ -590,6 +617,13 @@
         "name": "The Market",
         "description": "Create sounds for a busy market square",
         "markt": "Market Square"
+      },
+      "test-locaties": {
+        "name": "Test Locations",
+        "description": "Temporary test storyboard with 3 locations (crossfade test)",
+        "boerderij": "Farm",
+        "speeltuin": "Playground",
+        "gymlokaal": "Gym"
       }
     }
   }

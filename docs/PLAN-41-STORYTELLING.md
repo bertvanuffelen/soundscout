@@ -488,7 +488,8 @@ src/i18n/locales/en.json             ← nieuwe vertalingen
 | Fase | Status | Datum |
 |------|--------|-------|
 | Ontwerp & plan | ✅ Afgerond | 2026-03-11 |
-| Fase A — Fundament | ⬜ Niet begonnen | |
-| Fase B — Studio split-view | ⬜ Niet begonnen | |
-| Fase C — Podium weergave | ⬜ Niet begonnen | |
-| Fase D — Persistence & afronding | ⬜ Niet begonnen | |
+| Fase A — Fundament | ✅ Afgerond | 2026-03-11 |
+| Fase B — Studio split-view | ✅ Afgerond | 2026-03-11 |
+| Fase C — Podium weergave | ✅ Afgerond | 2026-03-11 |
+| Fase D — Persistence & afronding | ✅ Afgerond | 2026-03-11 |
+| Extra: Studio playback sync | ✅ Afgerond | 2026-03-11 |

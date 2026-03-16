@@ -8,7 +8,7 @@
  * - Drop position calculation
  */
 
-import { useCallback, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import {
   PointerSensor,
   TouchSensor,
@@ -19,6 +19,7 @@ import {
   type DragStartEvent,
 } from '@dnd-kit/core';
 import { useTimelineStore } from '../stores/timelineStore';
+import { useAppStore } from '../stores/appStore';
 import { secondsToBeats, getClipDurationBeats } from '../utils/audio';
 import type { Clip, Sample } from '../types';
 import {
@@ -61,6 +62,33 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
   // For clip drags: remember the clip to calculate trimmed duration
   const activeDragClipRef = useRef<Clip | null>(null);
 
+  // Track real-time pointer position to avoid auto-scroll drift
+  // (activatorEvent.clientX + delta.x can diverge from actual pointer when dnd-kit auto-scrolls)
+  const lastPointerXRef = useRef<number | null>(null);
+  const lastPointerYRef = useRef<number | null>(null);
+  const isDraggingRef = useRef(false);
+
+  useEffect(() => {
+    if (!isDraggingRef.current) return;
+
+    const handlePointerMove = (e: PointerEvent) => {
+      lastPointerXRef.current = e.clientX;
+      lastPointerYRef.current = e.clientY;
+    };
+    const handleTouchMove = (e: TouchEvent) => {
+      if (e.touches.length > 0) {
+        lastPointerXRef.current = e.touches[0].clientX;
+        lastPointerYRef.current = e.touches[0].clientY;
+      }
+    };
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('touchmove', handleTouchMove);
+    return () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('touchmove', handleTouchMove);
+    };
+  });
+
   // Configure sensors
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -74,7 +102,9 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
     })
   );
 
-  // Calculate drop beat position
+  // Calculate drop beat position using tracked pointer position
+  // Uses lastPointerXRef (real-time pointer tracking) for accuracy during auto-scroll,
+  // falls back to activatorEvent + delta if pointer tracking unavailable.
   const calculateDropBeat = useCallback(
     (
       over: DragEndEvent['over'],
@@ -89,8 +119,11 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
       const trackRect = trackEl.getBoundingClientRect();
       const trackLabelWidth = TRACK_LABEL_WIDTH_PX;
 
+      // Prefer real-time pointer position (immune to auto-scroll drift)
       let pointerX: number;
-      if (activatorEvent instanceof PointerEvent) {
+      if (lastPointerXRef.current !== null) {
+        pointerX = lastPointerXRef.current;
+      } else if (activatorEvent instanceof PointerEvent) {
         pointerX = activatorEvent.clientX + delta.x;
       } else if (
         activatorEvent instanceof TouchEvent &&
@@ -148,6 +181,21 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
     setActiveDragType(dragType);
     activeDragSampleRef.current = sample ?? null;
     activeDragTypeRef.current = dragType;
+
+    // Start real-time pointer tracking
+    isDraggingRef.current = true;
+    lastPointerXRef.current = null;
+    lastPointerYRef.current = null;
+
+    // Capture initial pointer position from activator event
+    const activator = event.activatorEvent;
+    if (activator instanceof PointerEvent) {
+      lastPointerXRef.current = activator.clientX;
+      lastPointerYRef.current = activator.clientY;
+    } else if (activator instanceof TouchEvent && activator.touches.length > 0) {
+      lastPointerXRef.current = activator.touches[0].clientX;
+      lastPointerYRef.current = activator.touches[0].clientY;
+    }
 
     // For clips: remember original position and clip data for delta-based repositioning
     if (dragType === 'clip') {
@@ -219,6 +267,7 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
       activeDragTypeRef.current = null;
       originalClipStartBeatRef.current = null;
       activeDragClipRef.current = null;
+      isDraggingRef.current = false;
 
       const { active, over, activatorEvent, delta } = event;
       if (!over) return;
@@ -256,6 +305,10 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
         moveClip(fromTrackIndex, toTrackIndex, clip.id, startBeat);
       } else {
         // Adding new clip from library
+        // Block if template doesn't allow new clips (#59)
+        const { activeTemplate, templateLockOptions } = useAppStore.getState();
+        if (activeTemplate && !templateLockOptions.allowNewClips) return;
+
         const sample = active.data.current?.sample as Sample | undefined;
         if (!sample) return;
 
@@ -282,6 +335,7 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
     activeDragTypeRef.current = null;
     originalClipStartBeatRef.current = null;
     activeDragClipRef.current = null;
+    isDraggingRef.current = false;
   }, []);
 
   return {

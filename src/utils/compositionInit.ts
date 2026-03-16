@@ -13,7 +13,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
-import { getThemeStoryboards } from '../data/themes';
+import { getThemeStoryboards, findStoryboardById } from '../data/themes';
 import { logger } from './logger';
 import type { Template } from '../types';
 
@@ -106,11 +106,26 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
     sections: compositionData.sections,
   });
 
-  // Stap 2: Laad samples in library (leerling krijgt alleen deze samples)
+  // Stap 2: Laad samples in library
+  // When libraryLocked = true, student only gets template samples
+  // When libraryLocked = false, template samples are loaded as starting point
+  // (student can collect more from locations later)
   useLibraryStore.getState().loadLibrary(compositionData.samples);
 
   // Stap 3: Sla template context op
   useAppStore.getState().loadTemplate(template);
+
+  // Stap 3b: Activeer storyboard als de template er een bevat
+  if (compositionData.storyboardId) {
+    const found = findStoryboardById(compositionData.storyboardId);
+    if (found) {
+      useAppStore.getState().setActiveStoryboard(found.storyboard);
+      useAppStore.getState().setComposeMode('storyboard');
+      logger.info(`[templateInit] Storyboard "${found.storyboard.id}" activated from template`);
+    } else {
+      logger.warn(`[templateInit] storyboardId "${compositionData.storyboardId}" not found in theme data`);
+    }
+  }
 
   // Stap 4: Audio initialiseren (niet kritiek)
   try {

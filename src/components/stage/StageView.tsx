@@ -19,6 +19,7 @@ import {
   Link2,
   ArrowLeft,
   FileText,
+  Film,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
@@ -27,6 +28,7 @@ import { useAuth } from '../../contexts/AuthContext';
 import { useAudioEngine } from '../../hooks/useAudioEngine';
 import { useAudioCleanup } from '../../hooks/useAudioCleanup';
 import { useAudioExport } from '../../hooks/useAudioExport';
+import { useVideoExport } from '../../hooks/useVideoExport';
 import { useStageSave } from '../../hooks/useStageSave';
 import { useStageModals } from '../../hooks/useStageModals';
 import { Button, Modal } from '../ui';
@@ -54,6 +56,14 @@ export function StageView() {
 
   // Audio export hook
   const { exportState, progress, error, exportMp3 } = useAudioExport();
+
+  // Video export hook (storyboard/image mode only)
+  const {
+    videoExportState,
+    videoProgress,
+    videoError,
+    exportVideo,
+  } = useVideoExport();
 
   // Audio cleanup on unmount
   useAudioCleanup();
@@ -91,6 +101,12 @@ export function StageView() {
     const filename = compositionName.trim() || 'mijn-compositie';
     exportMp3(tracks, librarySamples, filename);
   }, [exportMp3, tracks, librarySamples, compositionName]);
+
+  const handleVideoExport = useCallback(() => {
+    if (!activeStoryboard) return;
+    const filename = compositionName.trim() || 'mijn-compositie';
+    exportVideo(activeStoryboard, tracks, librarySamples, totalBeats, sections, filename);
+  }, [exportVideo, activeStoryboard, tracks, librarySamples, totalBeats, sections, compositionName]);
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-900 overflow-hidden">
@@ -192,6 +208,29 @@ export function StageView() {
               )}
             </Button>
 
+            {/* Video export — alleen bij storyboard/image modus */}
+            {activeStoryboard && videoExportState !== 'unsupported' && (
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={handleVideoExport}
+                disabled={videoExportState === 'exporting' || exportState === 'exporting'}
+                className="w-full"
+              >
+                {videoExportState === 'exporting' ? (
+                  <>
+                    <Loader2 size={20} className="mr-2 animate-spin" />
+                    {t('stage.exportingVideo')} {videoProgress}%
+                  </>
+                ) : (
+                  <>
+                    <Film size={20} className="mr-2" />
+                    {t('stage.downloadVideo')}
+                  </>
+                )}
+              </Button>
+            )}
+
             <Button
               variant="secondary"
               size="lg"
@@ -247,6 +286,12 @@ export function StageView() {
           )}
           {exportState === 'success' && (
             <p className="text-success-600 text-sm text-center">{t('stage.exportSuccess')}</p>
+          )}
+          {videoError && (
+            <p className="text-error-500 text-sm text-center">{videoError}</p>
+          )}
+          {videoExportState === 'success' && (
+            <p className="text-success-600 text-sm text-center">{t('stage.videoExportSuccess')}</p>
           )}
         </div>
       </div>

@@ -186,10 +186,14 @@ export function useClasses(): UseClassesReturn {
     try {
       setOperationError(null);
 
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error('Niet ingelogd');
+
       const { error: deleteErr } = await supabase
         .from('classes')
         .delete()
-        .eq('id', id);
+        .eq('id', id)
+        .eq('teacher_id', user.id);
 
       if (deleteErr) {
         throw new Error('Kon klas niet verwijderen: ' + deleteErr.message);

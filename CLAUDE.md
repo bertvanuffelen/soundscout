@@ -35,6 +35,7 @@ Tests use jsdom environment with jest-style globals (`describe`, `it`, `expect`)
 - **i18next** for i18n (Dutch default, English fallback)
 - **Supabase** for teacher auth + student submissions
 - **Zod** for runtime schema validation (compositions, timeline state)
+- **Mediabunny** for video export (MP4 muxing via WebCodecs)
 
 ## Architecture
 
@@ -90,6 +91,14 @@ AudioService (singleton)
 
 **MP3 export**: `src/utils/audioExport.ts` uses `Tone.Offline()` for offline rendering + `@breezystack/lamejs` for MP3 encoding. Output: 128kbps stereo.
 
+**Video export**: `src/utils/videoExport.ts` orchestrates storyboard → video. Dual-engine architecture in `videoExportEngines.ts`:
+- **Primary**: WebCodecs + Mediabunny → MP4 (H.264 + AAC). Uses `CanvasSource` + `AudioBufferSource`.
+- **Fallback**: MediaRecorder → WebM (VP8 + Opus). Real-time rendering.
+- Engine detection tries H.264 profiles in order: Main (`avc1.4d0028`) → High (`avc1.640028`) → Baseline (`avc1.42001f`), with hardware-first then software-fallback for each. Not all GPUs support Baseline encoding despite it being the most compatible for playback.
+- Video duration = `Math.max(audioDuration, timelineDuration)` so silent storyboard sections are fully rendered.
+- `useVideoExport` hook provides React interface (mirrors `useAudioExport` pattern).
+- Settings: 1920×1080, 4 Mbps video, 128 kbps audio, 30 fps, 0.5s crossfade between images.
+
 ### Timeline Header & Studio Layout
 
 The Timeline component (`Timeline.tsx`) has a header bar with three zones:
@@ -127,6 +136,8 @@ Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disabl
 **Row Level Security (RLS)** is required on all tables with user data. Always implement both:
 1. Code-level filtering: `.eq('teacher_id', user.id)` in queries
 2. Database-level: RLS policies (SELECT, INSERT, UPDATE, DELETE) using `auth.uid()`
+
+**Server-side Rate Limiting**: All public RPC functions (`submit_composition`, `share_composition`, `get_shared_composition`) are rate-limited via `check_rate_limit()` PostgreSQL function. Limits: 60/min per classcode (submit), 10/min per session (share), 30/min per code (get_shared). Table: `rate_limits`. Migration: `supabase/migrations/002_rate_limiting.sql`.
 
 ### i18n
 

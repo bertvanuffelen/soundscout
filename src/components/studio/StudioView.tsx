@@ -9,7 +9,7 @@
 
 import { useCallback, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { DndContext, DragOverlay, closestCenter } from '@dnd-kit/core';
+import { DndContext, DragOverlay, pointerWithin, closestCenter, MeasuringStrategy, type CollisionDetection } from '@dnd-kit/core';
 import { Music, Image } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -31,6 +31,23 @@ import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
 import { generateClipId } from '../../utils/uuid';
 
+/**
+ * Custom collision detection: prefer the track the pointer is actually inside,
+ * fall back to closestCenter when pointer isn't directly over any track.
+ * This fixes the "sample sticks to track 1" bug when dragging from library.
+ */
+const trackCollisionDetection: CollisionDetection = (args) => {
+  // First: check which droppable(s) the pointer is literally inside
+  const pointerCollisions = pointerWithin(args);
+  if (pointerCollisions.length > 0) {
+    return pointerCollisions;
+  }
+
+  // Fallback: closestCenter for when pointer is outside all tracks
+  // (e.g., during the transition from library to timeline area)
+  return closestCenter(args);
+};
+
 export function StudioView() {
   const { t } = useTranslation();
 
@@ -40,7 +57,7 @@ export function StudioView() {
 
   // Template state
   const activeTemplate = useAppStore((s) => s.activeTemplate);
-  const templateClipsLocked = useAppStore((s) => s.templateClipsLocked);
+  const templateLockOptions = useAppStore((s) => s.templateLockOptions);
 
   // Storytelling state (#41)
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
@@ -107,6 +124,8 @@ export function StudioView() {
   const { undo, redo, canUndo, canRedo } = useUndoRedoTimeline();
 
   // Navigation handlers
+  // Always go to map — never to start (student would lose all work)
+  // When libraryLocked, hotspots are disabled on the location screen
   const handleBack = useCallback(() => {
     handleStop();
     goToMap();
@@ -213,6 +232,8 @@ export function StudioView() {
   const addClip = useTimelineStore((s) => s.addClip);
   const handleAddToTrack = useCallback(() => {
     if (!selectedLibrarySampleId) return;
+    // Block if template doesn't allow new clips (#59)
+    if (activeTemplate && !templateLockOptions.allowNewClips) return;
 
     const clip = {
       id: generateClipId(),
@@ -225,7 +246,7 @@ export function StudioView() {
 
     // Clear selection after adding
     setSelectedLibrarySampleId(null);
-  }, [selectedLibrarySampleId, addClip]);
+  }, [selectedLibrarySampleId, addClip, activeTemplate, templateLockOptions.allowNewClips]);
 
   // Get translated name of selected library sample for the "+" button aria-label
   const selectedLibrarySampleName = useMemo(() => {
@@ -314,7 +335,8 @@ export function StudioView() {
       {/* DnD Context wrapping Library + Timeline */}
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCenter}
+        collisionDetection={trackCollisionDetection}
+        measuring={{ droppable: { strategy: MeasuringStrategy.WhileDragging } }}
         onDragStart={handleDragStart}
         onDragMove={handleDragMove}
         onDragEnd={handleDragEnd}
@@ -384,7 +406,7 @@ export function StudioView() {
             onDuplicate: handleDuplicate,
             onClipVolumeChange: handleClipVolumeChange,
             onClipMuteToggle: handleClipMuteToggle,
-            locked: templateClipsLocked && (selectedClipData.clip.fromTemplate === true),
+            locked: templateLockOptions.clipsLocked && (selectedClipData.clip.fromTemplate === true),
           } : null}
         />
 

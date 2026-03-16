@@ -17,6 +17,7 @@ import { useAppStore } from '../../stores/appStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { getThemeStoryboards } from '../../data/themes';
+import { MAX_SECTIONS } from '../../constants/config';
 import type { Storyboard, ComposeMode } from '../../types';
 
 export default function ComposeModeScreen() {
@@ -61,14 +62,16 @@ export default function ComposeModeScreen() {
     clearSections();
 
     // Auto-create sections for storyboards with multiple images
-    // E.g. 3 images, 32 beats → sections at beat 11, 22, 32
+    // E.g. 3 images, 128 beats → sections at beat 43, 86, 128
+    // Clamp to MAX_SECTIONS to prevent silent addSection failures
     if (sb.images.length > 1) {
-      const beatsPerImage = Math.floor(totalBeats / sb.images.length);
-      for (let i = 0; i < sb.images.length; i++) {
-        const endBeat = i < sb.images.length - 1
+      const sectionCount = Math.min(sb.images.length, MAX_SECTIONS);
+      const beatsPerImage = Math.floor(totalBeats / sectionCount);
+      for (let i = 0; i < sectionCount; i++) {
+        const endBeat = i < sectionCount - 1
           ? beatsPerImage * (i + 1)
           : totalBeats;
-        const label = sb.images[i].label;
+        const label = sb.images[i]?.label;
         addSection(endBeat, undefined, label, true);
       }
     }

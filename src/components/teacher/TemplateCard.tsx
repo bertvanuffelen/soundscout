@@ -16,7 +16,7 @@ interface TemplateCardProps {
 
 export function TemplateCard({ template, onDelete, onToggle }: TemplateCardProps) {
   const { t } = useTranslation();
-  const { name, code, description, clipsLocked, isActive, createdAt } = template;
+  const { name, code, description, lockOptions, isActive, createdAt } = template;
   const [copied, setCopied] = useState(false);
 
   const formattedDate = new Date(createdAt).toLocaleDateString('nl-NL', {
@@ -71,12 +71,24 @@ export function TemplateCard({ template, onDelete, onToggle }: TemplateCardProps
         }`}>
           {isActive ? t('templates.active') : t('templates.inactive')}
         </span>
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
-          clipsLocked ? 'bg-amber-50 text-amber-700' : 'bg-neutral-50 text-neutral-500'
-        }`}>
-          {clipsLocked ? <Lock className="w-3 h-3" /> : <Unlock className="w-3 h-3" />}
-          {clipsLocked ? t('templates.locked') : t('templates.unlocked')}
-        </span>
+        {lockOptions.clipsLocked && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+            <Lock className="w-3 h-3" />
+            {t('templates.lockClipsShort')}
+          </span>
+        )}
+        {lockOptions.sectionsLocked && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+            <Lock className="w-3 h-3" />
+            {t('templates.lockSectionsShort')}
+          </span>
+        )}
+        {!lockOptions.clipsLocked && !lockOptions.sectionsLocked && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-neutral-50 text-neutral-500">
+            <Unlock className="w-3 h-3" />
+            {t('templates.unlocked')}
+          </span>
+        )}
       </div>
 
       {/* Actions */}

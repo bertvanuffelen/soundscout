@@ -48,4 +48,29 @@ export const storyboards: Storyboard[] = [
       },
     ],
   },
+  // --- Tijdelijk test-storyboard voor crossfade (#62) — verwijder na testen ---
+  {
+    id: 'test-locaties',
+    themeId: 'basis',
+    name: 'storyboards.basis.test-locaties.name',
+    description: 'storyboards.basis.test-locaties.description',
+    coverImage: '/images/themes/basis/boerderij.jpg',
+    images: [
+      {
+        id: 'boerderij',
+        url: '/images/themes/basis/boerderij.jpg',
+        label: 'storyboards.basis.test-locaties.boerderij',
+      },
+      {
+        id: 'speeltuin',
+        url: '/images/themes/basis/speeltuin.jpg',
+        label: 'storyboards.basis.test-locaties.speeltuin',
+      },
+      {
+        id: 'gymlokaal',
+        url: '/images/themes/basis/gymlokaal.jpg',
+        label: 'storyboards.basis.test-locaties.gymlokaal',
+      },
+    ],
+  },
 ];

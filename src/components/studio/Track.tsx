@@ -39,8 +39,8 @@ export const Track = memo(function Track({
   // Section state (for background colors)
   const sections = useTimelineStore((s) => s.sections);
 
-  // Template clip lock
-  const templateClipsLocked = useAppStore((s) => s.templateClipsLocked);
+  // Template lock options (#59)
+  const templateLockOptions = useAppStore((s) => s.templateLockOptions);
 
   // Volume popover state
   const [showVolumePopover, setShowVolumePopover] = useState(false);
@@ -104,7 +104,7 @@ export const Track = memo(function Track({
       aria-label={trackLabel}
       onClick={handleTrackClick}
       className={`
-        relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150
+        relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150 touch-none
         ${isOver && !readOnly ? 'bg-primary-100/60' : 'bg-white/40'}
       `}
     >
@@ -199,7 +199,7 @@ export const Track = memo(function Track({
               totalBeats={totalBeats}
               readOnly={readOnly}
               isMuted={isClipMuted}
-              locked={templateClipsLocked && (clip.fromTemplate === true)}
+              locked={templateLockOptions.clipsLocked && (clip.fromTemplate === true)}
             />
           );
         })}

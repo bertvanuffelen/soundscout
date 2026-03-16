@@ -8,7 +8,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { AlertCircle } from 'lucide-react';
+import { AlertCircle, Lock } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useThemeStore } from '../../stores/themeStore';
@@ -27,6 +27,11 @@ export function LocationScene() {
   const currentLocationId = useAppStore((s) => s.currentLocationId);
   const goToStudio = useAppStore((s) => s.goToStudio);
   const goToMap = useAppStore((s) => s.goToMap);
+
+  // Template lock state (#59)
+  const activeTemplate = useAppStore((s) => s.activeTemplate);
+  const libraryLocked = useAppStore((s) => s.templateLockOptions).libraryLocked;
+  const isLibraryLocked = activeTemplate !== null && libraryLocked;
 
   // Theme store
   const getLocationById = useThemeStore((s) => s.getLocationById);
@@ -140,12 +145,12 @@ export function LocationScene() {
     [isSampleInRecorder, isSampleCollected]
   );
 
-  // Helper for ZoomableView - checks if a sample should be disabled (recorder full)
+  // Helper for ZoomableView - checks if a sample should be disabled (recorder full or library locked)
   const isSampleDisabled = useCallback(
     () => {
-      return isRecorderFull();
+      return isLibraryLocked || isRecorderFull();
     },
-    [isRecorderFull]
+    [isLibraryLocked, isRecorderFull]
   );
 
   // Error state
@@ -199,6 +204,16 @@ export function LocationScene() {
             </Button>
           </div>
 
+          {/* Library locked banner (#59) */}
+          {isLibraryLocked && (
+            <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20">
+              <div className="flex items-center gap-2 bg-amber-100/90 backdrop-blur-sm text-amber-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-md">
+                <Lock className="w-3.5 h-3.5 flex-shrink-0" />
+                {t('templates.libraryLockedBanner')}
+              </div>
+            </div>
+          )}
+
           {/* Hotspots - positioned relative to the canvas */}
           {/* Only show hotspots for samples that haven't been collected yet */}
           {location.hotspots.map((hotspot) => {
@@ -209,8 +224,8 @@ export function LocationScene() {
             const isAlreadyCollected = isSampleInRecorder(sample.id) || isSampleCollected(sample.id);
             if (isAlreadyCollected) return null;
 
-            // Disable if recorder is full (but still show the hotspot)
-            const disabled = isRecorderFull();
+            // Disable if recorder is full or library is locked by template
+            const disabled = isLibraryLocked || isRecorderFull();
 
             return (
               <Hotspot

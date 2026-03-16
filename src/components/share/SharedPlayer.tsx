@@ -15,26 +15,26 @@ import {
   AlertCircle,
   Play,
   Pause,
-  Square,
+  SkipBack,
   ArrowLeft,
-  Clock,
-  Eye,
 } from 'lucide-react';
 import * as Tone from 'tone';
 import { audioService } from '../../services/AudioService';
 import { getSharedComposition } from '../../lib/submissions';
 import { isValidCompositionData } from '../../utils/compositionData';
+import { findStoryboardById } from '../../data/themes';
 import { Timeline } from '../studio/Timeline';
+import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { Button } from '../ui';
 import { DEFAULT_BPM } from '../../constants/config';
-import type { Track, Sample } from '../../types';
+import type { Track, Sample, Section, Storyboard } from '../../types';
 
 interface SharedPlayerProps {
   code: string;
   onBack: () => void;
 }
 
-type PlayerState = 'loading-data' | 'loading-audio' | 'ready' | 'playing' | 'paused' | 'error' | 'not-found' | 'expired';
+type PlayerState = 'loading-data' | 'waiting-gesture' | 'loading-audio' | 'ready' | 'playing' | 'paused' | 'error' | 'not-found' | 'expired';
 
 export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   const { t } = useTranslation();
@@ -47,13 +47,13 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   // Composition data from Supabase
   const [compositionName, setCompositionName] = useState('');
   const [studentName, setStudentName] = useState('');
-  const [createdAt, setCreatedAt] = useState('');
-  const [viewCount, setViewCount] = useState(0);
   const [tracks, setTracks] = useState<Track[]>([]);
   const [samples, setSamples] = useState<Sample[]>([]);
   const [totalBeats, setTotalBeats] = useState(16);
   const [bpm, setBpm] = useState(DEFAULT_BPM);
   const [isLooping, setIsLooping] = useState(false);
+  const [sections, setSections] = useState<Section[]>([]);
+  const [storyboard, setStoryboard] = useState<Storyboard | null>(null);
 
   // Refs for beat tracking
   const bpmRef = useRef(bpm);
@@ -84,8 +84,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         // Store composition data
         setCompositionName(result.composition_name);
         setStudentName(result.student_name);
-        setCreatedAt(result.created_at);
-        setViewCount(result.view_count);
+
 
         const data = result.composition_data;
 
@@ -101,28 +100,19 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         setTotalBeats(data.totalBeats);
         setBpm(data.bpm);
         setIsLooping(data.isLooping);
+        setSections(data.sections ?? []);
 
-        // Now load audio samples
-        setPlayerState('loading-audio');
-
-        await audioService.initialize();
-        if (!isMounted) return;
-
-        const loadedSamples = data.samples;
-        if (loadedSamples.length === 0) {
-          setErrorMessage(t('share.notFound'));
-          setPlayerState('error');
-          return;
+        // Resolve storyboard if composition was made with one
+        if (data.storyboardId) {
+          const found = findStoryboardById(data.storyboardId);
+          if (found) {
+            setStoryboard(found.storyboard);
+          }
         }
 
-        await audioService.loadSamples(loadedSamples, (loaded, total) => {
-          if (isMounted) {
-            setLoadingProgress(Math.round((loaded / total) * 100));
-          }
-        });
-
-        if (!isMounted) return;
-        setPlayerState('ready');
+        // Wacht op user gesture voordat we audio initialiseren
+        // (Chrome blokkeert AudioContext zonder user interaction)
+        setPlayerState('waiting-gesture');
       } catch (err) {
         if (isMounted) {
           setErrorMessage(err instanceof Error ? err.message : t('share.errorGeneric'));
@@ -166,22 +156,43 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
     };
   }, [playerState]);
 
+  // --- Audio initialiseren na user gesture ---
+  const handleStartAudio = useCallback(async () => {
+    setPlayerState('loading-audio');
+    try {
+      await audioService.initialize();
+
+      if (samples.length === 0) {
+        setErrorMessage(t('share.notFound'));
+        setPlayerState('error');
+        return;
+      }
+
+      await audioService.loadSamples(samples, (loaded, total) => {
+        setLoadingProgress(Math.round((loaded / total) * 100));
+      });
+
+      setPlayerState('ready');
+    } catch (err) {
+      setErrorMessage(err instanceof Error ? err.message : t('share.errorGeneric'));
+      setPlayerState('error');
+    }
+  }, [samples, t]);
+
   // --- Playback controls ---
+  // Mirror the regular player pattern: always reschedule + play from currentBeat.
+  // This ensures the hybrid seek approach (startActiveClips) works correctly.
   const handlePlayPause = useCallback(() => {
     if (playerState === 'playing') {
       audioService.pause();
       setPlayerState('paused');
     } else {
-      if (playerState === 'paused') {
-        audioService.play();
-      } else {
-        audioService.scheduleTimeline(tracks, samples);
-        audioService.setLoop(isLooping, totalBeats);
-        audioService.play();
-      }
+      audioService.scheduleTimeline(tracks, samples);
+      audioService.setLoop(isLooping, totalBeats);
+      audioService.play(currentBeat);
       setPlayerState('playing');
     }
-  }, [playerState, tracks, samples, isLooping, totalBeats]);
+  }, [playerState, tracks, samples, isLooping, totalBeats, currentBeat]);
 
   const handleStop = useCallback(() => {
     audioService.stop();
@@ -189,41 +200,44 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
     setPlayerState('ready');
   }, []);
 
+  // Seek handler — for playhead scrubbing
+  const handleSeek = useCallback((beat: number) => {
+    setCurrentBeat(beat);
+    // Use audioService.seek() to update transport + notify listeners
+    audioService.seek(beat);
+  }, []);
+
   const handleBack = useCallback(() => {
     audioService.stop();
     onBack();
   }, [onBack]);
 
-  // Format date
-  const formattedDate = createdAt
-    ? new Date(createdAt).toLocaleDateString('nl-NL', {
-        day: 'numeric',
-        month: 'long',
-        year: 'numeric',
-      })
-    : '';
-
   // Derived state
   const showTimeline = playerState === 'ready' || playerState === 'playing' || playerState === 'paused';
   const isPlaying = playerState === 'playing';
 
-  const trackCount = tracks.filter((t) => t.clips?.length > 0).length;
-  const clipCount = tracks.reduce(
-    (total, track) => total + (track.clips?.length || 0),
-    0
-  );
-
   return (
     <div className="min-h-screen flex flex-col bg-slate-900">
-      {/* Header */}
-      <div className="bg-bg-surface border-b border-border-subtle px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shrink-0">
+      {/* Header — compact: back + title + author on one line */}
+      <div className="bg-bg-surface border-b border-border-subtle px-3 sm:px-6 py-2 sm:py-3 flex items-center gap-3 shrink-0">
         <Button variant="secondary" size="sm" onClick={handleBack}>
           <ArrowLeft className="w-4 h-4 mr-1.5" />
           <span className="hidden sm:inline">{t('share.backToStart')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
-        <h1 className="text-lg sm:text-xl font-bold text-text-main">SoundScout</h1>
-        <div className="w-16 sm:w-28" />
+        <div className="flex-1 min-w-0 text-center">
+          {showTimeline ? (
+            <div className="truncate">
+              <span className="font-bold text-text-main text-sm sm:text-base">{compositionName}</span>
+              <span className="text-text-muted text-xs sm:text-sm ml-2">
+                {t('share.by')} {studentName}
+              </span>
+            </div>
+          ) : (
+            <span className="text-sm sm:text-base font-bold text-text-main">SoundScout</span>
+          )}
+        </div>
+        <div className="w-16 sm:w-20 shrink-0" />
       </div>
 
       {/* Main content */}
@@ -234,6 +248,25 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
             <div className="text-center">
               <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" />
               <p className="text-white font-medium">{t('share.loading')}</p>
+            </div>
+          </div>
+        )}
+
+        {/* Waiting for user gesture to unlock audio */}
+        {playerState === 'waiting-gesture' && (
+          <div className="flex-1 flex items-center justify-center p-6">
+            <div className="text-center max-w-sm">
+              <Music className="w-16 h-16 text-accent-500 mx-auto mb-4" />
+              <h2 className="text-xl font-bold text-white mb-1">
+                {compositionName}
+              </h2>
+              <p className="text-neutral-400 text-sm mb-6">
+                {t('share.by')} {studentName}
+              </p>
+              <Button variant="primary" size="lg" onClick={handleStartAudio}>
+                <Play className="w-5 h-5 mr-2" />
+                {t('share.openComposition')}
+              </Button>
             </div>
           </div>
         )}
@@ -285,43 +318,21 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         {/* Composition info + timeline */}
         {showTimeline && (
           <>
-            {/* Composition info bar */}
-            <div className="bg-bg-surface border-b border-border-subtle px-4 sm:px-6 py-3 shrink-0">
-              <h2 className="text-xl sm:text-2xl font-bold text-text-main">
-                {compositionName}
-              </h2>
-              <div className="flex flex-wrap items-center gap-x-4 gap-y-1 mt-1">
-                <p className="text-text-muted text-sm">
-                  {t('share.by')} <span className="font-medium text-text-main">{studentName}</span>
-                </p>
-                {formattedDate && (
-                  <p className="text-text-muted text-sm flex items-center gap-1">
-                    <Clock className="w-3.5 h-3.5" />
-                    {formattedDate}
-                  </p>
-                )}
-                {viewCount > 0 && (
-                  <p className="text-text-muted text-sm flex items-center gap-1">
-                    <Eye className="w-3.5 h-3.5" />
-                    {t('share.viewCount', { count: viewCount })}
-                  </p>
-                )}
+            {/* Storyboard viewer */}
+            {storyboard && (
+              <div className="shrink-0 border-b border-border-subtle bg-neutral-50">
+                <StoryboardViewer
+                  storyboard={storyboard}
+                  currentBeat={currentBeat}
+                  totalBeats={totalBeats}
+                  sections={sections}
+                  compact
+                  isPlaying={isPlaying}
+                  onPlayPause={handlePlayPause}
+                  onStop={handleStop}
+                />
               </div>
-              <div className="flex gap-4 mt-2">
-                <div className="flex items-center gap-1.5">
-                  <span className="text-lg font-bold text-accent-600">{trackCount}</span>
-                  <span className="text-text-muted text-sm">{t('common.tracks')}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-lg font-bold text-accent-600">{clipCount}</span>
-                  <span className="text-text-muted text-sm">{t('common.clips')}</span>
-                </div>
-                <div className="flex items-center gap-1.5">
-                  <span className="text-lg font-bold text-accent-600">{samples.length}</span>
-                  <span className="text-text-muted text-sm">{t('common.samples')}</span>
-                </div>
-              </div>
-            </div>
+            )}
 
             {/* Timeline */}
             <div className="flex-1 overflow-hidden bg-bg-surface">
@@ -331,34 +342,34 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
                 totalBeats={totalBeats}
                 currentBeat={currentBeat}
                 isPlaying={isPlaying}
+                onSeek={handleSeek}
                 snapPreview={null}
                 readOnly={true}
                 samples={samples}
+                sections={sections}
               />
             </div>
 
-            {/* Transport controls */}
-            <div className="px-4 sm:px-6 py-4 sm:py-6 border-t border-border-subtle bg-neutral-50 shrink-0">
-              <div className="flex justify-center gap-4">
-                <button
-                  onClick={handlePlayPause}
-                  className="w-16 h-16 sm:w-20 sm:h-20 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95"
-                  title={isPlaying ? t('common.pause') : t('common.play')}
-                >
-                  {isPlaying ? (
-                    <Pause className="w-8 h-8 sm:w-10 sm:h-10" />
-                  ) : (
-                    <Play className="w-8 h-8 sm:w-10 sm:h-10 ml-1" />
-                  )}
-                </button>
-                <button
-                  onClick={handleStop}
-                  className="w-16 h-16 sm:w-20 sm:h-20 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95"
-                  title={t('common.stop')}
-                >
-                  <Square className="w-7 h-7 sm:w-8 sm:h-8" />
-                </button>
-              </div>
+            {/* Transport controls — matches studio TransportControls sizing */}
+            <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 border-t border-border-subtle shrink-0">
+              <button
+                onClick={handlePlayPause}
+                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer bg-primary-500 hover:bg-primary-600 active:bg-primary-700 active:scale-95 text-white"
+                title={isPlaying ? t('common.pause') : t('common.play')}
+              >
+                {isPlaying ? (
+                  <Pause className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
+                ) : (
+                  <Play className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
+                )}
+              </button>
+              <button
+                onClick={handleStop}
+                className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 active:scale-95 text-neutral-600"
+                title={t('transport.rewind')}
+              >
+                <SkipBack className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
+              </button>
             </div>
           </>
         )}

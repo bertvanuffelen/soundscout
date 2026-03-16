@@ -92,3 +92,15 @@ export function getAllLocationsByTheme(): Array<{ themeId: string; themeName: st
 export function getThemeStoryboards(themeId: string): ThemeConfig['storyboards'] {
   return themes[themeId]?.storyboards ?? [];
 }
+
+/**
+ * Find a storyboard by ID across all themes.
+ * Used when loading a composition/template that references a storyboardId.
+ */
+export function findStoryboardById(storyboardId: string): { themeId: string; storyboard: NonNullable<ThemeConfig['storyboards']>[number] } | undefined {
+  for (const [themeId, theme] of Object.entries(themes)) {
+    const sb = theme.storyboards?.find((s) => s.id === storyboardId);
+    if (sb) return { themeId, storyboard: sb };
+  }
+  return undefined;
+}

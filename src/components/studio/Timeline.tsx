@@ -1,15 +1,15 @@
 import { memo, useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser } from 'lucide-react';
-import type { Track as TrackType, Sample, Clip } from '../../types';
+import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import type { Track as TrackType, Sample, Clip, Section } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
 import { SectionBar } from './SectionBar';
 import { VolumePopover } from './VolumePopover';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration } from '../../utils/audio';
-import { VISIBLE_BEATS, MAX_SECTIONS } from '../../constants/config';
+import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, ZOOM_DEFAULT_DESKTOP, ZOOM_DEFAULT_MOBILE } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
@@ -37,6 +37,7 @@ interface TimelineProps {
   snapPreview: { trackId: string; beat: number; durationBeats: number; color: string } | null;
   readOnly?: boolean;
   samples?: Sample[];  // Optional: for read-only mode with custom samples
+  sections?: Section[];  // Optional: for read-only mode with external sections (SharedPlayer/SubmissionPlayer)
   onUndo?: () => void;
   onRedo?: () => void;
   canUndo?: boolean;
@@ -65,6 +66,7 @@ export const Timeline = memo(function Timeline({
   selectedLibrarySampleName,
   onAddToTrack,
   clipEdit,
+  sections: propSections,
 }: TimelineProps) {
   const { t } = useTranslation();
   const scrollContainerRef = useRef<HTMLDivElement>(null);
@@ -89,20 +91,24 @@ export const Timeline = memo(function Timeline({
     setShowClearConfirm(false);
   }, []);
 
-  // Section state
-  const sections = useTimelineStore((s) => s.sections);
+  // Section state — use prop if provided (read-only players), otherwise from store
+  const storeSections = useTimelineStore((s) => s.sections);
+  const sections = propSections ?? storeSections;
   const addSection = useTimelineStore((s) => s.addSection);
   const updateSection = useTimelineStore((s) => s.updateSection);
   const removeSection = useTimelineStore((s) => s.removeSection);
 
-  // Lock sections when a template or multi-image storyboard is active
+  // Lock sections based on template lock options (#59) or storyboard mode
   const activeTemplate = useAppStore((s) => s.activeTemplate);
+  const templateLockOptions = useAppStore((s) => s.templateLockOptions);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
   const composeMode = useAppStore((s) => s.composeMode);
   const isMultiImageStoryboard = activeStoryboard !== null && composeMode === 'storyboard';
-  const sectionsLocked = activeTemplate !== null || isMultiImageStoryboard;
+  // Sections locked when: template says so, OR multi-image storyboard (always managed by storyboard)
+  const sectionsLocked = (activeTemplate !== null && templateLockOptions.sectionsLocked) || isMultiImageStoryboard;
   // Storyboard sections can be resized but not added/deleted/edited
-  const sectionsResizable = isMultiImageStoryboard;
+  // Exception: when template locks sections, no resize allowed
+  const sectionsResizable = isMultiImageStoryboard && !(activeTemplate !== null && templateLockOptions.sectionsLocked);
 
   // Subscribe to currentBeat from store (for StudioView)
   // or use prop (for SubmissionPlayer with local state)
@@ -151,9 +157,41 @@ export const Timeline = memo(function Timeline({
     updateSection(sectionId, { endBeat: newEndBeat });
   }, [updateSection]);
 
-  // Calculate width multiplier for scrollable content
-  const widthMultiplier = totalBeats / VISIBLE_BEATS;
+  // --- Zoom state ---
+  // Detect mobile once on mount for default zoom level
+  const isMobileRef = useRef(typeof window !== 'undefined' && window.innerWidth < 640);
+  const [zoomLevel, setZoomLevel] = useState(() =>
+    isMobileRef.current ? ZOOM_DEFAULT_MOBILE : ZOOM_DEFAULT_DESKTOP,
+  );
+
+  // widthMultiplier: 1.0 = fit all beats in viewport, 2.0 = half visible, etc.
+  const widthMultiplier = zoomLevel;
   const playheadPercent = (currentBeat / totalBeats) * 100;
+
+  // Zoom handlers — center on playhead position
+  const applyZoom = useCallback((newZoom: number) => {
+    const clamped = Math.round(Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, newZoom)) * 100) / 100;
+    const container = scrollContainerRef.current;
+    if (container) {
+      // Use playhead position as zoom anchor so it stays in view
+      const beat = useAudioStore.getState().currentBeat;
+      const playheadFraction = beat / totalBeats;
+      setZoomLevel(clamped);
+      // After React re-renders with new width, scroll to keep playhead in view
+      requestAnimationFrame(() => {
+        const newScrollWidth = container.scrollWidth;
+        const playheadPx = playheadFraction * newScrollWidth;
+        // Center the playhead in the viewport
+        container.scrollLeft = Math.max(0, playheadPx - container.clientWidth / 2);
+      });
+    } else {
+      setZoomLevel(clamped);
+    }
+  }, [totalBeats]);
+
+  const handleZoomIn = useCallback(() => applyZoom(zoomLevel + ZOOM_STEP), [zoomLevel, applyZoom]);
+  const handleZoomOut = useCallback(() => applyZoom(zoomLevel - ZOOM_STEP), [zoomLevel, applyZoom]);
+  const handleZoomFit = useCallback(() => applyZoom(1.0), [applyZoom]);
 
   // Generate grid lines (one per beat) — memoized since totalBeats rarely changes
   const gridLines = useMemo(
@@ -336,6 +374,39 @@ export const Timeline = memo(function Timeline({
               </button>
             )
           )}
+          {/* Zoom controls */}
+          <div className="flex items-center gap-0">
+            <button
+              onClick={handleZoomOut}
+              disabled={zoomLevel <= ZOOM_MIN}
+              aria-label={t('studio.zoomOut')}
+              title={t('studio.zoomOut')}
+              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+            >
+              <ZoomOut size={14} />
+            </button>
+            <button
+              onClick={handleZoomFit}
+              aria-label={t('studio.zoomFit')}
+              title={t('studio.zoomFit')}
+              className={`p-1 rounded transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center ${
+                zoomLevel === 1.0
+                  ? 'text-accent-500'
+                  : 'text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60'
+              }`}
+            >
+              <Maximize2 size={14} />
+            </button>
+            <button
+              onClick={handleZoomIn}
+              disabled={zoomLevel >= ZOOM_MAX}
+              aria-label={t('studio.zoomIn')}
+              title={t('studio.zoomIn')}
+              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+            >
+              <ZoomIn size={14} />
+            </button>
+          </div>
           {onUndo && onRedo && (
             <>
               <button
