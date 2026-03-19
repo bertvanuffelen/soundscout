@@ -195,7 +195,24 @@ export interface Track {
   volume?: number;
   /** Whether the entire track is muted (default false) */
   mute?: boolean;
+  /** Optional track color for colored sidebar (#67) */
+  color?: string;
 }
+
+/**
+ * Fixed color palette for track sidebar (#67).
+ * 8 distinct, accessible colors matching the 8 tracks.
+ */
+export const TRACK_COLORS = [
+  '#EF4444', // red
+  '#F97316', // orange
+  '#EAB308', // yellow
+  '#22C55E', // green
+  '#06B6D4', // cyan
+  '#3B82F6', // blue
+  '#8B5CF6', // violet
+  '#EC4899', // pink
+] as const;
 
 export interface Clip {
   id: string;
@@ -212,6 +229,15 @@ export interface Clip {
 
   /** Whether this clip originated from a template (locked when templateClipsLocked = true) */
   fromTemplate?: boolean;
+
+  /** Optional short label for the clip (#66, e.g. "wind", "tikken") */
+  label?: string;
+
+  // Loop (#65) — clip repeats the (trimmed) sample until loopDurationBeats
+  /** When true, clip repeats the trimmed sample to fill loopDurationBeats */
+  loop?: boolean;
+  /** Total clip width in beats when looping. Only meaningful when loop=true. */
+  loopDurationBeats?: number;
 }
 
 // --- Game State ---

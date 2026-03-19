@@ -44,33 +44,31 @@ const DraggableSample = memo(function DraggableSample({
   return (
     <div
       ref={setNodeRef}
-      style={style}
+      style={{
+        ...style,
+        touchAction: 'none',
+        WebkitTouchCallout: 'none',
+        userSelect: 'none',
+      }}
       onClick={handleSampleClick}
+      {...listeners}
+      {...attributes}
       className={`
-        flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1 sm:py-2 rounded-md sm:rounded-xl border sm:border-2
-        transition-all duration-150 select-none shrink-0 cursor-pointer
+        flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-xl border sm:border-2
+        transition-all duration-150 select-none shrink-0 cursor-grab active:cursor-grabbing
         ${isDragging ? 'opacity-30 scale-95' : 'hover:shadow-md active:shadow-sm'}
         ${isSelected ? 'ring-2 ring-accent-400 border-accent-400 bg-accent-50' : ''}
       `}
+      title={t('studio.dragToTimeline')}
     >
-      {/* Drag handle - only this element triggers drag */}
-      <div
-        {...listeners}
-        {...attributes}
-        className="flex items-center justify-center w-4 sm:w-6 h-5 sm:h-10 -ml-0.5 sm:-ml-1 cursor-grab active:cursor-grabbing text-neutral-400 hover:text-neutral-600 transition-colors"
-        style={{
-          touchAction: 'none',
-          WebkitTouchCallout: 'none',
-          userSelect: 'none',
-        }}
-        title={t('studio.dragToTimeline')}
-      >
+      {/* Grip icon — visual indicator only */}
+      <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 text-neutral-400 pointer-events-none">
         <svg
           width="12"
           height="20"
           viewBox="0 0 12 20"
           fill="currentColor"
-          className="pointer-events-none w-2 sm:w-3 h-3 sm:h-5"
+          className="w-2 sm:w-3 h-3 sm:h-5"
         >
           <circle cx="3" cy="3" r="1.5" />
           <circle cx="9" cy="3" r="1.5" />
@@ -90,8 +88,9 @@ const DraggableSample = memo(function DraggableSample({
         {t(sample.name)}
       </span>
       <button
-        onClick={() => onPreview(sample.id)}
-        className="ml-0.5 sm:ml-1 w-5 h-5 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-500 hover:text-neutral-700 text-sm cursor-pointer shrink-0 transition-colors"
+        onClick={(e) => { e.stopPropagation(); onPreview(sample.id); }}
+        onPointerDown={(e) => e.stopPropagation()}
+        className="ml-0.5 sm:ml-1 w-6 h-6 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-500 hover:text-neutral-700 text-sm cursor-pointer shrink-0 transition-colors"
         title={t('recorder.preview')}
       >
         <Play className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />

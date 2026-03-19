@@ -56,7 +56,7 @@ Seven independent stores in `src/stores/`:
 |---|---|
 | `appStore` (alias: `gameStore`) | Current screen, active location ID, current composition ID |
 | `audioStore` | Playback state (isPlaying, currentBeat) |
-| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute, sections, clearAllTracks |
+| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb) |
 | `libraryStore` | Recorder slots (max 6), collected samples, transfer to library |
 | `userStore` | User session, role (guest/student/teacher), class code |
 | `themeStore` | Active theme, locations, samples, map config (loaded from `?theme=` URL param) |
@@ -77,17 +77,25 @@ Seven independent stores in `src/stores/`:
 
 ```
 AudioService (singleton)
-├── players: Map<sampleId, Tone.Player>     — cached, loaded lazily
+├── players: Map<sampleId, Tone.Player>     — cached, loaded lazily (shared)
 ├── timelinePart: Tone.Part | null          — scheduled clip events
 ├── scheduledTracks: Track[]                — current timeline state for seek
 ├── scheduledSamples: Sample[]              — sample metadata for seek
+├── effectChains: Array<{player, nodes}>    — isolated players for clips with effects
+├── clipEffectChainMap: Map<clipId, index>  — lookup for seek support
 ├── waveformCache: Map<sampleId, WaveformData>
 └── ambientPlayer: Tone.Player | null
 ```
 
 **Playback flow**: `scheduleTimeline()` creates a `Tone.Part` with all clip events → `play(fromBeat)` starts transport. For seek (fromBeat > 0), a **hybrid approach** is used: clips already active at the seek position are started directly via `startActiveClips()`, while future clips play via `Tone.Part`.
 
-**Volume**: No persistent `Tone.Gain` nodes. Volume is calculated per clip event as `trackVolume + clipVolume` (dB) and applied via `player.volume.setValueAtTime()` before each `player.start()`. Muted clips/tracks are skipped entirely.
+**Clip Loop (#65)**: `clip.loop` + `clip.loopDurationBeats` on the Clip interface. Looping clips generate multiple `ClipEvent`s in `scheduleTimeline()` (one per loop iteration). Resize handle uses pure pointer events (not dnd-kit) with half-beat grid snapping. Loop-aware collision detection via `getEffectiveClipDurationBeats()`. Loop-aware seek uses modulo arithmetic (`elapsedSeconds % singleDuration`) to find position within loop iteration.
+
+**Clip Effects (#33)**: Per-clip `PitchShift` (-12 to +12 semitones) and `Reverb` (0-100%). Clips with effects get **isolated effect chains** (separate `Tone.Player` + effect nodes) stored in `effectChains[]`. Shared players remain unmodified for clips without effects. `clipEffectChainMap` maps clipId → effectChainIndex so `startActiveClips()` uses the correct player on seek. Effect chains are created in `scheduleTimeline()`, stopped (not disposed) on `pause()`, and fully disposed on `stop()` and before re-scheduling. `EffectsPopover` component (portal-based) provides pitch/reverb sliders.
+
+**Live reschedule (#22)**: Timeline changes during playback are detected via `audioVersion` counter in `timelineStore` (incremented on every audio-relevant action). `useRescheduleOnChange` hook watches this counter; when it changes while `isPlaying === true`, it calls `AudioService.rescheduleWhilePlaying()` which stops all players, rebuilds the `Tone.Part` with current tracks, and resumes from the same beat position. **Convention**: any new timelineStore action that affects audio output MUST increment `audioVersion` in its `set()` call.
+
+**Volume**: No persistent `Tone.Gain` nodes. Volume is calculated per clip event as `trackVolume + clipVolume` (dB) and applied via `player.volume.setValueAtTime()` before each `player.start()`. For effect chain clips, volume is baked into the chain's `Tone.Volume` node. Muted clips/tracks are skipped entirely.
 
 **MP3 export**: `src/utils/audioExport.ts` uses `Tone.Offline()` for offline rendering + `@breezystack/lamejs` for MP3 encoding. Output: 128kbps stereo.
 
@@ -103,7 +111,7 @@ AudioService (singleton)
 
 The Timeline component (`Timeline.tsx`) has a header bar with three zones:
 - **Left**: Timeline label
-- **Center**: Inline clip edit actions (trim, duplicate, volume, delete) — only visible when a clip is selected. These were previously in a separate `EditToolbar` component.
+- **Center**: Inline clip edit actions (trim, duplicate, volume, effects, delete) — only visible when a clip is selected. Effects button opens `EffectsPopover` (pitch/reverb sliders).
 - **Right**: Flag (section mark), Eraser (clear timeline with inline confirm), Undo/Redo
 
 The Timeline has `max-h-[50dvh]` to guarantee the sample library gets enough space. Tracks scroll vertically within `overflow-y-auto min-h-0 flex-1`.
@@ -170,6 +178,12 @@ These are hard-won lessons — violating them causes subtle audio bugs:
 3. **`currentBeat` in callbacks causes re-render storms**: Never use `currentBeat` as a `useCallback` dependency — it updates ~20x/sec during playback. Read imperatively: `useAudioStore.getState().currentBeat`.
 
 4. **Async sample loading race conditions**: Use `AbortController` pattern when loading samples. Always check `signal.aborted` BEFORE any state updates to prevent infinite render loops. Stabilize array dependencies with ID-based string comparison (not array references).
+
+5. **Shared players can't have per-clip effects**: `Tone.Player` instances are shared across clips using the same sample. If one clip needs pitch shift and another doesn't, the shared player can't serve both. Solution: create **isolated players** (cloned from the shared player's buffer) with their own effect chain for clips with effects. Store in `effectChains[]` and map via `clipEffectChainMap`.
+
+6. **Seek must use effect chain players**: `startActiveClips()` starts clips that are "already playing" at the seek position. It MUST use the effect chain player (not the shared player) for clips with effects, otherwise both the original and effected sound play simultaneously. The `clipEffectChainMap` lookup solves this.
+
+7. **CSS `transition-all` conflicts with pointer-based resize**: When resizing clips via pointer events, `transition-all` animates the width change, but absolutely-positioned children reposition instantly based on the final width. This creates visual jitter. Solution: conditionally disable `transition-all` during resize operations.
 
 ## Conventions
 

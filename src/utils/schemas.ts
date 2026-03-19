@@ -31,6 +31,10 @@ export const ClipSchema = z.object({
   trimStart: z.number().min(0).optional(),
   trimEnd: z.number().min(0).optional(),
   fromTemplate: z.boolean().optional(),
+  label: z.string().max(30).optional(),
+  // #65 Clip Loop
+  loop: z.boolean().optional(),
+  loopDurationBeats: z.number().positive().optional(),
 });
 
 export const TrackSchema = z.object({
@@ -38,6 +42,7 @@ export const TrackSchema = z.object({
   clips: z.array(ClipSchema),
   volume: z.number().optional(),
   mute: z.boolean().optional(),
+  color: z.string().optional(),
 });
 
 export const SampleSchema = z.object({

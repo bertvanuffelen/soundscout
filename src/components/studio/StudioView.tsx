@@ -18,6 +18,7 @@ import { useSelectionStore } from '../../stores/selectionStore';
 import { useStudioDnD } from '../../hooks/useStudioDnD';
 import { useStudioPlayback } from '../../hooks/useStudioPlayback';
 import { useAudioCleanup } from '../../hooks/useAudioCleanup';
+import { useRescheduleOnChange } from '../../hooks/useRescheduleOnChange';
 import { useStudioKeyboardShortcuts } from '../../hooks/useStudioKeyboardShortcuts';
 import { useUndoRedoTimeline } from '../../hooks/useUndoRedoTimeline';
 import { SampleLibrary } from './SampleLibrary';
@@ -75,6 +76,9 @@ export function StudioView() {
   const duplicateClip = useTimelineStore((s) => s.duplicateClip);
   const updateClipVolume = useTimelineStore((s) => s.updateClipVolume);
   const setClipMute = useTimelineStore((s) => s.setClipMute);
+  const updateClipLabel = useTimelineStore((s) => s.updateClipLabel);
+  const updateClipPitch = useTimelineStore((s) => s.updateClipPitch);
+  const updateClipReverb = useTimelineStore((s) => s.updateClipReverb);
   const hasClips = useTimelineStore((s) => s.selectHasClips());
 
   // Audio state
@@ -119,6 +123,9 @@ export function StudioView() {
 
   // Cleanup on unmount
   useAudioCleanup();
+
+  // Reschedule audio when timeline changes during playback (#22)
+  useRescheduleOnChange();
 
   // Undo/Redo
   const { undo, redo, canUndo, canRedo } = useUndoRedoTimeline();
@@ -226,6 +233,36 @@ export function StudioView() {
       }
     },
     [selectedClipData, setClipMute],
+  );
+
+  // Handle clip label change (#66)
+  const handleClipLabelChange = useCallback(
+    (label: string) => {
+      if (selectedClipData) {
+        updateClipLabel(selectedClipData.trackIndex, selectedClipData.clip.id, label);
+      }
+    },
+    [selectedClipData, updateClipLabel],
+  );
+
+  // Handle clip pitch change (#33)
+  const handleClipPitchChange = useCallback(
+    (pitch: number) => {
+      if (selectedClipData) {
+        updateClipPitch(selectedClipData.trackIndex, selectedClipData.clip.id, pitch);
+      }
+    },
+    [selectedClipData, updateClipPitch],
+  );
+
+  // Handle clip reverb change (#33)
+  const handleClipReverbChange = useCallback(
+    (reverb: number) => {
+      if (selectedClipData) {
+        updateClipReverb(selectedClipData.trackIndex, selectedClipData.clip.id, reverb);
+      }
+    },
+    [selectedClipData, updateClipReverb],
   );
 
   // A11Y-1: Add selected library sample to first available track position
@@ -406,6 +443,9 @@ export function StudioView() {
             onDuplicate: handleDuplicate,
             onClipVolumeChange: handleClipVolumeChange,
             onClipMuteToggle: handleClipMuteToggle,
+            onClipLabelChange: handleClipLabelChange,
+            onClipPitchChange: handleClipPitchChange,
+            onClipReverbChange: handleClipReverbChange,
             locked: templateLockOptions.clipsLocked && (selectedClipData.clip.fromTemplate === true),
           } : null}
         />

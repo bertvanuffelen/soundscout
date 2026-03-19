@@ -79,3 +79,35 @@ export function getClipTrimStart(clip: Clip): number {
 export function getClipTrimEnd(clip: Clip, sample: Sample): number {
   return clip.trimEnd ?? sample.duration;
 }
+
+// =============================================================================
+// LOOP-AWARE UTILITIES (#65)
+// =============================================================================
+
+/**
+ * Get the effective visual/scheduling width of a clip in beats.
+ * For looping clips: returns loopDurationBeats.
+ * For normal clips: returns trimmed sample duration in beats.
+ */
+export function getEffectiveClipDurationBeats(
+  clip: Clip,
+  sample: Sample,
+  bpm: number,
+): number {
+  if (clip.loop && clip.loopDurationBeats) {
+    return clip.loopDurationBeats;
+  }
+  return getClipDurationBeats(clip, sample, bpm);
+}
+
+/**
+ * Calculate the end beat of a clip (loop-aware).
+ * Uses loopDurationBeats for looping clips.
+ */
+export function getEffectiveClipEndBeat(
+  clip: Clip,
+  sample: Sample,
+  bpm: number,
+): number {
+  return clip.startBeat + getEffectiveClipDurationBeats(clip, sample, bpm);
+}

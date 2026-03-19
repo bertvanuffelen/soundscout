@@ -3,7 +3,7 @@
 Checklist voor hands-on testen op diverse apparaten.
 Vink af wat getest en goed bevonden is. Noteer bevindingen direct onder het item.
 
-**Laatst bijgewerkt**: 2026-03-13
+**Laatst bijgewerkt**: 2026-03-16
 
 ---
 
@@ -50,7 +50,83 @@ Flow: docent maakt compositie met storyboard → slaat op als template → leerl
 
 ---
 
-## 2. Touch & Drag op Tablets en Chromebooks (#16)
+## 2. Vrije Afbeelding — Locatiekeuze (#61)
+
+Bij "Afbeelding"-modus kan de leerling kiezen uit alle locatieafbeeldingen van het thema.
+
+### ComposeModeScreen (keuze)
+
+- [x] Open SoundScout met `?storytelling=true`
+- [x] Kies "Bij een afbeelding" — picker toont alle 5 locatieafbeeldingen (Boerderij, Speeltuin, Gymzaal, Muziekwinkel, Klaslokaal)
+- [x] Kaartjes tonen alleen titel + afbeelding (geen beschrijving)
+- [x] Klik op een locatieafbeelding → navigeert naar de kaart
+
+### Studio weergave
+
+- [x] In de studio: gekozen afbeelding is zichtbaar in het storytelling-panel
+- [x] Afbeelding past in het beschikbare venster zonder afsnijding (object-contain)
+- [x] Zoom-knop opent lightbox met fullscreen afbeelding
+
+### Opslaan, delen & exporteren
+
+- [x] Compositie opslaan als MP3 — werkt normaal
+- [x] Compositie exporteren als video (MP4) — afbeelding wordt getoond in de video
+- [x] Compositie delen met link — SharedPlayer toont de locatieafbeelding correct
+- [ ] Compositie indienen bij docent via klascode — docent ziet de locatieafbeelding in SubmissionPlayer
+
+### Persistentie (virtual storyboard ID)
+
+De locatiekeuze wordt opgeslagen als `storyboardId: "location-{locationId}"` (bijv. `location-boerderij`).
+`findStoryboardById()` bouwt het virtuele storyboard on-the-fly op uit de locatiedata.
+
+- [ ] Compositie opslaan lokaal → herladen → locatieafbeelding is er nog
+- [ ] Compositie opslaan als template → leerling laadt template → afbeelding is correct
+- [ ] Deelbare link met locatieafbeelding → SharedPlayer toont de juiste afbeelding
+- [ ] Docentenviewer met locatieafbeelding → SubmissionPlayer toont de juiste afbeelding
+
+---
+
+## 3. Crossfade & Lightbox (#60, #62)
+
+### Crossfade bij afbeeldingwissel
+
+- [x] Storyboard met meerdere afbeeldingen: bij sectiewissel is er een 500ms crossfade (niet een harde cut)
+- [x] Crossfade werkt in StorytellingPanel (studio)
+- [x] Crossfade werkt in StorytellingDisplay (podium)
+- [x] Crossfade werkt in StoryboardViewer (SharedPlayer, SubmissionPlayer)
+- [x] Geen positie/grootte glitch tijdens crossfade (overlay matcht het image-area)
+
+### Lightbox (fullscreen afbeelding)
+
+- [x] Zoom-knop zichtbaar op alle storyboard-afbeeldingen
+- [x] Klik opent fullscreen overlay
+- [x] Escape of klik op achtergrond sluit de lightbox
+- [x] Transport controls (play/pause/stop) zichtbaar in de lightbox
+- [x] Spatiebalk togglet play/pause in lightbox
+
+### Seek zonder playback
+
+- [x] Sleep de playhead ruler naar een andere positie (zonder play) — storyboard-afbeelding update mee
+
+---
+
+## 4. SharedPlayer & SubmissionPlayer Playback (#58)
+
+### Seek + Play
+
+- [x] SharedPlayer: verplaats de ruler → druk play → afspelen start op de seek-positie (niet beat 0)
+- [x] SubmissionPlayer: idem
+- [x] Resume na pause respecteert de huidige positie
+
+### Transport controls
+
+- [x] SharedPlayer: buttons hebben studio-formaat (compact, niet oversized)
+- [x] Play/Pause en Stop werken correct
+- [x] Playhead beweegt mee tijdens afspelen
+
+---
+
+## 5. Touch & Drag op Tablets en Chromebooks (#16)
 
 Verbeteringen doorgevoerd: touch tolerance verhoogd (10px), touch-action:none op tracks, autoplay unlock.
 
@@ -112,7 +188,7 @@ Verbeteringen doorgevoerd: touch tolerance verhoogd (10px), touch-action:none op
 ## 4. Storytelling Edge Cases (#41 D.7)
 
 - [x] Thema zonder storyboards (bijv. `?theme=winterspelen`): compose-mode scherm moet overgeslagen worden, direct naar kaart
-- [ ] Storyboard met slechts 1 afbeelding: geen pijltjes zichtbaar, afbeelding altijd zichtbaar, geen secties aangemaakt _(vereist storyboard met 1 afbeelding)_
+- [x] Storyboard met slechts 1 afbeelding: geen pijltjes zichtbaar, afbeelding altijd zichtbaar, geen secties aangemaakt (testbaar via "Bij een afbeelding" → locatiekeuze)
 - [x] Venster resizen tijdens actieve studio split-view: layout moet correct aanpassen
 - [ ] Mobiel: tabs (afbeelding / timeline) moeten correct werken in plaats van split-view
 - [ ] Storyboard wisselen naar vrij modus en terug — clips blijven staan, alleen secties/afbeeldingen resetten
@@ -285,7 +361,41 @@ Storyboard-composities exporteren als video met crossfade-transities.
 
 ---
 
-## 10. Navigatie, Kaart & Locaties (#1, #6, #11, #13)
+## 10. Clip-labels & Track-kleuren (#66, #67)
+
+### Clip-labels (#66)
+
+- [ ] Selecteer een clip in de studio → tag-icoon (🏷) verschijnt in de inline edit toolbar
+- [ ] Klik op het tag-icoon → klein tekstveld opent inline
+- [ ] Typ een label (bijv. "wind") → druk Enter of klik erbuiten
+- [ ] Clip toont nu het label i.p.v. de sample-naam
+- [ ] Label wissen (leeg veld + Enter) → clip toont weer de originele sample-naam
+- [ ] Tag-icoon is oranje geaccentueerd als het clip een label heeft
+- [ ] Dupliceer een clip met label → kopie heeft hetzelfde label
+- [ ] Sla compositie op → herlaad → labels zijn bewaard (localStorage)
+- [ ] Deel compositie via klascode → docent ziet labels in de viewer
+- [ ] Max 30 karakters — meer typen is niet mogelijk
+
+### Track-kleuren (#67)
+
+- [ ] Klik op het volume-icoon bij een track → volume-popover opent
+- [ ] Onder de volume slider verschijnt een kleurenrij (8 kleuren + "geen kleur")
+- [ ] Klik op een kleur → gekleurde zijbalk verschijnt links op de track
+- [ ] Klik op "geen kleur" (witte bol) → zijbalk verdwijnt
+- [ ] Actieve kleur heeft een ring-indicator in de picker
+- [ ] Sla compositie op → herlaad → track-kleuren zijn bewaard (localStorage)
+- [ ] Deel compositie via klascode → docent ziet track-kleuren in de viewer
+
+### Persistentie
+
+- [ ] Maak een compositie met clip-labels en track-kleuren
+- [ ] Sla op, sluit de app, heropen → labels en kleuren zijn bewaard
+- [ ] Exporteer als MP3 → labels/kleuren zijn puur visueel, audio is onveranderd
+- [ ] Exporteer als video → labels/kleuren beïnvloeden de video niet (correct)
+
+---
+
+## 11. Navigatie, Kaart & Locaties (#1, #6, #11, #13)
 
 ### Startscherm & thema selectie
 
@@ -310,7 +420,7 @@ Storyboard-composities exporteren als video met crossfade-transities.
 
 ---
 
-## 11. Delen met Link (#14)
+## 12. Delen met Link (#14)
 
 - [ ] Op het podium: klik "Delen met link" (naam is verplicht)
 - [ ] Share-code (8 karakters) wordt gegenereerd en getoond
@@ -322,7 +432,7 @@ Storyboard-composities exporteren als video met crossfade-transities.
 
 ---
 
-## 12. i18n & Taal (#35)
+## 13. i18n & Taal (#35)
 
 - [ ] Taalwisselaar zichtbaar (NL/EN toggle)
 - [ ] Wissel naar Engels: alle UI-teksten in het Engels
@@ -333,7 +443,7 @@ Storyboard-composities exporteren als video met crossfade-transities.
 
 ---
 
-## 13. Responsiveness & Layout (#4, #5, #37)
+## 14. Responsiveness & Layout (#4, #5, #37)
 
 ### Desktop (>640px)
 
@@ -351,7 +461,7 @@ Storyboard-composities exporteren als video met crossfade-transities.
 
 ---
 
-## 14. Overige Features
+## 15. Overige Features
 
 ### Feedback systeem (#15, #51)
 

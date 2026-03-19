@@ -79,9 +79,11 @@ export function calculateTimelineDuration(
       if (!sample) return;
 
       const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
-      // Use trimmed duration instead of full sample duration
-      const clipDuration = getClipDuration(clip, sample);
-      const endSeconds = startSeconds + clipDuration;
+      // Use loop duration if looping, otherwise trimmed sample duration
+      const effectiveDuration = clip.loop && clip.loopDurationBeats
+        ? beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM)
+        : getClipDuration(clip, sample);
+      const endSeconds = startSeconds + effectiveDuration;
       maxEndTime = Math.max(maxEndTime, endSeconds);
     });
   });
@@ -130,7 +132,7 @@ export async function renderOffline(
     ({ transport }) => {
       transport.bpm.value = DEFAULT_BPM;
 
-      // Schedule all clips
+      // Schedule all clips (with loop + effects support)
       tracks.forEach((track) => {
         const trackVolume = track.volume ?? 0;
         const trackMuted = track.mute ?? false;
@@ -149,20 +151,62 @@ export async function renderOffline(
           const clipVolume = clip.effects?.volume ?? 0;
           const totalVolumeDb = trackVolume + clipVolume;
 
-          // Create player with the loaded buffer and volume node
-          const volume = new Tone.Volume(totalVolumeDb).toDestination();
-          const player = new Tone.Player(buffer).connect(volume);
+          // Build audio chain: player → [effects] → volume → destination
+          const hasEffects = ((clip.effects?.pitch ?? 0) !== 0) ||
+                             ((clip.effects?.reverb ?? 0) > 0);
 
+          let targetNode: Tone.ToneAudioNode;
+          if (hasEffects) {
+            const chainNodes: Tone.ToneAudioNode[] = [];
+
+            if ((clip.effects?.pitch ?? 0) !== 0) {
+              chainNodes.push(new Tone.PitchShift({ pitch: clip.effects!.pitch }));
+            }
+            if ((clip.effects?.reverb ?? 0) > 0) {
+              const reverb = new Tone.Reverb({
+                decay: 1.5 + (clip.effects!.reverb / 100) * 3,
+              });
+              reverb.wet.value = clip.effects!.reverb / 100;
+              chainNodes.push(reverb);
+            }
+
+            const vol = new Tone.Volume(totalVolumeDb);
+            chainNodes.push(vol);
+
+            // Connect chain: node[0] → node[1] → ... → destination
+            for (let i = 0; i < chainNodes.length - 1; i++) {
+              chainNodes[i].connect(chainNodes[i + 1]);
+            }
+            chainNodes[chainNodes.length - 1].toDestination();
+            targetNode = chainNodes[0];
+          } else {
+            targetNode = new Tone.Volume(totalVolumeDb).toDestination();
+          }
+
+          const player = new Tone.Player(buffer).connect(targetNode);
           const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
-
-          // Apply clip trimming: offset into buffer and trimmed duration
           const trimStart = getClipTrimStart(clip);
-          const clipDuration = getClipDuration(clip, sample);
+          const singleDuration = getClipDuration(clip, sample);
 
-          transport.schedule((time) => {
-            // player.start(when, offset, duration)
-            player.start(time, trimStart, clipDuration);
-          }, startSeconds);
+          // Loop logic (#65): schedule multiple events for looping clips
+          if (clip.loop && clip.loopDurationBeats) {
+            const totalSeconds = beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM);
+            let offset = 0;
+
+            while (offset < totalSeconds - 0.001) {
+              const remaining = totalSeconds - offset;
+              const dur = Math.min(singleDuration, remaining);
+              const scheduleTime = startSeconds + offset;
+              transport.schedule((time) => {
+                player.start(time, trimStart, dur);
+              }, scheduleTime);
+              offset += singleDuration;
+            }
+          } else {
+            transport.schedule((time) => {
+              player.start(time, trimStart, singleDuration);
+            }, startSeconds);
+          }
         });
       });
 

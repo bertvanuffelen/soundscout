@@ -14,7 +14,7 @@ import {
   createSampleMap,
   type SmartSnapResult,
 } from '../utils/clipCollision';
-import { getClipEndBeat } from '../utils/audio';
+import { getEffectiveClipEndBeat } from '../utils/audio';
 import { generateClipId } from '../utils/uuid';
 import { useLibraryStore } from './libraryStore';
 
@@ -31,6 +31,9 @@ interface TimelineStore {
   totalBeats: number;
   isLooping: boolean;
   sections: Section[];
+
+  /** Incremented on every audio-relevant change (#22). Used by useRescheduleOnChange. */
+  audioVersion: number;
 
   // Section actions (musical form / vormschema)
   addSection: (endBeat: number, color?: string, label?: string, fromStoryboard?: boolean) => boolean;
@@ -73,6 +76,20 @@ interface TimelineStore {
   updateClipVolume: (trackIndex: number, clipId: string, volumeDb: number) => void;
   setClipMute: (trackIndex: number, clipId: string, muted: boolean) => void;
 
+  // Clip label (#66)
+  updateClipLabel: (trackIndex: number, clipId: string, label: string) => void;
+
+  // Track color (#67)
+  updateTrackColor: (trackIndex: number, color: string | undefined) => void;
+
+  // Clip loop (#65)
+  setClipLoop: (trackIndex: number, clipId: string, loop: boolean, durationBeats?: number) => void;
+  resizeClipLoop: (trackIndex: number, clipId: string, loopDurationBeats: number) => void;
+
+  // Clip effects (#33) — pitch + reverb
+  updateClipPitch: (trackIndex: number, clipId: string, pitch: number) => void;
+  updateClipReverb: (trackIndex: number, clipId: string, reverb: number) => void;
+
   // Track actions
   clearTrack: (trackIndex: number) => void;
   clearAllTracks: () => void;
@@ -98,6 +115,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   totalBeats: DEFAULT_TOTAL_BEATS,
   isLooping: false,
   sections: [],
+  audioVersion: 0,
 
   // --- Section Actions ---
 
@@ -196,6 +214,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       tracks: prev.tracks.map((t, i) =>
         i === result.trackIndex ? { ...t, clips: [...t.clips, finalClip] } : t,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
 
     return result;
@@ -208,6 +227,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
           ? { ...t, clips: t.clips.filter((c) => c.id !== clipId) }
           : t,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
@@ -283,6 +303,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
         }
         return t;
       }),
+      audioVersion: prev.audioVersion + 1,
     }));
 
     return result;
@@ -302,6 +323,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
             }
           : track,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
@@ -328,11 +350,11 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
 
     const sampleMap = createSampleMap(allSamples);
 
-    // Calculate desired position (directly after original clip)
-    const originalEndBeat = getClipEndBeat(originalClip, sample, state.bpm);
+    // Calculate desired position (directly after original clip — loop-aware)
+    const originalEndBeat = getEffectiveClipEndBeat(originalClip, sample, state.bpm);
     const desiredStartBeat = Math.ceil(originalEndBeat);
 
-    // Create new clip with same trim settings
+    // Create new clip with same trim settings, label, effects, and loop
     const newClipId = generateClipId();
     const newClip: Clip = {
       id: newClipId,
@@ -341,6 +363,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       trimStart: originalClip.trimStart,
       trimEnd: originalClip.trimEnd,
       effects: originalClip.effects,
+      label: originalClip.label,
+      loop: originalClip.loop,
+      loopDurationBeats: originalClip.loopDurationBeats,
     };
 
     // Use smart snap to find optimal position
@@ -368,6 +393,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
           ? { ...t, clips: [...t.clips, finalClip] }
           : t,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
 
     return { ...result, newClipId };
@@ -379,6 +405,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       tracks: prev.tracks.map((t, i) =>
         i === trackIndex ? { ...t, volume: clamped } : t,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
@@ -387,6 +414,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       tracks: prev.tracks.map((t, i) =>
         i === trackIndex ? { ...t, mute: muted } : t,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
@@ -411,6 +439,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
             }
           : track,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
@@ -434,6 +463,130 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
             }
           : track,
       ),
+      audioVersion: prev.audioVersion + 1,
+    }));
+  },
+
+  updateClipLabel: (trackIndex, clipId, label) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? { ...clip, label: label || undefined }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+    }));
+  },
+
+  updateTrackColor: (trackIndex, color) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((t, i) =>
+        i === trackIndex ? { ...t, color } : t,
+      ),
+    }));
+  },
+
+  // --- Clip Loop (#65) ---
+
+  setClipLoop: (trackIndex, clipId, loop, durationBeats) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? {
+                      ...clip,
+                      loop: loop || undefined,
+                      loopDurationBeats: loop ? durationBeats : undefined,
+                    }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+      audioVersion: prev.audioVersion + 1,
+    }));
+  },
+
+  resizeClipLoop: (trackIndex, clipId, loopDurationBeats) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? {
+                      ...clip,
+                      loop: true,
+                      loopDurationBeats,
+                    }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+      audioVersion: prev.audioVersion + 1,
+    }));
+  },
+
+  // --- Clip Effects (#33) — Pitch + Reverb ---
+
+  updateClipPitch: (trackIndex, clipId, pitch) => {
+    const clamped = Math.max(-12, Math.min(12, Math.round(pitch)));
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? {
+                      ...clip,
+                      effects: {
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        pitch: clamped,
+                      },
+                    }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+      audioVersion: prev.audioVersion + 1,
+    }));
+  },
+
+  updateClipReverb: (trackIndex, clipId, reverb) => {
+    const clamped = Math.max(0, Math.min(100, reverb));
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? {
+                      ...clip,
+                      effects: {
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        reverb: clamped,
+                      },
+                    }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
@@ -442,11 +595,15 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       tracks: prev.tracks.map((t, i) =>
         i === trackIndex ? { ...t, clips: [] } : t,
       ),
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
   clearAllTracks: () => {
-    set({ tracks: createEmptyTracks() });
+    set((prev) => ({
+      tracks: createEmptyTracks(),
+      audioVersion: prev.audioVersion + 1,
+    }));
   },
 
   setLooping: (looping) => {

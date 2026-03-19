@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
 import { Volume2, VolumeX } from 'lucide-react';
 import type { Track as TrackType, Sample } from '../../types';
+import { TRACK_COLORS } from '../../types';
 import { useThemeStore } from '../../stores/themeStore';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -35,6 +36,7 @@ export const Track = memo(function Track({
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const updateTrackVolume = useTimelineStore((s) => s.updateTrackVolume);
   const setTrackMute = useTimelineStore((s) => s.setTrackMute);
+  const updateTrackColor = useTimelineStore((s) => s.updateTrackColor);
 
   // Section state (for background colors)
   const sections = useTimelineStore((s) => s.sections);
@@ -83,6 +85,11 @@ export const Track = memo(function Track({
     [trackIndex, setTrackMute],
   );
 
+  const handleTrackColorChange = useCallback(
+    (color: string | undefined) => updateTrackColor(trackIndex, color),
+    [trackIndex, updateTrackColor],
+  );
+
   const handleClosePopover = useCallback(() => {
     setShowVolumePopover(false);
   }, []);
@@ -107,10 +114,14 @@ export const Track = memo(function Track({
         relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150 touch-none
         ${isOver && !readOnly ? 'bg-primary-100/60' : 'bg-white/40'}
       `}
+      style={track.color ? { backgroundColor: `${track.color}12` } : undefined}
     >
       {/* Track label with volume icon */}
-      <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 flex flex-col items-center justify-center bg-neutral-100/80 border-r border-neutral-200 z-10 gap-0.5">
-        <span className="text-[9px] sm:text-[10px] font-bold text-neutral-400" aria-hidden="true">
+      <div
+        className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 flex flex-col items-center justify-center border-r border-neutral-200 z-10 gap-0.5"
+        style={track.color ? { backgroundColor: `${track.color}25` } : { backgroundColor: 'rgb(245 245 245 / 0.8)' }}
+      >
+        <span className="text-[8px] sm:text-[10px] font-bold text-neutral-400" aria-hidden="true">
           {trackIndex + 1}
         </span>
         {/* Volume icon — only in edit mode */}
@@ -150,6 +161,9 @@ export const Track = memo(function Track({
             onMuteToggle={handleMuteToggle}
             onClose={handleClosePopover}
             label={`${t('common.tracks')} ${trackIndex + 1}`}
+            trackColor={track.color}
+            onTrackColorChange={handleTrackColorChange}
+            colorPalette={TRACK_COLORS}
           />
         </div>,
         document.body,
@@ -157,7 +171,7 @@ export const Track = memo(function Track({
 
       {/* Clips area */}
       <div
-        className="absolute left-5 sm:left-6 right-0 top-0 bottom-0"
+        className="absolute left-4 sm:left-6 right-0 top-0 bottom-0"
         onClick={handleTrackClick}
       >
         {/* Section background colors */}

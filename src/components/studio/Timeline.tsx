@@ -1,12 +1,13 @@
 import { memo, useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2 } from 'lucide-react';
+import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles } from 'lucide-react';
 import type { Track as TrackType, Sample, Clip, Section } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
 import { SectionBar } from './SectionBar';
 import { VolumePopover } from './VolumePopover';
+import { EffectsPopover } from './EffectsPopover';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration } from '../../utils/audio';
 import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, ZOOM_DEFAULT_DESKTOP, ZOOM_DEFAULT_MOBILE } from '../../constants/config';
@@ -24,6 +25,9 @@ interface ClipEditProps {
   onDuplicate?: () => void;
   onClipVolumeChange?: (db: number) => void;
   onClipMuteToggle?: (muted: boolean) => void;
+  onClipLabelChange?: (label: string) => void;
+  onClipPitchChange?: (pitch: number) => void;
+  onClipReverbChange?: (reverb: number) => void;
   locked?: boolean;
 }
 
@@ -119,17 +123,66 @@ export const Timeline = memo(function Timeline({
   const [showClipVolumePopover, setShowClipVolumePopover] = useState(false);
   const clipVolumeBtnRef = useRef<HTMLButtonElement>(null);
 
+  // --- Clip edit: effects popover state (#33) ---
+  const [showEffectsPopover, setShowEffectsPopover] = useState(false);
+  const effectsBtnRef = useRef<HTMLButtonElement>(null);
+
+  // --- Clip edit: label editing state (#66) ---
+  const [showLabelInput, setShowLabelInput] = useState(false);
+  const [labelDraft, setLabelDraft] = useState('');
+  const labelInputRef = useRef<HTMLInputElement>(null);
+
   const handleClipVolumeClick = useCallback(() => {
     setShowClipVolumePopover((prev) => !prev);
+    setShowEffectsPopover(false);
   }, []);
 
   const handleCloseClipVolumePopover = useCallback(() => {
     setShowClipVolumePopover(false);
   }, []);
 
-  // Close clip volume popover when selection changes
+  const handleEffectsClick = useCallback(() => {
+    setShowEffectsPopover((prev) => !prev);
+    setShowClipVolumePopover(false);
+  }, []);
+
+  const handleCloseEffectsPopover = useCallback(() => {
+    setShowEffectsPopover(false);
+  }, []);
+
+  const handleLabelToggle = useCallback(() => {
+    setShowLabelInput((prev) => {
+      if (!prev && clipEdit) {
+        setLabelDraft(clipEdit.clip.label ?? '');
+        // Focus the input after render
+        requestAnimationFrame(() => labelInputRef.current?.focus());
+      }
+      return !prev;
+    });
+  }, [clipEdit]);
+
+  const handleLabelSubmit = useCallback(() => {
+    if (clipEdit?.onClipLabelChange) {
+      clipEdit.onClipLabelChange(labelDraft.trim());
+    }
+    setShowLabelInput(false);
+  }, [clipEdit, labelDraft]);
+
+  const handleLabelKeyDown = useCallback((e: React.KeyboardEvent) => {
+    if (e.key === 'Enter') {
+      handleLabelSubmit();
+    } else if (e.key === 'Escape') {
+      setShowLabelInput(false);
+    }
+  }, [handleLabelSubmit]);
+
+  // Close clip volume popover, effects popover, and label input when selection changes
   useEffect(() => {
-    if (!clipEdit) setShowClipVolumePopover(false);
+    if (!clipEdit) {
+      setShowClipVolumePopover(false);
+      setShowEffectsPopover(false);
+      setShowLabelInput(false);
+    }
   }, [clipEdit]);
 
   // Handle click on timeline background to clear selection
@@ -236,17 +289,17 @@ export const Timeline = memo(function Timeline({
               className="flex items-center gap-0.5 sm:gap-1"
               onClick={(e) => e.stopPropagation()}
             >
-              {/* Sample info pill */}
-              <div className="flex items-center gap-1 px-1.5 sm:px-2 mr-0.5">
+              {/* Sample info pill — hidden on mobile to save toolbar space */}
+              <div className="hidden sm:flex items-center gap-1 px-1.5 sm:px-2 mr-0.5">
                 <div
                   className="w-2.5 h-2.5 rounded-full shrink-0"
                   style={{ backgroundColor: clipEdit.sample.color }}
                 />
-                <SampleIcon name={clipEdit.sample.icon} size={12} className="text-neutral-600 shrink-0 hidden sm:block" />
-                <span className="text-[10px] sm:text-xs font-medium text-neutral-700 max-w-20 sm:max-w-28 truncate">
+                <SampleIcon name={clipEdit.sample.icon} size={12} className="text-neutral-600 shrink-0" />
+                <span className="text-xs font-medium text-neutral-700 max-w-28 truncate">
                   {t(clipEdit.sample.name)}
                 </span>
-                <span className="text-[9px] sm:text-[10px] text-neutral-400">
+                <span className="text-[10px] text-neutral-400">
                   {getClipDuration(clipEdit.clip, clipEdit.sample).toFixed(1)}s
                   {(clipEdit.clip.trimStart !== undefined || clipEdit.clip.trimEnd !== undefined) && ' ✂'}
                 </span>
@@ -276,6 +329,37 @@ export const Timeline = memo(function Timeline({
                 </button>
               )}
 
+              {/* Label (#66) — toggle inline input */}
+              {clipEdit.onClipLabelChange && (
+                showLabelInput ? (
+                  <input
+                    ref={labelInputRef}
+                    type="text"
+                    value={labelDraft}
+                    onChange={(e) => setLabelDraft(e.target.value.slice(0, 30))}
+                    onBlur={handleLabelSubmit}
+                    onKeyDown={handleLabelKeyDown}
+                    placeholder={t('studio.clipLabelPlaceholder')}
+                    className="w-20 sm:w-24 text-[10px] sm:text-xs px-1.5 py-0.5 rounded border border-neutral-300 focus:border-accent-400 focus:outline-none bg-white text-neutral-700"
+                  />
+                ) : (
+                  <button
+                    onClick={handleLabelToggle}
+                    aria-label={t('studio.clipLabel')}
+                    title={clipEdit.clip.label ? `${t('studio.clipLabel')}: ${clipEdit.clip.label}` : t('studio.clipLabel')}
+                    className={`
+                      p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded-lg transition-colors
+                      ${clipEdit.clip.label
+                        ? 'bg-accent-50 text-accent-600 hover:bg-accent-100'
+                        : 'hover:bg-neutral-100 active:bg-neutral-200 text-neutral-600'
+                      }
+                    `}
+                  >
+                    <Tag size={14} />
+                  </button>
+                )
+              )}
+
               {/* Volume */}
               {clipEdit.onClipVolumeChange && clipEdit.onClipMuteToggle && (
                 <button
@@ -295,6 +379,25 @@ export const Timeline = memo(function Timeline({
                     ? <VolumeX size={14} className="text-error-500" />
                     : <Volume2 size={14} className="text-neutral-600" />
                   }
+                </button>
+              )}
+
+              {/* Effects (#33) — pitch + reverb */}
+              {clipEdit.onClipPitchChange && clipEdit.onClipReverbChange && (
+                <button
+                  ref={effectsBtnRef}
+                  onClick={handleEffectsClick}
+                  aria-label={t('studio.effects')}
+                  title={t('studio.effects')}
+                  className={`
+                    p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded-lg transition-colors
+                    ${((clipEdit.clip.effects?.pitch ?? 0) !== 0 || (clipEdit.clip.effects?.reverb ?? 0) > 0)
+                      ? 'bg-violet-50 text-violet-600 hover:bg-violet-100'
+                      : 'hover:bg-neutral-100 active:bg-neutral-200 text-neutral-600'
+                    }
+                  `}
+                >
+                  <Sparkles size={14} />
                 </button>
               )}
 
@@ -374,8 +477,8 @@ export const Timeline = memo(function Timeline({
               </button>
             )
           )}
-          {/* Zoom controls */}
-          <div className="flex items-center gap-0">
+          {/* Zoom controls — hidden on mobile to save toolbar space */}
+          <div className="hidden sm:flex items-center gap-0">
             <button
               onClick={handleZoomOut}
               disabled={zoomLevel <= ZOOM_MIN}
@@ -453,6 +556,29 @@ export const Timeline = memo(function Timeline({
         document.body,
       )}
 
+      {/* Effects popover (#33) — portal to escape overflow */}
+      {showEffectsPopover && clipEdit?.onClipPitchChange && clipEdit?.onClipReverbChange && effectsBtnRef.current && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: effectsBtnRef.current.getBoundingClientRect().left,
+            top: effectsBtnRef.current.getBoundingClientRect().top - 8,
+            transform: 'translateY(-100%)',
+            zIndex: 9999,
+          }}
+        >
+          <EffectsPopover
+            pitch={clipEdit.clip.effects?.pitch ?? 0}
+            reverb={clipEdit.clip.effects?.reverb ?? 0}
+            onPitchChange={clipEdit.onClipPitchChange}
+            onReverbChange={clipEdit.onClipReverbChange}
+            onClose={handleCloseEffectsPopover}
+            label={t(clipEdit.sample.name)}
+          />
+        </div>,
+        document.body,
+      )}
+
       <div
         ref={scrollContainerRef}
         className="relative overflow-x-auto overflow-y-auto min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
@@ -467,7 +593,7 @@ export const Timeline = memo(function Timeline({
           {sections.length > 0 && (
             <div className="relative border-b border-border-subtle">
               {/* Track label spacer */}
-              <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 bg-neutral-200/50 z-10" />
+              <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-neutral-200/50 z-10" />
               <div className="ml-5 sm:ml-6">
                 <SectionBar
                   sections={sections}
@@ -485,10 +611,10 @@ export const Timeline = memo(function Timeline({
           {/* Ruler strip - 16px with measure lines */}
           <div className="relative h-4 border-b border-border-subtle bg-neutral-100/80">
             {/* Track label spacer */}
-            <div className="absolute left-0 top-0 bottom-0 w-5 sm:w-6 bg-neutral-200/50" />
+            <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-neutral-200/50" />
 
             {/* Measure lines in ruler (every 4 beats) */}
-            <div className="absolute inset-0 left-5 sm:left-6">
+            <div className="absolute inset-0 left-4 sm:left-6">
               {gridLines
                 .filter((b) => b % 4 === 0)
                 .map((beat) => {
@@ -524,7 +650,7 @@ export const Timeline = memo(function Timeline({
           </div>
 
           {/* Grid lines for tracks */}
-          <div className="absolute top-4 inset-x-0 bottom-0 left-5 sm:left-6 pointer-events-none">
+          <div className="absolute top-4 inset-x-0 bottom-0 left-4 sm:left-6 pointer-events-none">
             {gridLines.map((beat) => {
               const leftPercent = (beat / totalBeats) * 100;
               const isMajor = beat % 4 === 0;
@@ -559,7 +685,7 @@ export const Timeline = memo(function Timeline({
 
           {/* Playhead line fallback for read-only mode without seek */}
           {readOnly && !onSeek && (
-            <div className="absolute top-4 inset-x-0 bottom-0 left-5 sm:left-6 pointer-events-none z-20">
+            <div className="absolute top-4 inset-x-0 bottom-0 left-4 sm:left-6 pointer-events-none z-20">
               <div
                 className="absolute top-0 bottom-0 w-0.5 bg-error-500 -translate-x-1/2"
                 style={{ left: `${playheadPercent}%` }}

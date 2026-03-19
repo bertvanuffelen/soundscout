@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-03-16
+**Laatst bijgewerkt**: 2026-03-19
 
 ---
 
@@ -85,50 +85,17 @@ Leerlingen moeten thuis of op een andere computer verder kunnen werken aan hun c
 
 ### P3 — Middel prioriteit
 
-#### #61 — Vrije afbeelding: leerling kiest eigen afbeelding
-**Complexiteit:** Medium · **Bron:** Handmatig testen (2026-03-13)
-
-Bij vrije afbeelding-modus moeten leerlingen zelf een afbeelding kunnen kiezen waarmee ze gaan werken. Momenteel wordt dit niet aangeboden. Vereist file-upload of afbeelding-selectie UI.
-
 #### #48 — Video-Storyboard (Compositie bij Video)
 **Complexiteit:** Zeer Hoog · **Afhankelijk van:** #41 ✅ · **Status:** Onderzoeksfase
 
 Video afspelen i.p.v. stilstaande afbeeldingen in het storyboard-systeem. Vereist onderzoek naar HTML5 video sync met Tone.js, hosting, performance en mobile support.
 
-#### #22 — Real-time Geluiden Toevoegen tijdens Afspelen
-**Complexiteit:** Zeer Hoog · **Bron:** Gebruiker feedback (2026-02-05)
-
-Tijdens playback nieuwe samples op de timeline kunnen slepen die direct meespelen. Technische uitdaging: Tone.Part dynamisch updaten terwijl transport loopt.
-
-#### #33 — Sample Effecten
-**Complexiteit:** Laag (types voorbereid) → Medium (UI + audio)
-
-Per-clip effecten: volume, pitch shift, reverb, pan, filter. Types zijn voorbereid in `ClipEffects`, maar nog geen UI of Tone.js nodes.
-
-#### #65 — Clip-loop (sample herhaalt binnen clip-duur)
-**Complexiteit:** Medium · **Bron:** PRD Soundscape Storyboard + brainstorm (2026-03-14)
-
-Een clip kan herhalen binnen zijn positie op de tijdlijn. Korte sample (bijv. 0.3s tikje) in een blok van 4 beats → sample loopt automatisch tot het blok eindigt. Gecombineerd met trimming bepaalt de leerling welk stukje loopt. Technisch: `loop?: boolean` op Clip interface, Tone.js `player.loop = true` + `loopStart`/`loopEnd` in AudioService scheduling. Standalone waardevol — geen afhankelijkheid van partituur-tool.
-
-#### #66 — Clip-labels (tekst/icoon op clip)
-**Complexiteit:** Laag · **Bron:** PRD Soundscape Storyboard + brainstorm (2026-03-14)
-
-Optioneel kort label op een clip ("wind", "tikken", "achtergrond"). Maakt de tijdlijn leesbaarder als visueel overzicht, vooral bij composities met veel clips van dezelfde kleur. Helpt leerlingen bij het organiseren en bespreken van hun werk. Technisch: `label?: string` op Clip interface, toon als inline tekst of tooltip in Clip component.
-
-#### #67 — Track-kleuren (visuele groepering)
-**Complexiteit:** Laag · **Bron:** PRD Soundscape Storyboard + brainstorm (2026-03-14)
-
-Optionele kleur per track naast de bestaande sample-kleuren. "Blauwe track = achtergrondgeluiden, rode track = korte effecten." Maakt de tijdlijn meer als partituur leesbaar. Technisch: `color?: string` op Track interface, toon als gekleurde zijbalk.
-
-#### UX-4 — Kindvriendelijker vocabulaire
-**Status:** Wacht op review · **Document:** `docs/WOORDENLIJST-VOCABULAIRE.md`
-
-4 hoge-prioriteit suggesties: Compositie, Bibliotheek, Samples, Dupliceren → kindvriendelijkere alternatieven. Alleen i18n keys wijzigen, geen code.
-
 #### UX-9 — Studio pagina indeling herbekijken
-**Status:** Deels afgerond (timeline hoogte + image padding geoptimaliseerd, 2026-03-12)
+**Status:** Grotendeels afgerond (2026-03-18)
 
-Resterende optimalisaties: verdere verhouding-verbeteringen op kleine schermen.
+Afgerond: timeline hoogte + image padding (2026-03-12), toolbar crowding fix (sample info pill + zoom hidden op mobile), full-row drag targets voor samples, narrowere track labels op mobile (2026-03-18).
+
+Eventueel resterend: verdere verhouding-verbeteringen op zeer kleine schermen indien nodig.
 
 ---
 
@@ -177,6 +144,24 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 #### TP4-2 — Factory pattern voor AudioService
 **Status:** Toekomstig — singleton maakt unit testing onmogelijk.
 
+#### TP5-5 — Zod validatie op Supabase RPC responses
+**Bron:** Architectuur-analyse (P2) · `src/lib/submissions.ts`, `src/lib/templates.ts` — localStorage reads worden gevalideerd met Zod, maar Supabase RPC returns worden gecast zonder validatie. Schema-wijzigingen op de server kunnen stille runtime failures veroorzaken. Fix: voeg Zod schemas toe voor alle RPC return types.
+
+#### TP5-6 — StorageService migratiestrategie
+**Bron:** Architectuur-analyse (P2) · `StorageService.ts` — `STORAGE_VERSION` is uitgecommentarieerd. Schema-wijzigingen veroorzaken stille data loss (composities die Zod-validatie falen worden stil gefilterd). Fix: implementeer `migrateIfNeeded()` met versioned transformers.
+
+#### TP5-7 — Extraheer useCompositionPlayer() hook
+**Bron:** Architectuur-analyse (P2) · `SharedPlayer.tsx` (381 regels) en `SubmissionPlayer.tsx` (353 regels) zijn ~95% identiek. Extraheer gedeelde playback-logica (data fetching, audio init, transport controls, beat tracking) naar een herbruikbare hook.
+
+#### TP5-8 — Extraheer useCompositionData() hook
+**Bron:** Architectuur-analyse (P2) · `StageView.tsx` assembleert compositie-data 3x voor verschillende modals. Extraheer naar een gedeelde hook die tracks + samples + metadata bundelt.
+
+#### TP5-9 — Decompose Timeline.tsx
+**Bron:** Architectuur-analyse (P3) · 582 regels, 19 hooks. Split in Timeline (core), TimelineHeader (edit toolbar + tools), ZoomControls. Verbetert leesbaarheid en testbaarheid.
+
+#### TP5-10 — Verwijder dode velden uit TimelineState
+**Bron:** Architectuur-analyse (P3) · `isPlaying` en `currentBeat` in `TimelineState` worden altijd hardcoded naar `false`/`0` in `getTimelineState()`. Verwijder uit het type en pas serialisatie/deserialisatie aan.
+
 #### TP5-1 — StorageService.getRaw() silent catch loggen
 **Bron:** Architectuur-analyse · `StorageService.ts:311-318` — JSON.parse fout wordt stil geslikt zonder logging. Callers loggen wél validatiefouten, maar JSON-corruptie is onzichtbaar. Voeg `logger.warn` toe in catch block.
 
@@ -211,6 +196,7 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | SEC-1 Credentials in git | **False positive** — `.env.local` nooit gecommit, `.gitignore` correct, alleen `.env.example` (zonder secrets) in git |
 | Cross-store sample validatie | **Reeds geïmplementeerd** — `addClip`, `moveClip`, `duplicateClip` valideren allemaal sampleId bestaan |
 | Zod schema coverage | **Voldoende** — alle untrusted boundaries (localStorage, Supabase) hebben schemas. Interne types (Location, Hotspot) hoeven geen runtime validatie |
+| UX-4 Kindvriendelijker vocabulaire | Bewust besluit: huidige termen (Compositie, Bibliotheek, Samples, Dupliceren) blijven behouden |
 
 ---
 
@@ -278,7 +264,16 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | #59 | Template vergrendelingsopties uitbreiden | 2026-03-14 | `clipsLocked` boolean → `TemplateLockOptions` object met 4 granulaire opties: clips, secties, bibliotheek, nieuwe clips. Standaard alles vergrendeld. SaveAsTemplateModal toont 4 checkboxes. Backward compat via `parseLockOptions()`. Supabase: `lock_options` JSONB kolom + RPC update. Migratie: `003_template_lock_options.sql` |
 | #60 | Storyboard afbeelding vergroten (lightbox) | 2026-03-16 | ZoomIn-knop op alle storyboard-afbeeldingen (StoryboardViewer, StorytellingPanel, StorytellingDisplay). Herbruikbaar `ImageLightbox` component: fullscreen overlay, escape/backdrop-click sluiten, play/pause/stop transport controls in lightbox, spatiebalk sneltoets |
 | #62 | Crossfade bij afbeeldingwissel (live) | 2026-03-16 | Herbruikbaar `CrossfadeImage` component: oude afbeelding fadeout op top-layer, nieuwe afbeelding direct zichtbaar eronder. 500ms ease-in-out. Wrapper div met `relative max-h-full` lost positioning-glitch op (overlay vulde parent container i.p.v. image area bij `object-contain`). Toegepast in StoryboardViewer, StorytellingPanel, StorytellingDisplay. Tijdelijk test-storyboard "Test Locaties" (3 locatie-afbeeldingen) toegevoegd |
+| #61 | Vrije afbeelding: locatiekeuze bij compositiemodus | 2026-03-16 | Bij "Afbeelding"-modus toont picker alle locatieafbeeldingen uit het thema. Virtueel single-image storyboard (`location-{id}`) hergebruikt bestaand storyboard-systeem. `findStoryboardById()` uitgebreid voor `location-` prefix. Kaartjes vereenvoudigd (alleen titel + afbeelding). `containerClassName` prop op CrossfadeImage voor correcte studio-sizing |
 | #64 | "Ga verder" knop op startscherm | 2026-03-16 | Wanneer tijdlijn clips bevat verschijnt "Ga verder" knop boven "Nieuwe Compositie". Detectie via `selectHasClips()`. Navigeert direct naar studio |
+| #66 | Clip-labels (tekst op clip) | 2026-03-16 | `label?: string` op Clip interface. Tag-icoon in clip edit toolbar opent inline tekstveld (max 30 chars). Label vervangt sample-naam op de clip. Persist via Zod schema + localStorage. Duplicate kopieert label mee |
+| #67 | Track-kleuren (visuele groepering) | 2026-03-16 | `color?: string` op Track interface + `TRACK_COLORS` palette (8 kleuren). Hele track-achtergrond krijgt lichte tint (~7% opacity), track-label iets sterker (~15%). Kleurkiezer geïntegreerd in track volume-popover met "geen kleur" optie. Persist via Zod schema + localStorage |
+| P1-A | Audio stop bij undo/redo | 2026-03-16 | `audioService.stop()` vóór state-restore in `useUndoRedoTimeline`. Voorkomt desync waarbij oude clips doorspelen na Ctrl+Z |
+| P1-B | AbortController op sample loading | 2026-03-16 | AbortController toegevoegd aan `useStudioPlayback` en `StagePlayback` sample loading. Voorkomt stale loads bij snelle navigatie |
+| #65 | Clip-loop (sample herhaalt binnen clip-duur) | 2026-03-18 | `loop`/`loopDurationBeats` op Clip interface. Resize handle (pointer events, niet dnd-kit) op rechterrand van geselecteerde clip. Loop genereert meerdere ClipEvents in `scheduleTimeline()`. Loop-aware seek via modulo-berekening. Loop-aware collision detection, duplicatie, export. Lichtere tint overlay voor herhalingen. `transition-all` uitgeschakeld tijdens resize om visuele jitter te voorkomen |
+| #33 | Clip-effecten: Pitch + Reverb | 2026-03-18 | Per-clip `Tone.PitchShift` (-12 tot +12 halftonen) en `Tone.Reverb` (0-100%). Geïsoleerde effect chains (eigen `Tone.Player` + nodes) per clip met effecten — shared players blijven ongewijzigd. `clipEffectChainMap` voor seek-support zodat `startActiveClips()` de juiste player gebruikt. EffectsPopover (portal-based, violet accent). Sparkles-icoon als indicator. Effecten meegekopieerd bij duplicate. Offline export bouwt per-clip effect chains |
+| UX-9 | Studio mobiele indeling | 2026-03-18 | Toolbar crowding fix (sample info pill + zoom hidden op mobile), full-row drag targets voor samples in library, narrowere track labels op mobile (w-4 i.p.v. w-5) |
+| #22 | Real-time geluiden toevoegen tijdens afspelen | 2026-03-19 | `audioVersion` counter in timelineStore (15 audio-relevante acties). `useRescheduleOnChange` hook detecteert wijzigingen tijdens playback. `rescheduleWhilePlaying()` op AudioService: stop players → reschedule → hervat vanaf zelfde beat. Alle timeline-wijzigingen (clips, volume, mute, trim, loop, pitch, reverb) klinken direct tijdens playback. Docs: `PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` |
 
 ### Technische schuld (afgerond)
 

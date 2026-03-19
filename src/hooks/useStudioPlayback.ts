@@ -8,7 +8,7 @@
  * - Clear all
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useAudioStore } from '../stores/audioStore';
@@ -37,11 +37,19 @@ export function useStudioPlayback() {
     seekTo,
   } = useAudioEngine();
 
+  // AbortController to cancel pending sample loads on cleanup / re-trigger
+  const abortRef = useRef<AbortController | null>(null);
+
   // Load library samples when they change
   useEffect(() => {
     if (librarySamples.length > 0) {
-      loadSamples(librarySamples);
+      // Cancel any in-progress load
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      loadSamples(librarySamples, undefined, controller.signal);
     }
+    return () => { abortRef.current?.abort(); };
   }, [librarySamples, loadSamples]);
 
   // Play the timeline from current seek position

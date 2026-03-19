@@ -124,6 +124,12 @@ export function useAudioEngine() {
     audioService.seek(beat);
   }, []);
 
+  const rescheduleWhilePlaying = useCallback(
+    (tracks: Track[], samples: Sample[], looping: boolean, totalBeats: number) => {
+      audioService.rescheduleWhilePlaying(tracks, samples, looping, totalBeats);
+    }, []
+  );
+
   // --- Ambient Audio ---
 
   const loadAmbient = useCallback(async (url: string) => {
@@ -166,6 +172,7 @@ export function useAudioEngine() {
     setTransportLoop,
     getCurrentBeat,
     seekTo,
+    rescheduleWhilePlaying,
 
     // Ambient audio
     loadAmbient,

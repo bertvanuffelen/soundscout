@@ -6,7 +6,7 @@
  */
 
 import type { Clip, Sample, Track } from '../types';
-import { getClipDurationBeats } from './audio';
+import { getEffectiveClipDurationBeats } from './audio';
 
 // =============================================================================
 // TYPES
@@ -35,7 +35,7 @@ export function getClipBounds(
   sample: Sample,
   bpm: number,
 ): ClipBounds {
-  const durationBeats = getClipDurationBeats(clip, sample, bpm);
+  const durationBeats = getEffectiveClipDurationBeats(clip, sample, bpm);
   return {
     startBeat: clip.startBeat,
     endBeat: clip.startBeat + durationBeats,
@@ -114,7 +114,7 @@ export function findSmartSnapPosition(
   totalBeats: number,
   excludeClipId?: string,
 ): SmartSnapResult {
-  const clipDurationBeats = getClipDurationBeats(newClip, newSample, bpm);
+  const clipDurationBeats = getEffectiveClipDurationBeats(newClip, newSample, bpm);
 
   // Strategy 1: Try original position on target track
   const targetTrack = tracks[targetTrackIndex];
@@ -200,6 +200,6 @@ export function clipFitsInTimeline(
   bpm: number,
   totalBeats: number,
 ): boolean {
-  const endBeat = clip.startBeat + getClipDurationBeats(clip, sample, bpm);
+  const endBeat = clip.startBeat + getEffectiveClipDurationBeats(clip, sample, bpm);
   return clip.startBeat >= 0 && endBeat <= totalBeats;
 }

@@ -157,6 +157,10 @@
     "mute": "Mute",
     "unmute": "Unmute",
     "muted": "Muted",
+    "clipLabel": "Label",
+    "clipLabelPlaceholder": "e.g. wind, tapping",
+    "trackColor": "Color",
+    "noColor": "No color",
     "clearTimeline": "Clear timeline",
     "clearConfirm": "Clear all?",
     "trimModal": {
@@ -166,6 +170,14 @@
       "cancel": "Cancel",
       "reset": "Reset"
     },
+    "effects": "Effects",
+    "pitch": "Pitch",
+    "pitchLow": "Low",
+    "pitchHigh": "High",
+    "reverbLabel": "Reverb",
+    "reverbDry": "Dry",
+    "reverbWet": "Wet",
+    "resetEffect": "Reset",
     "sections": {
       "markSection": "Mark section",
       "sectionLabel": "Section {{number}}",
