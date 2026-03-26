@@ -650,7 +650,13 @@
       "fetchError": "Kon praatplaten niet laden",
       "fetchSubmissionsError": "Kon composities niet laden",
       "emptyTitle": "Nog geen praatplaten",
-      "emptyDescription": "Maak een praatplaat aan zodat leerlingen hun compositie op een locatie kunnen plaatsen."
+      "emptyDescription": "Maak een praatplaat aan zodat leerlingen hun compositie op een locatie kunnen plaatsen.",
+      "viewer": {
+        "stop": "Stop",
+        "showTimeline": "Bekijk timeline",
+        "emptyTitle": "Nog geen composities",
+        "emptyDescription": "Zodra leerlingen hun compositie opslaan, verschijnen ze hier op de praatplaat."
+      }
     },
     "shareWithTeacher": {
       "title": "Deel met docent",

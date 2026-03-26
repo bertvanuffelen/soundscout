@@ -15,6 +15,8 @@ import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { PraatplaatCard } from './PraatplaatCard';
 import { CreatePraatplaatModal } from './CreatePraatplaatModal';
+import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
+import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 import { logger } from '../../utils/logger';
 
@@ -42,6 +44,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     remove: removePraatplaat,
   } = usePraatplaten(classData.id);
   const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
+  const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
 
   const handleCreatePraatplaat = useCallback(async (params: {
     name: string;
@@ -230,7 +233,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     praatplaat={pp}
                     onToggle={(activate) => handleTogglePraatplaat(pp.id, activate)}
                     onDelete={() => handleDeletePraatplaat(pp.id)}
-                    onView={() => {/* TODO: Fase 5 — PraatplaatViewer */}}
+                    onView={() => setViewingPraatplaat(pp)}
                   />
                 ))}
               </div>
@@ -343,6 +346,14 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         onClose={() => setShowCreatePraatplaat(false)}
         onCreate={handleCreatePraatplaat}
       />
+
+      {/* Praatplaat viewer (#72 Fase 5) */}
+      {viewingPraatplaat && (
+        <PraatplaatViewer
+          praatplaat={viewingPraatplaat}
+          onClose={() => setViewingPraatplaat(null)}
+        />
+      )}
     </div>
   );
 }

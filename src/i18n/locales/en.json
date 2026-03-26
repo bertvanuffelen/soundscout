@@ -650,7 +650,13 @@
       "fetchError": "Could not load sound maps",
       "fetchSubmissionsError": "Could not load compositions",
       "emptyTitle": "No sound maps yet",
-      "emptyDescription": "Create a sound map so students can place their composition on a location."
+      "emptyDescription": "Create a sound map so students can place their composition on a location.",
+      "viewer": {
+        "stop": "Stop",
+        "showTimeline": "View timeline",
+        "emptyTitle": "No compositions yet",
+        "emptyDescription": "Once students save their composition, they will appear here on the sound map."
+      }
     },
     "shareWithTeacher": {
       "title": "Share with teacher",
