@@ -45,6 +45,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   } = usePraatplaten(classData.id);
   const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
+  const [showActivatedCode, setShowActivatedCode] = useState(false);
 
   const handleCreatePraatplaat = useCallback(async (params: {
     name: string;
@@ -62,8 +63,11 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     try {
       if (activate) {
         await activatePraatplaat(id);
+        setShowActivatedCode(true);
+        setTimeout(() => setShowActivatedCode(false), 8000);
       } else {
         await deactivatePraatplaat(id);
+        setShowActivatedCode(false);
       }
     } catch (err) {
       logger.error('Toggle praatplaat failed:', err);
@@ -207,6 +211,14 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             {praatplaatError && (
               <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4 text-sm">
                 {praatplaatError}
+              </div>
+            )}
+
+            {/* Klascode tonen na activeren */}
+            {showActivatedCode && (
+              <div className="bg-primary-50 border border-primary-200 text-primary-800 px-4 py-3 rounded-xl mb-4 text-sm flex items-center justify-between">
+                <span>{t('teacher.praatplaat.activatedMessage')}</span>
+                <span className="font-mono font-bold text-lg ml-3">{classData.code}</span>
               </div>
             )}
 

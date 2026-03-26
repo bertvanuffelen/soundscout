@@ -7,18 +7,19 @@
 
 import { useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Trash2, ToggleLeft, ToggleRight, Eye } from 'lucide-react';
+import { Trash2, ToggleLeft, ToggleRight, Volume2 } from 'lucide-react';
 import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 
 interface PraatplaatCardProps {
   praatplaat: PraatplaatRow;
+  submissionCount?: number;
   onToggle: (isActive: boolean) => void;
   onDelete: () => void;
   onView: () => void;
 }
 
-export function PraatplaatCard({ praatplaat, onToggle, onDelete, onView }: PraatplaatCardProps) {
+export function PraatplaatCard({ praatplaat, submissionCount, onToggle, onDelete, onView }: PraatplaatCardProps) {
   const { t } = useTranslation();
   const { name, image_url, is_active, created_at } = praatplaat;
 
@@ -61,6 +62,24 @@ export function PraatplaatCard({ praatplaat, onToggle, onDelete, onView }: Praat
           </p>
         </div>
 
+        {/* Submission count */}
+        {typeof submissionCount === 'number' && (
+          <p className="text-gray-500 text-xs mb-3">
+            {t('teacher.praatplaat.submissionCount', { count: submissionCount })}
+          </p>
+        )}
+
+        {/* Open praatplaat button */}
+        <Button
+          variant="primary"
+          size="sm"
+          onClick={onView}
+          className="w-full mb-2 inline-flex items-center justify-center gap-1.5"
+        >
+          <Volume2 className="w-4 h-4" />
+          {t('teacher.praatplaat.openPraatplaat')}
+        </Button>
+
         {/* Actions */}
         <div className="flex gap-2">
           <Button
@@ -71,14 +90,6 @@ export function PraatplaatCard({ praatplaat, onToggle, onDelete, onView }: Praat
           >
             {is_active ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
             {is_active ? t('teacher.praatplaat.deactivate') : t('teacher.praatplaat.activate')}
-          </Button>
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={onView}
-            title={t('teacher.praatplaat.view')}
-          >
-            <Eye className="w-4 h-4" />
           </Button>
           <Button
             variant="ghost"

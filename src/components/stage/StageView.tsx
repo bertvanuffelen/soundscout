@@ -15,6 +15,7 @@ import {
   Check,
   ArrowLeft,
   Ellipsis,
+  MapPin,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
@@ -91,6 +92,22 @@ export function StageView() {
     setShowSaveOnlineModal,
     handleNewComposition,
   } = useStageModals();
+
+  // Praatplaat success modal
+  const activePraatplaat = useAppStore((s) => s.activePraatplaat);
+  const goToPraatplaatSelect = useAppStore((s) => s.goToPraatplaatSelect);
+  const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
+  const [praatplaatSuccessDismissed, setPraatplaatSuccessDismissed] = useState(false);
+  const showPraatplaatSuccess = praatplaatSubmitted && !!activePraatplaat && !praatplaatSuccessDismissed;
+
+  const handleNewSpot = useCallback(() => {
+    stopAll();
+    clearAllTracks();
+    // Clear position but keep activePraatplaat so student can pick new spot
+    useAppStore.setState({ praatplaatPosition: null });
+    setPraatplaatSuccessDismissed(true);
+    goToPraatplaatSelect();
+  }, [stopAll, clearAllTracks, goToPraatplaatSelect]);
 
   const handleBackToStudio = useCallback(() => {
     stopAll();
@@ -221,7 +238,7 @@ export function StageView() {
           {videoExportState === 'success' && (
             <p className="text-success-600 text-sm text-center">{t('stage.videoExportSuccess')}</p>
           )}
-          {praatplaatSubmitted && (
+          {praatplaatSubmitted && !showPraatplaatSuccess && (
             <p className="text-success-600 text-sm text-center font-medium">{t('stage.praatplaatSubmitted')}</p>
           )}
         </div>
@@ -292,6 +309,40 @@ export function StageView() {
           >
             {t('stage.save')}
           </Button>
+        </div>
+      </Modal>
+
+      {/* Praatplaat success modal (#72) */}
+      <Modal
+        isOpen={showPraatplaatSuccess}
+        onClose={() => setPraatplaatSuccessDismissed(true)}
+        title={t('stage.praatplaatSuccessTitle')}
+        size="sm"
+      >
+        <div className="text-center">
+          <div className="w-16 h-16 rounded-full bg-success-50 flex items-center justify-center mx-auto mb-4">
+            <MapPin className="w-8 h-8 text-success-600" />
+          </div>
+          <p className="text-text-muted text-sm mb-6 leading-relaxed">
+            {t('stage.praatplaatSuccessMessage')}
+          </p>
+          <div className="flex flex-col gap-3">
+            <Button
+              variant="primary"
+              onClick={() => setPraatplaatSuccessDismissed(true)}
+              className="w-full"
+            >
+              {t('stage.praatplaatContinue')}
+            </Button>
+            <Button
+              variant="secondary"
+              onClick={handleNewSpot}
+              className="w-full"
+            >
+              <MapPin className="w-4 h-4 mr-1.5" />
+              {t('stage.praatplaatNewSpot')}
+            </Button>
+          </div>
         </div>
       </Modal>
 

@@ -13,11 +13,26 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { Button } from '../ui/Button';
+import type { Storyboard } from '../../types';
+
+/** Convert praatplaat to a virtual storyboard for split studio view */
+function praatplaatToStoryboard(praatplaat: { id: string; name: string; imageUrl: string; themeId: string }): Storyboard {
+  return {
+    id: `praatplaat-${praatplaat.id}`,
+    themeId: praatplaat.themeId,
+    name: praatplaat.name,
+    description: 'Praatplaat',
+    coverImage: praatplaat.imageUrl,
+    images: [{ id: praatplaat.id, url: praatplaat.imageUrl, label: praatplaat.name }],
+  };
+}
 
 export function PraatplaatSelectScreen() {
   const { t } = useTranslation();
   const activePraatplaat = useAppStore((s) => s.activePraatplaat);
   const setPraatplaatPosition = useAppStore((s) => s.setPraatplaatPosition);
+  const setActiveStoryboard = useAppStore((s) => s.setActiveStoryboard);
+  const setComposeMode = useAppStore((s) => s.setComposeMode);
   const goToMap = useAppStore((s) => s.goToMap);
   const goToStart = useAppStore((s) => s.goToStart);
 
@@ -58,12 +73,15 @@ export function PraatplaatSelectScreen() {
     []
   );
 
-  // Bevestig positie en ga naar kaart
+  // Bevestig positie, stel storyboard in, en ga naar kaart
   const handleConfirm = useCallback(() => {
-    if (!selectedPos) return;
+    if (!selectedPos || !activePraatplaat) return;
     setPraatplaatPosition(selectedPos);
+    // Stel praatplaat in als storyboard zodat de afbeelding in de studio te zien is
+    setActiveStoryboard(praatplaatToStoryboard(activePraatplaat));
+    setComposeMode('image');
     goToMap();
-  }, [selectedPos, setPraatplaatPosition, goToMap]);
+  }, [selectedPos, activePraatplaat, setPraatplaatPosition, setActiveStoryboard, setComposeMode, goToMap]);
 
   if (!activePraatplaat) {
     // Fallback — zou niet moeten voorkomen
@@ -99,10 +117,10 @@ export function PraatplaatSelectScreen() {
       </div>
 
       {/* Afbeelding met klik-handler */}
-      <div className="flex-1 flex items-center justify-center px-4 pb-4 min-h-0">
+      <div className="flex-1 flex items-center justify-center px-2 pb-2 min-h-0">
         <div
           ref={imageRef}
-          className="relative w-full max-w-3xl aspect-video rounded-2xl overflow-hidden shadow-2xl cursor-crosshair select-none"
+          className="relative w-full max-w-6xl aspect-video rounded-xl overflow-hidden shadow-2xl cursor-crosshair select-none"
           onClick={handleImageClick}
           onTouchStart={handleImageClick}
           role="button"

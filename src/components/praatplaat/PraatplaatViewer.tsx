@@ -6,15 +6,15 @@
  * speelt de compositie af. Bij meerdere op dezelfde plek: dropdown selectie.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Loader2, Square, RefreshCw } from 'lucide-react';
+import { X, Loader2, Square, RefreshCw, ListMusic } from 'lucide-react';
 import { getPraatplaatSubmissions } from '../../lib/praatplaat';
 import type { PraatplaatSubmission, PraatplaatRow } from '../../lib/praatplaat';
 import { PraatplaatSpot } from './PraatplaatSpot';
 import { SubmissionPlayer } from '../teacher/SubmissionPlayer';
 import { Button } from '../ui/Button';
-import { AudioService } from '../../services/AudioService';
+import { audioService } from '../../services/AudioService';
 import { logger } from '../../utils/logger';
 
 // --- Clustering: groepeer nearby submissions ---
@@ -67,7 +67,6 @@ interface PraatplaatViewerProps {
 
 export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps) {
   const { t } = useTranslation();
-  const audioService = useRef(AudioService.getInstance());
 
   const [submissions, setSubmissions] = useState<PraatplaatSubmission[]>([]);
   const [loading, setLoading] = useState(true);
@@ -75,6 +74,7 @@ export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps)
 
   // Playback state
   const [playingSubmissionId, setPlayingSubmissionId] = useState<string | null>(null);
+  const [audioLoading, setAudioLoading] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
 
   // Clusters
@@ -103,35 +103,83 @@ export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps)
     fetchData();
   }, [fetchData]);
 
+  // Auto-stop listener
+  useEffect(() => {
+    const unsubscribe = audioService.onPlaybackEnd(() => {
+      setPlayingSubmissionId(null);
+    });
+    return unsubscribe;
+  }, []);
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      audioService.stop();
+    };
+  }, []);
+
+  // --- Direct afspelen ---
+  const playSubmission = useCallback(async (sub: PraatplaatSubmission) => {
+    // Stop current playback
+    audioService.stop();
+
+    if (playingSubmissionId === sub.id) {
+      // Toggle off
+      setPlayingSubmissionId(null);
+      return;
+    }
+
+    setPlayingSubmissionId(sub.id);
+    setAudioLoading(true);
+
+    try {
+      await audioService.initialize();
+
+      const samples = sub.composition_data?.samples || [];
+      const tracks = sub.composition_data?.tracks || [];
+      const totalBeats = sub.composition_data?.totalBeats || 16;
+      const isLooping = sub.composition_data?.isLooping || false;
+
+      if (samples.length > 0) {
+        await audioService.loadSamples(samples);
+      }
+
+      audioService.scheduleTimeline(tracks, samples);
+      audioService.setLoop(isLooping, totalBeats);
+      audioService.play(0);
+      setAudioLoading(false);
+    } catch (err) {
+      logger.error('PraatplaatViewer playback failed:', err);
+      setPlayingSubmissionId(null);
+      setAudioLoading(false);
+    }
+  }, [playingSubmissionId]);
+
   // --- Afspelen ---
   const handleSpotClick = useCallback((cluster: SpotCluster) => {
     if (cluster.submissions.length === 1) {
-      const sub = cluster.submissions[0];
-      if (playingSubmissionId === sub.id) {
-        // Stop afspelen
-        audioService.current.stop();
-        setPlayingSubmissionId(null);
-      } else {
-        // Start afspelen — open in SubmissionPlayer (bestaand component)
-        setPlayingSubmissionId(sub.id);
-        setShowTimeline(true);
-      }
+      playSubmission(cluster.submissions[0]);
     } else {
       // Meerdere submissions: toon dropdown
       setDropdownCluster(cluster);
     }
-  }, [playingSubmissionId]);
+  }, [playSubmission]);
 
   const handleSubmissionSelect = useCallback((sub: PraatplaatSubmission) => {
     setDropdownCluster(null);
-    setPlayingSubmissionId(sub.id);
-    setShowTimeline(true);
-  }, []);
+    playSubmission(sub);
+  }, [playSubmission]);
 
   const handleStop = useCallback(() => {
-    audioService.current.stop();
+    audioService.stop();
     setPlayingSubmissionId(null);
     setShowTimeline(false);
+  }, []);
+
+  const handleShowTimeline = useCallback(() => {
+    // Stop direct playback and open SubmissionPlayer
+    audioService.stop();
+    setShowTimeline(true);
   }, []);
 
   const playingSubmission = submissions.find((s) => s.id === playingSubmissionId);
@@ -164,8 +212,8 @@ export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps)
       </header>
 
       {/* Praatplaat afbeelding + spots */}
-      <div className="flex-1 flex items-center justify-center min-h-0 p-4 pt-16">
-        <div className="relative w-full max-w-5xl aspect-video rounded-2xl overflow-hidden shadow-2xl">
+      <div className="flex-1 flex items-center justify-center min-h-0 p-2 pt-14">
+        <div className="relative w-full max-w-7xl aspect-video rounded-xl overflow-hidden shadow-2xl">
           <img
             src={praatplaat.image_url}
             alt={praatplaat.name}
@@ -239,11 +287,26 @@ export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps)
       {/* Afspeel-balk onderin */}
       {playingSubmission && (
         <div className="absolute bottom-0 inset-x-0 z-20 bg-gradient-to-t from-black/80 to-transparent px-4 py-4">
-          <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
             <span className="text-white font-medium text-sm truncate mr-4">
-              {playingSubmission.student_name} — {playingSubmission.composition_name}
+              {audioLoading ? (
+                <span className="flex items-center gap-2">
+                  <Loader2 className="w-4 h-4 animate-spin" />
+                  {t('teacher.submissionPlayer.loading')}
+                </span>
+              ) : (
+                <>{playingSubmission.student_name} — {playingSubmission.composition_name}</>
+              )}
             </span>
             <div className="flex items-center gap-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleShowTimeline}
+              >
+                <ListMusic className="w-4 h-4 mr-1" />
+                {t('teacher.praatplaat.viewer.showTimeline')}
+              </Button>
               <Button
                 variant="secondary"
                 size="sm"

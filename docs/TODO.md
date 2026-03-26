@@ -123,6 +123,22 @@ Nieuw te bouwen:
 
 **Verwant aan:** #44 (luister-en-plaats — verwant maar omgekeerd: daar plaatst het kind een bestaand geluid, hier componeert het kind nieuw geluid voor een plek), #63 (collaboratief storyboard — praatplaat is eenvoudiger alternatief zonder real-time sync), #42 (ensemble — praatplaat is asynchroon i.p.v. real-time), #28 (eigen samples opnemen — mooie combinatie)
 
+#### #73 — Deelbare Praatplaat-link
+**Complexiteit:** Middel · **Afhankelijk van:** #72 ✅
+
+Genereer een deelbare link (of QR-code) waarmee leerlingen direct naar een specifieke praatplaat worden geleid, zonder eerst de klascode handmatig in te voeren. De link bevat de klascode en optioneel de praatplaat-ID, zodat de app direct naar het PraatplaatSelectScreen navigeert.
+
+**Mogelijke aanpak:**
+- URL-parameter: `?praatplaat=KLASCODE` of `?pp=KLASCODE&id=praatplaat-id`
+- QR-code generatie in het docenten-dashboard (hergebruik `qrcode` package van #52-FASE2)
+- Bij openen: code valideren → actieve praatplaat ophalen → PraatplaatSelectScreen tonen
+- Eventueel: korte URL via Supabase of redirect-service
+
+**Voordelen:**
+- Geen handmatige code-invoer nodig (belangrijk voor jonge kinderen)
+- Docent projecteert QR op digibord → leerlingen scannen met tablet
+- Lagere drempel, minder fouten
+
 ---
 
 ### P3 — Middel prioriteit

@@ -37,13 +37,16 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
   const selectedLocation = locations.find((l) => l.id === selectedLocationId);
 
   const handleSubmit = useCallback(async () => {
-    if (!name.trim() || !selectedLocation) return;
+    if (!selectedLocation) return;
+
+    // Auto-naam als leeg: "Locatienaam - dd-mm-yyyy"
+    const finalName = name.trim() || `${t(selectedLocation.name)} - ${new Date().toLocaleDateString('nl-NL')}`;
 
     try {
       setSaving(true);
       setError(null);
       await onCreate({
-        name: name.trim(),
+        name: finalName,
         themeId: activeThemeId,
         locationId: selectedLocation.id,
         imageUrl: selectedLocation.backgroundImage,
@@ -68,7 +71,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
     onClose();
   }, [saving, onClose]);
 
-  const canSubmit = name.trim().length > 0 && selectedLocationId !== null && !saving;
+  const canSubmit = selectedLocationId !== null && !saving;
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={t('teacher.praatplaat.createTitle')} size="md">

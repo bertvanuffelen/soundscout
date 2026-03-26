@@ -48,10 +48,10 @@ export function PraatplaatSpot({ submissions, x, y, isPlaying, onClick }: Praatp
         onMouseLeave={() => setIsHovered(false)}
         className={`
           relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center
-          transition-all duration-200 cursor-pointer
+          transition-all duration-200 cursor-pointer border-3
           ${isPlaying
-            ? 'bg-accent-500 shadow-lg shadow-accent-500/40 scale-110 animate-pulse'
-            : 'bg-white/90 hover:bg-white hover:scale-110 shadow-md'
+            ? 'bg-accent-500 border-accent-600 shadow-lg shadow-accent-500/40 scale-110 animate-pulse'
+            : 'bg-white/40 border-amber-400 hover:bg-white/60 hover:scale-110 shadow-md backdrop-blur-sm'
           }
         `}
         aria-label={label}
