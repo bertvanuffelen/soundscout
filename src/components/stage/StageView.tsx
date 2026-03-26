@@ -76,6 +76,7 @@ export function StageView() {
     setDontShowWarningAgain,
     handleSaveClick,
     handleSaveConfirm,
+    praatplaatSubmitted,
   } = useStageSave();
 
   // Modal state (extracted hook)
@@ -219,6 +220,9 @@ export function StageView() {
           )}
           {videoExportState === 'success' && (
             <p className="text-success-600 text-sm text-center">{t('stage.videoExportSuccess')}</p>
+          )}
+          {praatplaatSubmitted && (
+            <p className="text-success-600 text-sm text-center font-medium">{t('stage.praatplaatSubmitted')}</p>
           )}
         </div>
       </div>

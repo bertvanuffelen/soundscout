@@ -14,18 +14,22 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
 import { updateSavedComposition } from '../lib/submissions';
+import { submitPraatplaatComposition } from '../lib/praatplaat';
 import { logger } from '../utils/logger';
 import type { CompositionData } from '../types';
 
 export function useStageSave() {
   const currentCompositionId = useAppStore((s) => s.currentCompositionId);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
+  const activePraatplaat = useAppStore((s) => s.activePraatplaat);
+  const praatplaatPosition = useAppStore((s) => s.praatplaatPosition);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const getTimelineState = useTimelineStore((s) => s.getTimelineState);
 
   const [compositionName, setCompositionName] = useState('');
   const [showSaveWarning, setShowSaveWarning] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [praatplaatSubmitted, setPraatplaatSubmitted] = useState(false);
   const [dontShowWarningAgain, setDontShowWarningAgain] = useState(() => {
     return localStorage.getItem('soundscout:hideSaveWarning') === 'true';
   });
@@ -91,9 +95,37 @@ export function useStageSave() {
           logger.warn('Kon online bewaarcode niet bijwerken', err);
         });
       }
+
+      // Auto-submit to praatplaat if active (#72)
+      if (activePraatplaat && praatplaatPosition && !praatplaatSubmitted) {
+        const { sections } = useTimelineStore.getState();
+        const compositionData: CompositionData = {
+          tracks: timelineState.tracks,
+          bpm: timelineState.bpm,
+          totalBeats: timelineState.totalBeats,
+          isLooping: timelineState.isLooping,
+          samples: librarySamples,
+          sections: sections.length > 0 ? sections : undefined,
+          storyboardId: activeStoryboard?.id,
+        };
+        // Fire-and-forget: auto-submit praatplaat composition
+        submitPraatplaatComposition({
+          classCode: activePraatplaat.classCode,
+          praatplaatId: activePraatplaat.id,
+          positionX: praatplaatPosition.x,
+          positionY: praatplaatPosition.y,
+          compositionName: compositionName.trim(),
+          compositionData,
+        }).then(() => {
+          logger.info('Praatplaat compositie automatisch ingestuurd', { praatplaatId: activePraatplaat.id });
+          setPraatplaatSubmitted(true);
+        }).catch((err) => {
+          logger.warn('Kon praatplaat compositie niet insturen', err);
+        });
+      }
     }
     // If save failed (result is null), let the logger handle error reporting
-  }, [compositionName, getTimelineState, librarySamples, currentCompositionId, activeStoryboard]);
+  }, [compositionName, getTimelineState, librarySamples, currentCompositionId, activeStoryboard, activePraatplaat, praatplaatPosition, praatplaatSubmitted]);
 
   const handleSaveClick = useCallback(() => {
     if (!compositionName.trim()) {
@@ -126,5 +158,6 @@ export function useStageSave() {
     setDontShowWarningAgain,
     handleSaveClick,
     handleSaveConfirm,
+    praatplaatSubmitted,
   };
 }
