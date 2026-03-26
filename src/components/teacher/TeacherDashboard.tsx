@@ -44,7 +44,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   } = useTemplates();
   const {
     praatplaten, loading: praatplatenLoading, error: praatplatenError,
-    remove: removePraatplaat, refetch: refetchPraatplaten,
+    create: createPraatplaatHook, remove: removePraatplaat, refetch: refetchPraatplaten,
   } = usePraatplaten(); // Alle docent-praatplaten (geen classId)
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
@@ -105,15 +105,13 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   }) => {
     try {
       setActionError(null);
-      const { createPraatplaat } = await import('../../lib/praatplaat');
-      await createPraatplaat(params);
-      await refetchPraatplaten();
+      await createPraatplaatHook(params);
       setShowCreatePraatplaat(false);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.createError'));
       logger.error('createPraatplaat failed:', err);
     }
-  }, [refetchPraatplaten, t]);
+  }, [createPraatplaatHook, t]);
 
   const handleDeletePraatplaat = async (id: string) => {
     if (!confirm(t('teacher.praatplaat.deleteConfirm'))) return;

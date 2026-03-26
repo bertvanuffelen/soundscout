@@ -22,7 +22,7 @@ interface UsePraatplatenReturn {
   error: string | null;
   operationError: string | null;
   create: (params: {
-    classId: string;
+    classId?: string;
     name: string;
     themeId: string;
     locationId: string;
