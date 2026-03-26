@@ -44,7 +44,7 @@ Tests use jsdom environment with jest-style globals (`describe`, `it`, `expect`)
 No router — `App.tsx` switches on `gameStore.currentScreen`:
 `'start'` → `'map'` → `'location'` → `'studio'` → `'stage'`
 
-Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player)
+Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player), `'praatplaat-select'` (student position picker for praatplaat #72)
 
 Teacher screens: `'teacher-login'` → `'teacher-dashboard'` → `'compositions'`
 
@@ -56,7 +56,7 @@ Seven independent stores in `src/stores/`:
 
 | Store | Responsibility |
 |---|---|
-| `appStore` (alias: `gameStore`) | Current screen, active location ID, current composition ID |
+| `appStore` (alias: `gameStore`) | Current screen, active location ID, current composition ID, praatplaat context (#72) |
 | `audioStore` | Playback state (isPlaying, currentBeat) |
 | `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb) |
 | `libraryStore` | Recorder slots (max 6), collected samples, transfer to library |
@@ -178,13 +178,37 @@ Students can save compositions online with a 6-character save code. On another d
 
 **Teacher "In bewerking" tab**: `ClassDetail` splits submissions by `save_code` presence. Compositions saved with a class code but not formally submitted appear under an "In bewerking" tab with a blue WIP badge and "Laatst bewerkt" timestamp.
 
+### Praatplaat — Collaboratieve Klankkaart (#72)
+
+A praatplaat (sound map) is a class activity where students create compositions and place them on a shared location image. The teacher presents the praatplaat on a digibord and clicks spots to play student compositions.
+
+**Architecture**: Separate path from existing compose modes (Hypothesis C). Entry via class code → praatplaat detection → dedicated flow. No code overlap with "Bij een afbeelding" mode.
+
+**Database**: `praatplaten` table + 3 nullable columns on `submissions` (`praatplaat_id`, `position_x`, `position_y`). One active praatplaat per class (enforced by trigger + partial unique index). Migration: `supabase/migrations/005_praatplaten.sql`. 7 RPC functions (SECURITY DEFINER for public access).
+
+**Teacher flow**:
+- `ClassDetail` → praatplaat section with `PraatplaatCard` grid + `CreatePraatplaatModal`
+- `CreatePraatplaatModal`: name input + location image grid from active theme
+- `PraatplaatCard`: thumbnail, active/inactive badge, toggle, delete, view buttons
+- `PraatplaatViewer`: fullscreen presentation with `PraatplaatSpot` icons on x,y positions, clustering (5% threshold), hover tooltips, click to play via `SubmissionPlayer`
+- `usePraatplaten` hook: CRUD with optimistic updates (follows `useTemplates` pattern)
+
+**Student flow**:
+- `ShareCodeInput`: 4-digit class code → `getActivePraatplaat()` → route to `praatplaat-select`
+- `PraatplaatSelectScreen`: fullscreen image, click/tap to choose position (normalized 0-1)
+- Position stored in `appStore.praatplaatPosition`
+- Normal flow: map → studio → stage
+- Auto-submit on save via `useStageSave` (fire-and-forget, like bewaarcode sync)
+
+**Key files**: `src/lib/praatplaat.ts` (Supabase client), `src/hooks/usePraatplaten.ts` (teacher hook), `src/components/praatplaat/` (PraatplaatSelectScreen, PraatplaatViewer, PraatplaatSpot), `src/components/teacher/` (PraatplaatCard, CreatePraatplaatModal).
+
 ### i18n
 
 Translation files at `src/i18n/locales/{nl,en}.json`. Uses `useTranslation()` hook. Keys are nested (e.g., `studio.timeline`, `samples.park-birds`).
 
 ### Types
 
-All shared interfaces in `src/types/index.ts`. Key types: `GameScreen`, `Location`, `Hotspot`, `Sample`, `Clip`, `Track`, `ClipEffects`, `SavedComposition` (localStorage) vs `SharedComposition` (Supabase).
+All shared interfaces in `src/types/index.ts`. Key types: `GameScreen`, `Location`, `Hotspot`, `Sample`, `Clip`, `Track`, `ClipEffects`, `SavedComposition` (localStorage) vs `SharedComposition` (Supabase), `Praatplaat`, `ActivePraatplaat`, `PraatplaatPosition`.
 
 ### Design System
 

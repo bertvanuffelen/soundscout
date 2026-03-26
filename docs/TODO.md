@@ -77,7 +77,7 @@ De klas neemt samen geluiden op ("Wie kan het geluid van een aap nadoen?") en pl
 Microfoon opname in de app: permissions, real-time waveform, max 5 seconden, encode naar MP3/WAV. Vereist MediaRecorder API.
 
 #### #72 — Praatplaat: Collaboratieve Klankkaart
-**Complexiteit:** Hoog · **Status:** Plan klaar (2026-03-25) · **Document:** `docs/PLAN-72-PRAATPLAAT.md`
+**Complexiteit:** Hoog · **Status:** Basis geïmplementeerd (2026-03-26) · **Document:** `docs/PLAN-72-PRAATPLAAT.md`
 
 Klassikale activiteit waarbij leerlingen individueel een compositie/soundscape maken en die koppelen aan een specifieke plek (X,Y-positie) op een gedeelde afbeelding ("praatplaat"). De docent opent de praatplaat op het digibord en ziet iconen verschijnen op plekken waar leerlingen composities aan hebben gekoppeld. Door op een icoon te klikken speelt de compositie van die leerling af.
 
@@ -349,6 +349,7 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | #54b | Tutorial als eigen scherm | 2026-03-24 | "Hoe werkt het?" modal vervangen door dedicated `TutorialScreen` (`'tutorial'` in GameScreen). Quick-start stappen (4 stappen, accent-kleur badges) + video-thumbnails per categorie ("Voor de componisten", "Voor de docenten"). Klik op thumbnail → inline YouTube player (geen 7 iframes tegelijk). Provider-onafhankelijk: `thumbnailUrl()` en `embedUrl()` zijn de enige YouTube-specifieke functies. Lazy-loaded |
 | #70 | Storyboard-badge in docentenlijst | 2026-03-25 | `SubmissionCard` toont nu een accent-kleur badge met Image-icoon + "Storyboard" label als `composition_data.storyboardId` aanwezig is. Docenten zien in één oogopslag welke inzendingen een storyboard bevatten |
 | #52-FASE2 | Bewaarcode uitbreidingen | 2026-03-25 | Drie verbeteringen: (A) Auto-sync naar online bewaarcode bij lokaal opslaan via fire-and-forget `updateSavedComposition()` in `useStageSave`. (B) QR-code toggle in `SaveOnlineModal` success-scherm via `qrcode` npm package. (C) Teacher dashboard "In bewerking" tab in `ClassDetail` — splitst submissions op `save_code` aanwezigheid. WIP-kaarten tonen blauw "In bewerking" badge + "Laatst bewerkt" datum |
+| #72 | Praatplaat: Collaboratieve Klankkaart | 2026-03-26 | Basis-implementatie. Docent: CreatePraatplaatModal (naam + locatiekeuze), PraatplaatCard (thumbnail, toggle actief/inactief, verwijder), PraatplaatViewer (fullscreen presentatie met spots + clustering + klik-to-play via SubmissionPlayer). Leerling: ShareCodeInput detecteert 4-cijferige klascode → getActivePraatplaat() → PraatplaatSelectScreen (positie kiezen op afbeelding) → normaal componeren → auto-submit bij opslaan. Database: `praatplaten` tabel + 3 kolommen op `submissions`, 7 RPC functies, trigger voor 1 actieve per klas. Migratie: `005_praatplaten.sql`. Plan: `PLAN-72-PRAATPLAAT.md` |
 
 ### Technische schuld (afgerond)
 
