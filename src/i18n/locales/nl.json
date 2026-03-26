@@ -416,6 +416,7 @@
     "listen": "Beluister",
     "invalidCode": "Voer een geldige code in",
     "codeNotFound": "Code niet gevonden. Controleer of de code klopt.",
+    "noPraatplaat": "Er is geen actieve praatplaat voor deze klascode. Vraag je docent.",
     "lookupError": "Er ging iets mis bij het opzoeken. Probeer opnieuw.",
     "backToStart": "Terug naar SoundScout",
     "viewCount": "{{count}}x beluisterd",
@@ -671,6 +672,17 @@
       "checkingCode": "Code controleren...",
       "sendError": "Versturen mislukt. Probeer opnieuw."
     }
+  },
+  "praatplaat": {
+    "select": {
+      "instruction": "Tik op de plek waar jij geluid voor gaat maken",
+      "confirmHint": "Tevreden? Druk op de knop om te beginnen!",
+      "confirm": "Ga verder",
+      "tapHint": "Tik op de afbeelding om je plek te kiezen",
+      "imageAria": "Praatplaat — kies een positie"
+    },
+    "fetchError": "Kon praatplaat niet laden",
+    "submitError": "Kon compositie niet insturen"
   },
   "composeMode": {
     "title": "Hoe wil je componeren?",

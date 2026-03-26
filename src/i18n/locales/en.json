@@ -416,6 +416,7 @@
     "listen": "Listen",
     "invalidCode": "Please enter a valid code",
     "codeNotFound": "Code not found. Please check and try again.",
+    "noPraatplaat": "No active sound map for this class code. Ask your teacher.",
     "lookupError": "Something went wrong. Please try again.",
     "backToStart": "Back to SoundScout",
     "viewCount": "Listened {{count}} times",
@@ -671,6 +672,17 @@
       "checkingCode": "Checking code...",
       "sendError": "Failed to send. Please try again."
     }
+  },
+  "praatplaat": {
+    "select": {
+      "instruction": "Tap the spot where you want to create sound for",
+      "confirmHint": "Happy with your spot? Press the button to start!",
+      "confirm": "Continue",
+      "tapHint": "Tap the image to choose your spot",
+      "imageAria": "Sound map — choose a position"
+    },
+    "fetchError": "Could not load sound map",
+    "submitError": "Could not submit composition"
   },
   "composeMode": {
     "title": "How do you want to compose?",

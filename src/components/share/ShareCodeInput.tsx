@@ -1,11 +1,12 @@
 /**
  * ShareCodeInput - Universele code-invoer op het startscherm
  *
- * Accepteert template-codes (8 chars), share-codes (8 chars) en bewaar-codes (6 chars).
+ * Accepteert template-codes (8 chars), share-codes (8 chars), bewaar-codes (6 chars)
+ * en klascodes (4 digits, met praatplaat-detectie #72).
  * Herkenning op basis van codelengte:
+ * - 4 cijfers → klascode → check actieve praatplaat → route naar praatplaat-select of normaal
  * - 6 karakters → bewaarcode (#52) → laad in studio om verder te werken
  * - 8 karakters → probeer eerst als template, dan als share-code
- * - 4 cijfers → klascode (wordt elders afgehandeld)
  */
 
 import { useState, useCallback } from 'react';
@@ -14,6 +15,7 @@ import { Headphones, Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
+import { getActivePraatplaat } from '../../lib/praatplaat';
 import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, initializeFromSavedComposition } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
@@ -21,6 +23,8 @@ import { logger } from '../../utils/logger';
 export function ShareCodeInput() {
   const { t } = useTranslation();
   const goToShared = useAppStore((s) => s.goToShared);
+  const setPraatplaat = useAppStore((s) => s.setPraatplaat);
+  const goToPraatplaatSelect = useAppStore((s) => s.goToPraatplaatSelect);
 
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -46,6 +50,35 @@ export function ShareCodeInput() {
       setError(null);
 
       try {
+        // 0. Als 4 cijfers → klascode → check actieve praatplaat (#72)
+        if (code.length === 4 && /^\d{4}$/.test(code)) {
+          try {
+            const praatplaat = await getActivePraatplaat(code);
+            if (praatplaat) {
+              // Actieve praatplaat gevonden → sla op en navigeer
+              setPraatplaat({
+                id: praatplaat.praatplaatId,
+                name: praatplaat.praatplaatName,
+                imageUrl: praatplaat.imageUrl,
+                classId: praatplaat.classId,
+                classCode: code,
+                themeId: praatplaat.themeId,
+                locationId: praatplaat.locationId,
+              });
+              goToPraatplaatSelect();
+              setCode('');
+              return;
+            }
+          } catch {
+            // Geen praatplaat → val door naar "code niet gevonden"
+          }
+          // Geen actieve praatplaat — klascode is valide maar geen praatplaat flow
+          // Voor nu: meld dat er geen actieve praatplaat is
+          setError(t('share.noPraatplaat'));
+          setIsLoading(false);
+          return;
+        }
+
         // 1. Als 6 karakters → probeer als bewaarcode (#52)
         if (code.length === 6) {
           try {
@@ -98,7 +131,7 @@ export function ShareCodeInput() {
         setIsLoading(false);
       }
     },
-    [code, t, goToShared]
+    [code, t, goToShared, setPraatplaat, goToPraatplaatSelect]
   );
 
   return (

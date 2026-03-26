@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions } from '../types';
+import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition } from '../types';
 
 interface AppStore {
   // Navigation state
@@ -30,6 +30,10 @@ interface AppStore {
   activeStoryboard: Storyboard | null;
   currentImageIndex: number;
   storytellingEnabled: boolean;  // URL flag: ?storytelling=true
+
+  // Praatplaat (#72)
+  activePraatplaat: ActivePraatplaat | null;
+  praatplaatPosition: PraatplaatPosition | null;
 
   // Navigation actions
   setScreen: (screen: GameScreen) => void;
@@ -58,6 +62,12 @@ interface AppStore {
   clearStoryboard: () => void;
   setStorytellingEnabled: (enabled: boolean) => void;
   goToComposeMode: () => void;
+
+  // Praatplaat actions (#72)
+  setPraatplaat: (praatplaat: ActivePraatplaat) => void;
+  setPraatplaatPosition: (position: PraatplaatPosition) => void;
+  clearPraatplaat: () => void;
+  goToPraatplaatSelect: () => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -71,6 +81,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   activeStoryboard: null,
   currentImageIndex: 0,
   storytellingEnabled: false,
+  activePraatplaat: null,
+  praatplaatPosition: null,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -78,7 +90,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0 }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -117,6 +129,12 @@ export const useAppStore = create<AppStore>()((set) => ({
   clearStoryboard: () => set({ composeMode: 'free', activeStoryboard: null, currentImageIndex: 0 }),
   setStorytellingEnabled: (enabled) => set({ storytellingEnabled: enabled }),
   goToComposeMode: () => set({ currentScreen: 'compose-mode' }),
+
+  // Praatplaat actions (#72)
+  setPraatplaat: (praatplaat) => set({ activePraatplaat: praatplaat }),
+  setPraatplaatPosition: (position) => set({ praatplaatPosition: position }),
+  clearPraatplaat: () => set({ activePraatplaat: null, praatplaatPosition: null }),
+  goToPraatplaatSelect: () => set({ currentScreen: 'praatplaat-select' }),
 }));
 
 // Re-export for backwards compatibility during migration
