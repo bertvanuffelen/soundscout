@@ -4,21 +4,28 @@
  * Toont:
  * - Overzicht van alle klassen
  * - Knop om nieuwe klas aan te maken
+ * - Unified "Mijn opdrachten" sectie (templates + praatplaten)
  * - Mogelijkheid om klas te openen voor details
  */
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText } from 'lucide-react';
+import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText, MapPin } from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { useClasses } from '../../hooks/useClasses';
 import { useTemplates } from '../../hooks/useTemplates';
+import { usePraatplaten } from '../../hooks/usePraatplaten';
 import type { TeacherClass } from '../../hooks/useClasses';
+import type { PraatplaatRow } from '../../lib/praatplaat';
 import { signOut } from '../../lib/auth';
 import { Button } from '../ui/Button';
 import { CreateClassModal } from './CreateClassModal';
 import { ClassCard } from './ClassCard';
 import { TemplateCard } from './TemplateCard';
+import { PraatplaatCard } from './PraatplaatCard';
+import { CreatePraatplaatModal } from './CreatePraatplaatModal';
+import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
+import { logger } from '../../utils/logger';
 
 interface TeacherDashboardProps {
   onSelectClass: (classData: TeacherClass) => void;
@@ -34,7 +41,13 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     templates, loading: templatesLoading, error: templatesError,
     remove: removeTemplate, toggle: toggleTemplate, refetch: refetchTemplates,
   } = useTemplates();
+  const {
+    praatplaten, loading: praatplatenLoading, error: praatplatenError,
+    remove: removePraatplaat, refetch: refetchPraatplaten,
+  } = usePraatplaten(); // Alle docent-praatplaten (geen classId)
   const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
+  const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
   // Haal display name op uit user metadata
@@ -88,6 +101,34 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
       await toggleTemplate(id, isActive);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('templates.toggleError'));
+    }
+  };
+
+  const handleCreatePraatplaat = useCallback(async (params: {
+    name: string;
+    themeId: string;
+    locationId: string;
+    imageUrl: string;
+  }) => {
+    try {
+      setActionError(null);
+      const { createPraatplaat } = await import('../../lib/praatplaat');
+      await createPraatplaat(params);
+      await refetchPraatplaten();
+      setShowCreatePraatplaat(false);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.createError'));
+      logger.error('createPraatplaat failed:', err);
+    }
+  }, [refetchPraatplaten, t]);
+
+  const handleDeletePraatplaat = async (id: string) => {
+    if (!confirm(t('teacher.praatplaat.deleteConfirm'))) return;
+    try {
+      setActionError(null);
+      await removePraatplaat(id);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.deleteError'));
     }
   };
 
@@ -214,60 +255,90 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           </ol>
         </div>
 
-        {/* --- Templates sectie --- */}
+        {/* --- Opdrachten sectie (Templates + Praatplaten) --- */}
         <div className="mt-10">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg sm:text-xl font-semibold text-text-main flex items-center gap-2">
-                <FileText className="w-5 h-5" />
-                {t('templates.dashboardTitle')}
-              </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg sm:text-xl font-semibold text-text-main flex items-center gap-2">
+              <FileText className="w-5 h-5" />
+              {t('templates.dashboardTitle')}
+            </h2>
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowCreatePraatplaat(true)}
+              className="inline-flex items-center gap-1"
+            >
+              <Plus className="w-4 h-4" />
+              {t('templates.newPraatplaat')}
+            </Button>
+          </div>
+
+          <p className="text-text-muted text-sm mb-4">
+            {t('templates.dashboardDescription')}
+          </p>
+
+          {/* Errors */}
+          {(templatesError || praatplatenError) && (
+            <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
+              {templatesError || praatplatenError}
+              <button onClick={() => { refetchTemplates(); refetchPraatplaten(); }} className="ml-2 underline">
+                {t('common.retry')}
+              </button>
             </div>
+          )}
 
-            <p className="text-text-muted text-sm mb-4">
-              {t('templates.dashboardDescription')}
-            </p>
+          {/* Loading */}
+          {(templatesLoading || praatplatenLoading) && (
+            <div className="text-center py-8">
+              <Loader2 className="w-8 h-8 text-primary-500 animate-spin mx-auto mb-2" />
+            </div>
+          )}
 
-            {/* Templates error */}
-            {templatesError && (
-              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
-                {templatesError}
-                <button onClick={refetchTemplates} className="ml-2 underline">
-                  {t('common.retry')}
-                </button>
-              </div>
-            )}
+          {/* Empty state */}
+          {!templatesLoading && !praatplatenLoading && templates.length === 0 && praatplaten.length === 0 && (
+            <div className="bg-bg-surface rounded-xl shadow p-6 text-center">
+              <FileText className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
+              <p className="text-text-muted text-sm">
+                {t('templates.emptyState')}
+              </p>
+            </div>
+          )}
 
-            {/* Templates loading */}
-            {templatesLoading && (
-              <div className="text-center py-8">
-                <Loader2 className="w-8 h-8 text-primary-500 animate-spin mx-auto mb-2" />
-              </div>
-            )}
-
-            {/* Templates empty state */}
-            {!templatesLoading && templates.length === 0 && (
-              <div className="bg-bg-surface rounded-xl shadow p-6 text-center">
-                <FileText className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
-                <p className="text-text-muted text-sm">
-                  {t('templates.emptyState')}
-                </p>
-              </div>
-            )}
-
-            {/* Templates grid */}
-            {!templatesLoading && templates.length > 0 && (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {templates.map((tmpl) => (
+          {/* Unified grid: templates + praatplaten */}
+          {!templatesLoading && !praatplatenLoading && (templates.length > 0 || praatplaten.length > 0) && (
+            <div className="grid gap-4 sm:grid-cols-2">
+              {/* Templates */}
+              {templates.map((tmpl) => (
+                <div key={`t-${tmpl.id}`} className="relative">
+                  <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium">
+                    <FileText className="w-3 h-3" />
+                    {t('templates.typeTemplate')}
+                  </span>
                   <TemplateCard
-                    key={tmpl.id}
                     template={tmpl}
                     onDelete={() => handleDeleteTemplate(tmpl.id)}
                     onToggle={(active) => handleToggleTemplate(tmpl.id, active)}
                   />
-                ))}
-              </div>
-            )}
-          </div>
+                </div>
+              ))}
+              {/* Praatplaten */}
+              {praatplaten.map((pp) => (
+                <div key={`p-${pp.id}`} className="relative">
+                  <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-primary-100 text-primary-800 font-medium">
+                    <MapPin className="w-3 h-3" />
+                    {t('templates.typePraatplaat')}
+                  </span>
+                  <PraatplaatCard
+                    praatplaat={pp}
+                    onToggle={() => {}} // Activering gaat nu via ClassDetail
+                    onDelete={() => handleDeletePraatplaat(pp.id)}
+                    onView={() => setViewingPraatplaat(pp)}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
       </main>
 
       {/* Create class modal */}
@@ -275,6 +346,21 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         <CreateClassModal
           onClose={() => setShowCreateModal(false)}
           onCreate={handleCreateClass}
+        />
+      )}
+
+      {/* Create praatplaat modal */}
+      <CreatePraatplaatModal
+        isOpen={showCreatePraatplaat}
+        onClose={() => setShowCreatePraatplaat(false)}
+        onCreate={handleCreatePraatplaat}
+      />
+
+      {/* Praatplaat viewer */}
+      {viewingPraatplaat && (
+        <PraatplaatViewer
+          praatplaat={viewingPraatplaat}
+          onClose={() => setViewingPraatplaat(null)}
         />
       )}
     </div>

@@ -2,9 +2,9 @@
  * ShareCodeInput - Universele code-invoer op het startscherm
  *
  * Accepteert template-codes (8 chars), share-codes (8 chars), bewaar-codes (6 chars)
- * en klascodes (4 digits, met praatplaat-detectie #72).
+ * en klascodes (4 digits, met unified assignment-detectie).
  * Herkenning op basis van codelengte:
- * - 4 cijfers → klascode → check actieve praatplaat → route naar praatplaat-select of normaal
+ * - 4 cijfers → klascode → check actieve opdracht (template of praatplaat) → route
  * - 6 karakters → bewaarcode (#52) → laad in studio om verder te werken
  * - 8 karakters → probeer eerst als template, dan als share-code
  */
@@ -15,7 +15,7 @@ import { Headphones, Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
-import { getActivePraatplaat } from '../../lib/praatplaat';
+import { getActiveAssignment } from '../../lib/assignments';
 import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, initializeFromSavedComposition } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
@@ -50,31 +50,37 @@ export function ShareCodeInput() {
       setError(null);
 
       try {
-        // 0. Als 4 cijfers → klascode → check actieve praatplaat (#72)
+        // 0. Als 4 cijfers → klascode → check actieve opdracht (template of praatplaat)
         if (code.length === 4 && /^\d{4}$/.test(code)) {
           try {
-            const praatplaat = await getActivePraatplaat(code);
-            if (praatplaat) {
-              // Actieve praatplaat gevonden → sla op en navigeer
-              setPraatplaat({
-                id: praatplaat.praatplaatId,
-                name: praatplaat.praatplaatName,
-                imageUrl: praatplaat.imageUrl,
-                classId: praatplaat.classId,
-                classCode: code,
-                themeId: praatplaat.themeId,
-                locationId: praatplaat.locationId,
-              });
-              goToPraatplaatSelect();
-              setCode('');
-              return;
+            const assignment = await getActiveAssignment(code);
+            if (assignment) {
+              if (assignment.type === 'praatplaat' && assignment.praatplaat) {
+                // Actieve praatplaat → praatplaat-select flow
+                setPraatplaat({
+                  id: assignment.praatplaat.id,
+                  name: assignment.praatplaat.name,
+                  imageUrl: assignment.praatplaat.imageUrl,
+                  classId: assignment.classId,
+                  classCode: code,
+                  themeId: assignment.praatplaat.themeId,
+                  locationId: assignment.praatplaat.locationId,
+                });
+                goToPraatplaatSelect();
+                setCode('');
+                return;
+              }
+              if (assignment.type === 'template' && assignment.template) {
+                // Actieve template → initialiseer en ga naar studio
+                await initializeFromTemplate(assignment.template);
+                setCode('');
+                return;
+              }
             }
           } catch {
-            // Geen praatplaat → val door naar "code niet gevonden"
+            // Fout bij ophalen → val door naar "geen actieve opdracht"
           }
-          // Geen actieve praatplaat — klascode is valide maar geen praatplaat flow
-          // Voor nu: meld dat er geen actieve praatplaat is
-          setError(t('share.noPraatplaat'));
+          setError(t('share.noActiveAssignment'));
           setIsLoading(false);
           return;
         }

@@ -6,15 +6,14 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, Plus, MapPin } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Play, XCircle } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
-import { usePraatplaten } from '../../hooks/usePraatplaten';
+import { useClassAssignment } from '../../hooks/useClassAssignment';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
-import { PraatplaatCard } from './PraatplaatCard';
-import { CreatePraatplaatModal } from './CreatePraatplaatModal';
+import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
@@ -33,55 +32,39 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'submitted' | 'wip'>('submitted');
 
-  // --- Praatplaten (#72) ---
+  // --- Actieve opdracht ---
   const {
-    praatplaten,
-    loading: praatplatenLoading,
-    operationError: praatplaatError,
-    create: createPraatplaatHook,
-    activate: activatePraatplaat,
-    deactivate: deactivatePraatplaat,
-    remove: removePraatplaat,
-  } = usePraatplaten(classData.id);
-  const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
+    activeAssignment,
+    loading: assignmentLoading,
+    operationError: assignmentError,
+    activateTemplate,
+    activatePraatplaat: activatePraatplaatAssignment,
+    deactivate: deactivateAssignment,
+  } = useClassAssignment(classData.id);
+  const [showActivateModal, setShowActivateModal] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [showActivatedCode, setShowActivatedCode] = useState(false);
 
-  const handleCreatePraatplaat = useCallback(async (params: {
-    name: string;
-    themeId: string;
-    locationId: string;
-    imageUrl: string;
-  }) => {
-    await createPraatplaatHook({
-      classId: classData.id,
-      ...params,
-    });
-  }, [classData.id, createPraatplaatHook]);
+  const handleActivateTemplate = useCallback(async (templateId: string) => {
+    await activateTemplate(templateId);
+    setShowActivatedCode(true);
+    setTimeout(() => setShowActivatedCode(false), 8000);
+  }, [activateTemplate]);
 
-  const handleTogglePraatplaat = useCallback(async (id: string, activate: boolean) => {
-    try {
-      if (activate) {
-        await activatePraatplaat(id);
-        setShowActivatedCode(true);
-        setTimeout(() => setShowActivatedCode(false), 8000);
-      } else {
-        await deactivatePraatplaat(id);
-        setShowActivatedCode(false);
-      }
-    } catch (err) {
-      logger.error('Toggle praatplaat failed:', err);
-    }
-  }, [activatePraatplaat, deactivatePraatplaat]);
+  const handleActivatePraatplaat = useCallback(async (praatplaatId: string) => {
+    await activatePraatplaatAssignment(praatplaatId);
+    setShowActivatedCode(true);
+    setTimeout(() => setShowActivatedCode(false), 8000);
+  }, [activatePraatplaatAssignment]);
 
-  const handleDeletePraatplaat = useCallback(async (id: string) => {
-    if (!confirm(t('teacher.praatplaat.deleteConfirm'))) return;
+  const handleDeactivateAssignment = useCallback(async () => {
     try {
-      await removePraatplaat(id);
+      await deactivateAssignment();
+      setShowActivatedCode(false);
     } catch (err) {
-      logger.error('Delete praatplaat failed:', err);
+      logger.error('Deactivate assignment failed:', err);
     }
-  }, [removePraatplaat, t]);
+  }, [deactivateAssignment]);
 
   // Split submissions into submitted (no save_code) and work-in-progress (has save_code)
   const { submitted, workInProgress } = useMemo(() => {
@@ -190,27 +173,17 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           </div>
         )}
 
-        {/* --- Praatplaten sectie (#72) --- */}
+        {/* --- Actieve opdracht blok --- */}
         {!loading && (
           <div className="mb-8">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-semibold text-text-main flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-primary-500" />
-                {t('teacher.praatplaat.sectionTitle')}
-              </h2>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={() => setShowCreatePraatplaat(true)}
-              >
-                <Plus className="w-4 h-4 mr-1" />
-                {t('teacher.praatplaat.create')}
-              </Button>
-            </div>
+            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-4">
+              <Play className="w-5 h-5 text-primary-500" />
+              {t('assignments.activeTitle')}
+            </h2>
 
-            {praatplaatError && (
+            {assignmentError && (
               <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4 text-sm">
-                {praatplaatError}
+                {assignmentError}
               </div>
             )}
 
@@ -222,32 +195,113 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               </div>
             )}
 
-            {praatplatenLoading && (
+            {assignmentLoading && (
               <div className="text-center py-6">
                 <Loader2 className="w-6 h-6 text-primary-500 animate-spin mx-auto" />
               </div>
             )}
 
-            {!praatplatenLoading && praatplaten.length === 0 && (
+            {/* Geen actieve opdracht */}
+            {!assignmentLoading && !activeAssignment && (
               <div className="bg-bg-surface rounded-xl p-6 text-center border border-border-subtle">
-                <MapPin className="w-10 h-10 text-text-muted mx-auto mb-2" />
-                <p className="text-text-muted text-sm">
-                  {t('teacher.praatplaat.emptyDescription')}
+                <p className="text-text-muted text-sm mb-4">
+                  {t('assignments.noActive')}
                 </p>
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => setShowActivateModal(true)}
+                >
+                  {t('assignments.activateButton')}
+                </Button>
               </div>
             )}
 
-            {!praatplatenLoading && praatplaten.length > 0 && (
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {praatplaten.map((pp) => (
-                  <PraatplaatCard
-                    key={pp.id}
-                    praatplaat={pp}
-                    onToggle={(activate) => handleTogglePraatplaat(pp.id, activate)}
-                    onDelete={() => handleDeletePraatplaat(pp.id)}
-                    onView={() => setViewingPraatplaat(pp)}
-                  />
-                ))}
+            {/* Actieve opdracht kaart */}
+            {!assignmentLoading && activeAssignment && (
+              <div className="bg-bg-surface rounded-xl p-4 sm:p-5 border border-primary-200 shadow-sm">
+                <div className="flex items-start gap-3">
+                  {/* Type icoon */}
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
+                    activeAssignment.type === 'template'
+                      ? 'bg-amber-100 text-amber-700'
+                      : 'bg-primary-100 text-primary-700'
+                  }`}>
+                    {activeAssignment.type === 'template' ? (
+                      <FileText className="w-5 h-5" />
+                    ) : (
+                      <MapPin className="w-5 h-5" />
+                    )}
+                  </div>
+
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium ${
+                        activeAssignment.type === 'template'
+                          ? 'bg-amber-100 text-amber-800'
+                          : 'bg-primary-100 text-primary-800'
+                      }`}>
+                        {activeAssignment.type === 'template'
+                          ? t('templates.typeTemplate')
+                          : t('templates.typePraatplaat')}
+                      </span>
+                    </div>
+                    <h3 className="font-semibold text-text-main text-lg">
+                      {activeAssignment.assignmentName}
+                    </h3>
+                    <p className="text-text-muted text-sm">
+                      {t('assignments.activatedAt', {
+                        date: new Date(activeAssignment.activatedAt).toLocaleDateString('nl-NL', {
+                          day: 'numeric',
+                          month: 'long',
+                          year: 'numeric',
+                        }),
+                      })}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex gap-2 mt-4">
+                  {/* Als het een praatplaat is: open viewer */}
+                  {activeAssignment.type === 'praatplaat' && activeAssignment.praatplaatId && (
+                    <Button
+                      variant="primary"
+                      size="sm"
+                      onClick={async () => {
+                        // Haal praatplaat-data op voor de viewer
+                        try {
+                          const { fetchPraatplaten } = await import('../../lib/praatplaat');
+                          const all = await fetchPraatplaten();
+                          const pp = all.find((p) => p.id === activeAssignment.praatplaatId);
+                          if (pp) setViewingPraatplaat(pp);
+                        } catch (err) {
+                          logger.error('Fetch praatplaat for viewer failed:', err);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1"
+                    >
+                      <MapPin className="w-4 h-4" />
+                      {t('teacher.praatplaat.openPraatplaat')}
+                    </Button>
+                  )}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowActivateModal(true)}
+                  >
+                    {t('assignments.changeButton')}
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={handleDeactivateAssignment}
+                    className="text-error-600 hover:bg-error-50"
+                  >
+                    <XCircle className="w-4 h-4 mr-1" />
+                    {t('assignments.deactivate')}
+                  </Button>
+                </div>
               </div>
             )}
           </div>
@@ -352,14 +406,15 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         />
       )}
 
-      {/* Praatplaat aanmaken modal (#72) */}
-      <CreatePraatplaatModal
-        isOpen={showCreatePraatplaat}
-        onClose={() => setShowCreatePraatplaat(false)}
-        onCreate={handleCreatePraatplaat}
+      {/* Opdracht activeren modal */}
+      <ActivateAssignmentModal
+        isOpen={showActivateModal}
+        onClose={() => setShowActivateModal(false)}
+        onActivateTemplate={handleActivateTemplate}
+        onActivatePraatplaat={handleActivatePraatplaat}
       />
 
-      {/* Praatplaat viewer (#72 Fase 5) */}
+      {/* Praatplaat viewer */}
       {viewingPraatplaat && (
         <PraatplaatViewer
           praatplaat={viewingPraatplaat}

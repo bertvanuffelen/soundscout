@@ -16,7 +16,7 @@ import type { CompositionData } from '../types';
 
 export interface PraatplaatRow {
   id: string;
-  class_id: string;
+  class_id: string | null;
   teacher_id: string;
   name: string;
   theme_id: string;
@@ -52,7 +52,7 @@ export interface ActivePraatplaatInfo {
  * Maak een nieuwe praatplaat aan voor een klas.
  */
 export async function createPraatplaat(params: {
-  classId: string;
+  classId?: string;
   name: string;
   themeId: string;
   locationId: string;
@@ -61,11 +61,11 @@ export async function createPraatplaat(params: {
   const { classId, name, themeId, locationId, imageUrl } = params;
 
   const { data, error } = await supabase.rpc('create_praatplaat', {
-    p_class_id: classId,
     p_name: name.trim(),
     p_theme_id: themeId,
     p_location_id: locationId,
     p_image_url: imageUrl,
+    p_class_id: classId || null,
   });
 
   if (error) {
@@ -127,12 +127,17 @@ export async function deletePraatplaat(praatplaatId: string): Promise<boolean> {
 /**
  * Haal alle praatplaten op voor een specifieke klas (docent).
  */
-export async function fetchPraatplaten(classId: string): Promise<PraatplaatRow[]> {
-  const { data, error } = await supabase
+export async function fetchPraatplaten(classId?: string): Promise<PraatplaatRow[]> {
+  let query = supabase
     .from('praatplaten')
     .select('*')
-    .eq('class_id', classId)
     .order('created_at', { ascending: false });
+
+  if (classId) {
+    query = query.eq('class_id', classId);
+  }
+
+  const { data, error } = await query;
 
   if (error) {
     logger.error('Fout bij ophalen praatplaten:', sanitizeError(error));

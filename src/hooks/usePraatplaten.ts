@@ -34,17 +34,13 @@ interface UsePraatplatenReturn {
   refetch: () => Promise<void>;
 }
 
-export function usePraatplaten(classId: string): UsePraatplatenReturn {
+export function usePraatplaten(classId?: string): UsePraatplatenReturn {
   const [praatplaten, setPraatplaten] = useState<PraatplaatRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [operationError, setOperationError] = useState<string | null>(null);
 
   const fetch = useCallback(async () => {
-    if (!classId) {
-      setLoading(false);
-      return;
-    }
     try {
       setLoading(true);
       setError(null);
@@ -59,7 +55,7 @@ export function usePraatplaten(classId: string): UsePraatplatenReturn {
   }, [classId]);
 
   const create = async (params: {
-    classId: string;
+    classId?: string;
     name: string;
     themeId: string;
     locationId: string;
@@ -71,7 +67,7 @@ export function usePraatplaten(classId: string): UsePraatplatenReturn {
       // Add to local state
       const newRow: PraatplaatRow = {
         id,
-        class_id: params.classId,
+        class_id: params.classId || '',
         teacher_id: '', // Filled by server, not critical for display
         name: params.name,
         theme_id: params.themeId,
