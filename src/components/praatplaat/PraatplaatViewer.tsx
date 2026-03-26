@@ -62,10 +62,12 @@ function clusterSubmissions(submissions: PraatplaatSubmission[]): SpotCluster[] 
 
 interface PraatplaatViewerProps {
   praatplaat: PraatplaatRow;
+  /** Als classId is opgegeven, worden alleen submissions van die klas getoond. Zonder: alleen de afbeelding. */
+  classId?: string;
   onClose: () => void;
 }
 
-export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps) {
+export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatViewerProps) {
   const { t } = useTranslation();
 
   const [submissions, setSubmissions] = useState<PraatplaatSubmission[]>([]);
@@ -83,12 +85,17 @@ export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps)
   // Dropdown state voor multi-submission spots
   const [dropdownCluster, setDropdownCluster] = useState<SpotCluster | null>(null);
 
-  // --- Data laden ---
+  // --- Data laden (alleen als classId is opgegeven) ---
   const fetchData = useCallback(async () => {
+    if (!classId) {
+      // Geen classId = preview-modus, geen submissions laden
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     setError(null);
     try {
-      const data = await getPraatplaatSubmissions(praatplaat.id);
+      const data = await getPraatplaatSubmissions(praatplaat.id, classId);
       setSubmissions(data);
       setClusters(clusterSubmissions(data));
     } catch (err) {
@@ -97,7 +104,7 @@ export function PraatplaatViewer({ praatplaat, onClose }: PraatplaatViewerProps)
     } finally {
       setLoading(false);
     }
-  }, [praatplaat.id, t]);
+  }, [praatplaat.id, classId, t]);
 
   useEffect(() => {
     fetchData();

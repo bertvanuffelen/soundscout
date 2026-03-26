@@ -418,6 +418,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
       {viewingPraatplaat && (
         <PraatplaatViewer
           praatplaat={viewingPraatplaat}
+          classId={classData.id}
           onClose={() => setViewingPraatplaat(null)}
         />
       )}

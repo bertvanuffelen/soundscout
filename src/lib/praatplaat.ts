@@ -148,14 +148,18 @@ export async function fetchPraatplaten(classId?: string): Promise<PraatplaatRow[
 }
 
 /**
- * Haal alle submissions op voor een specifieke praatplaat (docent).
+ * Haal submissions op voor een praatplaat (docent).
+ * Met classId: alleen submissions van die klas.
+ * Zonder classId: alle submissions (backward compatible).
  */
 export async function getPraatplaatSubmissions(
-  praatplaatId: string
+  praatplaatId: string,
+  classId?: string
 ): Promise<PraatplaatSubmission[]> {
-  const { data, error } = await supabase.rpc('get_praatplaat_submissions', {
-    p_praatplaat_id: praatplaatId,
-  });
+  const params: Record<string, string> = { p_praatplaat_id: praatplaatId };
+  if (classId) params.p_class_id = classId;
+
+  const { data, error } = await supabase.rpc('get_praatplaat_submissions', params);
 
   if (error) {
     logger.error('Fout bij ophalen praatplaat-composities:', sanitizeError(error));
