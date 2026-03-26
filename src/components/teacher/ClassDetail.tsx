@@ -4,15 +4,19 @@
  * Toont alle composities van leerlingen in deze klas
  */
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, RefreshCw, Loader2, Music, PenLine } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, Plus, MapPin } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
+import { usePraatplaten } from '../../hooks/usePraatplaten';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
+import { PraatplaatCard } from './PraatplaatCard';
+import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { Button } from '../ui/Button';
+import { logger } from '../../utils/logger';
 
 interface ClassDetailProps {
   classData: TeacherClass;
@@ -26,6 +30,51 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'submitted' | 'wip'>('submitted');
+
+  // --- Praatplaten (#72) ---
+  const {
+    praatplaten,
+    loading: praatplatenLoading,
+    operationError: praatplaatError,
+    create: createPraatplaatHook,
+    activate: activatePraatplaat,
+    deactivate: deactivatePraatplaat,
+    remove: removePraatplaat,
+  } = usePraatplaten(classData.id);
+  const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
+
+  const handleCreatePraatplaat = useCallback(async (params: {
+    name: string;
+    themeId: string;
+    locationId: string;
+    imageUrl: string;
+  }) => {
+    await createPraatplaatHook({
+      classId: classData.id,
+      ...params,
+    });
+  }, [classData.id, createPraatplaatHook]);
+
+  const handleTogglePraatplaat = useCallback(async (id: string, activate: boolean) => {
+    try {
+      if (activate) {
+        await activatePraatplaat(id);
+      } else {
+        await deactivatePraatplaat(id);
+      }
+    } catch (err) {
+      logger.error('Toggle praatplaat failed:', err);
+    }
+  }, [activatePraatplaat, deactivatePraatplaat]);
+
+  const handleDeletePraatplaat = useCallback(async (id: string) => {
+    if (!confirm(t('teacher.praatplaat.deleteConfirm'))) return;
+    try {
+      await removePraatplaat(id);
+    } catch (err) {
+      logger.error('Delete praatplaat failed:', err);
+    }
+  }, [removePraatplaat, t]);
 
   // Split submissions into submitted (no save_code) and work-in-progress (has save_code)
   const { submitted, workInProgress } = useMemo(() => {
@@ -134,6 +183,61 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           </div>
         )}
 
+        {/* --- Praatplaten sectie (#72) --- */}
+        {!loading && (
+          <div className="mb-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-semibold text-text-main flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-primary-500" />
+                {t('teacher.praatplaat.sectionTitle')}
+              </h2>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => setShowCreatePraatplaat(true)}
+              >
+                <Plus className="w-4 h-4 mr-1" />
+                {t('teacher.praatplaat.create')}
+              </Button>
+            </div>
+
+            {praatplaatError && (
+              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4 text-sm">
+                {praatplaatError}
+              </div>
+            )}
+
+            {praatplatenLoading && (
+              <div className="text-center py-6">
+                <Loader2 className="w-6 h-6 text-primary-500 animate-spin mx-auto" />
+              </div>
+            )}
+
+            {!praatplatenLoading && praatplaten.length === 0 && (
+              <div className="bg-bg-surface rounded-xl p-6 text-center border border-border-subtle">
+                <MapPin className="w-10 h-10 text-text-muted mx-auto mb-2" />
+                <p className="text-text-muted text-sm">
+                  {t('teacher.praatplaat.emptyDescription')}
+                </p>
+              </div>
+            )}
+
+            {!praatplatenLoading && praatplaten.length > 0 && (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {praatplaten.map((pp) => (
+                  <PraatplaatCard
+                    key={pp.id}
+                    praatplaat={pp}
+                    onToggle={(activate) => handleTogglePraatplaat(pp.id, activate)}
+                    onDelete={() => handleDeletePraatplaat(pp.id)}
+                    onView={() => {/* TODO: Fase 5 — PraatplaatViewer */}}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+
         {/* Tabs — only show when there are work-in-progress compositions */}
         {!loading && workInProgress.length > 0 && (
           <div className="flex gap-1 mb-6 bg-bg-surface rounded-xl p-1 border border-border-subtle">
@@ -232,6 +336,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           onClose={() => setSelectedSubmission(null)}
         />
       )}
+
+      {/* Praatplaat aanmaken modal (#72) */}
+      <CreatePraatplaatModal
+        isOpen={showCreatePraatplaat}
+        onClose={() => setShowCreatePraatplaat(false)}
+        onCreate={handleCreatePraatplaat}
+      />
     </div>
   );
 }

@@ -18,7 +18,40 @@ export type GameScreen =
   | 'compositions'
   | 'teacher'
   | 'shared'
-  | 'tutorial';
+  | 'tutorial'
+  | 'praatplaat-select';
+
+// --- Praatplaat (#72) ---
+
+/** Praatplaat configuration (teacher-managed) */
+export interface Praatplaat {
+  id: string;
+  classId: string;
+  teacherId: string;
+  name: string;
+  themeId: string;
+  locationId: string;
+  imageUrl: string;
+  isActive: boolean;
+  createdAt: string;
+}
+
+/** Active praatplaat context for student flow */
+export interface ActivePraatplaat {
+  id: string;
+  name: string;
+  imageUrl: string;
+  classId: string;
+  classCode: string;
+  themeId: string;
+  locationId: string;
+}
+
+/** Position on a praatplaat (0-1 normalized) */
+export interface PraatplaatPosition {
+  x: number;
+  y: number;
+}
 
 // --- Storytelling (#41) ---
 
