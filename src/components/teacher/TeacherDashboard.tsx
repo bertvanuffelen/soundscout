@@ -19,6 +19,7 @@ import type { TeacherClass } from '../../hooks/useClasses';
 import type { PraatplaatRow } from '../../lib/praatplaat';
 import { signOut } from '../../lib/auth';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
 import { CreateClassModal } from './CreateClassModal';
 import { ClassCard } from './ClassCard';
 import { TemplateCard } from './TemplateCard';
@@ -47,6 +48,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   } = usePraatplaten(); // Alle docent-praatplaten (geen classId)
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
+  const [showTemplateInfo, setShowTemplateInfo] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
 
@@ -323,17 +325,15 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                     <FileText className="w-4 h-4 text-amber-600" />
                     {t('templates.templatesTitle')}
                   </h3>
-                  {onBack && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={onBack}
-                      className="inline-flex items-center gap-1"
-                    >
-                      <Plus className="w-4 h-4" />
-                      {t('templates.newTemplate')}
-                    </Button>
-                  )}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowTemplateInfo(true)}
+                    className="inline-flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('templates.newTemplate')}
+                  </Button>
                 </div>
                 <p className="text-text-muted text-sm mb-4">
                   {t('templates.templatesDescription')}
@@ -387,6 +387,40 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           onClose={() => setViewingPraatplaat(null)}
         />
       )}
+
+      {/* Template info modal */}
+      <Modal
+        isOpen={showTemplateInfo}
+        onClose={() => setShowTemplateInfo(false)}
+        title={t('templates.newTemplateModalTitle')}
+        size="sm"
+      >
+        <div className="space-y-3 text-text-main text-sm">
+          <p>{t('templates.newTemplateModalStep1')}</p>
+          <p>{t('templates.newTemplateModalStep2')}</p>
+          <p>{t('templates.newTemplateModalStep3')}</p>
+        </div>
+        <div className="mt-6 flex gap-3">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => setShowTemplateInfo(false)}
+            className="flex-1"
+          >
+            {t('common.close')}
+          </Button>
+          {onBack && (
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => { setShowTemplateInfo(false); onBack(); }}
+              className="flex-1"
+            >
+              {t('templates.newTemplateModalButton')}
+            </Button>
+          )}
+        </div>
+      </Modal>
     </div>
   );
 }
