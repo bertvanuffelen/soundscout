@@ -1,22 +1,24 @@
 /**
  * TemplateCard - Kaart voor een template in het docenten dashboard
+ *
+ * Resource-kaart: toont naam, template-code, beschrijving, lock badges en verwijderen.
+ * Activering per klas gaat via ClassDetail → ActivateAssignmentModal.
  */
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Check, Trash2, ToggleLeft, ToggleRight, Lock, Unlock } from 'lucide-react';
+import { Copy, Check, Trash2, Lock, Unlock } from 'lucide-react';
 import type { TeacherTemplate } from '../../lib/templates';
 import { Button } from '../ui/Button';
 
 interface TemplateCardProps {
   template: TeacherTemplate;
   onDelete: () => void;
-  onToggle: (isActive: boolean) => void;
 }
 
-export function TemplateCard({ template, onDelete, onToggle }: TemplateCardProps) {
+export function TemplateCard({ template, onDelete }: TemplateCardProps) {
   const { t } = useTranslation();
-  const { name, code, description, lockOptions, isActive, createdAt } = template;
+  const { name, code, description, lockOptions, createdAt } = template;
   const [copied, setCopied] = useState(false);
 
   const formattedDate = new Date(createdAt).toLocaleDateString('nl-NL', {
@@ -36,7 +38,7 @@ export function TemplateCard({ template, onDelete, onToggle }: TemplateCardProps
   }, [code]);
 
   return (
-    <div className={`bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5 ${!isActive ? 'opacity-60' : ''}`}>
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
       {/* Header met naam en code */}
       <div className="flex items-start justify-between mb-2">
         <div className="min-w-0 flex-1 mr-3">
@@ -64,13 +66,8 @@ export function TemplateCard({ template, onDelete, onToggle }: TemplateCardProps
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">{description}</p>
       )}
 
-      {/* Status badges */}
+      {/* Lock badges */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
-        <span className={`inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full ${
-          isActive ? 'bg-success-50 text-success-700' : 'bg-neutral-100 text-neutral-500'
-        }`}>
-          {isActive ? t('templates.active') : t('templates.inactive')}
-        </span>
         {lockOptions.clipsLocked && (
           <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
             <Lock className="w-3 h-3" />
@@ -91,17 +88,8 @@ export function TemplateCard({ template, onDelete, onToggle }: TemplateCardProps
         )}
       </div>
 
-      {/* Actions */}
-      <div className="flex gap-2">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={() => onToggle(!isActive)}
-          className="flex-1 inline-flex items-center justify-center gap-1"
-        >
-          {isActive ? <ToggleRight className="w-4 h-4" /> : <ToggleLeft className="w-4 h-4" />}
-          {isActive ? t('templates.deactivate') : t('templates.activate')}
-        </Button>
+      {/* Delete action */}
+      <div className="flex justify-end">
         <Button
           variant="ghost"
           size="sm"

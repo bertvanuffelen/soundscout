@@ -39,7 +39,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const { classes, loading, error, createClass, deleteClass, refetch } = useClasses();
   const {
     templates, loading: templatesLoading, error: templatesError,
-    remove: removeTemplate, toggle: toggleTemplate, refetch: refetchTemplates,
+    remove: removeTemplate, refetch: refetchTemplates,
   } = useTemplates();
   const {
     praatplaten, loading: praatplatenLoading, error: praatplatenError,
@@ -92,15 +92,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
       await removeTemplate(id);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('templates.deleteError'));
-    }
-  };
-
-  const handleToggleTemplate = async (id: string, isActive: boolean) => {
-    try {
-      setActionError(null);
-      await toggleTemplate(id, isActive);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t('templates.toggleError'));
     }
   };
 
@@ -317,7 +308,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                   <TemplateCard
                     template={tmpl}
                     onDelete={() => handleDeleteTemplate(tmpl.id)}
-                    onToggle={(active) => handleToggleTemplate(tmpl.id, active)}
                   />
                 </div>
               ))}
@@ -330,7 +320,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                   </span>
                   <PraatplaatCard
                     praatplaat={pp}
-                    onToggle={() => {}} // Activering gaat nu via ClassDetail
                     onDelete={() => handleDeletePraatplaat(pp.id)}
                     onView={() => setViewingPraatplaat(pp)}
                   />
