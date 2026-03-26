@@ -246,27 +246,12 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           </ol>
         </div>
 
-        {/* --- Opdrachten sectie (Templates + Praatplaten) --- */}
+        {/* --- Opdrachten sectie --- */}
         <div className="mt-10">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg sm:text-xl font-semibold text-text-main flex items-center gap-2">
-              <FileText className="w-5 h-5" />
-              {t('templates.dashboardTitle')}
-            </h2>
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={() => setShowCreatePraatplaat(true)}
-              className="inline-flex items-center gap-1"
-            >
-              <Plus className="w-4 h-4" />
-              {t('templates.newPraatplaat')}
-            </Button>
-          </div>
-
-          <p className="text-text-muted text-sm mb-4">
-            {t('templates.dashboardDescription')}
-          </p>
+          <h2 className="text-lg sm:text-xl font-semibold text-text-main flex items-center gap-2 mb-6">
+            <FileText className="w-5 h-5" />
+            {t('templates.dashboardTitle')}
+          </h2>
 
           {/* Errors */}
           {(templatesError || praatplatenError) && (
@@ -285,47 +270,97 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
             </div>
           )}
 
-          {/* Empty state */}
-          {!templatesLoading && !praatplatenLoading && templates.length === 0 && praatplaten.length === 0 && (
-            <div className="bg-bg-surface rounded-xl shadow p-6 text-center">
-              <FileText className="w-12 h-12 text-neutral-300 mx-auto mb-3" />
-              <p className="text-text-muted text-sm">
-                {t('templates.emptyState')}
-              </p>
-            </div>
-          )}
+          {!templatesLoading && !praatplatenLoading && (
+            <>
+              {/* --- Praatplaten subsectie --- */}
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-base font-semibold text-text-main flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-primary-500" />
+                    {t('templates.praatplatenTitle')}
+                  </h3>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowCreatePraatplaat(true)}
+                    className="inline-flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('templates.newPraatplaat')}
+                  </Button>
+                </div>
+                <p className="text-text-muted text-sm mb-4">
+                  {t('templates.praatplatenDescription')}
+                </p>
 
-          {/* Unified grid: templates + praatplaten */}
-          {!templatesLoading && !praatplatenLoading && (templates.length > 0 || praatplaten.length > 0) && (
-            <div className="grid gap-4 sm:grid-cols-2">
-              {/* Templates */}
-              {templates.map((tmpl) => (
-                <div key={`t-${tmpl.id}`} className="relative">
-                  <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-800 font-medium">
-                    <FileText className="w-3 h-3" />
-                    {t('templates.typeTemplate')}
-                  </span>
-                  <TemplateCard
-                    template={tmpl}
-                    onDelete={() => handleDeleteTemplate(tmpl.id)}
-                  />
+                {praatplaten.length === 0 && (
+                  <div className="bg-bg-surface rounded-xl p-5 text-center border border-border-subtle">
+                    <MapPin className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                    <p className="text-text-muted text-sm">
+                      {t('templates.praatplatenEmpty')}
+                    </p>
+                  </div>
+                )}
+
+                {praatplaten.length > 0 && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {praatplaten.map((pp) => (
+                      <PraatplaatCard
+                        key={pp.id}
+                        praatplaat={pp}
+                        onDelete={() => handleDeletePraatplaat(pp.id)}
+                        onView={() => setViewingPraatplaat(pp)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* --- Templates subsectie --- */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-base font-semibold text-text-main flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-amber-600" />
+                    {t('templates.templatesTitle')}
+                  </h3>
+                  {onBack && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={onBack}
+                      className="inline-flex items-center gap-1"
+                    >
+                      <Plus className="w-4 h-4" />
+                      {t('templates.newTemplate')}
+                    </Button>
+                  )}
                 </div>
-              ))}
-              {/* Praatplaten */}
-              {praatplaten.map((pp) => (
-                <div key={`p-${pp.id}`} className="relative">
-                  <span className="absolute top-2 left-2 z-10 inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-primary-100 text-primary-800 font-medium">
-                    <MapPin className="w-3 h-3" />
-                    {t('templates.typePraatplaat')}
-                  </span>
-                  <PraatplaatCard
-                    praatplaat={pp}
-                    onDelete={() => handleDeletePraatplaat(pp.id)}
-                    onView={() => setViewingPraatplaat(pp)}
-                  />
-                </div>
-              ))}
-            </div>
+                <p className="text-text-muted text-sm mb-4">
+                  {t('templates.templatesDescription')}
+                </p>
+
+                {templates.length === 0 && (
+                  <div className="bg-bg-surface rounded-xl p-5 text-center border border-border-subtle">
+                    <FileText className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                    <p className="text-text-muted text-sm">
+                      {t('templates.templatesEmpty')}
+                    </p>
+                  </div>
+                )}
+
+                {templates.length > 0 && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {templates.map((tmpl) => (
+                      <TemplateCard
+                        key={tmpl.id}
+                        template={tmpl}
+                        onDelete={() => handleDeleteTemplate(tmpl.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
           )}
         </div>
       </main>
