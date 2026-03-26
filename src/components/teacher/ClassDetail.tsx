@@ -4,9 +4,9 @@
  * Toont alle composities van leerlingen in deze klas
  */
 
-import { useState } from 'react';
+import { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, RefreshCw, Loader2, Music } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Loader2, Music, PenLine } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -25,6 +25,21 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
+  const [activeTab, setActiveTab] = useState<'submitted' | 'wip'>('submitted');
+
+  // Split submissions into submitted (no save_code) and work-in-progress (has save_code)
+  const { submitted, workInProgress } = useMemo(() => {
+    const submitted: Submission[] = [];
+    const workInProgress: Submission[] = [];
+    for (const s of submissions) {
+      if (s.save_code) {
+        workInProgress.push(s);
+      } else {
+        submitted.push(s);
+      }
+    }
+    return { submitted, workInProgress };
+  }, [submissions]);
 
   const handleRefresh = async () => {
     setRefreshing(true);
@@ -68,7 +83,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                 {classData.name}
               </h1>
               <p className="text-sm text-text-muted">
-                {t('teacher.classDetail.compositionCount', { count: submissions.length })}
+                {t('teacher.classDetail.compositionCount', { count: submitted.length })}
               </p>
             </div>
 
@@ -119,34 +134,87 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           </div>
         )}
 
-        {/* Empty state */}
-        {!loading && submissions.length === 0 && (
-          <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
-            <Music className="w-16 h-16 text-primary-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-text-main mb-2">
-              {t('teacher.classDetail.emptyTitle')}
-            </h3>
-            <p className="text-text-muted mb-4">
-              {t('teacher.classDetail.emptyDescription', { code: classData.code })}
-            </p>
-            <p className="text-text-muted text-sm">
-              {t('teacher.classDetail.instruction', { code: classData.code })}
-            </p>
+        {/* Tabs — only show when there are work-in-progress compositions */}
+        {!loading && workInProgress.length > 0 && (
+          <div className="flex gap-1 mb-6 bg-bg-surface rounded-xl p-1 border border-border-subtle">
+            <button
+              onClick={() => setActiveTab('submitted')}
+              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'submitted'
+                  ? 'bg-white text-text-main shadow-sm'
+                  : 'text-text-muted hover:text-text-main'
+              }`}
+            >
+              <Music className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
+              {t('teacher.classDetail.tabSubmitted', { count: submitted.length })}
+            </button>
+            <button
+              onClick={() => setActiveTab('wip')}
+              className={`flex-1 px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === 'wip'
+                  ? 'bg-white text-text-main shadow-sm'
+                  : 'text-text-muted hover:text-text-main'
+              }`}
+            >
+              <PenLine className="w-4 h-4 inline-block mr-1.5 -mt-0.5" />
+              {t('teacher.classDetail.tabWip', { count: workInProgress.length })}
+            </button>
           </div>
         )}
 
-        {/* Submissions list */}
-        {!loading && submissions.length > 0 && (
-          <div className="space-y-3">
-            {submissions.map((submission) => (
-              <SubmissionCard
-                key={submission.id}
-                submission={submission}
-                onPlay={() => handlePlay(submission)}
-                onDelete={() => handleDelete(submission.id)}
-              />
-            ))}
-          </div>
+        {/* Submitted tab (default) */}
+        {(!loading && (activeTab === 'submitted' || workInProgress.length === 0)) && activeTab === 'submitted' && (
+          <>
+            {/* Empty state */}
+            {submitted.length === 0 && (
+              <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
+                <Music className="w-16 h-16 text-primary-500 mx-auto mb-4" />
+                <h3 className="text-xl font-semibold text-text-main mb-2">
+                  {t('teacher.classDetail.emptyTitle')}
+                </h3>
+                <p className="text-text-muted mb-4">
+                  {t('teacher.classDetail.emptyDescription', { code: classData.code })}
+                </p>
+                <p className="text-text-muted text-sm">
+                  {t('teacher.classDetail.instruction', { code: classData.code })}
+                </p>
+              </div>
+            )}
+
+            {/* Submissions list */}
+            {submitted.length > 0 && (
+              <div className="space-y-3">
+                {submitted.map((submission) => (
+                  <SubmissionCard
+                    key={submission.id}
+                    submission={submission}
+                    onPlay={() => handlePlay(submission)}
+                    onDelete={() => handleDelete(submission.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* Work in progress tab */}
+        {!loading && activeTab === 'wip' && workInProgress.length > 0 && (
+          <>
+            <p className="text-text-muted text-sm mb-4">
+              {t('teacher.classDetail.wipDescription')}
+            </p>
+            <div className="space-y-3">
+              {workInProgress.map((submission) => (
+                <SubmissionCard
+                  key={submission.id}
+                  submission={submission}
+                  onPlay={() => handlePlay(submission)}
+                  onDelete={() => handleDelete(submission.id)}
+                  isWip
+                />
+              ))}
+            </div>
+          </>
         )}
 
         {/* Instructie box */}

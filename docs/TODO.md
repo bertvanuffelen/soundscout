@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-03-19
+**Laatst bijgewerkt**: 2026-03-25
 
 ---
 
@@ -69,17 +69,59 @@ De klas neemt samen geluiden op ("Wie kan het geluid van een aap nadoen?") en pl
 
 **Opslag:** Nog open — lokaal (localStorage) of database (Supabase). Beslissing later.
 
-**Verwant aan:** #28 (microfoon opname), #68 (partituur-tool — beide starten vanuit beeld i.p.v. samples)
+**Verwant aan:** #28 (microfoon opname), #68 (partituur-tool — beide starten vanuit beeld i.p.v. samples), #72 (praatplaat — verwante richting maar dan collaboratief: leerlingen componeren zelfstandig een soundscape en koppelen die aan een plek op een gedeelde afbeelding)
 
 #### #28 — Eigen Samples Opnemen
 **Complexiteit:** Zeer Hoog
 
 Microfoon opname in de app: permissions, real-time waveform, max 5 seconden, encode naar MP3/WAV. Vereist MediaRecorder API.
 
-#### #52 — Compositie Overdracht / Verder Werken op Ander Apparaat
-**Complexiteit:** Medium-Hoog · **Status:** Nog niet uitgedacht
+#### #72 — Praatplaat: Collaboratieve Klankkaart
+**Complexiteit:** Hoog · **Status:** Plan klaar (2026-03-25) · **Document:** `docs/PLAN-72-PRAATPLAAT.md`
 
-Leerlingen moeten thuis of op een andere computer verder kunnen werken aan hun compositie. Huidige opslag is localStorage (device-gebonden). Mogelijke richtingen: export/import bestand, QR-code, Supabase cloud sync, of koppeling via klascode. Nog brainstormen over de juiste aanpak.
+Klassikale activiteit waarbij leerlingen individueel een compositie/soundscape maken en die koppelen aan een specifieke plek (X,Y-positie) op een gedeelde afbeelding ("praatplaat"). De docent opent de praatplaat op het digibord en ziet iconen verschijnen op plekken waar leerlingen composities aan hebben gekoppeld. Door op een icoon te klikken speelt de compositie van die leerling af.
+
+**Klassikale flow:**
+1. **Docent** selecteert of uploadt een praatplaat-afbeelding (bijv. een boerderij, stadsplein, bos, schoolplein)
+2. **Docent** deelt de praatplaat via een klascode met de klas
+3. **Leerlingen** zien op hun eigen device (tablet/Chromebook) dezelfde praatplaat
+4. **Leerling** klikt op een plek op de afbeelding: "Ik maak geluid voor dit stuk"
+5. **Leerling** komt in de bestaande studio terecht en componeert een korte soundscape (bestaande samples + eventueel zelf opgenomen geluiden)
+6. **Leerling** submit de compositie → gekoppeld aan de gekozen X,Y-positie
+7. **Docent** opent de praatplaat op het digibord → op verschillende plekken verschijnen iconen (bijv. luidspreker-symbool of avatar) met de naam van de leerling
+8. **Docent** klikt op een icoon → de compositie van die leerling speelt af
+
+**Geavanceerd — simultaan afspelen:**
+De docent kan meerdere iconen "activeren" en tegelijkertijd afspelen. Zo hoort de klas hoe alle individuele composities samensmelten tot één groot klanklandschap. Dit is het pedagogisch hoogtepunt: elk kind heeft een bijdrage geleverd aan het geheel.
+
+**Open ontwerpvragen:**
+- **Spot-claiming:** Mogen meerdere leerlingen dezelfde plek kiezen? (Ja lijkt logischer — vergelijk: 3 kinderen maken elk een ander geluid voor de vijver)
+- **Spotgrootte:** Punt-marker (simpel) of een cirkelvormig gebied (visueel duidelijker)?
+- **Afbeeldingsbron:** Gecureerde praatplaten bij thema's, of docent uploadt zelf een afbeelding?
+- **Compositieduur:** Beperken tot bijv. 8-16 beats voor korte soundscapes, zodat simultaan afspelen niet chaotisch wordt?
+
+**Technische haalbaarheid (~70% hergebruik):**
+Bestaande systemen die hergebruikt worden:
+- **Hotspot-systeem** (locatieschermen): X,Y-positionering op afbeeldingen bestaat al
+- **Klascode-systeem** (Supabase): leerlingen koppelen aan docent/klas werkt al
+- **Compositie-inzending**: `submit_composition` RPC + `submissions` tabel bestaan al
+- **Compositie-afspelen**: `SharedPlayer` / `SubmissionPlayer` bestaan al
+- **Docenten dashboard**: basis voor het tonen van ingezonden werk aanwezig
+
+Nieuw te bouwen:
+- **Praatplaat-modus**: nieuw scherm of tab in dashboard waar docent een praatplaat beheert
+- **Spot-selectie UI**: leerling klikt op afbeelding om positie te kiezen (hergebruik van hotspot click-logica)
+- **Praatplaat-viewer**: docentenweergave met iconen op posities, click-to-play per icoon
+- **Simultaan afspelen**: meerdere composities tegelijk afspelen (meerdere `Tone.Player` instances, volume balancing)
+- **Database**: nieuw veld `position_x`, `position_y` op submissions, of aparte `praatplaat`-tabel
+
+**Pedagogische sterkte:**
+- Verbindt geluid aan visuele betekenis ("hoe klinkt dit deel van het plaatje?")
+- Elk kind draagt bij aan een geheel, maar werkt zelfstandig (geen real-time sync nodig!)
+- Klassikaale afsluiting: samen luisteren naar het resultaat op het digibord
+- Laagdrempelig: dezelfde studio die kinderen al kennen
+
+**Verwant aan:** #44 (luister-en-plaats — verwant maar omgekeerd: daar plaatst het kind een bestaand geluid, hier componeert het kind nieuw geluid voor een plek), #63 (collaboratief storyboard — praatplaat is eenvoudiger alternatief zonder real-time sync), #42 (ensemble — praatplaat is asynchroon i.p.v. real-time), #28 (eigen samples opnemen — mooie combinatie)
 
 ---
 
@@ -88,7 +130,28 @@ Leerlingen moeten thuis of op een andere computer verder kunnen werken aan hun c
 #### #48 — Video-Storyboard (Compositie bij Video)
 **Complexiteit:** Zeer Hoog · **Afhankelijk van:** #41 ✅ · **Status:** Onderzoeksfase
 
-Video afspelen i.p.v. stilstaande afbeeldingen in het storyboard-systeem. Vereist onderzoek naar HTML5 video sync met Tone.js, hosting, performance en mobile support.
+Video afspelen i.p.v. stilstaande afbeeldingen in het storyboard-systeem. De natuurlijke evolutie van het huidige storyboard: "componeer een soundtrack bij dit filmfragment."
+
+**Pedagogische waarde:**
+Kinderen leren muziek/geluid koppelen aan bewegend beeld — een stap dichter bij echte filmmuziek-compositie. Korte clips (15-30 seconden) van natuur, stadsleven, sport, etc. werken het beste om focus te houden.
+
+**Content-bottleneck:**
+De grootste uitdaging is niet technisch maar inhoudelijk: wie levert de video's? Opties: (a) gecureerde clipbibliotheek meeleveren met thema's, (b) docent uploadt eigen clips, (c) koppeling met vrij beschikbare educatieve video's. Dit verschuift het product richting een film-scoring tool — bewuste keuze nodig of dat gewenst is.
+
+**Technische uitdagingen:**
+- HTML5 `<video>` synchronisatie met Tone.js transport (play, pause, seek)
+- Video hosting en bandbreedte (te groot voor statische hosting op Strato)
+- Performance op tablets/Chromebooks (video + audio tegelijk)
+- Mobile autoplay restricties (vergelijkbaar met audio autoplay, maar strenger voor video)
+
+**Verwant aan:** #41 ✅ (storyboard basis), #71 (variabel aantal afbeeldingen), #72 (praatplaat)
+
+#### #71 — Storyboard: variabel aantal afbeeldingen (3-5 keuze)
+**Complexiteit:** Laag · **Status:** Geparkeerd — systeem klaar, wacht op content (2026-03-25)
+
+Het storyboard-systeem ondersteunt al dynamisch elk aantal afbeeldingen (secties, image sync, viewers, video export werken allemaal met variabele aantallen). Er is geen code-aanpassing nodig. Wat ontbreekt is **content**: nieuwe afbeeldingen voor storyboards met 4 of 5 scènes. Twee richtingen overwogen: (a) verhalende storyboards met actie (schooldag, marktdag), (b) zoekplaten per dagdeel (dezelfde locatie op verschillende momenten). Nieuwe storyboards worden handmatig in code toegevoegd (route 1) wanneer afbeeldingen beschikbaar zijn.
+
+**Verwant aan:** #41 ✅ (storyboard basis), #48 (video-storyboard), #69 (moduswisseling)
 
 #### UX-9 — Studio pagina indeling herbekijken
 **Status:** Grotendeels afgerond (2026-03-18)
@@ -96,6 +159,11 @@ Video afspelen i.p.v. stilstaande afbeeldingen in het storyboard-systeem. Vereis
 Afgerond: timeline hoogte + image padding (2026-03-12), toolbar crowding fix (sample info pill + zoom hidden op mobile), full-row drag targets voor samples, narrowere track labels op mobile (2026-03-18).
 
 Eventueel resterend: verdere verhouding-verbeteringen op zeer kleine schermen indien nodig.
+
+#### #69 — Storyboard ↔ vrij modus wisselen zonder clips te verliezen
+**Complexiteit:** Medium · **Status:** Concept
+
+Momenteel wist `ComposeModeScreen` altijd de volledige timeline (`clearAllTracks` + `clearSections`) bij elke moduswissel. Gebruikers zouden vanuit de studio moeten kunnen wisselen tussen storyboard/image/vrij modus, waarbij clips behouden blijven en alleen secties + afbeeldingen resetten. Vereist een in-studio mode-switcher (momenteel alleen beschikbaar op het keuzescherm vóór de kaart).
 
 ---
 
@@ -108,9 +176,11 @@ Eventueel resterend: verdere verhouding-verbeteringen op zeer kleine schermen in
 Leerlingen kijken naar een beeld en tekenen eerst een visuele partituur (blokken op tijdlijn: lang/kort, veel/weinig). Pas daarna zoeken ze samples die bij hun ontwerp passen. Omgekeerde workflow: van structuur naar klank i.p.v. van klank naar structuur. Pedagogisch sterk: dwingt leerlingen om eerst na te denken over opbouw, timing en spanning. Technisch 80% hergebruik van bestaande SoundScout-componenten. **Open vraag:** moet dit een modus binnen SoundScout worden of een losstaande tool? Afhankelijk van #65 (clip-loop) voor de sample-koppeling.
 
 #### #63 — Collaboratief storyboard (leerlingen werken aan delen)
-**Complexiteit:** Zeer Hoog · **Status:** Concept
+**Complexiteit:** Zeer Hoog · **Status:** Concept — mogelijk vervangen door #72 (praatplaat)
 
 Leerlingen werken aan verschillende afbeeldingen van een storyboard die later samengevoegd worden tot één geheel. Vereist: task-toewijzing per leerling, merge-logica, mogelijk Supabase Realtime sync. Verwant aan #42 (Ensemble-modus).
+
+**Opmerking (2026-03-25):** Het praatplaat-concept (#72) biedt een eenvoudiger en concreter alternatief voor collaboratieve compositie. Waar #63 real-time sync en merge-logica vereist, werkt de praatplaat volledig asynchroon: leerlingen componeren onafhankelijk en koppelen hun werk aan een positie. Geen conflict resolution nodig. Overweeg om #72 als eerste stap te implementeren en #63 te parkeren.
 
 #### #30 — Extra Locaties
 **Status:** 5 locaties af, 4 nog gepland (Spookhuis, Strand, Markt, Ruimtestation)
@@ -274,6 +344,11 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | #33 | Clip-effecten: Pitch + Reverb | 2026-03-18 | Per-clip `Tone.PitchShift` (-12 tot +12 halftonen) en `Tone.Reverb` (0-100%). Geïsoleerde effect chains (eigen `Tone.Player` + nodes) per clip met effecten — shared players blijven ongewijzigd. `clipEffectChainMap` voor seek-support zodat `startActiveClips()` de juiste player gebruikt. EffectsPopover (portal-based, violet accent). Sparkles-icoon als indicator. Effecten meegekopieerd bij duplicate. Offline export bouwt per-clip effect chains |
 | UX-9 | Studio mobiele indeling | 2026-03-18 | Toolbar crowding fix (sample info pill + zoom hidden op mobile), full-row drag targets voor samples in library, narrowere track labels op mobile (w-4 i.p.v. w-5) |
 | #22 | Real-time geluiden toevoegen tijdens afspelen | 2026-03-19 | `audioVersion` counter in timelineStore (15 audio-relevante acties). `useRescheduleOnChange` hook detecteert wijzigingen tijdens playback. `rescheduleWhilePlaying()` op AudioService: stop players → reschedule → hervat vanaf zelfde beat. Alle timeline-wijzigingen (clips, volume, mute, trim, loop, pitch, reverb) klinken direct tijdens playback. Docs: `PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` |
+| #52 | Online bewaarcode (compositie overdracht) | 2026-03-19 | 6-karakter bewaarcode via `SaveOnlineModal` op podium. `save_composition_online` RPC → code + secret. Op ander apparaat: code invoeren → `load_saved_composition` + `claim_saved_composition` → laadt in studio. Secret in localStorage voor update-rechten. 60 dagen inactiviteit-expiry. Optioneel: klascode-koppeling + e-mail. Migratie: `004_save_codes.sql`. Docs: `PLAN-52-BEWAARCODE.md` |
+| UX-10 | Podium UX refactor — actiemenu | 2026-03-19 | Podium teruggebracht naar 3 knoppen (Opslaan, Delen & Exporteren, Nieuwe compositie). Alle secundaire acties (bewaar online, deel link, deel met docent, export MP3, export video, template) verplaatst naar `StageActionsModal` — gegroepeerd met kopjes en hint-teksten. Modal slide-up op mobiel, gecentreerd op desktop. Design tokens (`bg-bg-surface`, `text-text-main`, `text-text-muted`) consistent met app |
+| #54b | Tutorial als eigen scherm | 2026-03-24 | "Hoe werkt het?" modal vervangen door dedicated `TutorialScreen` (`'tutorial'` in GameScreen). Quick-start stappen (4 stappen, accent-kleur badges) + video-thumbnails per categorie ("Voor de componisten", "Voor de docenten"). Klik op thumbnail → inline YouTube player (geen 7 iframes tegelijk). Provider-onafhankelijk: `thumbnailUrl()` en `embedUrl()` zijn de enige YouTube-specifieke functies. Lazy-loaded |
+| #70 | Storyboard-badge in docentenlijst | 2026-03-25 | `SubmissionCard` toont nu een accent-kleur badge met Image-icoon + "Storyboard" label als `composition_data.storyboardId` aanwezig is. Docenten zien in één oogopslag welke inzendingen een storyboard bevatten |
+| #52-FASE2 | Bewaarcode uitbreidingen | 2026-03-25 | Drie verbeteringen: (A) Auto-sync naar online bewaarcode bij lokaal opslaan via fire-and-forget `updateSavedComposition()` in `useStageSave`. (B) QR-code toggle in `SaveOnlineModal` success-scherm via `qrcode` npm package. (C) Teacher dashboard "In bewerking" tab in `ClassDetail` — splitst submissions op `save_code` aanwezigheid. WIP-kaarten tonen blauw "In bewerking" badge + "Laatst bewerkt" datum |
 
 ### Technische schuld (afgerond)
 

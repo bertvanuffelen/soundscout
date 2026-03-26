@@ -178,7 +178,8 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
         <CrossfadeImage
           src={currentImage.url}
           alt={t(currentImage.label)}
-          className="max-w-full max-h-full object-contain"
+          className="w-full h-full object-contain"
+          containerClassName="w-full h-full"
         />
 
         {/* Zoom button */}

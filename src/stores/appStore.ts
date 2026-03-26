@@ -43,6 +43,7 @@ interface AppStore {
   goToCompositions: () => void;
   goToTeacher: () => void;
   goToShared: (code: string) => void;
+  goToTutorial: () => void;
   // Template actions
   loadTemplate: (template: Template) => void;
   clearTemplate: () => void;
@@ -93,6 +94,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToTeacher: () => set({ currentScreen: 'teacher' }),
 
   goToShared: (code) => set({ currentScreen: 'shared', shareCode: code }),
+
+  goToTutorial: () => set({ currentScreen: 'tutorial' }),
 
   // Template actions
   loadTemplate: (template) => set({ activeTemplate: template, templateLockOptions: template.lockOptions }),

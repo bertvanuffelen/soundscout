@@ -49,6 +49,12 @@ interface VolumePopoverProps {
   onClose: () => void;
   /** Label for accessibility (e.g. "Track 1" or sample name) */
   label: string;
+  /** Optional: current track color (#67) — shows color picker when provided */
+  trackColor?: string;
+  /** Optional: callback when track color changes (#67) */
+  onTrackColorChange?: (color: string | undefined) => void;
+  /** Optional: color palette to choose from (#67) */
+  colorPalette?: readonly string[];
 }
 
 export const VolumePopover = memo(function VolumePopover({
@@ -58,6 +64,9 @@ export const VolumePopover = memo(function VolumePopover({
   onMuteToggle,
   onClose,
   label,
+  trackColor,
+  onTrackColorChange,
+  colorPalette,
 }: VolumePopoverProps) {
   const { t } = useTranslation();
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -168,6 +177,47 @@ export const VolumePopover = memo(function VolumePopover({
           title={t('studio.volumeSliderHint')}
         />
       </div>
+
+      {/* Track color picker (#67) — only shown when colorPalette is provided */}
+      {colorPalette && onTrackColorChange && (
+        <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-neutral-100">
+          <span className="text-[10px] font-bold text-text-muted uppercase tracking-wide shrink-0">
+            {t('studio.trackColor')}
+          </span>
+          <div className="flex items-center gap-1 flex-wrap">
+            {/* No-color option */}
+            <button
+              onClick={() => onTrackColorChange(undefined)}
+              aria-label={t('studio.noColor')}
+              className={`
+                w-4 h-4 rounded-full border transition-all
+                ${!trackColor
+                  ? 'border-neutral-400 ring-1 ring-neutral-400 ring-offset-1 bg-white'
+                  : 'border-neutral-300 bg-neutral-100 hover:border-neutral-400'
+                }
+              `}
+            />
+            {colorPalette.map((color) => (
+              <button
+                key={color}
+                onClick={() => onTrackColorChange(color)}
+                aria-label={color}
+                className={`
+                  w-4 h-4 rounded-full border transition-all
+                  ${trackColor === color
+                    ? 'ring-1 ring-offset-1 border-transparent'
+                    : 'border-transparent hover:scale-110'
+                  }
+                `}
+                style={{
+                  backgroundColor: color,
+                  ...(trackColor === color ? { ringColor: color } : {}),
+                }}
+              />
+            ))}
+          </div>
+        </div>
+      )}
     </div>
   );
 });

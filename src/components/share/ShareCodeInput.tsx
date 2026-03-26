@@ -1,9 +1,11 @@
 /**
  * ShareCodeInput - Universele code-invoer op het startscherm
  *
- * Accepteert zowel template-codes als share-codes.
- * Probeert eerst als template, dan als gedeelde compositie.
- * Bij match: respectieve flow wordt getriggerd.
+ * Accepteert template-codes (8 chars), share-codes (8 chars) en bewaar-codes (6 chars).
+ * Herkenning op basis van codelengte:
+ * - 6 karakters → bewaarcode (#52) → laad in studio om verder te werken
+ * - 8 karakters → probeer eerst als template, dan als share-code
+ * - 4 cijfers → klascode (wordt elders afgehandeld)
  */
 
 import { useState, useCallback } from 'react';
@@ -11,9 +13,9 @@ import { useTranslation } from 'react-i18next';
 import { Headphones, Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
-import { getSharedComposition } from '../../lib/submissions';
+import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
 import { useAppStore } from '../../stores/appStore';
-import { initializeFromTemplate } from '../../utils/compositionInit';
+import { initializeFromTemplate, initializeFromSavedComposition } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
 
 export function ShareCodeInput() {
@@ -44,7 +46,30 @@ export function ShareCodeInput() {
       setError(null);
 
       try {
-        // 1. Probeer als template-code
+        // 1. Als 6 karakters → probeer als bewaarcode (#52)
+        if (code.length === 6) {
+          try {
+            const saved = await loadSavedComposition(code);
+            if (saved) {
+              // Claim de compositie (genereert nieuwe secret voor dit apparaat)
+              const newSecret = await claimSavedComposition(code, saved.student_name);
+              await initializeFromSavedComposition(
+                saved.composition_data,
+                saved.composition_name,
+                code,
+                newSecret,
+              );
+              setCode('');
+              return;
+            }
+          } catch {
+            // Fall through to "not found"
+          }
+          setError(t('share.codeNotFound'));
+          return;
+        }
+
+        // 2. Probeer als template-code (8 chars)
         const template = await getTemplateByCode(code);
         if (template) {
           await initializeFromTemplate(template);
@@ -52,7 +77,7 @@ export function ShareCodeInput() {
           return;
         }
 
-        // 2. Niet gevonden als template → probeer als share-code
+        // 3. Niet gevonden als template → probeer als share-code (8 chars)
         try {
           const shared = await getSharedComposition(code);
           if (shared) {
@@ -64,7 +89,7 @@ export function ShareCodeInput() {
           // getSharedComposition throws on error, fall through to "not found"
         }
 
-        // 3. Geen match gevonden
+        // 4. Geen match gevonden
         setError(t('share.codeNotFound'));
       } catch (err) {
         logger.error('Code lookup mislukt:', err);

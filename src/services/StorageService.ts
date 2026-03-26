@@ -303,7 +303,41 @@ class StorageServiceImpl {
     localStorage.removeItem('soundscout:library');
     localStorage.removeItem('soundscout:preferences');
     localStorage.removeItem('soundscout:version');
+    localStorage.removeItem('soundscout:save-online');
     logger.info('All storage cleared');
+  }
+
+  // --- Online bewaren (#52) ---
+
+  /**
+   * Sla online bewaar-info op (saveCode + saveSecret + compositionName).
+   * Wordt opgeslagen na succesvol aanmaken of claimen.
+   */
+  setSaveOnlineInfo(saveCode: string, saveSecret: string, compositionName: string): void {
+    this.set('soundscout:save-online', { saveCode, saveSecret, compositionName });
+  }
+
+  /**
+   * Haal online bewaar-info op (saveCode + saveSecret + compositionName).
+   * Retourneert null als er geen bewaar-info is.
+   */
+  getSaveOnlineInfo(): { saveCode: string; saveSecret: string; compositionName: string } | null {
+    const raw = this.getRaw('soundscout:save-online');
+    if (!raw || typeof raw !== 'object') return null;
+    const info = raw as Record<string, unknown>;
+    if (typeof info.saveCode !== 'string' || typeof info.saveSecret !== 'string') return null;
+    return {
+      saveCode: info.saveCode as string,
+      saveSecret: info.saveSecret as string,
+      compositionName: (info.compositionName as string) || '',
+    };
+  }
+
+  /**
+   * Verwijder online bewaar-info (bij nieuwe compositie of clearAll).
+   */
+  clearSaveOnlineInfo(): void {
+    localStorage.removeItem('soundscout:save-online');
   }
 
   // --- Private helpers ---

@@ -95,14 +95,19 @@
     "tutorialTitle": "Zo werkt SoundScout",
     "tutorialSteps": [
       "Verken een locatie en klik op de geluiden die je hoort",
-      "Verzamel tot 6 geluiden in je recorder",
+      "Verzamel geluiden in je recorder",
       "Ga naar de studio en sleep je geluiden op de tijdlijn",
       "Combineer geluiden tot je eigen compositie!"
     ],
     "closeTutorial": "Begrepen!",
     "videoTutorials": "Video uitleg",
-    "videoSoundScout": "Uitleg SoundScout",
-    "videoDashboard": "Uitleg docent dashboard",
+    "videoSoundScout": "SoundScout tutorial",
+    "videoDashboard": "Docent dashboard tutorial",
+    "videoClipEdit": "Samples knippen, loopen en dupliceren",
+    "videoSaveShare": "Bewaren, delen en exporteren",
+    "videoVolume": "Volume aanpassen",
+    "videoEffects": "Effecten toevoegen aan samples",
+    "videoSections": "Secties en vormschema maken",
     "feedbackHint": "Hulp nodig of bug melden?",
     "teacherLink": "Ben je docent?",
     "createdBy": "Gemaakt door Bert van Uffelen",
@@ -111,6 +116,36 @@
     "aboutText1": "SoundScout is gemaakt door Bert van Uffelen, muziekdocent en ontwikkelaar van creatieve digitale tools voor het onderwijs.",
     "aboutText2": "Benieuwd naar meer apps, workshops of muzikale ideeën? Of wil je een training waarin je leert hoe je technologie effectief inzet in de muziekles?",
     "aboutText3": "Neem een kijkje op mijn LinkedIn-profiel:"
+  },
+  "tutorial": {
+    "title": "Uitleg & video's",
+    "back": "Terug",
+    "quickStart": "In 4 stappen aan de slag",
+    "steps": [
+      "Verken een locatie en klik op geluiden",
+      "Verzamel geluiden in je recorder",
+      "Sleep je geluiden op de tijdlijn in de studio",
+      "Combineer, bewerk en maak je eigen compositie!"
+    ],
+    "forStudents": "Voor de componisten",
+    "forTeachers": "Voor de docenten",
+    "backToOverview": "Alle video's",
+    "videos": {
+      "soundscout": "SoundScout uitleg",
+      "soundscout-desc": "Van locatie tot compositie — de basisflow",
+      "clip-edit": "Knippen, loopen en dupliceren",
+      "clip-edit-desc": "Bewerk je samples op de tijdlijn",
+      "save-share": "Bewaren, delen en exporteren",
+      "save-share-desc": "Sla op, deel met een code of exporteer als MP3",
+      "volume": "Volume aanpassen",
+      "volume-desc": "Regel het volume per track en per clip",
+      "effects": "Effecten toevoegen",
+      "effects-desc": "Pitch en reverb op je samples",
+      "sections": "Secties en vormschema",
+      "sections-desc": "Geef structuur aan je compositie",
+      "dashboard": "Docent dashboard",
+      "dashboard-desc": "Klassen beheren en werk van leerlingen bekijken"
+    }
   },
   "location": {
     "backToMap": "Terug",
@@ -224,7 +259,19 @@
     "videoNotSupported": "Video export niet beschikbaar op deze browser",
     "subtitle": "Jouw SoundScout compositie",
     "shareWithTeacher": "Deel met docent",
-    "defaultName": "Mijn compositie"
+    "defaultName": "Mijn compositie",
+    "actionsButton": "Delen & Exporteren",
+    "actionsTitle": "Delen & Exporteren",
+    "actionsSaveShare": "Bewaren & Delen",
+    "actionsExport": "Exporteren",
+    "actionsTeacher": "Docent",
+    "actionsOnlineHint": "Verder werken op een ander apparaat",
+    "actionsShareHint": "Maak een luisterlink voor iedereen",
+    "actionsTeacherHint": "Stuur naar je docent via klascode",
+    "actionsExportMp3Hint": "Download als audiobestand",
+    "actionsExportVideoHint": "Download als video met afbeeldingen",
+    "actionsTemplateHint": "Maak een opdracht voor leerlingen",
+    "actionsNameRequired": "Geef je compositie eerst een naam"
   },
   "compositions": {
     "title": "Mijn Composities",
@@ -535,7 +582,10 @@
       "emptyDescription": "Deel de klas-code {{code}} met je leerlingen. Zodra leerlingen hun compositie delen, verschijnen ze hier.",
       "deleteConfirm": "Weet je zeker dat je deze compositie wilt verwijderen?",
       "deleteError": "Kon niet verwijderen",
-      "instruction": "Leerlingen kunnen hun compositie delen via Podium → Opslaan → Deel met docent en de code {{code}} invoeren."
+      "instruction": "Leerlingen kunnen hun compositie delen via Podium → Opslaan → Deel met docent en de code {{code}} invoeren.",
+      "tabSubmitted": "Ingeleverd ({{count}})",
+      "tabWip": "In bewerking ({{count}})",
+      "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd."
     },
     "createClassModal": {
       "title": "Nieuwe Klas Aanmaken",
@@ -571,7 +621,10 @@
     "submissionCard": {
       "play": "Afspelen",
       "by": "Door:",
-      "delete": "Verwijderen"
+      "delete": "Verwijderen",
+      "withStoryboard": "Storyboard",
+      "wip": "In bewerking",
+      "lastEdited": "Laatst bewerkt:"
     },
     "shareWithTeacher": {
       "title": "Deel met docent",
@@ -615,6 +668,34 @@
     "viewImage": "Beeld",
     "prevImage": "Vorige afbeelding",
     "nextImage": "Volgende afbeelding"
+  },
+  "saveOnline": {
+    "title": "Bewaar online",
+    "description": "Bewaar je compositie online en krijg een code. Met deze code kun je op elk apparaat verder werken.",
+    "nameLabel": "Jouw naam",
+    "namePlaceholder": "Bijv. Lisa of Groep 5",
+    "emailLabel": "E-mailadres (optioneel)",
+    "emailPlaceholder": "Om je code te ontvangen per mail",
+    "classCodeLabel": "Klascode (optioneel)",
+    "classCodePlaceholder": "4 cijfers",
+    "saveButton": "Bewaar",
+    "saving": "Bezig met bewaren...",
+    "successDescription": "Je compositie is online bewaard!",
+    "yourCode": "Jouw bewaarcode",
+    "rememberCode": "Onthoud deze code goed!",
+    "copyCode": "Kopieer code",
+    "sendToMail": "Stuur naar mail",
+    "mailSent": "Verstuurd!",
+    "expiryNote": "Je compositie blijft 60 dagen beschikbaar na de laatste bewerking.",
+    "emailSubject": "Jouw bewaarcode",
+    "emailBody": "Je bewaarcode voor \"{{name}}\" is: {{code}}\n\nVoer deze code in op het startscherm van SoundScout om verder te werken.",
+    "saveError": "Bewaren mislukt. Probeer het opnieuw.",
+    "updateError": "Bijwerken mislukt. Probeer het opnieuw.",
+    "invalidSecret": "Ongeldige bewaarcode of je hebt geen toegang meer.",
+    "codeNotFound": "Bewaarcode niet gevonden of verlopen.",
+    "claimError": "Kon compositie niet ophalen. Probeer het opnieuw.",
+    "qrAlt": "QR-code met bewaarcode",
+    "qrHint": "Scan om de code over te nemen"
   },
   "storyboards": {
     "basis": {

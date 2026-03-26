@@ -3,21 +3,24 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Play, Trash2 } from 'lucide-react';
+import { Play, Trash2, Image, PenLine } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 
 interface SubmissionCardProps {
   submission: Submission;
   onPlay: () => void;
   onDelete: () => void;
+  isWip?: boolean;
 }
 
-export function SubmissionCard({ submission, onPlay, onDelete }: SubmissionCardProps) {
+export function SubmissionCard({ submission, onPlay, onDelete, isWip }: SubmissionCardProps) {
   const { t } = useTranslation();
-  const { student_name, composition_name, created_at } = submission;
+  const { student_name, composition_name, composition_data, created_at, last_updated_at } = submission;
+  const hasStoryboard = !!composition_data?.storyboardId;
 
-  // Format datum
-  const formattedDate = new Date(created_at).toLocaleDateString('nl-NL', {
+  // Show last_updated_at for work-in-progress, created_at for submissions
+  const displayDate = (isWip && last_updated_at) ? last_updated_at : created_at;
+  const formattedDate = new Date(displayDate).toLocaleDateString('nl-NL', {
     day: 'numeric',
     month: 'short',
     hour: '2-digit',
@@ -37,14 +40,28 @@ export function SubmissionCard({ submission, onPlay, onDelete }: SubmissionCardP
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <h3 className="font-semibold text-gray-800 truncate">
-          {composition_name}
-        </h3>
+        <div className="flex items-center gap-2">
+          <h3 className="font-semibold text-gray-800 truncate">
+            {composition_name}
+          </h3>
+          {isWip && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700 text-xs font-medium shrink-0">
+              <PenLine className="w-3 h-3" />
+              {t('teacher.submissionCard.wip')}
+            </span>
+          )}
+          {hasStoryboard && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent-100 text-accent-700 text-xs font-medium shrink-0">
+              <Image className="w-3 h-3" />
+              {t('teacher.submissionCard.withStoryboard')}
+            </span>
+          )}
+        </div>
         <p className="text-gray-500 text-sm">
           {t('teacher.submissionCard.by')} <span className="font-medium text-gray-700">{student_name}</span>
         </p>
         <p className="text-gray-400 text-xs">
-          {formattedDate}
+          {isWip && last_updated_at ? `${t('teacher.submissionCard.lastEdited')} ` : ''}{formattedDate}
         </p>
       </div>
 

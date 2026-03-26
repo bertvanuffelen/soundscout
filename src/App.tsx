@@ -19,6 +19,7 @@ const CompositionsView = lazy(() => import('./components/compositions/Compositio
 const SharedPlayer = lazy(() => import('./components/share/SharedPlayer'));
 const TeacherPage = lazy(() => import('./pages/TeacherPage'));
 const ComposeModeScreen = lazy(() => import('./components/start/ComposeModeScreen'));
+const TutorialScreen = lazy(() => import('./components/tutorial/TutorialScreen'));
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
@@ -55,6 +56,7 @@ function AppContent() {
       studio: t('studio.title'),
       stage: t('stage.title'),
       'compose-mode': t('composeMode.title'),
+      tutorial: t('tutorial.title'),
       compositions: t('compositions.title'),
       teacher: 'Teacher Dashboard',
       shared: 'SoundScout',
@@ -134,6 +136,15 @@ function AppContent() {
         <FeatureErrorBoundary featureName="ComposeMode">
           <Suspense fallback={<LoadingFallback />}>
             <ComposeModeScreen />
+          </Suspense>
+        </FeatureErrorBoundary>
+      );
+
+    case 'tutorial':
+      return (
+        <FeatureErrorBoundary featureName="Tutorial">
+          <Suspense fallback={<LoadingFallback />}>
+            <TutorialScreen />
           </Suspense>
         </FeatureErrorBoundary>
       );

@@ -13,6 +13,9 @@ import { useAppStore } from '../stores/appStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
+import { updateSavedComposition } from '../lib/submissions';
+import { logger } from '../utils/logger';
+import type { CompositionData } from '../types';
 
 export function useStageSave() {
   const currentCompositionId = useAppStore((s) => s.currentCompositionId);
@@ -62,6 +65,32 @@ export function useStageSave() {
       setShowSaveWarning(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
+
+      // Auto-sync to online save if bewaarcode exists (#52-FASE2)
+      const saveOnlineInfo = storageService.getSaveOnlineInfo();
+      if (saveOnlineInfo) {
+        const { sections } = useTimelineStore.getState();
+        const compositionData: CompositionData = {
+          tracks: timelineState.tracks,
+          bpm: timelineState.bpm,
+          totalBeats: timelineState.totalBeats,
+          isLooping: timelineState.isLooping,
+          samples: librarySamples,
+          sections: sections.length > 0 ? sections : undefined,
+          storyboardId: activeStoryboard?.id,
+        };
+        // Fire-and-forget: don't block local save on network issues
+        updateSavedComposition(
+          saveOnlineInfo.saveCode,
+          saveOnlineInfo.saveSecret,
+          compositionData,
+          compositionName.trim(),
+        ).then(() => {
+          logger.info('Online bewaarcode automatisch bijgewerkt', { code: saveOnlineInfo.saveCode });
+        }).catch((err) => {
+          logger.warn('Kon online bewaarcode niet bijwerken', err);
+        });
+      }
     }
     // If save failed (result is null), let the logger handle error reporting
   }, [compositionName, getTimelineState, librarySamples, currentCompositionId, activeStoryboard]);

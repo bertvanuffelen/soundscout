@@ -11,15 +11,10 @@
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  Download,
-  Loader2,
   Save,
   Check,
-  Send,
-  Link2,
   ArrowLeft,
-  FileText,
-  Film,
+  Ellipsis,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
@@ -32,8 +27,10 @@ import { useVideoExport } from '../../hooks/useVideoExport';
 import { useStageSave } from '../../hooks/useStageSave';
 import { useStageModals } from '../../hooks/useStageModals';
 import { Button, Modal } from '../ui';
-import { ShareWithTeacherModal, ShareLinkModal } from '../share';
+import { ShareWithTeacherModal, ShareLinkModal, SaveOnlineModal } from '../share';
+import { storageService } from '../../services/StorageService';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
+import { StageActionsModal } from './StageActionsModal';
 import { StagePlayback, StageAudience } from './StagePlayback';
 import { StorytellingDisplay } from './StorytellingDisplay';
 
@@ -51,8 +48,8 @@ export function StageView() {
 
   // Template feature: only for logged-in teachers
   const { isTeacher } = useAuth();
-  const showTemplateOption = isTeacher;
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showActionsModal, setShowActionsModal] = useState(false);
 
   // Audio export hook
   const { exportState, progress, error, exportMp3 } = useAudioExport();
@@ -89,6 +86,8 @@ export function StageView() {
     setShowShareModal,
     showShareLinkModal,
     setShowShareLinkModal,
+    showSaveOnlineModal,
+    setShowSaveOnlineModal,
     handleNewComposition,
   } = useStageModals();
 
@@ -166,7 +165,7 @@ export function StageView() {
           {/* Playback controls (extracted component) */}
           <StagePlayback />
 
-          {/* Action buttons */}
+          {/* Action buttons — clean: save + options + new */}
           <div className="flex flex-col gap-3 w-full max-w-xs">
             <Button
               variant="primary"
@@ -191,84 +190,12 @@ export function StageView() {
             <Button
               variant="secondary"
               size="lg"
-              onClick={handleExport}
-              disabled={exportState === 'exporting'}
+              onClick={() => setShowActionsModal(true)}
               className="w-full"
             >
-              {exportState === 'exporting' ? (
-                <>
-                  <Loader2 size={20} className="mr-2 animate-spin" />
-                  {t('stage.exporting')} {progress}%
-                </>
-              ) : (
-                <>
-                  <Download size={20} className="mr-2" />
-                  {t('stage.download')}
-                </>
-              )}
+              <Ellipsis size={20} className="mr-2" />
+              {t('stage.actionsButton')}
             </Button>
-
-            {/* Video export — alleen bij storyboard/image modus */}
-            {activeStoryboard && videoExportState !== 'unsupported' && (
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={handleVideoExport}
-                disabled={videoExportState === 'exporting' || exportState === 'exporting'}
-                className="w-full"
-              >
-                {videoExportState === 'exporting' ? (
-                  <>
-                    <Loader2 size={20} className="mr-2 animate-spin" />
-                    {t('stage.exportingVideo')} {videoProgress}%
-                  </>
-                ) : (
-                  <>
-                    <Film size={20} className="mr-2" />
-                    {t('stage.downloadVideo')}
-                  </>
-                )}
-              </Button>
-            )}
-
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => setShowShareLinkModal(true)}
-              disabled={!compositionName.trim()}
-              className="w-full"
-              title={!compositionName.trim() ? t('stage.nameRequired') : ''}
-            >
-              <Link2 size={20} className="mr-2" />
-              {t('share.shareLink')}
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => setShowShareModal(true)}
-              disabled={!compositionName.trim()}
-              className="w-full"
-              title={!compositionName.trim() ? t('stage.nameRequired') : ''}
-            >
-              <Send size={20} className="mr-2" />
-              {t('stage.shareWithTeacher')}
-            </Button>
-
-            {/* Opslaan als template — alleen voor docenten met dev flag */}
-            {showTemplateOption && (
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => setShowTemplateModal(true)}
-                disabled={!compositionName.trim()}
-                className="w-full"
-                title={!compositionName.trim() ? t('stage.nameRequired') : ''}
-              >
-                <FileText size={20} className="mr-2" />
-                {t('templates.saveAsTemplate')}
-              </Button>
-            )}
 
             <Button
               variant="ghost"
@@ -363,6 +290,46 @@ export function StageView() {
           </Button>
         </div>
       </Modal>
+
+      {/* Stage actions modal (share, export, save online) */}
+      {showActionsModal && (
+        <StageActionsModal
+          compositionName={compositionName}
+          hasStoryboard={!!activeStoryboard}
+          isTeacher={isTeacher}
+          exportState={exportState}
+          exportProgress={progress}
+          videoExportState={videoExportState}
+          videoProgress={videoProgress}
+          onExportMp3={handleExport}
+          onExportVideo={handleVideoExport}
+          onSaveOnline={() => setShowSaveOnlineModal(true)}
+          onShareLink={() => setShowShareLinkModal(true)}
+          onShareTeacher={() => setShowShareModal(true)}
+          onSaveTemplate={() => setShowTemplateModal(true)}
+          onClose={() => setShowActionsModal(false)}
+        />
+      )}
+
+      {/* Save online modal (#52) */}
+      {showSaveOnlineModal && (
+        <SaveOnlineModal
+          compositionName={compositionName.trim() || t('stage.defaultName')}
+          compositionData={{
+            tracks,
+            bpm,
+            totalBeats,
+            isLooping,
+            samples: librarySamples,
+            sections: sections.length > 0 ? sections : undefined,
+            storyboardId: activeStoryboard?.id,
+          }}
+          onClose={() => setShowSaveOnlineModal(false)}
+          onSaved={(saveCode, saveSecret) => {
+            storageService.setSaveOnlineInfo(saveCode, saveSecret, compositionName.trim());
+          }}
+        />
+      )}
 
       {/* Share link modal */}
       {showShareLinkModal && (

@@ -19,9 +19,9 @@ export function StartScreen() {
   const goToCompositions = useAppStore((s) => s.goToCompositions);
   const goToStudio = useAppStore((s) => s.goToStudio);
   const goToTeacher = useAppStore((s) => s.goToTeacher);
+  const goToTutorial = useAppStore((s) => s.goToTutorial);
   const hasClipsInProgress = useTimelineStore((s) => s.selectHasClips());
   const [isLoading, setIsLoading] = useState(false);
-  const [showTutorial, setShowTutorial] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showThemeSelection, setShowThemeSelection] = useState(false);
@@ -47,10 +47,6 @@ export function StartScreen() {
       setIsLoading(false);
     }
   };
-
-  const tutorialSteps = t('start.tutorialSteps', {
-    returnObjects: true,
-  }) as string[];
 
   return (
     <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
@@ -123,7 +119,7 @@ export function StartScreen() {
 
         <div className="flex flex-col items-center gap-1 mt-3 sm:mt-4 w-full max-w-[280px] sm:max-w-xs">
           <Button
-            onClick={() => setShowTutorial(true)}
+            onClick={goToTutorial}
             variant="ghost"
             size="lg"
             className="w-full text-brand-300 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100"
@@ -248,59 +244,6 @@ export function StartScreen() {
             linkedin.com/in/bvanuffelen
           </a>
         </div>
-      </Modal>
-
-      {/* Tutorial modal */}
-      <Modal
-        isOpen={showTutorial}
-        onClose={() => setShowTutorial(false)}
-        title={t('start.tutorialTitle')}
-      >
-        <ol className="space-y-3 sm:space-y-4 mb-6 sm:mb-8">
-          {tutorialSteps.map((step, i) => (
-            <li key={i} className="flex gap-2 sm:gap-3 items-start">
-              <span className="flex-shrink-0 w-7 h-7 sm:w-8 sm:h-8 bg-brand-800 text-white rounded-full flex items-center justify-center font-bold text-xs sm:text-sm">
-                {i + 1}
-              </span>
-              <span className="text-text-main text-base sm:text-lg leading-snug pt-0.5">
-                {step}
-              </span>
-            </li>
-          ))}
-        </ol>
-
-        {/* Video tutorials */}
-        <div className="border-t border-neutral-200 pt-4 mb-6 space-y-2">
-          <p className="text-sm font-semibold text-text-muted mb-2">
-            {t('start.videoTutorials')}
-          </p>
-          <a
-            href="https://youtu.be/WRvXvKsIQfc"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors text-text-main font-medium text-sm"
-          >
-            <Youtube className="w-5 h-5 flex-shrink-0 text-accent-500" />
-            {t('start.videoSoundScout')}
-          </a>
-          <a
-            href="https://youtu.be/clA69CeXXcM"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-2 px-3 py-2.5 rounded-lg bg-neutral-100 hover:bg-neutral-200 transition-colors text-text-main font-medium text-sm"
-          >
-            <Youtube className="w-5 h-5 flex-shrink-0 text-accent-500" />
-            {t('start.videoDashboard')}
-          </a>
-        </div>
-
-        <Button
-          onClick={() => setShowTutorial(false)}
-          variant="secondary"
-          className="w-full bg-brand-800 hover:bg-brand-700 active:bg-brand-900 text-white border-0 shadow-[0_3px_0_0_rgba(15,23,42,0.5)]"
-        >
-          {t('start.closeTutorial')}
-        </Button>
       </Modal>
 
       {/* Feedback modal */}

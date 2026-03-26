@@ -21,6 +21,8 @@ interface CrossfadeImageProps {
   src: string;
   alt: string;
   className?: string;
+  /** Extra classes for the wrapper div (e.g. "w-full h-full" to fill parent) */
+  containerClassName?: string;
   /** Transition duration in ms (default: 500) */
   duration?: number;
 }
@@ -29,6 +31,7 @@ export function CrossfadeImage({
   src,
   alt,
   className,
+  containerClassName,
   duration = 500,
 }: CrossfadeImageProps) {
   // Bottom layer: always shows the current (new) image — in normal flow for sizing
@@ -77,7 +80,7 @@ export function CrossfadeImage({
   }, []);
 
   return (
-    <div className="relative max-h-full">
+    <div className={cn('relative', containerClassName)}>
       {/* Bottom: current image — in normal flow (determines wrapper size) */}
       <img src={displaySrc} alt={alt} className={className} />
 

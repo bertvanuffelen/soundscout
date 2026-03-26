@@ -10,6 +10,8 @@
 
 import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTimelineStore } from '../stores/timelineStore';
+import { useAudioStore } from '../stores/audioStore';
+import { audioService } from '../services/AudioService';
 import type { Track, Section } from '../types';
 
 const MAX_HISTORY = 50;
@@ -154,6 +156,11 @@ export function useUndoRedoTimeline() {
     const newIndex = index - 1;
     const snapshot = historyRef.current[newIndex];
 
+    // Force stop audio before restoring — prevents desync where old clips keep playing
+    if (useAudioStore.getState().isPlaying) {
+      audioService.stop();
+    }
+
     isRestoringRef.current = true;
     useTimelineStore.getState().loadTimeline({
       tracks: cloneTracks(snapshot.tracks),
@@ -176,6 +183,11 @@ export function useUndoRedoTimeline() {
 
     const newIndex = index + 1;
     const snapshot = history[newIndex];
+
+    // Force stop audio before restoring — prevents desync where old clips keep playing
+    if (useAudioStore.getState().isPlaying) {
+      audioService.stop();
+    }
 
     isRestoringRef.current = true;
     useTimelineStore.getState().loadTimeline({

@@ -1,8 +1,9 @@
 /**
  * Submissions Helper Functies
  *
- * Functies voor het versturen van composities naar docenten
- * en het genereren/ophalen van publieke luisterlinks.
+ * Functies voor het versturen van composities naar docenten,
+ * het genereren/ophalen van publieke luisterlinks,
+ * en het online bewaren/laden van composities (#52).
  * (Werkt zonder login - voor leerlingen)
  */
 
@@ -165,5 +166,149 @@ export async function getSharedComposition(
     return null;
   }
 
-  return data[0];
+  return data[0] as SharedComposition;
+}
+
+// --- Online bewaren (#52) ---
+
+interface SaveCompositionOnlineParams {
+  studentName: string;
+  compositionName: string;
+  compositionData: CompositionData;
+  classCode?: string;
+  email?: string;
+}
+
+export interface SaveCompositionOnlineResult {
+  saveCode: string;
+  saveSecret: string;
+}
+
+export interface SavedOnlineComposition {
+  id: string;
+  student_name: string;
+  composition_name: string;
+  composition_data: CompositionData;
+  last_updated_at: string;
+  student_email: string | null;
+}
+
+/**
+ * Bewaar een compositie online en krijg een 6-karakter bewaarcode.
+ * Optioneel: koppel aan een klas en/of voeg e-mailadres toe.
+ */
+export async function saveCompositionOnline(
+  params: SaveCompositionOnlineParams
+): Promise<SaveCompositionOnlineResult> {
+  const { studentName, compositionName, compositionData, classCode, email } = params;
+
+  const { data, error } = await supabase.rpc('save_composition_online', {
+    p_student_name: studentName.trim(),
+    p_composition_name: compositionName,
+    p_composition_data: compositionData,
+    p_class_code: classCode?.trim() || null,
+    p_email: email?.trim() || null,
+  });
+
+  if (error) {
+    logger.error('Fout bij online bewaren:', sanitizeError(error));
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
+    throw new Error(i18n.t('saveOnline.saveError'));
+  }
+
+  if (!data || data.length === 0) {
+    throw new Error(i18n.t('saveOnline.saveError'));
+  }
+
+  const result = data[0] as { save_code: string; save_secret: string };
+  return {
+    saveCode: result.save_code,
+    saveSecret: result.save_secret,
+  };
+}
+
+/**
+ * Werk een online bewaarde compositie bij via bewaarcode + secret.
+ * Reset de 60-dagen vervaltermijn.
+ */
+export async function updateSavedComposition(
+  saveCode: string,
+  saveSecret: string,
+  compositionData: CompositionData,
+  compositionName?: string,
+): Promise<boolean> {
+  const { error } = await supabase.rpc('update_saved_composition', {
+    p_save_code: saveCode.toUpperCase().trim(),
+    p_save_secret: saveSecret,
+    p_composition_data: compositionData,
+    p_composition_name: compositionName || null,
+  });
+
+  if (error) {
+    logger.error('Fout bij bijwerken bewaarde compositie:', sanitizeError(error));
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
+    if (error.message.includes('Ongeldige bewaarcode')) {
+      throw new Error(i18n.t('saveOnline.invalidSecret'));
+    }
+    throw new Error(i18n.t('saveOnline.updateError'));
+  }
+
+  return true;
+}
+
+/**
+ * Laad een online bewaarde compositie via bewaarcode.
+ * Geen secret nodig (read-only). Verlopen na 60 dagen inactiviteit.
+ */
+export async function loadSavedComposition(
+  saveCode: string
+): Promise<SavedOnlineComposition | null> {
+  const { data, error } = await supabase.rpc('load_saved_composition', {
+    p_save_code: saveCode.toUpperCase().trim(),
+  });
+
+  if (error) {
+    logger.error('Fout bij laden bewaarde compositie:', sanitizeError(error));
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
+    throw new Error(i18n.t('submissions.loadError'));
+  }
+
+  if (!data || data.length === 0) {
+    return null;
+  }
+
+  return data[0] as SavedOnlineComposition;
+}
+
+/**
+ * Claim een bewaarde compositie op een nieuw apparaat.
+ * Genereert een nieuwe save_secret (oude wordt overschreven).
+ */
+export async function claimSavedComposition(
+  saveCode: string,
+  studentName: string,
+): Promise<string> {
+  const { data, error } = await supabase.rpc('claim_saved_composition', {
+    p_save_code: saveCode.toUpperCase().trim(),
+    p_student_name: studentName.trim(),
+  });
+
+  if (error) {
+    logger.error('Fout bij claimen compositie:', sanitizeError(error));
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
+    if (error.message.includes('niet gevonden')) {
+      throw new Error(i18n.t('saveOnline.codeNotFound'));
+    }
+    throw new Error(i18n.t('saveOnline.claimError'));
+  }
+
+  return data as string;
 }

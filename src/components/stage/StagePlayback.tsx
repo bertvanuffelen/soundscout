@@ -8,7 +8,7 @@
  * - Audience animatie
  */
 
-import { useCallback, useEffect } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Play,
@@ -59,11 +59,18 @@ export function StagePlayback() {
     stopTimeline,
   } = useAudioEngine();
 
+  // AbortController to cancel pending sample loads on cleanup
+  const abortRef = useRef<AbortController | null>(null);
+
   // Load samples on mount
   useEffect(() => {
     if (librarySamples.length > 0) {
-      loadSamples(librarySamples);
+      abortRef.current?.abort();
+      const controller = new AbortController();
+      abortRef.current = controller;
+      loadSamples(librarySamples, undefined, controller.signal);
     }
+    return () => { abortRef.current?.abort(); };
   }, [librarySamples, loadSamples]);
 
   const handlePlay = useCallback(() => {

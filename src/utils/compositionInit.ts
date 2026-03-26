@@ -15,7 +15,8 @@ import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
 import { getThemeStoryboards, findStoryboardById } from '../data/themes';
 import { logger } from './logger';
-import type { Template } from '../types';
+import type { Template, CompositionData } from '../types';
+import { storageService } from '../services/StorageService';
 
 export interface InitCompositionOptions {
   /** Theme ID to load */
@@ -120,8 +121,9 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
     const found = findStoryboardById(compositionData.storyboardId);
     if (found) {
       useAppStore.getState().setActiveStoryboard(found.storyboard);
-      useAppStore.getState().setComposeMode('storyboard');
-      logger.info(`[templateInit] Storyboard "${found.storyboard.id}" activated from template`);
+      const mode = found.storyboard.images.length === 1 ? 'image' : 'storyboard';
+      useAppStore.getState().setComposeMode(mode);
+      logger.info(`[templateInit] Storyboard "${found.storyboard.id}" activated from template (mode: ${mode})`);
     } else {
       logger.warn(`[templateInit] storyboardId "${compositionData.storyboardId}" not found in theme data`);
     }
@@ -132,6 +134,58 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
     await audioService.initialize();
   } catch (error) {
     logger.warn('Audio initialization failed during template init:', error);
+  }
+
+  // Stap 5: Navigeer naar studio
+  useAppStore.getState().goToStudio();
+}
+
+/**
+ * Initialiseer een compositie vanuit een online bewaarde versie (#52):
+ * 1. Laad timeline data (tracks, bpm, totalBeats, sections)
+ * 2. Laad samples in library
+ * 3. Sla saveCode + saveSecret op in localStorage
+ * 4. Initialiseer audio engine
+ * 5. Navigeer naar studio
+ */
+export async function initializeFromSavedComposition(
+  compositionData: CompositionData,
+  compositionName: string,
+  saveCode: string,
+  saveSecret: string,
+): Promise<void> {
+  // Stap 1: Laad timeline
+  useTimelineStore.getState().loadTimeline({
+    tracks: compositionData.tracks,
+    bpm: compositionData.bpm,
+    totalBeats: compositionData.totalBeats,
+    isLooping: compositionData.isLooping,
+    isPlaying: false,
+    currentBeat: 0,
+    sections: compositionData.sections,
+  });
+
+  // Stap 2: Laad samples in library
+  useLibraryStore.getState().loadLibrary(compositionData.samples);
+
+  // Stap 2b: Activeer storyboard als de compositie er een bevat
+  if (compositionData.storyboardId) {
+    const found = findStoryboardById(compositionData.storyboardId);
+    if (found) {
+      useAppStore.getState().setActiveStoryboard(found.storyboard);
+      const mode = found.storyboard.images.length === 1 ? 'image' : 'storyboard';
+      useAppStore.getState().setComposeMode(mode);
+    }
+  }
+
+  // Stap 3: Sla online bewaar-info op in localStorage
+  storageService.setSaveOnlineInfo(saveCode, saveSecret, compositionName);
+
+  // Stap 4: Audio initialiseren
+  try {
+    await audioService.initialize();
+  } catch (error) {
+    logger.warn('Audio initialization failed during saved composition init:', error);
   }
 
   // Stap 5: Navigeer naar studio

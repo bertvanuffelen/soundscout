@@ -18,7 +18,22 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { getThemeStoryboards } from '../../data/themes';
 import { MAX_SECTIONS } from '../../constants/config';
-import type { Storyboard, ComposeMode } from '../../types';
+import type { Storyboard, ComposeMode, Location } from '../../types';
+
+/**
+ * Convert a location to a virtual single-image Storyboard.
+ * This allows reuse of the existing storyboard system for image-mode composing.
+ */
+function locationToStoryboard(location: Location, themeId: string): Storyboard {
+  return {
+    id: `location-${location.id}`,
+    themeId,
+    name: location.name,
+    description: location.description,
+    coverImage: location.backgroundImage,
+    images: [{ id: location.id, url: location.backgroundImage, label: location.name }],
+  };
+}
 
 export default function ComposeModeScreen() {
   const { t } = useTranslation();
@@ -27,28 +42,25 @@ export default function ComposeModeScreen() {
   const setComposeMode = useAppStore((s) => s.setComposeMode);
   const setActiveStoryboard = useAppStore((s) => s.setActiveStoryboard);
   const themeId = useThemeStore((s) => s.activeThemeId);
+  const getLocations = useThemeStore((s) => s.getLocations);
 
   const storyboards = getThemeStoryboards(themeId) ?? [];
+  const locations = getLocations();
 
-  // Step: 'choose-mode' → 'pick-storyboard'
-  const [step, setStep] = useState<'choose-mode' | 'pick-storyboard'>('choose-mode');
+  // Virtual storyboards from location images (for "Afbeelding" mode)
+  const locationImages = locations.map((loc) => locationToStoryboard(loc, themeId));
 
-  const handleSelectMode = useCallback((mode: ComposeMode) => {
-    if (mode === 'free') {
-      // Reset timeline completely when switching to free mode
-      const { clearAllTracks, clearSections } = useTimelineStore.getState();
-      clearAllTracks();
-      clearSections();
-      setComposeMode('free');
-      setActiveStoryboard(null);
-      goToMap();
-    } else if (mode === 'image') {
-      // Show picker with storyboards that have exactly 1 image
-      setStep('pick-storyboard');
-    } else if (mode === 'storyboard') {
-      // Show picker with storyboards that have 2+ images
-      setStep('pick-storyboard');
-    }
+  // Step: 'choose-mode' → 'pick-storyboard' | 'pick-image'
+  const [step, setStep] = useState<'choose-mode' | 'pick-storyboard' | 'pick-image'>('choose-mode');
+
+  const handleSelectFree = useCallback(() => {
+    // Reset timeline completely when switching to free mode
+    const { clearAllTracks, clearSections } = useTimelineStore.getState();
+    clearAllTracks();
+    clearSections();
+    setComposeMode('free');
+    setActiveStoryboard(null);
+    goToMap();
   }, [setComposeMode, setActiveStoryboard, goToMap]);
 
   const handleSelectStoryboard = useCallback((sb: Storyboard) => {
@@ -79,8 +91,7 @@ export default function ComposeModeScreen() {
     goToMap();
   }, [setComposeMode, setActiveStoryboard, goToMap]);
 
-  // Separate single-image and multi-image storyboards
-  const singleImages = storyboards.filter((sb) => sb.images.length === 1);
+  // Multi-image storyboards for "Storyboard" mode
   const multiImages = storyboards.filter((sb) => sb.images.length > 1);
 
   return (
@@ -88,7 +99,7 @@ export default function ComposeModeScreen() {
       <div className="w-full max-w-2xl md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-8 lg:p-10">
         {/* Back button */}
         <button
-          onClick={step === 'pick-storyboard' ? () => setStep('choose-mode') : goToStart}
+          onClick={step !== 'choose-mode' ? () => setStep('choose-mode') : goToStart}
           className="flex items-center gap-1.5 text-brand-300 hover:text-white md:text-text-muted md:hover:text-text-main mb-6 transition-colors"
         >
           <ArrowLeft size={16} />
@@ -110,24 +121,17 @@ export default function ComposeModeScreen() {
                 icon={<Music size={32} />}
                 title={t('composeMode.free')}
                 description={t('composeMode.freeDescription')}
-                onClick={() => handleSelectMode('free')}
+                onClick={handleSelectFree}
                 color="accent"
               />
 
-              {/* Single image */}
-              {singleImages.length > 0 && (
+              {/* Single image — always available when theme has locations */}
+              {locationImages.length > 0 && (
                 <ModeCard
                   icon={<Image size={32} />}
                   title={t('composeMode.image')}
                   description={t('composeMode.imageDescription')}
-                  onClick={() => {
-                    if (singleImages.length === 1) {
-                      // Only one option: select directly
-                      handleSelectStoryboard(singleImages[0]);
-                    } else {
-                      handleSelectMode('image');
-                    }
-                  }}
+                  onClick={() => setStep('pick-image')}
                   color="teal"
                 />
               )}
@@ -140,15 +144,32 @@ export default function ComposeModeScreen() {
                   description={t('composeMode.storyboardDescription')}
                   onClick={() => {
                     if (multiImages.length === 1) {
-                      // Only one option: select directly
                       handleSelectStoryboard(multiImages[0]);
                     } else {
-                      handleSelectMode('storyboard');
+                      setStep('pick-storyboard');
                     }
                   }}
                   color="purple"
                 />
               )}
+            </div>
+          </>
+        )}
+
+        {step === 'pick-image' && (
+          <>
+            <h1 className="text-2xl sm:text-3xl font-bold text-white md:text-text-main mb-2">
+              {t('composeMode.pickImage')}
+            </h1>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
+              {locationImages.map((sb) => (
+                <StoryboardCard
+                  key={sb.id}
+                  storyboard={sb}
+                  onSelect={() => handleSelectStoryboard(sb)}
+                />
+              ))}
             </div>
           </>
         )}
@@ -160,7 +181,7 @@ export default function ComposeModeScreen() {
             </h1>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-              {storyboards.map((sb) => (
+              {multiImages.map((sb) => (
                 <StoryboardCard
                   key={sb.id}
                   storyboard={sb}
@@ -243,17 +264,11 @@ function StoryboardCard({ storyboard, onSelect }: StoryboardCardProps) {
         />
       </div>
 
-      {/* Info */}
-      <div className="p-4">
-        <h3 className="text-base font-bold text-white md:text-text-main mb-1">
+      {/* Title */}
+      <div className="px-3 py-2">
+        <h3 className="text-sm font-bold text-white md:text-text-main truncate">
           {t(storyboard.name)}
         </h3>
-        <p className="text-sm text-brand-300 md:text-text-muted mb-1.5">
-          {t(storyboard.description)}
-        </p>
-        <span className="text-xs text-brand-400 md:text-text-muted">
-          {t('composeMode.images', { count: storyboard.images.length })}
-        </span>
       </div>
 
       {/* Hover overlay */}

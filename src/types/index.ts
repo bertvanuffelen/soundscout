@@ -17,7 +17,8 @@ export type GameScreen =
   | 'stage'
   | 'compositions'
   | 'teacher'
-  | 'shared';
+  | 'shared'
+  | 'tutorial';
 
 // --- Storytelling (#41) ---
 
@@ -392,7 +393,8 @@ export type StorageKey =
   | 'soundscout:compositions'
   | 'soundscout:library'
   | 'soundscout:preferences'
-  | 'soundscout:version';
+  | 'soundscout:version'
+  | 'soundscout:save-online';
 
 // --- User Preferences ---
 

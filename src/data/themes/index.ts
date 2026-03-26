@@ -95,12 +95,36 @@ export function getThemeStoryboards(themeId: string): ThemeConfig['storyboards']
 
 /**
  * Find a storyboard by ID across all themes.
+ * Also supports virtual location storyboards (id format: "location-{locationId}").
  * Used when loading a composition/template that references a storyboardId.
  */
 export function findStoryboardById(storyboardId: string): { themeId: string; storyboard: NonNullable<ThemeConfig['storyboards']>[number] } | undefined {
+  // Check predefined storyboards first
   for (const [themeId, theme] of Object.entries(themes)) {
     const sb = theme.storyboards?.find((s) => s.id === storyboardId);
     if (sb) return { themeId, storyboard: sb };
   }
+
+  // Check for virtual location storyboards (e.g. "location-boerderij")
+  if (storyboardId.startsWith('location-')) {
+    const locationId = storyboardId.slice('location-'.length);
+    for (const [themeId, theme] of Object.entries(themes)) {
+      const location = theme.locations.find((loc) => loc.id === locationId);
+      if (location) {
+        return {
+          themeId,
+          storyboard: {
+            id: storyboardId,
+            themeId,
+            name: location.name,
+            description: location.description,
+            coverImage: location.backgroundImage,
+            images: [{ id: location.id, url: location.backgroundImage, label: location.name }],
+          },
+        };
+      }
+    }
+  }
+
   return undefined;
 }

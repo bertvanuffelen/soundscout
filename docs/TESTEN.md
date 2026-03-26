@@ -175,7 +175,7 @@ Verbeteringen doorgevoerd: touch tolerance verhoogd (10px), touch-action:none op
 - [x] Zoom in terwijl playhead aan het begin staat — playhead moet in beeld blijven
 - [x] Zoom in terwijl playhead halverwege staat — playhead moet gecentreerd blijven
 - [x] Zoom tot maximum (4×) — knoppen moeten correct uitschakelen
-- [ ] Zoom in tot max en sleep een sample → clip moet op de juiste positie terechtkomen → **Bekende bug, zie #55**
+- [x] Zoom in tot max en sleep een sample → clip moet op de juiste positie terechtkomen → **Bekende bug, zie #55**
 
 ### Mobiel / Tablet
 
@@ -191,8 +191,8 @@ Verbeteringen doorgevoerd: touch tolerance verhoogd (10px), touch-action:none op
 - [x] Storyboard met slechts 1 afbeelding: geen pijltjes zichtbaar, afbeelding altijd zichtbaar, geen secties aangemaakt (testbaar via "Bij een afbeelding" → locatiekeuze)
 - [x] Venster resizen tijdens actieve studio split-view: layout moet correct aanpassen
 - [ ] Mobiel: tabs (afbeelding / timeline) moeten correct werken in plaats van split-view
-- [ ] Storyboard wisselen naar vrij modus en terug — clips blijven staan, alleen secties/afbeeldingen resetten
-- [ ] Afbeeldingwissel tijdens afspelen: bij sectie-overgang wisselt de afbeelding (momenteel hard-cut, fade is feature request → zie #62)
+- ~~Storyboard wisselen naar vrij modus en terug~~ — Nog niet geïmplementeerd, zie TODO #69
+- [x] Afbeeldingwissel tijdens afspelen: bij sectie-overgang wisselt de afbeelding (momenteel hard-cut, fade is feature request → zie #62)
 - [x] Playhead handmatig naar ander punt slepen: afbeelding moet direct mee-updaten naar de juiste sectie
 
 ---
@@ -204,10 +204,10 @@ Verbeteringen doorgevoerd: touch tolerance verhoogd (10px), touch-action:none op
 - [x] Leerling stuurt een compositie met storyboard in via klascode
 - [x] Docent opent het dashboard en klikt op de inzending
 - [x] Controleer dat er "Met storyboard" indicator zichtbaar is in de header
-- [ ] Overweeg: "Met storyboard" indicator ook tonen in het overzicht van alle inzendingen bij een klas
+- ~~"Met storyboard" indicator in inzendingenlijst~~ — Feature request, zie TODO #70
 - [x] Controleer dat de storyboard-afbeelding boven de timeline verschijnt
 - [x] Speel de compositie af — afbeelding moet wisselen bij sectie-overgangen
-- [ ] Controleer dat de positie-indicator (bijv. "Afbeelding 1/3, 2/3") correct meeloopt met playback?
+- [x] Controleer dat de positie-indicator (bijv. "Afbeelding 1/3, 2/3") correct meeloopt met playback?
 - [x] Inzending ZONDER storyboard openen — geen afbeelding, geen indicator, normale weergave
 
 ### Publieke Deellink (SharedPlayer)
@@ -251,16 +251,16 @@ Storyboard-composities exporteren als video met crossfade-transities.
 
 ### Enkele afbeelding (image modus)
 
-- [ ] Maak een compositie met één afbeelding
-- [ ] Exporteer als video — video toont enkele afbeelding, geen crossfade
-- [ ] Audio loopt correct
+- [x] Maak een compositie met één afbeelding
+- [x] Exporteer als video — video toont enkele afbeelding, geen crossfade
+- [x] Audio loopt correct
 
 ### Edge cases
 
-- [ ] Vrije compositie (geen storyboard): video-exportknop is NIET zichtbaar
-- [ ] Lege timeline (geen clips): foutmelding verschijnt
-- [ ] Video export tijdens MP3 export: beide knoppen disabled
-- [ ] Annuleer niet — wacht tot export klaar is (geen cancel-functie in v1)
+- [x] Vrije compositie (geen storyboard): video-exportknop is NIET zichtbaar
+- [x] Lege timeline (geen clips): foutmelding verschijnt ==> GEEN FOUTMELDING MAAR TOEGANG TOT PODIUM IS NIET MOGELIJK ZOLANG ER GEEN SAMPLES IN TIMELINE STAAN = CORRECT
+- [x] Video export tijdens MP3 export: beide knoppen disabled
+- [x] Annuleer niet — wacht tot export klaar is (geen cancel-functie in v1)
 
 ### Bestandsgroottes (indicatief)
 
@@ -365,13 +365,13 @@ Storyboard-composities exporteren als video met crossfade-transities.
 
 ### Clip-labels (#66)
 
-- [ ] Selecteer een clip in de studio → tag-icoon (🏷) verschijnt in de inline edit toolbar
-- [ ] Klik op het tag-icoon → klein tekstveld opent inline
-- [ ] Typ een label (bijv. "wind") → druk Enter of klik erbuiten
-- [ ] Clip toont nu het label i.p.v. de sample-naam
-- [ ] Label wissen (leeg veld + Enter) → clip toont weer de originele sample-naam
-- [ ] Tag-icoon is oranje geaccentueerd als het clip een label heeft
-- [ ] Dupliceer een clip met label → kopie heeft hetzelfde label
+- [x] Selecteer een clip in de studio → tag-icoon (🏷) verschijnt in de inline edit toolbar
+- [x] Klik op het tag-icoon → klein tekstveld opent inline
+- [x] Typ een label (bijv. "wind") → druk Enter of klik erbuiten
+- [x] Clip toont nu het label i.p.v. de sample-naam
+- [x] Label wissen (leeg veld + Enter) → clip toont weer de originele sample-naam
+- [x] Tag-icoon is oranje geaccentueerd als het clip een label heeft
+- [x] Dupliceer een clip met label → kopie heeft hetzelfde label
 - [ ] Sla compositie op → herlaad → labels zijn bewaard (localStorage)
 - [ ] Deel compositie via klascode → docent ziet labels in de viewer
 - [ ] Max 30 karakters — meer typen is niet mogelijk

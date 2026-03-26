@@ -44,9 +44,11 @@ Tests use jsdom environment with jest-style globals (`describe`, `it`, `expect`)
 No router — `App.tsx` switches on `gameStore.currentScreen`:
 `'start'` → `'map'` → `'location'` → `'studio'` → `'stage'`
 
+Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player)
+
 Teacher screens: `'teacher-login'` → `'teacher-dashboard'` → `'compositions'`
 
-Each screen maps to a component in `src/components/` (e.g., `StudioView`, `MapView`).
+Each screen maps to a component in `src/components/` (e.g., `StudioView`, `MapView`, `TutorialScreen`).
 
 ### State Management (Zustand Stores)
 
@@ -127,6 +129,12 @@ The Timeline has `max-h-[50dvh]` to guarantee the sample library gets enough spa
 - **Smart snap** (`src/utils/clipCollision.ts`): Try original position → shift after blocking clip → try tracks below → reject
 - Sensors: PointerSensor (8px distance) + TouchSensor (150ms delay)
 
+### Stage / Podium Screen
+
+The Stage screen (`StageView.tsx`) is the performance screen where students listen to their composition. Clean layout with only 3 buttons visible: **Save** (primary), **Share & Export** (secondary, opens `StageActionsModal`), and **New Composition** (ghost).
+
+`StageActionsModal` groups all secondary actions with section headers and hint text per button: Save & Share (save online, share link, share with teacher), Export (MP3, video), and Teacher (save as template, teacher-only). The modal slides up from the bottom on mobile (`items-end`, `rounded-t-2xl`) and centers on desktop.
+
 ### Theme System
 
 Themes in `src/data/themes/{themeId}/` — each has `locations.ts`, `samples.ts`, `map.ts`, `index.ts`.
@@ -146,6 +154,29 @@ Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disabl
 2. Database-level: RLS policies (SELECT, INSERT, UPDATE, DELETE) using `auth.uid()`
 
 **Server-side Rate Limiting**: All public RPC functions (`submit_composition`, `share_composition`, `get_shared_composition`) are rate-limited via `check_rate_limit()` PostgreSQL function. Limits: 60/min per classcode (submit), 10/min per session (share), 30/min per code (get_shared). Table: `rate_limits`. Migration: `supabase/migrations/002_rate_limiting.sql`.
+
+### Online Bewaarcode (#52)
+
+Students can save compositions online with a 6-character save code. On another device, entering the code loads the composition into the studio to continue working. Compositions expire after 60 days of inactivity (`last_updated_at`).
+
+**Code types** (distinguished by length in `ShareCodeInput`):
+- 4 digits → class code (teacher submission)
+- 6 alphanumeric → save code (load into studio, read+write)
+- 8 alphanumeric → share code or template code (listen-only / template)
+
+**Security**: A `save_secret` (32-char token in localStorage via `storageService.setSaveOnlineInfo()`) is required for updates. On a new device, the student "claims" the composition via `claim_saved_composition()` which generates a new secret.
+
+**Database**: Reuses `submissions` table with additional columns: `save_code`, `save_secret`, `last_updated_at`, `student_email`. Migration: `supabase/migrations/004_save_codes.sql`.
+
+**RPC functions**: `save_composition_online`, `update_saved_composition`, `load_saved_composition`, `claim_saved_composition`. All rate-limited.
+
+**Client flow**: `SaveOnlineModal` (Stage) → `saveCompositionOnline()` → code displayed. `ShareCodeInput` (Start) → 6-char detected → `loadSavedComposition()` → `claimSavedComposition()` → `initializeFromSavedComposition()` → studio.
+
+**Auto-sync (#52-FASE2)**: When a local save occurs and `saveOnlineInfo` (saveCode + saveSecret) is in localStorage, `useStageSave` fire-and-forgets `updateSavedComposition()` to keep the online copy in sync.
+
+**QR code**: `SaveOnlineModal` success state has a QR toggle button (via `qrcode` npm package) that shows a scannable QR of the 6-char code.
+
+**Teacher "In bewerking" tab**: `ClassDetail` splits submissions by `save_code` presence. Compositions saved with a class code but not formally submitted appear under an "In bewerking" tab with a blue WIP badge and "Laatst bewerkt" timestamp.
 
 ### i18n
 
@@ -216,4 +247,8 @@ VITE_SUPABASE_ANON_KEY=xxx
 | `docs/TONEJS-KENNISBANK.md` | Tone.js knowledge base & critical limitations |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Guide for adding locations and themes |
 | `docs/PLAN-KLASCODE-SYSTEEM.md` | Supabase integration plan |
+| `docs/PLAN-52-BEWAARCODE.md` | Online save code system design (#52) |
+| `docs/PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` | Real-time reschedule design (#22) |
+| `docs/PLAN-CLIP-LOOP-EFFECTS.md` | Clip loop + effects implementation plan (#65, #33) |
+| `docs/PLAN-72-PRAATPLAAT.md` | Praatplaat collaborative sound map design (#72) |
 | `soundscout-prd.md` | Product requirements document |

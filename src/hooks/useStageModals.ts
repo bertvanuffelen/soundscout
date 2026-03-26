@@ -22,6 +22,7 @@ export function useStageModals() {
   const [showNewModal, setShowNewModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
   const [showShareLinkModal, setShowShareLinkModal] = useState(false);
+  const [showSaveOnlineModal, setShowSaveOnlineModal] = useState(false);
 
   const handleNewComposition = useCallback(() => {
     stopAll();
@@ -39,6 +40,8 @@ export function useStageModals() {
     setShowShareModal,
     showShareLinkModal,
     setShowShareLinkModal,
+    showSaveOnlineModal,
+    setShowSaveOnlineModal,
     handleNewComposition,
   };
 }

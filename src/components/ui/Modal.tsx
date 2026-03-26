@@ -18,7 +18,7 @@ export interface ModalProps {
   title?: string;
   children: ReactNode;
   /** Size of the modal */
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl';
   /** Whether clicking backdrop closes modal */
   closeOnBackdrop?: boolean;
   /** Whether pressing Escape closes modal */
@@ -31,6 +31,7 @@ const sizeStyles = {
   sm: 'max-w-[280px] sm:max-w-sm',
   md: 'max-w-[320px] sm:max-w-md',
   lg: 'max-w-[360px] sm:max-w-lg',
+  xl: 'max-w-[95vw] sm:max-w-3xl lg:max-w-5xl',
 };
 
 export function Modal({
@@ -107,7 +108,7 @@ export function Modal({
         ) as NodeListOf<HTMLElement> | undefined;
 
         if (focusableElements && focusableElements.length > 0) {
-          focusableElements[0].focus();
+          focusableElements[0].focus({ preventScroll: true });
         }
       }, 0);
     }
@@ -161,7 +162,15 @@ export function Modal({
           </div>
         )}
 
-        <div id="modal-body" className={cn(title ? 'px-4 sm:px-6 pb-4 sm:pb-6' : 'p-4 sm:p-6')}>{children}</div>
+        <div
+          id="modal-body"
+          className={cn(
+            title ? 'px-4 sm:px-6 pb-4 sm:pb-6' : 'p-4 sm:p-6',
+            size === 'xl' && 'max-h-[75dvh] overflow-y-auto'
+          )}
+        >
+          {children}
+        </div>
       </div>
     </div>
   );

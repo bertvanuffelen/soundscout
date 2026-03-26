@@ -16,6 +16,8 @@ export interface Submission {
   composition_name: string;
   composition_data: CompositionData;
   created_at: string;
+  save_code?: string | null;
+  last_updated_at?: string | null;
 }
 
 interface UseSubmissionsReturn {
