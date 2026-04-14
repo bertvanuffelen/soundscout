@@ -15,16 +15,13 @@ import { Headphones, Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
-import { getActiveAssignment } from '../../lib/assignments';
 import { useAppStore } from '../../stores/appStore';
-import { initializeFromTemplate, initializeFromSavedComposition } from '../../utils/compositionInit';
+import { initializeFromTemplate, initializeFromSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
 
 export function ShareCodeInput() {
   const { t } = useTranslation();
   const goToShared = useAppStore((s) => s.goToShared);
-  const setPraatplaat = useAppStore((s) => s.setPraatplaat);
-  const goToPraatplaatSelect = useAppStore((s) => s.goToPraatplaatSelect);
 
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -50,37 +47,17 @@ export function ShareCodeInput() {
       setError(null);
 
       try {
-        // 0. Als 4 cijfers → klascode → check actieve opdracht (template of praatplaat)
+        // 0. Als 4 cijfers → klascode → route naar AssignmentLandingScreen.
+        //    Het landingsscherm toont de opdracht (template/praatplaat) of
+        //    soft-recovery (Route C) zodat de leerling zelf op "Starten" drukt
+        //    voordat we de studio/praatplaat-select in gaan (#78).
         if (code.length === 4 && /^\d{4}$/.test(code)) {
-          try {
-            const assignment = await getActiveAssignment(code);
-            if (assignment) {
-              if (assignment.type === 'praatplaat' && assignment.praatplaat) {
-                // Actieve praatplaat → praatplaat-select flow
-                setPraatplaat({
-                  id: assignment.praatplaat.id,
-                  name: assignment.praatplaat.name,
-                  imageUrl: assignment.praatplaat.imageUrl,
-                  classId: assignment.classId,
-                  classCode: code,
-                  themeId: assignment.praatplaat.themeId,
-                  locationId: assignment.praatplaat.locationId,
-                });
-                goToPraatplaatSelect();
-                setCode('');
-                return;
-              }
-              if (assignment.type === 'template' && assignment.template) {
-                // Actieve template → initialiseer en ga naar studio
-                await initializeFromTemplate(assignment.template);
-                setCode('');
-                return;
-              }
-            }
-          } catch {
-            // Fout bij ophalen → val door naar "geen actieve opdracht"
+          const routed = await lookupAndRouteAssignment(code);
+          if (routed) {
+            setCode('');
+            return;
           }
-          setError(t('share.noActiveAssignment'));
+          setError(t('share.lookupError'));
           setIsLoading(false);
           return;
         }
@@ -137,7 +114,7 @@ export function ShareCodeInput() {
         setIsLoading(false);
       }
     },
-    [code, t, goToShared, setPraatplaat, goToPraatplaatSelect]
+    [code, t, goToShared]
   );
 
   return (

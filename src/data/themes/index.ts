@@ -6,8 +6,11 @@
  */
 
 import type { ThemeConfig } from './types';
+import type { Storyboard } from '../../types';
 import { basisTheme } from './basis';
 import { winterspelenTheme } from './winterspelen';
+import { praatplaatImages, isAvailableForStudent } from '../praatplaatImages';
+import { storyboards as allStoryboards, getStoryboardsForTheme } from '../storyboards';
 
 // Export types
 export type { ThemeConfig, MapConfig, LocationPosition, ThemeColors } from './types';
@@ -88,9 +91,65 @@ export function getAllLocationsByTheme(): Array<{ themeId: string; themeName: st
 
 /**
  * Get storyboards for a theme (empty array if none).
+ * Leest uit de standalone `storyboards`-registry (niet uit `theme.storyboards`).
  */
-export function getThemeStoryboards(themeId: string): ThemeConfig['storyboards'] {
-  return themes[themeId]?.storyboards ?? [];
+export function getThemeStoryboards(themeId: string): Storyboard[] {
+  return getStoryboardsForTheme(themeId);
+}
+
+/** Eén storyboard met de bron-thema erbij (voor cross-theme pickers). */
+export interface StoryboardWithTheme {
+  themeId: string;
+  themeName: string;
+  storyboard: Storyboard;
+}
+
+/**
+ * Alle compositie-afbeeldingen (single-image storyboards) over alle thema's heen.
+ * Gebruik in `ImagePickerModal` zodat de leerling direct een afbeelding kiest;
+ * het thema (en dus de geluiden) volgt impliciet uit `storyboard.themeId`.
+ */
+export function getAllCompositionImages(): StoryboardWithTheme[] {
+  // Losse compositie-afbeeldingen leven in `praatplaatImages` (los van thema's).
+  // Theme-storyboards (single-image of niet) worden hier niet meer meegenomen —
+  // multi-image storyboards horen thuis in `getAllMultiImageStoryboards`.
+  const result: StoryboardWithTheme[] = [];
+
+  for (const img of praatplaatImages.filter(isAvailableForStudent)) {
+    const themeId = img.themeId;
+    if (!themeId || !themes[themeId]) continue;
+    const virtualStoryboard: Storyboard = {
+      id: img.id,
+      themeId,
+      name: img.nameKey,
+      description: '',
+      coverImage: img.imageUrl,
+      images: [{ id: img.id, url: img.imageUrl, label: img.nameKey }],
+    };
+    result.push({
+      themeId,
+      themeName: themes[themeId].name,
+      storyboard: virtualStoryboard,
+    });
+  }
+
+  return result;
+}
+
+/**
+ * Alle multi-image storyboards over alle thema's heen.
+ * Leest uit de standalone `storyboards`-registry. Gebruik in
+ * `StoryboardPickerModal`.
+ */
+export function getAllMultiImageStoryboards(): StoryboardWithTheme[] {
+  const result: StoryboardWithTheme[] = [];
+  for (const sb of allStoryboards) {
+    if (sb.images.length <= 1) continue;
+    const theme = themes[sb.themeId];
+    if (!theme) continue;
+    result.push({ themeId: theme.id, themeName: theme.name, storyboard: sb });
+  }
+  return result;
 }
 
 /**
@@ -98,11 +157,30 @@ export function getThemeStoryboards(themeId: string): ThemeConfig['storyboards']
  * Also supports virtual location storyboards (id format: "location-{locationId}").
  * Used when loading a composition/template that references a storyboardId.
  */
-export function findStoryboardById(storyboardId: string): { themeId: string; storyboard: NonNullable<ThemeConfig['storyboards']>[number] } | undefined {
-  // Check predefined storyboards first
-  for (const [themeId, theme] of Object.entries(themes)) {
-    const sb = theme.storyboards?.find((s) => s.id === storyboardId);
-    if (sb) return { themeId, storyboard: sb };
+export function findStoryboardById(storyboardId: string): { themeId: string; storyboard: Storyboard } | undefined {
+  // Check standalone storyboards registry first
+  const sb = allStoryboards.find((s) => s.id === storyboardId);
+  if (sb && themes[sb.themeId]) {
+    return { themeId: sb.themeId, storyboard: sb };
+  }
+
+  // Check universele praatplaat-afbeeldingen (id prefix "pp-") — deze hebben
+  // géén echte storyboard-entry maar worden on-the-fly opgebouwd.
+  if (storyboardId.startsWith('pp-')) {
+    const img = praatplaatImages.find((p) => p.id === storyboardId);
+    if (img && img.themeId && themes[img.themeId]) {
+      return {
+        themeId: img.themeId,
+        storyboard: {
+          id: img.id,
+          themeId: img.themeId,
+          name: img.nameKey,
+          description: '',
+          coverImage: img.imageUrl,
+          images: [{ id: img.id, url: img.imageUrl, label: img.nameKey }],
+        },
+      };
+    }
   }
 
   // Check for virtual location storyboards (e.g. "location-boerderij")

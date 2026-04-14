@@ -35,6 +35,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   // --- Actieve opdracht ---
   const {
     activeAssignment,
+    pastAssignments,
     loading: assignmentLoading,
     operationError: assignmentError,
     activateTemplate,
@@ -304,6 +305,35 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                 </div>
               </div>
             )}
+          </div>
+        )}
+
+        {/* --- Eerdere opdrachten --- */}
+        {!loading && !assignmentLoading && pastAssignments.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3">
+              {t('assignments.pastTitle')}
+            </h2>
+            <div className="space-y-2">
+              {pastAssignments.map((pa) => (
+                <div
+                  key={pa.id}
+                  className="bg-bg-surface rounded-lg p-3 border border-border-subtle flex items-center gap-3"
+                >
+                  <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${
+                    pa.type === 'template' ? 'bg-amber-100 text-amber-600' : 'bg-primary-100 text-primary-600'
+                  }`}>
+                    {pa.type === 'template' ? <FileText className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-medium text-text-main truncate">{pa.assignmentName}</p>
+                    <p className="text-xs text-text-muted">
+                      {new Date(pa.activatedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}
+                    </p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 

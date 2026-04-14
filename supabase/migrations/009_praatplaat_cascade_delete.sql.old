@@ -1,0 +1,21 @@
+-- ============================================
+-- MIGRATIE 009: Hard delete voor praatplaten
+-- Voer uit in Supabase SQL Editor
+-- ============================================
+-- Wijzig submissions.praatplaat_id van ON DELETE SET NULL naar
+-- ON DELETE CASCADE, zodat submissions automatisch worden
+-- verwijderd wanneer een praatplaat wordt verwijderd.
+
+-- ============================================
+-- 1. WIJZIG FOREIGN KEY: SET NULL → CASCADE
+-- ============================================
+
+-- Drop de bestaande foreign key constraint
+ALTER TABLE public.submissions
+  DROP CONSTRAINT IF EXISTS submissions_praatplaat_id_fkey;
+
+-- Maak nieuwe constraint met CASCADE
+ALTER TABLE public.submissions
+  ADD CONSTRAINT submissions_praatplaat_id_fkey
+  FOREIGN KEY (praatplaat_id) REFERENCES public.praatplaten(id)
+  ON DELETE CASCADE;

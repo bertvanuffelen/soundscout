@@ -3,7 +3,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Play, Trash2, Image, PenLine } from 'lucide-react';
+import { Play, Trash2, Image, PenLine, FileText, MapPin } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 
 interface SubmissionCardProps {
@@ -54,6 +54,18 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
             <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent-100 text-accent-700 text-xs font-medium shrink-0">
               <Image className="w-3 h-3" />
               {t('teacher.submissionCard.withStoryboard')}
+            </span>
+          )}
+          {submission.assignment_type === 'template' && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 text-xs font-medium shrink-0">
+              <FileText className="w-3 h-3" />
+              {t('teacher.submissionCard.fromTemplate')}
+            </span>
+          )}
+          {submission.assignment_type === 'praatplaat' && (
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-primary-50 text-primary-700 text-xs font-medium shrink-0">
+              <MapPin className="w-3 h-3" />
+              {t('teacher.submissionCard.fromPraatplaat')}
             </span>
           )}
         </div>

@@ -18,22 +18,20 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { getThemeStoryboards } from '../../data/themes';
 import { MAX_SECTIONS } from '../../constants/config';
-import type { Storyboard, ComposeMode, Location } from '../../types';
+import type { Storyboard, ComposeMode } from '../../types';
 
 /**
- * Convert a location to a virtual single-image Storyboard.
- * This allows reuse of the existing storyboard system for image-mode composing.
+ * Fallback-scherm dat alléén nog wordt bereikt als `initializeNewComposition`
+ * wordt aangeroepen vóórdat een storyboard/afbeelding gekozen is. In de
+ * nieuwe Sketch A-flow (#78) gebeurt de keuze al via modals op het
+ * startscherm (`StoryboardPickerModal`), dus dit scherm is normaal
+ * gesproken onbereikbaar.
+ *
+ * NB: `locationToStoryboard` (her-gebruik van locatie-achtergronden als
+ * compositie-afbeelding) is uit dit scherm verwijderd. Compositie-
+ * afbeeldingen leven nu als single-image storyboards in
+ * `themes/{theme}/storyboards.ts`.
  */
-function locationToStoryboard(location: Location, themeId: string): Storyboard {
-  return {
-    id: `location-${location.id}`,
-    themeId,
-    name: location.name,
-    description: location.description,
-    coverImage: location.backgroundImage,
-    images: [{ id: location.id, url: location.backgroundImage, label: location.name }],
-  };
-}
 
 export default function ComposeModeScreen() {
   const { t } = useTranslation();
@@ -41,17 +39,21 @@ export default function ComposeModeScreen() {
   const goToStart = useAppStore((s) => s.goToStart);
   const setComposeMode = useAppStore((s) => s.setComposeMode);
   const setActiveStoryboard = useAppStore((s) => s.setActiveStoryboard);
+  const composeMode = useAppStore((s) => s.composeMode);
   const themeId = useThemeStore((s) => s.activeThemeId);
-  const getLocations = useThemeStore((s) => s.getLocations);
 
   const storyboards = getThemeStoryboards(themeId) ?? [];
-  const locations = getLocations();
-
-  // Virtual storyboards from location images (for "Afbeelding" mode)
-  const locationImages = locations.map((loc) => locationToStoryboard(loc, themeId));
+  // Single-image storyboards in dit thema = compositie-afbeeldingen
+  const singleImages = storyboards.filter((sb) => sb.images.length === 1);
 
   // Step: 'choose-mode' → 'pick-storyboard' | 'pick-image'
-  const [step, setStep] = useState<'choose-mode' | 'pick-storyboard' | 'pick-image'>('choose-mode');
+  // Wanneer de mode al gekozen is via `ComposeModeModal` (#78), slaan we de
+  // mode-keuze stap over en starten direct in de juiste picker.
+  const initialStep =
+    composeMode === 'image' ? 'pick-image'
+    : composeMode === 'storyboard' ? 'pick-storyboard'
+    : 'choose-mode';
+  const [step, setStep] = useState<'choose-mode' | 'pick-storyboard' | 'pick-image'>(initialStep);
 
   const handleSelectFree = useCallback(() => {
     // Reset timeline completely when switching to free mode
@@ -97,9 +99,15 @@ export default function ComposeModeScreen() {
   return (
     <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-2xl md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-8 lg:p-10">
-        {/* Back button */}
+        {/* Back button — als de mode al via modal gekozen is, brengt 'terug'
+            de leerling helemaal terug naar het startscherm. Anders terug naar
+            de mode-keuze. */}
         <button
-          onClick={step !== 'choose-mode' ? () => setStep('choose-mode') : goToStart}
+          onClick={
+            step !== 'choose-mode' && initialStep === 'choose-mode'
+              ? () => setStep('choose-mode')
+              : goToStart
+          }
           className="flex items-center gap-1.5 text-brand-300 hover:text-white md:text-text-muted md:hover:text-text-main mb-6 transition-colors"
         >
           <ArrowLeft size={16} />
@@ -126,7 +134,7 @@ export default function ComposeModeScreen() {
               />
 
               {/* Single image — always available when theme has locations */}
-              {locationImages.length > 0 && (
+              {singleImages.length > 0 && (
                 <ModeCard
                   icon={<Image size={32} />}
                   title={t('composeMode.image')}
@@ -163,7 +171,7 @@ export default function ComposeModeScreen() {
             </h1>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-6">
-              {locationImages.map((sb) => (
+              {singleImages.map((sb) => (
                 <StoryboardCard
                   key={sb.id}
                   storyboard={sb}

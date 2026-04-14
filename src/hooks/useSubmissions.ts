@@ -18,6 +18,8 @@ export interface Submission {
   created_at: string;
   save_code?: string | null;
   last_updated_at?: string | null;
+  assignment_id?: string | null;
+  assignment_type?: 'template' | 'praatplaat' | null;
 }
 
 interface UseSubmissionsReturn {

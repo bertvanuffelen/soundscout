@@ -5,7 +5,7 @@
  * Each theme contains its own locations, samples, and map configuration.
  */
 
-import type { Location, Sample, Storyboard } from '../../types';
+import type { Location, Sample } from '../../types';
 
 /**
  * Position of a location on the map.
@@ -82,7 +82,4 @@ export interface ThemeConfig {
 
   /** Optional color overrides */
   colors?: ThemeColors;
-
-  /** Optional storyboards for storytelling mode (#41) */
-  storyboards?: Storyboard[];
 }

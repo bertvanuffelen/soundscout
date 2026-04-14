@@ -9,7 +9,7 @@
  * - Animations
  */
 
-import { useEffect, useCallback, useRef, type ReactNode } from 'react';
+import { useEffect, useRef, type ReactNode } from 'react';
 import { cn } from '../../utils/cn';
 
 export interface ModalProps {
@@ -47,19 +47,56 @@ export function Modal({
   const modalRef = useRef<HTMLDivElement>(null);
   const previouslyFocusedRef = useRef<HTMLElement | null>(null);
 
-  // Handle escape key
-  const handleEscape = useCallback(
-    (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && closeOnEscape) {
-        onClose();
-      }
-    },
-    [onClose, closeOnEscape]
-  );
+  // Keep latest callbacks in refs so the keydown listener doesn't need to be
+  // reattached on every render (which would also re-trigger the auto-focus
+  // effect below, yanking focus out of inputs while the user is typing).
+  const onCloseRef = useRef(onClose);
+  const closeOnEscapeRef = useRef(closeOnEscape);
+  useEffect(() => {
+    onCloseRef.current = onClose;
+    closeOnEscapeRef.current = closeOnEscape;
+  }, [onClose, closeOnEscape]);
 
-  // Focus trap handler
-  const handleKeyDown = useCallback(
-    (e: KeyboardEvent) => {
+  // Open/close lifecycle: store & restore focus, body-scroll lock, auto-focus.
+  // Only depends on `isOpen` so it fires exactly once per open/close.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    previouslyFocusedRef.current = document.activeElement as HTMLElement;
+    document.body.style.overflow = 'hidden';
+
+    const focusTimer = setTimeout(() => {
+      const focusableElements = modalRef.current?.querySelectorAll(
+        'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+      ) as NodeListOf<HTMLElement> | undefined;
+
+      if (focusableElements && focusableElements.length > 0) {
+        focusableElements[0].focus({ preventScroll: true });
+      }
+    }, 0);
+
+    return () => {
+      clearTimeout(focusTimer);
+      document.body.style.overflow = '';
+
+      if (previouslyFocusedRef.current) {
+        previouslyFocusedRef.current.focus();
+      }
+    };
+  }, [isOpen]);
+
+  // Keydown listeners: Escape + Tab focus trap. Attached once per open and
+  // read the latest callbacks through refs.
+  useEffect(() => {
+    if (!isOpen) return;
+
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === 'Escape' && closeOnEscapeRef.current) {
+        onCloseRef.current();
+      }
+    };
+
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (e.key !== 'Tab') return;
 
       const focusableElements = modalRef.current?.querySelectorAll(
@@ -73,57 +110,26 @@ export function Modal({
       const activeElement = document.activeElement as HTMLElement;
 
       if (e.shiftKey) {
-        // Shift+Tab: move backwards
         if (activeElement === firstElement) {
           e.preventDefault();
           lastElement.focus();
         }
       } else {
-        // Tab: move forwards
         if (activeElement === lastElement) {
           e.preventDefault();
           firstElement.focus();
         }
       }
-    },
-    []
-  );
+    };
 
-  useEffect(() => {
-    if (isOpen) {
-      // Store previously focused element
-      previouslyFocusedRef.current = document.activeElement as HTMLElement;
-
-      // Add event listeners
-      document.addEventListener('keydown', handleEscape);
-      document.addEventListener('keydown', handleKeyDown);
-
-      // Prevent body scroll when modal is open
-      document.body.style.overflow = 'hidden';
-
-      // Auto-focus first focusable element
-      setTimeout(() => {
-        const focusableElements = modalRef.current?.querySelectorAll(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
-        ) as NodeListOf<HTMLElement> | undefined;
-
-        if (focusableElements && focusableElements.length > 0) {
-          focusableElements[0].focus({ preventScroll: true });
-        }
-      }, 0);
-    }
+    document.addEventListener('keydown', handleEscape);
+    document.addEventListener('keydown', handleKeyDown);
 
     return () => {
       document.removeEventListener('keydown', handleEscape);
       document.removeEventListener('keydown', handleKeyDown);
-      document.body.style.overflow = '';
-
-      // Restore focus to previously focused element
-      if (previouslyFocusedRef.current) {
-        previouslyFocusedRef.current.focus();
-      }
     };
-  }, [isOpen, handleEscape, handleKeyDown]);
+  }, [isOpen]);
 
   if (!isOpen) return null;
 

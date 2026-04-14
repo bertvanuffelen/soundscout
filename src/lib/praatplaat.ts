@@ -60,13 +60,15 @@ export async function createPraatplaat(params: {
 }): Promise<string> {
   const { classId, name, themeId, locationId, imageUrl } = params;
 
-  const { data, error } = await supabase.rpc('create_praatplaat', {
+  const rpcParams: Record<string, unknown> = {
     p_name: name.trim(),
     p_theme_id: themeId,
     p_location_id: locationId,
     p_image_url: imageUrl,
-    p_class_id: classId || null,
-  });
+  };
+  if (classId) rpcParams.p_class_id = classId;
+
+  const { data, error } = await supabase.rpc('create_praatplaat', rpcParams);
 
   if (error) {
     logger.error('Fout bij aanmaken praatplaat:', sanitizeError(error));

@@ -224,3 +224,56 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
     assignmentName,
   };
 }
+
+/**
+ * Haal eerdere (gedeactiveerde) opdrachten op voor een klas.
+ * Gesorteerd op activated_at (nieuwste eerst).
+ */
+export async function fetchPastAssignments(classId: string): Promise<ClassAssignmentRow[]> {
+  const { data, error } = await supabase
+    .from('class_assignments')
+    .select(`
+      id,
+      class_id,
+      teacher_id,
+      template_id,
+      praatplaat_id,
+      is_active,
+      activated_at,
+      templates:template_id ( name ),
+      praatplaten:praatplaat_id ( name )
+    `)
+    .eq('class_id', classId)
+    .eq('is_active', false)
+    .order('activated_at', { ascending: false });
+
+  if (error) {
+    logger.error('fetchPastAssignments error:', sanitizeError(error));
+    return [];
+  }
+
+  if (!data) return [];
+
+  return data.map((row) => {
+    const type: AssignmentType = row.template_id ? 'template' : 'praatplaat';
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const templateData = row.templates as any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const praatplaatData = row.praatplaten as any;
+    const assignmentName = type === 'template'
+      ? (templateData?.name || 'Template')
+      : (praatplaatData?.name || 'Praatplaat');
+
+    return {
+      id: row.id,
+      classId: row.class_id,
+      teacherId: row.teacher_id,
+      type,
+      templateId: row.template_id,
+      praatplaatId: row.praatplaat_id,
+      isActive: row.is_active,
+      activatedAt: row.activated_at,
+      assignmentName,
+    };
+  });
+}

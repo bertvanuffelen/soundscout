@@ -10,7 +10,22 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition } from '../types';
+import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition, ClassSession } from '../types';
+import type { ActiveAssignment } from '../lib/assignments';
+
+/**
+ * PendingAssignment - tussenstaat tussen klascode-invoer en opdracht-activatie (#78).
+ *
+ * Wordt gezet door ShareCodeInput / App.tsx ?pp= deep link nadat `getActiveAssignment`
+ * is aangeroepen. `AssignmentLandingScreen` leest deze waarde en toont de juiste
+ * preview. Op "Starten" wordt de opdracht geactiveerd (template-init of praatplaat-
+ * select). `assignment === null` betekent Route C: klascode gevonden maar geen
+ * actieve opdracht → landing toont soft-recovery (vrij componeren / terug).
+ */
+export interface PendingAssignment {
+  classCode: string;
+  assignment: ActiveAssignment | null;
+}
 
 interface AppStore {
   // Navigation state
@@ -29,7 +44,6 @@ interface AppStore {
   composeMode: ComposeMode;
   activeStoryboard: Storyboard | null;
   currentImageIndex: number;
-  storytellingEnabled: boolean;  // URL flag: ?storytelling=true
 
   // Praatplaat (#72)
   activePraatplaat: ActivePraatplaat | null;
@@ -48,6 +62,7 @@ interface AppStore {
   goToTeacher: () => void;
   goToShared: (code: string) => void;
   goToTutorial: () => void;
+  goToTeacherGuide: () => void;
   // Template actions
   loadTemplate: (template: Template) => void;
   clearTemplate: () => void;
@@ -60,7 +75,6 @@ interface AppStore {
   nextImage: () => void;
   prevImage: () => void;
   clearStoryboard: () => void;
-  setStorytellingEnabled: (enabled: boolean) => void;
   goToComposeMode: () => void;
 
   // Praatplaat actions (#72)
@@ -68,6 +82,23 @@ interface AppStore {
   setPraatplaatPosition: (position: PraatplaatPosition) => void;
   clearPraatplaat: () => void;
   goToPraatplaatSelect: () => void;
+
+  // Klascode-sessie (universele flow)
+  classSession: ClassSession | null;
+  submissionId: string | null;
+  submissionSynced: boolean;
+  isSubmitting: boolean;
+  setClassSession: (session: ClassSession) => void;
+  setSubmissionId: (id: string | null) => void;
+  setSubmissionSynced: (synced: boolean) => void;
+  setIsSubmitting: (submitting: boolean) => void;
+  clearClassSession: () => void;
+
+  // Assignment landing (#78) — tussenscherm na klascode-invoer
+  pendingAssignment: PendingAssignment | null;
+  setPendingAssignment: (pending: PendingAssignment) => void;
+  clearPendingAssignment: () => void;
+  goToAssignmentLanding: (pending: PendingAssignment) => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -80,9 +111,13 @@ export const useAppStore = create<AppStore>()((set) => ({
   composeMode: 'free',
   activeStoryboard: null,
   currentImageIndex: 0,
-  storytellingEnabled: false,
   activePraatplaat: null,
   praatplaatPosition: null,
+  classSession: null,
+  submissionId: null,
+  submissionSynced: false,
+  isSubmitting: false,
+  pendingAssignment: null,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -90,7 +125,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -108,6 +143,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToShared: (code) => set({ currentScreen: 'shared', shareCode: code }),
 
   goToTutorial: () => set({ currentScreen: 'tutorial' }),
+
+  goToTeacherGuide: () => set({ currentScreen: 'teacher-guide' }),
 
   // Template actions
   loadTemplate: (template) => set({ activeTemplate: template, templateLockOptions: template.lockOptions }),
@@ -127,7 +164,6 @@ export const useAppStore = create<AppStore>()((set) => ({
     currentImageIndex: Math.max(state.currentImageIndex - 1, 0),
   })),
   clearStoryboard: () => set({ composeMode: 'free', activeStoryboard: null, currentImageIndex: 0 }),
-  setStorytellingEnabled: (enabled) => set({ storytellingEnabled: enabled }),
   goToComposeMode: () => set({ currentScreen: 'compose-mode' }),
 
   // Praatplaat actions (#72)
@@ -135,6 +171,18 @@ export const useAppStore = create<AppStore>()((set) => ({
   setPraatplaatPosition: (position) => set({ praatplaatPosition: position }),
   clearPraatplaat: () => set({ activePraatplaat: null, praatplaatPosition: null }),
   goToPraatplaatSelect: () => set({ currentScreen: 'praatplaat-select' }),
+
+  // Klascode-sessie actions (universele flow)
+  setClassSession: (session) => set({ classSession: session, submissionId: null, submissionSynced: false }),
+  setSubmissionId: (id) => set({ submissionId: id }),
+  setSubmissionSynced: (synced) => set({ submissionSynced: synced }),
+  setIsSubmitting: (submitting) => set({ isSubmitting: submitting }),
+  clearClassSession: () => set({ classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false }),
+
+  // Assignment landing actions (#78)
+  setPendingAssignment: (pending) => set({ pendingAssignment: pending }),
+  clearPendingAssignment: () => set({ pendingAssignment: null }),
+  goToAssignmentLanding: (pending) => set({ currentScreen: 'assignment-landing', pendingAssignment: pending }),
 }));
 
 // Re-export for backwards compatibility during migration

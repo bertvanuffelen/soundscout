@@ -34,11 +34,13 @@ import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { StageActionsModal } from './StageActionsModal';
 import { StagePlayback, StageAudience } from './StagePlayback';
 import { StorytellingDisplay } from './StorytellingDisplay';
+import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 
 export function StageView() {
   const { t } = useTranslation();
   const setScreen = useAppStore((s) => s.setScreen);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
+  const classSession = useAppStore((s) => s.classSession);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
   const bpm = useTimelineStore((s) => s.bpm);
@@ -78,6 +80,8 @@ export function StageView() {
     handleSaveClick,
     handleSaveConfirm,
     praatplaatSubmitted,
+    submitFeedback,
+    setSubmitFeedback,
   } = useStageSave();
 
   // Modal state (extracted hook)
@@ -103,8 +107,10 @@ export function StageView() {
   const handleNewSpot = useCallback(() => {
     stopAll();
     clearAllTracks();
-    // Clear position but keep activePraatplaat so student can pick new spot
-    useAppStore.setState({ praatplaatPosition: null });
+    // Clear position + submissionId but keep activePraatplaat + classSession
+    // so student can pick a new spot and create a NEW submission
+    useAppStore.setState({ praatplaatPosition: null, submissionId: null, submissionSynced: false });
+    useLibraryStore.getState().clearLibrary();
     setPraatplaatSuccessDismissed(true);
     goToPraatplaatSelect();
   }, [stopAll, clearAllTracks, goToPraatplaatSelect]);
@@ -149,9 +155,27 @@ export function StageView() {
           <span className="hidden sm:inline">{t('stage.backToStudio')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
-        <h1 className="text-lg sm:text-xl font-bold text-text-main">{t('stage.title')}</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-lg sm:text-xl font-bold text-text-main">{t('stage.title')}</h1>
+          <ClassSessionBadge />
+        </div>
         <div className="w-16 sm:w-28" />
       </div>
+
+      {/* Submit feedback toast */}
+      {submitFeedback && (
+        <div
+          className={`relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm transition-all ${
+            submitFeedback.type === 'success'
+              ? 'bg-emerald-600/90 text-white'
+              : 'bg-red-600/90 text-white cursor-pointer'
+          }`}
+          onClick={submitFeedback.type === 'error' ? () => setSubmitFeedback(null) : undefined}
+          role={submitFeedback.type === 'error' ? 'alert' : 'status'}
+        >
+          {submitFeedback.message}
+        </div>
+      )}
 
       {/* Main content */}
       <div className="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6">
@@ -352,6 +376,7 @@ export function StageView() {
           compositionName={compositionName}
           hasStoryboard={!!activeStoryboard}
           isTeacher={isTeacher}
+          hasClassSession={!!classSession}
           exportState={exportState}
           exportProgress={progress}
           videoExportState={videoExportState}

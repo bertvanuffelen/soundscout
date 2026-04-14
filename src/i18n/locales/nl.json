@@ -24,7 +24,7 @@
     "en": "English"
   },
   "map": {
-    "title": "Kies een locatie",
+    "title": "Kies een locatie om geluiden op te nemen",
     "selectLocation": "Klik op een locatie om te verkennen",
     "loadingTheme": "Thema laden...",
     "studioShort": "Studio",
@@ -88,6 +88,8 @@
     "startGame": "Start Spel",
     "continueComposition": "Ga verder",
     "newComposition": "Nieuwe Compositie",
+    "haveCode": "Ik heb een code",
+    "backToChoices": "Terug",
     "howItWorks": "Hoe werkt het?",
     "myCompositions": "Mijn Composities",
     "tagline": "Ontdek geluiden, maak muziek!",
@@ -443,7 +445,8 @@
     "noActive": "Geen actieve opdracht voor deze klas.",
     "activateButton": "Opdracht activeren",
     "changeButton": "Wijzig",
-    "activatedAt": "Geactiveerd op {{date}}"
+    "activatedAt": "Geactiveerd op {{date}}",
+    "pastTitle": "Eerdere opdrachten"
   },
   "templates": {
     "activeBanner": "Opdracht:",
@@ -527,11 +530,94 @@
     "shareLinkError": "Kon link niet aanmaken. Probeer opnieuw.",
     "loadError": "Kon compositie niet laden.",
     "cooldown": "Even geduld! Wacht {{seconds}} seconden voordat je opnieuw kunt versturen.",
-    "rateLimitError": "Te veel verzoeken. Wacht even en probeer opnieuw."
+    "rateLimitError": "Te veel verzoeken. Wacht even en probeer opnieuw.",
+    "autoSubmitSuccess": "Ingeleverd bij {{className}}",
+    "autoSubmitUpdated": "Bijgewerkt bij {{className}}",
+    "autoSubmitFailed": "Inleveren mislukt — wordt opnieuw geprobeerd bij volgende opslaan"
   },
   "teacher": {
     "common": {
       "backToSoundScout": "Terug naar SoundScout"
+    },
+    "guide": {
+      "title": "Docentenhandleiding",
+      "subtitle": "Alles wat je nodig hebt om SoundScout in de klas te gebruiken",
+      "back": "Terug naar dashboard",
+      "playVideo": "Video afspelen",
+      "moreVideosTitle": "Meer instructievideo's nodig?",
+      "moreVideosDescription": "In de algemene tutorial-sectie van SoundScout vind je extra video's over de studio, effecten, opslaan en delen — handig om ook aan je leerlingen te laten zien.",
+      "sections": {
+        "getting-started": {
+          "title": "Aan de slag",
+          "content": [
+            "Welkom! SoundScout is een web-app waarmee leerlingen muziek leren componeren door geluiden te verzamelen op locaties en die op een timeline te plaatsen. Als docent heb je een eigen dashboard waar je klassen beheert, opdrachten klaarzet en inzendingen bekijkt.",
+            "Je hebt een docentenaccount nodig. Registreren gaat via de loginpagina — klik op 'Nog geen account?' en volg de stappen. Je ontvangt een bevestigingsmail; activeer je account via de link daarin.",
+            "Na het inloggen maak je je eerste klas aan via de knop 'Nieuwe klas'. Elke klas krijgt automatisch een 4-cijferige klascode. Die klascode deel je met je leerlingen — zij vullen die in op het startscherm om gekoppeld te worden aan jouw klas.",
+            "Tip: schrijf de klascode op het digibord of print hem op een werkblad. Leerlingen kunnen ook via een link met ingebouwde klascode binnenkomen (handig als je met een Chromebook-trolley werkt)."
+          ]
+        },
+        "classes": {
+          "title": "Klassen beheren",
+          "content": [
+            "Op je dashboard zie je alle klassen die je hebt aangemaakt. Je kunt maximaal 8 klassen tegelijk hebben (gratis account). Elke klas heeft een eigen klascode die niet verandert — leerlingen hoeven hem dus maar één keer te krijgen.",
+            "Een klas verwijderen doe je via het prullenbak-icoon op de klaskaart. Let op: als je een klas verwijdert, worden ook alle bijbehorende inzendingen, templates en praatplaten verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+            "Klik op een klas om de detailweergave te openen. Daar zie je alle inzendingen van leerlingen, kun je opdrachten activeren (template of praatplaat), en zie je compositions die nog 'In bewerking' zijn."
+          ]
+        },
+        "assignments": {
+          "title": "Opdrachten klaarzetten",
+          "content": [
+            "SoundScout kent twee soorten opdrachten: templates en praatplaten. Templates zijn voorgestructureerde compositions waar leerlingen op verder bouwen — ideaal voor gerichte oefeningen. Praatplaten zijn samenwerkingsactiviteiten waarbij leerlingen hun composition op een locatie op een afbeelding plaatsen, en jij als docent die achteraf kunt presenteren.",
+            "Per klas kun je één opdracht tegelijk actief hebben. Leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid: bij een template starten ze in de studio met jouw compositie als startpunt; bij een praatplaat kiezen ze eerst een positie op de afbeelding.",
+            "Opdrachten klaarzetten doe je in het klas-detailscherm. Daar vind je tabbladen voor templates en praatplaten, en knoppen om nieuwe aan te maken of bestaande te activeren."
+          ]
+        },
+        "templates": {
+          "title": "Templates maken",
+          "content": [
+            "Een template is een composition die jij als startpunt voor leerlingen klaarzet. Bijvoorbeeld: een lege track-structuur, een vast ritme, of een halfafgemaakt lied dat leerlingen afmaken.",
+            "Een template maak je door in de studio een composition op te bouwen en vervolgens te kiezen voor 'Opslaan als template' (in het Stage-scherm, onder 'Delen & Exporteren'). Je kunt een naam en beschrijving geven, en slotopties kiezen: wil je dat leerlingen de bestaande clips kunnen aanpassen? Mogen ze tracks toevoegen? Wordt de sample-bibliotheek vastgezet?",
+            "Na opslaan verschijnt de template in je dashboard. Activeer hem voor een specifieke klas via het klas-detailscherm. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt."
+          ]
+        },
+        "praatplaat": {
+          "title": "Praatplaat gebruiken",
+          "content": [
+            "Een praatplaat is een gezamenlijke klankkaart: elke leerling maakt een kleine composition en plaatst die op een positie op een afbeelding (bijvoorbeeld een bos, een stad, een markt). Als docent kun je de praatplaat daarna klassikaal presenteren — je klikt op een spot en hoort wat die leerling heeft gemaakt.",
+            "Aanmaken: ga naar een klas, klik op 'Nieuwe praatplaat' en kies een locatie-afbeelding uit het actieve thema. Geef de praatplaat een naam (bijvoorbeeld 'Geluiden in het park — groep 5a') en activeer hem. Per klas kan er maar één praatplaat tegelijk actief zijn.",
+            "Leerlingen die de klascode invoeren, zien eerst de afbeelding en kiezen een plek waar zij iets willen plaatsen. Daarna maken ze hun composition zoals gewoonlijk. Wanneer ze opslaan, wordt de compositie automatisch aan de praatplaat gekoppeld.",
+            "Presenteren op het digibord: open de praatplaat via de 'Bekijken'-knop op de praatplaatkaart. Je ziet de afbeelding met spots; klik op een spot om de bijbehorende composition af te spelen. Spots die dicht bij elkaar staan worden automatisch geclusterd.",
+            "Praatplaat-link delen (#73): via de deel-knop op de praatplaatkaart krijg je een URL en QR-code. Leerlingen die deze openen komen direct in de praatplaat-flow, zonder dat ze de klascode handmatig hoeven in te voeren."
+          ]
+        },
+        "submissions": {
+          "title": "Inzendingen bekijken",
+          "content": [
+            "In het klas-detailscherm zie je alle composities die leerlingen hebben gedeeld met jouw klas. Elke inzending toont de naam van de leerling, de datum, en een afspeelknop.",
+            "Er zijn twee tabbladen: 'Ingeleverd' toont composities die leerlingen formeel hebben ingediend; 'In bewerking' toont composities die ze lokaal hebben opgeslagen maar nog niet hebben ingeleverd (herkenbaar aan een blauwe badge en 'Laatst bewerkt'-tijd).",
+            "Per inzending kun je de composition beluisteren, bekijken in detail, en desgewenst exporteren naar MP3. Zo kun je werk van leerlingen beoordelen, feedback geven, of composities gebruiken in een klassenpresentatie."
+          ]
+        },
+        "save-codes": {
+          "title": "Bewaarcodes voor leerlingen",
+          "content": [
+            "Leerlingen werken vaak op gedeelde apparaten. Met bewaarcodes kunnen ze verder werken op een ander apparaat — bijvoorbeeld thuis afmaken wat ze op school begonnen zijn.",
+            "Drie soorten codes die leerlingen kunnen tegenkomen: een 4-cijferige klascode (om aan jouw klas te koppelen), een 6-tekens bewaarcode (om een eigen compositie op te slaan en later verder te werken), en een 8-tekens share- of template-code (om alleen te luisteren of een template te openen).",
+            "Een bewaarcode maakt een leerling in de studio of in het stage-scherm via 'Online opslaan'. De app toont een 6-tekens code en een QR-code; die schrijft de leerling op of scant hij op het andere apparaat. Op dat andere apparaat voert de leerling de code in op het startscherm om verder te werken.",
+            "Compositions met een bewaarcode verlopen automatisch na 60 dagen inactiviteit. Als een leerling tussendoor verder werkt, wordt die teller gereset."
+          ]
+        },
+        "classroom-tips": {
+          "title": "Tips voor de klas",
+          "content": [
+            "Koptelefoons zijn bijna onmisbaar. Zonder koptelefoon is het chaotisch in een klas met 25 leerlingen die tegelijk geluiden afspelen. Tip: zet klassikaal de volumes van de Chromebooks op maximaal 50% om gehoorschade te voorkomen.",
+            "Autoplay-unlock: browsers blokkeren standaard audio totdat de gebruiker iets klikt. SoundScout vangt dit op bij de eerste klik of tap — leerlingen hoeven hier niets voor te doen, maar als geluid ontbreekt, laat ze dan even op het scherm tikken.",
+            "Chromebooks en iPads: SoundScout werkt op beide. iPad: gebruik het landschapsformaat voor meer werkruimte. Safari werkt het beste. Chromebook: zorg dat het apparaat niet in slaapstand gaat tijdens opnames — dat onderbreekt het web-audio-systeem.",
+            "Tijdsplanning: reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten.",
+            "Veelgestelde vraag van leerlingen: 'Mijn geluid speelt niet.' Meestal is dit een volumekwestie (spreker/koptelefoon) of een niet-geünlockte audiocontext (even op het scherm tikken). Als een sample echt niet laadt, vernieuw dan de pagina — de composition blijft lokaal bewaard."
+          ]
+        }
+      }
     },
     "validation": {
       "emailRequired": "Voer je e-mailadres in",
@@ -590,6 +676,7 @@
       "title": "Docenten Dashboard",
       "welcome": "Welkom, {{name}}",
       "logout": "Uitloggen",
+      "guide": "Handleiding",
       "myClasses": "Mijn Klassen",
       "newClass": "Nieuwe Klas",
       "loading": "Klassen laden...",
@@ -658,7 +745,9 @@
       "delete": "Verwijderen",
       "withStoryboard": "Storyboard",
       "wip": "In bewerking",
-      "lastEdited": "Laatst bewerkt:"
+      "lastEdited": "Laatst bewerkt:",
+      "fromTemplate": "Opdracht",
+      "fromPraatplaat": "Praatplaat"
     },
     "praatplaat": {
       "sectionTitle": "Praatplaten",
@@ -666,7 +755,8 @@
       "createTitle": "Nieuwe Praatplaat",
       "nameLabel": "Naam",
       "namePlaceholder": "Bijv. Geluiden op de boerderij",
-      "locationLabel": "Kies een locatie-afbeelding",
+      "imageLabel": "Kies een achtergrond",
+      "themeImagesToggle": "Of kies een locatie uit het thema",
       "createButton": "Aanmaken",
       "createError": "Kon praatplaat niet aanmaken",
       "active": "Actief",
@@ -677,7 +767,7 @@
       "activateError": "Kon praatplaat niet activeren",
       "deactivateError": "Kon praatplaat niet deactiveren",
       "delete": "Verwijderen",
-      "deleteConfirm": "Weet je zeker dat je deze praatplaat wilt verwijderen?\n\nIngestuurde composities blijven bewaard.",
+      "deleteConfirm": "Weet je zeker dat je deze praatplaat wilt verwijderen?\n\nAlle ingestuurde composities worden ook verwijderd!",
       "deleteError": "Kon praatplaat niet verwijderen",
       "view": "Bekijken",
       "openPraatplaat": "Open praatplaat",
@@ -687,6 +777,15 @@
       "fetchSubmissionsError": "Kon composities niet laden",
       "emptyTitle": "Nog geen praatplaten",
       "emptyDescription": "Maak een praatplaat aan zodat leerlingen hun compositie op een locatie kunnen plaatsen.",
+      "share": "Deel link",
+      "shareTitle": "Deel praatplaat",
+      "shareDescription": "Deel deze link zodat leerlingen direct naar de praatplaat \"{{name}}\" worden geleid.",
+      "copyLink": "Kopieer link",
+      "shareClassCode": "Klascode: {{code}}",
+      "showQr": "Toon QR-code",
+      "hideQr": "Verberg QR-code",
+      "qrAlt": "QR-code voor praatplaat {{name}}",
+      "qrHint": "Projecteer deze QR-code op het digibord zodat leerlingen direct kunnen scannen.",
       "viewer": {
         "stop": "Stop",
         "showTimeline": "Bekijk timeline",
@@ -715,6 +814,11 @@
       "checkingCode": "Code controleren...",
       "sendError": "Versturen mislukt. Probeer opnieuw."
     }
+  },
+  "praatplaatImages": {
+    "koningsdag": "Koningsdag",
+    "robotfabriek": "Robotfabriek",
+    "sportveld": "Sportveld"
   },
   "praatplaat": {
     "select": {
@@ -748,6 +852,13 @@
     "prevImage": "Vorige afbeelding",
     "nextImage": "Volgende afbeelding"
   },
+  "storyboardLightbox": {
+    "openPreview": "Bekijk afbeeldingen",
+    "previous": "Vorige afbeelding",
+    "next": "Volgende afbeelding",
+    "counter": "{{current}} / {{total}}",
+    "goTo": "Ga naar afbeelding {{index}}"
+  },
   "saveOnline": {
     "title": "Bewaar online",
     "description": "Bewaar je compositie online en krijg een code. Met deze code kun je op elk apparaat verder werken.",
@@ -777,26 +888,54 @@
     "qrHint": "Scan om de code over te nemen"
   },
   "storyboards": {
-    "basis": {
-      "stad-dag": {
-        "name": "Een dag in de stad",
-        "description": "Maak geluid bij een dag in de stad: van ochtend tot avond",
-        "ochtend": "Ochtend",
-        "middag": "Middag",
-        "avond": "Avond"
-      },
-      "stad-markt": {
-        "name": "De Markt",
-        "description": "Maak geluid bij een druk marktplein",
-        "markt": "Marktplein"
-      },
-      "test-locaties": {
-        "name": "Test Locaties",
-        "description": "Tijdelijk test-storyboard met 3 locaties (crossfade test)",
-        "boerderij": "Boerderij",
-        "speeltuin": "Speeltuin",
-        "gymlokaal": "Gymlokaal"
-      }
+    "verspringen": {
+      "name": "Verspringen",
+      "description": "Een robot zet een sprong in: aanloop, sprong en landing",
+      "start": "Start",
+      "sprong": "Sprong",
+      "landing": "Landing"
+    }
+  },
+  "privacy": {
+    "title": "Privacy & gegevens",
+    "button": "Privacy",
+    "dataTitle": "Hoe SoundScout je gegevens gebruikt",
+    "dataText": "Composities die je maakt worden opgeslagen op je eigen apparaat (in de browser). Er wordt geen account aangemaakt en er worden geen persoonlijke gegevens verzameld. Als je een compositie online bewaart met een bewaarcode, wordt deze tijdelijk opgeslagen in de cloud en na 60 dagen inactiviteit automatisch verwijderd.",
+    "classCodeTitle": "Klascode & docent",
+    "classCodeText": "Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld.",
+    "cookiesTitle": "Cookies & tracking",
+    "cookiesText": "SoundScout gebruikt geen tracking cookies, geen analytics en geen advertenties. De enige lokale opslag is voor je composities en taalvoorkeur. Er worden geen gegevens gedeeld met derden.",
+    "contact": "Vragen over privacy? Neem contact op via <mail>bvanuffelen@gmail.com</mail>."
+  },
+  "shareCodeModal": {
+    "title": "Ik heb een code",
+    "subtitle": "Voer een klascode, bewaarcode of luister-code in."
+  },
+  "assignmentLanding": {
+    "classCodeLabel": "Klascode",
+    "classLabel": "Klas:",
+    "back": "Terug",
+    "start": "Starten",
+    "starting": "Bezig...",
+    "startError": "Starten is niet gelukt. Probeer het opnieuw.",
+    "missingContext": "Geen opdracht gevonden. Ga terug naar het startscherm.",
+    "backToStart": "Terug naar start",
+    "template": {
+      "kind": "Opdracht van de docent",
+      "by": "Van {{teacher}}",
+      "instructions": "Instructies",
+      "storyboardCount_one": "{{count}} afbeelding",
+      "storyboardCount_other": "{{count}} afbeeldingen"
+    },
+    "praatplaat": {
+      "kind": "Praatplaat",
+      "description": "Je kiest straks een plek op deze afbeelding. Daar hoort jouw compositie bij."
+    },
+    "none": {
+      "heading": "Nog geen opdracht klaar",
+      "message": "Deze klas heeft nog geen opdracht actief. Wacht even of vraag je docent. Je kunt ook vrij gaan componeren.",
+      "composeFree": "Vrij componeren",
+      "otherCode": "Andere code proberen"
     }
   }
 }

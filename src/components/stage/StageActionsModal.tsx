@@ -22,6 +22,8 @@ interface StageActionsModalProps {
   compositionName: string;
   hasStoryboard: boolean;
   isTeacher: boolean;
+  /** When true, hide "Online bewaren" and "Inleveren bij docent" (auto-submit handles it) */
+  hasClassSession?: boolean;
 
   // Export state
   exportState: 'idle' | 'exporting' | 'success' | 'error';
@@ -43,6 +45,7 @@ export function StageActionsModal({
   compositionName,
   hasStoryboard,
   isTeacher,
+  hasClassSession = false,
   exportState,
   exportProgress,
   videoExportState,
@@ -81,19 +84,22 @@ export function StageActionsModal({
               {t('stage.actionsSaveShare')}
             </p>
             <div className="flex flex-col gap-2">
-              <Button
-                variant="secondary"
-                size="md"
-                onClick={() => { onSaveOnline(); onClose(); }}
-                disabled={nameDisabled}
-                className="w-full justify-start"
-              >
-                <CloudUpload size={18} className="mr-3 shrink-0" />
-                <span className="text-left">
-                  <span className="block text-sm font-medium">{t('saveOnline.title')}</span>
-                  <span className="block text-xs text-text-muted">{t('stage.actionsOnlineHint')}</span>
-                </span>
-              </Button>
+              {/* Online bewaren: verborgen in klascode-flow (auto-submit regelt het) */}
+              {!hasClassSession && (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => { onSaveOnline(); onClose(); }}
+                  disabled={nameDisabled}
+                  className="w-full justify-start"
+                >
+                  <CloudUpload size={18} className="mr-3 shrink-0" />
+                  <span className="text-left">
+                    <span className="block text-sm font-medium">{t('saveOnline.title')}</span>
+                    <span className="block text-xs text-text-muted">{t('stage.actionsOnlineHint')}</span>
+                  </span>
+                </Button>
+              )}
 
               <Button
                 variant="secondary"
@@ -109,19 +115,22 @@ export function StageActionsModal({
                 </span>
               </Button>
 
-              <Button
-                variant="secondary"
-                size="md"
-                onClick={() => { onShareTeacher(); onClose(); }}
-                disabled={nameDisabled}
-                className="w-full justify-start"
-              >
-                <Send size={18} className="mr-3 shrink-0" />
-                <span className="text-left">
-                  <span className="block text-sm font-medium">{t('stage.shareWithTeacher')}</span>
-                  <span className="block text-xs text-text-muted">{t('stage.actionsTeacherHint')}</span>
-                </span>
-              </Button>
+              {/* Inleveren bij docent: verborgen in klascode-flow (auto-submit regelt het) */}
+              {!hasClassSession && (
+                <Button
+                  variant="secondary"
+                  size="md"
+                  onClick={() => { onShareTeacher(); onClose(); }}
+                  disabled={nameDisabled}
+                  className="w-full justify-start"
+                >
+                  <Send size={18} className="mr-3 shrink-0" />
+                  <span className="text-left">
+                    <span className="block text-sm font-medium">{t('stage.shareWithTeacher')}</span>
+                    <span className="block text-xs text-text-muted">{t('stage.actionsTeacherHint')}</span>
+                  </span>
+                </Button>
+              )}
             </div>
           </div>
 

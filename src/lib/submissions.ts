@@ -95,6 +95,76 @@ export async function submitComposition(
   };
 }
 
+// --- Universele klascode-submit (UPSERT) ---
+
+interface SubmitOrUpdateParams {
+  classCode: string;
+  studentName?: string;
+  compositionName: string;
+  compositionData: CompositionData;
+  /** Client-generated UUID for idempotent UPSERT (reuse across retries) */
+  clientId?: string;
+  /** UUID of the assignment (template or praatplaat) */
+  assignmentId?: string;
+  /** Type of assignment */
+  assignmentType?: 'template' | 'praatplaat';
+  /** Praatplaat position (only for praatplaat assignments) */
+  praatplaatPositionX?: number;
+  praatplaatPositionY?: number;
+}
+
+/**
+ * Submit or update a composition via klascode (idempotent UPSERT).
+ *
+ * First call (clientId = new UUID): creates a submission.
+ * Subsequent calls (same clientId): updates the existing submission.
+ * If the response is lost, retrying with the same clientId is safe.
+ *
+ * @returns The submission UUID
+ */
+export async function submitOrUpdateComposition(
+  params: SubmitOrUpdateParams
+): Promise<string> {
+  const {
+    classCode, studentName, compositionName, compositionData,
+    clientId, assignmentId, assignmentType,
+    praatplaatPositionX, praatplaatPositionY,
+  } = params;
+
+  const finalStudentName = studentName?.trim() || generateRandomDutchName();
+
+  const rpcParams: Record<string, unknown> = {
+    p_class_code: classCode.trim(),
+    p_student_name: finalStudentName,
+    p_composition_name: compositionName,
+    p_composition_data: compositionData,
+  };
+
+  // Only include optional params when they have a value (avoids PostgREST ambiguity)
+  if (clientId) rpcParams.p_client_id = clientId;
+  if (assignmentId) rpcParams.p_assignment_id = assignmentId;
+  if (assignmentType) rpcParams.p_assignment_type = assignmentType;
+  if (praatplaatPositionX != null) rpcParams.p_praatplaat_position_x = praatplaatPositionX;
+  if (praatplaatPositionY != null) rpcParams.p_praatplaat_position_y = praatplaatPositionY;
+
+  const { data, error } = await supabase.rpc('submit_or_update_composition', rpcParams);
+
+  if (error) {
+    logger.error('Fout bij submit_or_update_composition:', sanitizeError(error));
+
+    if (error.message.includes('Rate limit exceeded')) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
+    if (error.message.includes('niet gevonden') || error.message.includes('niet actief')) {
+      throw new Error(i18n.t('submissions.classCodeNotFound'));
+    }
+
+    throw new Error(i18n.t('submissions.submitError'));
+  }
+
+  return data as string;
+}
+
 // --- Publieke luisterlinks ---
 
 interface ShareCompositionParams {

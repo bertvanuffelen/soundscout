@@ -15,6 +15,7 @@ import { useAppStore } from '../../stores/appStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { storageService } from '../../services/StorageService';
+import { hydrateCompositionContext } from '../../utils/compositionInit';
 import type { SavedComposition } from '../../types';
 import { Button } from '../ui';
 import { CompositionCard } from './CompositionCard';
@@ -26,6 +27,9 @@ export function CompositionsView() {
   const goToStage = useAppStore((s) => s.goToStage);
   const goToMap = useAppStore((s) => s.goToMap);
   const setCurrentCompositionId = useAppStore((s) => s.setCurrentCompositionId);
+  const setClassSession = useAppStore((s) => s.setClassSession);
+  const setSubmissionId = useAppStore((s) => s.setSubmissionId);
+  const clearClassSession = useAppStore((s) => s.clearClassSession);
 
   const loadTimeline = useTimelineStore((s) => s.loadTimeline);
   const loadLibrary = useLibraryStore((s) => s.loadLibrary);
@@ -47,30 +51,61 @@ export function CompositionsView() {
     goToStart();
   }, [goToStart]);
 
+  // Restore classSession context from a saved composition
+  const restoreClassSession = useCallback(
+    (composition: SavedComposition) => {
+      if (composition.classSession) {
+        setClassSession(composition.classSession);
+        if (composition.submissionId) {
+          setSubmissionId(composition.submissionId);
+        }
+      } else {
+        clearClassSession();
+      }
+    },
+    [setClassSession, setSubmissionId, clearClassSession]
+  );
+
   const handleOpenComposition = useCallback(
     (composition: SavedComposition) => {
       // Track which composition we're editing
       setCurrentCompositionId(composition.id);
+      // Restore klascode context if present
+      restoreClassSession(composition);
       // Load timeline and library into stores
       loadTimeline(composition.timeline);
       loadLibrary(composition.samples);
+      // Restore storyboard / praatplaat / compose-mode context (#41, #72)
+      hydrateCompositionContext({
+        storyboardId: composition.storyboardId,
+        praatplaat: composition.praatplaat,
+        praatplaatPosition: composition.praatplaatPosition,
+      });
       // Navigate to Studio
       goToStudio();
     },
-    [setCurrentCompositionId, loadTimeline, loadLibrary, goToStudio]
+    [setCurrentCompositionId, restoreClassSession, loadTimeline, loadLibrary, goToStudio]
   );
 
   const handlePlayComposition = useCallback(
     (composition: SavedComposition) => {
       // Track which composition we're editing
       setCurrentCompositionId(composition.id);
+      // Restore klascode context if present
+      restoreClassSession(composition);
       // Load timeline and library into stores
       loadTimeline(composition.timeline);
       loadLibrary(composition.samples);
+      // Restore storyboard / praatplaat / compose-mode context (#41, #72)
+      hydrateCompositionContext({
+        storyboardId: composition.storyboardId,
+        praatplaat: composition.praatplaat,
+        praatplaatPosition: composition.praatplaatPosition,
+      });
       // Navigate to Stage
       goToStage();
     },
-    [setCurrentCompositionId, loadTimeline, loadLibrary, goToStage]
+    [setCurrentCompositionId, restoreClassSession, loadTimeline, loadLibrary, goToStage]
   );
 
   const handleDeleteComposition = useCallback((id: string) => {

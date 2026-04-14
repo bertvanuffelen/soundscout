@@ -1,25 +1,31 @@
 /**
  * PraatplaatCard - Kaart voor een praatplaat in het docenten dashboard
  *
- * Resource-kaart: toont thumbnail, naam, datum, bekijken en verwijderen.
+ * Resource-kaart: toont thumbnail, naam, datum, bekijken, delen en verwijderen.
  * Activering per klas gaat via ClassDetail → ActivateAssignmentModal.
+ * Deel-knop (#73) opent SharePraatplaatModal met directe link + QR-code.
  */
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Trash2, Volume2 } from 'lucide-react';
+import { Trash2, Volume2, Share2 } from 'lucide-react';
 import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
+import { SharePraatplaatModal } from './SharePraatplaatModal';
 
 interface PraatplaatCardProps {
   praatplaat: PraatplaatRow;
   submissionCount?: number;
+  /** Klascode van de klas waartoe deze praatplaat behoort (nodig voor deel-link) */
+  classCode?: string;
   onDelete: () => void;
   onView: () => void;
 }
 
-export function PraatplaatCard({ praatplaat, submissionCount, onDelete, onView }: PraatplaatCardProps) {
+export function PraatplaatCard({ praatplaat, submissionCount, classCode, onDelete, onView }: PraatplaatCardProps) {
   const { t } = useTranslation();
   const { name, image_url, created_at } = praatplaat;
+  const [showShareModal, setShowShareModal] = useState(false);
 
   const formattedDate = new Date(created_at).toLocaleDateString('nl-NL', {
     day: 'numeric',
@@ -68,6 +74,16 @@ export function PraatplaatCard({ praatplaat, submissionCount, onDelete, onView }
             <Volume2 className="w-4 h-4" />
             {t('teacher.praatplaat.openPraatplaat')}
           </Button>
+          {classCode && (
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowShareModal(true)}
+              title={t('teacher.praatplaat.share')}
+            >
+              <Share2 className="w-4 h-4" />
+            </Button>
+          )}
           <Button
             variant="ghost"
             size="sm"
@@ -79,6 +95,16 @@ export function PraatplaatCard({ praatplaat, submissionCount, onDelete, onView }
           </Button>
         </div>
       </div>
+
+      {/* Share modal (#73) */}
+      {classCode && (
+        <SharePraatplaatModal
+          isOpen={showShareModal}
+          onClose={() => setShowShareModal(false)}
+          classCode={classCode}
+          praatplaatName={name}
+        />
+      )}
     </div>
   );
 }

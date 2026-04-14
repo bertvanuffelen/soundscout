@@ -75,6 +75,23 @@ export const SectionSchema = z.object({
 // COMPOSITION DATA (Supabase JSONB)
 // =============================================================================
 
+// Praatplaat snapshot (#72) — persisted so praatplaat-compositions can be
+// fully reconstructed when re-opened.
+export const ActivePraatplaatSchema = z.object({
+  id: z.string(),
+  name: z.string(),
+  imageUrl: z.string(),
+  classId: z.string(),
+  classCode: z.string(),
+  themeId: z.string(),
+  locationId: z.string(),
+});
+
+export const PraatplaatPositionSchema = z.object({
+  x: z.number(),
+  y: z.number(),
+});
+
 export const CompositionDataSchema = z.object({
   tracks: z.array(TrackSchema),
   bpm: z.number().positive(),
@@ -83,6 +100,8 @@ export const CompositionDataSchema = z.object({
   samples: z.array(SampleSchema),
   sections: z.array(SectionSchema).optional(),
   storyboardId: z.string().optional(),
+  praatplaat: ActivePraatplaatSchema.optional(),
+  praatplaatPosition: PraatplaatPositionSchema.optional(),
 });
 
 // =============================================================================
@@ -121,6 +140,8 @@ export const SavedCompositionSchema = z.object({
   shareCode: z.string().optional(),
   sharedAt: z.string().optional(),
   storyboardId: z.string().optional(),
+  praatplaat: ActivePraatplaatSchema.optional(),
+  praatplaatPosition: PraatplaatPositionSchema.optional(),
 });
 
 // =============================================================================

@@ -30,6 +30,7 @@ import type { StudioViewMode } from './storytelling';
 import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
+import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { generateClipId } from '../../utils/uuid';
 
 /**
@@ -319,6 +320,7 @@ export function StudioView() {
             </div>
           )}
           <h1 className="text-base sm:text-lg font-bold text-text-main">{t('studio.title')}</h1>
+          <ClassSessionBadge variant="light" />
         </div>
         <Button
           variant="primary"

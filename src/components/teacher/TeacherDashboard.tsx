@@ -10,7 +10,8 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText, MapPin } from 'lucide-react';
+import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText, MapPin, HelpCircle } from 'lucide-react';
+import { useAppStore } from '../../stores/appStore';
 import { useAuth } from '../../contexts/AuthContext';
 import { useClasses } from '../../hooks/useClasses';
 import { useTemplates } from '../../hooks/useTemplates';
@@ -37,6 +38,7 @@ interface TeacherDashboardProps {
 export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDashboardProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  const goToTeacherGuide = useAppStore((s) => s.goToTeacherGuide);
   const { classes, loading, error, createClass, deleteClass, refetch } = useClasses();
   const {
     templates, loading: templatesLoading, error: templatesError,
@@ -147,13 +149,22 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               {t('teacher.dashboard.welcome', { name: displayName })}
             </p>
           </div>
-          <button
-            onClick={handleLogout}
-            className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
-          >
-            <LogOut className="w-4 h-4" />
-            {t('teacher.dashboard.logout')}
-          </button>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={goToTeacherGuide}
+              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
+            >
+              <HelpCircle className="w-4 h-4" />
+              {t('teacher.dashboard.guide')}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
+            >
+              <LogOut className="w-4 h-4" />
+              {t('teacher.dashboard.logout')}
+            </button>
+          </div>
         </div>
       </header>
 
@@ -308,6 +319,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                       <PraatplaatCard
                         key={pp.id}
                         praatplaat={pp}
+                        classCode={classes.find((c) => c.id === pp.class_id)?.code}
                         onDelete={() => handleDeletePraatplaat(pp.id)}
                         onView={() => setViewingPraatplaat(pp)}
                       />

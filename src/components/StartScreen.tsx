@@ -4,15 +4,22 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, BookOpen } from 'lucide-react';
+import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, Shield, KeyRound, Sparkles } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
-import { initializeNewComposition } from '../utils/compositionInit';
+import {
+  initializeNewComposition,
+  initializeCompositionFromStoryboard,
+} from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
 import { FeedbackModal } from './feedback';
 import { ThemeSelectionModal } from './ThemeSelectionModal';
-import { ShareCodeInput } from './share';
+import { ComposeModeModal } from './start/ComposeModeModal';
+import { StoryboardPickerModal } from './start/StoryboardPickerModal';
+import { ShareCodeModal } from './share';
+import { PrivacyModal } from './PrivacyModal';
+import type { ComposeMode, Storyboard } from '../types';
 
 export function StartScreen() {
   const { t } = useTranslation();
@@ -24,8 +31,16 @@ export function StartScreen() {
   const [isLoading, setIsLoading] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
-  const [showThemeSelection, setShowThemeSelection] = useState(false);
+  const [showPrivacy, setShowPrivacy] = useState(false);
   const [hasCompositions, setHasCompositions] = useState(false);
+  // Sketch A (#78): "Nieuwe compositie" doorloopt twee modals achter elkaar:
+  // eerst soort compositie kiezen, dáárna pas thema. "Ik heb een code" opent
+  // een aparte modal met dezelfde chrome.
+  const [showComposeMode, setShowComposeMode] = useState(false);
+  const [showThemeSelection, setShowThemeSelection] = useState(false);
+  const [showImagePicker, setShowImagePicker] = useState(false);
+  const [showStoryboardPicker, setShowStoryboardPicker] = useState(false);
+  const [showCodeModal, setShowCodeModal] = useState(false);
 
   // Check if there are saved compositions
   useEffect(() => {
@@ -34,8 +49,23 @@ export function StartScreen() {
   }, []);
 
   const handleNewComposition = () => {
-    // Show theme selection modal
-    setShowThemeSelection(true);
+    // Stap 1: soort compositie kiezen
+    setShowComposeMode(true);
+  };
+
+  const handleModeSelected = (mode: ComposeMode) => {
+    // Stap 2 hangt af van de gekozen mode (#78):
+    // - 'free' → thema kiezen, dan map
+    // - 'image' → afbeelding kiezen (thema impliciet), dan map
+    // - 'storyboard' → storyboard kiezen (thema impliciet), dan map
+    setShowComposeMode(false);
+    if (mode === 'free') {
+      setShowThemeSelection(true);
+    } else if (mode === 'image') {
+      setShowImagePicker(true);
+    } else {
+      setShowStoryboardPicker(true);
+    }
   };
 
   const handleSelectTheme = async (themeId: string) => {
@@ -43,6 +73,17 @@ export function StartScreen() {
     try {
       await initializeNewComposition({ themeId });
       setShowThemeSelection(false);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleSelectStoryboard = async (storyboard: Storyboard) => {
+    setIsLoading(true);
+    try {
+      await initializeCompositionFromStoryboard(storyboard);
+      setShowImagePicker(false);
+      setShowStoryboardPicker(false);
     } finally {
       setIsLoading(false);
     }
@@ -74,7 +115,9 @@ export function StartScreen() {
           </p>
         </div>
 
-        {/* Buttons */}
+        {/* Primaire keuzes — Sketch A (#78):
+            twee gelijkwaardige CTAs, plus "Verder werken" als er nog clips
+            zijn. Code-invoer verschijnt pas na expliciete klik. */}
         <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-[280px] sm:max-w-xs">
           {/* Continue button — shown when composition in progress (#64) */}
           {hasClipsInProgress && (
@@ -95,13 +138,24 @@ export function StartScreen() {
             size="lg"
             className="w-full"
           >
+            <Sparkles className="w-5 h-5 mr-1.5 sm:mr-2" />
             {isLoading ? t('start.loading') : t('start.newComposition')}
+          </Button>
+
+          <Button
+            onClick={() => setShowCodeModal(true)}
+            variant="secondary"
+            size="lg"
+            className="w-full"
+          >
+            <KeyRound className="w-5 h-5 mr-1.5 sm:mr-2" />
+            {t('start.haveCode')}
           </Button>
 
           {hasCompositions && (
             <Button
               onClick={goToCompositions}
-              variant="secondary"
+              variant="ghost"
               size="lg"
               className="w-full"
             >
@@ -109,15 +163,9 @@ export function StartScreen() {
               {t('start.myCompositions')}
             </Button>
           )}
-
         </div>
 
-        {/* Share code input */}
-        <div className="mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
-          <ShareCodeInput />
-        </div>
-
-        <div className="flex flex-col items-center gap-1 mt-3 sm:mt-4 w-full max-w-[280px] sm:max-w-xs">
+        <div className="flex flex-col items-center gap-1 mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
           <Button
             onClick={goToTutorial}
             variant="ghost"
@@ -170,6 +218,13 @@ export function StartScreen() {
         >
           <HelpCircle className="w-4 h-4" />
         </button>
+        <button
+          onClick={() => setShowPrivacy(true)}
+          className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
+          title={t('privacy.button')}
+        >
+          <Shield className="w-4 h-4" />
+        </button>
         <div className="w-px h-4 bg-brand-700 md:bg-neutral-300" />
         <div className="flex items-center gap-2">
           <a
@@ -208,14 +263,6 @@ export function StartScreen() {
           >
             <Youtube className="w-4 h-4" />
           </a>
-          <div className="w-px h-4 bg-brand-700 md:bg-neutral-300" />
-          <a
-            href="?storytelling=true"
-            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-            title="Storytelling mode"
-          >
-            <BookOpen className="w-4 h-4" />
-          </a>
         </div>
       </footer>
 
@@ -253,12 +300,49 @@ export function StartScreen() {
         mode="feedback"
       />
 
-      {/* Theme selection modal */}
+      {/* Compose mode modal — stap 1 van Nieuwe compositie */}
+      <ComposeModeModal
+        isOpen={showComposeMode}
+        onClose={() => setShowComposeMode(false)}
+        onModeSelected={handleModeSelected}
+      />
+
+      {/* Theme selection modal — stap 2 voor 'vrij componeren' */}
       <ThemeSelectionModal
         isOpen={showThemeSelection}
         onClose={() => setShowThemeSelection(false)}
         onSelectTheme={handleSelectTheme}
         isLoading={isLoading}
+      />
+
+      {/* Image picker — stap 2 voor 'bij een afbeelding' */}
+      <StoryboardPickerModal
+        isOpen={showImagePicker}
+        onClose={() => setShowImagePicker(false)}
+        variant="image"
+        onSelect={handleSelectStoryboard}
+        isLoading={isLoading}
+      />
+
+      {/* Storyboard picker — stap 2 voor 'bij een storyboard' */}
+      <StoryboardPickerModal
+        isOpen={showStoryboardPicker}
+        onClose={() => setShowStoryboardPicker(false)}
+        variant="storyboard"
+        onSelect={handleSelectStoryboard}
+        isLoading={isLoading}
+      />
+
+      {/* Code modal — "Ik heb een code" */}
+      <ShareCodeModal
+        isOpen={showCodeModal}
+        onClose={() => setShowCodeModal(false)}
+      />
+
+      {/* Privacy modal */}
+      <PrivacyModal
+        isOpen={showPrivacy}
+        onClose={() => setShowPrivacy(false)}
       />
     </div>
   );

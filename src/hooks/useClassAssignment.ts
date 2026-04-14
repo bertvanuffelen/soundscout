@@ -8,6 +8,7 @@
 import { useState, useCallback, useEffect } from 'react';
 import {
   fetchClassAssignment,
+  fetchPastAssignments,
   activateAssignment,
   deactivateAssignment,
 } from '../lib/assignments';
@@ -17,6 +18,8 @@ import { logger } from '../utils/logger';
 interface UseClassAssignmentReturn {
   /** Huidige actieve opdracht (null = geen actieve opdracht) */
   activeAssignment: ClassAssignmentRow | null;
+  /** Eerdere (gedeactiveerde) opdrachten, nieuwste eerst */
+  pastAssignments: ClassAssignmentRow[];
   loading: boolean;
   error: string | null;
   operationError: string | null;
@@ -32,6 +35,7 @@ interface UseClassAssignmentReturn {
 
 export function useClassAssignment(classId: string): UseClassAssignmentReturn {
   const [activeAssignment, setActiveAssignment] = useState<ClassAssignmentRow | null>(null);
+  const [pastAssignments, setPastAssignments] = useState<ClassAssignmentRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [operationError, setOperationError] = useState<string | null>(null);
@@ -40,8 +44,12 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     setLoading(true);
     setError(null);
     try {
-      const data = await fetchClassAssignment(classId);
-      setActiveAssignment(data);
+      const [active, past] = await Promise.all([
+        fetchClassAssignment(classId),
+        fetchPastAssignments(classId),
+      ]);
+      setActiveAssignment(active);
+      setPastAssignments(past);
     } catch (err) {
       logger.error('useClassAssignment fetch error:', err);
       setError('Kon actieve opdracht niet laden');
@@ -93,6 +101,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
 
   return {
     activeAssignment,
+    pastAssignments,
     loading,
     error,
     operationError,

@@ -13,19 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { Button } from '../ui/Button';
-import type { Storyboard } from '../../types';
-
-/** Convert praatplaat to a virtual storyboard for split studio view */
-function praatplaatToStoryboard(praatplaat: { id: string; name: string; imageUrl: string; themeId: string }): Storyboard {
-  return {
-    id: `praatplaat-${praatplaat.id}`,
-    themeId: praatplaat.themeId,
-    name: praatplaat.name,
-    description: 'Praatplaat',
-    coverImage: praatplaat.imageUrl,
-    images: [{ id: praatplaat.id, url: praatplaat.imageUrl, label: praatplaat.name }],
-  };
-}
+import { praatplaatToStoryboard } from '../../utils/praatplaatStoryboard';
 
 export function PraatplaatSelectScreen() {
   const { t } = useTranslation();

@@ -3,7 +3,7 @@
 Checklist voor hands-on testen op diverse apparaten.
 Vink af wat getest en goed bevonden is. Noteer bevindingen direct onder het item.
 
-**Laatst bijgewerkt**: 2026-03-16
+**Laatst bijgewerkt**: 2026-04-13
 
 ---
 
@@ -372,7 +372,7 @@ Storyboard-composities exporteren als video met crossfade-transities.
 - [x] Label wissen (leeg veld + Enter) → clip toont weer de originele sample-naam
 - [x] Tag-icoon is oranje geaccentueerd als het clip een label heeft
 - [x] Dupliceer een clip met label → kopie heeft hetzelfde label
-- [ ] Sla compositie op → herlaad → labels zijn bewaard (localStorage)
+- [x] Sla compositie op → herlaad → labels zijn bewaard (localStorage)
 - [ ] Deel compositie via klascode → docent ziet labels in de viewer
 - [ ] Max 30 karakters — meer typen is niet mogelijk
 
@@ -429,6 +429,49 @@ Storyboard-composities exporteren als video met crossfade-transities.
 - [ ] Afspelen werkt in de shared player (read-only, geen edit)
 - [ ] Link is 30 dagen geldig — na verloopdatum: foutmelding
 - [ ] Compositie zonder secties: shared player toont geen SectionBar
+
+---
+
+## 12b. Deelbare Praatplaat-link (#73)
+
+### Deel-knop in dashboard
+
+- [ ] Praatplaat aangemaakt voor een klas → PraatplaatCard toont Share-icoon (naast Open en Verwijder)
+- [ ] Praatplaat zonder gekoppelde klas (class_id null) → Share-icoon NIET zichtbaar
+- [ ] Klik op Share-icoon → modal opent met link en praatplaatnaam
+
+### Share modal
+
+- [ ] Link bevat correct formaat: `soundscout.nl?pp=KLASCODE` (4-cijferige code)
+- [ ] Kopieer-knop kopieert de link naar het klembord → vinkje-feedback verschijnt
+- [ ] Klascode wordt getoond als referentie onder de link
+- [ ] "Toon QR-code" toggle → QR-code verschijnt (scanbare afbeelding)
+- [ ] "Verberg QR-code" toggle → QR-code verdwijnt weer
+- [ ] QR-code scant correct (test met telefoon camera) → opent de juiste URL
+- [ ] Modal sluit met X of klik buiten de modal
+
+### URL-parameter flow (leerling-zijde)
+
+- [ ] Open `?pp=1234` (geldige klascode met actieve praatplaat) → direct naar PraatplaatSelectScreen
+- [ ] URL wordt opgeschoond na laden (geen `?pp=` meer in adresbalk)
+- [ ] Open `?pp=9999` (ongeldige of geen actieve praatplaat) → terug naar startscherm
+- [ ] Open `?pp=1234` zonder actieve praatplaat (praatplaat gedeactiveerd) → terug naar startscherm
+- [ ] Open `?pp=1234` met actieve template (geen praatplaat) → terug naar startscherm
+- [ ] Na succesvolle navigatie: praatplaat-afbeelding toont correct, positie kiezen werkt
+- [ ] Na positie kiezen → normale flow: kaart → studio → podium → auto-submit
+
+### Combinatie met bestaande flows
+
+- [ ] `?pp=` + `?share=` in dezelfde URL: share heeft voorrang (bestaand gedrag)
+- [ ] `?pp=` + `?theme=winterspelen`: thema wordt correct geladen voor de praatplaat
+- [ ] Leerling voert dezelfde klascode handmatig in via ShareCodeInput → zelfde resultaat als via link
+
+### Cross-browser / device
+
+- [ ] iPad Safari: QR-code scannen vanuit camera-app → Safari opent URL correct
+- [ ] Android Chrome: QR scannen → Chrome opent URL correct
+- [ ] Chromebook: link kopieer-functie werkt (clipboard API)
+- [ ] Digibord-scenario: QR geprojecteerd op scherm, leerlingen scannen met tablets
 
 ---
 

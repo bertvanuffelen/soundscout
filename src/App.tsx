@@ -4,6 +4,8 @@ import { AudioService } from './services/AudioService';
 import { useAppStore } from './stores/appStore';
 import { useThemeStore } from './stores/themeStore';
 import { useDevFlagsStore } from './stores/devFlagsStore';
+import { lookupAndRouteAssignment } from './utils/compositionInit';
+import { logger } from './utils/logger';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
@@ -20,7 +22,9 @@ const SharedPlayer = lazy(() => import('./components/share/SharedPlayer'));
 const TeacherPage = lazy(() => import('./pages/TeacherPage'));
 const ComposeModeScreen = lazy(() => import('./components/start/ComposeModeScreen'));
 const TutorialScreen = lazy(() => import('./components/tutorial/TutorialScreen'));
+const TeacherGuideScreen = lazy(() => import('./components/teacher/TeacherGuideScreen'));
 const PraatplaatSelectScreen = lazy(() => import('./components/praatplaat/PraatplaatSelectScreen'));
+const AssignmentLandingScreen = lazy(() => import('./components/assignment/AssignmentLandingScreen'));
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
@@ -58,10 +62,12 @@ function AppContent() {
       stage: t('stage.title'),
       'compose-mode': t('composeMode.title'),
       tutorial: t('tutorial.title'),
+      'teacher-guide': t('teacher.guide.title'),
       compositions: t('compositions.title'),
       teacher: 'Teacher Dashboard',
       shared: 'SoundScout',
       'praatplaat-select': 'SoundScout',
+      'assignment-landing': 'SoundScout',
     };
 
     const screenTitle = screenTitles[currentScreen] || 'SoundScout';
@@ -92,21 +98,6 @@ function AppContent() {
     }
   }, []);
 
-  // Initialize storytelling flag: ?storytelling=true activates compose mode selection
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const storytellingParam = params.get('storytelling');
-
-    if (storytellingParam === 'true') {
-      console.log('[App] Storytelling enabled via URL param');
-      useAppStore.getState().setStorytellingEnabled(true);
-      // Clean URL without reloading
-      const url = new URL(window.location.href);
-      url.searchParams.delete('storytelling');
-      window.history.replaceState({}, '', url.pathname + url.search);
-    }
-  }, []);
-
   // Check for ?share= query parameter on mount
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -119,6 +110,30 @@ function AppContent() {
       window.history.replaceState({}, '', url.pathname + url.search);
     }
   }, [goToShared]);
+
+  // Check for ?pp= query parameter on mount (#73 — deelbare praatplaat-link)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ppCode = params.get('pp');
+    if (ppCode) {
+      // Clean URL immediately (before async call)
+      const url = new URL(window.location.href);
+      url.searchParams.delete('pp');
+      window.history.replaceState({}, '', url.pathname + url.search);
+
+      // Route via AssignmentLandingScreen (#78) — ook voor praatplaat-deeplinks,
+      // zodat de leerling eerst ziet welke opdracht ze binnengaan.
+      lookupAndRouteAssignment(ppCode).then((success) => {
+        if (!success) {
+          logger.warn(`[App] ?pp=${ppCode}: lookup mislukt`);
+          goToStart();
+        }
+      }).catch((err) => {
+        logger.error('[App] ?pp= praatplaat lookup failed:', err);
+        goToStart();
+      });
+    }
+  }, [goToStart]);
 
   // Wait for theme to load
   if (!isThemeInitialized) {
@@ -151,11 +166,29 @@ function AppContent() {
         </FeatureErrorBoundary>
       );
 
+    case 'assignment-landing':
+      return (
+        <FeatureErrorBoundary featureName="AssignmentLanding">
+          <Suspense fallback={<LoadingFallback />}>
+            <AssignmentLandingScreen />
+          </Suspense>
+        </FeatureErrorBoundary>
+      );
+
     case 'tutorial':
       return (
         <FeatureErrorBoundary featureName="Tutorial">
           <Suspense fallback={<LoadingFallback />}>
             <TutorialScreen />
+          </Suspense>
+        </FeatureErrorBoundary>
+      );
+
+    case 'teacher-guide':
+      return (
+        <FeatureErrorBoundary featureName="TeacherGuide">
+          <Suspense fallback={<LoadingFallback />}>
+            <TeacherGuideScreen />
           </Suspense>
         </FeatureErrorBoundary>
       );

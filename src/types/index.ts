@@ -19,7 +19,9 @@ export type GameScreen =
   | 'teacher'
   | 'shared'
   | 'tutorial'
-  | 'praatplaat-select';
+  | 'teacher-guide'
+  | 'praatplaat-select'
+  | 'assignment-landing';
 
 // --- Praatplaat (#72) ---
 
@@ -51,6 +53,24 @@ export interface ActivePraatplaat {
 export interface PraatplaatPosition {
   x: number;
   y: number;
+}
+
+// --- Klascode-sessie (Universele Flow) ---
+
+/** Klascode session context — persisted with saved compositions */
+export interface ClassSession {
+  /** 4-digit class code */
+  classCode: string;
+  /** UUID of the class */
+  classId: string;
+  /** Display name of the class (e.g. "Groep 5") */
+  className: string;
+  /** Type of assignment linked to this class entry */
+  assignmentType: 'template' | 'praatplaat';
+  /** UUID of the active assignment (template_id or praatplaat_id) */
+  assignmentId: string;
+  /** Display name of the assignment */
+  assignmentName: string;
 }
 
 // --- Storytelling (#41) ---
@@ -324,6 +344,18 @@ export interface SavedComposition {
   sharedAt?: string;
   /** Storyboard ID if composed with storytelling (#41) */
   storyboardId?: string;
+  /** Klascode session context (if created via klascode flow) */
+  classSession?: ClassSession;
+  /** Server-side submission ID (for updates via klascode flow) */
+  submissionId?: string;
+  /**
+   * Snapshot of praatplaat context (#72) — persisted so that re-opening a
+   * praatplaat-compositie restores the image + position in the studio.
+   * `storyboardId` on this composition will be `praatplaat-{id}` in that case.
+   */
+  praatplaat?: ActivePraatplaat;
+  /** Position on the praatplaat (0-1 normalized), if applicable */
+  praatplaatPosition?: PraatplaatPosition;
 }
 
 // --- Composition Data Transfer Object ---
@@ -348,6 +380,13 @@ export interface CompositionData {
   sections?: Section[];
   /** Storyboard ID if composed with storytelling (#41) */
   storyboardId?: string;
+  /**
+   * Snapshot of praatplaat context (#72) — included in remote/online saves so
+   * that re-opening a praatplaat-compositie restores the image + position.
+   */
+  praatplaat?: ActivePraatplaat;
+  /** Position on the praatplaat (0-1 normalized), if applicable */
+  praatplaatPosition?: PraatplaatPosition;
 }
 
 // --- Template (Fase 5 - Docent-aangemaakt sjabloon) ---

@@ -14,9 +14,94 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
 import { getThemeStoryboards, findStoryboardById } from '../data/themes';
+import { getActiveAssignment } from '../lib/assignments';
+import { MAX_SECTIONS } from '../constants/config';
 import { logger } from './logger';
-import type { Template, CompositionData } from '../types';
+import { praatplaatToStoryboard } from './praatplaatStoryboard';
+import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, Storyboard, ComposeMode } from '../types';
 import { storageService } from '../services/StorageService';
+
+/**
+ * Payload voor `hydrateCompositionContext`: alle velden van een compositie die
+ * de appStore nodig heeft om de juiste studio-UI te tonen (storyboard-paneel,
+ * praatplaat, compose-mode).
+ */
+export interface CompositionContextInput {
+  storyboardId?: string;
+  praatplaat?: ActivePraatplaat;
+  praatplaatPosition?: PraatplaatPosition;
+}
+
+/**
+ * Hydrateert de `appStore` met de compose-context van een compositie.
+ *
+ * Herstel-volgorde:
+ * 1. Reset altijd de bestaande praatplaat/storyboard state (voorkomt lekkage
+ *    van een vorige sessie wanneer de nieuwe compositie die context niet heeft).
+ * 2. Heeft de compositie een `praatplaat`? → zet praatplaat + positie, bouw
+ *    een virtueel storyboard en zet compose-mode `'image'`.
+ * 3. Anders: heeft de compositie een `storyboardId`? → zoek op via
+ *    `findStoryboardById` (echte + `location-*` virtual IDs) en zet
+ *    compose-mode op basis van het aantal images (1 → `'image'`, meer →
+ *    `'storyboard'`).
+ * 4. Geen context → compose-mode `'free'` en storyboard `null`.
+ *
+ * Deze helper wordt aangeroepen door alle drie de laad-paden:
+ * - `initializeFromSavedComposition` (online bewaarcode)
+ * - `initializeFromTemplate` (docent-template)
+ * - `CompositionsView.handleOpenComposition` / `handlePlayComposition`
+ *   (lokale compositielijst)
+ */
+export function hydrateCompositionContext(input: CompositionContextInput): void {
+  const app = useAppStore.getState();
+
+  // 1. Reset praatplaat-context — we zetten 'm hieronder weer als die er is
+  app.clearPraatplaat();
+
+  // 2. Praatplaat-compositie?
+  if (input.praatplaat) {
+    app.setPraatplaat(input.praatplaat);
+    if (input.praatplaatPosition) {
+      app.setPraatplaatPosition(input.praatplaatPosition);
+    }
+    app.setActiveStoryboard(praatplaatToStoryboard(input.praatplaat));
+    app.setComposeMode('image');
+    logger.info(`[hydrateCompositionContext] Praatplaat "${input.praatplaat.id}" hersteld`);
+    return;
+  }
+
+  // 3. Reguliere storyboard / location-image
+  if (input.storyboardId) {
+    // Praatplaat-storyboard-IDs zonder bijbehorende praatplaat-snapshot zijn
+    // onherleidbaar (afbeelding zit in Supabase, niet in theme-data). Val
+    // terug op reset + waarschuwing.
+    if (input.storyboardId.startsWith('praatplaat-')) {
+      logger.warn(
+        `[hydrateCompositionContext] storyboardId "${input.storyboardId}" ` +
+        `verwijst naar een praatplaat maar er is geen praatplaat-snapshot ` +
+        `opgeslagen. Compositie wordt geopend zonder praatplaat-context.`
+      );
+      app.setActiveStoryboard(null);
+      app.setComposeMode('free');
+      return;
+    }
+
+    const found = findStoryboardById(input.storyboardId);
+    if (found) {
+      app.setActiveStoryboard(found.storyboard);
+      const mode = found.storyboard.images.length === 1 ? 'image' : 'storyboard';
+      app.setComposeMode(mode);
+      logger.info(`[hydrateCompositionContext] Storyboard "${found.storyboard.id}" hersteld (mode: ${mode})`);
+      return;
+    }
+
+    logger.warn(`[hydrateCompositionContext] storyboardId "${input.storyboardId}" niet gevonden`);
+  }
+
+  // 4. Reset
+  app.setActiveStoryboard(null);
+  app.setComposeMode('free');
+}
 
 export interface InitCompositionOptions {
   /** Theme ID to load */
@@ -61,21 +146,85 @@ export async function initializeNewComposition(
     onAudioInitFailed?.(error);
   }
 
-  // Stap 4: Navigeer — naar compose-mode als storytelling actief, anders naar map
-  const { storytellingEnabled, goToComposeMode, goToMap } = useAppStore.getState();
-  const storyboards = getThemeStoryboards(themeId);
-  const hasStoryboards = storyboards && storyboards.length > 0;
+  // Stap 4: Navigeer op basis van de gekozen compose-mode (#78).
+  // De mode is gezet door `ComposeModeModal` vóór thema-keuze. Voor 'free' gaan
+  // we direct naar de map; voor 'image' / 'storyboard' eerst naar
+  // `ComposeModeScreen` zodat de leerling binnen het thema een afbeelding of
+  // storyboard kan kiezen.
+  const { composeMode, goToComposeMode, goToMap } = useAppStore.getState();
 
   if (import.meta.env.DEV) {
-    logger.info(`[compositionInit] storytellingEnabled=${storytellingEnabled}, themeId=${themeId}, storyboards=${storyboards?.length ?? 0}, hasStoryboards=${hasStoryboards}`);
+    const storyboards = getThemeStoryboards(themeId);
+    logger.info(`[compositionInit] themeId=${themeId}, composeMode=${composeMode}, storyboards=${storyboards?.length ?? 0}`);
   }
 
-  if (storytellingEnabled && hasStoryboards) {
-    goToComposeMode();
-  } else {
+  if (composeMode === 'free') {
     goToMap();
+  } else {
+    goToComposeMode();
   }
 
+  return audioSuccess;
+}
+
+/**
+ * Initialiseer een nieuwe compositie vanaf een gekozen storyboard /
+ * compositie-afbeelding (#78).
+ *
+ * Zet thema impliciet op `storyboard.themeId`, koppelt de storyboard aan de
+ * appStore en maakt automatisch sections aan voor multi-image storyboards
+ * (zelfde gedrag als de oude `ComposeModeScreen`).
+ *
+ * @returns true als alles (inclusief audio) succesvol was
+ */
+export async function initializeCompositionFromStoryboard(
+  storyboard: Storyboard,
+  options: { onAudioInitFailed?: (error: unknown) => void } = {},
+): Promise<boolean> {
+  const mode: ComposeMode = storyboard.images.length === 1 ? 'image' : 'storyboard';
+
+  // 1. Thema impliciet uit storyboard
+  useThemeStore.getState().setTheme(storyboard.themeId);
+
+  // 2. Reset state
+  const { totalBeats, clearAllTracks, clearSections, addSection } = useTimelineStore.getState();
+  clearAllTracks();
+  clearSections();
+  useLibraryStore.getState().clearLibrary();
+
+  // 2b. Memory hygiene
+  const activeSamples = useThemeStore.getState().getSamples();
+  const activeSampleIds = new Set(activeSamples.map((s: { id: string }) => s.id));
+  audioService.disposeUnusedPlayers(activeSampleIds);
+
+  // 3. Compose-context
+  const app = useAppStore.getState();
+  app.setComposeMode(mode);
+  app.setActiveStoryboard(storyboard);
+
+  // 3b. Auto-sections voor multi-image
+  if (storyboard.images.length > 1) {
+    const sectionCount = Math.min(storyboard.images.length, MAX_SECTIONS);
+    const beatsPerImage = Math.floor(totalBeats / sectionCount);
+    for (let i = 0; i < sectionCount; i++) {
+      const endBeat = i < sectionCount - 1 ? beatsPerImage * (i + 1) : totalBeats;
+      const label = storyboard.images[i]?.label;
+      addSection(endBeat, undefined, label, true);
+    }
+  }
+
+  // 4. Audio init (niet kritiek)
+  let audioSuccess = true;
+  try {
+    await audioService.initialize();
+  } catch (error) {
+    audioSuccess = false;
+    logger.warn('Audio initialization failed during storyboard composition init:', error);
+    options.onAudioInitFailed?.(error);
+  }
+
+  // 5. Naar de map zodat leerling samples kan verzamelen
+  useAppStore.getState().goToMap();
   return audioSuccess;
 }
 
@@ -116,18 +265,12 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
   // Stap 3: Sla template context op
   useAppStore.getState().loadTemplate(template);
 
-  // Stap 3b: Activeer storyboard als de template er een bevat
-  if (compositionData.storyboardId) {
-    const found = findStoryboardById(compositionData.storyboardId);
-    if (found) {
-      useAppStore.getState().setActiveStoryboard(found.storyboard);
-      const mode = found.storyboard.images.length === 1 ? 'image' : 'storyboard';
-      useAppStore.getState().setComposeMode(mode);
-      logger.info(`[templateInit] Storyboard "${found.storyboard.id}" activated from template (mode: ${mode})`);
-    } else {
-      logger.warn(`[templateInit] storyboardId "${compositionData.storyboardId}" not found in theme data`);
-    }
-  }
+  // Stap 3b: Herstel compose-context (storyboard / praatplaat / free)
+  hydrateCompositionContext({
+    storyboardId: compositionData.storyboardId,
+    praatplaat: compositionData.praatplaat,
+    praatplaatPosition: compositionData.praatplaatPosition,
+  });
 
   // Stap 4: Audio initialiseren (niet kritiek)
   try {
@@ -138,6 +281,116 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
 
   // Stap 5: Navigeer naar studio
   useAppStore.getState().goToStudio();
+}
+
+/**
+ * Initialiseer een compositie vanuit een online bewaarde versie (#52):
+ * 1. Laad timeline data (tracks, bpm, totalBeats, sections)
+ * 2. Laad samples in library
+ * 3. Sla saveCode + saveSecret op in localStorage
+ * 4. Initialiseer audio engine
+ * 5. Navigeer naar studio
+ */
+/**
+ * Klascode-flow entry point (#78).
+ *
+ * Haalt de actieve opdracht op en routeert naar `AssignmentLandingScreen`
+ * met de pending assignment (template, praatplaat, of `null` = Route C).
+ *
+ * Wordt gebruikt door `ShareCodeInput` (handmatige invoer) en `App.tsx`
+ * (?pp= URL param). Retourneert `true` als er succesvol naar de landing is
+ * genavigeerd (ook bij Route C — de landing toont dan soft-recovery).
+ * Retourneert `false` alleen bij technische fouten.
+ *
+ * Belangrijk: deze functie initialiseert GEEN template en zet geen
+ * klascode-sessie. Dat gebeurt pas op de landing bij "Starten", via
+ * `activatePendingAssignment`. Zo blijven de stappen reviewbaar voor de
+ * leerling voordat ze echt in de studio/praatplaat-select landen.
+ */
+export async function lookupAndRouteAssignment(classCode: string): Promise<boolean> {
+  try {
+    const assignment = await getActiveAssignment(classCode);
+    useAppStore.getState().goToAssignmentLanding({ classCode, assignment });
+    return true;
+  } catch (err) {
+    logger.error('lookupAndRouteAssignment failed:', err);
+    return false;
+  }
+}
+
+/**
+ * Activeer de `pendingAssignment` uit de appStore (#78).
+ *
+ * Wordt aangeroepen vanuit `AssignmentLandingScreen` op "Starten". Zet de
+ * klascode-sessie, roept het juiste init-pad aan en navigeert:
+ * - `template` → `initializeFromTemplate` → studio
+ * - `praatplaat` → set praatplaat-context → `praatplaat-select`
+ * - `null` (Route C) → no-op (landing zelf toont soft-recovery knoppen)
+ *
+ * De pendingAssignment blijft staan tot navigatie rond is; `goToStart()`
+ * ruimt 'm op.
+ */
+export async function activatePendingAssignment(): Promise<void> {
+  const { pendingAssignment } = useAppStore.getState();
+  if (!pendingAssignment || !pendingAssignment.assignment) {
+    logger.warn('[activatePendingAssignment] Geen pending assignment om te activeren');
+    return;
+  }
+
+  const { classCode, assignment } = pendingAssignment;
+
+  // Wis bewaarcode-context (exclusief met klascode-flow)
+  storageService.clearSaveOnlineInfo();
+
+  if (assignment.type === 'template' && assignment.template) {
+    // Klascode-sessie vastleggen
+    useAppStore.getState().setClassSession({
+      classCode,
+      classId: assignment.classId,
+      className: assignment.className,
+      assignmentType: 'template',
+      assignmentId: assignment.template.id,
+      assignmentName: assignment.template.name,
+    });
+
+    await initializeFromTemplate(assignment.template);
+    return;
+  }
+
+  if (assignment.type === 'praatplaat' && assignment.praatplaat) {
+    useAppStore.getState().setClassSession({
+      classCode,
+      classId: assignment.classId,
+      className: assignment.className,
+      assignmentType: 'praatplaat',
+      assignmentId: assignment.praatplaat.id,
+      assignmentName: assignment.praatplaat.name,
+    });
+
+    useAppStore.getState().setPraatplaat({
+      id: assignment.praatplaat.id,
+      name: assignment.praatplaat.name,
+      imageUrl: assignment.praatplaat.imageUrl,
+      classId: assignment.classId,
+      classCode,
+      themeId: assignment.praatplaat.themeId,
+      locationId: assignment.praatplaat.locationId,
+    });
+
+    useAppStore.getState().goToPraatplaatSelect();
+    return;
+  }
+
+  logger.warn('[activatePendingAssignment] Onbekend assignment-type', { type: assignment.type });
+}
+
+/**
+ * @deprecated Gebruik `lookupAndRouteAssignment` — deze wrapper blijft bestaan
+ * voor code die nog direct naar praatplaat-select wilde routeren, maar routeert
+ * nu ook via de landing-flow (#78).
+ */
+export async function navigateToPraatplaat(classCode: string): Promise<boolean> {
+  return lookupAndRouteAssignment(classCode);
 }
 
 /**
@@ -168,15 +421,12 @@ export async function initializeFromSavedComposition(
   // Stap 2: Laad samples in library
   useLibraryStore.getState().loadLibrary(compositionData.samples);
 
-  // Stap 2b: Activeer storyboard als de compositie er een bevat
-  if (compositionData.storyboardId) {
-    const found = findStoryboardById(compositionData.storyboardId);
-    if (found) {
-      useAppStore.getState().setActiveStoryboard(found.storyboard);
-      const mode = found.storyboard.images.length === 1 ? 'image' : 'storyboard';
-      useAppStore.getState().setComposeMode(mode);
-    }
-  }
+  // Stap 2b: Herstel compose-context (storyboard / praatplaat / free)
+  hydrateCompositionContext({
+    storyboardId: compositionData.storyboardId,
+    praatplaat: compositionData.praatplaat,
+    praatplaatPosition: compositionData.praatplaatPosition,
+  });
 
   // Stap 3: Sla online bewaar-info op in localStorage
   storageService.setSaveOnlineInfo(saveCode, saveSecret, compositionName);

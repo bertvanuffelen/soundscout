@@ -76,7 +76,11 @@ class StorageServiceImpl {
     name: string,
     timeline: TimelineState,
     samples: Sample[],
-    storyboardId?: string
+    storyboardId?: string,
+    classSession?: SavedComposition['classSession'],
+    submissionId?: string,
+    praatplaat?: SavedComposition['praatplaat'],
+    praatplaatPosition?: SavedComposition['praatplaatPosition'],
   ): SavedComposition | null {
     const compositions = this.getCompositions();
 
@@ -101,6 +105,10 @@ class StorageServiceImpl {
       samples,
       metadata: this.computeMetadata(timeline, samples),
       ...(storyboardId ? { storyboardId } : {}),
+      ...(classSession ? { classSession } : {}),
+      ...(submissionId ? { submissionId } : {}),
+      ...(praatplaat ? { praatplaat } : {}),
+      ...(praatplaatPosition ? { praatplaatPosition } : {}),
     };
 
     compositions.push(newComposition);
@@ -121,7 +129,7 @@ class StorageServiceImpl {
    */
   updateComposition(
     id: string,
-    updates: Partial<Pick<SavedComposition, 'name' | 'timeline' | 'samples'>>
+    updates: Partial<Pick<SavedComposition, 'name' | 'timeline' | 'samples' | 'classSession' | 'submissionId' | 'praatplaat' | 'praatplaatPosition' | 'storyboardId'>>
   ): SavedComposition | null {
     const compositions = this.getCompositions();
     const index = compositions.findIndex((c) => c.id === id);
