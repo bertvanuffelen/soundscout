@@ -251,8 +251,6 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
     bpm: compositionData.bpm,
     totalBeats: compositionData.totalBeats,
     isLooping: compositionData.isLooping,
-    isPlaying: false,
-    currentBeat: 0,
     sections: compositionData.sections,
   });
 
@@ -413,8 +411,6 @@ export async function initializeFromSavedComposition(
     bpm: compositionData.bpm,
     totalBeats: compositionData.totalBeats,
     isLooping: compositionData.isLooping,
-    isPlaying: false,
-    currentBeat: 0,
     sections: compositionData.sections,
   });
 

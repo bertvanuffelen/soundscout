@@ -227,7 +227,7 @@ function PraatplaatBody({ praatplaat }: { praatplaat: { name: string; imageUrl: 
   return (
     <div>
       <div className="flex items-start gap-3 mb-4">
-        <div className="shrink-0 w-12 h-12 rounded-xl bg-teal-500/20 md:bg-teal-100 text-teal-400 md:text-teal-600 flex items-center justify-center">
+        <div className="shrink-0 w-12 h-12 rounded-xl bg-accent-500/20 md:bg-accent-100 text-accent-400 md:text-accent-600 flex items-center justify-center">
           <ImageIcon size={24} />
         </div>
         <div className="min-w-0">

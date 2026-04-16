@@ -11,52 +11,12 @@ import { useTranslation } from 'react-i18next';
 import { X, Loader2, Square, RefreshCw, ListMusic } from 'lucide-react';
 import { getPraatplaatSubmissions } from '../../lib/praatplaat';
 import type { PraatplaatSubmission, PraatplaatRow } from '../../lib/praatplaat';
+import { clusterSubmissions, type SpotCluster } from '../../utils/praatplaatClustering';
 import { PraatplaatSpot } from './PraatplaatSpot';
 import { SubmissionPlayer } from '../teacher/SubmissionPlayer';
 import { Button } from '../ui/Button';
 import { audioService } from '../../services/AudioService';
 import { logger } from '../../utils/logger';
-
-// --- Clustering: groepeer nearby submissions ---
-
-interface SpotCluster {
-  x: number;
-  y: number;
-  submissions: PraatplaatSubmission[];
-}
-
-const CLUSTER_THRESHOLD = 0.05; // 5% van de afbeelding
-
-function clusterSubmissions(submissions: PraatplaatSubmission[]): SpotCluster[] {
-  const clusters: SpotCluster[] = [];
-
-  for (const sub of submissions) {
-    // Zoek bestaand cluster dichtbij
-    const nearbyCluster = clusters.find(
-      (c) =>
-        Math.abs(c.x - sub.position_x) < CLUSTER_THRESHOLD &&
-        Math.abs(c.y - sub.position_y) < CLUSTER_THRESHOLD
-    );
-
-    if (nearbyCluster) {
-      nearbyCluster.submissions.push(sub);
-      // Herbereken centroïde
-      const total = nearbyCluster.submissions.length;
-      nearbyCluster.x =
-        nearbyCluster.submissions.reduce((sum, s) => sum + s.position_x, 0) / total;
-      nearbyCluster.y =
-        nearbyCluster.submissions.reduce((sum, s) => sum + s.position_y, 0) / total;
-    } else {
-      clusters.push({
-        x: sub.position_x,
-        y: sub.position_y,
-        submissions: [sub],
-      });
-    }
-  }
-
-  return clusters;
-}
 
 // --- Component ---
 
@@ -78,12 +38,13 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
   const [playingSubmissionId, setPlayingSubmissionId] = useState<string | null>(null);
   const [audioLoading, setAudioLoading] = useState(false);
   const [showTimeline, setShowTimeline] = useState(false);
+  const [errorSubmissionId, setErrorSubmissionId] = useState<string | null>(null);
 
   // Clusters
-  const [clusters, setClusters] = useState<SpotCluster[]>([]);
+  const [clusters, setClusters] = useState<SpotCluster<PraatplaatSubmission>[]>([]);
 
   // Dropdown state voor multi-submission spots
-  const [dropdownCluster, setDropdownCluster] = useState<SpotCluster | null>(null);
+  const [dropdownCluster, setDropdownCluster] = useState<SpotCluster<PraatplaatSubmission> | null>(null);
 
   // --- Data laden (alleen als classId is opgegeven) ---
   const fetchData = useCallback(async () => {
@@ -157,13 +118,16 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
       setAudioLoading(false);
     } catch (err) {
       logger.error('PraatplaatViewer playback failed:', err);
+      setErrorSubmissionId(sub.id);
       setPlayingSubmissionId(null);
       setAudioLoading(false);
+      // Auto-clear error after 3 seconds
+      setTimeout(() => setErrorSubmissionId(null), 3000);
     }
   }, [playingSubmissionId]);
 
   // --- Afspelen ---
-  const handleSpotClick = useCallback((cluster: SpotCluster) => {
+  const handleSpotClick = useCallback((cluster: SpotCluster<PraatplaatSubmission>) => {
     if (cluster.submissions.length === 1) {
       playSubmission(cluster.submissions[0]);
     } else {
@@ -255,6 +219,7 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
               x={cluster.x}
               y={cluster.y}
               isPlaying={cluster.submissions.some((s) => s.id === playingSubmissionId)}
+              hasError={cluster.submissions.some((s) => s.id === errorSubmissionId)}
               onClick={() => handleSpotClick(cluster)}
             />
           ))}

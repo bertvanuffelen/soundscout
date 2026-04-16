@@ -74,6 +74,7 @@ export function LocationEditor() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingHotspotId, setEditingHotspotId] = useState<string | null>(null);
   const [showHelp, setShowHelp] = useState(false);
+  const [showResetModal, setShowResetModal] = useState(false);
 
   // Locations for the selected theme (derived)
   const themeLocations = useMemo(
@@ -185,7 +186,11 @@ export function LocationEditor() {
   }, []);
 
   const handleReset = useCallback(() => {
-    if (!confirm('Weet je zeker dat je alles wilt resetten?')) return;
+    setShowResetModal(true);
+  }, []);
+
+  const handleResetConfirm = useCallback(() => {
+    setShowResetModal(false);
 
     setThemeId('basis');
     setLocationId('');
@@ -605,6 +610,34 @@ export function LocationEditor() {
         onUpdate={handleUpdateHotspot}
         onCancel={handleModalCancel}
       />
+
+      {/* Reset bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={showResetModal}
+        onClose={() => setShowResetModal(false)}
+        title="Reset"
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed">
+          Weet je zeker dat je alles wilt resetten?
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setShowResetModal(false)}
+            className="flex-1"
+          >
+            Annuleren
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleResetConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            Reset
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

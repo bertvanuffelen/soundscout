@@ -302,7 +302,7 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
         const fromTrackIndex = active.data.current?.trackIndex as number;
 
         // Smart snap will find the best position
-        moveClip(fromTrackIndex, toTrackIndex, clip.id, startBeat);
+        moveClip(fromTrackIndex, toTrackIndex, clip.id, startBeat, samples);
       } else {
         // Adding new clip from library
         // Block if template doesn't allow new clips (#59)
@@ -320,6 +320,7 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
             sampleId: sample.id,
             startBeat,
           },
+          samples,
         );
       }
     },

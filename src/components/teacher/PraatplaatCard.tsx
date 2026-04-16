@@ -48,17 +48,17 @@ export function PraatplaatCard({ praatplaat, submissionCount, classCode, onDelet
       <div className="p-4 sm:p-5">
         {/* Header */}
         <div className="mb-3">
-          <h3 className="font-semibold text-gray-800 text-lg truncate">
+          <h3 className="font-semibold text-text-main text-lg truncate">
             {name}
           </h3>
-          <p className="text-gray-500 text-sm">
+          <p className="text-text-muted text-sm">
             {formattedDate}
           </p>
         </div>
 
         {/* Submission count */}
         {typeof submissionCount === 'number' && (
-          <p className="text-gray-500 text-xs mb-3">
+          <p className="text-text-muted text-xs mb-3">
             {t('teacher.praatplaat.submissionCount', { count: submissionCount })}
           </p>
         )}
@@ -88,7 +88,7 @@ export function PraatplaatCard({ praatplaat, submissionCount, classCode, onDelet
             variant="ghost"
             size="sm"
             onClick={onDelete}
-            className="text-red-600 hover:bg-red-50"
+            className="text-error-600 hover:bg-error-50"
             title={t('teacher.praatplaat.delete')}
           >
             <Trash2 className="w-4 h-4" />
@@ -103,6 +103,7 @@ export function PraatplaatCard({ praatplaat, submissionCount, classCode, onDelet
           onClose={() => setShowShareModal(false)}
           classCode={classCode}
           praatplaatName={name}
+          praatplaatId={praatplaat.id}
         />
       )}
     </div>

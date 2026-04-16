@@ -2,7 +2,7 @@
 
 Technisch referentiedocument voor de maker/beheerder van SoundScout.
 
-**Laatst bijgewerkt**: 2026-04-13
+**Laatst bijgewerkt**: 2026-04-15
 
 ---
 
@@ -53,14 +53,14 @@ Login: [https://supabase.com/dashboard](https://supabase.com/dashboard)
 | `classes` | Klassen van docenten (code, naam, is_active) |
 | `submissions` | Leerling-inzendingen (compositie-data, bewaarcode, praatplaat-positie) |
 | `templates` | Docent-templates (compositie-data, lock-opties) |
-| `praatplaten` | Praatplaat-kaarten (naam, afbeelding, type) |
+| `praatplaten` | Praatplaat-kaarten (naam, afbeelding, share_code, view_count) |
 | `class_assignments` | Actieve opdrachten per klas (template of praatplaat) |
 | `shared_compositions` | Gedeelde composities via deellink (30 dagen geldig) |
 | `rate_limits` | Rate limiting tellers (automatisch opgeschoond) |
 
 ### Migraties
 
-SQL-bestanden in `supabase/migrations/`, genummerd 002 t/m 011. Bij database-wijzigingen: nieuw bestand met volgend nummer. Altijd RLS policies toevoegen bij nieuwe tabellen.
+SQL-bestanden in `supabase/migrations/`, genummerd 002 t/m 012. Bij database-wijzigingen: nieuw bestand met volgend nummer. Altijd RLS policies toevoegen bij nieuwe tabellen.
 
 ### Veelvoorkomende taken
 
@@ -83,6 +83,22 @@ Handmatig verwijderen na controle:
 DELETE FROM submissions
 WHERE save_code IS NOT NULL
   AND last_updated_at < NOW() - INTERVAL '60 days';
+```
+
+**Verlopen praatplaat-deellinks opschonen:**
+Luisterpagina-links voor praatplaten verlopen na 30 dagen. Docenten kunnen ze verlengen via het dashboard. Om verlopen links handmatig op te ruimen:
+```sql
+SELECT id, name, share_code, share_expires_at, share_view_count
+FROM praatplaten
+WHERE share_code IS NOT NULL
+  AND share_expires_at < NOW();
+```
+Opschonen (verwijdert alleen de share-kolommen, niet de praatplaat zelf):
+```sql
+UPDATE praatplaten
+SET share_code = NULL, share_expires_at = NULL, share_view_count = 0
+WHERE share_code IS NOT NULL
+  AND share_expires_at < NOW();
 ```
 
 **Rate limits resetten (als iemand geblokkeerd is):**
@@ -134,6 +150,7 @@ Beschikbaar op `/editor` (beveiligd pad). Gebruik voor:
 |-----|----------|-------|
 | Supabase usage | Maandelijks | Dashboard → Usage: check storage, bandwidth, row counts |
 | Verlopen bewaarcodes | Maandelijks | Zie query hierboven, handmatig opschonen |
+| Verlopen praatplaat-links | Maandelijks | Zie query hierboven, share-kolommen resetten |
 | EmailJS quota | Maandelijks | EmailJS dashboard → check resterende berichten |
 | SSL-certificaat | Automatisch bij Strato | Controleer op waarschuwingsmails van Strato |
 

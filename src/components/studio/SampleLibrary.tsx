@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Play } from 'lucide-react';
+import { Play, MapPin } from 'lucide-react';
 import type { Sample } from '../../types';
 import { SampleIcon } from '../../utils/iconMap';
 
@@ -111,6 +111,10 @@ export const SampleLibrary = memo(function SampleLibrary({
     return (
       <div className="flex-1 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
         <p className="text-xs sm:text-sm text-text-muted italic">{t('studio.emptyLibrary')}</p>
+        <p className="text-xs text-text-muted mt-1 flex items-center gap-1">
+          <MapPin className="w-3 h-3 shrink-0" />
+          {t('studio.emptyLibraryHint')}
+        </p>
       </div>
     );
   }

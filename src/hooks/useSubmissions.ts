@@ -5,7 +5,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { getSupabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
 import type { CompositionData } from '../types';
 
@@ -53,6 +53,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
       setLoading(true);
       setError(null);
 
+      const supabase = await getSupabase();
       const { data, error: fetchError } = await supabase
         .from('submissions')
         .select('*')
@@ -75,6 +76,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
     try {
       setOperationError(null);
 
+      const supabase = await getSupabase();
       const { error: deleteErr } = await supabase
         .from('submissions')
         .delete()

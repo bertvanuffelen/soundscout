@@ -104,7 +104,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
       <div className="space-y-4">
         {/* Naam invoer */}
         <div>
-          <label htmlFor="praatplaat-name" className="block text-sm font-medium text-gray-700 mb-1">
+          <label htmlFor="praatplaat-name" className="block text-sm font-medium text-text-main mb-1">
             {t('teacher.praatplaat.nameLabel')}
           </label>
           <input
@@ -121,7 +121,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
 
         {/* Praatplaat-bibliotheek (primair) */}
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-text-main mb-2">
             {t('teacher.praatplaat.imageLabel')}
           </label>
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-2">
@@ -134,7 +134,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                 className={`group relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
                   selected?.id === img.id
                     ? 'border-primary-400 ring-2 ring-primary-200'
-                    : 'border-transparent hover:border-gray-300'
+                    : 'border-transparent hover:border-neutral-300'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
                 <img
@@ -187,7 +187,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                           className={`group relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
                             selected?.id === location.id && selected?.source === 'theme' && selected?.themeId === group.themeId
                               ? 'border-primary-400 ring-2 ring-primary-200'
-                              : 'border-transparent hover:border-gray-300'
+                              : 'border-transparent hover:border-neutral-300'
                           } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
                           <img
@@ -217,7 +217,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
 
         {/* Error */}
         {error && (
-          <p className="text-red-600 text-sm">{error}</p>
+          <p className="text-error-600 text-sm">{error}</p>
         )}
 
         {/* Acties */}

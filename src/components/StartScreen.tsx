@@ -41,6 +41,7 @@ export function StartScreen() {
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [showStoryboardPicker, setShowStoryboardPicker] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
+  const [showNewConfirm, setShowNewConfirm] = useState(false);
 
   // Check if there are saved compositions
   useEffect(() => {
@@ -49,7 +50,17 @@ export function StartScreen() {
   }, []);
 
   const handleNewComposition = () => {
-    // Stap 1: soort compositie kiezen
+    if (hasClipsInProgress) {
+      // Waarschuw dat de huidige compositie verloren gaat
+      setShowNewConfirm(true);
+    } else {
+      // Geen actieve compositie — ga direct door
+      setShowComposeMode(true);
+    }
+  };
+
+  const handleConfirmNewComposition = () => {
+    setShowNewConfirm(false);
     setShowComposeMode(true);
   };
 
@@ -299,6 +310,34 @@ export function StartScreen() {
         onClose={() => setShowFeedback(false)}
         mode="feedback"
       />
+
+      {/* Waarschuwing: actieve compositie wordt gewist */}
+      <Modal
+        isOpen={showNewConfirm}
+        onClose={() => setShowNewConfirm(false)}
+        title={t('start.newComposition')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">
+          {t('start.newCompositionConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setShowNewConfirm(false)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleConfirmNewComposition}
+            className="flex-1"
+          >
+            {t('start.newCompositionStart')}
+          </Button>
+        </div>
+      </Modal>
 
       {/* Compose mode modal — stap 1 van Nieuwe compositie */}
       <ComposeModeModal

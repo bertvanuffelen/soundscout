@@ -8,7 +8,16 @@
  * - getCurrentUser: Huidige gebruiker ophalen
  */
 
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
+import {
+  ERR_AUTH_ALREADY_REGISTERED,
+  ERR_AUTH_INVALID_EMAIL,
+  ERR_AUTH_PASSWORD_TOO_SHORT,
+  ERR_AUTH_INVALID_CREDENTIALS,
+  ERR_AUTH_EMAIL_NOT_CONFIRMED,
+  ERR_AUTH_RATE_LIMIT,
+  matchesError,
+} from './supabaseErrors';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
@@ -26,6 +35,7 @@ export async function signUpTeacher(
   password: string,
   displayName: string
 ) {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.auth.signUp({
     email,
     password,
@@ -38,13 +48,13 @@ export async function signUpTeacher(
 
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
-    if (error.message.includes('already registered')) {
+    if (matchesError(error, ERR_AUTH_ALREADY_REGISTERED)) {
       throw new Error(i18n.t('auth.emailAlreadyRegistered'));
     }
-    if (error.message.includes('valid email')) {
+    if (matchesError(error, ERR_AUTH_INVALID_EMAIL)) {
       throw new Error(i18n.t('auth.invalidEmail'));
     }
-    if (error.message.includes('at least 6 characters')) {
+    if (matchesError(error, ERR_AUTH_PASSWORD_TOO_SHORT)) {
       throw new Error(i18n.t('auth.passwordTooShort'));
     }
     throw new Error(error.message);
@@ -61,6 +71,7 @@ export async function signUpTeacher(
  * @returns Session object of gooit error
  */
 export async function signInTeacher(email: string, password: string) {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.auth.signInWithPassword({
     email,
     password,
@@ -68,10 +79,10 @@ export async function signInTeacher(email: string, password: string) {
 
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
-    if (error.message.includes('Invalid login credentials')) {
+    if (matchesError(error, ERR_AUTH_INVALID_CREDENTIALS)) {
       throw new Error(i18n.t('auth.invalidCredentials'));
     }
-    if (error.message.includes('Email not confirmed')) {
+    if (matchesError(error, ERR_AUTH_EMAIL_NOT_CONFIRMED)) {
       throw new Error(i18n.t('auth.emailNotConfirmed'));
     }
     throw new Error(error.message);
@@ -84,6 +95,7 @@ export async function signInTeacher(email: string, password: string) {
  * Uitloggen
  */
 export async function signOut() {
+  const supabase = await getSupabase();
   const { error } = await supabase.auth.signOut();
 
   if (error) {
@@ -97,6 +109,7 @@ export async function signOut() {
  * @returns User object of null
  */
 export async function getCurrentUser() {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.auth.getUser();
 
   if (error) {
@@ -113,6 +126,7 @@ export async function getCurrentUser() {
  * @returns Session object of null
  */
 export async function getCurrentSession() {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.auth.getSession();
 
   if (error) {
@@ -129,13 +143,14 @@ export async function getCurrentSession() {
  * @param email - Email adres van de docent
  */
 export async function resetPassword(email: string) {
+  const supabase = await getSupabase();
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${window.location.origin}/#reset-password`,
   });
 
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
-    if (error.message.includes('rate limit')) {
+    if (matchesError(error, ERR_AUTH_RATE_LIMIT)) {
       throw new Error(i18n.t('auth.rateLimited'));
     }
     throw new Error(i18n.t('auth.resetEmailFailed'));

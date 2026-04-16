@@ -26,11 +26,11 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 const variantStyles = {
   primary: [
     // 3D tactile button effect with soft shadow
-    'bg-amber-400 hover:bg-amber-500 active:bg-amber-500',
-    'text-amber-900 font-bold',
+    'bg-accent-400 hover:bg-accent-500 active:bg-accent-500',
+    'text-accent-900 font-bold',
     'shadow-[0_4px_0_0_rgba(180,83,9,0.5)] hover:shadow-[0_4px_0_0_rgba(146,64,14,0.5)]',
     'active:shadow-[0_1px_0_0_rgba(180,83,9,0.5)] active:translate-y-[3px]',
-    'disabled:bg-amber-300 disabled:shadow-[0_4px_0_0_rgba(217,119,6,0.4)] disabled:translate-y-0',
+    'disabled:bg-accent-300 disabled:shadow-[0_4px_0_0_rgba(217,119,6,0.4)] disabled:translate-y-0',
   ].join(' '),
 
   secondary: [
@@ -52,11 +52,11 @@ const variantStyles = {
 
   danger: [
     // 3D tactile effect with soft shadow
-    'bg-red-500 hover:bg-red-600 active:bg-red-600',
+    'bg-error-500 hover:bg-error-600 active:bg-error-600',
     'text-white font-bold',
     'shadow-[0_4px_0_0_rgba(153,27,27,0.5)] hover:shadow-[0_4px_0_0_rgba(127,29,29,0.5)]',
     'active:shadow-[0_1px_0_0_rgba(153,27,27,0.5)] active:translate-y-[3px]',
-    'disabled:bg-red-300 disabled:shadow-[0_4px_0_0_rgba(220,38,38,0.4)] disabled:translate-y-0',
+    'disabled:bg-error-300 disabled:shadow-[0_4px_0_0_rgba(220,38,38,0.4)] disabled:translate-y-0',
   ].join(' '),
 };
 

@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Play, XCircle } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Play, XCircle, Share2 } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -15,8 +15,10 @@ import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
+import { SharePraatplaatModal } from './SharePraatplaatModal';
 import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
 import { logger } from '../../utils/logger';
 
 interface ClassDetailProps {
@@ -31,6 +33,8 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [actionError, setActionError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   const [activeTab, setActiveTab] = useState<'submitted' | 'wip'>('submitted');
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
 
   // --- Actieve opdracht ---
   const {
@@ -45,6 +49,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [showActivateModal, setShowActivateModal] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [showActivatedCode, setShowActivatedCode] = useState(false);
+  const [showSharePraatplaatModal, setShowSharePraatplaatModal] = useState(false);
 
   const handleActivateTemplate = useCallback(async (templateId: string) => {
     await activateTemplate(templateId);
@@ -88,17 +93,19 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setTimeout(() => setRefreshing(false), 500);
   };
 
-  const handleDelete = async (id: string) => {
-    if (!confirm(t('teacher.classDetail.deleteConfirm'))) {
-      return;
-    }
+  const handleDeleteRequest = (id: string) => {
+    setDeleteConfirmId(id);
+  };
 
+  const handleDeleteConfirm = async () => {
+    if (!deleteConfirmId) return;
     try {
       setActionError(null);
-      await deleteSubmission(id);
+      await deleteSubmission(deleteConfirmId);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('teacher.classDetail.deleteError'));
     }
+    setDeleteConfirmId(null);
   };
 
   const handlePlay = (submission: Submission) => {
@@ -225,7 +232,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   {/* Type icoon */}
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
                     activeAssignment.type === 'template'
-                      ? 'bg-amber-100 text-amber-700'
+                      ? 'bg-warning-100 text-warning-700'
                       : 'bg-primary-100 text-primary-700'
                   }`}>
                     {activeAssignment.type === 'template' ? (
@@ -239,7 +246,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     <div className="flex items-center gap-2 mb-1">
                       <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium ${
                         activeAssignment.type === 'template'
-                          ? 'bg-amber-100 text-amber-800'
+                          ? 'bg-warning-100 text-warning-800'
                           : 'bg-primary-100 text-primary-800'
                       }`}>
                         {activeAssignment.type === 'template'
@@ -286,6 +293,18 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       {t('teacher.praatplaat.openPraatplaat')}
                     </Button>
                   )}
+                  {/* Deel link — voor praatplaat (#73) */}
+                  {activeAssignment.type === 'praatplaat' && activeAssignment.praatplaatId && (
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setShowSharePraatplaatModal(true)}
+                      className="inline-flex items-center gap-1"
+                    >
+                      <Share2 className="w-4 h-4" />
+                      {t('teacher.praatplaat.share')}
+                    </Button>
+                  )}
                   <Button
                     variant="secondary"
                     size="sm"
@@ -296,7 +315,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   <Button
                     variant="ghost"
                     size="sm"
-                    onClick={handleDeactivateAssignment}
+                    onClick={() => setShowDeactivateModal(true)}
                     className="text-error-600 hover:bg-error-50"
                   >
                     <XCircle className="w-4 h-4 mr-1" />
@@ -321,7 +340,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   className="bg-bg-surface rounded-lg p-3 border border-border-subtle flex items-center gap-3"
                 >
                   <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${
-                    pa.type === 'template' ? 'bg-amber-100 text-amber-600' : 'bg-primary-100 text-primary-600'
+                    pa.type === 'template' ? 'bg-warning-100 text-warning-600' : 'bg-primary-100 text-primary-600'
                   }`}>
                     {pa.type === 'template' ? <FileText className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
                   </div>
@@ -392,7 +411,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     key={submission.id}
                     submission={submission}
                     onPlay={() => handlePlay(submission)}
-                    onDelete={() => handleDelete(submission.id)}
+                    onDelete={() => handleDeleteRequest(submission.id)}
                   />
                 ))}
               </div>
@@ -412,7 +431,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   key={submission.id}
                   submission={submission}
                   onPlay={() => handlePlay(submission)}
-                  onDelete={() => handleDelete(submission.id)}
+                  onDelete={() => handleDeleteRequest(submission.id)}
                   isWip
                 />
               ))}
@@ -452,6 +471,73 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           onClose={() => setViewingPraatplaat(null)}
         />
       )}
+
+      {/* Share praatplaat modal (#73) */}
+      {activeAssignment?.type === 'praatplaat' && activeAssignment.praatplaatId && (
+        <SharePraatplaatModal
+          isOpen={showSharePraatplaatModal}
+          onClose={() => setShowSharePraatplaatModal(false)}
+          classCode={classData.code}
+          praatplaatName={activeAssignment.assignmentName}
+          praatplaatId={activeAssignment.praatplaatId}
+        />
+      )}
+
+      {/* Deactiveer opdracht bevestiging (UX-DEST-1) */}
+      <Modal
+        isOpen={showDeactivateModal}
+        onClose={() => setShowDeactivateModal(false)}
+        title={t('assignments.deactivate')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed">
+          {t('assignments.deactivateConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setShowDeactivateModal(false)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => { setShowDeactivateModal(false); handleDeactivateAssignment(); }}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('assignments.deactivate')}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Verwijder compositie bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deleteConfirmId}
+        onClose={() => setDeleteConfirmId(null)}
+        title={t('teacher.classDetail.deleteTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed">
+          {t('teacher.classDetail.deleteConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeleteConfirmId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }

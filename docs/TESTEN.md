@@ -3,7 +3,7 @@
 Checklist voor hands-on testen op diverse apparaten.
 Vink af wat getest en goed bevonden is. Noteer bevindingen direct onder het item.
 
-**Laatst bijgewerkt**: 2026-04-13
+**Laatst bijgewerkt**: 2026-04-14
 
 ---
 
@@ -561,6 +561,33 @@ Bij elke testronde even controleren dat de kern werkt:
 - [ ] Compositie delen met link
 - [ ] Taal wisselen (NL ↔ EN)
 - [ ] App werkt na pagina-refresh (state hersteld uit localStorage)
+
+---
+
+## 16. Technische wijzigingen (2026-04-14)
+
+Vandaag doorgevoerde changes die functioneel getest moeten worden.
+
+### TP5-2 — Lazy-load Supabase
+- [x] Klascode invoeren werkt (Supabase wordt pas bij eerste gebruik geladen)
+- [x] Docent login werkt
+
+### TP5-3 — Dynamic import lamejs
+- [x] MP3 export werkt (lamejs wordt pas bij export geladen)
+
+### TP5-5 — Zod validatie op RPC responses
+- [ ] Bewaarcode laden op ander device: compositie opent correct in studio
+- [ ] Deelbare link openen: SharedPlayer toont compositie
+- [ ] Praatplaat viewer: inzendingen laden en afspelen
+
+### TP5-11 — QuotaExceededError feedback
+- [ ] Moeilijk te testen zonder kunstmatig localStorage vol te maken. Optioneel: via DevTools `localStorage` vullen tot 5MB, dan opslaan → rode toast "Opslagruimte vol" moet verschijnen
+
+### TP5-12 — Bewaarcode sync feedback
+- [ ] Maak een compositie, sla online op met bewaarcode
+- [ ] Sla opnieuw op → groene toast "Online kopie bijgewerkt" verschijnt kort
+- [ ] Zet wifi uit (of throttle network in DevTools), sla opnieuw op → oranje toast "Online kopie niet bijgewerkt" verschijnt
+- [ ] Lokale save werkt nog steeds ondanks sync-falen (groene "Opgeslagen" button)
 
 ---
 

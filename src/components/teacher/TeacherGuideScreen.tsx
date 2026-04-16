@@ -23,6 +23,16 @@ function embedUrl(id: string): string {
   return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
 }
 
+// --- Content item types ---
+
+/** Een content-item is een platte string (paragraaf) of een object met type. */
+type ContentItem = string | { type: 'heading'; text: string };
+
+/** Type guard: is dit een structured content item? */
+function isStructuredItem(item: ContentItem): item is { type: 'heading'; text: string } {
+  return typeof item === 'object' && item !== null && 'type' in item;
+}
+
 // --- Sectie-data ---
 
 interface GuideSection {
@@ -52,6 +62,11 @@ const SECTIONS: GuideSection[] = [
     id: 'assignments',
     titleKey: 'teacher.guide.sections.assignments.title',
     contentKey: 'teacher.guide.sections.assignments.content',
+  },
+  {
+    id: 'compose-modes',
+    titleKey: 'teacher.guide.sections.compose-modes.title',
+    contentKey: 'teacher.guide.sections.compose-modes.content',
   },
   {
     id: 'templates',
@@ -126,7 +141,7 @@ export default function TeacherGuideScreen() {
           <div className="flex flex-col gap-2">
             {SECTIONS.map((section, index) => {
               const isOpen = openId === section.id;
-              const paragraphs = t(section.contentKey, { returnObjects: true, defaultValue: [] }) as string[];
+              const contentItems = t(section.contentKey, { returnObjects: true, defaultValue: [] }) as ContentItem[];
 
               return (
                 <div
@@ -168,9 +183,22 @@ export default function TeacherGuideScreen() {
                     >
                       {/* Prose content */}
                       <div className="flex flex-col gap-3 text-text-main text-sm sm:text-base leading-relaxed">
-                        {Array.isArray(paragraphs) && paragraphs.map((paragraph, i) => (
-                          <p key={i}>{paragraph}</p>
-                        ))}
+                        {Array.isArray(contentItems) && contentItems.map((item, i) => {
+                          if (isStructuredItem(item)) {
+                            if (item.type === 'heading') {
+                              return (
+                                <h3
+                                  key={i}
+                                  className="font-semibold text-text-main text-sm sm:text-base mt-2 first:mt-0"
+                                >
+                                  {item.text}
+                                </h3>
+                              );
+                            }
+                            return null;
+                          }
+                          return <p key={i}>{item}</p>;
+                        })}
                       </div>
 
                       {/* Optional embedded video */}

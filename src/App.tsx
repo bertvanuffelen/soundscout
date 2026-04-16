@@ -25,6 +25,7 @@ const TutorialScreen = lazy(() => import('./components/tutorial/TutorialScreen')
 const TeacherGuideScreen = lazy(() => import('./components/teacher/TeacherGuideScreen'));
 const PraatplaatSelectScreen = lazy(() => import('./components/praatplaat/PraatplaatSelectScreen'));
 const AssignmentLandingScreen = lazy(() => import('./components/assignment/AssignmentLandingScreen'));
+const SharedPraatplaatViewer = lazy(() => import('./components/praatplaat/SharedPraatplaatViewer'));
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
@@ -47,7 +48,9 @@ function AppContent() {
   const { t } = useTranslation();
   const currentScreen = useAppStore((s) => s.currentScreen);
   const shareCode = useAppStore((s) => s.shareCode);
+  const sharedPraatplaatCode = useAppStore((s) => s.sharedPraatplaatCode);
   const goToShared = useAppStore((s) => s.goToShared);
+  const goToSharedPraatplaat = useAppStore((s) => s.goToSharedPraatplaat);
   const goToStart = useAppStore((s) => s.goToStart);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
@@ -68,6 +71,7 @@ function AppContent() {
       shared: 'SoundScout',
       'praatplaat-select': 'SoundScout',
       'assignment-landing': 'SoundScout',
+      'shared-praatplaat': 'SoundScout',
     };
 
     const screenTitle = screenTitles[currentScreen] || 'SoundScout';
@@ -134,6 +138,19 @@ function AppContent() {
       });
     }
   }, [goToStart]);
+
+  // Check for ?pp-share= query parameter on mount (#73 — publieke praatplaat-viewer)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const ppShareCode = params.get('pp-share');
+    if (ppShareCode) {
+      goToSharedPraatplaat(ppShareCode);
+      // Clean URL without reloading
+      const url = new URL(window.location.href);
+      url.searchParams.delete('pp-share');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, [goToSharedPraatplaat]);
 
   // Wait for theme to load
   if (!isThemeInitialized) {
@@ -248,6 +265,17 @@ function AppContent() {
         <FeatureErrorBoundary featureName="Player">
           <Suspense fallback={<LoadingFallback />}>
             <SharedPlayer code={shareCode} onBack={goToStart} />
+          </Suspense>
+        </FeatureErrorBoundary>
+      ) : (
+        <StartScreen />
+      );
+
+    case 'shared-praatplaat':
+      return sharedPraatplaatCode ? (
+        <FeatureErrorBoundary featureName="SharedPraatplaat">
+          <Suspense fallback={<LoadingFallback />}>
+            <SharedPraatplaatViewer code={sharedPraatplaatCode} onBack={goToStart} />
           </Suspense>
         </FeatureErrorBoundary>
       ) : (

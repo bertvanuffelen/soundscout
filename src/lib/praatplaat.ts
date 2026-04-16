@@ -5,9 +5,11 @@
  * en het ophalen/insturen van praatplaat-composities (leerlingen).
  */
 
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
+import { ERR_RATE_LIMIT, matchesError } from './supabaseErrors';
 import { generateRandomDutchName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
+import { parseCompositionData } from '../utils/schemas';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
@@ -59,6 +61,7 @@ export async function createPraatplaat(params: {
   imageUrl: string;
 }): Promise<string> {
   const { classId, name, themeId, locationId, imageUrl } = params;
+  const supabase = await getSupabase();
 
   const rpcParams: Record<string, unknown> = {
     p_name: name.trim(),
@@ -82,6 +85,7 @@ export async function createPraatplaat(params: {
  * Activeer een praatplaat (deactiveert automatisch andere praatplaten van dezelfde klas).
  */
 export async function activatePraatplaat(praatplaatId: string): Promise<boolean> {
+  const supabase = await getSupabase();
   const { error } = await supabase.rpc('activate_praatplaat', {
     p_praatplaat_id: praatplaatId,
   });
@@ -98,6 +102,7 @@ export async function activatePraatplaat(praatplaatId: string): Promise<boolean>
  * Deactiveer een praatplaat.
  */
 export async function deactivatePraatplaat(praatplaatId: string): Promise<boolean> {
+  const supabase = await getSupabase();
   const { error } = await supabase.rpc('deactivate_praatplaat', {
     p_praatplaat_id: praatplaatId,
   });
@@ -114,6 +119,7 @@ export async function deactivatePraatplaat(praatplaatId: string): Promise<boolea
  * Verwijder een praatplaat. Submissions blijven bewaard (praatplaat_id wordt NULL).
  */
 export async function deletePraatplaat(praatplaatId: string): Promise<boolean> {
+  const supabase = await getSupabase();
   const { error } = await supabase.rpc('delete_praatplaat', {
     p_praatplaat_id: praatplaatId,
   });
@@ -130,6 +136,7 @@ export async function deletePraatplaat(praatplaatId: string): Promise<boolean> {
  * Haal alle praatplaten op voor een specifieke klas (docent).
  */
 export async function fetchPraatplaten(classId?: string): Promise<PraatplaatRow[]> {
+  const supabase = await getSupabase();
   let query = supabase
     .from('praatplaten')
     .select('*')
@@ -158,6 +165,7 @@ export async function getPraatplaatSubmissions(
   praatplaatId: string,
   classId?: string
 ): Promise<PraatplaatSubmission[]> {
+  const supabase = await getSupabase();
   const params: Record<string, string> = { p_praatplaat_id: praatplaatId };
   if (classId) params.p_class_id = classId;
 
@@ -168,7 +176,17 @@ export async function getPraatplaatSubmissions(
     throw new Error(i18n.t('teacher.praatplaat.fetchSubmissionsError'));
   }
 
-  return (data || []) as PraatplaatSubmission[];
+  // Validate composition_data per submission (TP5-5)
+  const validated = (data || []).filter((row: PraatplaatSubmission) => {
+    const compositionData = parseCompositionData(row.composition_data);
+    if (!compositionData) {
+      logger.warn('Praatplaat submission data validation failed', { id: row.id });
+      return false;
+    }
+    return true;
+  });
+
+  return validated as PraatplaatSubmission[];
 }
 
 // --- Leerling functies (publiek, geen auth nodig) ---
@@ -180,13 +198,14 @@ export async function getPraatplaatSubmissions(
 export async function getActivePraatplaat(
   classCode: string
 ): Promise<ActivePraatplaatInfo | null> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('get_active_praatplaat', {
     p_class_code: classCode.trim(),
   });
 
   if (error) {
     logger.error('Fout bij ophalen actieve praatplaat:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
     throw new Error(i18n.t('praatplaat.fetchError'));
@@ -234,6 +253,7 @@ export async function submitPraatplaatComposition(params: {
     studentName, compositionName, compositionData,
   } = params;
 
+  const supabase = await getSupabase();
   const finalStudentName = studentName?.trim() || generateRandomDutchName();
 
   const { data, error } = await supabase.rpc('submit_praatplaat_composition', {
@@ -248,11 +268,89 @@ export async function submitPraatplaatComposition(params: {
 
   if (error) {
     logger.error('Fout bij insturen praatplaat-compositie:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
     throw new Error(i18n.t('praatplaat.submitError'));
   }
 
   return data as string;
+}
+
+// --- Deelbare praatplaat (#73) ---
+
+export interface SharedPraatplaatData {
+  praatplaat: {
+    id: string;
+    name: string;
+    image_url: string;
+    theme_id: string;
+    location_id: string;
+  };
+  submissions: Array<{
+    id: string;
+    student_name: string;
+    composition_name: string;
+    composition_data: CompositionData;
+    position_x: number;
+    position_y: number;
+    created_at: string;
+  }>;
+}
+
+/**
+ * Genereer een share code voor een praatplaat (docent).
+ * Bij herhaaldelijk aanroepen wordt de bestaande code + verlengde verloopdatum teruggegeven.
+ */
+export async function sharePraatplaat(praatplaatId: string): Promise<string> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('share_praatplaat', {
+    p_praatplaat_id: praatplaatId,
+  });
+
+  if (error) {
+    logger.error('Fout bij delen praatplaat:', sanitizeError(error));
+    if (matchesError(error, ERR_RATE_LIMIT)) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
+    throw new Error(i18n.t('teacher.praatplaat.shareError'));
+  }
+
+  return data as string;
+}
+
+/**
+ * Haal een gedeelde praatplaat op via share code (publiek, geen auth nodig).
+ * Retourneert praatplaat metadata + alle leerlingcomposities.
+ */
+export async function getSharedPraatplaat(
+  code: string
+): Promise<SharedPraatplaatData | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('get_shared_praatplaat', {
+    p_code: code.trim().toUpperCase(),
+  });
+
+  if (error) {
+    logger.error('Fout bij ophalen gedeelde praatplaat:', sanitizeError(error));
+    if (matchesError(error, ERR_RATE_LIMIT)) {
+      throw new Error(i18n.t('submissions.rateLimitError'));
+    }
+    return null;
+  }
+
+  if (!data) return null;
+
+  // Validate composition_data per submission
+  const result = data as SharedPraatplaatData;
+  result.submissions = result.submissions.filter((sub) => {
+    const compositionData = parseCompositionData(sub.composition_data);
+    if (!compositionData) {
+      logger.warn('Shared praatplaat submission data validation failed', { id: sub.id });
+      return false;
+    }
+    return true;
+  });
+
+  return result;
 }

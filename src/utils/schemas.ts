@@ -112,9 +112,7 @@ export const TimelineStateSchema = z.object({
   tracks: z.array(TrackSchema),
   bpm: z.number().positive(),
   totalBeats: z.number().positive(),
-  isPlaying: z.boolean(),
   isLooping: z.boolean(),
-  currentBeat: z.number().min(0),
   sections: z.array(SectionSchema).optional(),
 });
 

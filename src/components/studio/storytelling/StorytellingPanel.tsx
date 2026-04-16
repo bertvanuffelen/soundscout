@@ -10,7 +10,7 @@
 
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ChevronLeft, ChevronRight, ZoomIn } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Crosshair, Maximize2, ZoomIn } from 'lucide-react';
 import { useAppStore } from '../../../stores/appStore';
 import { useAudioStore } from '../../../stores/audioStore';
 import { useTimelineStore } from '../../../stores/timelineStore';
@@ -26,11 +26,16 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
   const composeMode = useAppStore((s) => s.composeMode);
   const nextImage = useAppStore((s) => s.nextImage);
   const prevImage = useAppStore((s) => s.prevImage);
+  const praatplaatPosition = useAppStore((s) => s.praatplaatPosition);
   const isPlaying = useAudioStore((s) => s.isPlaying);
 
   // Local display index (driven by playback sync or manual navigation)
   const [displayIndex, setDisplayIndex] = useState(() => useAppStore.getState().currentImageIndex);
   const [lightboxOpen, setLightboxOpen] = useState(false);
+
+  // --- Praatplaat zoom (#80) ---
+  const hasPraatplaatZoom = !!praatplaatPosition;
+  const [isZoomed, setIsZoomed] = useState(hasPraatplaatZoom);
   const rafRef = useRef<number | null>(null);
 
   if (!activeStoryboard) return null;
@@ -171,6 +176,24 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
   const currentImage = activeStoryboard.images[displayIndex];
   if (!currentImage) return null;
 
+  // --- Praatplaat zoom style (#80) ---
+  const ZOOM_LEVEL = 2.5;
+  const zoomStyle = (hasPraatplaatZoom && isZoomed && praatplaatPosition)
+    ? (() => {
+        // Clamp origin so the crop stays within bounds
+        // At 2.5× zoom, visible area = 1/2.5 = 40% of image.
+        // Origin must be ≥ 20% from edge and ≤ 80% from edge.
+        const min = (1 / ZOOM_LEVEL) / 2;           // 0.2
+        const max = 1 - min;                          // 0.8
+        const ox = Math.min(max, Math.max(min, praatplaatPosition.x)) * 100;
+        const oy = Math.min(max, Math.max(min, praatplaatPosition.y)) * 100;
+        return {
+          transform: `scale(${ZOOM_LEVEL})`,
+          transformOrigin: `${ox}% ${oy}%`,
+        } as React.CSSProperties;
+      })()
+    : undefined;
+
   return (
     <div className={`flex flex-col min-h-0 ${className}`}>
       {/* Image container — fills all available space */}
@@ -180,9 +203,24 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
           alt={t(currentImage.label)}
           className="w-full h-full object-contain"
           containerClassName="w-full h-full"
+          style={zoomStyle}
         />
 
-        {/* Zoom button */}
+        {/* Praatplaat zoom toggle (#80) */}
+        {hasPraatplaatZoom && (
+          <button
+            onClick={() => setIsZoomed((z) => !z)}
+            className="absolute top-1.5 right-10 sm:right-11 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-black/40 text-white/80 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors"
+            aria-label={t(isZoomed ? 'studio.praatplaatZoomOut' : 'studio.praatplaatZoomIn')}
+          >
+            {isZoomed
+              ? <Maximize2 className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+              : <Crosshair className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+            }
+          </button>
+        )}
+
+        {/* Lightbox zoom button */}
         <button
           onClick={() => setLightboxOpen(true)}
           className="absolute top-1.5 right-1.5 w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center rounded-full bg-black/40 text-white/80 hover:text-white hover:bg-black/60 backdrop-blur-sm transition-colors"

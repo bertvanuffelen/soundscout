@@ -32,7 +32,7 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
       {/* Play button */}
       <button
         onClick={onPlay}
-        className="w-12 h-12 sm:w-14 sm:h-14 bg-amber-400 hover:bg-amber-500 active:bg-amber-600 rounded-full flex items-center justify-center text-white transition-colors shrink-0"
+        className="w-12 h-12 sm:w-14 sm:h-14 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 rounded-full flex items-center justify-center text-white transition-colors shrink-0"
         title={t('teacher.submissionCard.play')}
       >
         <Play className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -41,11 +41,11 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-gray-800 truncate">
+          <h3 className="font-semibold text-text-main truncate">
             {composition_name}
           </h3>
           {isWip && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-blue-100 text-blue-700 text-xs font-medium shrink-0">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-warning-100 text-warning-700 text-xs font-medium shrink-0">
               <PenLine className="w-3 h-3" />
               {t('teacher.submissionCard.wip')}
             </span>
@@ -57,7 +57,7 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
             </span>
           )}
           {submission.assignment_type === 'template' && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-amber-50 text-amber-700 text-xs font-medium shrink-0">
+            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent-50 text-accent-700 text-xs font-medium shrink-0">
               <FileText className="w-3 h-3" />
               {t('teacher.submissionCard.fromTemplate')}
             </span>
@@ -69,10 +69,10 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
             </span>
           )}
         </div>
-        <p className="text-gray-500 text-sm">
-          {t('teacher.submissionCard.by')} <span className="font-medium text-gray-700">{student_name}</span>
+        <p className="text-text-muted text-sm">
+          {t('teacher.submissionCard.by')} <span className="font-medium text-text-main">{student_name}</span>
         </p>
-        <p className="text-gray-400 text-xs">
+        <p className="text-text-muted text-xs">
           {isWip && last_updated_at ? `${t('teacher.submissionCard.lastEdited')} ` : ''}{formattedDate}
         </p>
       </div>
@@ -80,7 +80,7 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
       {/* Delete button */}
       <button
         onClick={onDelete}
-        className="text-gray-400 hover:text-red-500 p-2 transition-colors shrink-0"
+        className="text-text-muted hover:text-error-500 p-2 transition-colors shrink-0"
         title={t('teacher.submissionCard.delete')}
       >
         <Trash2 className="w-5 h-5" />

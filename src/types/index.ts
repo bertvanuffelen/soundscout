@@ -21,7 +21,8 @@ export type GameScreen =
   | 'tutorial'
   | 'teacher-guide'
   | 'praatplaat-select'
-  | 'assignment-landing';
+  | 'assignment-landing'
+  | 'shared-praatplaat';
 
 // --- Praatplaat (#72) ---
 
@@ -235,9 +236,7 @@ export interface TimelineState {
   tracks: Track[];
   bpm: number; // fixed internal value (e.g. 120), not user-adjustable
   totalBeats: number; // total length of timeline in beats
-  isPlaying: boolean;
   isLooping: boolean;
-  currentBeat: number; // current playback position in beats
   /** Optional sections for musical form (vormschema) */
   sections?: Section[];
 }

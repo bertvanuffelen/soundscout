@@ -41,14 +41,22 @@ Tests use jsdom environment with jest-style globals (`describe`, `it`, `expect`)
 
 ### Screen Navigation
 
-No router — `App.tsx` switches on `gameStore.currentScreen`:
+No router — `App.tsx` switches on `appStore.currentScreen`:
 `'start'` → `'map'` → `'location'` → `'studio'` → `'stage'`
 
-Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player), `'praatplaat-select'` (student position picker for praatplaat #72)
+Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player), `'shared-praatplaat'` (public praatplaat viewer #73), `'praatplaat-select'` (student position picker for praatplaat #72), `'assignment-landing'` (class code assignment preview before starting)
 
 Teacher screens: `'teacher-login'` → `'teacher-dashboard'` → `'compositions'`
 
 Each screen maps to a component in `src/components/` (e.g., `StudioView`, `MapView`, `TutorialScreen`).
+
+### Start Screen & Assignment Flow (#78)
+
+StartScreen has two primary CTAs: "Nieuwe compositie" (opens `ComposeModeModal` → `ThemeSelectionModal` or `StoryboardPickerModal`) and "Ik heb een code" (opens `ShareCodeModal` with `ShareCodeInput`). Both are modal-driven — no page navigation for initial choices.
+
+**Class code flow (4 digits)**: `ShareCodeInput` → `lookupAndRouteAssignment()` → `goToAssignmentLanding({ classCode, assignment })` → `AssignmentLandingScreen`. The `pendingAssignment` is stored in appStore but NOT initialized yet. Only when the student clicks "Starten" does `activatePendingAssignment()` run (template → `initializeFromTemplate()` → studio; praatplaat → `goToPraatplaatSelect()`). Route C (no active assignment) shows recovery options ("Vrij componeren" / "Andere code").
+
+**New composition flow**: "Nieuwe compositie" → `ComposeModeModal` (choose free/image/storyboard) → theme or storyboard picker → `initializeNewComposition()` → map.
 
 ### State Management (Zustand Stores)
 
@@ -56,9 +64,9 @@ Seven independent stores in `src/stores/`:
 
 | Store | Responsibility |
 |---|---|
-| `appStore` (alias: `gameStore`) | Current screen, active location ID, current composition ID, praatplaat context (#72) |
+| `appStore` | Current screen, active location ID, current composition ID, praatplaat context (#72) |
 | `audioStore` | Playback state (isPlaying, currentBeat) |
-| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb) |
+| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb). Clip actions (`addClip`, `moveClip`, `duplicateClip`) accept `samples: Sample[]` as parameter — no direct dependency on libraryStore |
 | `libraryStore` | Recorder slots (max 6), collected samples, transfer to library |
 | `userStore` | User session, role (guest/student/teacher), class code |
 | `themeStore` | Active theme, locations, samples, map config (loaded from `?theme=` URL param) |
@@ -71,7 +79,7 @@ Seven independent stores in `src/stores/`:
 | Service | Responsibility |
 |---|---|
 | `AudioService.ts` | Tone.js audio engine — sample loading (parallel with retry), playback scheduling, seek, ambient audio, waveform cache |
-| `StorageService.ts` | localStorage wrapper for compositions (max 10), library, preferences |
+| `StorageService.ts` | localStorage wrapper for compositions (max 10), library, preferences. Detects `QuotaExceededError` via `isQuotaExceeded()` helper; exposes `lastSaveError` for UI feedback |
 
 ### Audio Engine — Key Architecture
 
@@ -99,7 +107,7 @@ AudioService (singleton)
 
 **Volume**: No persistent `Tone.Gain` nodes. Volume is calculated per clip event as `trackVolume + clipVolume` (dB) and applied via `player.volume.setValueAtTime()` before each `player.start()`. For effect chain clips, volume is baked into the chain's `Tone.Volume` node. Muted clips/tracks are skipped entirely.
 
-**MP3 export**: `src/utils/audioExport.ts` uses `Tone.Offline()` for offline rendering + `@breezystack/lamejs` for MP3 encoding. Output: 128kbps stereo.
+**MP3 export**: `src/utils/audioExport.ts` uses `Tone.Offline()` for offline rendering + `@breezystack/lamejs` (dynamic import, loaded on first export) for MP3 encoding. Output: 128kbps stereo.
 
 **Video export**: `src/utils/videoExport.ts` orchestrates storyboard → video. Dual-engine architecture in `videoExportEngines.ts`:
 - **Primary**: WebCodecs + Mediabunny → MP4 (H.264 + AAC). Uses `CanvasSource` + `AudioBufferSource`.
@@ -143,6 +151,25 @@ Themes in `src/data/themes/{themeId}/` — each has `locations.ts`, `samples.ts`
 - Assets: `/public/audio/themes/{themeId}/{locationId}/{sampleId}.mp3` and `/public/images/themes/{themeId}/`
 - Guide for adding themes: `docs/NIEUWE-LOCATIE-THEMA.md`
 
+### Storyboards & Composition Images
+
+**Standalone registries** — decoupled from themes, themeId is a field on each entry:
+
+| Registry | File | Image folder | Purpose |
+|---|---|---|---|
+| Storyboards (multi-image) | `src/data/storyboards.ts` | `/public/images/storyboards/{id}/` | Sequenced image stories for storytelling mode |
+| Composition images (single) | `src/data/praatplaatImages.ts` | `/public/images/praatplaten/` | Loose images for image mode + teacher praatplaten |
+
+**Adding a new storyboard**: drop frames in `/public/images/storyboards/{id}/`, add entry to `src/data/storyboards.ts`, add i18n keys under `storyboards.{id}.*`.
+
+**Adding a new composition image**: drop image in `/public/images/praatplaten/`, add entry to `src/data/praatplaatImages.ts` with `availableFor` tag (`'teacher'` | `'student'` | `'both'`).
+
+**Helpers** in `src/data/themes/index.ts`: `getAllCompositionImages()` (reads praatplaatImages), `getAllMultiImageStoryboards()` (reads storyboards.ts), `findStoryboardById()` (supports standalone IDs, `pp-*` virtual IDs, `location-*` virtual IDs).
+
+### Destructive Action Confirmations
+
+"Nieuwe compositie" shows a confirmation modal when `hasClipsInProgress` is true. Implemented on both `StartScreen.tsx` and `StageView.tsx` (via `useStageModals`). Pattern: guard with `timelineStore.selectHasClips()`, show `<Modal>` with cancel/confirm, proceed only on confirm.
+
 ### Teacher Dashboard
 
 Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disables DnD and hides edit controls. Max 8 classes per teacher (free tier).
@@ -153,7 +180,13 @@ Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disabl
 1. Code-level filtering: `.eq('teacher_id', user.id)` in queries
 2. Database-level: RLS policies (SELECT, INSERT, UPDATE, DELETE) using `auth.uid()`
 
-**Server-side Rate Limiting**: All public RPC functions (`submit_composition`, `share_composition`, `get_shared_composition`) are rate-limited via `check_rate_limit()` PostgreSQL function. Limits: 60/min per classcode (submit), 10/min per session (share), 30/min per code (get_shared). Table: `rate_limits`. Migration: `supabase/migrations/002_rate_limiting.sql`.
+**Server-side Rate Limiting**: All public RPC functions (`submit_composition`, `share_composition`, `get_shared_composition`, `share_praatplaat`, `get_shared_praatplaat`) are rate-limited via `check_rate_limit()` PostgreSQL function. Limits: 60/min per classcode (submit), 10/min per session (share), 30/min per code (get_shared), 10/min per teacher (share_praatplaat), 30/min per code (get_shared_praatplaat). Table: `rate_limits`. Migration: `supabase/migrations/002_rate_limiting.sql`.
+
+**Lazy loading**: Supabase client is lazy-loaded via `getSupabase()` async getter in `src/lib/supabase.ts`. All 8 consumers use `await getSupabase()`. Main chunk reduced from 534KB to 152KB.
+
+**Error constants**: `src/lib/supabaseErrors.ts` centralizes all Supabase/auth error string patterns (10 constants + `matchesError()` helper). Used by `submissions.ts`, `praatplaat.ts`, and `auth.ts` instead of inline string matching.
+
+**Zod validation on RPC responses**: `parseCompositionData()` validates composition data from all Supabase RPC responses (`loadSavedComposition`, `getSharedComposition`, `getPraatplaatSubmissions`). Invalid data returns `null` + `logger.warn`.
 
 ### Online Bewaarcode (#52)
 
@@ -162,7 +195,7 @@ Students can save compositions online with a 6-character save code. On another d
 **Code types** (distinguished by length in `ShareCodeInput`):
 - 4 digits → class code (teacher submission)
 - 6 alphanumeric → save code (load into studio, read+write)
-- 8 alphanumeric → share code or template code (listen-only / template)
+- 8 alphanumeric → share code, template code, or praatplaat share code (listen-only / template / public praatplaat)
 
 **Security**: A `save_secret` (32-char token in localStorage via `storageService.setSaveOnlineInfo()`) is required for updates. On a new device, the student "claims" the composition via `claim_saved_composition()` which generates a new secret.
 
@@ -172,7 +205,7 @@ Students can save compositions online with a 6-character save code. On another d
 
 **Client flow**: `SaveOnlineModal` (Stage) → `saveCompositionOnline()` → code displayed. `ShareCodeInput` (Start) → 6-char detected → `loadSavedComposition()` → `claimSavedComposition()` → `initializeFromSavedComposition()` → studio.
 
-**Auto-sync (#52-FASE2)**: When a local save occurs and `saveOnlineInfo` (saveCode + saveSecret) is in localStorage, `useStageSave` fire-and-forgets `updateSavedComposition()` to keep the online copy in sync.
+**Auto-sync (#52-FASE2)**: When a local save occurs and `saveOnlineInfo` (saveCode + saveSecret) is in localStorage, `useStageSave` calls `updateSavedComposition()` to keep the online copy in sync. Success shows a green toast ("Online kopie bijgewerkt"); failure shows an amber warning toast ("Online kopie niet bijgewerkt"). State managed via `syncFeedback` in `useStageSave`.
 
 **QR code**: `SaveOnlineModal` success state has a QR toggle button (via `qrcode` npm package) that shows a scannable QR of the 6-char code.
 
@@ -184,7 +217,7 @@ A praatplaat (sound map) is a class activity where students create compositions 
 
 **Architecture**: Separate path from existing compose modes (Hypothesis C). Entry via class code → praatplaat detection → dedicated flow. No code overlap with "Bij een afbeelding" mode.
 
-**Database**: `praatplaten` table + 3 nullable columns on `submissions` (`praatplaat_id`, `position_x`, `position_y`). One active praatplaat per class (enforced by trigger + partial unique index). Migration: `supabase/migrations/005_praatplaten.sql`. 7 RPC functions (SECURITY DEFINER for public access).
+**Database**: `praatplaten` table (incl. `share_code`, `share_expires_at`, `share_view_count` for #73) + 3 nullable columns on `submissions` (`praatplaat_id`, `position_x`, `position_y`). One active praatplaat per class (enforced by trigger + partial unique index). Migrations: `supabase/migrations/005_praatplaten.sql` + `012_praatplaat_share.sql`. 7 core RPC functions (SECURITY DEFINER) + 2 share RPCs (`share_praatplaat`, `get_shared_praatplaat`).
 
 **Teacher flow**:
 - `ClassDetail` → praatplaat section with `PraatplaatCard` grid + `CreatePraatplaatModal`
@@ -199,12 +232,17 @@ A praatplaat (sound map) is a class activity where students create compositions 
 - Position stored in `appStore.praatplaatPosition`
 - Normal flow: map → studio → stage
 - Auto-submit on save via `useStageSave` (fire-and-forget, like bewaarcode sync)
+- **Important**: `useStageSave` has two submit paths — classSession (normal praatplaat flow) and legacy (no classSession). Both must set `setPraatplaatSubmitted(true)` on success for the StageView success modal to appear. The classSession path sets it when `assignmentType === 'praatplaat'`.
+- After submission, a permanent "Kies een nieuwe plek" button appears on the stage (visible when `praatplaatSubmitted && activePraatplaat`)
+- **Studio zoom (#80)**: `StorytellingPanel` zooms 2.5× to the chosen position via CSS `transform: scale()` + clamped `transformOrigin`. Toggle button (Crosshair/Maximize2) switches between zoomed and full view. Default: zoomed in.
 
-**Key files**: `src/lib/praatplaat.ts` (Supabase client), `src/hooks/usePraatplaten.ts` (teacher hook), `src/components/praatplaat/` (PraatplaatSelectScreen, PraatplaatViewer, PraatplaatSpot), `src/components/teacher/` (PraatplaatCard, CreatePraatplaatModal).
+**Sharing (#73)**: Docent deelt praatplaat via 8-char share code (30 dagen geldig, verlengbaar). `share_praatplaat()` RPC generates code (checks both `praatplaten.share_code` AND `submissions.share_code` for cross-collision avoidance). Public access via `?pp-share=CODE` → `SharedPraatplaatViewer` (lazy-loaded). State machine: loading → waiting-gesture → ready (+ error/not-found/expired). Audio init requires user gesture (`Tone.start()`). Generic clustering utility in `src/utils/praatplaatClustering.ts` shared between teacher and public viewer. `ShareCodeInput` 8-char fallback chain: template → share code → praatplaat share code → not found. Migration: `supabase/migrations/012_praatplaat_share.sql`.
+
+**Key files**: `src/lib/praatplaat.ts` (Supabase client), `src/hooks/usePraatplaten.ts` (teacher hook), `src/components/praatplaat/` (PraatplaatSelectScreen, PraatplaatViewer, SharedPraatplaatViewer, PraatplaatSpot), `src/utils/praatplaatClustering.ts` (generic clustering), `src/components/teacher/` (PraatplaatCard, CreatePraatplaatModal, SharePraatplaatModal).
 
 ### i18n
 
-Translation files at `src/i18n/locales/{nl,en}.json`. Uses `useTranslation()` hook. Keys are nested (e.g., `studio.timeline`, `samples.park-birds`).
+Translation files at `src/i18n/locales/{nl,en}.json`. Uses `useTranslation()` hook. Keys are nested (e.g., `studio.timeline`, `samples.park-birds`). Some content arrays (e.g., `teacher.guide.sections.*.content`) mix plain strings with structured objects `{ type: 'heading', text: string }` — rendered via `isStructuredItem()` type guard in `TeacherGuideScreen`.
 
 ### Types
 
@@ -214,13 +252,38 @@ All shared interfaces in `src/types/index.ts`. Key types: `GameScreen`, `Locatio
 
 Design tokens in `src/index.css` via Tailwind `@theme`, following 60-30-10 rule:
 - 60% neutral (slate), 30% brand (slate-900), 10% accent (amber)
-- Semantic colors: `danger-*`, `success-*`, `warning-*`
+- Semantic colors: `error-*`, `success-*`, `warning-*`
 - Screen gradients: `--color-{start,location,studio,stage}-{from,via,to}`
 - Responsive: `sm:` breakpoint (640px) for mobile/desktop. Touch-first with 44px minimum targets.
+
+**Color conventions (CRITICAL — enforced by audit 2026-04-15):**
+- **NEVER** use raw Tailwind colors (`red-*`, `green-*`, `blue-*`, `gray-*`, `amber-*`, `teal-*`). Always use design tokens.
+- Error/destructive: `error-*` (not `red-*`)
+- Success: `success-*` (not `green-*`)
+- Warning/caution: `warning-*` (not `yellow-*`)
+- Accent/interactive: `accent-*` or `primary-*` alias (not `amber-*`)
+- Text: `text-text-main`, `text-text-muted`, `text-text-inverse` (not `gray-*` or `slate-*`)
+- Borders: `border-border-subtle`, `border-neutral-*` (not `gray-*`)
+- Backgrounds: `bg-bg-app`, `bg-bg-surface` (not arbitrary grays)
 
 ### UI Components
 
 Reusable `Button`, `Card`, `Modal` in `src/components/ui/`. Use `cn()` from `src/utils/cn.ts` (clsx + tailwind-merge) for conditional classes.
+
+**Button variants**: `primary` (accent bg, dark text), `secondary` (white bg), `ghost` (transparent), `danger` (error bg, white text). For destructive confirmation buttons that use `primary` variant with error override: always include `!text-white` — e.g., `className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"`.
+
+**Destructive action pattern**: Never use `window.confirm()`. Use state-based Modal confirmation:
+```tsx
+const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+// ...
+<Modal isOpen={!!deleteConfirmId} onClose={() => setDeleteConfirmId(null)} title={t('...')} size="sm">
+  <p className="text-text-muted text-sm mb-6 leading-relaxed text-center whitespace-pre-line">{t('...')}</p>
+  <div className="flex gap-3">
+    <Button variant="secondary" onClick={() => setDeleteConfirmId(null)} className="flex-1">{t('common.cancel')}</Button>
+    <Button variant="primary" onClick={handleConfirm} className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white">{t('common.delete')}</Button>
+  </div>
+</Modal>
+```
 
 ## Tone.js Pitfalls (Critical)
 
@@ -275,4 +338,5 @@ VITE_SUPABASE_ANON_KEY=xxx
 | `docs/PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` | Real-time reschedule design (#22) |
 | `docs/PLAN-CLIP-LOOP-EFFECTS.md` | Clip loop + effects implementation plan (#65, #33) |
 | `docs/PLAN-72-PRAATPLAAT.md` | Praatplaat collaborative sound map design (#72) |
+| `docs/HANDLEIDING-BEHEER.md` | Technical admin guide (deployment, Supabase, maintenance) |
 | `soundscout-prd.md` | Product requirements document |

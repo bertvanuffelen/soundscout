@@ -6,10 +6,10 @@
  * - Gebruik useAuth() hook om auth state te lezen
  */
 
-import { createContext, useContext, useEffect, useState } from 'react';
+import { createContext, useContext, useEffect, useState, useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
-import { supabase } from '../lib/supabase';
+import { getSupabase } from '../lib/supabase';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 
@@ -36,33 +36,46 @@ export function AuthProvider({ children }: AuthProviderProps) {
   const [user, setUser] = useState<User | null>(null);
   const [session, setSession] = useState<Session | null>(null);
   const [loading, setLoading] = useState(true);
+  const cleanupRef = useRef<(() => void) | null>(null);
 
   useEffect(() => {
-    // Haal initiële sessie op
-    const initSession = async () => {
+    let cancelled = false;
+
+    const init = async () => {
       try {
+        const supabase = await getSupabase();
+        if (cancelled) return;
+
+        // Haal initiële sessie op
         const { data: { session } } = await supabase.auth.getSession();
+        if (cancelled) return;
+
         setSession(session);
         setUser(session?.user ?? null);
+
+        // Luister naar auth wijzigingen (login, logout, etc.)
+        const { data: { subscription } } = supabase.auth.onAuthStateChange(
+          (_event, session) => {
+            setSession(session);
+            setUser(session?.user ?? null);
+          }
+        );
+
+        cleanupRef.current = () => subscription.unsubscribe();
       } catch (error) {
         logger.error('Fout bij laden sessie:', sanitizeError(error));
       } finally {
-        setLoading(false);
+        if (!cancelled) setLoading(false);
       }
     };
 
-    initSession();
-
-    // Luister naar auth wijzigingen (login, logout, etc.)
-    const { data: { subscription } } = supabase.auth.onAuthStateChange(
-      (_event, session) => {
-        setSession(session);
-        setUser(session?.user ?? null);
-      }
-    );
+    init();
 
     // Cleanup subscription bij unmount
-    return () => subscription.unsubscribe();
+    return () => {
+      cancelled = true;
+      cleanupRef.current?.();
+    };
   }, []);
 
   const value: AuthContextType = {

@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Clip, Track, Section, TimelineState } from '../types';
+import type { Clip, Track, Section, Sample, TimelineState } from '../types';
 import { SECTION_COLORS } from '../types';
 import {
   DEFAULT_BPM,
@@ -16,7 +16,6 @@ import {
 } from '../utils/clipCollision';
 import { getEffectiveClipEndBeat } from '../utils/audio';
 import { generateClipId } from '../utils/uuid';
-import { useLibraryStore } from './libraryStore';
 
 function createEmptyTracks(): Track[] {
   return Array.from({ length: DEFAULT_TRACK_COUNT }, (_, i) => ({
@@ -45,6 +44,7 @@ interface TimelineStore {
   addClip: (
     trackIndex: number,
     clip: Clip,
+    samples: Sample[],
   ) => SmartSnapResult;
   removeClip: (trackIndex: number, clipId: string) => void;
   moveClip: (
@@ -52,6 +52,7 @@ interface TimelineStore {
     toTrackIndex: number,
     clipId: string,
     newStartBeat: number,
+    samples: Sample[],
   ) => SmartSnapResult;
 
   // Clip trim action
@@ -66,6 +67,7 @@ interface TimelineStore {
   duplicateClip: (
     trackIndex: number,
     clipId: string,
+    samples: Sample[],
   ) => SmartSnapResult & { newClipId?: string };
 
   // Track volume/mute actions
@@ -174,9 +176,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
 
   // --- Clip Actions ---
 
-  addClip: (trackIndex, clip) => {
+  addClip: (trackIndex, clip, samples) => {
     const state = get();
-    const allSamples = useLibraryStore.getState().librarySamples;
+    const allSamples = samples;
     const sample = allSamples.find((s) => s.id === clip.sampleId);
 
     // Validate track index
@@ -231,9 +233,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     }));
   },
 
-  moveClip: (fromTrackIndex, toTrackIndex, clipId, newStartBeat) => {
+  moveClip: (fromTrackIndex, toTrackIndex, clipId, newStartBeat, samples) => {
     const state = get();
-    const allSamples = useLibraryStore.getState().librarySamples;
+    const allSamples = samples;
 
     // Validate track indices
     if (
@@ -327,9 +329,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     }));
   },
 
-  duplicateClip: (trackIndex, clipId) => {
+  duplicateClip: (trackIndex, clipId, samples) => {
     const state = get();
-    const allSamples = useLibraryStore.getState().librarySamples;
+    const allSamples = samples;
 
     // Find the original clip
     const track = state.tracks[trackIndex];
@@ -626,9 +628,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       tracks: state.tracks,
       bpm: state.bpm,
       totalBeats: state.totalBeats,
-      isPlaying: false, // Always false when saving
       isLooping: state.isLooping,
-      currentBeat: 0,
       sections: state.sections.length > 0 ? state.sections : undefined,
     };
   },

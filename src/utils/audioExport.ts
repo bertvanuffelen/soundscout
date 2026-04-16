@@ -7,7 +7,6 @@
 
 import * as Tone from 'tone';
 import toWav from 'audiobuffer-to-wav';
-import { Mp3Encoder } from '@breezystack/lamejs';
 import type { Track, Sample } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
 import { beatsToSeconds, getClipTrimStart, getClipDuration } from './audio';
@@ -323,7 +322,8 @@ async function encodeToMp3(
   const sampleRate = audioBuffer.sampleRate;
   const totalSamples = audioBuffer.length;
 
-  // Create encoder
+  // Dynamically load lamejs (TP5-3: -169KB from initial bundle)
+  const { Mp3Encoder } = await import('@breezystack/lamejs');
   const encoder = new Mp3Encoder(channels, sampleRate, kbps);
   const mp3Chunks: ArrayBuffer[] = [];
 

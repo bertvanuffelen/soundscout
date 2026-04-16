@@ -36,8 +36,17 @@ export function useStageSave() {
     return localStorage.getItem('soundscout:hideSaveWarning') === 'true';
   });
 
+  // Save error feedback (TP5-11: QuotaExceeded + generic failures)
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   // Klascode auto-submit feedback state
   const [submitFeedback, setSubmitFeedback] = useState<{
+    type: 'success' | 'error';
+    message: string;
+  } | null>(null);
+
+  // Bewaarcode sync feedback state (TP5-12)
+  const [syncFeedback, setSyncFeedback] = useState<{
     type: 'success' | 'error';
     message: string;
   } | null>(null);
@@ -90,8 +99,21 @@ export function useStageSave() {
       );
     }
 
-    // Only show success if save succeeded (result is not null)
+    // Handle save failure (TP5-11)
+    if (!result) {
+      const errorType = storageService.lastSaveError;
+      if (errorType === 'quota_exceeded') {
+        setSaveError(i18n.t('stage.saveQuotaError'));
+      } else {
+        setSaveError(i18n.t('stage.saveGenericError'));
+      }
+      setTimeout(() => setSaveError(null), 6000);
+      return;
+    }
+
+    // Success path
     if (result) {
+      setSaveError(null);
       setShowSaveWarning(false);
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
@@ -138,6 +160,10 @@ export function useStageSave() {
             useAppStore.getState().setSubmissionSynced(true);
             // Update clientIdRef to the server-confirmed ID for subsequent updates
             clientIdRef.current = returnedId;
+            // Mark praatplaat as submitted so StageView shows success modal (#72 bugfix)
+            if (classSession.assignmentType === 'praatplaat') {
+              setPraatplaatSubmitted(true);
+            }
             setSubmitFeedback({
               type: 'success',
               message: submissionId
@@ -162,7 +188,7 @@ export function useStageSave() {
         // Only when NOT in klascode-flow (exclusive modes)
         const saveOnlineInfo = storageService.getSaveOnlineInfo();
         if (saveOnlineInfo) {
-          // Fire-and-forget: don't block local save on network issues
+          // Non-blocking sync with user feedback (TP5-12)
           updateSavedComposition(
             saveOnlineInfo.saveCode,
             saveOnlineInfo.saveSecret,
@@ -170,8 +196,19 @@ export function useStageSave() {
             compositionName.trim(),
           ).then(() => {
             logger.info('Online bewaarcode automatisch bijgewerkt', { code: saveOnlineInfo.saveCode });
+            setSyncFeedback({
+              type: 'success',
+              message: i18n.t('stage.syncSuccess'),
+            });
+            setTimeout(() => setSyncFeedback(null), 3000);
           }).catch((err) => {
             logger.warn('Kon online bewaarcode niet bijwerken', err);
+            setSyncFeedback({
+              type: 'error',
+              message: i18n.t('stage.syncFailed'),
+            });
+            // Keep error visible longer so user notices
+            setTimeout(() => setSyncFeedback(null), 6000);
           });
         }
 
@@ -229,7 +266,9 @@ export function useStageSave() {
     handleSaveClick,
     handleSaveConfirm,
     praatplaatSubmitted,
+    saveError,
     submitFeedback,
     setSubmitFeedback,
+    syncFeedback,
   };
 }

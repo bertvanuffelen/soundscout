@@ -53,6 +53,9 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const [showTemplateInfo, setShowTemplateInfo] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
+  const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
+  const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
+  const [deletePraatplaatId, setDeletePraatplaatId] = useState<string | null>(null);
 
   // Haal display name op uit user metadata
   const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Docent';
@@ -76,27 +79,26 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     }
   };
 
-  const handleDeleteClass = async (id: string) => {
-    if (!confirm(t('teacher.dashboard.deleteClassConfirm'))) {
-      return;
-    }
-
+  const handleDeleteClassConfirm = async () => {
+    if (!deleteClassId) return;
     try {
       setActionError(null);
-      await deleteClass(id);
+      await deleteClass(deleteClassId);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('teacher.dashboard.deleteClassError'));
     }
+    setDeleteClassId(null);
   };
 
-  const handleDeleteTemplate = async (id: string) => {
-    if (!confirm(t('templates.deleteConfirm'))) return;
+  const handleDeleteTemplateConfirm = async () => {
+    if (!deleteTemplateId) return;
     try {
       setActionError(null);
-      await removeTemplate(id);
+      await removeTemplate(deleteTemplateId);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('templates.deleteError'));
     }
+    setDeleteTemplateId(null);
   };
 
   const handleCreatePraatplaat = useCallback(async (params: {
@@ -115,14 +117,15 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     }
   }, [createPraatplaatHook, t]);
 
-  const handleDeletePraatplaat = async (id: string) => {
-    if (!confirm(t('teacher.praatplaat.deleteConfirm'))) return;
+  const handleDeletePraatplaatConfirm = async () => {
+    if (!deletePraatplaatId) return;
     try {
       setActionError(null);
-      await removePraatplaat(id);
+      await removePraatplaat(deletePraatplaatId);
     } catch (err) {
       setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.deleteError'));
     }
+    setDeletePraatplaatId(null);
   };
 
   return (
@@ -237,7 +240,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                 key={classData.id}
                 classData={classData}
                 onOpen={() => onSelectClass(classData)}
-                onDelete={() => handleDeleteClass(classData.id)}
+                onDelete={() => setDeleteClassId(classData.id)}
               />
             ))}
           </div>
@@ -320,7 +323,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                         key={pp.id}
                         praatplaat={pp}
                         classCode={classes.find((c) => c.id === pp.class_id)?.code}
-                        onDelete={() => handleDeletePraatplaat(pp.id)}
+                        onDelete={() => setDeletePraatplaatId(pp.id)}
                         onView={() => setViewingPraatplaat(pp)}
                       />
                     ))}
@@ -364,7 +367,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                       <TemplateCard
                         key={tmpl.id}
                         template={tmpl}
-                        onDelete={() => handleDeleteTemplate(tmpl.id)}
+                        onDelete={() => setDeleteTemplateId(tmpl.id)}
                       />
                     ))}
                   </div>
@@ -429,6 +432,90 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               {t('templates.newTemplateModalButton')}
             </Button>
           )}
+        </div>
+      </Modal>
+
+      {/* Verwijder klas bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deleteClassId}
+        onClose={() => setDeleteClassId(null)}
+        title={t('teacher.dashboard.deleteClassTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line">
+          {t('teacher.dashboard.deleteClassConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeleteClassId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteClassConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Verwijder template bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deleteTemplateId}
+        onClose={() => setDeleteTemplateId(null)}
+        title={t('templates.deleteTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed">
+          {t('templates.deleteConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeleteTemplateId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteTemplateConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Verwijder praatplaat bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deletePraatplaatId}
+        onClose={() => setDeletePraatplaatId(null)}
+        title={t('teacher.praatplaat.deleteTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line">
+          {t('teacher.praatplaat.deleteConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeletePraatplaatId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeletePraatplaatConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
         </div>
       </Modal>
     </div>

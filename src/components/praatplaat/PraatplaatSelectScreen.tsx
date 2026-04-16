@@ -61,6 +61,20 @@ export function PraatplaatSelectScreen() {
     []
   );
 
+  // Keyboard support: Enter/Space selecteert het midden van de afbeelding (UX-A11Y-1)
+  const handleKeyDown = useCallback(
+    (e: React.KeyboardEvent<HTMLDivElement>) => {
+      if (e.key === 'Enter' || e.key === ' ') {
+        e.preventDefault();
+        // Selecteer het midden als er nog geen positie is, anders bevestig de huidige
+        if (!selectedPos) {
+          setSelectedPos({ x: 0.5, y: 0.5 });
+        }
+      }
+    },
+    [selectedPos]
+  );
+
   // Bevestig positie, stel storyboard in, en ga naar kaart
   const handleConfirm = useCallback(() => {
     if (!selectedPos || !activePraatplaat) return;
@@ -111,8 +125,11 @@ export function PraatplaatSelectScreen() {
           className="relative w-full max-w-6xl aspect-video rounded-xl overflow-hidden shadow-2xl cursor-crosshair select-none"
           onClick={handleImageClick}
           onTouchStart={handleImageClick}
+          onKeyDown={handleKeyDown}
           role="button"
           tabIndex={0}
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus
           aria-label={t('praatplaat.select.imageAria')}
         >
           <img

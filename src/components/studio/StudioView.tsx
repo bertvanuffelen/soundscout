@@ -188,13 +188,14 @@ export function StudioView() {
       const result = duplicateClip(
         selectedClipData.trackIndex,
         selectedClipData.clip.id,
+        librarySamples,
       );
       // Select the new clip if duplication was successful
       if (result.reason !== 'rejected' && result.newClipId) {
         selectClip(result.newClipId, result.trackIndex);
       }
     }
-  }, [selectedClipData, duplicateClip, selectClip]);
+  }, [selectedClipData, duplicateClip, selectClip, librarySamples]);
 
   // Handle trim apply from modal
   const handleTrimApply = useCallback(
@@ -280,11 +281,11 @@ export function StudioView() {
     };
 
     // Try track 0 first — smart snap will find the best position
-    addClip(0, clip);
+    addClip(0, clip, librarySamples);
 
     // Clear selection after adding
     setSelectedLibrarySampleId(null);
-  }, [selectedLibrarySampleId, addClip, activeTemplate, templateLockOptions.allowNewClips]);
+  }, [selectedLibrarySampleId, addClip, activeTemplate, templateLockOptions.allowNewClips, librarySamples]);
 
   // Get translated name of selected library sample for the "+" button aria-label
   const selectedLibrarySampleName = useMemo(() => {

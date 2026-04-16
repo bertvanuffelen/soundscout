@@ -35,6 +35,8 @@ interface AppStore {
   currentCompositionId: string | null;
   // Share code for viewing shared compositions (null = not viewing)
   shareCode: string | null;
+  // Share code for viewing shared praatplaat (#73)
+  sharedPraatplaatCode: string | null;
   // Active template (null = no template loaded)
   activeTemplate: Template | null;
   // Granular lock options for active template (#59)
@@ -61,6 +63,7 @@ interface AppStore {
   goToCompositions: () => void;
   goToTeacher: () => void;
   goToShared: (code: string) => void;
+  goToSharedPraatplaat: (code: string) => void;
   goToTutorial: () => void;
   goToTeacherGuide: () => void;
   // Template actions
@@ -106,6 +109,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   currentLocationId: null,
   currentCompositionId: null,
   shareCode: null,
+  sharedPraatplaatCode: null,
   activeTemplate: null,
   templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true },
   composeMode: 'free',
@@ -125,7 +129,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -141,6 +145,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToTeacher: () => set({ currentScreen: 'teacher' }),
 
   goToShared: (code) => set({ currentScreen: 'shared', shareCode: code }),
+
+  goToSharedPraatplaat: (code) => set({ currentScreen: 'shared-praatplaat', sharedPraatplaatCode: code }),
 
   goToTutorial: () => set({ currentScreen: 'tutorial' }),
 
@@ -184,7 +190,3 @@ export const useAppStore = create<AppStore>()((set) => ({
   clearPendingAssignment: () => set({ pendingAssignment: null }),
   goToAssignmentLanding: (pending) => set({ currentScreen: 'assignment-landing', pendingAssignment: pending }),
 }));
-
-// Re-export for backwards compatibility during migration
-// TODO: Remove this after all components are migrated to useAppStore
-export const useGameStore = useAppStore;

@@ -6,7 +6,7 @@
  * - fetchTeacherTemplates: voor docenten dashboard
  */
 
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
@@ -63,6 +63,7 @@ function parseLockOptions(row: { lock_options?: TemplateLockOptions | null; clip
  */
 export async function getTemplateByCode(code: string): Promise<Template | null> {
   try {
+    const supabase = await getSupabase();
     const { data, error } = await supabase.rpc('get_template_by_code', {
       p_code: code.toUpperCase().trim(),
     });
@@ -107,6 +108,7 @@ export async function getTemplateByCode(code: string): Promise<Template | null> 
  * Haal alle templates op van de ingelogde docent.
  */
 export async function fetchTeacherTemplates(): Promise<TeacherTemplate[]> {
+  const supabase = await getSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) return [];
 
@@ -137,6 +139,7 @@ export async function fetchTeacherTemplates(): Promise<TeacherTemplate[]> {
  * Maak een nieuw template aan.
  */
 export async function createTemplate(params: CreateTemplateParams): Promise<TeacherTemplate> {
+  const supabase = await getSupabase();
   const { data: { user } } = await supabase.auth.getUser();
   if (!user) throw new Error('Je moet ingelogd zijn');
 
@@ -183,6 +186,7 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Teac
  * Verwijder een template.
  */
 export async function deleteTemplate(id: string): Promise<void> {
+  const supabase = await getSupabase();
   const { error } = await supabase
     .from('templates')
     .delete()
@@ -198,6 +202,7 @@ export async function deleteTemplate(id: string): Promise<void> {
  * Schakel een template actief/inactief.
  */
 export async function toggleTemplate(id: string, isActive: boolean): Promise<void> {
+  const supabase = await getSupabase();
   const { error } = await supabase
     .from('templates')
     .update({ is_active: isActive, updated_at: new Date().toISOString() })

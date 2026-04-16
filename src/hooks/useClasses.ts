@@ -6,7 +6,7 @@
  */
 
 import { useState, useEffect, useCallback } from 'react';
-import { supabase } from '../lib/supabase';
+import { getSupabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
 
 // Types
@@ -59,6 +59,8 @@ export function useClasses(): UseClassesReturn {
     try {
       setLoading(true);
       setError(null);
+
+      const supabase = await getSupabase();
 
       // Haal huidige user op voor teacher info
       const { data: { user } } = await supabase.auth.getUser();
@@ -116,6 +118,7 @@ export function useClasses(): UseClassesReturn {
   const createClass = async (name: string): Promise<TeacherClass> => {
     try {
       setOperationError(null);
+      const supabase = await getSupabase();
 
       // Check klassen limiet (null = onbeperkt)
       if (maxClasses !== null && classes.length >= maxClasses) {
@@ -185,6 +188,7 @@ export function useClasses(): UseClassesReturn {
   const deleteClass = async (id: string): Promise<void> => {
     try {
       setOperationError(null);
+      const supabase = await getSupabase();
 
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error('Niet ingelogd');

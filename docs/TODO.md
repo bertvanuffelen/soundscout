@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-04-13
+**Laatst bijgewerkt**: 2026-04-15
 
 ---
 
@@ -8,7 +8,43 @@
 
 > Plaats hier ideeën, bugs of verzoeken. Claude verwerkt ze later naar de juiste prioriteit.
 
-- [ ] Effect fade in en fade out kunnen toevoegen aan een sample
+[ ] Waarom zijn de youtube video's niet in de sectie "Hoe werkt het" niet zichtbaar op mijn iPad. Wel een algemene play button, maar verder blijft het zwart.
+
+---
+
+## Ontwikkelbundels (voorstel)
+
+> Issues gegroepeerd op samenhang en efficiëntie. Pak per bundel op voor focus.
+
+### Bundel C — Mobile/touch hardening (~1 dag)
+Vereist hands-on device testen (iPad, Android, Chromebook). Issues hangen samen.
+
+| Issue | Titel | Complexiteit |
+|-------|-------|-------------|
+| #MOBILE-AUDIT-BLOKKER | Touch-targets + iOS video-export | Medium |
+| #MOBILE-AUDIT-BELANGRIJK | Safe-area, autoscroll, overscroll | Klein-Medium |
+| #16 | Touch gevoeligheid & autoplay (resterende items) | Medium-Hoog |
+| #59-TEST | Template lock-opties hands-on testen | Laag |
+
+### Bundel D — Code-kwaliteit quick wins (~3 uur)
+Kleine verbeteringen die in rustiger momenten opgepakt kunnen worden.
+
+| Issue | Titel | Complexiteit |
+|-------|-------|-------------|
+| #MOBILE-AUDIT-MONITOR | Aandachtspunten uit mobile audit | Klein-Medium |
+| #38 | i18n review (terugkerend) | Laag |
+| PERF-4 | Theme images ongeoptimaliseerd | Laag |
+
+### Bundel E — Audio-opname infrastructuur + vervolgfeatures (volgorde belangrijk)
+Bouw de opname-infra in #74, daarna worden #28 en #76 veel goedkoper.
+
+| Stap | Issue | Titel | Complexiteit | Waarom deze volgorde |
+|------|-------|-------|-------------|----------------------|
+| 1 | #74 | Opname-Praatplaat (audio recording) | Hoog | Levert `useMicRecorder`, `RecordingPanel`, `audioFormat.ts` en Supabase Storage bucket op |
+| 2a | #28 | Eigen Samples Opnemen | Medium → Laag | Hergebruikt recording-infra uit #74; resteert alleen: blob → sample, libraryStore, UI-knop |
+| 2b | #76 | Custom Praatplaat-afbeeldingen Uploaden | Middel → Laag-Middel | Hergebruikt Supabase Storage bucket uit #74; resteert: upload UI, client-side resize, URL opslaan |
+
+> Stap 2a en 2b zijn onafhankelijk van elkaar en kunnen parallel of in willekeurige volgorde.
 
 ---
 
@@ -16,8 +52,8 @@
 
 ### P1 — Hoogste prioriteit
 
-#### #59-TEST — Template lock-opties uitgebreid testen
-**Complexiteit:** Laag · **Bron:** Implementatie #59 (2026-03-14)
+#### #59-TEST — Template lock-opties uitgebreid testen ⏳ NA TESTEN
+**Complexiteit:** Laag · **Bron:** Implementatie #59 (2026-03-14) · **Status:** Wacht op hands-on test
 
 De granulaire template vergrendelingsopties (#59) zijn geïmplementeerd maar nog niet hands-on getest. Testplan:
 
@@ -51,12 +87,11 @@ Resterende items (vereisen hands-on testen op iPad, Android tablet, Chromebook):
 
 ---
 
-#### #MOBILE-AUDIT — Mobile & Device Audit vóór studententest
-**Complexiteit:** Medium · **Bron:** Audit (2026-04-14) · **Type:** UX + stabiliteit
+#### #MOBILE-AUDIT-BLOKKER — Blokkers uit mobile & device audit ⏳ NA TESTEN
+**Complexiteit:** Medium · **Bron:** Audit (2026-04-14) · **Type:** UX + stabiliteit · **Status:** Wacht op hands-on device test
+**Gerelateerd:** #MOBILE-AUDIT-BELANGRIJK (P2), #MOBILE-AUDIT-MONITOR (P3)
 
-Grondige audit vóór de eerste studententest. Bevindingen gegroepeerd naar urgentie. Alles hieronder vereist hands-on testen op echte toestellen (iPhone met notch, Android telefoon, iPad portrait + landscape, Chromebook).
-
-**🔴 Blokkers**
+Moet opgelost of bewust geaccepteerd zijn vóór eerste studententest. Vereist hands-on testen op iPhone, Android en iPad.
 
 - [ ] **Touch-targets Timeline header te klein (28×28 px)** — clip-edit + mute-toggle.
   - `src/components/studio/Timeline.tsx:385-407` — `min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px]`
@@ -67,7 +102,47 @@ Grondige audit vóór de eerste studententest. Bevindingen gegroepeerd naar urge
   - `src/components/stage/StageView.tsx` + `StageActionsModal.tsx` — geen `unsupported`-state
   - Fix: feature-detect + `VideoExportState['unsupported']` + duidelijke boodschap naar gebruiker
 
-**🟠 Belangrijk**
+**Testmatrix per toestel** (iPhone met notch / Android / iPad / Chromebook):
+
+1. Volledige flow: klascode → map → locatie → studio → stage → save online → code op tweede device.
+2. Studio: clip slepen, trimmen, volume/effects popover, eraser, scrollen tijdens drag.
+3. Stage: MP3-export (moet overal werken), video-export (breekt naar verwachting op iOS Safari).
+4. Feedback-modal: lange Nederlandse tekst typen; cursor-stabiliteit + toetsenbord-overlap.
+5. Landscape-rotatie midden in compositie en terug.
+6. iPhone op stil → speel af → hoor je iets? (silent-switch).
+7. Netwerk uit tijdens "online bewaren" (Supabase timeout).
+
+**Al oké (geen actie):** `dvh`/`svh` gebruik, AudioContext-unlock, Modal focus-restore (recent gefixt), clip-resize `transition-all` suppressie, memoization + `currentBeat`-val vermeden, `aspect-ratio` tegen layout shift, DnD collision.
+
+#### #79 — Clip-effecten: Fade In & Fade Out
+**Complexiteit:** Medium · **Status:** Concept · **Bron:** Gebruikersfeedback (2026-04-14) · **Type:** Feature
+**Afhankelijk van:** #33 ✅ (clip-effecten basis)
+
+Mogelijkheid om per clip een fade-in en/of fade-out toe te voegen. Bouwt voort op het bestaande `ClipEffects`-systeem (pitch, reverb, pan).
+
+**Scope:**
+- [ ] Twee nieuwe velden op `ClipEffects`: `fadeIn: number` (seconden, 0 = uit) en `fadeOut: number` (seconden, 0 = uit)
+- [ ] Tone.js implementatie: `player.volume.linearRampToValueAtTime()` bij clip start/eind
+- [ ] UI: twee sliders in `EffectsPopover` (fade in / fade out, 0-2s in stappen van 0.1s)
+- [ ] Werkt met clip-loop: fade-in alleen op eerste iteratie, fade-out alleen op laatste
+- [ ] Werkt met clip-trim: fade-duur beperkt tot effectieve clip-duur
+- [ ] Offline export (MP3 + video) moet fades correct renderen
+- [ ] Zod schema + localStorage persistentie
+
+**Technische overwegingen:**
+De huidige effect chain (geïsoleerde `Tone.Player` + `PitchShift` + `Reverb`) moet uitgebreid worden met volume automation. Fade is geen extra audio-node maar volume-scheduling op de player. Bij seek moet de fade-positie correct berekend worden (als je halverwege een fade-in seekt, moet het volume op het juiste tussenliggende niveau staan).
+
+**Verwant aan:** #33 ✅ (clip-effecten basis), #65 ✅ (clip-loop — interactie met fades)
+
+---
+
+### P2 — Hoge prioriteit
+
+#### #MOBILE-AUDIT-BELANGRIJK — Belangrijke verbeteringen uit mobile audit ⏳ NA TESTEN
+**Complexiteit:** Klein-Medium · **Bron:** Audit (2026-04-14) · **Type:** UX · **Status:** Wacht op hands-on device test
+**Gerelateerd:** #MOBILE-AUDIT-BLOKKER (P1), #MOBILE-AUDIT-MONITOR (P3)
+
+Geen blokker, maar duidelijk merkbare problemen op iOS/Android. Oppakken kort na eerste studententest of wanneer in de buurt.
 
 - [ ] **`viewport-fit=cover` + safe-area CSS ontbreken** — notch/home-indicator kan UI bedekken.
   - `index.html:5` — viewport meta uitbreiden
@@ -83,93 +158,17 @@ Grondige audit vóór de eerste studententest. Bevindingen gegroepeerd naar urge
   - `src/config.ts:80` — `TOUCH_ACTIVATION_DELAY_MS`
   - Fix: test 150 ms
 
-**🟡 Aandachtspunten**
-
-- [ ] **Desktop-breakpoints (`md:`/`lg:`/`xl:`) doorbreken "alleen `sm:`"-filosofie** — iPads portrait krijgen inconsistente stijlen.
-  - ~94 matches in codebase; voorbeelden: `StudioView.tsx:348`, `StartScreen.tsx:93-95`, `MapView.tsx:75`, `Modal.tsx:34`
-  - Fix: per geval beslissen — migreren of CLAUDE.md bijwerken
-- [ ] **Geen detectie iOS silent-switch** — studenten denken dat audio kapot is.
-- [ ] **Supabase-calls zonder timeout** — UI hangt op trage netwerken.
-  - `src/lib/praatplaat.ts`, `src/lib/submissions.ts`, saved compositions
-  - Fix: 15s `AbortController` timeout + feedback
-- [ ] **FeedbackModal categorie-grid krap op 320 px.**
-  - `src/components/feedback/FeedbackModal.tsx:210` — `grid grid-cols-3`
-  - Fix: `grid-cols-1 sm:grid-cols-3`
-
-**Testmatrix per toestel:**
-
-1. Volledige flow: klascode → map → locatie → studio → stage → save online → code op tweede device.
-2. Studio: clip slepen, trimmen, volume/effects popover, eraser, scrollen tijdens drag.
-3. Stage: MP3-export (moet overal werken), video-export (breekt naar verwachting op iOS Safari).
-4. Feedback-modal: lange Nederlandse tekst typen; cursor-stabiliteit + toetsenbord-overlap.
-5. Landscape-rotatie midden in compositie en terug.
-6. iPhone op stil → speel af → hoor je iets? (silent-switch).
-7. Netwerk uit tijdens "online bewaren" (Supabase timeout).
-
-**Al oké (geen actie):** `dvh`/`svh` gebruik, AudioContext-unlock, Modal focus-restore (recent gefixt), clip-resize `transition-all` suppressie, memoization + `currentBeat`-val vermeden, `aspect-ratio` tegen layout shift, DnD collision.
-
 ---
 
-### P2 — Hoge prioriteit
+#### #69 — Storyboard ↔ vrij modus wisselen zonder clips te verliezen
+**Complexiteit:** Medium · **Status:** Concept · **Opgewaardeerd:** van P3 naar P2 (2026-04-14)
 
-#### #78 — Startscherm UX: expliciete opdracht-keuze + tussenscherm na klascode
-**Complexiteit:** Middel · **Bron:** Brainstorm (2026-04-13) · **Type:** UX
+Momenteel wist `ComposeModeScreen` altijd de volledige timeline (`clearAllTracks` + `clearSections`) bij elke moduswissel. Gebruikers zouden vanuit de studio moeten kunnen wisselen tussen storyboard/image/vrij modus, waarbij clips behouden blijven en alleen secties + afbeeldingen resetten. Vereist een in-studio mode-switcher (momenteel alleen beschikbaar op het keuzescherm vóór de kaart).
 
-**Probleem:**
-De huidige start-UX verstopt de compose-modi (vrij/afbeelding/verhaal) achter een boek-icoon in de footer + `?storytelling=true` URL-flag. Tegelijk valt een leerling die een klascode invoert direct in de opdracht (studio of praatplaat-select) zonder bevestiging of context — verkeerd-getypte codes zijn niet corrigeerbaar en er is geen "je bent nu in opdracht X van klas Y" feedback.
+**Docentenfeedback (2026-04-14):**
+Docent meldt dat leerlingen geluiden uit meerdere thema's willen combineren (bijv. De Stad + Winterspelen). Dit raakt het bredere vraagstuk van cross-thema compositie: nu is een compositie gekoppeld aan één `themeId`. Verder uitdenken: is cross-thema pedagogisch wenselijk? Wordt het onoverzichtelijk voor jonge kinderen? Architectureel: meerdere locatiereeksen binnen één compositie, of een universele samplebibliotheek los van thema's.
 
-**Ontwerpkeuzes (vastgelegd in brainstorm):**
-- Startscherm volgens **Sketch A**: twee gelijkwaardige primaire CTA's ("Nieuwe compositie" + "Ik heb een code") + secundair "Voor docenten"
-- Klascode en compose-mode zijn **twee verschillende assen**; niet door elkaar halen in de UI
-- Knoptekst op tussenscherm nu "Starten"; later uitbreidbaar naar "Verder werken" wanneer submission-herladen komt
-- "Terug"-uitgang op tussenscherm is **subtiel** (voorkomt dead-end zonder escape te benadrukken)
-- Tussenscherm is identiek voor leerling en docent-preview (geen aparte preview-modus)
-
-**Scope:**
-1. **Startscherm herstructureren** naar Sketch A. Verwijder boek-icoon + `?storytelling=true` URL-flag — niet meer nodig.
-2. `ComposeModeScreen` wordt **standaard tussenstap** bij "Nieuwe compositie" (i.p.v. conditioneel achter storytelling-flag).
-3. Nieuw scherm **`AssignmentLandingScreen`** (`GameScreen: 'assignment-landing'`):
-   - Klasnaam + opdrachtnaam uit `ClassSession`
-   - Type-specifieke preview:
-     - Template → thumbnail/omschrijving (uit `Template.description` indien aanwezig)
-     - Praatplaat → preview van de afbeelding + korte uitleg "Je gaat zo een plek op deze afbeelding kiezen"
-   - Primaire "Starten" knop → triggert `initializeFromTemplate` / vervolg van praatplaat-flow
-   - Subtiele "Terug" knop → wist `ClassSession` + `activePraatplaat` + terug naar startscherm
-4. **Route C herpositioneren** (geen actieve opdracht voor klascode):
-   - Niet meer als inline foutmelding
-   - Wel als variant van landing: "Klas {naam} heeft nu geen actieve opdracht. Wat wil je doen?" met knoppen "Vrij componeren" (wist klascode, gaat naar ComposeModeScreen) + "Andere code"
-5. **ShareCodeInput refactor**: na succesvolle klascode-lookup niet direct `initializeFromTemplate` / `navigateToPraatplaat`-vervolg aanroepen, maar state opslaan en navigeren naar `AssignmentLandingScreen` dat pas op "Starten" de feitelijke init doet.
-
-**Buiten scope (apart uit te denken):**
-- Bestaande server-inzending herladen op re-entry (latere uitbreiding → dan wordt "Starten" context-gevoelig "Verder werken")
-- Leerling-naam invullen op landing (privacy/UX apart)
-- Compose-mode wisselen in studio (zie #69)
-- Thema-filtering per compose-mode
-- Mini-landing voor bewaar- en template-code (eventueel follow-up voor consistentie)
-
-**Hypotheses:**
-- **H8** — Het tussenscherm vertraagt niet merkbaar maar voorkomt verkeerd-ingestapte leerlingen. Validatie: 2-3 leerlingen typen een verkeerde code; vergelijk huidige vs nieuwe flow.
-- **H9** — De opdracht-preview (afbeelding/thumbnail + korte zin) vervangt de behoefte aan aparte uitleg over "wat moet ik doen". Validatie: walkthrough met leerling die voor het eerst klascode invoert.
-
-**Verwant aan:** #41 ✅ (storyboard basis), #61 ✅ (vrije afbeeldingskeuze), #72 ✅ (praatplaat), #69 (mode wisselen in studio), #77 (handleiding aanvullen met nieuwe start-UX)
-
-#### #44 — Luister-en-Plaats Modus (omgekeerd spel)
-**Complexiteit:** Hoog · **Status:** Concept uitgebreid (2026-03-14)
-
-Omgekeerde spelrichting: het kind hoort een geluid en plaatst het op de juiste plek op de afbeelding. Ideaal voor klassikale inzet met jongere kinderen.
-
-**Klassikale flow:**
-De juffrouw/meester speelt een geluid af (bijv. een aap, water, wind). De kinderen kijken naar de afbeelding en bepalen samen: "Waar hoort dit geluid thuis?" Ze slepen het geluid naar de juiste plek op de afbeelding, of wijzen aan waar het moet.
-
-**Goed-fout systeem:**
-Per geluid wordt een doelregio gedefinieerd op de afbeelding (cirkel, rechthoek of vrije zone). Plaatst het kind het geluid binnen die regio → goed (visuele + audio feedback). Erbuiten → opnieuw proberen. Dit maakt het speels en leerzaam.
-
-**Combinatie met audio-opnemen (#28):**
-De klas neemt samen geluiden op ("Wie kan het geluid van een aap nadoen?") en plaatst die opnames op de afbeelding. Zo ontstaat een zelfgemaakt klanklandschap. Zowel vooraf opgenomen samples als zelf-opgenomen geluiden kunnen geplaatst worden.
-
-**Opslag:** Nog open — lokaal (localStorage) of database (Supabase). Beslissing later.
-
-**Verwant aan:** #28 (microfoon opname), #68 (partituur-tool — beide starten vanuit beeld i.p.v. samples), #72 (praatplaat — verwante richting maar dan collaboratief: leerlingen componeren zelfstandig een soundscape en koppelen die aan een plek op een gedeelde afbeelding)
+**Verwant aan:** #41 ✅ (storyboard basis), #48 (video-storyboard), #78 (startscherm UX — confirmatie bij "Nieuwe compositie")
 
 #### #28 — Eigen Samples Opnemen
 **Complexiteit:** ~~Zeer Hoog~~ Medium (na #74) · **Afhankelijk van:** #74 (recording-infrastructuur)
@@ -188,31 +187,6 @@ Microfoon opname in de app: leerling neemt een geluid op en gebruikt het als sam
 - Max 5 seconden, max 6 opnames (aansluitend bij bestaande recorder slots in libraryStore)
 - Persist in localStorage (base64 of IndexedDB voor grotere blobs)
 
-#### #72 — Praatplaat: Collaboratieve Klankkaart
-**Complexiteit:** Hoog · **Status:** Basis geïmplementeerd (2026-03-26) · **Document:** `docs/PLAN-72-PRAATPLAAT.md`
-
-Klassikale activiteit waarbij leerlingen individueel een compositie/soundscape maken en die koppelen aan een specifieke plek (X,Y-positie) op een gedeelde afbeelding ("praatplaat"). De docent opent de praatplaat op het digibord en ziet iconen verschijnen op plekken waar leerlingen composities aan hebben gekoppeld. Door op een icoon te klikken speelt de compositie van die leerling af.
-
-**Opgeloste ontwerpvragen (2026-04-13):**
-- **Spot-claiming:** Ja, meerdere leerlingen mogen dezelfde plek kiezen. Al geïmplementeerd: clustering (5% radius) + dropdown-selectie in viewer.
-- **Spotgrootte:** Punt-marker (geïmplementeerd).
-- **Afbeeldingsbron:** Voorgedefinieerde praatplaat-afbeeldingen (9 SVGs) + thema-locaties. Custom upload als apart issue (#76).
-- **Compositieduur:** Geen limiet. Eventueel relevant als onderdeel van een toekomstige "klassen-soundscape" feature (zie #74 v3-roadmap).
-- **Simultaan afspelen:** Niet als losse feature. De toekomstvisie is dat een docent leerling-opnames (#74) kan combineren tot een klassen-soundscape via de studio timeline (zie #74 v3-roadmap).
-
-**Verwant aan:** #44 (luister-en-plaats), #28 (eigen samples opnemen — deelt recording-infra met #74), #74 (opname-praatplaat — nieuwe variant)
-
-#### #73 — Deelbare Praatplaat-link
-**Complexiteit:** Middel · **Afhankelijk van:** #72 ✅ · **Wordt meegenomen in #74-sprint**
-
-Genereer een deelbare link (of QR-code) waarmee leerlingen direct naar een specifieke praatplaat worden geleid, zonder eerst de klascode handmatig in te voeren. De link bevat de klascode en optioneel de praatplaat-ID, zodat de app direct naar het PraatplaatSelectScreen navigeert. Belangrijk voor de doelgroep van #74 (groep 3-5): jonge kinderen kunnen moeilijk codes intypen, QR op digibord verlaagt de drempel enorm.
-
-**Mogelijke aanpak:**
-- URL-parameter: `?praatplaat=KLASCODE` of `?pp=KLASCODE&id=praatplaat-id`
-- QR-code generatie in het docenten-dashboard (hergebruik `qrcode` package van #52-FASE2)
-- Bij openen: code valideren → actieve praatplaat ophalen → PraatplaatSelectScreen tonen
-- Werkt voor zowel compositie- als opname-praatplaten
-
 #### #74 — Opname-Praatplaat (Audio Recording op Beeld)
 **Complexiteit:** Hoog · **Afhankelijk van:** #72 ✅ · **Status:** PRD compleet, klaar voor pre-development (2026-04-13)
 **Document:** `docs/PLAN-OPNAME-PRAATPLAAT.md`
@@ -230,11 +204,72 @@ Nieuwe variant van de praatplaat waarbij leerlingen een kort geluid opnemen (max
 
 **Alle 18 ontwerpbeslissingen zijn genomen.** Volgende stap: pre-development spikes (MediaRecorder device test, Supabase Storage POC, verwerkersovereenkomst).
 
-**Verwant aan:** #28 (eigen samples opnemen — RecordingPanel is herbruikbaar), #44 (luister-en-plaats), #73 (deelbare praatplaat-link)
+**Verwant aan:** #28 (eigen samples opnemen — RecordingPanel is herbruikbaar), #44 (luister-en-plaats), #73 ✅ (deelbare praatplaat-link)
+
+#### #63 — Collaboratief storyboard (leerlingen werken aan delen)
+**Complexiteit:** Zeer Hoog · **Status:** Concept
+
+Leerlingen werken aan verschillende afbeeldingen van een storyboard die later samengevoegd worden tot één geheel. Vereist: task-toewijzing per leerling, merge-logica, mogelijk Supabase Realtime sync. Verwant aan #42 (Ensemble-modus).
+
+**Opmerking (2026-04-15):** Met de praatplaat (#72 ✅) is een asynchroon collaboratief model bewezen: leerlingen componeren onafhankelijk en koppelen hun werk aan een positie. #63 is de logische volgende stap: van asynchrone samenwerking naar een gedeeld storyboard waar leerlingen elk een deel componeren. De praatplaat-infrastructuur (Supabase, positie-toewijzing, clustering) kan als fundament dienen.
+
+**Verwant aan:** #42 (Ensemble-modus), #72 ✅ (praatplaat — asynchroon collaboratief model als basis)
 
 ---
 
 ### P3 — Middel prioriteit
+
+#### #MOBILE-AUDIT-MONITOR — Aandachtspunten uit mobile audit ⏳ NA TESTEN
+**Complexiteit:** Klein-Medium · **Bron:** Audit (2026-04-14) · **Type:** Code-kwaliteit + robuustheid · **Status:** Wacht op hands-on device test
+**Gerelateerd:** #MOBILE-AUDIT-BLOKKER (P1), #MOBILE-AUDIT-BELANGRIJK (P2)
+
+Kleine nuisances en consistentie-items. Pak op wanneer in de buurt of bij klachten uit het veld.
+
+- [ ] **Desktop-breakpoints (`md:`/`lg:`/`xl:`) doorbreken "alleen `sm:`"-filosofie** — iPads portrait krijgen inconsistente stijlen.
+  - ~94 matches in codebase; voorbeelden: `StudioView.tsx:348`, `StartScreen.tsx:93-95`, `MapView.tsx:75`, `Modal.tsx:34`
+  - Fix: per geval beslissen — migreren of CLAUDE.md bijwerken
+- [ ] **Geen detectie iOS silent-switch** — studenten denken dat audio kapot is.
+- [ ] **Supabase-calls zonder timeout** — UI hangt op trage netwerken.
+  - `src/lib/praatplaat.ts`, `src/lib/submissions.ts`, saved compositions
+  - Fix: 15s `AbortController` timeout + feedback
+- [ ] **FeedbackModal categorie-grid krap op 320 px.**
+  - `src/components/feedback/FeedbackModal.tsx:210` — `grid grid-cols-3`
+  - Fix: `grid-cols-1 sm:grid-cols-3`
+
+- **Bestanden:** `src/components/share/ShareCodeInput.tsx`, `src/components/share/ShareCodeModal.tsx`
+
+- **Bestanden:** `src/components/teacher/TeacherDashboard.tsx`, `src/components/teacher/ClassDetail.tsx`, `src/components/admin/LocationEditor.tsx`
+
+#### PERF-4 — Theme images ongeoptimaliseerd (860K-1.1M JPG)
+**Complexiteit:** Laag · **Bron:** Externe frontend-analyse (2026-04-14) · **Type:** Performance
+
+Alle thema-afbeeldingen in `public/images/themes/` zijn ongecomprimeerde JPG's van 860K–1.1M. Geen WebP, geen `loading="lazy"`. Op mobiel (primaire doelgroep: tablets/Chromebooks) maakt dit een significant verschil in laadtijd.
+
+**Grootste bestanden:** `plattegrond.jpg` (1.1M), `bobsleebaan.jpg` (1.0M), `speeltuin.jpg` (1.0M), `winterdorp.jpg` (966K).
+
+**Fix:**
+1. Comprimeer JPG's (target 30-40% reductie) of converteer naar WebP met JPG fallback
+2. Voeg `loading="lazy"` toe aan niet-kritieke afbeeldingen (locatie-achtergronden, kaart)
+3. Overweeg responsive `<picture>` met kleinere versie voor mobiel
+
+---
+
+#### #81 — Praatplaat: docent-instelling "één plek per leerling"
+**Complexiteit:** Medium · **Status:** Concept · **Bron:** Gebruikersfeedback (2026-04-15) · **Type:** Feature
+**Afhankelijk van:** #72 ✅ (praatplaat basis)
+
+Een docent kan bij het aanmaken of bewerken van een praatplaat instellen dat elke leerling maar één plek mag vullen. Als deze optie actief is, controleert het systeem of een leerling (op basis van `student_name`) al een submission heeft op die praatplaat en blokkeert een tweede.
+
+**Scope:**
+- [ ] Nieuw veld `single_spot_only BOOLEAN DEFAULT false` op `praatplaten` tabel (migratie)
+- [ ] Toggle in `CreatePraatplaatModal` (en eventueel bewerkscherm): "Eén plek per leerling"
+- [ ] Server-side validatie in `submit_praatplaat_composition` RPC: als `single_spot_only = true` en er al een submission bestaat met dezelfde `student_name`, geef duidelijke foutmelding terug
+- [ ] Client-side foutafhandeling: toon melding aan leerling ("Je hebt al een plek op deze praatplaat")
+- [ ] `usePraatplaten` hook: `single_spot_only` meegeven bij create/update
+- [ ] `PraatplaatCard` / viewer: optioneel visuele indicator dat de beperking actief is
+
+**Technische notities:**
+De huidige flow staat toe dat dezelfde leerling meerdere composities op dezelfde of verschillende posities plaatst. De validatie moet server-side (in de RPC-functie) om manipulatie te voorkomen. Client-side controle is enkel voor UX (vroege foutmelding). De `student_name` is niet geauthenticeerd, dus de beperking is "best effort" — een leerling kan een andere naam invullen.
 
 #### #48 — Video-Storyboard (Compositie bij Video)
 **Complexiteit:** Zeer Hoog · **Afhankelijk van:** #41 ✅ · **Status:** Onderzoeksfase
@@ -253,46 +288,45 @@ De grootste uitdaging is niet technisch maar inhoudelijk: wie levert de video's?
 - Performance op tablets/Chromebooks (video + audio tegelijk)
 - Mobile autoplay restricties (vergelijkbaar met audio autoplay, maar strenger voor video)
 
-**Verwant aan:** #41 ✅ (storyboard basis), #71 (variabel aantal afbeeldingen), #72 (praatplaat)
+**Verwant aan:** #41 ✅ (storyboard basis), CONTENT-1 (content toevoegen), #72 (praatplaat)
 
-#### #71 — Storyboard: variabel aantal afbeeldingen (3-5 keuze)
-**Complexiteit:** Laag · **Status:** Geparkeerd — systeem klaar, wacht op content (2026-03-25)
+#### CONTENT-1 — Content toevoegen/vernieuwen
+**Status:** Doorlopend · **Type:** Content (geen code)
 
-Het storyboard-systeem ondersteunt al dynamisch elk aantal afbeeldingen (secties, image sync, viewers, video export werken allemaal met variabele aantallen). Er is geen code-aanpassing nodig. Wat ontbreekt is **content**: nieuwe afbeeldingen voor storyboards met 4 of 5 scènes. Twee richtingen overwogen: (a) verhalende storyboards met actie (schooldag, marktdag), (b) zoekplaten per dagdeel (dezelfde locatie op verschillende momenten). Nieuwe storyboards worden handmatig in code toegevoegd (route 1) wanneer afbeeldingen beschikbaar zijn.
-
-**Verwant aan:** #41 ✅ (storyboard basis), #48 (video-storyboard), #69 (moduswisseling)
-
-#### UX-9 — Studio pagina indeling herbekijken
-**Status:** Grotendeels afgerond (2026-03-18)
-
-Afgerond: timeline hoogte + image padding (2026-03-12), toolbar crowding fix (sample info pill + zoom hidden op mobile), full-row drag targets voor samples, narrowere track labels op mobile (2026-03-18).
-
-Eventueel resterend: verdere verhouding-verbeteringen op zeer kleine schermen indien nodig.
+Verzamelissue voor alle content-gerelateerde toevoegingen: nieuwe storyboards (variabel aantal afbeeldingen, het systeem ondersteunt dit al), nieuwe praatplaat-afbeeldingen, nieuwe locaties/thema's, lesbrieven. Wordt opgepakt wanneer content beschikbaar is. Vervangt #71 en #43.
 
 #### #77 — Docentenhandleiding uitbreiden (storyboard + compose-modi)
 **Complexiteit:** Laag · **Bron:** Eigen observatie (2026-04-13) · **Type:** Content
+**Status:** Deels geïmplementeerd (2026-04-14)
 
-De `TeacherGuideScreen` heeft nu 8 secties: getting-started, classes, assignments, templates, praatplaat, submissions, save-codes, classroom-tips. **De storyboard-/image-compose-modi (#41, #61, #71) zijn nergens in de handleiding uitgelegd.** Docenten die SoundScout met een klas gebruiken weten daardoor niet:
+**✅ Gedaan:**
+- Nieuwe sectie `compose-modes` ("Compositiemodi") in `TeacherGuideScreen.tsx` SECTIONS array, tussen `assignments` en `templates`.
+- NL + EN vertalingen (5 paragrafen): drie modi uitgelegd, didactische verschillen, samenhang secties/storyboard, template + storyboard combinatie.
 
-- Dat een leerling kan kiezen tussen vrij componeren, componeren bij één afbeelding, of bij een storyboard van meerdere afbeeldingen.
-- Hoe die modus geactiveerd wordt (nu via `?storytelling=true` op de URL / boek-icoon in de footer — zie ook #78).
-- Wat de didactische verschillen zijn tussen de modi (vrij = open, afbeelding = luisteren-en-verklanken, storyboard = muzikale vorm/secties oefenen).
-- Hoe storyboards samenhangen met secties (vormschema koppelt automatisch).
-- Dat een template óók een storyboard kan bevatten (template-modus + storyboard).
+**Nog open — bijwerken bij toekomstige features:**
+- Inhoud bijwerken wanneer nieuwe compose-modi, storyboards of afbeeldingen worden toegevoegd.
+- Eventueel: video-id koppelen wanneer een uitlegvideo beschikbaar komt.
+- Bestaande `templates`-sectie aanvullen met opmerking over storyboard-in-template wanneer die flow uitgebreider wordt.
 
-**Scope:**
-- Nieuwe sectie `compose-modes` in `TeacherGuideScreen.tsx` SECTIONS array (tussen `assignments` en `templates` past logisch).
-- NL + EN vertalingen in `src/i18n/locales/{nl,en}.json` onder `teacher.guide.sections.compose-modes.{title,content}`.
-- Inhoud: uitleg van de drie modi, wanneer welke modus passend is, pedagogische toepassingen, samenhang met secties en templates.
-- Eventueel: video-id koppelen wanneer een uitlegvideo beschikbaar komt (optioneel).
-- Bestaande `templates`-sectie aanvullen met opmerking over storyboard-in-template (#41 fase D.4).
+**Verwant aan:** #41 ✅ (storyboard basis), #61 ✅ (vrije afbeeldingskeuze), CONTENT-1 (content toevoegen), #78 (compose-mode discoverability)
 
-**Verwant aan:** #41 ✅ (storyboard basis), #61 ✅ (vrije afbeeldingskeuze), #71 (variabel aantal afbeeldingen), #78 (compose-mode discoverability)
+#### #44 — Luister-en-Plaats Modus (omgekeerd spel)
+**Complexiteit:** Hoog · **Status:** Concept uitgebreid (2026-03-14)
 
-#### #69 — Storyboard ↔ vrij modus wisselen zonder clips te verliezen
-**Complexiteit:** Medium · **Status:** Concept
+Omgekeerde spelrichting: het kind hoort een geluid en plaatst het op de juiste plek op de afbeelding. Ideaal voor klassikale inzet met jongere kinderen.
 
-Momenteel wist `ComposeModeScreen` altijd de volledige timeline (`clearAllTracks` + `clearSections`) bij elke moduswissel. Gebruikers zouden vanuit de studio moeten kunnen wisselen tussen storyboard/image/vrij modus, waarbij clips behouden blijven en alleen secties + afbeeldingen resetten. Vereist een in-studio mode-switcher (momenteel alleen beschikbaar op het keuzescherm vóór de kaart).
+**Klassikale flow:**
+De juffrouw/meester speelt een geluid af (bijv. een aap, water, wind). De kinderen kijken naar de afbeelding en bepalen samen: "Waar hoort dit geluid thuis?" Ze slepen het geluid naar de juiste plek op de afbeelding, of wijzen aan waar het moet.
+
+**Goed-fout systeem:**
+Per geluid wordt een doelregio gedefinieerd op de afbeelding (cirkel, rechthoek of vrije zone). Plaatst het kind het geluid binnen die regio → goed (visuele + audio feedback). Erbuiten → opnieuw proberen. Dit maakt het speels en leerzaam.
+
+**Combinatie met audio-opnemen (#28):**
+De klas neemt samen geluiden op ("Wie kan het geluid van een aap nadoen?") en plaatst die opnames op de afbeelding. Zo ontstaat een zelfgemaakt klanklandschap. Zowel vooraf opgenomen samples als zelf-opgenomen geluiden kunnen geplaatst worden.
+
+**Opslag:** Nog open — lokaal (localStorage) of database (Supabase). Beslissing later.
+
+**Verwant aan:** #28 (microfoon opname), #68 (partituur-tool — beide starten vanuit beeld i.p.v. samples), #72 ✅ (praatplaat — asynchroon collaboratief model als verwante basis)
 
 ---
 
@@ -303,13 +337,6 @@ Momenteel wist `ComposeModeScreen` altijd de volledige timeline (`clearAllTracks
 **Document:** `docs/CONCEPT-PARTITUUR-TOOL.md`
 
 Leerlingen kijken naar een beeld en tekenen eerst een visuele partituur (blokken op tijdlijn: lang/kort, veel/weinig). Pas daarna zoeken ze samples die bij hun ontwerp passen. Omgekeerde workflow: van structuur naar klank i.p.v. van klank naar structuur. Pedagogisch sterk: dwingt leerlingen om eerst na te denken over opbouw, timing en spanning. Technisch 80% hergebruik van bestaande SoundScout-componenten. **Open vraag:** moet dit een modus binnen SoundScout worden of een losstaande tool? Afhankelijk van #65 (clip-loop) voor de sample-koppeling.
-
-#### #63 — Collaboratief storyboard (leerlingen werken aan delen)
-**Complexiteit:** Zeer Hoog · **Status:** Concept — mogelijk vervangen door #72 (praatplaat)
-
-Leerlingen werken aan verschillende afbeeldingen van een storyboard die later samengevoegd worden tot één geheel. Vereist: task-toewijzing per leerling, merge-logica, mogelijk Supabase Realtime sync. Verwant aan #42 (Ensemble-modus).
-
-**Opmerking (2026-03-25):** Het praatplaat-concept (#72) biedt een eenvoudiger en concreter alternatief voor collaboratieve compositie. Waar #63 real-time sync en merge-logica vereist, werkt de praatplaat volledig asynchroon: leerlingen componeren onafhankelijk en koppelen hun werk aan een positie. Geen conflict resolution nodig. Overweeg om #72 als eerste stap te implementeren en #63 te parkeren.
 
 #### #30 — Extra Locaties
 **Status:** 5 locaties af, 4 nog gepland (Spookhuis, Strand, Markt, Ruimtestation)
@@ -336,9 +363,6 @@ Docenten kunnen een eigen afbeelding uploaden voor een praatplaat in plaats van 
 #### #38 — i18n Review (Terugkerend)
 Periodiek nalopen na elke feature: hardcoded teksten, NL/EN pariteit, vertaaldekking.
 
-#### #43 — Lesbrieven & Werkvormen
-Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en luisteropdrachten.
-
 #### TP3-4 — Alfanumerieke klas-codes
 **Status:** Geparkeerd — pas nodig bij >1.000 actieve klassen. Vereist DB migratie.
 
@@ -347,9 +371,6 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 
 #### TP4-2 — Factory pattern voor AudioService
 **Status:** Toekomstig — singleton maakt unit testing onmogelijk.
-
-#### TP5-5 — Zod validatie op Supabase RPC responses
-**Bron:** Architectuur-analyse (P2) · `src/lib/submissions.ts`, `src/lib/templates.ts` — localStorage reads worden gevalideerd met Zod, maar Supabase RPC returns worden gecast zonder validatie. Schema-wijzigingen op de server kunnen stille runtime failures veroorzaken. Fix: voeg Zod schemas toe voor alle RPC return types.
 
 #### TP5-6 — StorageService migratiestrategie
 **Bron:** Architectuur-analyse (P2) · `StorageService.ts` — `STORAGE_VERSION` is uitgecommentarieerd. Schema-wijzigingen veroorzaken stille data loss (composities die Zod-validatie falen worden stil gefilterd). Fix: implementeer `migrateIfNeeded()` met versioned transformers.
@@ -363,20 +384,9 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 #### TP5-9 — Decompose Timeline.tsx
 **Bron:** Architectuur-analyse (P3) · 582 regels, 19 hooks. Split in Timeline (core), TimelineHeader (edit toolbar + tools), ZoomControls. Verbetert leesbaarheid en testbaarheid.
 
-#### TP5-10 — Verwijder dode velden uit TimelineState
-**Bron:** Architectuur-analyse (P3) · `isPlaying` en `currentBeat` in `TimelineState` worden altijd hardcoded naar `false`/`0` in `getTimelineState()`. Verwijder uit het type en pas serialisatie/deserialisatie aan.
-
-#### TP5-1 — StorageService.getRaw() silent catch loggen
-**Bron:** Architectuur-analyse · `StorageService.ts:311-318` — JSON.parse fout wordt stil geslikt zonder logging. Callers loggen wél validatiefouten, maar JSON-corruptie is onzichtbaar. Voeg `logger.warn` toe in catch block.
-
-#### TP5-2 — Bundle size: lazy-load Supabase
-**Bron:** Architectuur-analyse · Main chunk 534KB (gzip 160KB). Supabase (167KB) is alleen nodig voor docentenflow. Lazy-load via dynamic import achter teacher-login guard.
-
-#### TP5-3 — Bundle size: dynamic import lamejs
-**Bron:** Architectuur-analyse · `audio-export` chunk is 169KB. lamejs encoder alleen laden wanneer export daadwerkelijk wordt getriggerd.
-
-#### TP5-4 — Security headers voor productie
-**Bron:** Architectuur-analyse · CSP, X-Frame-Options, HSTS headers toevoegen aan hosting config (Strato). DEPLOY-5 markeerde dit als afgerond maar bevestiging nodig op productie.
+#### TP5-13 — appStore opsplitsen (god store)
+**Bron:** Externe architectuur-review (2026-04-14) · **Type:** Maintenance
+**Status:** Geparkeerd — veroorzaakt geen bugs, maar 35 acties en 16 state-velden in één store is een onderhoudslast. `goToStart()` reset 16 velden. Splitsen naar navigation/session/assignment stores raakt ~30 bestanden. Oppakken bij volgende grote feature.
 
 #### TP4-4 — Tier 2 tests: services met Tone.js mock
 #### TP4-5 — Tier 3 tests: component integratie
@@ -396,11 +406,11 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | UX-6 StageView knoppen hiërarchie | Huidige layout voldoende |
 | A11Y-5 ZoomableView keyboard | Alleen kleine schermen, geen prioriteit |
 | A11Y-6 Audio zonder visueel alternatief | Niet geschikt voor deze app |
-| PERF-4 Image optimalisatie | Geen merkbare laadproblemen in praktijk |
 | SEC-1 Credentials in git | **False positive** — `.env.local` nooit gecommit, `.gitignore` correct, alleen `.env.example` (zonder secrets) in git |
 | Cross-store sample validatie | **Reeds geïmplementeerd** — `addClip`, `moveClip`, `duplicateClip` valideren allemaal sampleId bestaan |
 | Zod schema coverage | **Voldoende** — alle untrusted boundaries (localStorage, Supabase) hebben schemas. Interne types (Location, Hotspot) hoeven geen runtime validatie |
 | UX-4 Kindvriendelijker vocabulaire | Bewust besluit: huidige termen (Compositie, Bibliotheek, Samples, Dupliceren) blijven behouden |
+| LOAD-1 Export progress bar | **Reeds geïmplementeerd** — zowel MP3 als video export tonen percentage inline ("Exporting 45%") in StageActionsModal |
 
 ---
 
@@ -456,7 +466,7 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | #27 | Locatie Editor Verbeteringen | 2026-03-12 | MP3 upload per hotspot met auto-duration, drag-and-drop herpositionering, audio preview, edit bestaande hotspots, alle thema's in dropdown, split theme/location dropdowns, i18n fix, handleiding-modal |
 | #54 | YouTube Uitlegvideo's in Tutorial | 2026-03-12 | Links naar "Uitleg SoundScout" en "Uitleg docent dashboard" in "Hoe werkt het?" modal |
 | #53 | Zoom Functie Timeline | 2026-03-12 | Fit-to-width default (desktop), vrij zoomen (0.25× stappen, 0.5×–4.0×), zoom centreert op playhead, mobiel start ingezoomd |
-| #16 | Touch & Autoplay — code-verbeteringen | 2026-03-12 | Web Audio autoplay unlock (App.tsx), touch tolerance 10px, touch-action:none op Track. Rest wacht op device testen |
+| #16 (code) | Touch & Autoplay — code-verbeteringen | 2026-03-12 | Web Audio autoplay unlock (App.tsx), touch tolerance 10px, touch-action:none op Track. **Resterende hands-on device tests staan nog open als #16 in P1** |
 | #49 | Storyboard in Docentenviewer + Deellink | 2026-03-12 | StoryboardViewer component (props-driven, geen store), geïntegreerd in SubmissionPlayer (docent dashboard) en SharedPlayer (publieke deellink). Toont afbeeldingen gesynchroniseerd met beat/secties |
 | #50 | Export Storyboard als Video (MP4/WebM) | 2026-03-13 | Dual-engine: WebCodecs + Mediabunny (MP4, H.264+AAC) primary, MediaRecorder (WebM, VP8+Opus) fallback. Multi-profiel H.264 detectie (Main→High→Baseline) + hardware/software fallback. 1080p, 30fps, 0.5s crossfade. Video-duur = max(audio, timeline) zodat stille secties ook getoond worden |
 | SEC-2 | Server-side Rate Limiting | 2026-03-13 | `rate_limits` tabel + `check_rate_limit()` helper in PostgreSQL. submit: 60/min per klascode, share: 10/min per sessie, get_shared: 30/min per code. Migratie: `002_rate_limiting.sql` |
@@ -482,8 +492,11 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | UX-10 | Podium UX refactor — actiemenu | 2026-03-19 | Podium teruggebracht naar 3 knoppen (Opslaan, Delen & Exporteren, Nieuwe compositie). Alle secundaire acties (bewaar online, deel link, deel met docent, export MP3, export video, template) verplaatst naar `StageActionsModal` — gegroepeerd met kopjes en hint-teksten. Modal slide-up op mobiel, gecentreerd op desktop. Design tokens (`bg-bg-surface`, `text-text-main`, `text-text-muted`) consistent met app |
 | #54b | Tutorial als eigen scherm | 2026-03-24 | "Hoe werkt het?" modal vervangen door dedicated `TutorialScreen` (`'tutorial'` in GameScreen). Quick-start stappen (4 stappen, accent-kleur badges) + video-thumbnails per categorie ("Voor de componisten", "Voor de docenten"). Klik op thumbnail → inline YouTube player (geen 7 iframes tegelijk). Provider-onafhankelijk: `thumbnailUrl()` en `embedUrl()` zijn de enige YouTube-specifieke functies. Lazy-loaded |
 | #70 | Storyboard-badge in docentenlijst | 2026-03-25 | `SubmissionCard` toont nu een accent-kleur badge met Image-icoon + "Storyboard" label als `composition_data.storyboardId` aanwezig is. Docenten zien in één oogopslag welke inzendingen een storyboard bevatten |
-| #52-FASE2 | Bewaarcode uitbreidingen | 2026-03-25 | Drie verbeteringen: (A) Auto-sync naar online bewaarcode bij lokaal opslaan via fire-and-forget `updateSavedComposition()` in `useStageSave`. (B) QR-code toggle in `SaveOnlineModal` success-scherm via `qrcode` npm package. (C) Teacher dashboard "In bewerking" tab in `ClassDetail` — splitst submissions op `save_code` aanwezigheid. WIP-kaarten tonen blauw "In bewerking" badge + "Laatst bewerkt" datum |
+| #78 | Startscherm UX: opdracht-keuze + tussenscherm | 2026-04-14 | Sketch A (2 CTA's + modal code-input), ComposeModeModal flow, AssignmentLandingScreen (template/praatplaat preview + "Starten"), Route C herstelscherm, ShareCodeInput refactor (deferred init). Confirmatie-modal bij "Nieuwe compositie" |
+| #52-FASE2 | Bewaarcode uitbreidingen | 2026-03-25 | Drie verbeteringen: (A) Auto-sync naar online bewaarcode bij lokaal opslaan via fire-and-forget `updateSavedComposition()` in `useStageSave`. (B) QR-code toggle in `SaveOnlineModal` success-scherm via `qrcode` npm package. (C) Teacher dashboard "In bewerking" tab in `ClassDetail` — splitst submissions op `save_code` aanwezigheid. WIP-kaarten tonen warning "In bewerking" badge + "Laatst bewerkt" datum |
 | #72 | Praatplaat: Collaboratieve Klankkaart | 2026-03-26 | Basis-implementatie. Docent: CreatePraatplaatModal (naam + locatiekeuze), PraatplaatCard (thumbnail, toggle actief/inactief, verwijder), PraatplaatViewer (fullscreen presentatie met spots + clustering + klik-to-play via SubmissionPlayer). Leerling: ShareCodeInput detecteert 4-cijferige klascode → getActivePraatplaat() → PraatplaatSelectScreen (positie kiezen op afbeelding) → normaal componeren → auto-submit bij opslaan. Database: `praatplaten` tabel + 3 kolommen op `submissions`, 7 RPC functies, trigger voor 1 actieve per klas. Migratie: `005_praatplaten.sql`. Plan: `PLAN-72-PRAATPLAAT.md` |
+| #73 | Deelbare Praatplaat-link (Publieke Viewer) | 2026-04-15 | Publieke praatplaat-viewer via `?pp-share=CODE`. Database: `share_code`, `share_expires_at`, `share_view_count` kolommen op `praatplaten`. `generate_praatplaat_share_code()` checkt beide tabellen (praatplaten + submissions) voor cross-collision avoidance. `share_praatplaat()` RPC (auth, rate limited) genereert/verlengt 30-dagen code. `get_shared_praatplaat()` RPC (anon, rate limited 30/min) retourneert JSONB met metadata + submissions. SharedPraatplaatViewer: state machine (loading → waiting-gesture → ready + error/not-found/expired), audio init via `Tone.start()`. Generic clustering utility (`praatplaatClustering.ts`) gedeeld met teacher PraatplaatViewer. ShareCodeInput: 8-char fallback chain (template → share → praatplaat-share → not found). "Deel link" button in zowel PraatplaatCard als ClassDetail active assignment. Docentenhandleiding (TeacherGuideScreen) uitgebreid met praatplaat-sectie + tussenkopjes in alle secties (NL+EN). Migratie: `012_praatplaat_share.sql` |
+| #80 | Praatplaat: zoom naar gekozen positie in studio | 2026-04-15 | `StorytellingPanel` zoomt 2.5× in op de gekozen praatplaat-positie (x, y) via CSS `transform: scale()` + `transformOrigin`. Clamping (20%–80%) voorkomt crop buiten afbeelding. Toggle-knop (Crosshair/Maximize2) naast lightbox-knop. Default: ingezoomd. `CrossfadeImage` uitgebreid met `style` prop. Geen animatie, directe switch |
 
 ### Technische schuld (afgerond)
 
@@ -510,6 +523,16 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | TP3-3 | StorageService faal-feedback | 2026-02-27 |
 | TP3-5 | Gevoelige data uit console.error | 2026-02-27 |
 | TP4-3 | Tier 1 tests (209 tests) | 2026-02-27 |
+| TP5-1 | StorageService.getRaw() silent catch loggen | 2026-04-14 |
+| TP5-2 | Bundle size: lazy-load Supabase (534→152KB main chunk) | 2026-04-14 |
+| TP5-3 | Bundle size: dynamic import lamejs (-169KB) | 2026-04-14 |
+| TP5-5 | Zod validatie op Supabase RPC responses | 2026-04-14 |
+| TP5-11 | QuotaExceededError handling in StorageService | 2026-04-14 |
+| TP5-12 | Bewaarcode sync feedback | 2026-04-14 |
+| TP5-10 | Dode velden (isPlaying, currentBeat) uit TimelineState | 2026-04-14 |
+| TP5-15 | Supabase error strings gecentraliseerd | 2026-04-14 |
+| TP5-16 | `as any` verwijderd uit assignments.ts | 2026-04-14 |
+| TP5-14 | timelineStore decoupling van libraryStore | 2026-04-14 |
 
 ### UX & Accessibility (afgerond)
 
@@ -524,6 +547,14 @@ Content-creatie (geen code): 4 lesbrieven met concrete muziektaken, reflectie en
 | A11Y-3 | Timeline screen reader | 2026-02-27 |
 | A11Y-4 | Clips role + keyboard | 2026-02-27 |
 | A11Y-7 | Quick wins (aria, focus trap, labels) | 2026-02-27 |
+| UX-DEST-5 | Praatplaat "Nieuwe plek" wist timeline zonder waarschuwing | 2026-04-15 | Confirmatie-modal + permanente "Nieuwe plek"-knop op podium. Bugfix: `praatplaatSubmitted` werd niet gezet in classSession-pad (2026-04-15) |
+| UX-A11Y-1 | PraatplaatSelectScreen keyboard support | 2026-04-15 | onKeyDown handler + autoFocus zodat Enter/Spatie direct werkt |
+| UX-EMP-1 | Lege sample library: hint naar kaart/locaties | 2026-04-14 | Educatieve hint-tekst toegevoegd |
+| UX-FORM-1 | ShareCodeInput: geen uitleg codeformaten | 2026-04-14 | Helper-tekst toegevoegd ("4 cijfers = klascode, 6 tekens = bewaarcode") |
+| UX-ERR-3 | PraatplaatViewer: playback errors tonen aan docent | 2026-04-14 | Foutmelding UI toegevoegd (rood randje + tooltip) |
+| UX-DEST-1 | Confirmatie bij deactiveren opdracht | 2026-04-14 | Modal confirmatie toegevoegd in ClassDetail |
+| UX-DEST-2 | Browser `confirm()` vervangen door styled Modal | 2026-04-14 | 5 plekken vervangen (TeacherDashboard 3×, ClassDetail 1×, LocationEditor 1×) |
+| COLOR-1 | Kleurenaudit praatplaat + design system consistency | 2026-04-15 | 27 afwijkingen gefixt in 9 bestanden: teal→accent, red→error, gray→text-main/text-muted, amber→accent/warning, blue→warning, green→success. Button.tsx primary/danger variants op design tokens. Destructieve knoppen: `!text-white` voor leesbaarheid |
 
 ### Performance & Deployment (afgerond)
 

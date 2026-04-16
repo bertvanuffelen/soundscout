@@ -72,9 +72,7 @@ const validSavedComposition = {
     ],
     bpm: 120,
     totalBeats: 32,
-    isPlaying: false,
     isLooping: true,
-    currentBeat: 0,
   },
   samples: [
     {

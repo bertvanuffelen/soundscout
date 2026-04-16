@@ -166,9 +166,7 @@ export function useUndoRedoTimeline() {
       tracks: cloneTracks(snapshot.tracks),
       bpm: useTimelineStore.getState().bpm,
       totalBeats: useTimelineStore.getState().totalBeats,
-      isPlaying: false,
       isLooping: useTimelineStore.getState().isLooping,
-      currentBeat: 0,
       sections: cloneSections(snapshot.sections),
     });
     indexRef.current = newIndex;
@@ -194,9 +192,7 @@ export function useUndoRedoTimeline() {
       tracks: cloneTracks(snapshot.tracks),
       bpm: useTimelineStore.getState().bpm,
       totalBeats: useTimelineStore.getState().totalBeats,
-      isPlaying: false,
       isLooping: useTimelineStore.getState().isLooping,
-      currentBeat: 0,
       sections: cloneSections(snapshot.sections),
     });
     indexRef.current = newIndex;

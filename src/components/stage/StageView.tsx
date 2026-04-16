@@ -80,8 +80,10 @@ export function StageView() {
     handleSaveClick,
     handleSaveConfirm,
     praatplaatSubmitted,
+    saveError,
     submitFeedback,
     setSubmitFeedback,
+    syncFeedback,
   } = useStageSave();
 
   // Modal state (extracted hook)
@@ -102,6 +104,7 @@ export function StageView() {
   const goToPraatplaatSelect = useAppStore((s) => s.goToPraatplaatSelect);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const [praatplaatSuccessDismissed, setPraatplaatSuccessDismissed] = useState(false);
+  const [showNewSpotModal, setShowNewSpotModal] = useState(false);
   const showPraatplaatSuccess = praatplaatSubmitted && !!activePraatplaat && !praatplaatSuccessDismissed;
 
   const handleNewSpot = useCallback(() => {
@@ -177,6 +180,27 @@ export function StageView() {
         </div>
       )}
 
+      {/* Save error toast (TP5-11) */}
+      {saveError && (
+        <div className="relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm bg-red-600/90 text-white" role="alert">
+          {saveError}
+        </div>
+      )}
+
+      {/* Bewaarcode sync feedback toast (TP5-12) */}
+      {syncFeedback && (
+        <div
+          className={`relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm ${
+            syncFeedback.type === 'success'
+              ? 'bg-emerald-600/90 text-white'
+              : 'bg-amber-600/90 text-white'
+          }`}
+          role={syncFeedback.type === 'error' ? 'alert' : 'status'}
+        >
+          {syncFeedback.message}
+        </div>
+      )}
+
       {/* Main content */}
       <div className="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6">
         <div className="w-full max-w-lg bg-bg-surface rounded-2xl shadow-2xl p-6 sm:p-8 flex flex-col items-center gap-6 sm:gap-8">
@@ -238,6 +262,19 @@ export function StageView() {
               <Ellipsis size={20} className="mr-2" />
               {t('stage.actionsButton')}
             </Button>
+
+            {/* "Nieuwe plek" button — visible after praatplaat submission */}
+            {praatplaatSubmitted && activePraatplaat && (
+              <Button
+                variant="ghost"
+                size="lg"
+                onClick={() => setShowNewSpotModal(true)}
+                className="w-full text-text-muted hover:text-text-main"
+              >
+                <MapPin size={20} className="mr-2" />
+                {t('stage.praatplaatNewSpot')}
+              </Button>
+            )}
 
             <Button
               variant="ghost"
@@ -360,13 +397,41 @@ export function StageView() {
             </Button>
             <Button
               variant="secondary"
-              onClick={handleNewSpot}
+              onClick={() => setShowNewSpotModal(true)}
               className="w-full"
             >
               <MapPin className="w-4 h-4 mr-1.5" />
               {t('stage.praatplaatNewSpot')}
             </Button>
           </div>
+        </div>
+      </Modal>
+
+      {/* New spot confirmation modal (UX-DEST-5) */}
+      <Modal
+        isOpen={showNewSpotModal}
+        onClose={() => setShowNewSpotModal(false)}
+        title={t('stage.praatplaatNewSpot')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">
+          {t('stage.newSpotConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setShowNewSpotModal(false)}
+            className="flex-1"
+          >
+            {t('stage.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => { setShowNewSpotModal(false); handleNewSpot(); }}
+            className="flex-1"
+          >
+            {t('stage.praatplaatNewSpot')}
+          </Button>
         </div>
       </Modal>
 

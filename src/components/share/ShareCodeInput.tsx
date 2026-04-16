@@ -15,6 +15,7 @@ import { Headphones, Loader2 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
+import { getSharedPraatplaat } from '../../lib/praatplaat';
 import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, initializeFromSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
@@ -22,6 +23,7 @@ import { logger } from '../../utils/logger';
 export function ShareCodeInput() {
   const { t } = useTranslation();
   const goToShared = useAppStore((s) => s.goToShared);
+  const goToSharedPraatplaat = useAppStore((s) => s.goToSharedPraatplaat);
 
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -102,10 +104,22 @@ export function ShareCodeInput() {
             return;
           }
         } catch {
-          // getSharedComposition throws on error, fall through to "not found"
+          // getSharedComposition throws on error, fall through
         }
 
-        // 4. Geen match gevonden
+        // 4. Niet gevonden als share-code → probeer als praatplaat share-code (#73)
+        try {
+          const sharedPP = await getSharedPraatplaat(code);
+          if (sharedPP) {
+            goToSharedPraatplaat(code);
+            setCode('');
+            return;
+          }
+        } catch {
+          // getSharedPraatplaat returns null on not-found, throws on rate limit
+        }
+
+        // 5. Geen match gevonden
         setError(t('share.codeNotFound'));
       } catch (err) {
         logger.error('Code lookup mislukt:', err);
@@ -114,7 +128,7 @@ export function ShareCodeInput() {
         setIsLoading(false);
       }
     },
-    [code, t, goToShared]
+    [code, t, goToShared, goToSharedPraatplaat]
   );
 
   return (
@@ -153,8 +167,11 @@ export function ShareCodeInput() {
           )}
         </Button>
       </form>
+      <p className="text-white/40 md:text-text-muted text-[10px] sm:text-xs text-center mt-1.5">
+        {t('share.codeFormatHint')}
+      </p>
       {error && (
-        <p role="alert" aria-live="polite" className="text-red-400 text-xs text-center mt-1">
+        <p role="alert" aria-live="polite" className="text-error-400 text-xs text-center mt-1">
           {error}
         </p>
       )}

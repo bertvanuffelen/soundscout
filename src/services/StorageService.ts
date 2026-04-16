@@ -31,6 +31,17 @@ import {
 // const STORAGE_VERSION = 1;
 const MAX_COMPOSITIONS = 10;
 
+/** Error types returned by save operations (TP5-11) */
+export type StorageSaveError = 'quota_exceeded' | 'serialization' | 'unknown';
+
+function isQuotaExceeded(error: unknown): boolean {
+  if (error instanceof DOMException) {
+    // Most browsers
+    return error.code === 22 || error.code === 1014 || error.name === 'QuotaExceededError' || error.name === 'NS_ERROR_DOM_QUOTA_REACHED';
+  }
+  return false;
+}
+
 class StorageServiceImpl {
   // --- Compositions ---
 
@@ -354,17 +365,28 @@ class StorageServiceImpl {
     try {
       const item = localStorage.getItem(key);
       return item ? JSON.parse(item) : null;
-    } catch {
+    } catch (e) {
+      logger.warn('Failed to parse localStorage JSON', { key, error: e instanceof Error ? e.message : String(e) });
       return null;
     }
   }
 
+  /** Last save error type, readable by callers for user-facing feedback (TP5-11) */
+  lastSaveError: StorageSaveError | null = null;
+
   private set<T>(key: StorageKey, value: T): boolean {
     try {
       localStorage.setItem(key, JSON.stringify(value));
+      this.lastSaveError = null;
       return true;
     } catch (error) {
-      logger.error('Failed to save to localStorage', { key, error });
+      if (isQuotaExceeded(error)) {
+        this.lastSaveError = 'quota_exceeded';
+        logger.error('localStorage quota exceeded', { key, usage: this.getStorageUsage() });
+      } else {
+        this.lastSaveError = 'unknown';
+        logger.error('Failed to save to localStorage', { key, error });
+      }
       return false;
     }
   }

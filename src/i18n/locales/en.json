@@ -88,6 +88,8 @@
     "startGame": "Start Game",
     "continueComposition": "Continue",
     "newComposition": "New Composition",
+    "newCompositionConfirm": "You already have a composition in progress. Starting a new one will discard your current work.",
+    "newCompositionStart": "Start over",
     "haveCode": "I have a code",
     "backToChoices": "Back",
     "howItWorks": "How does it work?",
@@ -174,12 +176,15 @@
     "zoomIn": "Zoom in",
     "zoomOut": "Zoom out",
     "zoomFit": "Fit timeline",
+    "praatplaatZoomIn": "Zoom to my spot",
+    "praatplaatZoomOut": "Show full image",
     "library": "Library",
     "timeline": "Timeline",
     "playhead": "Playback position",
     "backToLocation": "Back to City",
     "toStage": "To Stage",
     "emptyLibrary": "Go collect some sounds first!",
+    "emptyLibraryHint": "Visit locations on the map to collect sounds.",
     "dragHint": "Drag sounds to the timeline",
     "addToTrack": "Add {{name}} to timeline",
     "dragToTimeline": "Drag to timeline",
@@ -263,6 +268,7 @@
     "praatplaatSuccessMessage": "Your composition has been placed on the sound map. The teacher can now play it on the smartboard!",
     "praatplaatContinue": "Continue with this composition",
     "praatplaatNewSpot": "Choose a new spot",
+    "newSpotConfirm": "Are you sure you want to choose a new spot? Your current composition and collected sounds will be lost.",
     "videoNotSupported": "Video export not available on this browser",
     "subtitle": "Your SoundScout composition",
     "shareWithTeacher": "Share with teacher",
@@ -278,7 +284,11 @@
     "actionsExportMp3Hint": "Download as audio file",
     "actionsExportVideoHint": "Download as video with images",
     "actionsTemplateHint": "Create an assignment for students",
-    "actionsNameRequired": "Give your composition a name first"
+    "actionsNameRequired": "Give your composition a name first",
+    "saveQuotaError": "Storage full — delete an old composition to free up space.",
+    "saveGenericError": "Save failed. Please try again.",
+    "syncSuccess": "Online copy updated",
+    "syncFailed": "Online copy not updated — check your internet connection"
   },
   "compositions": {
     "title": "My Compositions",
@@ -422,7 +432,8 @@
     "listenPlaceholder": "Enter code",
     "listen": "Listen",
     "invalidCode": "Please enter a valid code",
-    "codeNotFound": "Code not found. Please check and try again.",
+    "codeNotFound": "Code not found. Check the number of characters and if the code is correct.",
+    "codeFormatHint": "4 digits = class code · 6 characters = save code · 8 characters = listen code",
     "noPraatplaat": "No active sound map for this class code. Ask your teacher.",
     "noActiveAssignment": "No active assignment for this class code. Ask your teacher.",
     "lookupError": "Something went wrong. Please try again.",
@@ -439,6 +450,7 @@
     "activate": "Activate",
     "activateError": "Could not activate assignment",
     "deactivate": "Deactivate",
+    "deactivateConfirm": "Are you sure you want to deactivate this assignment? Students will no longer be able to work on this assignment via the class code.",
     "deactivateError": "Could not deactivate assignment",
     "noAssignments": "No assignments available yet. Create a template or sound map first.",
     "activeTitle": "Active assignment",
@@ -474,6 +486,7 @@
     "unlocked": "Clips free",
     "activate": "Activate",
     "deactivate": "Deactivate",
+    "deleteTitle": "Delete Assignment",
     "deleteConfirm": "Are you sure you want to delete this assignment? This cannot be undone.",
     "deleteError": "Could not delete assignment",
     "toggleError": "Could not change status",
@@ -551,7 +564,9 @@
           "title": "Getting started",
           "content": [
             "Welcome! SoundScout is a web app where students learn to compose music by collecting sounds at locations and placing them on a timeline. As a teacher you have your own dashboard to manage classes, set up assignments, and review submissions.",
+            { "type": "heading", "text": "Creating an account" },
             "You need a teacher account. Register via the login page — click 'No account yet?' and follow the steps. You'll receive a confirmation email; activate your account via the link.",
+            { "type": "heading", "text": "Creating your first class" },
             "After logging in, create your first class using the 'New class' button. Each class automatically gets a 4-digit class code. Share that code with your students — they enter it on the start screen to be linked to your class.",
             "Tip: write the class code on the whiteboard or print it on a worksheet. Students can also enter via a link with the class code embedded (handy when using a Chromebook cart)."
           ]
@@ -572,11 +587,27 @@
             "Set up assignments in the class detail screen. It has tabs for templates and praatplaten, with buttons to create new ones or activate existing ones."
           ]
         },
+        "compose-modes": {
+          "title": "Composition modes",
+          "content": [
+            "When a student clicks 'New Composition', they first choose a mode. Each mode suits a different learning objective.",
+            { "type": "heading", "text": "Free composition" },
+            "The student picks a theme (e.g. The City or Winter Games) and explores freely. There are no images or sections — the student decides the structure. This suits open-ended assignments and independent exploration.",
+            { "type": "heading", "text": "With an image" },
+            "The student picks an image (e.g. King's Day, Sports Field) and creates a soundscape to match that scene. The theme is automatically determined by the image. This suits listening and sound-illustration tasks: 'What sounds do you hear in this place?'",
+            { "type": "heading", "text": "With a storyboard" },
+            "The student picks a story of multiple images (e.g. Start → Jump → Landing). The timeline is automatically divided into sections matching the images, so the student practises musical structure and form. This suits assignments about tension, contrast and structure.",
+            { "type": "heading", "text": "Template + storyboard combined" },
+            "As a teacher you can also link a template to a storyboard. The student then gets a fixed composition as starting point, including the storyboard's sections and images. This combines a guided assignment with visual support."
+          ]
+        },
         "templates": {
           "title": "Creating templates",
           "content": [
             "A template is a composition you prepare as a starting point for students. For example: an empty track structure, a fixed rhythm, or a half-finished song that students complete.",
-            "Create a template by building a composition in the studio, then choosing 'Save as template' (in the Stage screen, under 'Share & Export'). You can give it a name and description, and choose lock options: can students modify existing clips? Can they add tracks? Is the sample library locked?",
+            { "type": "heading", "text": "Creating a template" },
+            "Build a composition in the studio, then choose 'Save as template' (in the Stage screen, under 'Share & Export'). You can give it a name and description, and choose lock options: can students modify existing clips? Can they add tracks? Is the sample library locked?",
+            { "type": "heading", "text": "Activating a template" },
             "After saving, the template appears in your dashboard. Activate it for a specific class via the class detail screen. Note: a template is linked to a theme — students automatically get the same theme you used."
           ]
         },
@@ -584,37 +615,51 @@
           "title": "Using a praatplaat",
           "content": [
             "A praatplaat is a collaborative sound map: each student creates a small composition and places it on a position on an image (e.g. a forest, a city, a market). As teacher you can then present the praatplaat to the class — click a spot and hear what that student made.",
-            "Create one: go to a class, click 'New praatplaat' and choose a location image from the active theme. Give it a name (e.g. 'Sounds in the park — grade 5a') and activate it. Each class can have only one active praatplaat at a time.",
-            "Students who enter the class code first see the image and choose a spot to place their work. Then they build their composition as usual. When they save, the composition is automatically linked to the praatplaat.",
-            "Present on the whiteboard: open the praatplaat via the 'View' button on the praatplaat card. You see the image with spots; click a spot to play that composition. Nearby spots are automatically clustered.",
-            "Share link (#73): via the share button on the praatplaat card you get a URL and QR code. Students opening this link go directly into the praatplaat flow, without needing to enter the class code manually."
+            { "type": "heading", "text": "Creating a praatplaat" },
+            "Go to the class detail screen and click 'Activate an assignment'. Choose 'Praatplaat', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time.",
+            { "type": "heading", "text": "What students see" },
+            "Students enter the 4-digit class code on the start screen. They then see a preview of the praatplaat. After clicking 'Start' they choose a spot on the image where they want to place their composition. Then they build their composition as usual in the studio. When they save, the composition is automatically linked to the chosen spot. Using the 'Choose a new spot' button they can then add another composition at a different location.",
+            { "type": "heading", "text": "Presenting on the whiteboard" },
+            "Open the praatplaat via 'Open praatplaat' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
+            { "type": "heading", "text": "Sharing a link with students" },
+            "Click 'Share link' next to the active praatplaat. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the praatplaat flow without needing to enter the class code manually. Ideal for projecting on the whiteboard.",
+            { "type": "heading", "text": "Public listening page" },
+            "At the bottom of the share dialog you'll find the 'Listening page' option. Click 'Create listening page' to generate a public link. Anyone with this link — including parents, colleagues or guests — can view the praatplaat and listen to all compositions, without logging in. The link is valid for 30 days and can be extended by clicking the button again. A QR code is also available for printing or sharing."
           ]
         },
         "submissions": {
           "title": "Reviewing submissions",
           "content": [
             "The class detail screen shows all compositions students have shared with your class. Each submission shows the student's name, date, and a play button.",
-            "There are two tabs: 'Submitted' shows formally submitted compositions; 'In progress' shows compositions students have saved locally but not yet submitted (marked with a blue badge and 'Last edited' timestamp).",
-            "Per submission you can listen, view details, and export to MP3. This way you can review student work, provide feedback, or use compositions in a class presentation."
+            { "type": "heading", "text": "Tabs" },
+            "'Submitted' shows formally submitted compositions. 'In progress' shows compositions students have saved locally but not yet submitted (marked with a badge and 'Last edited' timestamp).",
+            { "type": "heading", "text": "What can you do?" },
+            "Per submission you can listen, view details (timeline view), and export to MP3. This way you can review student work, provide feedback, or use compositions in a class presentation."
           ]
         },
         "save-codes": {
           "title": "Save codes for students",
           "content": [
             "Students often work on shared devices. Save codes let them continue on another device — for example, finish at home what they started at school.",
+            { "type": "heading", "text": "Code types" },
             "Three code types students may encounter: a 4-digit class code (to link to your class), a 6-character save code (to save their own composition and continue later), and an 8-character share or template code (for listen-only or opening a template).",
+            { "type": "heading", "text": "How does it work?" },
             "A student creates a save code in the studio or stage screen via 'Save online'. The app shows a 6-character code and a QR code; the student writes it down or scans it on the other device. On that device they enter the code on the start screen to continue.",
+            { "type": "heading", "text": "Expiry" },
             "Compositions with a save code automatically expire after 60 days of inactivity. If a student continues working, the counter resets."
           ]
         },
         "classroom-tips": {
           "title": "Classroom tips",
           "content": [
+            { "type": "heading", "text": "Headphones" },
             "Headphones are almost essential. Without them it's chaotic in a class of 25 students playing sounds at once. Tip: set Chromebook volumes to max 50% class-wide to prevent hearing damage.",
-            "Autoplay unlock: browsers block audio by default until the user clicks. SoundScout handles this on the first click or tap — students don't need to do anything, but if there's no sound, have them tap the screen.",
-            "Chromebooks and iPads: SoundScout works on both. iPad: use landscape orientation for more workspace. Safari works best. Chromebook: make sure the device doesn't go to sleep during recordings — it interrupts the web audio system.",
-            "Timing: plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block.",
-            "Common student question: 'My sound isn't playing.' Usually it's a volume issue (speaker/headphones) or an un-unlocked audio context (tap the screen). If a sample really won't load, refresh the page — the composition is saved locally."
+            { "type": "heading", "text": "Sound not working?" },
+            "Browsers block audio by default until the user clicks. SoundScout handles this on the first click or tap — students don't need to do anything, but if there's no sound, have them tap the screen. If a sample really won't load, refresh the page — the composition is saved locally.",
+            { "type": "heading", "text": "Devices" },
+            "SoundScout works on Chromebooks and iPads. iPad: use landscape orientation for more workspace. Safari works best. Chromebook: make sure the device doesn't go to sleep during recordings — it interrupts the web audio system.",
+            { "type": "heading", "text": "Timing" },
+            "Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block."
           ]
         }
       }
@@ -684,6 +729,7 @@
       "emptyDescription": "Create your first class to receive student compositions.",
       "createFirstClass": "Create First Class",
       "createClassError": "Could not create class",
+      "deleteClassTitle": "Delete Class",
       "deleteClassConfirm": "Are you sure you want to delete this class?\n\nAll student compositions will also be deleted!",
       "deleteClassError": "Could not delete class",
       "howItWorks": "How does it work?",
@@ -701,6 +747,7 @@
       "loading": "Loading compositions...",
       "emptyTitle": "No compositions yet",
       "emptyDescription": "Share the class code {{code}} with your students. Once students share their composition, they will appear here.",
+      "deleteTitle": "Delete Composition",
       "deleteConfirm": "Are you sure you want to delete this composition?",
       "deleteError": "Could not delete",
       "instruction": "Students can share their composition via Stage → Save → Share with teacher and enter the code {{code}}.",
@@ -767,6 +814,7 @@
       "activateError": "Could not activate sound map",
       "deactivateError": "Could not deactivate sound map",
       "delete": "Delete",
+      "deleteTitle": "Delete Sound Map",
       "deleteConfirm": "Are you sure you want to delete this sound map?\n\nAll submitted compositions will also be deleted!",
       "deleteError": "Could not delete sound map",
       "view": "View",
@@ -775,6 +823,7 @@
       "submissionCount_other": "{{count}} compositions",
       "fetchError": "Could not load sound maps",
       "fetchSubmissionsError": "Could not load compositions",
+      "playbackError": "Cannot play this composition",
       "emptyTitle": "No sound maps yet",
       "emptyDescription": "Create a sound map so students can place their composition on a location.",
       "share": "Share link",
@@ -786,6 +835,11 @@
       "hideQr": "Hide QR code",
       "qrAlt": "QR code for sound map {{name}}",
       "qrHint": "Project this QR code on the digital board so students can scan directly.",
+      "shareError": "Could not create the share link",
+      "shareListenTitle": "Listening page",
+      "shareListenDescription": "Create a public listening page that anyone (including parents) can open to view the sound map and listen to compositions.",
+      "generateShareLink": "Create listening page",
+      "shareListenExpiry": "The link is valid for 30 days. Recreating extends the expiry.",
       "viewer": {
         "stop": "Stop",
         "showTimeline": "View timeline",
@@ -937,5 +991,22 @@
       "composeFree": "Compose freely",
       "otherCode": "Try another code"
     }
+  },
+  "sharedPraatplaat": {
+    "fetchError": "Could not load the sound map",
+    "audioError": "Could not initialize audio",
+    "notFoundTitle": "Sound map not found",
+    "notFoundDescription": "This link is invalid or the sound map has been removed.",
+    "expiredTitle": "Link expired",
+    "expiredDescription": "The share link for this sound map has expired. Ask the teacher for a new link.",
+    "errorTitle": "Something went wrong",
+    "errorDescription": "Please try again later.",
+    "backToStart": "Back to SoundScout",
+    "submissionCount": "{{count}} composition(s) on the sound map",
+    "noSubmissions": "There are no compositions on this sound map yet",
+    "gestureHint": "Click the button below to open the sound map and listen to compositions.",
+    "startListening": "Listen to the sound map",
+    "emptyTitle": "No compositions yet",
+    "emptyDescription": "No compositions have been placed on this sound map yet."
   }
 }

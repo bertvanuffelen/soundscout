@@ -9,7 +9,7 @@
  * - fetchClassAssignment: voor docenten dashboard (direct table)
  */
 
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
@@ -52,6 +52,19 @@ export interface ClassAssignmentRow {
   assignmentName: string;
 }
 
+/** Shape of Supabase joined relation select `template_id ( name )` / `praatplaat_id ( name )`.
+ *  Supabase types FK joins as arrays, but `.maybeSingle()` returns a single object at runtime. */
+interface JoinedName {
+  name: string;
+}
+
+/** Safely extract name from a Supabase FK join (typed as array, returned as object) */
+function getJoinedName(data: JoinedName | JoinedName[] | null, fallback: string): string {
+  if (!data) return fallback;
+  if (Array.isArray(data)) return data[0]?.name || fallback;
+  return data.name || fallback;
+}
+
 // --- Lock options parsing (shared with templates.ts) ---
 
 function parseLockOptions(lockOptions: TemplateLockOptions | null | undefined): TemplateLockOptions {
@@ -74,6 +87,7 @@ function parseLockOptions(lockOptions: TemplateLockOptions | null | undefined): 
  */
 export async function getActiveAssignment(classCode: string): Promise<ActiveAssignment | null> {
   try {
+    const supabase = await getSupabase();
     const { data, error } = await supabase.rpc('get_active_assignment', {
       p_class_code: classCode.trim().toUpperCase(),
     });
@@ -145,6 +159,7 @@ export async function activateAssignment(
   templateId?: string,
   praatplaatId?: string,
 ): Promise<string> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('activate_assignment', {
     p_class_id: classId,
     p_template_id: templateId || null,
@@ -163,6 +178,7 @@ export async function activateAssignment(
  * Deactiveer de actieve opdracht voor een klas.
  */
 export async function deactivateAssignment(classId: string): Promise<void> {
+  const supabase = await getSupabase();
   const { error } = await supabase.rpc('deactivate_class_assignment', {
     p_class_id: classId,
   });
@@ -178,6 +194,7 @@ export async function deactivateAssignment(classId: string): Promise<void> {
  * Retourneert null als er geen actieve opdracht is.
  */
 export async function fetchClassAssignment(classId: string): Promise<ClassAssignmentRow | null> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from('class_assignments')
     .select(`
@@ -204,13 +221,9 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
 
   // Determine type and name from joined data
   const type: AssignmentType = data.template_id ? 'template' : 'praatplaat';
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const templateData = data.templates as any;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const praatplaatData = data.praatplaten as any;
   const assignmentName = type === 'template'
-    ? (templateData?.name || 'Template')
-    : (praatplaatData?.name || 'Praatplaat');
+    ? getJoinedName(data.templates as JoinedName | JoinedName[] | null, 'Template')
+    : getJoinedName(data.praatplaten as JoinedName | JoinedName[] | null, 'Praatplaat');
 
   return {
     id: data.id,
@@ -230,6 +243,7 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
  * Gesorteerd op activated_at (nieuwste eerst).
  */
 export async function fetchPastAssignments(classId: string): Promise<ClassAssignmentRow[]> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase
     .from('class_assignments')
     .select(`
@@ -256,13 +270,9 @@ export async function fetchPastAssignments(classId: string): Promise<ClassAssign
 
   return data.map((row) => {
     const type: AssignmentType = row.template_id ? 'template' : 'praatplaat';
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const templateData = row.templates as any;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const praatplaatData = row.praatplaten as any;
     const assignmentName = type === 'template'
-      ? (templateData?.name || 'Template')
-      : (praatplaatData?.name || 'Praatplaat');
+      ? getJoinedName(row.templates as JoinedName | JoinedName[] | null, 'Template')
+      : getJoinedName(row.praatplaten as JoinedName | JoinedName[] | null, 'Praatplaat');
 
     return {
       id: row.id,

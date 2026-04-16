@@ -7,9 +7,11 @@
  * (Werkt zonder login - voor leerlingen)
  */
 
-import { supabase } from './supabase';
+import { getSupabase } from './supabase';
+import { ERR_RATE_LIMIT, ERR_CLASS_NOT_FOUND, ERR_NOT_ACTIVE, ERR_INVALID_SAVE_CODE, matchesError } from './supabaseErrors';
 import { generateRandomDutchName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
+import { parseCompositionData } from '../utils/schemas';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
@@ -37,6 +39,7 @@ export async function validateClassCode(code: string): Promise<{
   name: string;
   teacher_name: string;
 } | null> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('get_class_by_code', {
     p_code: code,
   });
@@ -65,6 +68,8 @@ export async function submitComposition(
 ): Promise<SubmitCompositionResult> {
   const { classCode, studentName, compositionName, compositionData } = params;
 
+  const supabase = await getSupabase();
+
   // Gebruik grappige naam als geen naam opgegeven
   const finalStudentName = studentName?.trim() || generateRandomDutchName();
 
@@ -79,10 +84,10 @@ export async function submitComposition(
     logger.error('Fout bij versturen compositie:', sanitizeError(error));
 
     // Vertaal bekende fouten
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
-    if (error.message.includes('niet gevonden')) {
+    if (matchesError(error, ERR_CLASS_NOT_FOUND)) {
       throw new Error(i18n.t('submissions.classCodeNotFound'));
     }
 
@@ -131,6 +136,7 @@ export async function submitOrUpdateComposition(
     praatplaatPositionX, praatplaatPositionY,
   } = params;
 
+  const supabase = await getSupabase();
   const finalStudentName = studentName?.trim() || generateRandomDutchName();
 
   const rpcParams: Record<string, unknown> = {
@@ -152,10 +158,10 @@ export async function submitOrUpdateComposition(
   if (error) {
     logger.error('Fout bij submit_or_update_composition:', sanitizeError(error));
 
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
-    if (error.message.includes('niet gevonden') || error.message.includes('niet actief')) {
+    if (matchesError(error, ERR_CLASS_NOT_FOUND) || matchesError(error, ERR_NOT_ACTIVE)) {
       throw new Error(i18n.t('submissions.classCodeNotFound'));
     }
 
@@ -191,6 +197,7 @@ export async function shareComposition(
   params: ShareCompositionParams
 ): Promise<string> {
   const { studentName, compositionName, compositionData } = params;
+  const supabase = await getSupabase();
 
   const finalStudentName = studentName?.trim() || generateRandomDutchName();
 
@@ -202,7 +209,7 @@ export async function shareComposition(
 
   if (error) {
     logger.error('Fout bij delen compositie:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
     throw new Error(i18n.t('submissions.shareLinkError'));
@@ -220,13 +227,14 @@ export async function shareComposition(
 export async function getSharedComposition(
   code: string
 ): Promise<SharedComposition | null> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('get_shared_composition', {
     p_code: code.toUpperCase().trim(),
   });
 
   if (error) {
     logger.error('Fout bij ophalen gedeelde compositie:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
     throw new Error(i18n.t('submissions.loadError'));
@@ -236,7 +244,16 @@ export async function getSharedComposition(
     return null;
   }
 
-  return data[0] as SharedComposition;
+  const row = data[0];
+
+  // Validate composition_data via Zod (TP5-5)
+  const compositionData = parseCompositionData(row.composition_data);
+  if (!compositionData) {
+    logger.warn('Shared composition data validation failed', { code });
+    return null;
+  }
+
+  return { ...row, composition_data: compositionData } as SharedComposition;
 }
 
 // --- Online bewaren (#52) ---
@@ -271,6 +288,7 @@ export async function saveCompositionOnline(
   params: SaveCompositionOnlineParams
 ): Promise<SaveCompositionOnlineResult> {
   const { studentName, compositionName, compositionData, classCode, email } = params;
+  const supabase = await getSupabase();
 
   const { data, error } = await supabase.rpc('save_composition_online', {
     p_student_name: studentName.trim(),
@@ -282,7 +300,7 @@ export async function saveCompositionOnline(
 
   if (error) {
     logger.error('Fout bij online bewaren:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
     throw new Error(i18n.t('saveOnline.saveError'));
@@ -309,6 +327,7 @@ export async function updateSavedComposition(
   compositionData: CompositionData,
   compositionName?: string,
 ): Promise<boolean> {
+  const supabase = await getSupabase();
   const { error } = await supabase.rpc('update_saved_composition', {
     p_save_code: saveCode.toUpperCase().trim(),
     p_save_secret: saveSecret,
@@ -318,10 +337,10 @@ export async function updateSavedComposition(
 
   if (error) {
     logger.error('Fout bij bijwerken bewaarde compositie:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
-    if (error.message.includes('Ongeldige bewaarcode')) {
+    if (matchesError(error, ERR_INVALID_SAVE_CODE)) {
       throw new Error(i18n.t('saveOnline.invalidSecret'));
     }
     throw new Error(i18n.t('saveOnline.updateError'));
@@ -337,13 +356,14 @@ export async function updateSavedComposition(
 export async function loadSavedComposition(
   saveCode: string
 ): Promise<SavedOnlineComposition | null> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('load_saved_composition', {
     p_save_code: saveCode.toUpperCase().trim(),
   });
 
   if (error) {
     logger.error('Fout bij laden bewaarde compositie:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
     throw new Error(i18n.t('submissions.loadError'));
@@ -353,7 +373,16 @@ export async function loadSavedComposition(
     return null;
   }
 
-  return data[0] as SavedOnlineComposition;
+  const row = data[0];
+
+  // Validate composition_data via Zod (TP5-5)
+  const compositionData = parseCompositionData(row.composition_data);
+  if (!compositionData) {
+    logger.warn('Saved composition data validation failed', { saveCode });
+    return null;
+  }
+
+  return { ...row, composition_data: compositionData } as SavedOnlineComposition;
 }
 
 /**
@@ -364,6 +393,7 @@ export async function claimSavedComposition(
   saveCode: string,
   studentName: string,
 ): Promise<string> {
+  const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('claim_saved_composition', {
     p_save_code: saveCode.toUpperCase().trim(),
     p_student_name: studentName.trim(),
@@ -371,10 +401,10 @@ export async function claimSavedComposition(
 
   if (error) {
     logger.error('Fout bij claimen compositie:', sanitizeError(error));
-    if (error.message.includes('Rate limit exceeded')) {
+    if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
-    if (error.message.includes('niet gevonden')) {
+    if (matchesError(error, ERR_CLASS_NOT_FOUND)) {
       throw new Error(i18n.t('saveOnline.codeNotFound'));
     }
     throw new Error(i18n.t('saveOnline.claimError'));

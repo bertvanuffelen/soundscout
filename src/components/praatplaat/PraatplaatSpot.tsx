@@ -7,7 +7,8 @@
  */
 
 import { useState } from 'react';
-import { Volume2 } from 'lucide-react';
+import { Volume2, AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { PraatplaatSubmission } from '../../lib/praatplaat';
 
 interface PraatplaatSpotProps {
@@ -15,10 +16,12 @@ interface PraatplaatSpotProps {
   x: number; // 0-1 genormaliseerd
   y: number; // 0-1 genormaliseerd
   isPlaying: boolean;
+  hasError?: boolean;
   onClick: () => void;
 }
 
-export function PraatplaatSpot({ submissions, x, y, isPlaying, onClick }: PraatplaatSpotProps) {
+export function PraatplaatSpot({ submissions, x, y, isPlaying, hasError, onClick }: PraatplaatSpotProps) {
+  const { t } = useTranslation();
   const [isHovered, setIsHovered] = useState(false);
   const count = submissions.length;
   const label = count === 1 ? submissions[0].student_name : `${count}`;
@@ -32,9 +35,11 @@ export function PraatplaatSpot({ submissions, x, y, isPlaying, onClick }: Praatp
       {isHovered && (
         <div className="absolute bottom-full left-1/2 -translate-x-1/2 mb-2 pointer-events-none z-20">
           <div className="bg-black/80 text-white text-xs rounded-lg px-2.5 py-1.5 whitespace-nowrap shadow-lg">
-            {count === 1
-              ? submissions[0].student_name
-              : submissions.map((s) => s.student_name).join(', ')
+            {hasError
+              ? t('teacher.praatplaat.playbackError')
+              : count === 1
+                ? submissions[0].student_name
+                : submissions.map((s) => s.student_name).join(', ')
             }
           </div>
         </div>
@@ -49,14 +54,19 @@ export function PraatplaatSpot({ submissions, x, y, isPlaying, onClick }: Praatp
         className={`
           relative w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center
           transition-all duration-200 cursor-pointer border-3
-          ${isPlaying
-            ? 'bg-accent-500 border-accent-600 shadow-lg shadow-accent-500/40 scale-110 animate-pulse'
-            : 'bg-white/40 border-amber-400 hover:bg-white/60 hover:scale-110 shadow-md backdrop-blur-sm'
+          ${hasError
+            ? 'bg-error-100 border-error-400 shadow-md'
+            : isPlaying
+              ? 'bg-accent-500 border-accent-600 shadow-lg shadow-accent-500/40 scale-110 animate-pulse'
+              : 'bg-white/40 border-accent-400 hover:bg-white/60 hover:scale-110 shadow-md backdrop-blur-sm'
           }
         `}
-        aria-label={label}
+        aria-label={hasError ? t('teacher.praatplaat.playbackError') : label}
       >
-        <Volume2 className={`w-5 h-5 sm:w-6 sm:h-6 ${isPlaying ? 'text-white' : 'text-slate-700'}`} />
+        {hasError
+          ? <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-error-500" />
+          : <Volume2 className={`w-5 h-5 sm:w-6 sm:h-6 ${isPlaying ? 'text-white' : 'text-text-main'}`} />
+        }
 
         {/* Badge voor meerdere submissions */}
         {count > 1 && (

@@ -23,6 +23,8 @@ interface CrossfadeImageProps {
   className?: string;
   /** Extra classes for the wrapper div (e.g. "w-full h-full" to fill parent) */
   containerClassName?: string;
+  /** Inline styles for the wrapper div (e.g. zoom transform) */
+  style?: React.CSSProperties;
   /** Transition duration in ms (default: 500) */
   duration?: number;
 }
@@ -32,6 +34,7 @@ export function CrossfadeImage({
   alt,
   className,
   containerClassName,
+  style,
   duration = 500,
 }: CrossfadeImageProps) {
   // Bottom layer: always shows the current (new) image — in normal flow for sizing
@@ -80,7 +83,7 @@ export function CrossfadeImage({
   }, []);
 
   return (
-    <div className={cn('relative', containerClassName)}>
+    <div className={cn('relative', containerClassName)} style={style}>
       {/* Bottom: current image — in normal flow (determines wrapper size) */}
       <img src={displaySrc} alt={alt} className={className} />
 
