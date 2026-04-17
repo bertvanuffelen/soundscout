@@ -11,7 +11,22 @@
       "Bash(ffprobe:*)",
       "Bash(ls:*)",
       "Bash(for f in /Users/bertvanuffelen/Documents/gebouwde-apps/SoundScout/public/audio/themes/winterspelen/winterdorp/*.mp3)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(git rm *)",
+      "Bash(git restore *)",
+      "Bash(git commit *)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)",
+      "Bash(git merge feature/transport-driven-audio --no-ff -m ' *)",
+      "Bash(git mv *)",
+      "Bash(sed -i '' 's/located in the `muziek-grid\\\\/` subdirectory:/located in the project root \\(SoundGrid\\\\/\\):/g' /Users/bertvanuffelen/Documents/gebouwde-apps/musicgrid/CLAUDE.md)",
+      "Bash(sed -i '' '/^cd muziek-grid$/d' /Users/bertvanuffelen/Documents/gebouwde-apps/musicgrid/CLAUDE.md)",
+      "Bash(git merge *)",
+      "Bash(git branch *)",
+      "Bash(npx playwright *)",
+      "Bash(xargs sed *)",
+      "Bash(sed -i '' 's/'\\\\''Oswald'\\\\''/'\\\\''Nunito'\\\\''/g; s/'\\\\''Barlow'\\\\''/'\\\\''Nunito'\\\\''/g' /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/admin/content-generator/components/LivePreview.js /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/utils/exportUtils.js /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/components/Common/ErrorBoundary.jsx)",
+      "Bash(sed -i '' 's|https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Nunito:wght@400;500;600;700|https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800|g' /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/admin/content-generator/components/LivePreview.js)"
     ]
   }
 }
