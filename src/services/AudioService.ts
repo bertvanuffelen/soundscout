@@ -66,25 +66,17 @@ export class AudioService {
   private scheduledTracks: Track[] = [];
   private scheduledSamples: Sample[] = [];
 
-  // Effect chains (#33, #79): isolated players + effect nodes for clips with effects
-  private effectChains: Array<{
+  // Active on-demand sources: created by Part callback and startActiveClips().
+  // Each entry is a player + its effect nodes, auto-disposed when done.
+  // This replaces the old upfront effectChains[] approach.
+  private activeSources: Set<{
     player: Tone.Player;
     nodes: Tone.ToneAudioNode[];
-    fadeGain: Tone.Gain | null;
-  }> = [];
+  }> = new Set();
 
-  // Mapping from clipId to effectChainIndex (for seek support)
-  private clipEffectChainMap: Map<string, number> = new Map();
-
-  // Last AudioContext time each shared player was started — shared across
-  // startActiveClips() and the Tone.Part callback to prevent
-  // "Start time must be strictly greater than previous start time" crashes.
-  private sharedPlayerLastStart: Map<string, number> = new Map();
-
-  // Whether scheduleTimeline() has been called and the Part + effect chains
-  // are still valid. Set true in scheduleTimeline(), stays true through
-  // pause(), cleared on stop()/disposeEffectChains(). Allows resume without
-  // a costly reschedule (Fase 1 audio dropout fix).
+  // Whether scheduleTimeline() has been called and the Part is still valid.
+  // Set true in scheduleTimeline(), stays true through pause(), cleared on
+  // stop(). Allows resume without a costly reschedule (Fase 1 fix).
   private _isScheduled = false;
 
   // The audioVersion at the time of the last scheduleTimeline() call.
@@ -589,84 +581,86 @@ export class AudioService {
   }
 
   /**
-   * Create a simple isolated player with volume control only (no effects).
-   * Used for polyphonic playback: each clip gets its own player so multiple
-   * clips of the same sample can play simultaneously without conflicts.
-   * The player uses the shared ToneAudioBuffer — no extra memory.
-   * Routes through the track bus for submix processing.
+   * Create an on-demand player with optional effects, routed through a track bus.
+   * Used by Part callback and startActiveClips() — each call creates a fresh
+   * player that auto-disposes when done (via onstop callback).
+   *
+   * The player shares the source ToneAudioBuffer — no extra memory.
+   * Routes: player → [effects] → volume → trackBus[trackIndex]
+   *
+   * Returns the created source entry (added to activeSources) and the
+   * fadeGain node (if applicable, for external fade curve scheduling).
    */
-  private createSimpleChain(
+  private createOnDemandPlayer(
     buffer: Tone.ToneAudioBuffer,
     volumeDb: number,
     trackIndex: number,
-  ): { player: Tone.Player; nodes: Tone.ToneAudioNode[]; fadeGain: Tone.Gain | null } {
-    const volumeNode = new Tone.Volume(volumeDb);
-    const player = new Tone.Player(buffer);
-    // Route: player → volume → trackBus[trackIndex] → masterBus → Destination
-    const destination = this.trackBuses[trackIndex] || Tone.getDestination();
-    player.chain(volumeNode, destination);
-    return { player, nodes: [volumeNode], fadeGain: null };
-  }
-
-  /** Create an isolated player with effect nodes for a clip */
-  private createEffectChain(
-    buffer: Tone.ToneAudioBuffer,
-    clip: Clip,
-    volumeDb: number,
-    trackIndex: number,
-  ): { player: Tone.Player; nodes: Tone.ToneAudioNode[]; fadeGain: Tone.Gain | null } {
-    const fx = clip.effects!;
+    effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number },
+  ): { player: Tone.Player; fadeGain: Tone.Gain | null; source: { player: Tone.Player; nodes: Tone.ToneAudioNode[] } } {
     const nodes: Tone.ToneAudioNode[] = [];
 
-    // Build chain nodes (order: pitch → reverb → fadeGain → volume → destination)
-    if (fx.pitch !== 0 && fx.pitch !== undefined) {
-      nodes.push(new Tone.PitchShift({ pitch: fx.pitch }));
+    // Build effect nodes (order: pitch → reverb → fadeGain → volume)
+    if (effects) {
+      if (effects.pitch !== 0) {
+        nodes.push(new Tone.PitchShift({ pitch: effects.pitch }));
+      }
+      if (effects.reverb > 0) {
+        const reverb = new Tone.Reverb({
+          decay: 1.5 + (effects.reverb / 100) * 3,
+        });
+        reverb.wet.value = effects.reverb / 100;
+        nodes.push(reverb);
+      }
     }
 
-    if (fx.reverb > 0) {
-      const reverb = new Tone.Reverb({
-        decay: 1.5 + (fx.reverb / 100) * 3,
-      });
-      reverb.wet.value = fx.reverb / 100;
-      nodes.push(reverb);
-    }
-
-    // FadeGain node (#79) — separate from clip volume for independent control
+    // FadeGain node (#79) — separate from volume for independent control
     let fadeGain: Tone.Gain | null = null;
-    if (fx.fadeIn > 0 || fx.fadeOut > 0) {
-      fadeGain = new Tone.Gain(1); // starts at 1, curve scheduled later
+    if (effects && (effects.fadeIn > 0 || effects.fadeOut > 0)) {
+      fadeGain = new Tone.Gain(1);
       nodes.push(fadeGain);
     }
 
-    // Volume node (always needed)
+    // Volume node (always)
     nodes.push(new Tone.Volume(volumeDb));
 
-    // Create isolated player using the shared buffer
+    // Create player from shared buffer
     const player = new Tone.Player(buffer);
 
-    // Chain: player → [pitchShift] → [reverb] → [fadeGain] → volume → trackBus
+    // Chain: player → [effects] → volume → trackBus
     const destination = this.trackBuses[trackIndex] || Tone.getDestination();
-    if (nodes.length > 0) {
-      player.chain(...nodes, destination);
-    } else {
-      player.connect(destination);
-    }
+    player.chain(...nodes, destination);
 
-    return { player, nodes, fadeGain };
+    // Track in activeSources for lifecycle management
+    const source = { player, nodes };
+    this.activeSources.add(source);
+
+    // Auto-dispose when player finishes (fire-and-forget pattern)
+    player.onstop = () => {
+      this.activeSources.delete(source);
+      try { player.dispose(); } catch { /* ignore */ }
+      nodes.forEach((node) => {
+        try { node.dispose(); } catch { /* ignore */ }
+      });
+    };
+
+    return { player, fadeGain, source };
   }
 
-  /** Dispose all effect chains (players + nodes) */
-  private disposeEffectChains(): void {
-    this.effectChains.forEach(({ player, nodes }) => {
+  /**
+   * Stop and dispose all active on-demand sources.
+   * Called on pause (with dispose) and stop.
+   */
+  private disposeActiveSources(): void {
+    this.activeSources.forEach(({ player, nodes }) => {
+      // Remove onstop to prevent it from firing during manual dispose
+      player.onstop = () => {};
       try { player.stop(); } catch { /* ignore */ }
       try { player.dispose(); } catch { /* ignore */ }
       nodes.forEach((node) => {
         try { node.dispose(); } catch { /* ignore */ }
       });
     });
-    this.effectChains = [];
-    this.clipEffectChainMap.clear();
-    this._isScheduled = false;
+    this.activeSources.clear();
   }
 
   scheduleTimeline(tracks: Track[], samples: Sample[]): void {
@@ -674,9 +668,6 @@ export class AudioService {
     const transport = Tone.getTransport();
     transport.cancel(); // Clear previous schedule
     transport.bpm.value = DEFAULT_BPM;
-
-    // Reset dedup map so a fresh schedule starts clean
-    this.sharedPlayerLastStart.clear();
 
     // Store timeline data for active clip detection during seek
     this.scheduledTracks = tracks;
@@ -688,9 +679,8 @@ export class AudioService {
       this.timelinePart = null;
     }
 
-    // Dispose previous effect chains
-    this.disposeEffectChains();
-    this.clipEffectChainMap.clear();
+    // Dispose any lingering on-demand sources from previous schedule
+    this.disposeActiveSources();
 
     // Ensure track buses exist (lazy init) and sync volume/mute
     this.ensureTrackBuses();
@@ -699,20 +689,23 @@ export class AudioService {
     // Build lookup map for quick sample access
     const sampleMap = new Map(samples.map((s) => [s.id, s]));
 
-    // Define event type for Tone.Part (using object format with time property)
+    // Define event type for Tone.Part — on-demand: no pre-created chains,
+    // callback creates players at event time and disposes them when done.
     type ClipEvent = {
       time: number;
       sampleId: string;
       trimStart: number;
       duration: number;
       volumeDb: number;  // Combined track + clip volume
-      isMuted: boolean;  // Track or clip muted
-      effectChainIndex?: number;  // Index in this.effectChains for clips with effects
-      fadeIn?: number;   // Fade-in duration in seconds (#79)
-      fadeOut?: number;  // Fade-out duration in seconds (#79)
+      isMuted: boolean;
+      trackIndex: number;
+      // Effects config for on-demand chain creation (undefined = no effects)
+      effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number };
+      fadeIn?: number;   // Per-event fade-in (may differ per loop iteration)
+      fadeOut?: number;  // Per-event fade-out
     };
 
-    // Build events array for Tone.Part
+    // Build events array — NO upfront chain creation, just data
     const events: ClipEvent[] = [];
     let totalClipCount = 0;
     let mutedClipCount = 0;
@@ -732,30 +725,19 @@ export class AudioService {
         const clipMuted = clip.effects?.mute ?? false;
         const volumeDb = trackVolume + clipVolume;
         const isMuted = trackMuted || clipMuted;
+        if (isMuted) mutedClipCount++;
         const trimStart = getClipTrimStart(clip);
         const singleDuration = getClipDuration(clip, sample);
 
-        // Create an isolated player for EVERY non-muted clip (#polyphony).
-        // Each player shares the same ToneAudioBuffer — no extra memory.
-        // Clips with effects get the full chain (pitch/reverb/fade);
-        // clips without effects get a simple volume-only chain.
-        // All chains route through trackBuses[trackIndex] → masterBus.
-        let effectChainIndex: number | undefined;
-        if (isMuted) mutedClipCount++;
-        if (!isMuted) {
-          if (this.clipHasEffects(clip)) {
-            const chain = this.createEffectChain(buffer, clip, volumeDb, trackIndex);
-            effectChainIndex = this.effectChains.length;
-            this.effectChains.push(chain);
-          } else {
-            const chain = this.createSimpleChain(buffer, volumeDb, trackIndex);
-            effectChainIndex = this.effectChains.length;
-            this.effectChains.push(chain);
-          }
-          this.clipEffectChainMap.set(clip.id, effectChainIndex);
-        }
+        // Build effects config only if clip has non-default effects
+        const effects = this.clipHasEffects(clip) ? {
+          pitch: clip.effects?.pitch ?? 0,
+          reverb: clip.effects?.reverb ?? 0,
+          fadeIn: clip.effects?.fadeIn ?? 0,
+          fadeOut: clip.effects?.fadeOut ?? 0,
+        } : undefined;
 
-        // Fade durations (#79)
+        // Fade durations (#79) — also included at event level for per-iteration control
         const fadeIn = clip.effects?.fadeIn ?? 0;
         const fadeOut = clip.effects?.fadeOut ?? 0;
 
@@ -778,15 +760,15 @@ export class AudioService {
               duration: dur,
               volumeDb,
               isMuted,
-              effectChainIndex,
-              fadeIn: isFirst ? fadeIn : 0,      // Only first iteration fades in
-              fadeOut: isLast ? fadeOut : 0,      // Only last iteration fades out
+              trackIndex,
+              effects,
+              fadeIn: isFirst ? fadeIn : 0,
+              fadeOut: isLast ? fadeOut : 0,
             });
             offset += singleDuration;
             iterIndex++;
           }
         } else {
-          // Normal clip (not looped)
           events.push({
             time: beatsToSeconds(clip.startBeat, DEFAULT_BPM),
             sampleId: clip.sampleId,
@@ -794,7 +776,8 @@ export class AudioService {
             duration: singleDuration,
             volumeDb,
             isMuted,
-            effectChainIndex,
+            trackIndex,
+            effects,
             fadeIn,
             fadeOut,
           });
@@ -803,7 +786,6 @@ export class AudioService {
     });
 
     // Calculate lastActiveBeat: the beat where the last clip finishes playing
-    // Used for auto-stop when not looping — now loop-aware
     this.lastActiveBeat = 0;
     tracks.forEach((track) => {
       track.clips.forEach((clip) => {
@@ -816,97 +798,60 @@ export class AudioService {
       });
     });
 
-    // Pre-compute fade curves (#79)
+    // Pre-compute fade curves (#79) — captured by closure, used in callback
     const fadeInCurve = this.createFadeCurve('in');
     const fadeOutCurve = this.createFadeCurve('out');
 
-    // Create Tone.Part with events (object format with time property)
+    // Create Tone.Part with ON-DEMAND player creation in callback.
+    // Each event creates a fresh player → effects → trackBus, plays it,
+    // and auto-disposes when done. No upfront chain allocation.
     this.timelinePart = new Tone.Part<ClipEvent>(
       (time, event) => {
-        if (event.isMuted) return; // Skip muted clips/tracks
+        if (event.isMuted) return;
 
-        // Use effect chain if available (#33, #79)
-        if (event.effectChainIndex !== undefined) {
-          const chain = this.effectChains[event.effectChainIndex];
-          if (chain?.player) {
-            // Schedule fade curves on the fadeGain node (#79)
-            if (chain.fadeGain) {
-              const gainParam = chain.fadeGain.gain;
-              if (event.fadeIn && event.fadeIn > 0) {
-                gainParam.setValueAtTime(0, time);
-                gainParam.setValueCurveAtTime(fadeInCurve, time, event.fadeIn);
-              }
-              if (event.fadeOut && event.fadeOut > 0) {
-                const fadeOutStart = time + event.duration - event.fadeOut;
-                // Only schedule if fade-out starts after fade-in ends
-                if (fadeOutStart >= time + (event.fadeIn ?? 0)) {
-                  gainParam.setValueCurveAtTime(fadeOutCurve, fadeOutStart, event.fadeOut);
-                }
-              }
-            }
-            try {
-              chain.player.start(time, event.trimStart, event.duration);
-              audioDiag.partCallback({
-                scheduledTime: time,
-                audioContextCurrentTime: Tone.getContext().rawContext.currentTime,
-                sampleId: event.sampleId,
-                effectChainIndex: event.effectChainIndex,
-                success: true,
-              });
-            } catch (e) {
-              // Safety net: looping clips can rarely hit timing edge cases
-              logger.warn('Effect chain player start failed', { effectChainIndex: event.effectChainIndex, error: e });
-              audioDiag.partCallback({
-                scheduledTime: time,
-                audioContextCurrentTime: Tone.getContext().rawContext.currentTime,
-                sampleId: event.sampleId,
-                effectChainIndex: event.effectChainIndex,
-                success: false,
-                error: e instanceof Error ? e.message : String(e),
-              });
+        // Get buffer for this sample
+        const buffer = this.buffers.get(event.sampleId);
+        if (!buffer) return;
+
+        // Create on-demand player with effects, routed to track bus
+        const { player, fadeGain } = this.createOnDemandPlayer(
+          buffer, event.volumeDb, event.trackIndex, event.effects
+        );
+
+        // Schedule fade curves on the fadeGain node (#79)
+        if (fadeGain) {
+          const gainParam = fadeGain.gain;
+          if (event.fadeIn && event.fadeIn > 0) {
+            gainParam.setValueAtTime(0, time);
+            gainParam.setValueCurveAtTime(fadeInCurve, time, event.fadeIn);
+          }
+          if (event.fadeOut && event.fadeOut > 0) {
+            const fadeOutStart = time + event.duration - event.fadeOut;
+            if (fadeOutStart >= time + (event.fadeIn ?? 0)) {
+              gainParam.setValueCurveAtTime(fadeOutCurve, fadeOutStart, event.fadeOut);
             }
           }
-          return;
         }
 
-        // Fallback: shared player path. Since every non-muted clip now gets
-        // its own isolated player (#polyphony), this should only fire for
-        // edge cases (e.g., a muted clip that somehow reaches here).
-        logger.warn('Part callback using shared player fallback — should not happen', { sampleId: event.sampleId });
-        const player = this.players.get(event.sampleId);
-        if (player?.loaded) {
-          const lastStart = this.sharedPlayerLastStart.get(event.sampleId) ?? -1;
-          if (time <= lastStart) {
-            // Same or earlier time — skip (already started by startActiveClips or earlier Part event)
-            logger.audio('Skipping duplicate shared player start', {
-              sampleId: event.sampleId,
-              time,
-              lastStart,
-            });
-            return;
-          }
-          this.sharedPlayerLastStart.set(event.sampleId, time);
-          try {
-            player.volume.setValueAtTime(event.volumeDb, time);
-            player.start(time, event.trimStart, event.duration);
-            audioDiag.partCallback({
-              scheduledTime: time,
-              audioContextCurrentTime: Tone.getContext().rawContext.currentTime,
-              sampleId: event.sampleId,
-              effectChainIndex: undefined,
-              success: true,
-            });
-          } catch (e) {
-            logger.warn('Shared player start failed', { sampleId: event.sampleId, time, error: e });
-            audioDiag.partCallback({
-              scheduledTime: time,
-              audioContextCurrentTime: Tone.getContext().rawContext.currentTime,
-              sampleId: event.sampleId,
-              effectChainIndex: undefined,
-              success: false,
-              error: e instanceof Error ? e.message : String(e),
-            });
-          }
+        try {
+          player.start(time, event.trimStart, event.duration);
+          audioDiag.partCallback({
+            scheduledTime: time,
+            audioContextCurrentTime: Tone.getContext().rawContext.currentTime,
+            sampleId: event.sampleId,
+            effectChainIndex: undefined,
+            success: true,
+          });
+        } catch (e) {
+          logger.warn('On-demand player start failed', { sampleId: event.sampleId, error: e });
+          audioDiag.partCallback({
+            scheduledTime: time,
+            audioContextCurrentTime: Tone.getContext().rawContext.currentTime,
+            sampleId: event.sampleId,
+            effectChainIndex: undefined,
+            success: false,
+            error: e instanceof Error ? e.message : String(e),
+          });
         }
       },
       events
@@ -920,7 +865,7 @@ export class AudioService {
       durationMs: performance.now() - scheduleStartTime,
       totalClips: totalClipCount,
       totalEvents: events.length,
-      effectChains: this.effectChains.length,
+      effectChains: 0,  // No upfront chains — all on-demand now
       mutedClips: mutedClipCount,
       audioContext: Tone.getContext().rawContext as AudioContext,
     });
@@ -948,38 +893,41 @@ export class AudioService {
    * Get all clips that are active at a specific beat position,
    * with calculated playback parameters for immediate start.
    *
-   * Returns clips with adjusted trimStart and duration for seek playback.
+   * Returns clips with adjusted trimStart, duration, trackIndex, and effects
+   * config for on-demand player creation.
    */
   private getActiveClipsAtBeat(beat: number): Array<{
     clip: Clip;
     sample: Sample;
-    player: Tone.Player;
     adjustedTrimStart: number;
     remainingDuration: number;
     volumeDb: number;
     isMuted: boolean;
+    trackIndex: number;
+    effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number };
   }> {
     const activeClips: Array<{
       clip: Clip;
       sample: Sample;
-      player: Tone.Player;
       adjustedTrimStart: number;
       remainingDuration: number;
       volumeDb: number;
       isMuted: boolean;
+      trackIndex: number;
+      effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number };
     }> = [];
 
     const sampleMap = new Map(this.scheduledSamples.map((s) => [s.id, s]));
 
-    this.scheduledTracks.forEach((track) => {
+    this.scheduledTracks.forEach((track, trackIndex) => {
       const trackVolume = track.volume ?? 0;
       const trackMuted = track.mute ?? false;
 
       track.clips.forEach((clip) => {
         const sample = sampleMap.get(clip.sampleId);
-        const player = this.players.get(clip.sampleId);
+        const buffer = this.buffers.get(clip.sampleId);
 
-        if (!sample || !player || !player.loaded) return;
+        if (!sample || !buffer || !buffer.loaded) return;
         if (!this.isClipActiveAtBeat(clip, sample, beat)) return;
 
         const clipVolume = clip.effects?.volume ?? 0;
@@ -998,7 +946,6 @@ export class AudioService {
         let remainingDuration: number;
 
         if (clip.loop && clip.loopDurationBeats) {
-          // For looping clips: calculate position within current loop iteration
           const posInLoop = elapsedSeconds % singleDuration;
           adjustedTrimStart = originalTrimStart + posInLoop;
           const remainingInIteration = singleDuration - posInLoop;
@@ -1009,16 +956,25 @@ export class AudioService {
           remainingDuration = singleDuration - elapsedSeconds;
         }
 
+        // Build effects config if clip has non-default effects
+        const effects = this.clipHasEffects(clip) ? {
+          pitch: clip.effects?.pitch ?? 0,
+          reverb: clip.effects?.reverb ?? 0,
+          fadeIn: clip.effects?.fadeIn ?? 0,
+          fadeOut: clip.effects?.fadeOut ?? 0,
+        } : undefined;
+
         // Only add if there's still something to play (minimum 10ms)
         if (remainingDuration > 0.01) {
           activeClips.push({
             clip,
             sample,
-            player,
             adjustedTrimStart,
             remainingDuration,
             volumeDb: trackVolume + clipVolume,
             isMuted: trackMuted || clipMuted,
+            trackIndex,
+            effects,
           });
         }
       });
@@ -1029,69 +985,72 @@ export class AudioService {
 
   /**
    * Start all clips that are active at the given beat position.
-   * These clips have their start moment in the "past" relative to seek position,
-   * so they need to be started immediately with adjusted offset and duration.
-   *
-   * Every non-muted clip has its own isolated player (#polyphony), so all
-   * active clips can start simultaneously without conflicts.
+   * Creates on-demand players for each active clip, routed through track buses.
+   * Handles fade curve scheduling for seek into fade-in/fade-out zones.
    */
   private startActiveClips(seekBeat: number): void {
     const activeClips = this.getActiveClipsAtBeat(seekBeat);
-
     if (activeClips.length === 0) return;
 
-    // Separate clips with isolated players from shared-player clips (fallback).
-    // Since #polyphony, all non-muted clips should have isolated players.
-    const effectClips: typeof activeClips = [];
-    const sharedClipsBySample = new Map<string, typeof activeClips[0]>();
-
-    activeClips.forEach((clipData) => {
-      if (this.clipEffectChainMap.has(clipData.clip.id)) {
-        effectClips.push(clipData);
-      } else {
-        // Fallback: shared player (shouldn't happen for non-muted clips)
-        const existing = sharedClipsBySample.get(clipData.clip.sampleId);
-        if (!existing || clipData.remainingDuration > existing.remainingDuration) {
-          sharedClipsBySample.set(clipData.clip.sampleId, clipData);
-        }
-      }
-    });
-
-    // Start all clips at the same time with small buffer
     const startTime = Tone.now() + 0.05;
 
-    // Start effect chain clips
-    effectClips.forEach(({ adjustedTrimStart, remainingDuration, clip, sample, isMuted }) => {
+    activeClips.forEach(({ adjustedTrimStart, remainingDuration, clip, sample, isMuted, volumeDb, trackIndex, effects }) => {
       if (isMuted) return;
-      const chainIndex = this.clipEffectChainMap.get(clip.id)!;
-      const chain = this.effectChains[chainIndex];
-      if (chain?.player) {
-        // Schedule fade curves for seek position (#79)
-        if (chain.fadeGain) {
-          const fadeIn = clip.effects?.fadeIn ?? 0;
-          const fadeOut = clip.effects?.fadeOut ?? 0;
-          const elapsedBeats = seekBeat - clip.startBeat;
-          const elapsedSeconds = beatsToSeconds(elapsedBeats, DEFAULT_BPM);
-          const singleDuration = getClipDuration(clip, sample);
 
-          // For looping clips, calculate elapsed within current iteration
-          const effectiveElapsed = (clip.loop && clip.loopDurationBeats)
-            ? elapsedSeconds % singleDuration
-            : elapsedSeconds;
-          const totalClipDuration = (clip.loop && clip.loopDurationBeats)
-            ? beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM)
-            : singleDuration;
+      const buffer = this.buffers.get(clip.sampleId);
+      if (!buffer) return;
 
-          const gainParam = chain.fadeGain.gain;
+      // Create on-demand player routed to track bus
+      const { player, fadeGain } = this.createOnDemandPlayer(
+        buffer, volumeDb, trackIndex, effects
+      );
 
-          // Determine if we're in a fade-in zone
-          if (fadeIn > 0 && effectiveElapsed < fadeIn) {
-            // Seeking into middle of fade-in
-            const progress = effectiveElapsed / fadeIn;
-            const currentValue = progress * progress; // x² fade-in
-            const remainingFade = fadeIn - effectiveElapsed;
-            // Set current value, then schedule remaining curve
-            const remainingCurve = this.createFadeCurve('in');
+      // Schedule fade curves for seek position (#79)
+      if (fadeGain && effects) {
+        const fadeIn = effects.fadeIn;
+        const fadeOut = effects.fadeOut;
+        const elapsedBeats = seekBeat - clip.startBeat;
+        const elapsedSeconds = beatsToSeconds(elapsedBeats, DEFAULT_BPM);
+        const singleDuration = getClipDuration(clip, sample);
+
+        // For looping clips, calculate elapsed within current iteration
+        const effectiveElapsed = (clip.loop && clip.loopDurationBeats)
+          ? elapsedSeconds % singleDuration
+          : elapsedSeconds;
+        const totalClipDuration = (clip.loop && clip.loopDurationBeats)
+          ? beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM)
+          : singleDuration;
+
+        const gainParam = fadeGain.gain;
+
+        // Determine if we're in a fade-in zone
+        if (fadeIn > 0 && effectiveElapsed < fadeIn) {
+          const progress = effectiveElapsed / fadeIn;
+          const currentValue = progress * progress; // x² fade-in
+          const remainingFade = fadeIn - effectiveElapsed;
+          const remainingCurve = this.createFadeCurve('in');
+          const startIdx = Math.floor(progress * remainingCurve.length);
+          const partialCurve = remainingCurve.slice(startIdx);
+          if (partialCurve.length >= 2) {
+            gainParam.setValueAtTime(currentValue, startTime);
+            gainParam.setValueCurveAtTime(partialCurve, startTime, remainingFade);
+          } else {
+            gainParam.setValueAtTime(currentValue, startTime);
+          }
+        } else {
+          gainParam.setValueAtTime(1, startTime);
+        }
+
+        // Schedule fade-out if applicable
+        if (fadeOut > 0) {
+          const fadeOutStartInClip = totalClipDuration - fadeOut;
+          if (elapsedSeconds >= fadeOutStartInClip) {
+            // Already in fade-out zone
+            const fadeOutElapsed = elapsedSeconds - fadeOutStartInClip;
+            const progress = fadeOutElapsed / fadeOut;
+            const currentValue = (1 - progress) * (1 - progress);
+            const remainingFade = fadeOut - fadeOutElapsed;
+            const remainingCurve = this.createFadeCurve('out');
             const startIdx = Math.floor(progress * remainingCurve.length);
             const partialCurve = remainingCurve.slice(startIdx);
             if (partialCurve.length >= 2) {
@@ -1101,60 +1060,19 @@ export class AudioService {
               gainParam.setValueAtTime(currentValue, startTime);
             }
           } else {
-            // Past fade-in, set gain to 1
-            gainParam.setValueAtTime(1, startTime);
-          }
-
-          // Schedule fade-out if applicable
-          if (fadeOut > 0) {
-            const fadeOutStartInClip = totalClipDuration - fadeOut;
-            if (elapsedSeconds >= fadeOutStartInClip) {
-              // Already in fade-out zone
-              const fadeOutElapsed = elapsedSeconds - fadeOutStartInClip;
-              const progress = fadeOutElapsed / fadeOut;
-              const currentValue = (1 - progress) * (1 - progress); // exponential fade-out
-              const remainingFade = fadeOut - fadeOutElapsed;
-              const remainingCurve = this.createFadeCurve('out');
-              const startIdx = Math.floor(progress * remainingCurve.length);
-              const partialCurve = remainingCurve.slice(startIdx);
-              if (partialCurve.length >= 2) {
-                gainParam.setValueAtTime(currentValue, startTime);
-                gainParam.setValueCurveAtTime(partialCurve, startTime, remainingFade);
-              } else {
-                gainParam.setValueAtTime(currentValue, startTime);
-              }
-            } else {
-              // Not yet in fade-out, schedule it for the future
-              const fadeOutStartFromNow = fadeOutStartInClip - elapsedSeconds;
-              const fadeOutCurve = this.createFadeCurve('out');
-              gainParam.setValueCurveAtTime(fadeOutCurve, startTime + fadeOutStartFromNow, fadeOut);
-            }
+            const fadeOutStartFromNow = fadeOutStartInClip - elapsedSeconds;
+            const fadeOutCurve = this.createFadeCurve('out');
+            gainParam.setValueCurveAtTime(fadeOutCurve, startTime + fadeOutStartFromNow, fadeOut);
           }
         }
-
-        chain.player.start(startTime, adjustedTrimStart, remainingDuration);
-        logger.audio('startActiveClip (effect chain)', {
-          sampleId: clip.sampleId,
-          seekBeat,
-          adjustedTrimStart,
-          remainingDuration,
-        });
       }
-    });
 
-    // Start shared-player clips and record in instance-level dedup map
-    // so the Part callback knows not to re-start the same player.
-    sharedClipsBySample.forEach(({ player, adjustedTrimStart, remainingDuration, clip, volumeDb, isMuted }) => {
-      if (isMuted) return;
-      player.volume.setValueAtTime(volumeDb, startTime);
       player.start(startTime, adjustedTrimStart, remainingDuration);
-      this.sharedPlayerLastStart.set(clip.sampleId, startTime);
-      logger.audio('startActiveClip', {
+      logger.audio('startActiveClip (on-demand)', {
         sampleId: clip.sampleId,
         seekBeat,
         adjustedTrimStart,
         remainingDuration,
-        volumeDb,
       });
     });
   }
@@ -1192,11 +1110,10 @@ export class AudioService {
       transportPosition: transport.seconds,
       audioContextTime: Tone.getContext().rawContext.currentTime,
       audioContextState: Tone.getContext().rawContext.state,
-      activeSourceCount: this.effectChains.reduce((count, chain) => {
-        // Check if the player's internal state is "started"
-        try { return count + (chain.player.state === 'started' ? 1 : 0); } catch { return count; }
+      activeSourceCount: Array.from(this.activeSources).reduce((count, { player }) => {
+        try { return count + (player.state === 'started' ? 1 : 0); } catch { return count; }
       }, 0),
-      effectChainCount: this.effectChains.length,
+      effectChainCount: this.activeSources.size,
       isScheduled: this._isScheduled,
       getTransportSeconds: () => transport.seconds,
     }));
@@ -1204,34 +1121,17 @@ export class AudioService {
 
   pause(): void {
     const transport = Tone.getTransport();
-    const fadeGainCount = this.effectChains.filter(c => c.fadeGain !== null).length;
-    audioDiag.pause(this.getCurrentBeat(), this.effectChains.length, fadeGainCount);
+    audioDiag.pause(this.getCurrentBeat(), this.activeSources.size, 0);
     audioDiag.stopSnapshots();
     transport.pause();
-    // Stop all currently playing samples — they continue independently
-    // of the transport once started. On resume, handlePlay re-schedules
-    // everything and startActiveClips() restarts from the paused position.
+    // Dispose all on-demand sources — on resume, Part callback and
+    // startActiveClips() will create fresh players. This is safe because
+    // on-demand players are lightweight and share the same buffers.
+    this.disposeActiveSources();
+    // Stop preview players (they're independent of the transport)
     this.players.forEach((player) => {
-      try {
-        player.stop();
-      } catch {
-        // Player may not be started - ignore
-      }
-    });
-    // Stop effect chain players too (but DON'T dispose — needed for resume)
-    // Also cancel any scheduled fadeGain automation curves — stale curves
-    // would conflict with freshly scheduled ones when the Part fires on resume.
-    this.effectChains.forEach(({ player, fadeGain }) => {
       try { player.stop(); } catch { /* ignore */ }
-      if (fadeGain) {
-        try {
-          fadeGain.gain.cancelScheduledValues(0);
-          fadeGain.gain.setValueAtTime(1, Tone.now());
-        } catch { /* ignore */ }
-      }
     });
-    // Clear dedup map so stale entries from this session don't block the next play()
-    this.sharedPlayerLastStart.clear();
     this.stopPlayheadUpdates();
   }
 
@@ -1243,19 +1143,13 @@ export class AudioService {
     transport.cancel();
     transport.stop();
     transport.seconds = 0;
-    // Force-stop all players regardless of state (covers edge cases
-    // where a player was scheduled but not yet in 'started' state)
+    // Dispose all on-demand sources
+    this.disposeActiveSources();
+    // Stop preview players
     this.players.forEach((player) => {
-      try {
-        player.stop();
-      } catch {
-        // Player may not be started - ignore
-      }
+      try { player.stop(); } catch { /* ignore */ }
     });
-    // Stop + dispose effect chains (#33)
-    this.disposeEffectChains();
-    // Clear dedup map so stale entries don't block the next play()
-    this.sharedPlayerLastStart.clear();
+    this._isScheduled = false;
     this.stopPlayheadUpdates();
     // Notify listeners that we're back at beat 0
     this.beatUpdateCallbacks.forEach((cb) => cb(0));
@@ -1285,14 +1179,14 @@ export class AudioService {
     const currentBeat = this.getCurrentBeat();
     const transport = Tone.getTransport();
 
-    // 1. Stop players + transport so play(currentBeat) re-seeds cleanly
+    // 1. Stop all sources + transport so play(currentBeat) re-seeds cleanly
+    this.disposeActiveSources();
     this.players.forEach((p) => { try { p.stop(); } catch { /* ignore */ } });
-    this.effectChains.forEach(({ player }) => { try { player.stop(); } catch { /* ignore */ } });
     transport.cancel();
     transport.stop();
     this.stopPlayheadUpdates();
 
-    // 2. Full reschedule (disposes old Part + effect chains, builds new ones)
+    // 2. Full reschedule (disposes old Part + active sources, builds new Part)
     this.scheduleTimeline(tracks, samples);
     this.setLoop(looping, totalBeats);
 
