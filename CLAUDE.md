@@ -87,25 +87,31 @@ Seven independent stores in `src/stores/`:
 
 ```
 AudioService (singleton)
-├── players: Map<sampleId, Tone.Player>     — cached, loaded lazily (shared)
-├── timelinePart: Tone.Part | null          — scheduled clip events
-├── scheduledTracks: Track[]                — current timeline state for seek
-├── scheduledSamples: Sample[]              — sample metadata for seek
-├── effectChains: Array<{player, nodes}>    — isolated players for clips with effects
-├── clipEffectChainMap: Map<clipId, index>  — lookup for seek support
+├── buffers: Map<sampleId, ToneAudioBuffer>  — primary storage, zero graph footprint
+├── players: Map<sampleId, Tone.Player>      — preview players only (from buffer)
+├── trackBuses: Tone.Gain[] (8)              — submix per track (mute control)
+├── masterBus: Tone.Volume                   — master output
+├── activeSources: Set<{player, nodes}>      — lifecycle-tracked on-demand players
+├── timelinePart: Tone.Part | null           — scheduled clip events
+├── scheduledTracks: Track[]                 — current timeline state for seek
+├── scheduledSamples: Sample[]               — sample metadata for seek
 ├── waveformCache: Map<sampleId, WaveformData>
 └── ambientPlayer: Tone.Player | null
 ```
 
-**Playback flow**: `scheduleTimeline()` creates a `Tone.Part` with all clip events → `play(fromBeat)` starts transport. For seek (fromBeat > 0), a **hybrid approach** is used: clips already active at the seek position are started directly via `startActiveClips()`, while future clips play via `Tone.Part`.
+**On-demand fire-and-forget architecture (PERF-1, 2026-04-22)**: Replaced 170+ permanent `Tone.Player` nodes with on-demand players created per clip event. Root cause of audio dropouts: each Player creates a permanent GainNode; 170+ GainNodes exceeded the 2.9ms render quantum budget (128 samples @ 44.1kHz). Now: `ToneAudioBuffer` stores sample data (zero audio graph footprint), `createOnDemandPlayer()` creates a fresh Player from the buffer at event time, routes through trackBus, and auto-disposes via `onstop` callback. `activeSources` Set tracks all live players. On pause: all activeSources are disposed, Part stays valid. On resume: Part callback + `startActiveClips()` create fresh players. See `docs/PLAN-AUDIO-REFACTOR.md` for full design rationale and implementation log.
+
+**Playback flow**: `scheduleTimeline()` creates a `Tone.Part` with all clip events (each carrying `trackIndex` + `effects` config) → `play(fromBeat)` starts transport. Part callback calls `createOnDemandPlayer()` per event. For seek (fromBeat > 0), a **hybrid approach** is used: clips already active at the seek position are started directly via `startActiveClips()` (which also creates on-demand players), while future clips play via `Tone.Part`.
+
+**Track bus submix**: 8 `Tone.Gain` buses (one per track) + 1 `Tone.Volume` master → Destination. Buses handle mute only (gain 0 or 1). Track + clip volume is baked into per-clip on-demand players. Total permanent nodes: ~9 (vs 170+ before refactor).
 
 **Clip Loop (#65)**: `clip.loop` + `clip.loopDurationBeats` on the Clip interface. Looping clips generate multiple `ClipEvent`s in `scheduleTimeline()` (one per loop iteration). Resize handle uses pure pointer events (not dnd-kit) with half-beat grid snapping. Loop-aware collision detection via `getEffectiveClipDurationBeats()`. Loop-aware seek uses modulo arithmetic (`elapsedSeconds % singleDuration`) to find position within loop iteration.
 
-**Clip Effects (#33, #79)**: Per-clip `PitchShift` (-12 to +12 semitones), `Reverb` (0-100%), and `Fade In/Out` (0 to clip duration in seconds). Clips with effects get **isolated effect chains** (separate `Tone.Player` + effect nodes) stored in `effectChains[]`. Shared players remain unmodified for clips without effects. `clipEffectChainMap` maps clipId → effectChainIndex so `startActiveClips()` uses the correct player on seek. Effect chains are created in `scheduleTimeline()`, stopped (not disposed) on `pause()`, and fully disposed on `stop()` and before re-scheduling. `EffectsModal` component provides waveform with always-visible draggable fade handles + pitch/reverb sliders + preview button (`playSampleWithEffects()` creates temporary isolated chain). Chain order: Player → PitchShift → Reverb → FadeGain → Volume → Destination. Fade uses symmetric exponential curves: fade-in `x²` (gradual build from silence), fade-out `(1-x)²` (smooth descent to silence). Pre-computed `number[]` (128 steps) scheduled via `setValueCurveAtTime()` on a separate `Tone.Gain` node. For looping clips: fade-in on first iteration only, fade-out on last only. Seek into a fade region calculates intermediate volume using the same curve formula and schedules the remaining curve portion via `slice()`. **Trim+fade clamping**: when a clip is trimmed shorter, `updateClipTrim` proportionally scales down fades if `fadeIn + fadeOut > newDuration`.
+**Clip Effects (#33, #79)**: Per-clip `PitchShift` (-12 to +12 semitones), `Reverb` (0-100%), and `Fade In/Out` (0 to clip duration in seconds). Clips with effects get **isolated effect chains** via `createOnDemandPlayer(buffer, volume, trackIndex, effects)` — the effects parameter triggers PitchShift/Reverb/FadeGain node creation in the chain. Clips without effects get a simple Player → trackBus route. `EffectsModal` component provides waveform with always-visible draggable fade handles + pitch/reverb sliders + preview button (`playSampleWithEffects()` creates temporary isolated chain). Chain order: Player → PitchShift → Reverb → FadeGain → Volume → trackBus → masterBus → Destination. Fade uses symmetric exponential curves: fade-in `x²` (gradual build from silence), fade-out `(1-x)²` (smooth descent to silence). Pre-computed `number[]` (128 steps) scheduled via `setValueCurveAtTime()` on a separate `Tone.Gain` node. For looping clips: fade-in on first iteration only, fade-out on last only. Seek into a fade region calculates intermediate volume using the same curve formula and schedules the remaining curve portion via `slice()`. **Trim+fade clamping**: when a clip is trimmed shorter, `updateClipTrim` proportionally scales down fades if `fadeIn + fadeOut > newDuration`.
 
-**Live reschedule (#22)**: Timeline changes during playback are detected via `audioVersion` counter in `timelineStore` (incremented on every audio-relevant action). `useRescheduleOnChange` hook watches this counter; when it changes while `isPlaying === true`, it calls `AudioService.rescheduleWhilePlaying()` which stops all players, rebuilds the `Tone.Part` with current tracks, and resumes from the same beat position. **Convention**: any new timelineStore action that affects audio output MUST increment `audioVersion` in its `set()` call.
+**Live reschedule (#22)**: Timeline changes during playback are detected via `audioVersion` counter in `timelineStore` (incremented on every audio-relevant action). `useRescheduleOnChange` hook watches this counter; when it changes while `isPlaying === true`, it calls `AudioService.rescheduleWhilePlaying()` which disposes all activeSources, rebuilds the `Tone.Part` with current tracks, and resumes from the same beat position. **Convention**: any new timelineStore action that affects audio output MUST increment `audioVersion` in its `set()` call.
 
-**Volume**: No persistent `Tone.Gain` nodes. Volume is calculated per clip event as `trackVolume + clipVolume` (dB) and applied via `player.volume.setValueAtTime()` before each `player.start()`. For effect chain clips, volume is baked into the chain's `Tone.Volume` node. Muted clips/tracks are skipped entirely.
+**Volume**: Track + clip volume (dB) is applied per on-demand player via `player.volume.setValueAtTime()` before `player.start()`. For effect chain players, volume is baked into the chain's `Tone.Volume` node. Track buses handle mute only (gain 0 or 1). Muted clips/tracks are skipped entirely.
 
 **MP3 export**: `src/utils/audioExport.ts` uses `Tone.Offline()` for offline rendering + `@breezystack/lamejs` (dynamic import, loaded on first export) for MP3 encoding. Output: 128kbps stereo.
 
@@ -297,9 +303,9 @@ These are hard-won lessons — violating them causes subtle audio bugs:
 
 4. **Async sample loading race conditions**: Use `AbortController` pattern when loading samples. Always check `signal.aborted` BEFORE any state updates to prevent infinite render loops. Stabilize array dependencies with ID-based string comparison (not array references).
 
-5. **Shared players can't have per-clip effects**: `Tone.Player` instances are shared across clips using the same sample. If one clip needs pitch shift and another doesn't, the shared player can't serve both. Solution: create **isolated players** (cloned from the shared player's buffer) with their own effect chain for clips with effects. Store in `effectChains[]` and map via `clipEffectChainMap`.
+5. **On-demand players must auto-dispose**: Since PERF-1 refactor, all playback uses fire-and-forget players created from `ToneAudioBuffer`. Each player MUST register an `onstop` callback that disposes itself and removes from `activeSources`. Failing to dispose causes memory leaks. On pause/stop, `disposeActiveSources()` explicitly cleans up all tracked players.
 
-6. **Seek must use effect chain players**: `startActiveClips()` starts clips that are "already playing" at the seek position. It MUST use the effect chain player (not the shared player) for clips with effects, otherwise both the original and effected sound play simultaneously. The `clipEffectChainMap` lookup solves this.
+6. **Permanent nodes cause audio dropouts at scale**: 170+ permanent `Tone.Player` nodes (each with a GainNode) exceed the audio render quantum budget (~2.9ms). Solution: use `ToneAudioBuffer` for storage (zero graph footprint) + on-demand players + track bus submix (9 permanent nodes total). See `docs/PLAN-AUDIO-REFACTOR.md`.
 
 7. **CSS `transition-all` conflicts with pointer-based resize**: When resizing clips via pointer events, `transition-all` animates the width change, but absolutely-positioned children reposition instantly based on the final width. This creates visual jitter. Solution: conditionally disable `transition-all` during resize operations.
 
@@ -337,6 +343,7 @@ VITE_SUPABASE_ANON_KEY=xxx
 | `docs/PLAN-52-BEWAARCODE.md` | Online save code system design (#52) |
 | `docs/PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` | Real-time reschedule design (#22) |
 | `docs/PLAN-CLIP-LOOP-EFFECTS.md` | Clip loop + effects implementation plan (#65, #33) |
+| `docs/PLAN-AUDIO-REFACTOR.md` | Audio engine refactor: on-demand fire-and-forget players (PERF-1) |
 | `docs/PLAN-72-PRAATPLAAT.md` | Praatplaat collaborative sound map design (#72) |
 | `docs/HANDLEIDING-BEHEER.md` | Technical admin guide (deployment, Supabase, maintenance) |
 | `soundscout-prd.md` | Product requirements document |
