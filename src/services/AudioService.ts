@@ -525,19 +525,20 @@ export class AudioService {
   }
 
   /**
-   * Update track bus volumes and mute states from track data.
-   * Called at the start of scheduleTimeline() to sync bus gains with
-   * current track volume/mute settings.
+   * Update track bus states from track data.
+   * Called at the start of scheduleTimeline() to sync bus gains.
+   *
+   * Currently: bus handles mute only (gain = 0 or 1). Track volume is
+   * still baked into per-clip chains for backward compatibility.
+   * Future: move track volume to bus, clip volume stays in chain.
    */
   private updateTrackBuses(tracks: Track[]): void {
     tracks.forEach((track, index) => {
       if (index >= this.trackBuses.length) return;
       const bus = this.trackBuses[index];
       const muted = track.mute ?? false;
-      const volumeDb = track.volume ?? 0;
-      // Convert dB to linear gain for the bus
-      // Muted tracks get gain 0, otherwise convert from dB
-      bus.gain.value = muted ? 0 : Math.pow(10, volumeDb / 20);
+      // Bus handles mute; track volume still in per-clip chains
+      bus.gain.value = muted ? 0 : 1;
     });
   }
 
@@ -592,14 +593,18 @@ export class AudioService {
    * Used for polyphonic playback: each clip gets its own player so multiple
    * clips of the same sample can play simultaneously without conflicts.
    * The player uses the shared ToneAudioBuffer — no extra memory.
+   * Routes through the track bus for submix processing.
    */
   private createSimpleChain(
     buffer: Tone.ToneAudioBuffer,
     volumeDb: number,
+    trackIndex: number,
   ): { player: Tone.Player; nodes: Tone.ToneAudioNode[]; fadeGain: Tone.Gain | null } {
     const volumeNode = new Tone.Volume(volumeDb);
     const player = new Tone.Player(buffer);
-    player.chain(volumeNode, Tone.getDestination());
+    // Route: player → volume → trackBus[trackIndex] → masterBus → Destination
+    const destination = this.trackBuses[trackIndex] || Tone.getDestination();
+    player.chain(volumeNode, destination);
     return { player, nodes: [volumeNode], fadeGain: null };
   }
 
@@ -608,6 +613,7 @@ export class AudioService {
     buffer: Tone.ToneAudioBuffer,
     clip: Clip,
     volumeDb: number,
+    trackIndex: number,
   ): { player: Tone.Player; nodes: Tone.ToneAudioNode[]; fadeGain: Tone.Gain | null } {
     const fx = clip.effects!;
     const nodes: Tone.ToneAudioNode[] = [];
@@ -638,11 +644,12 @@ export class AudioService {
     // Create isolated player using the shared buffer
     const player = new Tone.Player(buffer);
 
-    // Chain: player → [pitchShift] → [reverb] → [fadeGain] → volume → destination
+    // Chain: player → [pitchShift] → [reverb] → [fadeGain] → volume → trackBus
+    const destination = this.trackBuses[trackIndex] || Tone.getDestination();
     if (nodes.length > 0) {
-      player.chain(...nodes, Tone.getDestination());
+      player.chain(...nodes, destination);
     } else {
-      player.toDestination();
+      player.connect(destination);
     }
 
     return { player, nodes, fadeGain };
@@ -710,7 +717,7 @@ export class AudioService {
     let totalClipCount = 0;
     let mutedClipCount = 0;
 
-    tracks.forEach((track) => {
+    tracks.forEach((track, trackIndex) => {
       const trackVolume = track.volume ?? 0;
       const trackMuted = track.mute ?? false;
 
@@ -732,15 +739,16 @@ export class AudioService {
         // Each player shares the same ToneAudioBuffer — no extra memory.
         // Clips with effects get the full chain (pitch/reverb/fade);
         // clips without effects get a simple volume-only chain.
+        // All chains route through trackBuses[trackIndex] → masterBus.
         let effectChainIndex: number | undefined;
         if (isMuted) mutedClipCount++;
         if (!isMuted) {
           if (this.clipHasEffects(clip)) {
-            const chain = this.createEffectChain(buffer, clip, volumeDb);
+            const chain = this.createEffectChain(buffer, clip, volumeDb, trackIndex);
             effectChainIndex = this.effectChains.length;
             this.effectChains.push(chain);
           } else {
-            const chain = this.createSimpleChain(buffer, volumeDb);
+            const chain = this.createSimpleChain(buffer, volumeDb, trackIndex);
             effectChainIndex = this.effectChains.length;
             this.effectChains.push(chain);
           }
