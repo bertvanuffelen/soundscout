@@ -27,7 +27,7 @@ export function RecorderFullModal({
       title={t('location.recorderFull')}
       size="sm"
     >
-      <p className="text-gray-600 mb-6 text-center">
+      <p className="text-text-muted mb-6 text-center">
         {t('location.goToStudio')}
       </p>
 
@@ -38,7 +38,7 @@ export function RecorderFullModal({
         <Button
           onClick={onStay}
           variant="secondary"
-          className="w-full bg-gray-100 hover:bg-gray-200 text-gray-600"
+          className="w-full bg-neutral-100 hover:bg-neutral-200 text-text-muted"
         >
           {t('location.stayHere')}
         </Button>

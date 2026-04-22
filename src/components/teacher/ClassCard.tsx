@@ -33,22 +33,22 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
         {/* Header met naam en code */}
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="font-semibold text-gray-800 text-lg">
+            <h3 className="font-semibold text-text-main text-lg">
               {name}
             </h3>
-            <p className="text-gray-500 text-sm">
+            <p className="text-neutral-500 text-sm">
               {t('teacher.classCard.createdOn', { date: formattedDate })}
             </p>
           </div>
 
           {/* Klas-code badge with show button */}
           <div className="flex items-center gap-2">
-            <div className="bg-amber-100 text-amber-800 px-3 py-1 rounded-lg font-mono font-bold text-lg">
+            <div className="bg-accent-100 text-accent-800 px-3 py-1 rounded-lg font-mono font-bold text-lg">
               {code}
             </div>
             <button
               onClick={() => setShowCodeOverlay(true)}
-              className="flex-shrink-0 p-2 rounded-lg bg-amber-50 text-amber-700 hover:bg-amber-100 transition-colors"
+              className="flex-shrink-0 p-2 rounded-lg bg-accent-50 text-accent-700 hover:bg-accent-100 transition-colors"
               title={t('teacher.classCard.showOnScreen')}
               aria-label={t('teacher.classCard.showOnScreen')}
             >
@@ -59,8 +59,8 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
 
       {/* Aantal composities */}
       <div className="flex items-center gap-2 mb-4">
-        <Music className="w-6 h-6 text-amber-500" />
-        <span className="text-gray-700">
+        <Music className="w-6 h-6 text-accent-500" />
+        <span className="text-text-muted">
           <strong>{submission_count}</strong> {t('teacher.classCard.compositionCount', { count: submission_count })}
         </span>
       </div>
@@ -79,7 +79,7 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
           variant="ghost"
           size="sm"
           onClick={onDelete}
-          className="text-red-600 hover:bg-red-50"
+          className="text-error-600 hover:bg-error-50"
         >
           <Trash2 className="w-4 h-4" />
         </Button>

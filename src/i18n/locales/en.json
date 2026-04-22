@@ -220,6 +220,17 @@
     "reverbDry": "Dry",
     "reverbWet": "Wet",
     "resetEffect": "Reset",
+    "fadeIn": "Fade in",
+    "fadeOut": "Fade out",
+    "fadeInDuration": "Fade in: {{duration}}s",
+    "fadeOutDuration": "Fade out: {{duration}}s",
+    "effectsModal": {
+      "title": "Effects",
+      "preview": "Preview",
+      "apply": "Apply",
+      "cancel": "Cancel",
+      "reset": "Reset"
+    },
     "sections": {
       "markSection": "Mark section",
       "sectionLabel": "Section {{number}}",
@@ -453,12 +464,14 @@
     "deactivateConfirm": "Are you sure you want to deactivate this assignment? Students will no longer be able to work on this assignment via the class code.",
     "deactivateError": "Could not deactivate assignment",
     "noAssignments": "No assignments available yet. Create a template or sound map first.",
-    "activeTitle": "Active assignment",
+    "activeTitle": "Active assignment for this class",
+    "activeDescription": "Students who log in with the class code will go directly to this assignment.",
     "noActive": "No active assignment for this class.",
     "activateButton": "Activate assignment",
     "changeButton": "Change",
     "activatedAt": "Activated on {{date}}",
-    "pastTitle": "Previous assignments"
+    "pastTitle": "Previous assignments",
+    "pastDescription": "Assignments that were previously used. You can reactivate these."
   },
   "templates": {
     "activeBanner": "Assignment:",
@@ -751,6 +764,8 @@
       "deleteConfirm": "Are you sure you want to delete this composition?",
       "deleteError": "Could not delete",
       "instruction": "Students can share their composition via Stage → Save → Share with teacher and enter the code {{code}}.",
+      "submissionsTitle": "Student submissions",
+      "submissionsDescription": "Compositions submitted by students using the class code.",
       "tabSubmitted": "Submitted ({{count}})",
       "tabWip": "In progress ({{count}})",
       "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet."

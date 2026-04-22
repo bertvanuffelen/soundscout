@@ -33,6 +33,7 @@ interface AudienceMember {
   className: string;
 }
 
+// Decorative audience colors — intentionally diverse for playful stage effect, not semantic tokens
 const AUDIENCE: AudienceMember[] = [
   { icon: Baby, className: 'text-pink-400' },
   { icon: User, className: 'text-blue-400' },
@@ -83,11 +84,12 @@ export function StagePlayback() {
   }, [stopTimeline]);
 
   const handlePlayAgain = useCallback(() => {
+    // Stop first (disposes chains + cancels transport), then immediately
+    // reschedule and play from beat 0. No setTimeout needed — stop() is
+    // synchronous and fully clears the audio state.
     stopTimeline();
-    setTimeout(() => {
-      scheduleTimeline(tracks, librarySamples);
-      playTimeline();
-    }, 50);
+    scheduleTimeline(tracks, librarySamples);
+    playTimeline();
   }, [stopTimeline, scheduleTimeline, playTimeline, librarySamples, tracks]);
 
   return (

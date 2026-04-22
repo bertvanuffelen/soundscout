@@ -155,8 +155,8 @@ function AppContent() {
   // Wait for theme to load
   if (!isThemeInitialized) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-sky-50">
-        <div className="text-sky-600 text-lg font-medium">{t('common.loading')}</div>
+      <div className="min-h-screen flex items-center justify-center bg-accent-50">
+        <div className="text-accent-600 text-lg font-medium">{t('common.loading')}</div>
       </div>
     );
   }

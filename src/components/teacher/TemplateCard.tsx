@@ -42,10 +42,10 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
       {/* Header met naam en code */}
       <div className="flex items-start justify-between mb-2">
         <div className="min-w-0 flex-1 mr-3">
-          <h3 className="font-semibold text-gray-800 text-lg truncate">
+          <h3 className="font-semibold text-text-main text-lg truncate">
             {name}
           </h3>
-          <p className="text-gray-500 text-sm">
+          <p className="text-neutral-500 text-sm">
             {formattedDate}
           </p>
         </div>
@@ -53,7 +53,7 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
         {/* Template code badge + copy */}
         <button
           onClick={handleCopyCode}
-          className="flex items-center gap-1.5 bg-amber-100 text-amber-800 px-3 py-1 rounded-lg font-mono font-bold text-sm hover:bg-amber-200 transition-colors shrink-0"
+          className="flex items-center gap-1.5 bg-accent-100 text-accent-800 px-3 py-1 rounded-lg font-mono font-bold text-sm hover:bg-accent-200 transition-colors shrink-0"
           title={t('templates.copyCode')}
         >
           {code}
@@ -63,19 +63,19 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
 
       {/* Beschrijving */}
       {description && (
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{description}</p>
+        <p className="text-text-muted text-sm mb-3 line-clamp-2">{description}</p>
       )}
 
       {/* Lock badges */}
       <div className="flex items-center gap-2 mb-3 flex-wrap">
         {lockOptions.clipsLocked && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-accent-50 text-accent-700">
             <Lock className="w-3 h-3" />
             {t('templates.lockClipsShort')}
           </span>
         )}
         {lockOptions.sectionsLocked && (
-          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-accent-50 text-accent-700">
             <Lock className="w-3 h-3" />
             {t('templates.lockSectionsShort')}
           </span>
@@ -94,7 +94,7 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
           variant="ghost"
           size="sm"
           onClick={onDelete}
-          className="text-red-600 hover:bg-red-50"
+          className="text-error-600 hover:bg-error-50"
         >
           <Trash2 className="w-4 h-4" />
         </Button>

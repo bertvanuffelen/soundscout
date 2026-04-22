@@ -83,7 +83,7 @@ export function MapView() {
                 className="absolute inset-0 w-full h-full object-cover"
               />
             ) : (
-              <div className="absolute inset-0 bg-gradient-to-br from-green-200 via-blue-100 to-green-100" />
+              <>{/* Decorative map fallback gradient — intentional raw colors */}<div className="absolute inset-0 bg-gradient-to-br from-green-200 via-blue-100 to-green-100" /></>
             )}
 
             {/* Map overlay for better marker visibility */}
@@ -113,7 +113,7 @@ export function MapView() {
 
       {/* Footer with theme info (dev only) */}
       {import.meta.env.DEV && (
-        <div className="px-4 py-2 bg-gray-800 md:bg-neutral-200 text-gray-300 md:text-neutral-500 text-xs text-center shrink-0">
+        <div className="px-4 py-2 bg-brand-800 md:bg-neutral-200 text-brand-300 md:text-neutral-500 text-xs text-center shrink-0">
           Thema: {theme.id} | Locaties: {locations.length}
         </div>
       )}

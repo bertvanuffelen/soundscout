@@ -1,7 +1,7 @@
 # Tone.js Kennisbank - SoundScout
 
 **Doel:** Centrale documentatie van Tone.js kennis voor SoundScout
-**Laatst bijgewerkt:** 2026-02-04
+**Laatst bijgewerkt:** 2026-04-16
 **Tone.js versie:** 15.1.22
 
 ---
@@ -18,7 +18,8 @@
 8. [**KRITIEK: Seeking naar Midden van Actieve Clips**](#8-kritiek-seeking-naar-midden-van-actieve-clips) ⚠️
 9. [Bekende Issues & Workarounds (Tone.js GitHub)](#9-bekende-issues--workarounds-tonejs-github)
 10. [SoundScout Specifieke Implementatie](#10-soundscout-specifieke-implementatie)
-11. [Bronnen](#11-bronnen)
+11. [Fade In/Out met setValueCurveAtTime (#79)](#11-fade-inout-met-setvaluecurveattime-79)
+12. [Bronnen](#12-bronnen)
 
 ---
 
@@ -640,7 +641,86 @@ getClipDuration(clip, sample)  // Effectieve duur
 
 ---
 
-## 11. Bronnen
+## 11. Fade In/Out met setValueCurveAtTime (#79)
+
+### Overzicht
+
+Per-clip fade-in en fade-out worden gerealiseerd via een aparte `Tone.Gain` node (FadeGain) in de effect chain. Dit is gescheiden van de clip-volume node zodat fade en volume onafhankelijk werken.
+
+**Chain-volgorde:** Player → PitchShift → Reverb → **FadeGain** → Volume → Destination
+
+### Fade-curves
+
+Symmetrische exponentiële curves (equal-power, DAW-conventie):
+
+```typescript
+// Fade-in: x² — geleidelijke opbouw van stilte naar vol volume
+fadeInCurve[i] = progress * progress;  // progress = i / (steps - 1)
+
+// Fade-out: (1-x)² — soepele afdaling van vol volume naar stilte
+fadeOutCurve[i] = (1 - progress) * (1 - progress);
+```
+
+De curves worden voorberekend als `number[]` (128 stappen) en hergebruikt. **Let op:** Tone.js `Param.setValueCurveAtTime()` accepteert `number[]`, **niet** `Float32Array`.
+
+### Scheduling
+
+```typescript
+// Fade-in: start op 0, bouw op naar 1
+gainParam.setValueAtTime(0, clipStartTime);
+gainParam.setValueCurveAtTime(fadeInCurve, clipStartTime, fadeInDuration);
+
+// Fade-out: daal af van 1 naar 0
+const fadeOutStart = clipEndTime - fadeOutDuration;
+gainParam.setValueCurveAtTime(fadeOutCurve, fadeOutStart, fadeOutDuration);
+```
+
+### Seek in fade-zone
+
+Bij seek halverwege een fade-in of fade-out zone:
+1. Bereken het voortgangspercentage: `progress = elapsedInFade / fadeDuration`
+2. Bereken tussenliggend volume met dezelfde curve-formule
+3. `setValueAtTime(tussenVolume, startTime)` — zet huidige waarde
+4. `setValueCurveAtTime(restCurve, startTime, resterendeDuur)` — schedule resterende curve via `slice()`
+
+```typescript
+// Voorbeeld: seek in fade-in zone
+const progress = elapsed / fadeIn;
+const currentGain = progress * progress;  // x² curve
+const remainingCurve = fadeInCurve.slice(Math.floor(progress * 127));
+fadeGain.gain.setValueAtTime(currentGain, startTime);
+fadeGain.gain.setValueCurveAtTime(remainingCurve, startTime, fadeIn - elapsed);
+```
+
+### Loop-interactie
+
+Bij loopende clips worden fade events per iteratie gepland:
+- **Eerste iteratie**: fade-in (als fadeIn > 0)
+- **Laatste iteratie**: fade-out (als fadeOut > 0)
+- **Middelste iteraties**: geen fade, gain blijft op 1
+
+### Trim+fade clamping
+
+Als een clip korter wordt getrimd en `fadeIn + fadeOut > newDuration`, worden fades proportioneel teruggeschaald:
+```typescript
+const scale = newDuration / (fadeIn + fadeOut);
+newFadeIn = fadeIn * scale;
+newFadeOut = fadeOut * scale;
+```
+
+### Preview in EffectsModal
+
+De EffectsModal heeft een "Voorbeeld"-knop die de sample afspeelt met alle effecten (pitch, reverb, fade). Dit gebruikt `AudioService.playSampleWithEffects()` die een tijdelijke geïsoleerde effect chain opbouwt (los van de timeline). Opruiming via `stopPreviewWithEffects()`.
+
+### Waveform-visualisatie
+
+De `Waveform`-component toont fades visueel via twee effecten per bar:
+1. **Hoogte-schaling**: `barHeight *= fadeFactor` — bars worden kleiner in fade-zones
+2. **Kleur-transitie**: bars blenden van sample-kleur naar `neutral-400` naarmate de fade vordert
+
+---
+
+## 12. Bronnen
 
 ### Officiële documentatie
 - [Tone.js Docs](https://tonejs.github.io/docs/)
@@ -672,3 +752,4 @@ getClipDuration(clip, sample)  // Effectieve duur
 | 2026-02-04 | Tone.Part sectie toegevoegd voor Playhead Seeking feature |
 | 2026-02-04 | **KRITIEK:** Sectie 8 toegevoegd - Seeking naar midden van actieve clips probleem + hybride oplossing |
 | 2026-02-04 | ✅ Sectie 10 bijgewerkt - Hybride aanpak volledig geïmplementeerd en werkend |
+| 2026-04-16 | Sectie 11 toegevoegd - Fade In/Out: x² / (1-x)² curves, FadeGain node, seek in fade-zone, loop-interactie, trim clamping, preview |

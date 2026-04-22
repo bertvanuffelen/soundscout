@@ -1,0 +1,142 @@
+{
+  "location": {
+    "id": "muziekwinkel",
+    "name": "locations.muziekwinkel.name",
+    "description": "locations.muziekwinkel.description",
+    "backgroundImage": "/images/themes/basis/muziekwinkel.png",
+    "ambientAudio": "",
+    "hotspots": [
+      {
+        "id": "muziekwinkel-drums",
+        "x": 49.7,
+        "y": 25.4,
+        "radius": 8,
+        "sampleId": "muziekwinkel-drums",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "muziekwinkel-brass",
+        "x": 69.7,
+        "y": 48.7,
+        "radius": 8,
+        "sampleId": "muziekwinkel-brass",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "muziekwinkel-bass",
+        "x": 28,
+        "y": 29.5,
+        "radius": 8,
+        "sampleId": "muziekwinkel-bass",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "muziekwinkel-guitar",
+        "x": 51.5,
+        "y": 51.3,
+        "radius": 8,
+        "sampleId": "muziekwinkel-guitar",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "muziekwinkel-strings",
+        "x": 31.8,
+        "y": 61.9,
+        "radius": 8,
+        "sampleId": "muziekwinkel-strings",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "muziekwinkel-piano",
+        "x": 73,
+        "y": 24.9,
+        "radius": 8,
+        "sampleId": "muziekwinkel-piano",
+        "visualHint": "pulse"
+      }
+    ],
+    "unlocked": true
+  },
+  "i18n": {
+    "nl": {
+      "locations.muziekwinkel.name": "Muziekwinkel",
+      "locations.muziekwinkel.description": "",
+      "samples.muziekwinkel-drums": "drums",
+      "samples.muziekwinkel-brass": "brass",
+      "samples.muziekwinkel-bass": "bass",
+      "samples.muziekwinkel-guitar": "guitar",
+      "samples.muziekwinkel-strings": "strings",
+      "samples.muziekwinkel-piano": "piano"
+    },
+    "en": {
+      "locations.muziekwinkel.name": "Music Store",
+      "locations.muziekwinkel.description": "",
+      "samples.muziekwinkel-drums": "drums",
+      "samples.muziekwinkel-brass": "brass",
+      "samples.muziekwinkel-bass": "bass",
+      "samples.muziekwinkel-guitar": "guitar",
+      "samples.muziekwinkel-strings": "strings",
+      "samples.muziekwinkel-piano": "piano"
+    }
+  },
+  "sampleStubs": [
+    {
+      "id": "muziekwinkel-drums",
+      "name": "samples.muziekwinkel-drums",
+      "locationId": "muziekwinkel",
+      "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-drums.mp3",
+      "duration": 8,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "muziekwinkel-brass",
+      "name": "samples.muziekwinkel-brass",
+      "locationId": "muziekwinkel",
+      "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-brass.mp3",
+      "duration": 8,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "muziekwinkel-bass",
+      "name": "samples.muziekwinkel-bass",
+      "locationId": "muziekwinkel",
+      "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-bass.mp3",
+      "duration": 8,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "muziekwinkel-guitar",
+      "name": "samples.muziekwinkel-guitar",
+      "locationId": "muziekwinkel",
+      "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-guitar.mp3",
+      "duration": 8,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "muziekwinkel-strings",
+      "name": "samples.muziekwinkel-strings",
+      "locationId": "muziekwinkel",
+      "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-strings.mp3",
+      "duration": 8,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "muziekwinkel-piano",
+      "name": "samples.muziekwinkel-piano",
+      "locationId": "muziekwinkel",
+      "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-piano.mp3",
+      "duration": 8,
+      "icon": "?",
+      "color": "#000000"
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-01T16:00:38.553Z",
+    "note": "Fill in duration, icon, and color for each sample manually"
+  }
+}

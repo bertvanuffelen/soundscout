@@ -51,7 +51,7 @@ export function JsonExportPanel({
 
   if (!isValid) {
     return (
-      <div className="text-center py-6 text-slate-500 text-sm">
+      <div className="text-center py-6 text-brand-500 text-sm">
         Vul een Location ID in en plaats minimaal 1 hotspot om te exporteren.
       </div>
     );
@@ -93,22 +93,22 @@ export function JsonExportPanel({
       {/* Toggle preview */}
       <button
         onClick={() => setShowPreview(!showPreview)}
-        className="text-xs text-slate-500 hover:text-slate-400 underline"
+        className="text-xs text-brand-500 hover:text-brand-400 underline"
       >
         {showPreview ? 'Verberg preview' : 'Toon JSON preview'}
       </button>
 
       {/* JSON Preview */}
       {showPreview && (
-        <pre className="bg-slate-900 rounded-lg p-3 text-xs text-slate-300 overflow-x-auto max-h-64 overflow-y-auto">
+        <pre className="bg-brand-900 rounded-lg p-3 text-xs text-brand-300 overflow-x-auto max-h-64 overflow-y-auto">
           {JSON.stringify(generateJson(), null, 2)}
         </pre>
       )}
 
       {/* Instructions */}
-      <div className="text-xs text-slate-500 space-y-1">
+      <div className="text-xs text-brand-500 space-y-1">
         <p>Na export:</p>
-        <ol className="list-decimal list-inside space-y-0.5 text-slate-600">
+        <ol className="list-decimal list-inside space-y-0.5 text-brand-600">
           <li>Kopieer location naar locations.ts</li>
           <li>Kopieer samples naar samples.ts</li>
           <li>Voeg i18n toe aan nl.json en en.json</li>

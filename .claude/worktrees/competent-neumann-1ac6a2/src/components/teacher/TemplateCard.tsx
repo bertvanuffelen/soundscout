@@ -1,0 +1,106 @@
+/**
+ * TemplateCard - Kaart voor een template in het docenten dashboard
+ *
+ * Resource-kaart: toont naam, template-code, beschrijving, lock badges en verwijderen.
+ * Activering per klas gaat via ClassDetail → ActivateAssignmentModal.
+ */
+
+import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Copy, Check, Trash2, Lock, Unlock } from 'lucide-react';
+import type { TeacherTemplate } from '../../lib/templates';
+import { Button } from '../ui/Button';
+
+interface TemplateCardProps {
+  template: TeacherTemplate;
+  onDelete: () => void;
+}
+
+export function TemplateCard({ template, onDelete }: TemplateCardProps) {
+  const { t } = useTranslation();
+  const { name, code, description, lockOptions, createdAt } = template;
+  const [copied, setCopied] = useState(false);
+
+  const formattedDate = new Date(createdAt).toLocaleDateString('nl-NL', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric',
+  });
+
+  const handleCopyCode = useCallback(async () => {
+    try {
+      await navigator.clipboard.writeText(code);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch {
+      // Fallback: select text
+    }
+  }, [code]);
+
+  return (
+    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
+      {/* Header met naam en code */}
+      <div className="flex items-start justify-between mb-2">
+        <div className="min-w-0 flex-1 mr-3">
+          <h3 className="font-semibold text-gray-800 text-lg truncate">
+            {name}
+          </h3>
+          <p className="text-gray-500 text-sm">
+            {formattedDate}
+          </p>
+        </div>
+
+        {/* Template code badge + copy */}
+        <button
+          onClick={handleCopyCode}
+          className="flex items-center gap-1.5 bg-amber-100 text-amber-800 px-3 py-1 rounded-lg font-mono font-bold text-sm hover:bg-amber-200 transition-colors shrink-0"
+          title={t('templates.copyCode')}
+        >
+          {code}
+          {copied ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
+        </button>
+      </div>
+
+      {/* Beschrijving */}
+      {description && (
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2">{description}</p>
+      )}
+
+      {/* Lock badges */}
+      <div className="flex items-center gap-2 mb-3 flex-wrap">
+        {lockOptions.clipsLocked && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+            <Lock className="w-3 h-3" />
+            {t('templates.lockClipsShort')}
+          </span>
+        )}
+        {lockOptions.sectionsLocked && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">
+            <Lock className="w-3 h-3" />
+            {t('templates.lockSectionsShort')}
+          </span>
+        )}
+        {!lockOptions.clipsLocked && !lockOptions.sectionsLocked && (
+          <span className="inline-flex items-center gap-1 text-xs px-2 py-0.5 rounded-full bg-neutral-50 text-neutral-500">
+            <Unlock className="w-3 h-3" />
+            {t('templates.unlocked')}
+          </span>
+        )}
+      </div>
+
+      {/* Delete action */}
+      <div className="flex justify-end">
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={onDelete}
+          className="text-red-600 hover:bg-red-50"
+        >
+          <Trash2 className="w-4 h-4" />
+        </Button>
+      </div>
+    </div>
+  );
+}
+
+export default TemplateCard;

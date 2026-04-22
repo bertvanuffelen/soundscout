@@ -1,0 +1,142 @@
+{
+  "location": {
+    "id": "bobslee",
+    "name": "locations.bobslee.name",
+    "description": "locations.bobslee.description",
+    "backgroundImage": "/images/themes/winterspelen/bobslee.png",
+    "ambientAudio": "",
+    "hotspots": [
+      {
+        "id": "bobslee-kapot",
+        "x": 49.7,
+        "y": 54.2,
+        "radius": 8,
+        "sampleId": "bobslee-kapot",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "bobslee-reparatie",
+        "x": 74.8,
+        "y": 74.1,
+        "radius": 8,
+        "sampleId": "bobslee-reparatie",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "bobslee-ziekenboeg",
+        "x": 88.2,
+        "y": 63.5,
+        "radius": 8,
+        "sampleId": "bobslee-ziekenboeg",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "bobslee-drone",
+        "x": 55.8,
+        "y": 7.3,
+        "radius": 8,
+        "sampleId": "bobslee-drone",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "bobslee-curlingisnext",
+        "x": 17.1,
+        "y": 74.4,
+        "radius": 8,
+        "sampleId": "bobslee-curlingisnext",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "bobslee-bobslee",
+        "x": 28.4,
+        "y": 19.2,
+        "radius": 8,
+        "sampleId": "bobslee-bobslee",
+        "visualHint": "pulse"
+      }
+    ],
+    "unlocked": true
+  },
+  "i18n": {
+    "nl": {
+      "locations.bobslee.name": "Bobslee baan",
+      "locations.bobslee.description": "",
+      "samples.bobslee-kapot": "kapot",
+      "samples.bobslee-reparatie": "reparatie",
+      "samples.bobslee-ziekenboeg": "ziekenboeg",
+      "samples.bobslee-drone": "drone",
+      "samples.bobslee-curlingisnext": "curlingisnext",
+      "samples.bobslee-bobslee": "bobslee"
+    },
+    "en": {
+      "locations.bobslee.name": "Bobsleigh track",
+      "locations.bobslee.description": "",
+      "samples.bobslee-kapot": "kapot",
+      "samples.bobslee-reparatie": "reparatie",
+      "samples.bobslee-ziekenboeg": "ziekenboeg",
+      "samples.bobslee-drone": "drone",
+      "samples.bobslee-curlingisnext": "curlingisnext",
+      "samples.bobslee-bobslee": "bobslee"
+    }
+  },
+  "sampleStubs": [
+    {
+      "id": "bobslee-kapot",
+      "name": "samples.bobslee-kapot",
+      "locationId": "bobslee",
+      "audioUrl": "/audio/themes/winterspelen/bobslee/kapot.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "bobslee-reparatie",
+      "name": "samples.bobslee-reparatie",
+      "locationId": "bobslee",
+      "audioUrl": "/audio/themes/winterspelen/bobslee/reparatie.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "bobslee-ziekenboeg",
+      "name": "samples.bobslee-ziekenboeg",
+      "locationId": "bobslee",
+      "audioUrl": "/audio/themes/winterspelen/bobslee/ziekenboeg.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "bobslee-drone",
+      "name": "samples.bobslee-drone",
+      "locationId": "bobslee",
+      "audioUrl": "/audio/themes/winterspelen/bobslee/drone.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "bobslee-curlingisnext",
+      "name": "samples.bobslee-curlingisnext",
+      "locationId": "bobslee",
+      "audioUrl": "/audio/themes/winterspelen/bobslee/curlingisnext.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "bobslee-bobslee",
+      "name": "samples.bobslee-bobslee",
+      "locationId": "bobslee",
+      "audioUrl": "/audio/themes/winterspelen/bobslee/bobslee.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-10T07:55:47.960Z",
+    "note": "Fill in duration, icon, and color for each sample manually"
+  }
+}

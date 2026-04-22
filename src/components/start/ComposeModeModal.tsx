@@ -66,6 +66,7 @@ export function ComposeModeModal({ isOpen, onClose, onModeSelected }: ComposeMod
               onClick={() => handleSelect('free')}
               color="accent"
             />
+            {/* Mode-specific card colors — visual distinction between free/image/storyboard, no semantic token equivalent */}
             <ModeCard
               icon={<ImageIcon size={28} />}
               title={t('composeMode.image')}
@@ -73,6 +74,7 @@ export function ComposeModeModal({ isOpen, onClose, onModeSelected }: ComposeMod
               onClick={() => handleSelect('image')}
               color="teal"
             />
+            {/* Mode-specific card colors — visual distinction between free/image/storyboard, no semantic token equivalent */}
             <ModeCard
               icon={<Film size={28} />}
               title={t('composeMode.storyboard')}

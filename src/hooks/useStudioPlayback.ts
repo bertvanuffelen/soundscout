@@ -14,6 +14,9 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useAudioStore } from '../stores/audioStore';
 import { useAudioEngine } from './useAudioEngine';
 
+// Read audioVersion for staleness detection (not reactive — read at call time)
+const getAudioVersion = () => useTimelineStore.getState().audioVersion;
+
 export function useStudioPlayback() {
   const tracks = useTimelineStore((s) => s.tracks);
   const totalBeats = useTimelineStore((s) => s.totalBeats);
@@ -35,6 +38,8 @@ export function useStudioPlayback() {
     stopTimeline,
     setTransportLoop,
     seekTo,
+    hasActiveSchedule,
+    setScheduledVersion,
   } = useAudioEngine();
 
   // AbortController to cancel pending sample loads on cleanup / re-trigger
@@ -52,9 +57,17 @@ export function useStudioPlayback() {
     return () => { abortRef.current?.abort(); };
   }, [librarySamples, loadSamples]);
 
-  // Play the timeline from current seek position
+  // Play the timeline from current seek position.
+  // If a valid schedule exists AND the timeline data hasn't changed since it
+  // was built (same audioVersion), skip the costly reschedule. This handles
+  // the common "quick pause/resume" case. If the user edited clips while
+  // paused, audioVersion will have bumped → version mismatch → full reschedule.
   const handlePlay = useCallback(() => {
-    scheduleTimeline(tracks, librarySamples);
+    const currentVersion = getAudioVersion();
+    if (!hasActiveSchedule(currentVersion)) {
+      scheduleTimeline(tracks, librarySamples);
+      setScheduledVersion(currentVersion);
+    }
     setTransportLoop(isLooping, totalBeats);
     // Read currentBeat at call time to avoid recreating this callback ~20x/sec
     const currentBeat = useAudioStore.getState().currentBeat;
@@ -63,6 +76,8 @@ export function useStudioPlayback() {
     scheduleTimeline,
     playTimeline,
     setTransportLoop,
+    hasActiveSchedule,
+    setScheduledVersion,
     librarySamples,
     tracks,
     isLooping,

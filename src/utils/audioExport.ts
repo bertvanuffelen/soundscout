@@ -105,6 +105,54 @@ function floatTo16BitPCM(input: Float32Array): Int16Array {
 }
 
 // =============================================================================
+// Fade Curve Helpers (#79)
+// =============================================================================
+
+/**
+ * Create a fade curve matching AudioService.createFadeCurve.
+ * - Fade-in: x² — gradual build from silence to full volume
+ * - Fade-out: (1-x)² — smooth descent from full volume to silence
+ */
+function createFadeCurve(type: 'in' | 'out', steps: number = 128): number[] {
+  const curve: number[] = new Array(steps);
+  for (let i = 0; i < steps; i++) {
+    const progress = i / (steps - 1);
+    if (type === 'in') {
+      curve[i] = progress * progress;
+    } else {
+      curve[i] = (1 - progress) * (1 - progress);
+    }
+  }
+  return curve;
+}
+
+const fadeInCurve = createFadeCurve('in');
+const fadeOutCurve = createFadeCurve('out');
+
+/**
+ * Schedule fade-in and/or fade-out curves on a Gain node.
+ */
+function scheduleFadeCurves(
+  fadeGain: Tone.Gain,
+  time: number,
+  duration: number,
+  fadeIn: number,
+  fadeOut: number,
+): void {
+  const gainParam = fadeGain.gain;
+  if (fadeIn > 0) {
+    gainParam.setValueAtTime(0, time);
+    gainParam.setValueCurveAtTime(fadeInCurve, time, fadeIn);
+  }
+  if (fadeOut > 0) {
+    const fadeOutStart = time + duration - fadeOut;
+    if (fadeOutStart >= time + fadeIn) {
+      gainParam.setValueCurveAtTime(fadeOutCurve, fadeOutStart, fadeOut);
+    }
+  }
+}
+
+// =============================================================================
 // Core Rendering Function
 // =============================================================================
 
@@ -150,11 +198,14 @@ export async function renderOffline(
           const clipVolume = clip.effects?.volume ?? 0;
           const totalVolumeDb = trackVolume + clipVolume;
 
-          // Build audio chain: player → [effects] → volume → destination
+          // Build audio chain: player → [effects] → [fadeGain] → volume → destination
           const hasEffects = ((clip.effects?.pitch ?? 0) !== 0) ||
-                             ((clip.effects?.reverb ?? 0) > 0);
+                             ((clip.effects?.reverb ?? 0) > 0) ||
+                             ((clip.effects?.fadeIn ?? 0) > 0) ||
+                             ((clip.effects?.fadeOut ?? 0) > 0);
 
           let targetNode: Tone.ToneAudioNode;
+          let fadeGain: Tone.Gain | null = null;
           if (hasEffects) {
             const chainNodes: Tone.ToneAudioNode[] = [];
 
@@ -167,6 +218,14 @@ export async function renderOffline(
               });
               reverb.wet.value = clip.effects!.reverb / 100;
               chainNodes.push(reverb);
+            }
+
+            // FadeGain node (#79) — separate from volume for independent control
+            const clipFadeIn = clip.effects?.fadeIn ?? 0;
+            const clipFadeOut = clip.effects?.fadeOut ?? 0;
+            if (clipFadeIn > 0 || clipFadeOut > 0) {
+              fadeGain = new Tone.Gain(1);
+              chainNodes.push(fadeGain);
             }
 
             const vol = new Tone.Volume(totalVolumeDb);
@@ -187,22 +246,40 @@ export async function renderOffline(
           const trimStart = getClipTrimStart(clip);
           const singleDuration = getClipDuration(clip, sample);
 
+          // Fade durations (#79)
+          const fadeIn = clip.effects?.fadeIn ?? 0;
+          const fadeOut = clip.effects?.fadeOut ?? 0;
+
           // Loop logic (#65): schedule multiple events for looping clips
           if (clip.loop && clip.loopDurationBeats) {
             const totalSeconds = beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM);
             let offset = 0;
+            let iterIndex = 0;
 
             while (offset < totalSeconds - 0.001) {
               const remaining = totalSeconds - offset;
               const dur = Math.min(singleDuration, remaining);
               const scheduleTime = startSeconds + offset;
+              const isFirst = iterIndex === 0;
+              const isLast = offset + singleDuration >= totalSeconds - 0.001;
+              const eventFadeIn = isFirst ? fadeIn : 0;
+              const eventFadeOut = isLast ? fadeOut : 0;
               transport.schedule((time) => {
+                // Schedule fade curves (#79)
+                if (fadeGain) {
+                  scheduleFadeCurves(fadeGain, time, dur, eventFadeIn, eventFadeOut);
+                }
                 player.start(time, trimStart, dur);
               }, scheduleTime);
               offset += singleDuration;
+              iterIndex++;
             }
           } else {
             transport.schedule((time) => {
+              // Schedule fade curves (#79)
+              if (fadeGain) {
+                scheduleFadeCurves(fadeGain, time, singleDuration, fadeIn, fadeOut);
+              }
               player.start(time, trimStart, singleDuration);
             }, startSeconds);
           }

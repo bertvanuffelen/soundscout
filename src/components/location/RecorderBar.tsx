@@ -44,7 +44,7 @@ export function RecorderBar({ slots, onEject, onPreview }: RecorderBarProps) {
                     e.stopPropagation();
                     onEject(slot.id);
                   }}
-                  className="text-[10px] sm:text-xs text-red-400 hover:text-red-600 active:text-red-700 font-semibold cursor-pointer transition-colors px-2 sm:px-3 py-1 sm:py-1.5 -mb-0.5 sm:-mb-1 rounded-md hover:bg-red-50 active:bg-red-100"
+                  className="text-[10px] sm:text-xs text-error-400 hover:text-error-600 active:text-error-600 font-semibold cursor-pointer transition-colors px-2 sm:px-3 py-1 sm:py-1.5 -mb-0.5 sm:-mb-1 rounded-md hover:bg-error-50 active:bg-error-100"
                   title={t('recorder.eject')}
                 >
                   {t('recorder.eject')}

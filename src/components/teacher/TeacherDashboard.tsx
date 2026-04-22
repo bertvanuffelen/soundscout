@@ -335,7 +335,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               <div>
                 <div className="flex items-center justify-between mb-2">
                   <h3 className="text-base font-semibold text-text-main flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-amber-600" />
+                    <FileText className="w-4 h-4 text-accent-600" />
                     {t('templates.templatesTitle')}
                   </h3>
                   <Button

@@ -88,9 +88,10 @@ interface TimelineStore {
   setClipLoop: (trackIndex: number, clipId: string, loop: boolean, durationBeats?: number) => void;
   resizeClipLoop: (trackIndex: number, clipId: string, loopDurationBeats: number) => void;
 
-  // Clip effects (#33) — pitch + reverb
+  // Clip effects (#33) — pitch + reverb + fade (#79)
   updateClipPitch: (trackIndex: number, clipId: string, pitch: number) => void;
   updateClipReverb: (trackIndex: number, clipId: string, reverb: number) => void;
+  updateClipEffects: (trackIndex: number, clipId: string, effects: Partial<import('../types').ClipEffects>) => void;
 
   // Track actions
   clearTrack: (trackIndex: number) => void;
@@ -317,11 +318,30 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
         i === trackIndex
           ? {
               ...track,
-              clips: track.clips.map((clip) =>
-                clip.id === clipId
-                  ? { ...clip, trimStart, trimEnd }
-                  : clip,
-              ),
+              clips: track.clips.map((clip) => {
+                if (clip.id !== clipId) return clip;
+
+                const updated = { ...clip, trimStart, trimEnd };
+
+                // Clamp fade durations to fit new clip duration (#79)
+                const fadeIn = clip.effects?.fadeIn ?? 0;
+                const fadeOut = clip.effects?.fadeOut ?? 0;
+                if (fadeIn > 0 || fadeOut > 0) {
+                  const newDuration = trimEnd - trimStart;
+                  const totalFade = fadeIn + fadeOut;
+                  if (totalFade > newDuration) {
+                    // Proportionally scale both fades to fit
+                    const scale = newDuration / totalFade;
+                    updated.effects = {
+                      ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                      fadeIn: Math.round(fadeIn * scale * 10) / 10,
+                      fadeOut: Math.round(fadeOut * scale * 10) / 10,
+                    };
+                  }
+                }
+
+                return updated;
+              }),
             }
           : track,
       ),
@@ -432,7 +452,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
                         volume: clamped,
                       },
                     }
@@ -456,7 +476,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
                         mute: muted,
                       },
                     }
@@ -554,7 +574,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
                         pitch: clamped,
                       },
                     }
@@ -579,8 +599,32 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
                         reverb: clamped,
+                      },
+                    }
+                  : clip,
+              ),
+            }
+          : track,
+      ),
+      audioVersion: prev.audioVersion + 1,
+    }));
+  },
+
+  updateClipEffects: (trackIndex, clipId, effects) => {
+    set((prev) => ({
+      tracks: prev.tracks.map((track, i) =>
+        i === trackIndex
+          ? {
+              ...track,
+              clips: track.clips.map((clip) =>
+                clip.id === clipId
+                  ? {
+                      ...clip,
+                      effects: {
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                        ...effects,
                       },
                     }
                   : clip,

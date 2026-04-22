@@ -92,7 +92,7 @@ export function PraatplaatSelectScreen() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-slate-900 to-slate-800 flex flex-col">
+    <div className="min-h-[100dvh] bg-gradient-to-b from-brand-900 to-brand-800 flex flex-col">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 bg-black/20">
         <button

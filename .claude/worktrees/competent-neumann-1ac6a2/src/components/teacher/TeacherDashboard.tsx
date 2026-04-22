@@ -1,0 +1,525 @@
+/**
+ * TeacherDashboard - Hoofdscherm voor docenten
+ *
+ * Toont:
+ * - Overzicht van alle klassen
+ * - Knop om nieuwe klas aan te maken
+ * - Unified "Mijn opdrachten" sectie (templates + praatplaten)
+ * - Mogelijkheid om klas te openen voor details
+ */
+
+import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText, MapPin, HelpCircle } from 'lucide-react';
+import { useAppStore } from '../../stores/appStore';
+import { useAuth } from '../../contexts/AuthContext';
+import { useClasses } from '../../hooks/useClasses';
+import { useTemplates } from '../../hooks/useTemplates';
+import { usePraatplaten } from '../../hooks/usePraatplaten';
+import type { TeacherClass } from '../../hooks/useClasses';
+import type { PraatplaatRow } from '../../lib/praatplaat';
+import { signOut } from '../../lib/auth';
+import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
+import { CreateClassModal } from './CreateClassModal';
+import { ClassCard } from './ClassCard';
+import { TemplateCard } from './TemplateCard';
+import { PraatplaatCard } from './PraatplaatCard';
+import { CreatePraatplaatModal } from './CreatePraatplaatModal';
+import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
+import { logger } from '../../utils/logger';
+
+interface TeacherDashboardProps {
+  onSelectClass: (classData: TeacherClass) => void;
+  onLogout: () => void;
+  onBack?: () => void;
+}
+
+export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDashboardProps) {
+  const { t } = useTranslation();
+  const { user } = useAuth();
+  const goToTeacherGuide = useAppStore((s) => s.goToTeacherGuide);
+  const { classes, loading, error, createClass, deleteClass, refetch } = useClasses();
+  const {
+    templates, loading: templatesLoading, error: templatesError,
+    remove: removeTemplate, refetch: refetchTemplates,
+  } = useTemplates();
+  const {
+    praatplaten, loading: praatplatenLoading, error: praatplatenError,
+    create: createPraatplaatHook, remove: removePraatplaat, refetch: refetchPraatplaten,
+  } = usePraatplaten(); // Alle docent-praatplaten (geen classId)
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
+  const [showTemplateInfo, setShowTemplateInfo] = useState(false);
+  const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
+  const [actionError, setActionError] = useState<string | null>(null);
+  const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
+  const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
+  const [deletePraatplaatId, setDeletePraatplaatId] = useState<string | null>(null);
+
+  // Haal display name op uit user metadata
+  const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Docent';
+
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      onLogout();
+    } catch (err) {
+      console.error('Logout error:', err);
+    }
+  };
+
+  const handleCreateClass = async (name: string) => {
+    try {
+      setActionError(null);
+      await createClass(name);
+      setShowCreateModal(false);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('teacher.dashboard.createClassError'));
+    }
+  };
+
+  const handleDeleteClassConfirm = async () => {
+    if (!deleteClassId) return;
+    try {
+      setActionError(null);
+      await deleteClass(deleteClassId);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('teacher.dashboard.deleteClassError'));
+    }
+    setDeleteClassId(null);
+  };
+
+  const handleDeleteTemplateConfirm = async () => {
+    if (!deleteTemplateId) return;
+    try {
+      setActionError(null);
+      await removeTemplate(deleteTemplateId);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('templates.deleteError'));
+    }
+    setDeleteTemplateId(null);
+  };
+
+  const handleCreatePraatplaat = useCallback(async (params: {
+    name: string;
+    themeId: string;
+    locationId: string;
+    imageUrl: string;
+  }) => {
+    try {
+      setActionError(null);
+      await createPraatplaatHook(params);
+      setShowCreatePraatplaat(false);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.createError'));
+      logger.error('createPraatplaat failed:', err);
+    }
+  }, [createPraatplaatHook, t]);
+
+  const handleDeletePraatplaatConfirm = async () => {
+    if (!deletePraatplaatId) return;
+    try {
+      setActionError(null);
+      await removePraatplaat(deletePraatplaatId);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.deleteError'));
+    }
+    setDeletePraatplaatId(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-bg-app">
+      {/* Header - branding donkerblauw */}
+      <header className="bg-brand-900">
+        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
+          <div>
+            {onBack && (
+              <button
+                onClick={onBack}
+                className="text-brand-300 hover:text-white text-sm mb-2 flex items-center gap-1"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                {t('teacher.common.backToSoundScout')}
+              </button>
+            )}
+            <div className="flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-white">
+                {t('teacher.dashboard.title')}
+              </h1>
+            </div>
+            <p className="text-sm text-brand-300">
+              {t('teacher.dashboard.welcome', { name: displayName })}
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={goToTeacherGuide}
+              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
+            >
+              <HelpCircle className="w-4 h-4" />
+              {t('teacher.dashboard.guide')}
+            </button>
+            <button
+              onClick={handleLogout}
+              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
+            >
+              <LogOut className="w-4 h-4" />
+              {t('teacher.dashboard.logout')}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* Main content */}
+      <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+        {/* Title + Create button */}
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-lg sm:text-xl font-semibold text-text-main">
+            {t('teacher.dashboard.myClasses')}
+          </h2>
+          <Button
+            variant="primary"
+            size="md"
+            onClick={() => setShowCreateModal(true)}
+            className="inline-flex items-center gap-1"
+          >
+            <Plus className="w-4 h-4" />
+            {t('teacher.dashboard.newClass')}
+          </Button>
+        </div>
+
+        {/* Error message */}
+        {(error || actionError) && (
+          <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
+            {error || actionError}
+            <button
+              onClick={() => { setActionError(null); refetch(); }}
+              className="ml-2 underline"
+            >
+              {t('common.retry')}
+            </button>
+          </div>
+        )}
+
+        {/* Loading state */}
+        {loading && (
+          <div className="text-center py-12">
+            <Loader2 className="w-10 h-10 text-primary-500 animate-spin mx-auto mb-4" />
+            <p className="text-text-muted">{t('teacher.dashboard.loading')}</p>
+          </div>
+        )}
+
+        {/* Empty state */}
+        {!loading && classes.length === 0 && (
+          <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
+            <BookOpen className="w-16 h-16 text-primary-500 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-text-main mb-2">
+              {t('teacher.dashboard.emptyTitle')}
+            </h3>
+            <p className="text-text-muted mb-6">
+              {t('teacher.dashboard.emptyDescription')}
+            </p>
+            <Button
+              variant="primary"
+              size="lg"
+              onClick={() => setShowCreateModal(true)}
+              className="inline-flex items-center gap-1"
+            >
+              <Plus className="w-4 h-4" />
+              {t('teacher.dashboard.createFirstClass')}
+            </Button>
+          </div>
+        )}
+
+        {/* Classes grid */}
+        {!loading && classes.length > 0 && (
+          <div className="grid gap-4 sm:grid-cols-2">
+            {classes.map((classData) => (
+              <ClassCard
+                key={classData.id}
+                classData={classData}
+                onOpen={() => onSelectClass(classData)}
+                onDelete={() => setDeleteClassId(classData.id)}
+              />
+            ))}
+          </div>
+        )}
+
+        {/* Info box */}
+        <div className="mt-8 bg-primary-50 border border-primary-200 rounded-xl p-4">
+          <h4 className="font-medium text-primary-800 mb-2 flex items-center gap-2">
+            <Lightbulb className="w-5 h-5" />
+            {t('teacher.dashboard.howItWorks')}
+          </h4>
+          <ol className="text-primary-700 text-sm space-y-1">
+            <li>{t('teacher.dashboard.step1')}</li>
+            <li>{t('teacher.dashboard.step2')}</li>
+            <li>{t('teacher.dashboard.step3')}</li>
+            <li>{t('teacher.dashboard.step4')}</li>
+          </ol>
+        </div>
+
+        {/* --- Opdrachten sectie --- */}
+        <div className="mt-10">
+          <h2 className="text-lg sm:text-xl font-semibold text-text-main flex items-center gap-2 mb-6">
+            <FileText className="w-5 h-5" />
+            {t('templates.dashboardTitle')}
+          </h2>
+
+          {/* Errors */}
+          {(templatesError || praatplatenError) && (
+            <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
+              {templatesError || praatplatenError}
+              <button onClick={() => { refetchTemplates(); refetchPraatplaten(); }} className="ml-2 underline">
+                {t('common.retry')}
+              </button>
+            </div>
+          )}
+
+          {/* Loading */}
+          {(templatesLoading || praatplatenLoading) && (
+            <div className="text-center py-8">
+              <Loader2 className="w-8 h-8 text-primary-500 animate-spin mx-auto mb-2" />
+            </div>
+          )}
+
+          {!templatesLoading && !praatplatenLoading && (
+            <>
+              {/* --- Praatplaten subsectie --- */}
+              <div className="mb-8">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-base font-semibold text-text-main flex items-center gap-2">
+                    <MapPin className="w-4 h-4 text-primary-500" />
+                    {t('templates.praatplatenTitle')}
+                  </h3>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowCreatePraatplaat(true)}
+                    className="inline-flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('templates.newPraatplaat')}
+                  </Button>
+                </div>
+                <p className="text-text-muted text-sm mb-4">
+                  {t('templates.praatplatenDescription')}
+                </p>
+
+                {praatplaten.length === 0 && (
+                  <div className="bg-bg-surface rounded-xl p-5 text-center border border-border-subtle">
+                    <MapPin className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                    <p className="text-text-muted text-sm">
+                      {t('templates.praatplatenEmpty')}
+                    </p>
+                  </div>
+                )}
+
+                {praatplaten.length > 0 && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {praatplaten.map((pp) => (
+                      <PraatplaatCard
+                        key={pp.id}
+                        praatplaat={pp}
+                        classCode={classes.find((c) => c.id === pp.class_id)?.code}
+                        onDelete={() => setDeletePraatplaatId(pp.id)}
+                        onView={() => setViewingPraatplaat(pp)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* --- Templates subsectie --- */}
+              <div>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-base font-semibold text-text-main flex items-center gap-2">
+                    <FileText className="w-4 h-4 text-amber-600" />
+                    {t('templates.templatesTitle')}
+                  </h3>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowTemplateInfo(true)}
+                    className="inline-flex items-center gap-1"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('templates.newTemplate')}
+                  </Button>
+                </div>
+                <p className="text-text-muted text-sm mb-4">
+                  {t('templates.templatesDescription')}
+                </p>
+
+                {templates.length === 0 && (
+                  <div className="bg-bg-surface rounded-xl p-5 text-center border border-border-subtle">
+                    <FileText className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                    <p className="text-text-muted text-sm">
+                      {t('templates.templatesEmpty')}
+                    </p>
+                  </div>
+                )}
+
+                {templates.length > 0 && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {templates.map((tmpl) => (
+                      <TemplateCard
+                        key={tmpl.id}
+                        template={tmpl}
+                        onDelete={() => setDeleteTemplateId(tmpl.id)}
+                      />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+      </main>
+
+      {/* Create class modal */}
+      {showCreateModal && (
+        <CreateClassModal
+          onClose={() => setShowCreateModal(false)}
+          onCreate={handleCreateClass}
+        />
+      )}
+
+      {/* Create praatplaat modal */}
+      <CreatePraatplaatModal
+        isOpen={showCreatePraatplaat}
+        onClose={() => setShowCreatePraatplaat(false)}
+        onCreate={handleCreatePraatplaat}
+      />
+
+      {/* Praatplaat viewer */}
+      {viewingPraatplaat && (
+        <PraatplaatViewer
+          praatplaat={viewingPraatplaat}
+          onClose={() => setViewingPraatplaat(null)}
+        />
+      )}
+
+      {/* Template info modal */}
+      <Modal
+        isOpen={showTemplateInfo}
+        onClose={() => setShowTemplateInfo(false)}
+        title={t('templates.newTemplateModalTitle')}
+        size="sm"
+      >
+        <div className="space-y-3 text-text-main text-sm">
+          <p>{t('templates.newTemplateModalStep1')}</p>
+          <p>{t('templates.newTemplateModalStep2')}</p>
+          <p>{t('templates.newTemplateModalStep3')}</p>
+        </div>
+        <div className="mt-6 flex gap-3">
+          <Button
+            variant="secondary"
+            size="md"
+            onClick={() => setShowTemplateInfo(false)}
+            className="flex-1"
+          >
+            {t('common.close')}
+          </Button>
+          {onBack && (
+            <Button
+              variant="primary"
+              size="md"
+              onClick={() => { setShowTemplateInfo(false); onBack(); }}
+              className="flex-1"
+            >
+              {t('templates.newTemplateModalButton')}
+            </Button>
+          )}
+        </div>
+      </Modal>
+
+      {/* Verwijder klas bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deleteClassId}
+        onClose={() => setDeleteClassId(null)}
+        title={t('teacher.dashboard.deleteClassTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line">
+          {t('teacher.dashboard.deleteClassConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeleteClassId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteClassConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Verwijder template bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deleteTemplateId}
+        onClose={() => setDeleteTemplateId(null)}
+        title={t('templates.deleteTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed">
+          {t('templates.deleteConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeleteTemplateId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteTemplateConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Verwijder praatplaat bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deletePraatplaatId}
+        onClose={() => setDeletePraatplaatId(null)}
+        title={t('teacher.praatplaat.deleteTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line">
+          {t('teacher.praatplaat.deleteConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeletePraatplaatId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeletePraatplaatConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
+    </div>
+  );
+}
+
+export default TeacherDashboard;

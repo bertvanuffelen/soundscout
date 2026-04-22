@@ -96,7 +96,7 @@ export default function AssignmentLandingScreen() {
         {!assignment && <RouteCBody />}
 
         {error && (
-          <p role="alert" className="text-red-400 text-sm mt-4">
+          <p role="alert" className="text-error-400 text-sm mt-4">
             {error}
           </p>
         )}

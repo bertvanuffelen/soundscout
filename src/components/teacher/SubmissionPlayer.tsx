@@ -13,6 +13,7 @@ import { X, Music, AlertCircle, Play, Pause, SkipBack, ImageIcon } from 'lucide-
 import * as Tone from 'tone';
 import type { Submission } from '../../hooks/useSubmissions';
 import { audioService } from '../../services/AudioService';
+import { audioDiag } from '../../utils/audioDiagnostics';
 import { findStoryboardById } from '../../data/themes';
 import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
@@ -167,9 +168,15 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
       // Pause
       audioService.pause();
       setPlayerState('paused');
+    } else if (audioService.hasActiveSchedule()) {
+      // Resume — reuse existing Part + effect chains (no reschedule needed).
+      // The Part events and chains survive pause() and fire correctly when
+      // the Transport resumes from the paused position.
+      audioDiag.resumeWithExistingSchedule(currentBeat);
+      audioService.play(currentBeat);
+      setPlayerState('playing');
     } else {
-      // Play or resume - always reschedule and play from currentBeat
-      // This ensures seek position is respected
+      // First play or after stop — full schedule needed
       audioService.scheduleTimeline(tracks, samples);
       audioService.setLoop(isLooping, totalBeats);
       audioService.play(currentBeat);

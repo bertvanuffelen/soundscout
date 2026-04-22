@@ -217,7 +217,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   const isPlaying = playerState === 'playing';
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900">
+    <div className="min-h-screen flex flex-col bg-brand-900">
       {/* Header — compact: back + title + author on one line */}
       <div className="bg-bg-surface border-b border-border-subtle px-3 sm:px-6 py-2 sm:py-3 flex items-center gap-3 shrink-0">
         <Button variant="secondary" size="sm" onClick={handleBack}>
@@ -306,8 +306,8 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         {playerState === 'error' && (
           <div className="flex-1 flex items-center justify-center p-6">
             <div className="text-center max-w-xs">
-              <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-              <p className="text-red-400 font-medium mb-4">{errorMessage}</p>
+              <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" />
+              <p className="text-error-400 font-medium mb-4">{errorMessage}</p>
               <Button variant="primary" onClick={handleBack}>
                 {t('share.backToStart')}
               </Button>

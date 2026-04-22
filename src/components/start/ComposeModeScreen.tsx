@@ -134,6 +134,7 @@ export default function ComposeModeScreen() {
               />
 
               {/* Single image — always available when theme has locations */}
+              {/* Mode-specific card colors — visual distinction between free/image/storyboard, no semantic token equivalent */}
               {singleImages.length > 0 && (
                 <ModeCard
                   icon={<Image size={32} />}
@@ -145,6 +146,7 @@ export default function ComposeModeScreen() {
               )}
 
               {/* Storyboard */}
+              {/* Mode-specific card colors — visual distinction between free/image/storyboard, no semantic token equivalent */}
               {multiImages.length > 0 && (
                 <ModeCard
                   icon={<Film size={32} />}

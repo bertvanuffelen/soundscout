@@ -1,0 +1,142 @@
+{
+  "location": {
+    "id": "skipiste",
+    "name": "locations.skipiste.name",
+    "description": "locations.skipiste.description",
+    "backgroundImage": "/images/themes/basis/skipiste.jpg",
+    "ambientAudio": "",
+    "hotspots": [
+      {
+        "id": "skipiste-publiek",
+        "x": 43.1,
+        "y": 67.1,
+        "radius": 8,
+        "sampleId": "skipiste-publiek",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "skipiste-robot-beeps",
+        "x": 36.7,
+        "y": 83.4,
+        "radius": 8,
+        "sampleId": "skipiste-robot-beeps",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "skipiste-snowboard",
+        "x": 84.4,
+        "y": 48.7,
+        "radius": 8,
+        "sampleId": "skipiste-snowboard",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "skipiste-stoeltjeslift",
+        "x": 72.9,
+        "y": 18.1,
+        "radius": 8,
+        "sampleId": "skipiste-stoeltjeslift",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "skipiste-schans",
+        "x": 52.3,
+        "y": 39.4,
+        "radius": 8,
+        "sampleId": "skipiste-schans",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "skipiste-ski-raket",
+        "x": 9.9,
+        "y": 34.2,
+        "radius": 8,
+        "sampleId": "skipiste-ski-raket",
+        "visualHint": "pulse"
+      }
+    ],
+    "unlocked": true
+  },
+  "i18n": {
+    "nl": {
+      "locations.skipiste.name": "skipiste",
+      "locations.skipiste.description": "",
+      "samples.skipiste-publiek": "publiek",
+      "samples.skipiste-robot-beeps": "beeps",
+      "samples.skipiste-snowboard": "snowboard",
+      "samples.skipiste-stoeltjeslift": "stoeltjeslift",
+      "samples.skipiste-schans": "schans",
+      "samples.skipiste-ski-raket": "raket"
+    },
+    "en": {
+      "locations.skipiste.name": "Ice Arena",
+      "locations.skipiste.description": "",
+      "samples.skipiste-publiek": "publiek",
+      "samples.skipiste-robot-beeps": "beeps",
+      "samples.skipiste-snowboard": "snowboard",
+      "samples.skipiste-stoeltjeslift": "stoeltjeslift",
+      "samples.skipiste-schans": "schans",
+      "samples.skipiste-ski-raket": "raket"
+    }
+  },
+  "sampleStubs": [
+    {
+      "id": "skipiste-publiek",
+      "name": "samples.skipiste-publiek",
+      "locationId": "skipiste",
+      "audioUrl": "/audio/themes/basis/skipiste/winterspelen-publiek.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "skipiste-robot-beeps",
+      "name": "samples.skipiste-robot-beeps",
+      "locationId": "skipiste",
+      "audioUrl": "/audio/themes/basis/skipiste/winterspelen-robot-beeps.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "skipiste-snowboard",
+      "name": "samples.skipiste-snowboard",
+      "locationId": "skipiste",
+      "audioUrl": "/audio/themes/basis/skipiste/winterspelen-snowboard.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "skipiste-stoeltjeslift",
+      "name": "samples.skipiste-stoeltjeslift",
+      "locationId": "skipiste",
+      "audioUrl": "/audio/themes/basis/skipiste/winterspelen-stoeltjeslift.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "skipiste-schans",
+      "name": "samples.skipiste-schans",
+      "locationId": "skipiste",
+      "audioUrl": "/audio/themes/basis/skipiste/winterspelen-schans.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "skipiste-ski-raket",
+      "name": "samples.skipiste-ski-raket",
+      "locationId": "skipiste",
+      "audioUrl": "/audio/themes/basis/skipiste/winterspelen-ski-raket.mp3",
+      "duration": 0,
+      "icon": "?",
+      "color": "#000000"
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-04T16:37:58.023Z",
+    "note": "Fill in duration, icon, and color for each sample manually"
+  }
+}

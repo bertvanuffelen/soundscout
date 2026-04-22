@@ -182,6 +182,10 @@ export interface ClipEffects {
   reverb: number;
   /** Stereo panning (-1 left to +1 right, default 0 center) */
   pan: number;
+  /** Fade in duration in seconds (0 = off, default 0) */
+  fadeIn: number;
+  /** Fade out duration in seconds (0 = off, default 0) */
+  fadeOut: number;
 }
 
 /**
@@ -192,6 +196,8 @@ export const DEFAULT_CLIP_EFFECTS: ClipEffects = {
   pitch: 0,
   reverb: 0,
   pan: 0,
+  fadeIn: 0,
+  fadeOut: 0,
 };
 
 // --- Sections (Fase 5 - Vormschema / Musical Form) ---

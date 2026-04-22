@@ -127,13 +127,13 @@ export function ShareWithTeacherModal({
       <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-text-main">
             {t('teacher.shareWithTeacher.title')}
           </h2>
           {step !== 'sending' && (
             <button
               onClick={onClose}
-              className="text-gray-400 hover:text-gray-600 p-1"
+              className="text-neutral-400 hover:text-text-muted p-1"
             >
               <X className="w-6 h-6" />
             </button>
@@ -143,19 +143,19 @@ export function ShareWithTeacherModal({
         {/* Step 1: Code invoeren */}
         {step === 'code' && (
           <form onSubmit={handleCodeSubmit}>
-            <h3 className="font-medium text-gray-800 mb-2">{t('teacher.shareWithTeacher.step1Title')}</h3>
-            <p className="text-gray-600 mb-4">
+            <h3 className="font-medium text-text-main mb-2">{t('teacher.shareWithTeacher.step1Title')}</h3>
+            <p className="text-text-muted mb-4">
               {t('teacher.shareWithTeacher.step1Description')}
             </p>
 
             {error && (
-              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4 text-sm">
+              <div className="bg-error-50 border border-error-200 text-error-600 px-4 py-3 rounded-lg mb-4 text-sm">
                 {error}
               </div>
             )}
 
             <div className="mb-6">
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-text-muted mb-2">
                 {t('teacher.shareWithTeacher.codePlaceholder')}
               </label>
               <input
@@ -164,7 +164,7 @@ export function ShareWithTeacherModal({
                 value={classCode}
                 onChange={(e) => handleCodeChange(e.target.value)}
                 placeholder="0000"
-                className="w-full text-center text-3xl font-mono font-bold tracking-widest px-4 py-4 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all text-gray-900 placeholder:text-gray-300"
+                className="w-full text-center text-3xl font-mono font-bold tracking-widest px-4 py-4 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-transparent outline-none transition-all text-text-main placeholder:text-neutral-300"
                 autoFocus
               />
             </div>
@@ -195,8 +195,8 @@ export function ShareWithTeacherModal({
         {/* Step 2: Naam invoeren */}
         {step === 'name' && (
           <form onSubmit={handleNameSubmit}>
-            <h3 className="font-medium text-gray-800 mb-2">{t('teacher.shareWithTeacher.step2Title')}</h3>
-            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-lg mb-4">
+            <h3 className="font-medium text-text-main mb-2">{t('teacher.shareWithTeacher.step2Title')}</h3>
+            <div className="bg-success-50 border border-success-200 text-success-600 px-4 py-3 rounded-lg mb-4">
               <p className="font-medium flex items-center gap-1">
                 <Check className="w-4 h-4" />
                 {t('teacher.shareWithTeacher.step2Title')}
@@ -205,7 +205,7 @@ export function ShareWithTeacherModal({
               <p className="text-sm">{t('teacher.shareWithTeacher.teacherName')}: {teacherName}</p>
             </div>
 
-            <p className="text-gray-600 mb-4">
+            <p className="text-text-muted mb-4">
               {t('teacher.shareWithTeacher.yourName')}
             </p>
 
@@ -215,14 +215,14 @@ export function ShareWithTeacherModal({
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
                 placeholder={t('teacher.shareWithTeacher.namePlaceholder')}
-                className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all text-gray-900 placeholder:text-gray-400"
+                className="w-full px-4 py-3 border border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-transparent outline-none transition-all text-text-main placeholder:text-neutral-400"
                 autoFocus
               />
             </div>
 
-            <p className="text-gray-400 text-sm mb-6 flex items-center gap-1 flex-wrap">
+            <p className="text-neutral-400 text-sm mb-6 flex items-center gap-1 flex-wrap">
               {t('teacher.shareWithTeacher.namePlaceholder')}
-              <Bird className="w-4 h-4 text-amber-500" />
+              <Bird className="w-4 h-4 text-accent-500" />
             </p>
 
             <div className="flex gap-3">
@@ -253,8 +253,8 @@ export function ShareWithTeacherModal({
         {/* Step 3: Versturen */}
         {step === 'sending' && (
           <div className="text-center py-8">
-            <Send className="w-12 h-12 text-amber-500 mx-auto mb-4 animate-bounce" />
-            <p className="text-gray-600">
+            <Send className="w-12 h-12 text-accent-500 mx-auto mb-4 animate-bounce" />
+            <p className="text-text-muted">
               {t('teacher.shareWithTeacher.sending')}
             </p>
           </div>
@@ -263,14 +263,14 @@ export function ShareWithTeacherModal({
         {/* Step 4: Succes */}
         {step === 'success' && (
           <div className="text-center py-4">
-            <PartyPopper className="w-16 h-16 text-amber-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-800 mb-2">
+            <PartyPopper className="w-16 h-16 text-accent-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-text-main mb-2">
               {t('teacher.shareWithTeacher.step3Title')}
             </h3>
-            <p className="text-gray-600 mb-2">
+            <p className="text-text-muted mb-2">
               {t('teacher.shareWithTeacher.step3Description')}
             </p>
-            <p className="text-gray-500 text-sm">
+            <p className="text-neutral-500 text-sm">
               {t('common.by')} <strong>{finalStudentName}</strong>
             </p>
           </div>
@@ -279,11 +279,11 @@ export function ShareWithTeacherModal({
         {/* Step 5: Error */}
         {step === 'error' && (
           <div className="text-center py-4">
-            <AlertCircle className="w-16 h-16 text-red-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-gray-800 mb-2">
+            <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-text-main mb-2">
               {t('error.title')}
             </h3>
-            <p className="text-red-600 mb-4">
+            <p className="text-error-600 mb-4">
               {error}
             </p>
             <div className="flex gap-3">

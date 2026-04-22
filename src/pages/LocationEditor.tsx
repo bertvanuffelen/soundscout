@@ -298,11 +298,11 @@ export function LocationEditor() {
   // --- Render ---
 
   return (
-    <div className="min-h-screen bg-slate-900 text-white">
+    <div className="min-h-screen bg-brand-900 text-white">
       {/* Header */}
-      <header className="bg-slate-800 border-b border-slate-700 px-6 py-4">
+      <header className="bg-brand-800 border-b border-brand-700 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
-          <h1 className="text-xl font-bold text-amber-400">
+          <h1 className="text-xl font-bold text-accent-400">
             Locatie Editor
           </h1>
           <div className="flex items-center gap-3">
@@ -310,7 +310,7 @@ export function LocationEditor() {
             <select
               value={themeId}
               onChange={(e) => handleThemeChange(e.target.value)}
-              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm"
+              className="bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-sm"
             >
               {allThemeLocations.map((group) => (
                 <option key={group.themeId} value={group.themeId}>
@@ -322,7 +322,7 @@ export function LocationEditor() {
             {/* Location selector (filtered by selected theme) */}
             <select
               onChange={(e) => handleLocationSelect(e.target.value)}
-              className="bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-sm"
+              className="bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-sm"
               value=""
             >
               <option value="" disabled>
@@ -339,7 +339,7 @@ export function LocationEditor() {
               variant="ghost"
               size="sm"
               onClick={() => setShowHelp(true)}
-              className="text-slate-400 hover:text-amber-400"
+              className="text-brand-400 hover:text-accent-400"
               title="Handleiding"
             >
               <HelpCircle size={16} />
@@ -348,7 +348,7 @@ export function LocationEditor() {
               variant="ghost"
               size="sm"
               onClick={handleReset}
-              className="text-slate-400 hover:text-white"
+              className="text-brand-400 hover:text-white"
             >
               <RotateCcw size={16} className="mr-1" />
               Reset
@@ -362,13 +362,13 @@ export function LocationEditor() {
           {/* Left column: Form + Canvas */}
           <div className="lg:col-span-2 space-y-6">
             {/* Location metadata form */}
-            <section className="bg-slate-800 rounded-xl p-5 border border-slate-700">
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-4">
+            <section className="bg-brand-800 rounded-xl p-5 border border-brand-700">
+              <h2 className="text-sm font-semibold text-brand-400 uppercase tracking-wide mb-4">
                 Locatie Gegevens
               </h2>
               <div className="grid grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm text-slate-400 mb-1">
+                  <label className="block text-sm text-brand-400 mb-1">
                     Theme ID
                   </label>
                   <input
@@ -376,11 +376,11 @@ export function LocationEditor() {
                     value={themeId}
                     onChange={(e) => setThemeId(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
                     placeholder="bijv. basis, kerst"
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-500"
+                    className="w-full bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-white placeholder:text-brand-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-400 mb-1">
+                  <label className="block text-sm text-brand-400 mb-1">
                     Location ID
                   </label>
                   <input
@@ -388,11 +388,11 @@ export function LocationEditor() {
                     value={locationId}
                     onChange={(e) => setLocationId(e.target.value.toLowerCase().replace(/\s+/g, '-'))}
                     placeholder="bijv. strand"
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-500"
+                    className="w-full bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-white placeholder:text-brand-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-400 mb-1">
+                  <label className="block text-sm text-brand-400 mb-1">
                     Achtergrond
                   </label>
                   <div className="flex gap-2">
@@ -415,7 +415,7 @@ export function LocationEditor() {
                   </div>
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-400 mb-1">
+                  <label className="block text-sm text-brand-400 mb-1">
                     Naam (NL)
                   </label>
                   <input
@@ -423,11 +423,11 @@ export function LocationEditor() {
                     value={nameNl}
                     onChange={(e) => setNameNl(e.target.value)}
                     placeholder="Het Strand"
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-500"
+                    className="w-full bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-white placeholder:text-brand-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-400 mb-1">
+                  <label className="block text-sm text-brand-400 mb-1">
                     Naam (EN)
                   </label>
                   <input
@@ -435,11 +435,11 @@ export function LocationEditor() {
                     value={nameEn}
                     onChange={(e) => setNameEn(e.target.value)}
                     placeholder="The Beach"
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-500"
+                    className="w-full bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-white placeholder:text-brand-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-400 mb-1">
+                  <label className="block text-sm text-brand-400 mb-1">
                     Beschrijving (NL)
                   </label>
                   <input
@@ -447,11 +447,11 @@ export function LocationEditor() {
                     value={descriptionNl}
                     onChange={(e) => setDescriptionNl(e.target.value)}
                     placeholder="Een zonnig strand..."
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-500"
+                    className="w-full bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-white placeholder:text-brand-500"
                   />
                 </div>
                 <div>
-                  <label className="block text-sm text-slate-400 mb-1">
+                  <label className="block text-sm text-brand-400 mb-1">
                     Beschrijving (EN)
                   </label>
                   <input
@@ -459,18 +459,18 @@ export function LocationEditor() {
                     value={descriptionEn}
                     onChange={(e) => setDescriptionEn(e.target.value)}
                     placeholder="A sunny beach..."
-                    className="w-full bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-500"
+                    className="w-full bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-white placeholder:text-brand-500"
                   />
                 </div>
               </div>
             </section>
 
             {/* Canvas for hotspot placement */}
-            <section className="bg-slate-800 rounded-xl p-5 border border-slate-700">
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-4">
+            <section className="bg-brand-800 rounded-xl p-5 border border-brand-700">
+              <h2 className="text-sm font-semibold text-brand-400 uppercase tracking-wide mb-4">
                 Hotspots Plaatsen
                 {!backgroundImage && (
-                  <span className="ml-2 text-amber-500 normal-case font-normal">
+                  <span className="ml-2 text-accent-500 normal-case font-normal">
                     (upload eerst een achtergrond)
                   </span>
                 )}
@@ -488,8 +488,8 @@ export function LocationEditor() {
           {/* Right column: Hotspot list + Export */}
           <div className="space-y-6">
             {/* Hotspot list */}
-            <section className="bg-slate-800 rounded-xl p-5 border border-slate-700">
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-4">
+            <section className="bg-brand-800 rounded-xl p-5 border border-brand-700">
+              <h2 className="text-sm font-semibold text-brand-400 uppercase tracking-wide mb-4">
                 Hotspots ({hotspots.length})
               </h2>
               <HotspotList
@@ -500,8 +500,8 @@ export function LocationEditor() {
             </section>
 
             {/* JSON Export */}
-            <section className="bg-slate-800 rounded-xl p-5 border border-slate-700">
-              <h2 className="text-sm font-semibold text-slate-400 uppercase tracking-wide mb-4">
+            <section className="bg-brand-800 rounded-xl p-5 border border-brand-700">
+              <h2 className="text-sm font-semibold text-brand-400 uppercase tracking-wide mb-4">
                 Export
               </h2>
               <JsonExportPanel
@@ -522,9 +522,9 @@ export function LocationEditor() {
         size="lg"
         className="max-h-[80vh] overflow-y-auto"
       >
-        <div className="space-y-5 text-sm text-slate-700 leading-relaxed">
+        <div className="space-y-5 text-sm text-brand-700 leading-relaxed">
           <section>
-            <h3 className="font-bold text-base text-slate-900 mb-2">Nieuwe locatie aanmaken</h3>
+            <h3 className="font-bold text-base text-brand-900 mb-2">Nieuwe locatie aanmaken</h3>
             <ol className="list-decimal list-inside space-y-1.5">
               <li>Kies het juiste <strong>thema</strong> in de header dropdown (bijv. "basis" of "winterspelen").</li>
               <li>Vul een <strong>Location ID</strong> in (lowercase, met koppeltekens, bijv. "strand").</li>
@@ -537,7 +537,7 @@ export function LocationEditor() {
           </section>
 
           <section>
-            <h3 className="font-bold text-base text-slate-900 mb-2">Bestaande locatie bewerken</h3>
+            <h3 className="font-bold text-base text-brand-900 mb-2">Bestaande locatie bewerken</h3>
             <ol className="list-decimal list-inside space-y-1.5">
               <li>Selecteer het <strong>thema</strong> in de eerste dropdown.</li>
               <li>Kies de <strong>locatie</strong> in de tweede dropdown ("Laad locatie...").</li>
@@ -548,7 +548,7 @@ export function LocationEditor() {
           </section>
 
           <section>
-            <h3 className="font-bold text-base text-slate-900 mb-2">Hotspots beheren</h3>
+            <h3 className="font-bold text-base text-brand-900 mb-2">Hotspots beheren</h3>
             <ul className="list-disc list-inside space-y-1.5">
               <li><strong>Plaatsen</strong>: klik op het canvas → vul Sample ID in → Toevoegen.</li>
               <li><strong>Verplaatsen</strong>: sleep een hotspot-marker naar een nieuwe positie.</li>
@@ -559,18 +559,18 @@ export function LocationEditor() {
           </section>
 
           <section>
-            <h3 className="font-bold text-base text-slate-900 mb-2">Exporteren &amp; verwerken</h3>
+            <h3 className="font-bold text-base text-brand-900 mb-2">Exporteren &amp; verwerken</h3>
             <ol className="list-decimal list-inside space-y-1.5">
               <li>Klik op <strong>"Kopieer JSON"</strong> of <strong>"Download JSON"</strong> in het Export-panel.</li>
               <li>De JSON bevat: locatie-config, i18n-vertalingen, en sample-stubs.</li>
               <li>Geef de JSON aan Claude om te verwerken in de codebase.</li>
-              <li>Plaats MP3-bestanden handmatig in: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">/public/audio/themes/&#123;themeId&#125;/&#123;locationId&#125;/</code></li>
-              <li>Plaats de achtergrondafbeelding in: <code className="bg-slate-100 px-1.5 py-0.5 rounded text-xs font-mono">/public/images/themes/&#123;themeId&#125;/</code></li>
+              <li>Plaats MP3-bestanden handmatig in: <code className="bg-brand-100 px-1.5 py-0.5 rounded text-xs font-mono">/public/audio/themes/&#123;themeId&#125;/&#123;locationId&#125;/</code></li>
+              <li>Plaats de achtergrondafbeelding in: <code className="bg-brand-100 px-1.5 py-0.5 rounded text-xs font-mono">/public/images/themes/&#123;themeId&#125;/</code></li>
             </ol>
           </section>
 
           <section>
-            <h3 className="font-bold text-base text-slate-900 mb-2">JSON structuur</h3>
+            <h3 className="font-bold text-base text-brand-900 mb-2">JSON structuur</h3>
             <ul className="list-disc list-inside space-y-1.5">
               <li><strong>location</strong>: configuratie voor het locatie-bestand (hotspots, achtergrond, etc.)</li>
               <li><strong>i18n</strong>: vertalingen voor NL en EN (namen, beschrijvingen, sample labels)</li>
@@ -579,12 +579,12 @@ export function LocationEditor() {
             </ul>
           </section>
 
-          <section className="bg-amber-50 border border-amber-200 rounded-lg p-3">
-            <h3 className="font-bold text-base text-amber-800 mb-1">Tips</h3>
-            <ul className="list-disc list-inside space-y-1 text-amber-900">
+          <section className="bg-accent-50 border border-accent-200 rounded-lg p-3">
+            <h3 className="font-bold text-base text-accent-800 mb-1">Tips</h3>
+            <ul className="list-disc list-inside space-y-1 text-accent-900">
               <li>Sample IDs zijn altijd lowercase met koppeltekens (bijv. "strand-golven").</li>
               <li>De editor slaat niets permanent op — exporteer altijd je JSON voordat je de pagina verlaat.</li>
-              <li>Je kunt de editor openen met een locatie-parameter: <code className="bg-amber-100 px-1 py-0.5 rounded text-xs font-mono">/editor?location=park</code></li>
+              <li>Je kunt de editor openen met een locatie-parameter: <code className="bg-accent-100 px-1 py-0.5 rounded text-xs font-mono">/editor?location=park</code></li>
               <li>Wanneer je een MP3 uploadt bij een hotspot, wordt de duur automatisch uitgelezen en meegenomen in de export.</li>
             </ul>
           </section>

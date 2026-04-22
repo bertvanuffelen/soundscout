@@ -1,7 +1,7 @@
-# Implementatieplan: #65 Clip Loop + #33 Clip Effects (Pitch & Reverb)
+# Implementatieplan: #65 Clip Loop + #33 Clip Effects (Pitch & Reverb) + #79 Fade
 
 > Datum: 2026-03-16
-> Status: Geaccordeerd ontwerp, klaar voor implementatie
+> Status: ✅ Volledig geïmplementeerd (#65 + #33: 2026-03-16, #79: 2026-04-16)
 
 ## Samenvatting beslissingen
 
@@ -11,11 +11,14 @@
 | Loop visueel | Herhaald stuk lichter dan origineel, 1px scheiding |
 | Loop limiet | Geen max — mag hele tijdlijn vullen |
 | Loop + trim | Loop herhaalt altijd het getrimde stuk |
-| Effects scope | Alleen pitch + reverb (geen pan/filter nu) |
+| Effects scope | Pitch + reverb + fade in/out (pan/filter toekomstig) |
 | Effects per | Per-clip (niet per-track). Dupliceren kopieert effects mee |
 | Reverb duur | Binnen clip-grenzen (geen tail voorbij clip-einde) |
 | Effect engine | Aparte Player per clip met effects (Optie B) |
 | Resize handle | Dedicated pointer-based resize (niet dnd-kit), alleen zichtbaar bij selectie |
+| Fade curves (#79) | Symmetrisch exponentieel: fade-in `x²`, fade-out `(1-x)²` |
+| Fade node (#79) | Aparte `Tone.Gain` (FadeGain), gescheiden van clip-volume |
+| Fade UI (#79) | EffectsModal (vervangt EffectsPopover): waveform + fade handles + sliders + preview |
 
 ---
 

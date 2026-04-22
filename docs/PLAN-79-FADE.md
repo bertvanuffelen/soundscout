@@ -1,7 +1,16 @@
 # Plan #79 — Clip-effecten: Fade In & Fade Out
 
 **Datum:** 2026-04-16
-**Status:** Voorstel — wacht op goedkeuring
+**Status:** ✅ Volledig geïmplementeerd (2026-04-16)
+
+> **Implementatie-afwijkingen t.o.v. plan:**
+> - Fade-curves gewijzigd van logaritmisch (`log(1+10x)/log(11)`) naar symmetrisch exponentieel: **fade-in `x²`**, **fade-out `(1-x)²`** (equal-power, gelijkmatigere perceptie)
+> - Curve datatype: `number[]` (128 stappen), niet `Float32Array` — Tone.js `setValueCurveAtTime` accepteert `number[]`
+> - Fade-handles zijn **altijd zichtbaar** (zoals TrimModal), niet alleen bij hover/drag
+> - Preview-knop gebruikt nieuw `AudioService.playSampleWithEffects()` met tijdelijke geïsoleerde effect chain
+> - Toolbar-volgorde gewijzigd: label-icoon direct na sample-naam (vóór trim)
+> - Alle UI in design token kleuren (`accent-*`), niet violet
+> - `updateClipTrim` clampt fades proportioneel bij inkorten: `scale = newDuration / (fadeIn + fadeOut)`
 
 ---
 
@@ -108,11 +117,7 @@ interface WaveformProps {
 }
 ```
 
-De Waveform-component rendert een **transparantie-gradiënt** over de bars:
-- **Fade-in zone** (0 → fadeIn seconden): bars krijgen opacity van 0.1 → 1.0 (logaritmisch)
-- **Fade-out zone** (duur - fadeOut → duur): bars krijgen opacity van 1.0 → 0.1 (logaritmisch)
-
-Dit wordt berekend per bar in de bestaande render-loop — geen extra canvas of overlay nodig, alleen een opacity-berekening per bar positie.
+De Waveform-component rendert fades visueel via hoogte-schaling + kleurtransitie (zie geïmplementeerde versie in Stap 7).
 
 ### Fade-handles
 
@@ -162,18 +167,18 @@ De modal werkt met lokale state en past pas toe bij "OK". Dit is consistent met 
 
 **Bestand:** `src/services/AudioService.ts`
 
-### Logaritmische fade-curve generator
+### Exponentiële fade-curve generator (geïmplementeerd als x² / (1-x)²)
 
-Nieuwe private helper:
+Private helper:
 
 ```typescript
-private createFadeCurve(duration: number, type: 'in' | 'out'): Float32Array
+private createFadeCurve(type: 'in' | 'out', steps: number = 128): number[]
 ```
 
-Genereert een `Float32Array` met een logaritmische curve:
-- **Fade in**: `Math.log(1 + 10 * progress) / Math.log(11)` — van 0 naar 1
-- **Fade out**: zelfde formule, maar dan van 1 naar 0
-- Array-lengte: `Math.ceil(duration * sampleRate)` of een vaste 1024 punten (genoeg voor smooth)
+Genereert een `number[]` met exponentiële curves:
+- **Fade in**: `progress * progress` (x²) — geleidelijke opbouw van stilte naar vol volume
+- **Fade out**: `(1 - progress) * (1 - progress)` ((1-x)²) — soepele afdaling naar stilte
+- Array-lengte: 128 stappen (voldoende voor smooth, voorberekend en hergebruikt)
 
 ### Fade-node in createEffectChain()
 
@@ -249,7 +254,7 @@ De iteratie-positie (eerste/laatste) is al af te leiden uit de loop-index.
 
 De export bouwt al per clip de effect chain op in `Tone.Offline()`. Uitbreiding:
 - FadeGain-node toevoegen aan de chain (zelfde als live)
-- `setValueCurveAtTime()` schedulen met dezelfde logaritmische curve
+- `setValueCurveAtTime()` schedulen met dezelfde x² / (1-x)² curves
 - Werkt automatisch omdat `Tone.Offline()` dezelfde scheduling-API ondersteunt
 
 ---
@@ -264,23 +269,27 @@ Nieuwe optionele prop `fadeRegion`:
 fadeRegion?: { fadeIn: number; fadeOut: number };
 ```
 
-In de render-loop: per bar de opacity berekenen op basis van positie in de fade-zone.
+In de render-loop: per bar de fadeFactor berekenen. Geïmplementeerd met **twee visuele effecten**:
+
+1. **Hoogte-schaling**: `barHeight = peak * maxBarHeight * fadeFactor` — bars worden fysiek kleiner
+2. **Kleur-transitie**: bars blenden van sample-kleur naar `neutral-400` (#9ca3af) via dubbele layer (fade-kleur base + sample-kleur bovenop)
 
 ```
 barTime = (i / barCount) * duration
 
 Als barTime < fadeIn:
-  opacity = logaritmischeCurve(barTime / fadeIn)  // 0.1 → 1.0
+  fadeFactor = (barTime / fadeIn)²              // x² curve
 Anders als barTime > (duration - fadeOut):
-  progress = (barTime - (duration - fadeOut)) / fadeOut
-  opacity = logaritmischeCurve(1 - progress)       // 1.0 → 0.1
+  progress = (barTime - fadeOutStart) / fadeOut
+  fadeFactor = (1 - progress)²                   // (1-x)² curve
 Anders:
-  opacity = 1.0
+  fadeFactor = 1.0
 
-ctx.fillStyle = `rgba(r, g, b, ${opacity})`
+fadeFactor = max(0.06, fadeFactor)  // minimum zichtbaarheid
+barHeight = max(2, peak * maxBarHeight * fadeFactor)
 ```
 
-Dit is ~10 regels extra in de bestaande canvas draw loop. Geen performance-impact (het is dezelfde loop, alleen een extra berekening per bar).
+Geen performance-impact (zelfde loop, alleen extra berekening per bar).
 
 ---
 

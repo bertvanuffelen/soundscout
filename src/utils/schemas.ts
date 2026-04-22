@@ -21,6 +21,8 @@ export const ClipEffectsSchema = z.object({
   pitch: z.number(),
   reverb: z.number(),
   pan: z.number(),
+  fadeIn: z.number().optional().default(0),
+  fadeOut: z.number().optional().default(0),
 });
 
 export const ClipSchema = z.object({

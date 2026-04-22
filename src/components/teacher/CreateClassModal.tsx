@@ -47,12 +47,12 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
       <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800">
+          <h2 className="text-xl font-bold text-text-main">
             {t('teacher.createClassModal.title')}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-1"
+            className="text-neutral-400 hover:text-neutral-600 p-1"
             disabled={loading}
           >
             <X className="w-6 h-6" />
@@ -61,7 +61,7 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
 
         {/* Error */}
         {error && (
-          <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg mb-4">
+          <div className="bg-error-50 border border-error-200 text-error-600 px-4 py-3 rounded-lg mb-4">
             {error}
           </div>
         )}
@@ -69,7 +69,7 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
         {/* Form */}
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
-            <label htmlFor="className" className="block text-sm font-medium text-gray-700 mb-1">
+            <label htmlFor="className" className="block text-sm font-medium text-text-muted mb-1">
               {t('teacher.createClassModal.nameLabel')}
             </label>
             <input
@@ -78,13 +78,13 @@ export function CreateClassModal({ onClose, onCreate }: CreateClassModalProps) {
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('teacher.createClassModal.namePlaceholder')}
-              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-amber-400 focus:border-transparent outline-none transition-all text-gray-900 placeholder:text-gray-400"
+              className="w-full px-4 py-3 border border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-transparent outline-none transition-all text-text-main placeholder:text-neutral-400"
               disabled={loading}
               autoFocus
             />
           </div>
 
-          <p className="text-gray-500 text-sm mb-4">
+          <p className="text-neutral-500 text-sm mb-4">
             {t('teacher.createClassModal.codeInfo')}
           </p>
 

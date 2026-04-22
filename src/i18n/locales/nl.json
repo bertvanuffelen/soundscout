@@ -211,6 +211,17 @@
     "reverbDry": "Droog",
     "reverbWet": "Galm",
     "resetEffect": "Reset",
+    "fadeIn": "Fade in",
+    "fadeOut": "Fade out",
+    "fadeInDuration": "Fade in: {{duration}}s",
+    "fadeOutDuration": "Fade out: {{duration}}s",
+    "effectsModal": {
+      "title": "Effecten",
+      "preview": "Voorbeeld",
+      "apply": "Toepassen",
+      "cancel": "Annuleren",
+      "reset": "Reset"
+    },
     "clearTimeline": "Wis tijdlijn",
     "clearConfirm": "Alles wissen?",
     "trimModal": {
@@ -453,12 +464,14 @@
     "deactivateConfirm": "Weet je zeker dat je deze opdracht wilt deactiveren? Leerlingen kunnen dan niet meer via de klascode aan deze opdracht werken.",
     "deactivateError": "Kon opdracht niet deactiveren",
     "noAssignments": "Nog geen opdrachten beschikbaar. Maak eerst een template of praatplaat aan.",
-    "activeTitle": "Actieve opdracht",
+    "activeTitle": "Actieve opdracht voor deze klas",
+    "activeDescription": "Leerlingen die inloggen met de klascode komen direct in deze opdracht terecht.",
     "noActive": "Geen actieve opdracht voor deze klas.",
     "activateButton": "Opdracht activeren",
     "changeButton": "Wijzig",
     "activatedAt": "Geactiveerd op {{date}}",
-    "pastTitle": "Eerdere opdrachten"
+    "pastTitle": "Eerdere opdrachten",
+    "pastDescription": "Opdrachten die eerder zijn uitgevoerd. Je kunt deze opnieuw activeren."
   },
   "templates": {
     "activeBanner": "Opdracht:",
@@ -751,6 +764,8 @@
       "deleteConfirm": "Weet je zeker dat je deze compositie wilt verwijderen?",
       "deleteError": "Kon niet verwijderen",
       "instruction": "Leerlingen kunnen hun compositie delen via Podium → Opslaan → Deel met docent en de code {{code}} invoeren.",
+      "submissionsTitle": "Inzendingen van leerlingen",
+      "submissionsDescription": "Composities die leerlingen hebben ingeleverd via de klascode.",
       "tabSubmitted": "Ingeleverd ({{count}})",
       "tabWip": "In bewerking ({{count}})",
       "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd."

@@ -37,8 +37,12 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
   // Playback state
   const [playingSubmissionId, setPlayingSubmissionId] = useState<string | null>(null);
   const [audioLoading, setAudioLoading] = useState(false);
-  const [showTimeline, setShowTimeline] = useState(false);
   const [errorSubmissionId, setErrorSubmissionId] = useState<string | null>(null);
+
+  // SubmissionPlayer lifecycle — decoupled from playingSubmissionId so that
+  // onPlaybackEnd (which clears playingSubmissionId) doesn't unmount the player.
+  // Stores a snapshot of the submission data when "show timeline" is clicked.
+  const [timelineSubmission, setTimelineSubmission] = useState<PraatplaatSubmission | null>(null);
 
   // Clusters
   const [clusters, setClusters] = useState<SpotCluster<PraatplaatSubmission>[]>([]);
@@ -141,19 +145,22 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
     playSubmission(sub);
   }, [playSubmission]);
 
+  const playingSubmission = submissions.find((s) => s.id === playingSubmissionId);
+
   const handleStop = useCallback(() => {
     audioService.stop();
     setPlayingSubmissionId(null);
-    setShowTimeline(false);
+    setTimelineSubmission(null);
   }, []);
 
   const handleShowTimeline = useCallback(() => {
-    // Stop direct playback and open SubmissionPlayer
+    // Stop direct playback and open SubmissionPlayer with a snapshot
+    // of the current submission data. SubmissionPlayer then fully owns audio.
     audioService.stop();
-    setShowTimeline(true);
-  }, []);
-
-  const playingSubmission = submissions.find((s) => s.id === playingSubmissionId);
+    if (playingSubmission) {
+      setTimelineSubmission(playingSubmission);
+    }
+  }, [playingSubmission]);
 
   return (
     <div className="fixed inset-0 z-50 bg-black flex flex-col">
@@ -306,18 +313,18 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
         </div>
       )}
 
-      {/* SubmissionPlayer overlay (bestaand component hergebruikt) */}
-      {showTimeline && playingSubmission && (
+      {/* SubmissionPlayer overlay — lifecycle decoupled from playingSubmissionId */}
+      {timelineSubmission && (
         <SubmissionPlayer
           submission={{
-            id: playingSubmission.id,
-            student_name: playingSubmission.student_name,
-            composition_name: playingSubmission.composition_name,
-            composition_data: playingSubmission.composition_data,
-            created_at: playingSubmission.created_at,
+            id: timelineSubmission.id,
+            student_name: timelineSubmission.student_name,
+            composition_name: timelineSubmission.composition_name,
+            composition_data: timelineSubmission.composition_data,
+            created_at: timelineSubmission.created_at,
           }}
           onClose={() => {
-            setShowTimeline(false);
+            setTimelineSubmission(null);
             setPlayingSubmissionId(null);
           }}
         />

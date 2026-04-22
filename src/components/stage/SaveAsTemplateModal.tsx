@@ -82,7 +82,7 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
 
           <button
             onClick={handleCopyCode}
-            className="inline-flex items-center gap-2 bg-amber-100 text-amber-800 px-6 py-3 rounded-xl font-mono font-bold text-2xl hover:bg-amber-200 transition-colors mx-auto mb-4"
+            className="inline-flex items-center gap-2 bg-accent-100 text-accent-800 px-6 py-3 rounded-xl font-mono font-bold text-2xl hover:bg-accent-200 transition-colors mx-auto mb-4"
           >
             {createdCode}
             {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}

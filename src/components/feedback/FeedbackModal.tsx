@@ -134,8 +134,8 @@ export function FeedbackModal({ isOpen, onClose, mode, errorData }: FeedbackModa
     return (
       <Modal isOpen={isOpen} onClose={handleClose} size="sm">
         <div className="text-center py-4">
-          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-green-100 flex items-center justify-center">
-            <Check className="w-8 h-8 text-green-600" />
+          <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-success-100 flex items-center justify-center">
+            <Check className="w-8 h-8 text-success-600" />
           </div>
           <h3 className="text-xl font-bold text-text-main mb-2">
             {t('feedback.successTitle')}
@@ -173,11 +173,11 @@ export function FeedbackModal({ isOpen, onClose, mode, errorData }: FeedbackModa
 
         {/* Error mode: show error details */}
         {mode === 'error' && errorData && (
-          <div className="bg-red-50 rounded-lg border border-red-200">
+          <div className="bg-error-50 rounded-lg border border-error-200">
             <button
               type="button"
               onClick={() => setShowErrorDetails(!showErrorDetails)}
-              className="w-full px-3 py-2 flex items-center justify-between text-sm text-red-700 hover:bg-red-100 rounded-lg transition-colors"
+              className="w-full px-3 py-2 flex items-center justify-between text-sm text-error-600 hover:bg-error-100 rounded-lg transition-colors"
             >
               <span className="flex items-center gap-2">
                 <Bug className="w-4 h-4" />
@@ -191,7 +191,7 @@ export function FeedbackModal({ isOpen, onClose, mode, errorData }: FeedbackModa
             </button>
             {showErrorDetails && (
               <div className="px-3 pb-3">
-                <pre className="text-xs text-red-600 bg-red-100 p-2 rounded overflow-auto max-h-32 whitespace-pre-wrap">
+                <pre className="text-xs text-error-600 bg-error-100 p-2 rounded overflow-auto max-h-32 whitespace-pre-wrap">
                   {errorData.message}
                   {errorData.stack && `\n\n${errorData.stack.slice(0, 500)}...`}
                 </pre>
@@ -267,7 +267,7 @@ export function FeedbackModal({ isOpen, onClose, mode, errorData }: FeedbackModa
 
         {/* Rate limit message */}
         {rateLimitSeconds > 0 && (
-          <div className="text-sm text-amber-600 bg-amber-50 px-3 py-2 rounded-lg">
+          <div className="text-sm text-warning-600 bg-warning-50 px-3 py-2 rounded-lg">
             {t('feedback.rateLimitMessage', { seconds: rateLimitSeconds })}
           </div>
         )}
@@ -277,7 +277,7 @@ export function FeedbackModal({ isOpen, onClose, mode, errorData }: FeedbackModa
           <div
             role="alert"
             aria-live="polite"
-            className="text-sm text-red-600 bg-red-50 px-3 py-2 rounded-lg flex items-center gap-2"
+            className="text-sm text-error-600 bg-error-50 px-3 py-2 rounded-lg flex items-center gap-2"
           >
             <X className="w-4 h-4 flex-shrink-0" />
             {errorMessage}

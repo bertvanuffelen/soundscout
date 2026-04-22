@@ -173,6 +173,8 @@ export function useAudioEngine() {
     getCurrentBeat,
     seekTo,
     rescheduleWhilePlaying,
+    hasActiveSchedule: useCallback((currentVersion?: number) => audioService.hasActiveSchedule(currentVersion), []),
+    setScheduledVersion: useCallback((version: number) => audioService.setScheduledVersion(version), []),
 
     // Ambient audio
     loadAmbient,

@@ -86,8 +86,8 @@ export function ZoomableView({
       <button
         onClick={openZoom}
         className={`absolute bottom-3 right-3 z-20 flex items-center gap-1.5 px-3 py-2
-          bg-white/90 hover:bg-white active:bg-gray-100
-          text-slate-800 font-semibold text-sm
+          bg-white/90 hover:bg-white active:bg-neutral-100
+          text-brand-800 font-semibold text-sm
           rounded-full shadow-lg backdrop-blur-sm
           transition-all active:scale-95
           ${getZoomButtonClass()}`}
@@ -100,7 +100,7 @@ export function ZoomableView({
       {/* Fullscreen zoom overlay */}
       {isZoomed && (
         <div
-          className="fixed inset-0 z-50 bg-black overflow-hidden"
+          className="fixed inset-0 z-50 bg-black overflow-hidden touch-none"
           ref={containerRef}
           onTouchStart={handlers.onTouchStart}
           onTouchMove={handlers.onTouchMove}
@@ -109,7 +109,6 @@ export function ZoomableView({
           onMouseMove={handlers.onMouseMove}
           onMouseUp={handlers.onMouseUp}
           onMouseLeave={handlers.onMouseLeave}
-          style={{ touchAction: 'none' }}
         >
           {/* Centered, scaled 16:9 canvas container */}
           <div
@@ -168,8 +167,8 @@ export function ZoomableView({
               closeZoom();
             }}
             className="fixed top-4 right-4 z-[60] p-3
-              bg-white/90 hover:bg-white active:bg-gray-100
-              text-slate-800 rounded-full shadow-lg
+              bg-white/90 hover:bg-white active:bg-neutral-100
+              text-brand-800 rounded-full shadow-lg
               transition-all active:scale-95"
             aria-label={t('common.close', 'Sluiten')}
           >

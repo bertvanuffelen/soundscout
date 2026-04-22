@@ -78,8 +78,8 @@ export function EditorCanvas({
 
   if (!backgroundImage) {
     return (
-      <div className="aspect-video bg-slate-700 rounded-lg flex items-center justify-center border-2 border-dashed border-slate-600">
-        <p className="text-slate-500 text-sm">
+      <div className="aspect-video bg-brand-700 rounded-lg flex items-center justify-center border-2 border-dashed border-brand-600">
+        <p className="text-brand-500 text-sm">
           Upload een achtergrondafbeelding om te beginnen
         </p>
       </div>
@@ -93,7 +93,7 @@ export function EditorCanvas({
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
       onPointerCancel={handlePointerUp}
-      className="relative aspect-video bg-slate-700 rounded-lg overflow-hidden cursor-crosshair touch-none"
+      className="relative aspect-video bg-brand-700 rounded-lg overflow-hidden cursor-crosshair touch-none"
     >
       {/* Background image */}
       <img
@@ -134,10 +134,10 @@ export function EditorCanvas({
           <div
             className={`absolute inset-0 rounded-full border-2 ${
               draggingId === hotspot.id
-                ? 'border-green-400 bg-green-400/30'
+                ? 'border-success-400 bg-success-400/30'
                 : hotspot.audioFile
-                  ? 'border-emerald-400 bg-emerald-400/20'
-                  : 'border-amber-400 bg-amber-400/20'
+                  ? 'border-success-400 bg-success-400/20'
+                  : 'border-accent-400 bg-accent-400/20'
             }`}
           />
           {/* Number label */}
@@ -158,7 +158,7 @@ export function EditorCanvas({
             top: `${pendingHotspot.y}%`,
           }}
         >
-          <div className="absolute inset-0 rounded-full border-2 border-green-400 bg-green-400/30" />
+          <div className="absolute inset-0 rounded-full border-2 border-success-400 bg-success-400/30" />
           <div className="absolute inset-0 flex items-center justify-center">
             <span className="text-xs font-bold text-white">?</span>
           </div>

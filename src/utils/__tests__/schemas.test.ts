@@ -29,7 +29,7 @@ const validCompositionData = {
           id: 'clip-1',
           sampleId: 'sample-1',
           startBeat: 0,
-          effects: { volume: 0.8, pitch: 1.0, reverb: 0.2, pan: 0 },
+          effects: { volume: 0.8, pitch: 1.0, reverb: 0.2, pan: 0, fadeIn: 0, fadeOut: 0 },
           trimStart: 0.1,
           trimEnd: 1.5,
         },

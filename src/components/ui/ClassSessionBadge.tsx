@@ -19,11 +19,11 @@ export function ClassSessionBadge({ variant = 'dark' }: ClassSessionBadgeProps) 
   if (!classSession) return null;
 
   const styles = variant === 'dark'
-    ? 'bg-slate-700/60 text-slate-200'
-    : 'bg-slate-200/80 text-slate-700';
+    ? 'bg-brand-700/60 text-brand-200'
+    : 'bg-brand-200/80 text-brand-700';
 
-  const dotStyles = variant === 'dark' ? 'text-slate-400' : 'text-slate-400';
-  const codeStyles = variant === 'dark' ? 'text-slate-300' : 'text-slate-500';
+  const dotStyles = variant === 'dark' ? 'text-brand-400' : 'text-brand-400';
+  const codeStyles = variant === 'dark' ? 'text-brand-300' : 'text-brand-500';
 
   return (
     <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs whitespace-nowrap ${styles}`}>

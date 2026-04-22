@@ -72,15 +72,15 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
       }
 
       return (
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-red-50 to-white p-6">
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-error-50 to-white p-6">
           <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 text-center">
-            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-red-100 flex items-center justify-center">
+            <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-error-100 flex items-center justify-center">
               <span className="text-3xl">😵</span>
             </div>
-            <h2 className="text-xl font-bold text-red-700 mb-2">
+            <h2 className="text-xl font-bold text-error-600 mb-2">
               {i18n.t('error.title')}
             </h2>
-            <p className="text-gray-600 mb-6 text-sm">
+            <p className="text-text-muted mb-6 text-sm">
               {i18n.t('error.description')}
             </p>
 
@@ -94,7 +94,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
               </button>
               <button
                 onClick={this.handleOpenFeedback}
-                className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-xl transition-colors cursor-pointer"
+                className="px-6 py-3 bg-error-500 hover:bg-error-600 text-white font-bold rounded-xl transition-colors cursor-pointer"
               >
                 {i18n.t('error.sendReportButton')}
               </button>
@@ -103,10 +103,10 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
             {/* Dev-only error details */}
             {import.meta.env.DEV && this.state.error && (
               <details className="mt-6 text-left">
-                <summary className="text-sm text-gray-500 cursor-pointer hover:text-gray-700">
+                <summary className="text-sm text-text-muted cursor-pointer hover:text-neutral-700">
                   {i18n.t('error.technicalDetails')}
                 </summary>
-                <pre className="mt-2 p-3 bg-gray-100 rounded-lg text-xs text-red-600 overflow-auto max-h-40">
+                <pre className="mt-2 p-3 bg-neutral-100 rounded-lg text-xs text-error-600 overflow-auto max-h-40">
                   {this.state.error.message}
                   {'\n\n'}
                   {this.state.error.stack}

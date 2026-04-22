@@ -1,0 +1,142 @@
+{
+  "location": {
+    "id": "boerderij",
+    "name": "locations.boerderij.name",
+    "description": "locations.boerderij.description",
+    "backgroundImage": "/images/themes/basis/boerderij.jpg",
+    "ambientAudio": "",
+    "hotspots": [
+      {
+        "id": "boerderij-lach",
+        "x": 24.6,
+        "y": 36.3,
+        "radius": 8,
+        "sampleId": "boerderij-lach",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "boerderij-geit",
+        "x": 51.2,
+        "y": 80.1,
+        "radius": 8,
+        "sampleId": "boerderij-geit",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "boerderij-hond",
+        "x": 85.3,
+        "y": 72,
+        "radius": 8,
+        "sampleId": "boerderij-hond",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "boerderij-kippen",
+        "x": 89.8,
+        "y": 26.7,
+        "radius": 8,
+        "sampleId": "boerderij-kippen",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "boerderij-koe",
+        "x": 27,
+        "y": 67.9,
+        "radius": 8,
+        "sampleId": "boerderij-koe",
+        "visualHint": "pulse"
+      },
+      {
+        "id": "boerderij-paard",
+        "x": 62.7,
+        "y": 40.7,
+        "radius": 8,
+        "sampleId": "boerderij-paard",
+        "visualHint": "pulse"
+      }
+    ],
+    "unlocked": true
+  },
+  "i18n": {
+    "nl": {
+      "locations.boerderij.name": "Boerderij",
+      "locations.boerderij.description": "",
+      "samples.boerderij-lach": "lach",
+      "samples.boerderij-geit": "geit",
+      "samples.boerderij-hond": "hond",
+      "samples.boerderij-kippen": "kippen",
+      "samples.boerderij-koe": "koe",
+      "samples.boerderij-paard": "paard"
+    },
+    "en": {
+      "locations.boerderij.name": "Farm",
+      "locations.boerderij.description": "",
+      "samples.boerderij-lach": "lach",
+      "samples.boerderij-geit": "geit",
+      "samples.boerderij-hond": "hond",
+      "samples.boerderij-kippen": "kippen",
+      "samples.boerderij-koe": "koe",
+      "samples.boerderij-paard": "paard"
+    }
+  },
+  "sampleStubs": [
+    {
+      "id": "boerderij-lach",
+      "name": "samples.boerderij-lach",
+      "locationId": "boerderij",
+      "audioUrl": "/audio/themes/basis/boerderij/robot_lach.mp3",
+      "duration": 4,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "boerderij-geit",
+      "name": "samples.boerderij-geit",
+      "locationId": "boerderij",
+      "audioUrl": "/audio/themes/basis/boerderij/geit.mp3",
+      "duration": 4,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "boerderij-hond",
+      "name": "samples.boerderij-hond",
+      "locationId": "boerderij",
+      "audioUrl": "/audio/themes/basis/boerderij/hond.mp3",
+      "duration": 4,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "boerderij-kippen",
+      "name": "samples.boerderij-kippen",
+      "locationId": "boerderij",
+      "audioUrl": "/audio/themes/basis/boerderij/kippen.mp3",
+      "duration": 4,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "boerderij-koe",
+      "name": "samples.boerderij-koe",
+      "locationId": "boerderij",
+      "audioUrl": "/audio/themes/basis/boerderij/koe.mp3",
+      "duration": 4,
+      "icon": "?",
+      "color": "#000000"
+    },
+    {
+      "id": "boerderij-paard",
+      "name": "samples.boerderij-paard",
+      "locationId": "boerderij",
+      "audioUrl": "/audio/themes/basis/boerderij/paard.mp3",
+      "duration": 4,
+      "icon": "?",
+      "color": "#000000"
+    }
+  ],
+  "_meta": {
+    "generated": "2026-02-01T16:41:33.994Z",
+    "note": "Fill in duration, icon, and color for each sample manually"
+  }
+}

@@ -8,7 +8,10 @@
 
 > Plaats hier ideeën, bugs of verzoeken. Claude verwerkt ze later naar de juiste prioriteit.
 
+[ ] Naaminconsistentie thema "basis": stadsplattegrond toont "MUZIEKLOKAAL" en "KINDERBOERDERIJ", maar i18n-labels zijn "De Muziekwinkel" en "De Boerderij". Alleen de weergavenamen in `src/i18n/locales/{nl,en}.json` aanpassen — IDs (`muziekwinkel`, `boerderij`) en bestandsnamen/paden blijven ongewijzigd. Voorstel: `locations.muziekwinkel.name` → "Het Muzieklokaal", `locations.boerderij.name` → "De Kinderboerderij". Ook description-teksten herzien (muziekwinkel heet nu "gezellige muziekwinkel vol instrumenten" — past bij lokaal net zo goed). EN-equivalenten eveneens bijwerken.
 [ ] Waarom zijn de youtube video's niet in de sectie "Hoe werkt het" niet zichtbaar op mijn iPad. Wel een algemene play button, maar verder blijft het zwart.
+[ ] In studio timeline is er nu onder 8e spoor een grijs vlak. Of in ieder geval wanneer je naar beneden scrollt dan zie je een grijs vlak. Kunnen we dit blokkeren dat dus spoor 8 gewoon aan de onderkant is en dat je niet verder kan scrollen.
+[ ] De studio heeft 8 sporen. We moeten nadenken of we de optie willen inbouwen dat een leerling nog extra sporen kan toevoegen en zo ja, hoe?
 
 ---
 
@@ -113,26 +116,6 @@ Moet opgelost of bewust geaccepteerd zijn vóór eerste studententest. Vereist h
 7. Netwerk uit tijdens "online bewaren" (Supabase timeout).
 
 **Al oké (geen actie):** `dvh`/`svh` gebruik, AudioContext-unlock, Modal focus-restore (recent gefixt), clip-resize `transition-all` suppressie, memoization + `currentBeat`-val vermeden, `aspect-ratio` tegen layout shift, DnD collision.
-
-#### #79 — Clip-effecten: Fade In & Fade Out
-**Complexiteit:** Medium · **Status:** Concept · **Bron:** Gebruikersfeedback (2026-04-14) · **Type:** Feature
-**Afhankelijk van:** #33 ✅ (clip-effecten basis)
-
-Mogelijkheid om per clip een fade-in en/of fade-out toe te voegen. Bouwt voort op het bestaande `ClipEffects`-systeem (pitch, reverb, pan).
-
-**Scope:**
-- [ ] Twee nieuwe velden op `ClipEffects`: `fadeIn: number` (seconden, 0 = uit) en `fadeOut: number` (seconden, 0 = uit)
-- [ ] Tone.js implementatie: `player.volume.linearRampToValueAtTime()` bij clip start/eind
-- [ ] UI: twee sliders in `EffectsPopover` (fade in / fade out, 0-2s in stappen van 0.1s)
-- [ ] Werkt met clip-loop: fade-in alleen op eerste iteratie, fade-out alleen op laatste
-- [ ] Werkt met clip-trim: fade-duur beperkt tot effectieve clip-duur
-- [ ] Offline export (MP3 + video) moet fades correct renderen
-- [ ] Zod schema + localStorage persistentie
-
-**Technische overwegingen:**
-De huidige effect chain (geïsoleerde `Tone.Player` + `PitchShift` + `Reverb`) moet uitgebreid worden met volume automation. Fade is geen extra audio-node maar volume-scheduling op de player. Bij seek moet de fade-positie correct berekend worden (als je halverwege een fade-in seekt, moet het volume op het juiste tussenliggende niveau staan).
-
-**Verwant aan:** #33 ✅ (clip-effecten basis), #65 ✅ (clip-loop — interactie met fades)
 
 ---
 
@@ -485,7 +468,7 @@ Periodiek nalopen na elke feature: hardcoded teksten, NL/EN pariteit, vertaaldek
 | P1-A | Audio stop bij undo/redo | 2026-03-16 | `audioService.stop()` vóór state-restore in `useUndoRedoTimeline`. Voorkomt desync waarbij oude clips doorspelen na Ctrl+Z |
 | P1-B | AbortController op sample loading | 2026-03-16 | AbortController toegevoegd aan `useStudioPlayback` en `StagePlayback` sample loading. Voorkomt stale loads bij snelle navigatie |
 | #65 | Clip-loop (sample herhaalt binnen clip-duur) | 2026-03-18 | `loop`/`loopDurationBeats` op Clip interface. Resize handle (pointer events, niet dnd-kit) op rechterrand van geselecteerde clip. Loop genereert meerdere ClipEvents in `scheduleTimeline()`. Loop-aware seek via modulo-berekening. Loop-aware collision detection, duplicatie, export. Lichtere tint overlay voor herhalingen. `transition-all` uitgeschakeld tijdens resize om visuele jitter te voorkomen |
-| #33 | Clip-effecten: Pitch + Reverb | 2026-03-18 | Per-clip `Tone.PitchShift` (-12 tot +12 halftonen) en `Tone.Reverb` (0-100%). Geïsoleerde effect chains (eigen `Tone.Player` + nodes) per clip met effecten — shared players blijven ongewijzigd. `clipEffectChainMap` voor seek-support zodat `startActiveClips()` de juiste player gebruikt. EffectsPopover (portal-based, violet accent). Sparkles-icoon als indicator. Effecten meegekopieerd bij duplicate. Offline export bouwt per-clip effect chains |
+| #33 | Clip-effecten: Pitch + Reverb | 2026-03-18 | Per-clip `Tone.PitchShift` (-12 tot +12 halftonen) en `Tone.Reverb` (0-100%). Geïsoleerde effect chains (eigen `Tone.Player` + nodes) per clip met effecten — shared players blijven ongewijzigd. `clipEffectChainMap` voor seek-support zodat `startActiveClips()` de juiste player gebruikt. UI: oorspronkelijk EffectsPopover, later vervangen door EffectsModal (#79). Sparkles-icoon als indicator. Effecten meegekopieerd bij duplicate. Offline export bouwt per-clip effect chains |
 | UX-9 | Studio mobiele indeling | 2026-03-18 | Toolbar crowding fix (sample info pill + zoom hidden op mobile), full-row drag targets voor samples in library, narrowere track labels op mobile (w-4 i.p.v. w-5) |
 | #22 | Real-time geluiden toevoegen tijdens afspelen | 2026-03-19 | `audioVersion` counter in timelineStore (15 audio-relevante acties). `useRescheduleOnChange` hook detecteert wijzigingen tijdens playback. `rescheduleWhilePlaying()` op AudioService: stop players → reschedule → hervat vanaf zelfde beat. Alle timeline-wijzigingen (clips, volume, mute, trim, loop, pitch, reverb) klinken direct tijdens playback. Docs: `PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` |
 | #52 | Online bewaarcode (compositie overdracht) | 2026-03-19 | 6-karakter bewaarcode via `SaveOnlineModal` op podium. `save_composition_online` RPC → code + secret. Op ander apparaat: code invoeren → `load_saved_composition` + `claim_saved_composition` → laadt in studio. Secret in localStorage voor update-rechten. 60 dagen inactiviteit-expiry. Optioneel: klascode-koppeling + e-mail. Migratie: `004_save_codes.sql`. Docs: `PLAN-52-BEWAARCODE.md` |
@@ -497,6 +480,7 @@ Periodiek nalopen na elke feature: hardcoded teksten, NL/EN pariteit, vertaaldek
 | #72 | Praatplaat: Collaboratieve Klankkaart | 2026-03-26 | Basis-implementatie. Docent: CreatePraatplaatModal (naam + locatiekeuze), PraatplaatCard (thumbnail, toggle actief/inactief, verwijder), PraatplaatViewer (fullscreen presentatie met spots + clustering + klik-to-play via SubmissionPlayer). Leerling: ShareCodeInput detecteert 4-cijferige klascode → getActivePraatplaat() → PraatplaatSelectScreen (positie kiezen op afbeelding) → normaal componeren → auto-submit bij opslaan. Database: `praatplaten` tabel + 3 kolommen op `submissions`, 7 RPC functies, trigger voor 1 actieve per klas. Migratie: `005_praatplaten.sql`. Plan: `PLAN-72-PRAATPLAAT.md` |
 | #73 | Deelbare Praatplaat-link (Publieke Viewer) | 2026-04-15 | Publieke praatplaat-viewer via `?pp-share=CODE`. Database: `share_code`, `share_expires_at`, `share_view_count` kolommen op `praatplaten`. `generate_praatplaat_share_code()` checkt beide tabellen (praatplaten + submissions) voor cross-collision avoidance. `share_praatplaat()` RPC (auth, rate limited) genereert/verlengt 30-dagen code. `get_shared_praatplaat()` RPC (anon, rate limited 30/min) retourneert JSONB met metadata + submissions. SharedPraatplaatViewer: state machine (loading → waiting-gesture → ready + error/not-found/expired), audio init via `Tone.start()`. Generic clustering utility (`praatplaatClustering.ts`) gedeeld met teacher PraatplaatViewer. ShareCodeInput: 8-char fallback chain (template → share → praatplaat-share → not found). "Deel link" button in zowel PraatplaatCard als ClassDetail active assignment. Docentenhandleiding (TeacherGuideScreen) uitgebreid met praatplaat-sectie + tussenkopjes in alle secties (NL+EN). Migratie: `012_praatplaat_share.sql` |
 | #80 | Praatplaat: zoom naar gekozen positie in studio | 2026-04-15 | `StorytellingPanel` zoomt 2.5× in op de gekozen praatplaat-positie (x, y) via CSS `transform: scale()` + `transformOrigin`. Clamping (20%–80%) voorkomt crop buiten afbeelding. Toggle-knop (Crosshair/Maximize2) naast lightbox-knop. Default: ingezoomd. `CrossfadeImage` uitgebreid met `style` prop. Geen animatie, directe switch |
+| #79 | Clip-effecten: Fade In & Fade Out | 2026-04-16 | `fadeIn`/`fadeOut` (seconden) op `ClipEffects`. `EffectsModal` met waveform + altijd-zichtbare draggable fade handles + pitch/reverb sliders + preview met alle effecten (`playSampleWithEffects()`). Symmetrische exponentiële fade-curves: fade-in `x²` (geleidelijke opbouw), fade-out `(1-x)²` (soepele afdaling). Via `setValueCurveAtTime()` op aparte `FadeGain` node (gescheiden van clip-volume). Chain: Player → PitchShift → Reverb → FadeGain → Volume → Destination. Seek in fade-zone berekent tussenliggend volume + schedult resterende curve. Loop-interactie: fade-in alleen eerste iteratie, fade-out alleen laatste. Trim+fade clamping: bij inkorten worden fades proportioneel teruggeschaald als `fadeIn + fadeOut > newDuration`. Waveform-visualisatie: bars schalen in hoogte + kleurtransitie naar neutral-400 in fade-zones. Offline export (MP3 + video) hergebruikt zelfde curves. Toolbar: label-icoon verplaatst naar direct na sample-naam. Design tokens: alle UI in `accent-*` kleuren. Zod `optional().default(0)` voor backward compat. Plan: `PLAN-79-FADE.md` |
 
 ### Technische schuld (afgerond)
 

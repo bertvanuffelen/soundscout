@@ -2,12 +2,12 @@ import { memo, useRef, useEffect, useCallback, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles } from 'lucide-react';
-import type { Track as TrackType, Sample, Clip, Section } from '../../types';
+import type { Track as TrackType, Sample, Clip, Section, ClipEffects } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
 import { SectionBar } from './SectionBar';
 import { VolumePopover } from './VolumePopover';
-import { EffectsPopover } from './EffectsPopover';
+import { EffectsModal } from './EffectsModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration } from '../../utils/audio';
 import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, ZOOM_DEFAULT_DESKTOP, ZOOM_DEFAULT_MOBILE } from '../../constants/config';
@@ -26,8 +26,7 @@ interface ClipEditProps {
   onClipVolumeChange?: (db: number) => void;
   onClipMuteToggle?: (muted: boolean) => void;
   onClipLabelChange?: (label: string) => void;
-  onClipPitchChange?: (pitch: number) => void;
-  onClipReverbChange?: (reverb: number) => void;
+  onClipEffectsApply?: (effects: Partial<ClipEffects>) => void;
   locked?: boolean;
 }
 
@@ -123,9 +122,8 @@ export const Timeline = memo(function Timeline({
   const [showClipVolumePopover, setShowClipVolumePopover] = useState(false);
   const clipVolumeBtnRef = useRef<HTMLButtonElement>(null);
 
-  // --- Clip edit: effects popover state (#33) ---
-  const [showEffectsPopover, setShowEffectsPopover] = useState(false);
-  const effectsBtnRef = useRef<HTMLButtonElement>(null);
+  // --- Clip edit: effects modal state (#33, #79) ---
+  const [showEffectsModal, setShowEffectsModal] = useState(false);
 
   // --- Clip edit: label editing state (#66) ---
   const [showLabelInput, setShowLabelInput] = useState(false);
@@ -134,7 +132,6 @@ export const Timeline = memo(function Timeline({
 
   const handleClipVolumeClick = useCallback(() => {
     setShowClipVolumePopover((prev) => !prev);
-    setShowEffectsPopover(false);
   }, []);
 
   const handleCloseClipVolumePopover = useCallback(() => {
@@ -142,12 +139,12 @@ export const Timeline = memo(function Timeline({
   }, []);
 
   const handleEffectsClick = useCallback(() => {
-    setShowEffectsPopover((prev) => !prev);
+    setShowEffectsModal(true);
     setShowClipVolumePopover(false);
   }, []);
 
-  const handleCloseEffectsPopover = useCallback(() => {
-    setShowEffectsPopover(false);
+  const handleCloseEffectsModal = useCallback(() => {
+    setShowEffectsModal(false);
   }, []);
 
   const handleLabelToggle = useCallback(() => {
@@ -176,11 +173,11 @@ export const Timeline = memo(function Timeline({
     }
   }, [handleLabelSubmit]);
 
-  // Close clip volume popover, effects popover, and label input when selection changes
+  // Close clip volume popover, effects modal, and label input when selection changes
   useEffect(() => {
     if (!clipEdit) {
       setShowClipVolumePopover(false);
-      setShowEffectsPopover(false);
+      setShowEffectsModal(false);
       setShowLabelInput(false);
     }
   }, [clipEdit]);
@@ -305,31 +302,7 @@ export const Timeline = memo(function Timeline({
                 </span>
               </div>
 
-              {/* Trim — hidden for locked clips */}
-              {!clipEdit.locked && (
-                <button
-                  onClick={clipEdit.onTrim}
-                  aria-label={t('studio.trim')}
-                  title={t('studio.trim')}
-                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
-                >
-                  <Scissors size={14} className="text-neutral-600" />
-                </button>
-              )}
-
-              {/* Duplicate — hidden for locked clips */}
-              {!clipEdit.locked && clipEdit.onDuplicate && (
-                <button
-                  onClick={clipEdit.onDuplicate}
-                  aria-label={t('studio.duplicate')}
-                  title={t('studio.duplicate')}
-                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
-                >
-                  <Copy size={14} className="text-neutral-600" />
-                </button>
-              )}
-
-              {/* Label (#66) — toggle inline input */}
+              {/* Label (#66) — toggle inline input, right after sample name */}
               {clipEdit.onClipLabelChange && (
                 showLabelInput ? (
                   <input
@@ -360,6 +333,30 @@ export const Timeline = memo(function Timeline({
                 )
               )}
 
+              {/* Trim — hidden for locked clips */}
+              {!clipEdit.locked && (
+                <button
+                  onClick={clipEdit.onTrim}
+                  aria-label={t('studio.trim')}
+                  title={t('studio.trim')}
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+                >
+                  <Scissors size={14} className="text-neutral-600" />
+                </button>
+              )}
+
+              {/* Duplicate — hidden for locked clips */}
+              {!clipEdit.locked && clipEdit.onDuplicate && (
+                <button
+                  onClick={clipEdit.onDuplicate}
+                  aria-label={t('studio.duplicate')}
+                  title={t('studio.duplicate')}
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+                >
+                  <Copy size={14} className="text-neutral-600" />
+                </button>
+              )}
+
               {/* Volume */}
               {clipEdit.onClipVolumeChange && clipEdit.onClipMuteToggle && (
                 <button
@@ -382,17 +379,16 @@ export const Timeline = memo(function Timeline({
                 </button>
               )}
 
-              {/* Effects (#33) — pitch + reverb */}
-              {clipEdit.onClipPitchChange && clipEdit.onClipReverbChange && (
+              {/* Effects (#33, #79) — pitch, reverb, fade */}
+              {clipEdit.onClipEffectsApply && (
                 <button
-                  ref={effectsBtnRef}
                   onClick={handleEffectsClick}
                   aria-label={t('studio.effects')}
                   title={t('studio.effects')}
                   className={`
                     p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded-lg transition-colors
-                    ${((clipEdit.clip.effects?.pitch ?? 0) !== 0 || (clipEdit.clip.effects?.reverb ?? 0) > 0)
-                      ? 'bg-violet-50 text-violet-600 hover:bg-violet-100'
+                    ${((clipEdit.clip.effects?.pitch ?? 0) !== 0 || (clipEdit.clip.effects?.reverb ?? 0) > 0 || (clipEdit.clip.effects?.fadeIn ?? 0) > 0 || (clipEdit.clip.effects?.fadeOut ?? 0) > 0)
+                      ? 'bg-accent-50 text-accent-600 hover:bg-accent-100'
                       : 'hover:bg-neutral-100 active:bg-neutral-200 text-neutral-600'
                     }
                   `}
@@ -556,27 +552,18 @@ export const Timeline = memo(function Timeline({
         document.body,
       )}
 
-      {/* Effects popover (#33) — portal to escape overflow */}
-      {showEffectsPopover && clipEdit?.onClipPitchChange && clipEdit?.onClipReverbChange && effectsBtnRef.current && createPortal(
-        <div
-          style={{
-            position: 'fixed',
-            left: effectsBtnRef.current.getBoundingClientRect().left,
-            top: effectsBtnRef.current.getBoundingClientRect().top - 8,
-            transform: 'translateY(-100%)',
-            zIndex: 9999,
+      {/* Effects modal (#33, #79) — pitch, reverb, fade */}
+      {clipEdit?.onClipEffectsApply && (
+        <EffectsModal
+          clip={clipEdit.clip}
+          sample={clipEdit.sample}
+          isOpen={showEffectsModal}
+          onClose={handleCloseEffectsModal}
+          onApply={(effects) => {
+            clipEdit.onClipEffectsApply!(effects);
+            handleCloseEffectsModal();
           }}
-        >
-          <EffectsPopover
-            pitch={clipEdit.clip.effects?.pitch ?? 0}
-            reverb={clipEdit.clip.effects?.reverb ?? 0}
-            onPitchChange={clipEdit.onClipPitchChange}
-            onReverbChange={clipEdit.onClipReverbChange}
-            onClose={handleCloseEffectsPopover}
-            label={t(clipEdit.sample.name)}
-          />
-        </div>,
-        document.body,
+        />
       )}
 
       <div

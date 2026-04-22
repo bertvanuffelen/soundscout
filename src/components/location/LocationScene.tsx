@@ -156,14 +156,14 @@ export function LocationScene() {
   // Error state
   if (!location) {
     return (
-      <div className="min-h-screen bg-emerald-50 flex items-center justify-center">
-        <p className="text-lg text-gray-500">Location not found</p>
+      <div className="min-h-screen bg-success-50 flex items-center justify-center">
+        <p className="text-lg text-text-muted">Location not found</p>
       </div>
     );
   }
 
   return (
-    <div className="relative min-h-screen bg-slate-900 flex flex-col overflow-hidden">
+    <div className="relative min-h-screen bg-brand-900 flex flex-col overflow-hidden">
       {/* Main area: canvas + surrounding space */}
       <div className="flex-1 flex items-start justify-center pt-1 sm:pt-2 px-2 sm:px-4 pb-0">
         {/* 16:9 Canvas container */}
@@ -207,7 +207,7 @@ export function LocationScene() {
           {/* Library locked banner (#59) */}
           {isLibraryLocked && (
             <div className="absolute bottom-2 sm:bottom-3 left-1/2 -translate-x-1/2 z-20">
-              <div className="flex items-center gap-2 bg-amber-100/90 backdrop-blur-sm text-amber-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-md">
+              <div className="flex items-center gap-2 bg-accent-100/90 backdrop-blur-sm text-accent-800 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full text-xs sm:text-sm font-medium shadow-md">
                 <Lock className="w-3.5 h-3.5 flex-shrink-0" />
                 {t('templates.libraryLockedBanner')}
               </div>
@@ -256,11 +256,11 @@ export function LocationScene() {
           {isLoading && (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-30">
               <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
-                <p className="text-sky-700 font-semibold mb-3">{t('start.loading')}</p>
+                <p className="text-accent-700 font-semibold mb-3">{t('start.loading')}</p>
                 {/* Progress bar */}
                 <div className="w-full bg-neutral-200 rounded-full h-2 mb-2">
                   <div
-                    className="bg-sky-500 h-2 rounded-full transition-all duration-300"
+                    className="bg-accent-500 h-2 rounded-full transition-all duration-300"
                     style={{ width: `${loadingProgress}%` }}
                   />
                 </div>
@@ -273,11 +273,11 @@ export function LocationScene() {
           {!isLoading && hasError && (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-30">
               <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
-                <AlertCircle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-                <p className="text-gray-700 font-medium mb-2">
+                <AlertCircle className="w-12 h-12 text-accent-500 mx-auto mb-3" />
+                <p className="text-text-main font-medium mb-2">
                   {t('location.loadingError', { count: failedCount })}
                 </p>
-                <p className="text-gray-500 text-sm mb-4">
+                <p className="text-text-muted text-sm mb-4">
                   {t('location.loadingErrorHint')}
                 </p>
                 <Button onClick={retry} variant="primary">

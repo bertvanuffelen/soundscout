@@ -165,18 +165,18 @@ export function HotspotModal({
       onClose={onCancel}
       title={isEditMode ? `Audio — ${editHotspot.sampleId}` : 'Nieuwe Hotspot'}
       size="sm"
-      className="bg-slate-800 border-slate-700 text-white"
+      className="bg-brand-800 border-brand-700 text-white"
     >
       <form onSubmit={handleSubmit}>
         {/* Sample ID — only editable in new mode */}
         {!isEditMode && (
           <div className="mb-4">
-            <label className="block text-sm text-slate-400 mb-2">
+            <label className="block text-sm text-brand-400 mb-2">
               Sample ID
             </label>
             <div className="flex items-center gap-2">
               {prefix && (
-                <span className="text-slate-500 text-sm font-mono">{prefix}</span>
+                <span className="text-brand-500 text-sm font-mono">{prefix}</span>
               )}
               <input
                 type="text"
@@ -184,18 +184,18 @@ export function HotspotModal({
                 onChange={(e) => setSampleId(e.target.value)}
                 placeholder="bijv. golven"
                 autoFocus
-                className="flex-1 bg-slate-700 border border-slate-600 rounded-lg px-3 py-2 text-white placeholder:text-slate-500 font-mono"
+                className="flex-1 bg-brand-700 border border-brand-600 rounded-lg px-3 py-2 text-white placeholder:text-brand-500 font-mono"
               />
             </div>
-            <p className="mt-2 text-xs text-slate-500">
-              Volledige ID wordt: <span className="font-mono text-amber-400">{prefix}{sampleId || '...'}</span>
+            <p className="mt-2 text-xs text-brand-500">
+              Volledige ID wordt: <span className="font-mono text-accent-400">{prefix}{sampleId || '...'}</span>
             </p>
           </div>
         )}
 
         {/* MP3 Upload */}
         <div className="mb-4">
-          <label className="block text-sm text-slate-400 mb-2">
+          <label className="block text-sm text-brand-400 mb-2">
             {isEditMode ? 'Audio bestand' : 'Audio bestand (optioneel)'}
           </label>
 
@@ -213,35 +213,35 @@ export function HotspotModal({
                 variant="secondary"
                 size="sm"
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full bg-slate-700 hover:bg-slate-600 border-slate-600"
+                className="w-full bg-brand-700 hover:bg-brand-600 border-brand-600"
               >
                 <Upload size={16} className="mr-1.5" />
                 MP3 uploaden
               </Button>
             </div>
           ) : (
-            <div className="bg-slate-700/50 rounded-lg p-3 space-y-2">
+            <div className="bg-brand-700/50 rounded-lg p-3 space-y-2">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2 min-w-0">
-                  <Music size={16} className="text-emerald-400 flex-shrink-0" />
+                  <Music size={16} className="text-success-400 flex-shrink-0" />
                   <span className="text-sm text-white truncate">{audioFile.name}</span>
                 </div>
                 <button
                   type="button"
                   onClick={handleRemoveAudio}
-                  className="p-1 rounded hover:bg-slate-600 text-slate-400 hover:text-white flex-shrink-0"
+                  className="p-1 rounded hover:bg-brand-600 text-brand-400 hover:text-white flex-shrink-0"
                 >
                   <X size={14} />
                 </button>
               </div>
 
               {isLoadingAudio ? (
-                <p className="text-xs text-slate-500">Laden...</p>
+                <p className="text-xs text-brand-500">Laden...</p>
               ) : (
                 <>
                   {duration !== null && (
-                    <p className="text-xs text-slate-400">
-                      Duur: <span className="text-emerald-400 font-mono">{duration}s</span>
+                    <p className="text-xs text-brand-400">
+                      Duur: <span className="text-success-400 font-mono">{duration}s</span>
                     </p>
                   )}
                   {audioUrl && (
@@ -263,7 +263,7 @@ export function HotspotModal({
             type="button"
             variant="ghost"
             onClick={onCancel}
-            className="flex-1 bg-slate-700 hover:bg-slate-600"
+            className="flex-1 bg-brand-700 hover:bg-brand-600"
           >
             Annuleren
           </Button>

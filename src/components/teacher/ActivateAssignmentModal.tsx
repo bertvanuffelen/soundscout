@@ -169,7 +169,7 @@ function TemplateOption({
     >
       <div className="flex items-center gap-3">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-          isSelected ? 'bg-primary-500 text-white' : 'bg-amber-100 text-amber-700'
+          isSelected ? 'bg-primary-500 text-white' : 'bg-accent-100 text-accent-700'
         }`}>
           <FileText className="w-4 h-4" />
         </div>

@@ -49,7 +49,7 @@ export function LocationMarker({
         'absolute transform -translate-x-1/2 -translate-y-1/2',
         'flex flex-col items-center gap-0.5 sm:gap-1',
         'transition-transform duration-200 hover:scale-110 active:scale-95',
-        'cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 rounded-xl'
+        'cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 rounded-xl' // sky: three-state visual distinction
       )}
       style={{
         left: `${position.x}%`,
@@ -64,10 +64,10 @@ export function LocationMarker({
           'rounded-xl sm:rounded-2xl shadow-lg flex items-center justify-center',
           'border-2 sm:border-4 transition-colors',
           isComplete
-            ? 'bg-green-100 border-green-400'
+            ? 'bg-success-100 border-success-400'
             : hasProgress
-              ? 'bg-amber-100 border-amber-400'
-              : 'bg-white border-sky-300 hover:border-sky-400'
+              ? 'bg-accent-100 border-accent-400'
+              : 'bg-white border-sky-300 hover:border-sky-400' // sky: three-state distinction (success/accent/sky)
         )}
       >
         {position.iconUrl ? (
@@ -81,9 +81,9 @@ export function LocationMarker({
             className={cn(
               'w-2.5 h-2.5 sm:w-6 sm:h-6',
               isComplete
-                ? 'text-green-600'
+                ? 'text-success-600'
                 : hasProgress
-                  ? 'text-amber-600'
+                  ? 'text-accent-600'
                   : 'text-sky-600'
             )}
           />
@@ -92,7 +92,7 @@ export function LocationMarker({
 
       {/* Location Name - hidden on mobile */}
       <div className="hidden sm:block bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg shadow-md">
-        <span className="text-sm font-semibold text-gray-800">
+        <span className="text-sm font-semibold text-text-main">
           {t(location.name)}
         </span>
       </div>
@@ -102,10 +102,10 @@ export function LocationMarker({
         className={cn(
           'px-1.5 sm:px-2 py-0.5 rounded-full text-[10px] sm:text-xs font-bold shadow',
           isComplete
-            ? 'bg-green-500 text-white'
+            ? 'bg-success-500 text-white'
             : hasProgress
-              ? 'bg-amber-500 text-white'
-              : 'bg-gray-200 text-gray-600'
+              ? 'bg-accent-500 text-white'
+              : 'bg-neutral-200 text-text-muted'
         )}
       >
         {collected}/{total}

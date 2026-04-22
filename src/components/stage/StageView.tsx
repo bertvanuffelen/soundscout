@@ -135,16 +135,16 @@ export function StageView() {
   }, [exportVideo, activeStoryboard, tracks, librarySamples, totalBeats, sections, compositionName]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-900 overflow-hidden">
+    <div className="min-h-screen flex flex-col bg-brand-900 overflow-hidden">
       {/* Stage lights background effect */}
       <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 left-1/4 w-96 h-[500px] bg-gradient-to-b from-purple-500/20 via-purple-500/5 to-transparent rotate-12 blur-3xl" />
-        <div className="absolute -top-32 right-1/4 w-96 h-[500px] bg-gradient-to-b from-pink-500/20 via-pink-500/5 to-transparent -rotate-12 blur-3xl" />
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-80 h-[400px] bg-gradient-to-b from-amber-400/15 via-amber-400/5 to-transparent blur-3xl" />
-        <div className="absolute top-1/3 -left-32 w-96 h-96 bg-gradient-to-r from-blue-500/15 via-blue-500/5 to-transparent blur-3xl" />
-        <div className="absolute top-1/3 -right-32 w-96 h-96 bg-gradient-to-l from-cyan-500/15 via-cyan-500/5 to-transparent blur-3xl" />
-        <div className="absolute -bottom-20 left-1/3 w-80 h-60 bg-gradient-to-t from-emerald-500/10 via-emerald-500/5 to-transparent blur-3xl" />
-        <div className="absolute -bottom-20 right-1/3 w-80 h-60 bg-gradient-to-t from-rose-500/10 via-rose-500/5 to-transparent blur-3xl" />
+        <div className="absolute -top-32 left-1/4 w-96 h-[500px] bg-gradient-to-b from-stage-light-purple/20 via-stage-light-purple/5 to-transparent rotate-12 blur-3xl" />
+        <div className="absolute -top-32 right-1/4 w-96 h-[500px] bg-gradient-to-b from-stage-light-pink/20 via-stage-light-pink/5 to-transparent -rotate-12 blur-3xl" />
+        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-80 h-[400px] bg-gradient-to-b from-stage-light-amber/15 via-stage-light-amber/5 to-transparent blur-3xl" />
+        <div className="absolute top-1/3 -left-32 w-96 h-96 bg-gradient-to-r from-stage-light-blue/15 via-stage-light-blue/5 to-transparent blur-3xl" />
+        <div className="absolute top-1/3 -right-32 w-96 h-96 bg-gradient-to-l from-stage-light-cyan/15 via-stage-light-cyan/5 to-transparent blur-3xl" />
+        <div className="absolute -bottom-20 left-1/3 w-80 h-60 bg-gradient-to-t from-stage-light-emerald/10 via-stage-light-emerald/5 to-transparent blur-3xl" />
+        <div className="absolute -bottom-20 right-1/3 w-80 h-60 bg-gradient-to-t from-stage-light-pink/10 via-stage-light-pink/5 to-transparent blur-3xl" />
       </div>
 
       {/* Header */}
@@ -170,8 +170,8 @@ export function StageView() {
         <div
           className={`relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm transition-all ${
             submitFeedback.type === 'success'
-              ? 'bg-emerald-600/90 text-white'
-              : 'bg-red-600/90 text-white cursor-pointer'
+              ? 'bg-success-600/90 text-white'
+              : 'bg-error-600/90 text-white cursor-pointer'
           }`}
           onClick={submitFeedback.type === 'error' ? () => setSubmitFeedback(null) : undefined}
           role={submitFeedback.type === 'error' ? 'alert' : 'status'}
@@ -182,7 +182,7 @@ export function StageView() {
 
       {/* Save error toast (TP5-11) */}
       {saveError && (
-        <div className="relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm bg-red-600/90 text-white" role="alert">
+        <div className="relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm bg-error-600/90 text-white" role="alert">
           {saveError}
         </div>
       )}
@@ -192,8 +192,8 @@ export function StageView() {
         <div
           className={`relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm ${
             syncFeedback.type === 'success'
-              ? 'bg-emerald-600/90 text-white'
-              : 'bg-amber-600/90 text-white'
+              ? 'bg-success-600/90 text-white'
+              : 'bg-warning-600/90 text-white'
           }`}
           role={syncFeedback.type === 'error' ? 'alert' : 'status'}
         >

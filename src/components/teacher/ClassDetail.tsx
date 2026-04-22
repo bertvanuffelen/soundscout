@@ -184,10 +184,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {/* --- Actieve opdracht blok --- */}
         {!loading && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-4">
+            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-1">
               <Play className="w-5 h-5 text-primary-500" />
               {t('assignments.activeTitle')}
             </h2>
+            <p className="text-sm text-text-muted mb-4 ml-7">
+              {t('assignments.activeDescription')}
+            </p>
 
             {assignmentError && (
               <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4 text-sm">
@@ -330,9 +333,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {/* --- Eerdere opdrachten --- */}
         {!loading && !assignmentLoading && pastAssignments.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-sm font-semibold text-text-muted uppercase tracking-wider mb-3">
+            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-1">
+              <FileText className="w-5 h-5 text-primary-500" />
               {t('assignments.pastTitle')}
             </h2>
+            <p className="text-sm text-text-muted mb-4 ml-7">
+              {t('assignments.pastDescription')}
+            </p>
             <div className="space-y-2">
               {pastAssignments.map((pa) => (
                 <div
@@ -353,6 +360,19 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                 </div>
               ))}
             </div>
+          </div>
+        )}
+
+        {/* --- Inzendingen van leerlingen --- */}
+        {!loading && (
+          <div className="mb-4">
+            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-1">
+              <Music className="w-5 h-5 text-primary-500" />
+              {t('teacher.classDetail.submissionsTitle')}
+            </h2>
+            <p className="text-sm text-text-muted ml-7">
+              {t('teacher.classDetail.submissionsDescription')}
+            </p>
           </div>
         )}
 

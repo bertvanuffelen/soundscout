@@ -1,0 +1,38 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm run build:*)",
+      "Bash(tree:*)",
+      "Skill(sc:analyze)",
+      "Skill(sc:analyze:*)",
+      "WebFetch(domain:lucide.dev)",
+      "Bash(for f in public/audio/themes/winterspelen/ijsarena/*.mp3)",
+      "Bash(done)",
+      "Bash(ffprobe:*)",
+      "Bash(ls:*)",
+      "Bash(for f in /Users/bertvanuffelen/Documents/gebouwde-apps/SoundScout/public/audio/themes/winterspelen/winterdorp/*.mp3)",
+      "Bash(wc:*)",
+      "Bash(git rm *)",
+      "Bash(git restore *)",
+      "Bash(git commit *)",
+      "Bash(git stash *)",
+      "Bash(git checkout *)",
+      "Bash(git merge feature/transport-driven-audio --no-ff -m ' *)",
+      "Bash(git mv *)",
+      "Bash(sed -i '' 's/located in the `muziek-grid\\\\/` subdirectory:/located in the project root \\(SoundGrid\\\\/\\):/g' /Users/bertvanuffelen/Documents/gebouwde-apps/musicgrid/CLAUDE.md)",
+      "Bash(sed -i '' '/^cd muziek-grid$/d' /Users/bertvanuffelen/Documents/gebouwde-apps/musicgrid/CLAUDE.md)",
+      "Bash(git merge *)",
+      "Bash(git branch *)",
+      "Bash(npx playwright *)",
+      "Bash(xargs sed *)",
+      "Bash(sed -i '' 's/'\\\\''Oswald'\\\\''/'\\\\''Nunito'\\\\''/g; s/'\\\\''Barlow'\\\\''/'\\\\''Nunito'\\\\''/g' /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/admin/content-generator/components/LivePreview.js /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/utils/exportUtils.js /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/components/Common/ErrorBoundary.jsx)",
+      "Bash(sed -i '' 's|https://fonts.googleapis.com/css2?family=Nunito:wght@400;500;600;700&family=Nunito:wght@400;500;600;700|https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800|g' /Users/bertvanuffelen/Documents/gebouwde-apps/SoundGrid/src/admin/content-generator/components/LivePreview.js)",
+      "Bash(npx eslint *)",
+      "Bash(xargs -0 sed -i '' -e 's/#D08856/#0f172a/g' -e 's/#d08856/#0f172a/g' -e 's/#B8744A/#1e293b/g' -e 's/#b8744a/#1e293b/g' -e 's/#A0633F/#334155/g' -e 's/#a0633f/#334155/g' -e 's/#E4A876/#cbd5e1/g' -e 's/#e4a876/#cbd5e1/g' -e 's/#F5E5D3/#f1f5f9/g' -e 's/#f5e5d3/#f1f5f9/g' -e 's/rgba\\(208, *136, *86,/rgba\\(15, 23, 42,/g' -e 's/rgba\\(184, *116, *74,/rgba\\(30, 41, 59,/g' -e 's/rgba\\(160, *99, *63,/rgba\\(51, 65, 85,/g' -e 's/rgba\\(228, *168, *118,/rgba\\(203, 213, 225,/g' -e 's/rgba\\(245, *229, *211,/rgba\\(241, 245, 249,/g')",
+      "Bash(awk '{add+=$1; del+=$2} END {print \"added lines:\", add, \"/ removed:\", del}')",
+      "Bash(xargs -0 sed -i '' -E 's/^\\([[:space:]]*\\)color[[:space:]]*:[[:space:]]*var\\\\\\(--brand-orange\\\\\\)/\\\\1color: var\\(--brand-orange-ink\\)/g')",
+      "Bash(xargs -0 sed -i '' 's/var\\(--brand-orange, *#0f172a\\)/var\\(--brand-orange, #fbbf24\\)/g')",
+      "Bash(xargs -0 sed -i '' -E 's/^\\([[:space:]]*\\)color[[:space:]]*:[[:space:]]*var\\\\\\(--brand-orange, *#fbbf24\\\\\\)/\\\\1color: var\\(--brand-orange-ink, #b45309\\)/g')"
+    ]
+  }
+}

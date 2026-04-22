@@ -56,13 +56,13 @@ export class FeatureErrorBoundary extends Component<
       return (
         <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-6">
           <div className="max-w-sm w-full bg-white rounded-2xl shadow-lg p-6 text-center">
-            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-amber-100 flex items-center justify-center">
+            <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-warning-100 flex items-center justify-center">
               <span className="text-2xl">⚠️</span>
             </div>
-            <h3 className="text-lg font-bold text-gray-800 mb-2">
+            <h3 className="text-lg font-bold text-text-main mb-2">
               {i18n.t('error.featureError', { feature: this.props.featureName })}
             </h3>
-            <p className="text-gray-500 text-sm mb-4">
+            <p className="text-text-muted text-sm mb-4">
               {i18n.t('error.featureDescription')}
             </p>
             <button
@@ -75,10 +75,10 @@ export class FeatureErrorBoundary extends Component<
             {/* Dev-only error details */}
             {import.meta.env.DEV && this.state.error && (
               <details className="mt-4 text-left">
-                <summary className="text-xs text-gray-400 cursor-pointer hover:text-gray-600">
+                <summary className="text-xs text-neutral-400 cursor-pointer hover:text-neutral-600">
                   {i18n.t('error.technicalDetails')}
                 </summary>
-                <pre className="mt-1 p-2 bg-gray-100 rounded-lg text-[10px] text-red-600 overflow-auto max-h-32">
+                <pre className="mt-1 p-2 bg-neutral-100 rounded-lg text-[10px] text-error-600 overflow-auto max-h-32">
                   {this.state.error.message}
                   {'\n'}
                   {this.state.error.stack}

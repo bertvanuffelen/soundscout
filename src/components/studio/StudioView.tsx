@@ -78,8 +78,7 @@ export function StudioView() {
   const updateClipVolume = useTimelineStore((s) => s.updateClipVolume);
   const setClipMute = useTimelineStore((s) => s.setClipMute);
   const updateClipLabel = useTimelineStore((s) => s.updateClipLabel);
-  const updateClipPitch = useTimelineStore((s) => s.updateClipPitch);
-  const updateClipReverb = useTimelineStore((s) => s.updateClipReverb);
+  const updateClipEffects = useTimelineStore((s) => s.updateClipEffects);
   const hasClips = useTimelineStore((s) => s.selectHasClips());
 
   // Audio state
@@ -247,24 +246,14 @@ export function StudioView() {
     [selectedClipData, updateClipLabel],
   );
 
-  // Handle clip pitch change (#33)
-  const handleClipPitchChange = useCallback(
-    (pitch: number) => {
+  // Handle clip effects apply (#33, #79) — pitch, reverb, fade
+  const handleClipEffectsApply = useCallback(
+    (effects: Partial<import('../../types').ClipEffects>) => {
       if (selectedClipData) {
-        updateClipPitch(selectedClipData.trackIndex, selectedClipData.clip.id, pitch);
+        updateClipEffects(selectedClipData.trackIndex, selectedClipData.clip.id, effects);
       }
     },
-    [selectedClipData, updateClipPitch],
-  );
-
-  // Handle clip reverb change (#33)
-  const handleClipReverbChange = useCallback(
-    (reverb: number) => {
-      if (selectedClipData) {
-        updateClipReverb(selectedClipData.trackIndex, selectedClipData.clip.id, reverb);
-      }
-    },
-    [selectedClipData, updateClipReverb],
+    [selectedClipData, updateClipEffects],
   );
 
   // A11Y-1: Add selected library sample to first available track position
@@ -447,8 +436,7 @@ export function StudioView() {
             onClipVolumeChange: handleClipVolumeChange,
             onClipMuteToggle: handleClipMuteToggle,
             onClipLabelChange: handleClipLabelChange,
-            onClipPitchChange: handleClipPitchChange,
-            onClipReverbChange: handleClipReverbChange,
+            onClipEffectsApply: handleClipEffectsApply,
             locked: templateLockOptions.clipsLocked && (selectedClipData.clip.fromTemplate === true),
           } : null}
         />

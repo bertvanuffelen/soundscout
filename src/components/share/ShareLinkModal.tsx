@@ -107,13 +107,13 @@ export function ShareLinkModal({
       <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl font-bold text-gray-800 flex items-center gap-2">
+          <h2 className="text-xl font-bold text-text-main flex items-center gap-2">
             <Link2 className="w-5 h-5 text-accent-500" />
             {t('share.shareLink')}
           </h2>
           <button
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 p-1"
+            className="text-neutral-400 hover:text-text-muted p-1"
           >
             <X className="w-6 h-6" />
           </button>
@@ -122,7 +122,7 @@ export function ShareLinkModal({
         {/* Confirm state */}
         {state === 'confirm' && (
           <div>
-            <p className="text-gray-600 mb-4">
+            <p className="text-text-muted mb-4">
               {t('share.confirmDescription')}
             </p>
             <div className="flex gap-3">
@@ -152,14 +152,14 @@ export function ShareLinkModal({
         {state === 'generating' && (
           <div className="text-center py-8">
             <Loader2 className="w-12 h-12 text-accent-500 mx-auto mb-4 animate-spin" />
-            <p className="text-gray-600">{t('share.generating')}</p>
+            <p className="text-text-muted">{t('share.generating')}</p>
           </div>
         )}
 
         {/* Ready state */}
         {state === 'ready' && shareCode && (
           <div>
-            <p className="text-gray-600 mb-4">{t('share.linkReady')}</p>
+            <p className="text-text-muted mb-4">{t('share.linkReady')}</p>
 
             {/* Share URL */}
             <div className="flex gap-2 mb-4">
@@ -167,7 +167,7 @@ export function ShareLinkModal({
                 type="text"
                 value={shareUrl}
                 readOnly
-                className="flex-1 px-3 py-2 bg-neutral-50 border border-gray-300 rounded-lg text-sm text-gray-700 font-mono truncate"
+                className="flex-1 px-3 py-2 bg-neutral-50 border border-border-subtle rounded-lg text-sm text-text-muted font-mono truncate"
                 onClick={(e) => (e.target as HTMLInputElement).select()}
               />
               <Button
@@ -191,18 +191,18 @@ export function ShareLinkModal({
             </div>
 
             {/* Share code */}
-            <div className="bg-neutral-50 border border-gray-200 rounded-lg p-4 mb-4">
-              <p className="text-xs text-gray-500 mb-1">{t('share.code')}</p>
-              <p className="text-2xl font-mono font-bold text-gray-900 tracking-widest text-center">
+            <div className="bg-neutral-50 border border-border-subtle rounded-lg p-4 mb-4">
+              <p className="text-xs text-neutral-500 mb-1">{t('share.code')}</p>
+              <p className="text-2xl font-mono font-bold text-text-main tracking-widest text-center">
                 {shareCode}
               </p>
-              <p className="text-xs text-gray-400 mt-2 text-center">
+              <p className="text-xs text-neutral-400 mt-2 text-center">
                 {t('share.codeDescription')}
               </p>
             </div>
 
             {/* Expiry notice */}
-            <p className="text-xs text-gray-400 text-center mb-4">
+            <p className="text-xs text-neutral-400 text-center mb-4">
               {t('share.expiresIn')}
             </p>
 
@@ -219,8 +219,8 @@ export function ShareLinkModal({
         {/* Error state */}
         {state === 'error' && (
           <div className="text-center py-4">
-            <AlertCircle className="w-12 h-12 text-red-500 mx-auto mb-4" />
-            <p className="text-red-600 mb-4">{error}</p>
+            <AlertCircle className="w-12 h-12 text-error-500 mx-auto mb-4" />
+            <p className="text-error-600 mb-4">{error}</p>
             <div className="flex gap-3">
               <Button
                 variant="secondary"
