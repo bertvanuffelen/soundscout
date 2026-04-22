@@ -37,6 +37,12 @@ export interface SampleLoadResult {
 export class AudioService {
   private static instance: AudioService | null = null;
 
+  // Audio buffers: raw ToneAudioBuffer storage — NO audio graph footprint.
+  // Used by scheduleTimeline() to create on-demand players.
+  private buffers: Map<string, Tone.ToneAudioBuffer> = new Map();
+
+  // Preview players: minimal Tone.Player per sample for playSample()/playSampleRegion().
+  // Connected to Destination but only active during preview — negligible overhead.
   private players: Map<string, Tone.Player> = new Map();
   private waveformCache: Map<string, WaveformData> = new Map();
   private isInitialized = false;
@@ -155,16 +161,21 @@ export class AudioService {
   // ==========================================================================
 
   async loadSample(sample: Sample): Promise<SampleLoadResult> {
-    if (this.players.has(sample.id)) {
+    if (this.buffers.has(sample.id)) {
       return { sampleId: sample.id, success: true };
     }
 
     try {
-      const player = new Tone.Player({
-        url: sample.audioUrl,
-      }).toDestination();
+      // Load into a ToneAudioBuffer — no audio graph footprint.
+      // This is the primary storage used by scheduleTimeline().
+      const buffer = new Tone.ToneAudioBuffer();
+      await buffer.load(sample.audioUrl);
+      this.buffers.set(sample.id, buffer);
 
-      await player.load(sample.audioUrl);
+      // Also create a preview Player for playSample()/playSampleRegion().
+      // This is the only permanent Player per sample (one per unique sample,
+      // typically 6 — negligible overhead vs 85+ per-clip Players before).
+      const player = new Tone.Player(buffer).toDestination();
       this.players.set(sample.id, player);
 
       return { sampleId: sample.id, success: true };
@@ -264,7 +275,7 @@ export class AudioService {
    */
   private async loadSampleWithTimeout(sample: Sample): Promise<SampleLoadResult> {
     // Skip if already loaded
-    if (this.players.has(sample.id)) {
+    if (this.buffers.has(sample.id)) {
       return { sampleId: sample.id, success: true };
     }
 
@@ -284,8 +295,8 @@ export class AudioService {
   }
 
   isSampleLoaded(sampleId: string): boolean {
-    const player = this.players.get(sampleId);
-    return player?.loaded ?? false;
+    const buffer = this.buffers.get(sampleId);
+    return buffer?.loaded ?? false;
   }
 
   // ==========================================================================
@@ -355,8 +366,8 @@ export class AudioService {
     // Clean up any previous preview chain
     this.stopPreviewWithEffects();
 
-    const sourcePlayer = this.players.get(sampleId);
-    if (!sourcePlayer || !sourcePlayer.loaded) {
+    const buffer = this.buffers.get(sampleId);
+    if (!buffer || !buffer.loaded) {
       logger.warn(`Sample "${sampleId}" not loaded for effects preview`);
       return;
     }
@@ -383,8 +394,8 @@ export class AudioService {
       nodes.push(fadeGain);
     }
 
-    // Create isolated player from the source buffer
-    const player = new Tone.Player(sourcePlayer.buffer);
+    // Create isolated player from the shared buffer
+    const player = new Tone.Player(buffer);
 
     if (nodes.length > 0) {
       player.chain(...nodes, Tone.getDestination());
@@ -446,20 +457,17 @@ export class AudioService {
       return this.waveformCache.get(sampleId)!;
     }
 
-    const player = this.players.get(sampleId);
-    if (!player || !player.loaded || !player.buffer) {
+    const buffer = this.buffers.get(sampleId);
+    if (!buffer || !buffer.loaded) {
       return null;
     }
 
-    // Extract the underlying AudioBuffer from Tone.js
-    const toneBuffer = player.buffer;
-    if (!toneBuffer || toneBuffer.length === 0) {
+    if (buffer.length === 0) {
       return null;
     }
 
-    // Get the raw AudioBuffer
-    // Tone.js ToneAudioBuffer wraps the native AudioBuffer
-    const audioBuffer = toneBuffer.get() as AudioBuffer | undefined;
+    // Get the raw AudioBuffer from ToneAudioBuffer
+    const audioBuffer = buffer.get() as AudioBuffer | undefined;
     if (!audioBuffer) {
       return null;
     }
@@ -523,21 +531,21 @@ export class AudioService {
    * Create a simple isolated player with volume control only (no effects).
    * Used for polyphonic playback: each clip gets its own player so multiple
    * clips of the same sample can play simultaneously without conflicts.
-   * The player shares the source's AudioBuffer — no extra memory.
+   * The player uses the shared ToneAudioBuffer — no extra memory.
    */
   private createSimpleChain(
-    sourcePlayer: Tone.Player,
+    buffer: Tone.ToneAudioBuffer,
     volumeDb: number,
   ): { player: Tone.Player; nodes: Tone.ToneAudioNode[]; fadeGain: Tone.Gain | null } {
     const volumeNode = new Tone.Volume(volumeDb);
-    const player = new Tone.Player(sourcePlayer.buffer);
+    const player = new Tone.Player(buffer);
     player.chain(volumeNode, Tone.getDestination());
     return { player, nodes: [volumeNode], fadeGain: null };
   }
 
   /** Create an isolated player with effect nodes for a clip */
   private createEffectChain(
-    sourcePlayer: Tone.Player,
+    buffer: Tone.ToneAudioBuffer,
     clip: Clip,
     volumeDb: number,
   ): { player: Tone.Player; nodes: Tone.ToneAudioNode[]; fadeGain: Tone.Gain | null } {
@@ -567,8 +575,8 @@ export class AudioService {
     // Volume node (always needed)
     nodes.push(new Tone.Volume(volumeDb));
 
-    // Create isolated player using the source player's buffer
-    const player = new Tone.Player(sourcePlayer.buffer);
+    // Create isolated player using the shared buffer
+    const player = new Tone.Player(buffer);
 
     // Chain: player → [pitchShift] → [reverb] → [fadeGain] → volume → destination
     if (nodes.length > 0) {
@@ -643,10 +651,10 @@ export class AudioService {
       const trackMuted = track.mute ?? false;
 
       track.clips.forEach((clip) => {
-        const player = this.players.get(clip.sampleId);
+        const buffer = this.buffers.get(clip.sampleId);
         const sample = sampleMap.get(clip.sampleId);
 
-        if (!player || !player.loaded || !sample) return;
+        if (!buffer || !buffer.loaded || !sample) return;
         totalClipCount++;
 
         const clipVolume = clip.effects?.volume ?? 0;
@@ -657,23 +665,18 @@ export class AudioService {
         const singleDuration = getClipDuration(clip, sample);
 
         // Create an isolated player for EVERY non-muted clip (#polyphony).
-        // Previously only clips with effects got isolated players — clips
-        // without effects shared one Tone.Player per sampleId. That meant
-        // overlapping clips of the same sample were silently dropped (the
-        // dedup guard skipped them). With 85+ clips on 6 samples this caused
-        // audible stuttering and missing sounds.
-        // Now every clip gets its own player (sharing the same AudioBuffer,
-        // so no extra memory). Clips with effects get the full chain;
+        // Each player shares the same ToneAudioBuffer — no extra memory.
+        // Clips with effects get the full chain (pitch/reverb/fade);
         // clips without effects get a simple volume-only chain.
         let effectChainIndex: number | undefined;
         if (isMuted) mutedClipCount++;
         if (!isMuted) {
           if (this.clipHasEffects(clip)) {
-            const chain = this.createEffectChain(player, clip, volumeDb);
+            const chain = this.createEffectChain(buffer, clip, volumeDb);
             effectChainIndex = this.effectChains.length;
             this.effectChains.push(chain);
           } else {
-            const chain = this.createSimpleChain(player, volumeDb);
+            const chain = this.createSimpleChain(buffer, volumeDb);
             effectChainIndex = this.effectChains.length;
             this.effectChains.push(chain);
           }
@@ -1404,23 +1407,29 @@ export class AudioService {
   // ==========================================================================
 
   /**
-   * Dispose players that are no longer needed.
+   * Dispose buffers and preview players that are no longer needed.
    * Call during theme switches to prevent unbounded memory growth.
    *
    * @param activeSampleIds - IDs of samples that should be kept loaded
    */
   disposeUnusedPlayers(activeSampleIds: Set<string>): void {
     let disposedCount = 0;
-    for (const [sampleId, player] of this.players) {
+    for (const [sampleId, buffer] of this.buffers) {
       if (!activeSampleIds.has(sampleId)) {
-        player.dispose();
-        this.players.delete(sampleId);
+        buffer.dispose();
+        this.buffers.delete(sampleId);
+        // Also dispose the corresponding preview player
+        const player = this.players.get(sampleId);
+        if (player) {
+          player.dispose();
+          this.players.delete(sampleId);
+        }
         this.waveformCache.delete(sampleId);
         disposedCount++;
       }
     }
     if (disposedCount > 0) {
-      logger.info(`Disposed ${disposedCount} unused audio players`);
+      logger.info(`Disposed ${disposedCount} unused audio buffers`);
     }
   }
 
@@ -1441,7 +1450,13 @@ export class AudioService {
     this.scheduledTracks = [];
     this.scheduledSamples = [];
 
-    // Dispose sample players
+    // Dispose audio buffers
+    this.buffers.forEach((buffer) => {
+      buffer.dispose();
+    });
+    this.buffers.clear();
+
+    // Dispose preview players
     this.players.forEach((player) => {
       player.dispose();
     });
