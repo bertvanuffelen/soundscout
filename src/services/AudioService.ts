@@ -92,6 +92,13 @@ export class AudioService {
   // (e.g. edits while paused in the studio).
   private _scheduledAtVersion: number = -1;
 
+  // Track buses: 8 Gain nodes (one per track) → masterBus → Destination.
+  // Lazy-initialized on first scheduleTimeline() call. Persist across
+  // schedule/stop cycles — only disposed in dispose().
+  // Total permanent nodes: 9 (8 buses + 1 master). Was 170+ before refactor.
+  private trackBuses: Tone.Gain[] = [];
+  private masterBus: Tone.Volume | null = null;
+
   private constructor() {
     // Private constructor for singleton
   }
@@ -496,6 +503,59 @@ export class AudioService {
   // TIMELINE SCHEDULING & PLAYBACK
   // ==========================================================================
 
+  // --- Track bus infrastructure ---
+
+  /** Number of track buses (matches fixed track count in timelineStore) */
+  private static readonly TRACK_BUS_COUNT = 8;
+
+  /**
+   * Ensure track buses exist. Lazy-initialized on first use.
+   * Creates 8 Gain nodes → 1 master Volume → Destination.
+   * These persist across schedule/stop cycles for efficiency.
+   */
+  private ensureTrackBuses(): void {
+    if (this.trackBuses.length > 0) return;
+
+    this.masterBus = new Tone.Volume(0).toDestination();
+    for (let i = 0; i < AudioService.TRACK_BUS_COUNT; i++) {
+      const bus = new Tone.Gain(1).connect(this.masterBus);
+      this.trackBuses.push(bus);
+    }
+    logger.audio('trackBuses initialized', { count: this.trackBuses.length });
+  }
+
+  /**
+   * Update track bus volumes and mute states from track data.
+   * Called at the start of scheduleTimeline() to sync bus gains with
+   * current track volume/mute settings.
+   */
+  private updateTrackBuses(tracks: Track[]): void {
+    tracks.forEach((track, index) => {
+      if (index >= this.trackBuses.length) return;
+      const bus = this.trackBuses[index];
+      const muted = track.mute ?? false;
+      const volumeDb = track.volume ?? 0;
+      // Convert dB to linear gain for the bus
+      // Muted tracks get gain 0, otherwise convert from dB
+      bus.gain.value = muted ? 0 : Math.pow(10, volumeDb / 20);
+    });
+  }
+
+  /**
+   * Dispose track buses and master bus.
+   * Only called from dispose() — buses persist across schedule cycles.
+   */
+  private disposeTrackBuses(): void {
+    this.trackBuses.forEach((bus) => {
+      try { bus.dispose(); } catch { /* ignore */ }
+    });
+    this.trackBuses = [];
+    if (this.masterBus) {
+      try { this.masterBus.dispose(); } catch { /* ignore */ }
+      this.masterBus = null;
+    }
+  }
+
   // --- Effect chain helpers (#33) ---
 
   /** Check if a clip has non-default effects (pitch, reverb, or fade) */
@@ -624,6 +684,10 @@ export class AudioService {
     // Dispose previous effect chains
     this.disposeEffectChains();
     this.clipEffectChainMap.clear();
+
+    // Ensure track buses exist (lazy init) and sync volume/mute
+    this.ensureTrackBuses();
+    this.updateTrackBuses(tracks);
 
     // Build lookup map for quick sample access
     const sampleMap = new Map(samples.map((s) => [s.id, s]));
@@ -1449,6 +1513,9 @@ export class AudioService {
     // Clear timeline data
     this.scheduledTracks = [];
     this.scheduledSamples = [];
+
+    // Dispose track buses
+    this.disposeTrackBuses();
 
     // Dispose audio buffers
     this.buffers.forEach((buffer) => {
