@@ -314,11 +314,11 @@ git revert <hash>  # Of: git reset --hard <hash>
 
 | Datum | Stap | Status | Notities |
 |---|---|---|---|
-| 2026-04-22 | Voorbereiding | ✅ | Backup branch aangemaakt, AudioService.ts geanalyseerd (1481 regels), plan geschreven |
-| | Stap 1 | ⬜ | |
-| | Stap 2 | ⬜ | |
-| | Stap 3 | ⬜ | |
-| | Stap 4 | ⬜ | |
+| 2026-04-22 | Voorbereiding | ✅ | Backup branch `backup/pre-audio-refactor` (commit `520bcf2`), AudioService.ts geanalyseerd (1481 regels), plan geschreven |
+| 2026-04-22 | Stap 1 | ✅ | Buffer-gebaseerde sample opslag (commit `c860844`). `this.buffers: Map<sampleId, ToneAudioBuffer>` als primaire opslag. Preview Players behouden voor playSample/playSampleRegion. Build+lint+227 tests OK. |
+| 2026-04-22 | Stap 2 | ✅ | Track bus infrastructuur (commit `63776e7`). 8 Gain buses + 1 master Volume, lazy init, buses→mute only. Build+tests OK. |
+| 2026-04-22 | Stap 3a | ✅ | Route chains via track buses (commit `47570f2`). createSimpleChain/createEffectChain routeren naar trackBuses[i] i.p.v. Destination. Build+tests OK. |
+| 2026-04-22 | Stap 3b+3c | ✅ | **KERN-REFACTOR** (commit `f17c19c`). On-demand player creatie in Part callback + startActiveClips. `createOnDemandPlayer()` + `activeSources` Set + `disposeActiveSources()`. Verwijderd: effectChains[], clipEffectChainMap, sharedPlayerLastStart, createSimpleChain, createEffectChain, disposeEffectChains. 232 regels erbij, 338 eruit. Build+lint+227 tests OK. |
 | | Stap 5 | ⬜ | |
 | | Stap 6 | ⬜ | |
 | | Stap 7 | ⬜ | |

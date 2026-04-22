@@ -169,9 +169,9 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
       audioService.pause();
       setPlayerState('paused');
     } else if (audioService.hasActiveSchedule()) {
-      // Resume — reuse existing Part + effect chains (no reschedule needed).
-      // The Part events and chains survive pause() and fire correctly when
-      // the Transport resumes from the paused position.
+      // Resume — reuse existing Part (no reschedule needed).
+      // The Part survives pause() and its callback creates fresh on-demand
+      // players when the Transport resumes from the paused position.
       audioDiag.resumeWithExistingSchedule(currentBeat);
       audioService.play(currentBeat);
       setPlayerState('playing');
