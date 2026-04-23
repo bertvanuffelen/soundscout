@@ -216,14 +216,6 @@ export const Timeline = memo(function Timeline({
 
   // widthMultiplier: 1.0 = fit all beats in viewport, 2.0 = half visible, etc.
   const widthMultiplier = zoomLevel;
-
-  // Exact content height for scroll-container: ruler + tracks + optional section bar
-  // Uses CSS variable --track-h (2.5rem mobile / 3rem desktop) for responsive track height
-  const trackAreaHeight = useMemo(() => {
-    const rulerH = '1rem';                                          // h-4 = 16px
-    const sectionBarH = sections.length > 0 ? ' + 1.3125rem' : '';  // h-5 + 1px border = 21px
-    return `calc(${rulerH} + ${tracks.length} * var(--track-h)${sectionBarH})`;
-  }, [tracks.length, sections.length]);
   const playheadPercent = (currentBeat / totalBeats) * 100;
 
   // Zoom handlers — center on playhead position
@@ -576,8 +568,7 @@ export const Timeline = memo(function Timeline({
 
       <div
         ref={scrollContainerRef}
-        className="relative overflow-x-auto overflow-y-auto bg-neutral-50/50 md:bg-neutral-100/50"
-        style={{ maxHeight: trackAreaHeight }}
+        className="relative overflow-x-auto overflow-y-auto min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
         onClick={handleTimelineClick}
       >
         {/* Scrollable content wrapper */}
