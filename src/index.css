@@ -288,3 +288,13 @@ input:focus:not(:focus-visible),
   display: inline-block;
   animation: audience-bounce 0.6s ease-in-out infinite;
 }
+
+/* Timeline track height — used by scroll-container to calculate exact content height */
+:root {
+  --track-h: 2.5rem; /* h-10 = 40px */
+}
+@media (min-width: 640px) {
+  :root {
+    --track-h: 3rem; /* sm:h-12 = 48px */
+  }
+}
