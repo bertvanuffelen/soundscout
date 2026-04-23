@@ -317,8 +317,8 @@
   },
   "locations": {
     "boerderij": {
-      "name": "De Boerderij",
-      "description": "Een gezellige boerderij vol dierengeluiden"
+      "name": "De Kinderboerderij",
+      "description": "Een gezellige kinderboerderij vol dierengeluiden"
     },
     "speeltuin": {
       "name": "De Speeltuin",
@@ -333,8 +333,8 @@
       "description": "Een sportieve gymzaal vol actieve geluiden"
     },
     "muziekwinkel": {
-      "name": "De Muziekwinkel",
-      "description": "Een gezellige muziekwinkel vol instrumenten"
+      "name": "Het Muzieklokaal",
+      "description": "Een gezellig muzieklokaal vol instrumenten"
     },
     "klaslokaal": {
       "name": "Het Klaslokaal",

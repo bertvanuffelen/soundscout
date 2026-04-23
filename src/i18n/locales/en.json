@@ -317,8 +317,8 @@
   },
   "locations": {
     "boerderij": {
-      "name": "The Farm",
-      "description": "A cozy farm full of animal sounds"
+      "name": "The Petting Zoo",
+      "description": "A cozy petting zoo full of animal sounds"
     },
     "speeltuin": {
       "name": "The Playground",
@@ -333,8 +333,8 @@
       "description": "A sporty gym full of active sounds"
     },
     "muziekwinkel": {
-      "name": "The Music Store",
-      "description": "A cozy music store full of instruments"
+      "name": "The Music Room",
+      "description": "A cozy music room full of instruments"
     },
     "klaslokaal": {
       "name": "The Classroom",
