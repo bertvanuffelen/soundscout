@@ -279,7 +279,7 @@ export const Timeline = memo(function Timeline({
   }, [currentBeat, totalBeats, isPlaying]);
 
   return (
-    <div className="flex flex-col shrink-0" role="region" aria-label={t('studio.timeline')}>
+    <div className={`flex flex-col shrink-0 ${composeMode === 'free' ? 'max-h-[50dvh]' : 'max-h-[40dvh]'}`} role="region" aria-label={t('studio.timeline')}>
       {/* --- Header bar: label | clip edit (center) | tools (right) --- */}
       <div className="flex items-center px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
         {/* Left: timeline label */}
