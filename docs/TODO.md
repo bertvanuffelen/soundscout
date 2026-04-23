@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-04-15
+**Laatst bijgewerkt**: 2026-04-23
 
 ---
 
@@ -8,10 +8,7 @@
 
 > Plaats hier ideeën, bugs of verzoeken. Claude verwerkt ze later naar de juiste prioriteit.
 
-[ ] Naaminconsistentie thema "basis": stadsplattegrond toont "MUZIEKLOKAAL" en "KINDERBOERDERIJ", maar i18n-labels zijn "De Muziekwinkel" en "De Boerderij". Alleen de weergavenamen in `src/i18n/locales/{nl,en}.json` aanpassen — IDs (`muziekwinkel`, `boerderij`) en bestandsnamen/paden blijven ongewijzigd. Voorstel: `locations.muziekwinkel.name` → "Het Muzieklokaal", `locations.boerderij.name` → "De Kinderboerderij". Ook description-teksten herzien (muziekwinkel heet nu "gezellige muziekwinkel vol instrumenten" — past bij lokaal net zo goed). EN-equivalenten eveneens bijwerken.
-[ ] Waarom zijn de youtube video's niet in de sectie "Hoe werkt het" niet zichtbaar op mijn iPad. Wel een algemene play button, maar verder blijft het zwart.
-[ ] In studio timeline is er nu onder 8e spoor een grijs vlak. Of in ieder geval wanneer je naar beneden scrollt dan zie je een grijs vlak. Kunnen we dit blokkeren dat dus spoor 8 gewoon aan de onderkant is en dat je niet verder kan scrollen.
-[ ] De studio heeft 8 sporen. We moeten nadenken of we de optie willen inbouwen dat een leerling nog extra sporen kan toevoegen en zo ja, hoe?
+_(Leeg — alle items zijn verwerkt naar de juiste prioriteit of afgerond)_
 
 ---
 
@@ -24,10 +21,12 @@ Vereist hands-on device testen (iPad, Android, Chromebook). Issues hangen samen.
 
 | Issue | Titel | Complexiteit |
 |-------|-------|-------------|
-| #MOBILE-AUDIT-BLOKKER | Touch-targets + iOS video-export | Medium |
-| #MOBILE-AUDIT-BELANGRIJK | Safe-area, autoscroll, overscroll | Klein-Medium |
-| #16 | Touch gevoeligheid & autoplay (resterende items) | Medium-Hoog |
-| #59-TEST | Template lock-opties hands-on testen | Laag |
+| #MOBILE-AUDIT-BLOKKER | Touch-targets + iOS video-export | Medium — iPad OK ✅, iPhone/Android open |
+| #MOBILE-AUDIT-BELANGRIJK | Safe-area, autoscroll, overscroll | Klein-Medium — iPad test 8-11 open |
+| #16 | Touch gevoeligheid & autoplay (resterende items) | Laag — iPad OK ✅, Chromebook open |
+| #59-TEST | Template lock-opties hands-on testen | Laag — iPad test 12-18 open |
+| UX-LOOP | Loop resize handle te klein op touch | Klein-Medium |
+| UX-LANDSCAPE | Landscape-hint tonen op tablet/telefoon | Laag |
 
 ### Bundel D — Code-kwaliteit quick wins (~3 uur)
 Kleine verbeteringen die in rustiger momenten opgepakt kunnen worden.
@@ -83,10 +82,24 @@ Doorgevoerde verbeteringen:
 - [x] `touch-action: none` op Track containers (voorkomt scroll-interpretatie van drag)
 
 Resterende items (vereisen hands-on testen op iPad, Android tablet, Chromebook):
-- [ ] Valideer of sensor config nu correct aanvoelt op touch
-- [ ] Touch targets evalueren (44px minimum) — vooral clips bij laag zoomniveau
-- [ ] Dubbele touch events reproduceren en oplossen
+- [x] Valideer of sensor config nu correct aanvoelt op touch — ✅ iPad (2026-04-23)
+- [x] Touch targets evalueren (44px minimum) — ✅ iPad (2026-04-23)
+- [x] Dubbele touch events reproduceren en oplossen — ✅ niet gereproduceerd op iPad (2026-04-23)
 - [ ] Testen autoplay unlock op Chromebook met beheerder-policies
+
+---
+
+#### BUG-TIMELINE-GRIJS — Grijs vlak onder spoor 8 in studio timeline 🔧 IN ONDERZOEK
+**Complexiteit:** Laag-Medium · **Bron:** Hands-on test (2026-04-23) · **Status:** Oorzaak geïdentificeerd, fix nog niet correct
+
+De scroll-container van de timeline (`overflow-y-auto min-h-0`) is groter dan de 8 tracks, waardoor een grijs vlak (`bg-neutral-50/50`) zichtbaar is onder spoor 8. Eerste fix (`overflow-y-hidden`) blokkeerde alle verticale scroll. Tweede fix (`flex-1` verwijderd) lost het niet op omdat de container zijn hoogte van de parent flex-layout krijgt. Verdere analyse nodig van de interactie tussen `max-h-[50dvh]` op Timeline root en de flex-distributie in StudioView.
+
+---
+
+#### BUG-YOUTUBE — YouTube video's zwart op iPad in "Hoe werkt het"
+**Complexiteit:** Laag · **Bron:** Hands-on test (2026-04-23) · **Status:** Nog niet onderzocht
+
+In de `TutorialScreen` ("Hoe werkt het?") tonen YouTube video's alleen een generieke play-knop maar blijven verder zwart op iPad. Mogelijk een iframe sandboxing-, autoplay-, of cookie-consent-issue specifiek voor iOS Safari.
 
 ---
 
@@ -96,14 +109,17 @@ Resterende items (vereisen hands-on testen op iPad, Android tablet, Chromebook):
 
 Moet opgelost of bewust geaccepteerd zijn vóór eerste studententest. Vereist hands-on testen op iPhone, Android en iPad.
 
-- [ ] **Touch-targets Timeline header te klein (28×28 px)** — clip-edit + mute-toggle.
-  - `src/components/studio/Timeline.tsx:385-407` — `min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px]`
-  - `src/components/studio/VolumePopover.tsx:141-152` — mute 32×32 op alle formaten
-  - Fix: `min-w-[40px] sm:min-w-[44px]` voor primaire acties; 44 px voor mute
-- [ ] **Video-export faalt stil op iOS Safari** — WebCodecs niet ondersteund, fallback naar WebM wat Safari niet kan afspelen.
-  - `src/utils/videoExportEngines.ts:55-87` — engine-detectie
-  - `src/components/stage/StageView.tsx` + `StageActionsModal.tsx` — geen `unsupported`-state
-  - Fix: feature-detect + `VideoExportState['unsupported']` + duidelijke boodschap naar gebruiker
+- [x] **Touch-targets Timeline header** — ✅ iPad: knoppen goed raakbaar (2026-04-23). Eventueel nog op iPhone testen.
+- [x] **Video-export op iPad Safari** — ✅ werkt (2026-04-23). Mogelijk alsnog probleem op iPhone Safari; iPhone test staat nog open.
+
+**iPad-testmatrix resultaten (2026-04-23):**
+- [x] Volledige audio-refactor (PERF-1): alle playback-scenario's getest — geen dropouts, geen kraakjes, seek/pause/resume/effects/loops OK
+- [x] Clip slepen, trimmen, volume/effects — OK
+- [x] MP3-export — OK
+- [x] Video-export — OK
+- [x] Landscape-rotatie midden in compositie — OK
+- [x] Audio bij mute-schakelaar — OK
+- [ ] Nog testen op iPhone en Android
 
 **Testmatrix per toestel** (iPhone met notch / Android / iPad / Chromebook):
 
@@ -140,6 +156,22 @@ Geen blokker, maar duidelijk merkbare problemen op iOS/Android. Oppakken kort na
 - [ ] **TouchSensor delay 200 ms voelt traag op iPad.**
   - `src/config.ts:80` — `TOUCH_ACTIVATION_DELAY_MS`
   - Fix: test 150 ms
+
+---
+
+#### UX-LOOP — Loop resize handle te klein op touch-apparaten
+**Complexiteit:** Klein-Medium · **Bron:** iPad-test (2026-04-23) · **Status:** Open
+
+De rechterrand van een looping clip is op iPad moeilijk te pakken om de loopduur aan te passen. Oplossingsrichtingen: bij ingedrukt houden een grotere sleepmarge creëren, visueel grotere handle tonen op touch-apparaten, of een apart resize-icoon toevoegen.
+
+**Verwant aan:** Bundel C (Mobile/touch hardening)
+
+---
+
+#### UX-FADE-LOOP — Fade-gedrag bij looping clips heroverwegen
+**Complexiteit:** Laag · **Bron:** iPad-test (2026-04-23) · **Status:** Ontwerpbeslissing open
+
+Huidige logica: fade-in alleen bij eerste loop-iteratie, fade-out alleen bij laatste. Gebruiker verwacht mogelijk dat elke herhaling een eigen fade-in en fade-out heeft ("elke loop als eigen puls"). Beide benaderingen zijn verdedigbaar — keuze maken en eventueel als instelling aanbieden.
 
 ---
 
@@ -201,6 +233,20 @@ Leerlingen werken aan verschillende afbeeldingen van een storyboard die later sa
 ---
 
 ### P3 — Middel prioriteit
+
+#### UX-LANDSCAPE — Landscape-hint tonen op tablet/telefoon
+**Complexiteit:** Laag · **Bron:** iPad-test (2026-04-23) · **Status:** Open
+
+Toon een subtiele eenmalige melding (toast of banner) wanneer de app in portrait wordt geopend op tablet/telefoon, met suggestie om naar landscape te draaien. Vooral relevant in de Studio. Tailwind heeft ingebouwde `landscape:` utility. Dismissal opslaan in localStorage.
+
+---
+
+#### UX-EXTRA-SPOREN — Optie voor extra sporen in studio
+**Complexiteit:** Medium · **Bron:** Eigen observatie (2026-04-23) · **Status:** Concept — beslissing nodig
+
+De studio heeft 8 vaste sporen. Overweging: wil je leerlingen de mogelijkheid geven om extra sporen toe te voegen? Zo ja: hoe (knop onderaan tracks, automatisch bij vol)? Pedagogische overweging: meer sporen = meer complexiteit, maar ook meer muzikale mogelijkheden. Architectureel: `tracks` array in timelineStore is nu 8 fixed, zou dynamisch moeten worden.
+
+---
 
 #### #MOBILE-AUDIT-MONITOR — Aandachtspunten uit mobile audit ⏳ NA TESTEN
 **Complexiteit:** Klein-Medium · **Bron:** Audit (2026-04-14) · **Type:** Code-kwaliteit + robuustheid · **Status:** Wacht op hands-on device test
@@ -481,6 +527,9 @@ Periodiek nalopen na elke feature: hardcoded teksten, NL/EN pariteit, vertaaldek
 | #73 | Deelbare Praatplaat-link (Publieke Viewer) | 2026-04-15 | Publieke praatplaat-viewer via `?pp-share=CODE`. Database: `share_code`, `share_expires_at`, `share_view_count` kolommen op `praatplaten`. `generate_praatplaat_share_code()` checkt beide tabellen (praatplaten + submissions) voor cross-collision avoidance. `share_praatplaat()` RPC (auth, rate limited) genereert/verlengt 30-dagen code. `get_shared_praatplaat()` RPC (anon, rate limited 30/min) retourneert JSONB met metadata + submissions. SharedPraatplaatViewer: state machine (loading → waiting-gesture → ready + error/not-found/expired), audio init via `Tone.start()`. Generic clustering utility (`praatplaatClustering.ts`) gedeeld met teacher PraatplaatViewer. ShareCodeInput: 8-char fallback chain (template → share → praatplaat-share → not found). "Deel link" button in zowel PraatplaatCard als ClassDetail active assignment. Docentenhandleiding (TeacherGuideScreen) uitgebreid met praatplaat-sectie + tussenkopjes in alle secties (NL+EN). Migratie: `012_praatplaat_share.sql` |
 | #80 | Praatplaat: zoom naar gekozen positie in studio | 2026-04-15 | `StorytellingPanel` zoomt 2.5× in op de gekozen praatplaat-positie (x, y) via CSS `transform: scale()` + `transformOrigin`. Clamping (20%–80%) voorkomt crop buiten afbeelding. Toggle-knop (Crosshair/Maximize2) naast lightbox-knop. Default: ingezoomd. `CrossfadeImage` uitgebreid met `style` prop. Geen animatie, directe switch |
 | #79 | Clip-effecten: Fade In & Fade Out | 2026-04-16 | `fadeIn`/`fadeOut` (seconden) op `ClipEffects`. `EffectsModal` met waveform + altijd-zichtbare draggable fade handles + pitch/reverb sliders + preview met alle effecten (`playSampleWithEffects()`). Symmetrische exponentiële fade-curves: fade-in `x²` (geleidelijke opbouw), fade-out `(1-x)²` (soepele afdaling). Via `setValueCurveAtTime()` op aparte `FadeGain` node (gescheiden van clip-volume). Chain: Player → PitchShift → Reverb → FadeGain → Volume → Destination. Seek in fade-zone berekent tussenliggend volume + schedult resterende curve. Loop-interactie: fade-in alleen eerste iteratie, fade-out alleen laatste. Trim+fade clamping: bij inkorten worden fades proportioneel teruggeschaald als `fadeIn + fadeOut > newDuration`. Waveform-visualisatie: bars schalen in hoogte + kleurtransitie naar neutral-400 in fade-zones. Offline export (MP3 + video) hergebruikt zelfde curves. Toolbar: label-icoon verplaatst naar direct na sample-naam. Design tokens: alle UI in `accent-*` kleuren. Zod `optional().default(0)` voor backward compat. Plan: `PLAN-79-FADE.md` |
+| BUG-PREVIEW | Sample preview stopt niet bij volgende tik | 2026-04-23 | `playSample()`, `playSampleRegion()` en `playSampleWithEffects()` stopten niet de vorige preview. Fix: `stopAllSamples()` + `stopPreviewWithEffects()` aanroepen vóór elke nieuwe preview. Eén regel per methode in `AudioService.ts` |
+| UX-NAMEN | Locatienamen consistent met kaartlabels | 2026-04-23 | i18n-labels kwamen niet overeen met de stadsplattegrond. "De Boerderij" → "De Kinderboerderij", "De Muziekwinkel" → "Het Muzieklokaal". EN: "The Farm" → "The Petting Zoo", "The Music Store" → "The Music Room". Descriptions mee aangepast |
+| UX-PP-PREVIEW | Preview-knop op praatplaat afbeeldingskeuze | 2026-04-23 | ZoomIn-knop op elke afbeeldingskaart in `CreatePraatplaatModal`. Opent bestaande `ImageLightbox` voor fullscreen weergave. Werkt voor zowel bibliotheek- als thema-afbeeldingen. `e.stopPropagation()` voorkomt selectie bij preview-klik |
 | PERF-1 | Audio engine refactor: on-demand fire-and-forget players | 2026-04-22 | **Probleem**: zware composities (85 clips, 6 samples, 32 beats) veroorzaakten hoorbare audio dropouts, kraakjes en visuele playhead-vertraging. Oorzaak: 170+ permanente `Tone.Player` nodes (elk met eigen GainNode) overschreden het audio render quantum budget (128 samples @ 44.1kHz = ~2.9ms). **Oplossing**: (1) `ToneAudioBuffer`-gebaseerde sample opslag — buffers hebben nul audio-graph footprint vs. Players die permanente GainNodes aanmaken. (2) Track bus submix-architectuur — 8 `Tone.Gain` buses + 1 `Tone.Volume` master = 9 permanente nodes i.p.v. 170+. (3) On-demand fire-and-forget players — `createOnDemandPlayer()` maakt per clip-event een verse Player van de buffer, routeert via trackBus, en auto-disposed via `onstop` callback. `activeSources` Set trackt levenscyclus. (4) Pause/resume maakt verse players aan via Part callback (Part overleeft pause). (5) Seek via `startActiveClips()` maakt on-demand players voor actieve clips op seek-positie, met volledige fade-curve support. Verwijderd: `effectChains[]`, `clipEffectChainMap`, `sharedPlayerLastStart`. Gebaseerd op Tone.js maintainer-advies (marcelblum #982, jamescqcampbell #1076). Plan: `PLAN-AUDIO-REFACTOR.md` |
 
 ### Technische schuld (afgerond)
