@@ -308,6 +308,9 @@ export class AudioService {
       logger.warn(`Sample "${sampleId}" not loaded, skipping`);
       return;
     }
+    // Stop any currently playing preview before starting a new one
+    this.stopAllSamples();
+    this.stopPreviewWithEffects();
     logger.audio('play', { sampleId });
     player.start();
   }
@@ -345,6 +348,9 @@ export class AudioService {
       return;
     }
 
+    // Stop any currently playing preview before starting a new one
+    this.stopAllSamples();
+    this.stopPreviewWithEffects();
     logger.audio('playRegion', { sampleId, offset: offsetSeconds, duration: durationSeconds });
     player.start(Tone.now(), offsetSeconds, durationSeconds);
   }
@@ -362,7 +368,8 @@ export class AudioService {
     durationSeconds: number,
     effects: { pitch: number; reverb: number; fadeIn: number; fadeOut: number },
   ): void {
-    // Clean up any previous preview chain
+    // Stop any currently playing preview before starting a new one
+    this.stopAllSamples();
     this.stopPreviewWithEffects();
 
     const buffer = this.buffers.get(sampleId);
