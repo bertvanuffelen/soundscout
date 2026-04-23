@@ -7,9 +7,10 @@
 
 import { useState, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Check, ChevronDown } from 'lucide-react';
+import { Loader2, Check, ChevronDown, ZoomIn } from 'lucide-react';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
+import { ImageLightbox } from '../ui/ImageLightbox';
 import { getAllLocationsByTheme } from '../../data/themes';
 import { praatplaatImages, isAvailableForTeacher } from '../../data/praatplaatImages';
 import { logger } from '../../utils/logger';
@@ -46,6 +47,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
   const [showThemeImages, setShowThemeImages] = useState(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [previewImage, setPreviewImage] = useState<{ src: string; alt: string } | null>(null);
 
   const handleSelectLibrary = useCallback((imgId: string, imageUrl: string, nameKey: string) => {
     setSelected({ source: 'library', id: imgId, imageUrl, displayName: t(nameKey) });
@@ -148,6 +150,15 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                     {t(img.nameKey)}
                   </span>
                 </div>
+                {/* Preview button */}
+                <button
+                  type="button"
+                  onClick={(e) => { e.stopPropagation(); setPreviewImage({ src: img.imageUrl, alt: t(img.nameKey) }); }}
+                  className="absolute top-1 left-1 w-6 h-6 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                  aria-label={t('studio.effectsModal.preview')}
+                >
+                  <ZoomIn className="w-3.5 h-3.5 text-white" />
+                </button>
                 {/* Selectie check */}
                 {selected?.id === img.id && (
                   <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary-400 flex items-center justify-center">
@@ -200,6 +211,15 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                               {t(location.name)}
                             </span>
                           </div>
+                          {/* Preview button */}
+                          <button
+                            type="button"
+                            onClick={(e) => { e.stopPropagation(); setPreviewImage({ src: location.backgroundImage, alt: t(location.name) }); }}
+                            className="absolute top-1 left-1 w-6 h-6 rounded-full bg-black/50 hover:bg-black/70 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                            aria-label={t('studio.effectsModal.preview')}
+                          >
+                            <ZoomIn className="w-3.5 h-3.5 text-white" />
+                          </button>
                           {selected?.id === location.id && selected?.source === 'theme' && selected?.themeId === group.themeId && (
                             <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-primary-400 flex items-center justify-center">
                               <Check className="w-4 h-4 text-white" />
@@ -244,6 +264,14 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
           </Button>
         </div>
       </div>
+      {/* Image preview lightbox */}
+      {previewImage && (
+        <ImageLightbox
+          src={previewImage.src}
+          alt={previewImage.alt}
+          onClose={() => setPreviewImage(null)}
+        />
+      )}
     </Modal>
   );
 }
