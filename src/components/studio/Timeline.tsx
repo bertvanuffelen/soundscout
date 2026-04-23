@@ -568,7 +568,7 @@ export const Timeline = memo(function Timeline({
 
       <div
         ref={scrollContainerRef}
-        className="relative overflow-x-auto overflow-y-hidden min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
+        className="relative overflow-x-auto overflow-y-auto min-h-0 bg-neutral-50/50 md:bg-neutral-100/50"
         onClick={handleTimelineClick}
       >
         {/* Scrollable content wrapper */}
