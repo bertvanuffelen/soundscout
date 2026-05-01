@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-04-23
+**Laatst bijgewerkt**: 2026-05-01
 
 ---
 
@@ -167,11 +167,6 @@ De rechterrand van een looping clip is op iPad moeilijk te pakken om de loopduur
 **Verwant aan:** Bundel C (Mobile/touch hardening)
 
 ---
-
-#### UX-FADE-LOOP — Fade-gedrag bij looping clips heroverwegen
-**Complexiteit:** Laag · **Bron:** iPad-test (2026-04-23) · **Status:** Ontwerpbeslissing open
-
-Huidige logica: fade-in alleen bij eerste loop-iteratie, fade-out alleen bij laatste. Gebruiker verwacht mogelijk dat elke herhaling een eigen fade-in en fade-out heeft ("elke loop als eigen puls"). Beide benaderingen zijn verdedigbaar — keuze maken en eventueel als instelling aanbieden.
 
 ---
 
@@ -530,6 +525,7 @@ Periodiek nalopen na elke feature: hardcoded teksten, NL/EN pariteit, vertaaldek
 | BUG-PREVIEW | Sample preview stopt niet bij volgende tik | 2026-04-23 | `playSample()`, `playSampleRegion()` en `playSampleWithEffects()` stopten niet de vorige preview. Fix: `stopAllSamples()` + `stopPreviewWithEffects()` aanroepen vóór elke nieuwe preview. Eén regel per methode in `AudioService.ts` |
 | UX-NAMEN | Locatienamen consistent met kaartlabels | 2026-04-23 | i18n-labels kwamen niet overeen met de stadsplattegrond. "De Boerderij" → "De Kinderboerderij", "De Muziekwinkel" → "Het Muzieklokaal". EN: "The Farm" → "The Petting Zoo", "The Music Store" → "The Music Room". Descriptions mee aangepast |
 | UX-PP-PREVIEW | Preview-knop op praatplaat afbeeldingskeuze | 2026-04-23 | ZoomIn-knop op elke afbeeldingskaart in `CreatePraatplaatModal`. Opent bestaande `ImageLightbox` voor fullscreen weergave. Werkt voor zowel bibliotheek- als thema-afbeeldingen. `e.stopPropagation()` voorkomt selectie bij preview-klik |
+| UX-FADE-LOOP | Fade per loop-iteratie (puls-effect) | 2026-05-01 | Voorheen: fade-in alleen eerste iteratie, fade-out alleen laatste. Nu: elke herhaling krijgt eigen fade-in en fade-out ("puls"-effect). Wijzigingen in `AudioService.ts`: (1) `scheduleTimeline()` loop-generatie geeft altijd `fadeIn`/`fadeOut` mee aan elke iteratie. (2) `startActiveClips()` seek-logica berekent fade-out per iteratie via `singleDuration - fadeOut` i.p.v. `totalClipDuration - fadeOut`, zodat seek midden in een fade-out correct wordt opgepakt |
 | PERF-1 | Audio engine refactor: on-demand fire-and-forget players | 2026-04-22 | **Probleem**: zware composities (85 clips, 6 samples, 32 beats) veroorzaakten hoorbare audio dropouts, kraakjes en visuele playhead-vertraging. Oorzaak: 170+ permanente `Tone.Player` nodes (elk met eigen GainNode) overschreden het audio render quantum budget (128 samples @ 44.1kHz = ~2.9ms). **Oplossing**: (1) `ToneAudioBuffer`-gebaseerde sample opslag — buffers hebben nul audio-graph footprint vs. Players die permanente GainNodes aanmaken. (2) Track bus submix-architectuur — 8 `Tone.Gain` buses + 1 `Tone.Volume` master = 9 permanente nodes i.p.v. 170+. (3) On-demand fire-and-forget players — `createOnDemandPlayer()` maakt per clip-event een verse Player van de buffer, routeert via trackBus, en auto-disposed via `onstop` callback. `activeSources` Set trackt levenscyclus. (4) Pause/resume maakt verse players aan via Part callback (Part overleeft pause). (5) Seek via `startActiveClips()` maakt on-demand players voor actieve clips op seek-positie, met volledige fade-curve support. Verwijderd: `effectChains[]`, `clipEffectChainMap`, `sharedPlayerLastStart`. Gebaseerd op Tone.js maintainer-advies (marcelblum #982, jamescqcampbell #1076). Plan: `PLAN-AUDIO-REFACTOR.md` |
 
 ### Technische schuld (afgerond)

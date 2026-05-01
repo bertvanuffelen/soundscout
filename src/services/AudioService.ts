@@ -749,17 +749,16 @@ export class AudioService {
         const fadeOut = clip.effects?.fadeOut ?? 0;
 
         // Loop logic (#65): generate multiple events for looping clips
+        // UX-FADE-LOOP: fade per iteration (pulse effect) — every repetition
+        // gets its own fade-in and fade-out
         if (clip.loop && clip.loopDurationBeats) {
           const totalSeconds = beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM);
           const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
           let offset = 0;
-          let iterIndex = 0;
 
           while (offset < totalSeconds - 0.001) {
             const remaining = totalSeconds - offset;
             const dur = Math.min(singleDuration, remaining);
-            const isFirst = iterIndex === 0;
-            const isLast = offset + singleDuration >= totalSeconds - 0.001;
             events.push({
               time: startSeconds + offset,
               sampleId: clip.sampleId,
@@ -769,11 +768,10 @@ export class AudioService {
               isMuted,
               trackIndex,
               effects,
-              fadeIn: isFirst ? fadeIn : 0,
-              fadeOut: isLast ? fadeOut : 0,
+              fadeIn,
+              fadeOut,
             });
             offset += singleDuration;
-            iterIndex++;
           }
         } else {
           events.push({
@@ -1021,16 +1019,15 @@ export class AudioService {
         const singleDuration = getClipDuration(clip, sample);
 
         // For looping clips, calculate elapsed within current iteration
+        // UX-FADE-LOOP: fade per iteration — use effectiveElapsed for both
+        // fade-in and fade-out calculations (pulse effect)
         const effectiveElapsed = (clip.loop && clip.loopDurationBeats)
           ? elapsedSeconds % singleDuration
           : elapsedSeconds;
-        const totalClipDuration = (clip.loop && clip.loopDurationBeats)
-          ? beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM)
-          : singleDuration;
 
         const gainParam = fadeGain.gain;
 
-        // Determine if we're in a fade-in zone
+        // Determine if we're in a fade-in zone (within current iteration)
         if (fadeIn > 0 && effectiveElapsed < fadeIn) {
           const progress = effectiveElapsed / fadeIn;
           const currentValue = progress * progress; // x² fade-in
@@ -1048,12 +1045,12 @@ export class AudioService {
           gainParam.setValueAtTime(1, startTime);
         }
 
-        // Schedule fade-out if applicable
+        // Schedule fade-out if applicable (per iteration, not total loop span)
         if (fadeOut > 0) {
-          const fadeOutStartInClip = totalClipDuration - fadeOut;
-          if (elapsedSeconds >= fadeOutStartInClip) {
-            // Already in fade-out zone
-            const fadeOutElapsed = elapsedSeconds - fadeOutStartInClip;
+          const fadeOutStartInIteration = singleDuration - fadeOut;
+          if (effectiveElapsed >= fadeOutStartInIteration) {
+            // Already in fade-out zone of this iteration
+            const fadeOutElapsed = effectiveElapsed - fadeOutStartInIteration;
             const progress = fadeOutElapsed / fadeOut;
             const currentValue = (1 - progress) * (1 - progress);
             const remainingFade = fadeOut - fadeOutElapsed;
@@ -1067,7 +1064,7 @@ export class AudioService {
               gainParam.setValueAtTime(currentValue, startTime);
             }
           } else {
-            const fadeOutStartFromNow = fadeOutStartInClip - elapsedSeconds;
+            const fadeOutStartFromNow = fadeOutStartInIteration - effectiveElapsed;
             const fadeOutCurve = this.createFadeCurve('out');
             gainParam.setValueCurveAtTime(fadeOutCurve, startTime + fadeOutStartFromNow, fadeOut);
           }
