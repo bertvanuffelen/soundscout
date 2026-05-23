@@ -33,9 +33,7 @@ export function StorytellingDisplay() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const rafRef = useRef<number | null>(null);
 
-  if (!activeStoryboard) return null;
-
-  const imageCount = activeStoryboard.images.length;
+  const imageCount = activeStoryboard?.images.length ?? 0;
   const isStoryboard = composeMode === 'storyboard' && imageCount > 1;
 
   // Sync image index with playback using requestAnimationFrame
@@ -149,6 +147,8 @@ export function StorytellingDisplay() {
     useAudioStore.getState().setIsPlaying(false);
     useAudioStore.getState().setCurrentBeat(0);
   }, []);
+
+  if (!activeStoryboard) return null;
 
   const currentImage = activeStoryboard.images[displayIndex];
   if (!currentImage) return null;
