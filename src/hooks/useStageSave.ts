@@ -14,6 +14,7 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
 import { updateSavedComposition, submitOrUpdateComposition } from '../lib/submissions';
+import { TimeoutError } from '../utils/withTimeout';
 import { submitPraatplaatComposition } from '../lib/praatplaat';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
@@ -174,9 +175,12 @@ export function useStageSave() {
             logger.info('Klascode auto-submit geslaagd', { classCode: classSession.classCode, submissionId: returnedId });
           }).catch((err) => {
             useAppStore.getState().setSubmissionSynced(false);
+            const isTimeout = err instanceof TimeoutError;
             setSubmitFeedback({
               type: 'error',
-              message: i18n.t('submissions.autoSubmitFailed'),
+              message: isTimeout
+                ? i18n.t('errors.networkTimeout')
+                : i18n.t('submissions.autoSubmitFailed'),
             });
             logger.warn('Klascode auto-submit mislukt', err);
           }).finally(() => {

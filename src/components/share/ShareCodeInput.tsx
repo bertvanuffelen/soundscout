@@ -9,9 +9,9 @@
  * - 8 karakters → probeer eerst als template, dan als share-code
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Headphones, Loader2 } from 'lucide-react';
+import { Headphones, Loader2, X } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
@@ -28,6 +28,7 @@ export function ShareCodeInput() {
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   // Only allow alphanumeric characters, convert to uppercase
   const handleChange = useCallback((value: string) => {
@@ -47,6 +48,8 @@ export function ShareCodeInput() {
 
       setIsLoading(true);
       setError(null);
+      abortRef.current = new AbortController();
+      const { signal } = abortRef.current;
 
       try {
         // 0. Als 4 cijfers → klascode → route naar AssignmentLandingScreen.
@@ -55,6 +58,7 @@ export function ShareCodeInput() {
         //    voordat we de studio/praatplaat-select in gaan (#78).
         if (code.length === 4 && /^\d{4}$/.test(code)) {
           const routed = await lookupAndRouteAssignment(code);
+          if (signal.aborted) return;
           if (routed) {
             setCode('');
             return;
@@ -68,9 +72,11 @@ export function ShareCodeInput() {
         if (code.length === 6) {
           try {
             const saved = await loadSavedComposition(code);
+            if (signal.aborted) return;
             if (saved) {
               // Claim de compositie (genereert nieuwe secret voor dit apparaat)
               const newSecret = await claimSavedComposition(code, saved.student_name);
+              if (signal.aborted) return;
               await initializeFromSavedComposition(
                 saved.composition_data,
                 saved.composition_name,
@@ -81,7 +87,7 @@ export function ShareCodeInput() {
               return;
             }
           } catch {
-            // Fall through to "not found"
+            if (signal.aborted) return;
           }
           setError(t('share.codeNotFound'));
           return;
@@ -89,6 +95,7 @@ export function ShareCodeInput() {
 
         // 2. Probeer als template-code (8 chars)
         const template = await getTemplateByCode(code);
+        if (signal.aborted) return;
         if (template) {
           await initializeFromTemplate(template);
           setCode('');
@@ -98,34 +105,37 @@ export function ShareCodeInput() {
         // 3. Niet gevonden als template → probeer als share-code (8 chars)
         try {
           const shared = await getSharedComposition(code);
+          if (signal.aborted) return;
           if (shared) {
             goToShared(code);
             setCode('');
             return;
           }
         } catch {
-          // getSharedComposition throws on error, fall through
+          if (signal.aborted) return;
         }
 
         // 4. Niet gevonden als share-code → probeer als praatplaat share-code (#73)
         try {
           const sharedPP = await getSharedPraatplaat(code);
+          if (signal.aborted) return;
           if (sharedPP) {
             goToSharedPraatplaat(code);
             setCode('');
             return;
           }
         } catch {
-          // getSharedPraatplaat returns null on not-found, throws on rate limit
+          if (signal.aborted) return;
         }
 
         // 5. Geen match gevonden
         setError(t('share.codeNotFound'));
       } catch (err) {
+        if (signal.aborted) return;
         logger.error('Code lookup mislukt:', err);
         setError(t('share.lookupError'));
       } finally {
-        setIsLoading(false);
+        if (!signal.aborted) setIsLoading(false);
       }
     },
     [code, t, goToShared, goToSharedPraatplaat]
@@ -140,15 +150,27 @@ export function ShareCodeInput() {
         <label htmlFor="share-code-input" className="sr-only">
           {t('share.listenPlaceholder')}
         </label>
-        <input
-          id="share-code-input"
-          type="text"
-          value={code}
-          onChange={(e) => handleChange(e.target.value)}
-          placeholder={t('share.listenPlaceholder')}
-          disabled={isLoading}
-          className="flex-1 px-3 py-2 bg-white/10 md:bg-neutral-100 border border-white/20 md:border-neutral-300 rounded-lg text-center text-white md:text-text-main font-mono text-sm tracking-wider placeholder:text-white/30 md:placeholder:text-neutral-400 focus:outline-none focus:border-accent-400 transition-colors disabled:opacity-50"
-        />
+        <div className="relative flex-1">
+          <input
+            id="share-code-input"
+            type="text"
+            value={code}
+            onChange={(e) => handleChange(e.target.value)}
+            placeholder={t('share.listenPlaceholder')}
+            disabled={isLoading}
+            className="w-full px-3 py-2 bg-white/10 md:bg-neutral-100 border border-white/20 md:border-neutral-300 rounded-lg text-center text-white md:text-text-main font-mono text-sm tracking-wider placeholder:text-white/30 md:placeholder:text-neutral-400 focus:outline-none focus:border-accent-400 transition-colors disabled:opacity-50"
+          />
+          {isLoading && (
+            <button
+              type="button"
+              onClick={() => { abortRef.current?.abort(); setIsLoading(false); }}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-text-muted hover:text-text-main"
+              aria-label={t('common.cancel')}
+            >
+              <X className="w-4 h-4" />
+            </button>
+          )}
+        </div>
         <Button
           type="submit"
           variant="secondary"
