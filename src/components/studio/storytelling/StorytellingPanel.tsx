@@ -38,9 +38,7 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
   const [isZoomed, setIsZoomed] = useState(hasPraatplaatZoom);
   const rafRef = useRef<number | null>(null);
 
-  if (!activeStoryboard) return null;
-
-  const imageCount = activeStoryboard.images.length;
+  const imageCount = activeStoryboard?.images.length ?? 0;
   const isStoryboard = composeMode === 'storyboard' && imageCount > 1;
   const isFirst = displayIndex === 0;
   const isLast = displayIndex === imageCount - 1;
@@ -172,6 +170,8 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
     useAudioStore.getState().setIsPlaying(false);
     useAudioStore.getState().setCurrentBeat(0);
   }, []);
+
+  if (!activeStoryboard) return null;
 
   const currentImage = activeStoryboard.images[displayIndex];
   if (!currentImage) return null;
