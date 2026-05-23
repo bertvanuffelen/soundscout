@@ -10,6 +10,7 @@
  */
 
 import { getSupabase } from './supabase';
+import { withTimeout } from '../utils/withTimeout';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
@@ -88,9 +89,13 @@ function parseLockOptions(lockOptions: TemplateLockOptions | null | undefined): 
 export async function getActiveAssignment(classCode: string): Promise<ActiveAssignment | null> {
   try {
     const supabase = await getSupabase();
-    const { data, error } = await supabase.rpc('get_active_assignment', {
-      p_class_code: classCode.trim().toUpperCase(),
-    });
+    const { data, error } = await withTimeout(
+      supabase.rpc('get_active_assignment', {
+        p_class_code: classCode.trim().toUpperCase(),
+      }),
+      15_000,
+      'errors.networkTimeout'
+    );
 
     if (error) {
       logger.error('get_active_assignment error:', sanitizeError(error));
@@ -160,11 +165,15 @@ export async function activateAssignment(
   praatplaatId?: string,
 ): Promise<string> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('activate_assignment', {
-    p_class_id: classId,
-    p_template_id: templateId || null,
-    p_praatplaat_id: praatplaatId || null,
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('activate_assignment', {
+      p_class_id: classId,
+      p_template_id: templateId || null,
+      p_praatplaat_id: praatplaatId || null,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('activate_assignment error:', sanitizeError(error));
@@ -179,9 +188,13 @@ export async function activateAssignment(
  */
 export async function deactivateAssignment(classId: string): Promise<void> {
   const supabase = await getSupabase();
-  const { error } = await supabase.rpc('deactivate_class_assignment', {
-    p_class_id: classId,
-  });
+  const { error } = await withTimeout(
+    supabase.rpc('deactivate_class_assignment', {
+      p_class_id: classId,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('deactivate_class_assignment error:', sanitizeError(error));

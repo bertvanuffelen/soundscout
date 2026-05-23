@@ -9,6 +9,7 @@
 
 import { getSupabase } from './supabase';
 import { ERR_RATE_LIMIT, ERR_CLASS_NOT_FOUND, ERR_NOT_ACTIVE, ERR_INVALID_SAVE_CODE, matchesError } from './supabaseErrors';
+import { withTimeout } from '../utils/withTimeout';
 import { generateRandomDutchName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
 import { parseCompositionData } from '../utils/schemas';
@@ -40,9 +41,13 @@ export async function validateClassCode(code: string): Promise<{
   teacher_name: string;
 } | null> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('get_class_by_code', {
-    p_code: code,
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('get_class_by_code', {
+      p_code: code,
+    }),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij valideren klas-code:', sanitizeError(error));
@@ -73,12 +78,16 @@ export async function submitComposition(
   // Gebruik grappige naam als geen naam opgegeven
   const finalStudentName = studentName?.trim() || generateRandomDutchName();
 
-  const { data, error } = await supabase.rpc('submit_composition', {
-    p_class_code: classCode,
-    p_student_name: finalStudentName,
-    p_composition_name: compositionName,
-    p_composition_data: compositionData,
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('submit_composition', {
+      p_class_code: classCode,
+      p_student_name: finalStudentName,
+      p_composition_name: compositionName,
+      p_composition_data: compositionData,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij versturen compositie:', sanitizeError(error));
@@ -153,7 +162,11 @@ export async function submitOrUpdateComposition(
   if (praatplaatPositionX != null) rpcParams.p_praatplaat_position_x = praatplaatPositionX;
   if (praatplaatPositionY != null) rpcParams.p_praatplaat_position_y = praatplaatPositionY;
 
-  const { data, error } = await supabase.rpc('submit_or_update_composition', rpcParams);
+  const { data, error } = await withTimeout(
+    supabase.rpc('submit_or_update_composition', rpcParams),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij submit_or_update_composition:', sanitizeError(error));
@@ -201,11 +214,15 @@ export async function shareComposition(
 
   const finalStudentName = studentName?.trim() || generateRandomDutchName();
 
-  const { data, error } = await supabase.rpc('share_composition', {
-    p_student_name: finalStudentName,
-    p_composition_name: compositionName,
-    p_composition_data: compositionData,
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('share_composition', {
+      p_student_name: finalStudentName,
+      p_composition_name: compositionName,
+      p_composition_data: compositionData,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij delen compositie:', sanitizeError(error));
@@ -228,9 +245,13 @@ export async function getSharedComposition(
   code: string
 ): Promise<SharedComposition | null> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('get_shared_composition', {
-    p_code: code.toUpperCase().trim(),
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('get_shared_composition', {
+      p_code: code.toUpperCase().trim(),
+    }),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij ophalen gedeelde compositie:', sanitizeError(error));
@@ -290,13 +311,17 @@ export async function saveCompositionOnline(
   const { studentName, compositionName, compositionData, classCode, email } = params;
   const supabase = await getSupabase();
 
-  const { data, error } = await supabase.rpc('save_composition_online', {
-    p_student_name: studentName.trim(),
-    p_composition_name: compositionName,
-    p_composition_data: compositionData,
-    p_class_code: classCode?.trim() || null,
-    p_email: email?.trim() || null,
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('save_composition_online', {
+      p_student_name: studentName.trim(),
+      p_composition_name: compositionName,
+      p_composition_data: compositionData,
+      p_class_code: classCode?.trim() || null,
+      p_email: email?.trim() || null,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij online bewaren:', sanitizeError(error));
@@ -328,12 +353,16 @@ export async function updateSavedComposition(
   compositionName?: string,
 ): Promise<boolean> {
   const supabase = await getSupabase();
-  const { error } = await supabase.rpc('update_saved_composition', {
-    p_save_code: saveCode.toUpperCase().trim(),
-    p_save_secret: saveSecret,
-    p_composition_data: compositionData,
-    p_composition_name: compositionName || null,
-  });
+  const { error } = await withTimeout(
+    supabase.rpc('update_saved_composition', {
+      p_save_code: saveCode.toUpperCase().trim(),
+      p_save_secret: saveSecret,
+      p_composition_data: compositionData,
+      p_composition_name: compositionName || null,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij bijwerken bewaarde compositie:', sanitizeError(error));
@@ -357,9 +386,13 @@ export async function loadSavedComposition(
   saveCode: string
 ): Promise<SavedOnlineComposition | null> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('load_saved_composition', {
-    p_save_code: saveCode.toUpperCase().trim(),
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('load_saved_composition', {
+      p_save_code: saveCode.toUpperCase().trim(),
+    }),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij laden bewaarde compositie:', sanitizeError(error));
@@ -394,10 +427,14 @@ export async function claimSavedComposition(
   studentName: string,
 ): Promise<string> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('claim_saved_composition', {
-    p_save_code: saveCode.toUpperCase().trim(),
-    p_student_name: studentName.trim(),
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('claim_saved_composition', {
+      p_save_code: saveCode.toUpperCase().trim(),
+      p_student_name: studentName.trim(),
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij claimen compositie:', sanitizeError(error));

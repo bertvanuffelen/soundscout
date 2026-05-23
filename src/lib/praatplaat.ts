@@ -7,6 +7,7 @@
 
 import { getSupabase } from './supabase';
 import { ERR_RATE_LIMIT, matchesError } from './supabaseErrors';
+import { withTimeout } from '../utils/withTimeout';
 import { generateRandomDutchName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
 import { parseCompositionData } from '../utils/schemas';
@@ -71,7 +72,11 @@ export async function createPraatplaat(params: {
   };
   if (classId) rpcParams.p_class_id = classId;
 
-  const { data, error } = await supabase.rpc('create_praatplaat', rpcParams);
+  const { data, error } = await withTimeout(
+    supabase.rpc('create_praatplaat', rpcParams),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij aanmaken praatplaat:', sanitizeError(error));
@@ -86,9 +91,13 @@ export async function createPraatplaat(params: {
  */
 export async function activatePraatplaat(praatplaatId: string): Promise<boolean> {
   const supabase = await getSupabase();
-  const { error } = await supabase.rpc('activate_praatplaat', {
-    p_praatplaat_id: praatplaatId,
-  });
+  const { error } = await withTimeout(
+    supabase.rpc('activate_praatplaat', {
+      p_praatplaat_id: praatplaatId,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij activeren praatplaat:', sanitizeError(error));
@@ -103,9 +112,13 @@ export async function activatePraatplaat(praatplaatId: string): Promise<boolean>
  */
 export async function deactivatePraatplaat(praatplaatId: string): Promise<boolean> {
   const supabase = await getSupabase();
-  const { error } = await supabase.rpc('deactivate_praatplaat', {
-    p_praatplaat_id: praatplaatId,
-  });
+  const { error } = await withTimeout(
+    supabase.rpc('deactivate_praatplaat', {
+      p_praatplaat_id: praatplaatId,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij deactiveren praatplaat:', sanitizeError(error));
@@ -120,9 +133,13 @@ export async function deactivatePraatplaat(praatplaatId: string): Promise<boolea
  */
 export async function deletePraatplaat(praatplaatId: string): Promise<boolean> {
   const supabase = await getSupabase();
-  const { error } = await supabase.rpc('delete_praatplaat', {
-    p_praatplaat_id: praatplaatId,
-  });
+  const { error } = await withTimeout(
+    supabase.rpc('delete_praatplaat', {
+      p_praatplaat_id: praatplaatId,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij verwijderen praatplaat:', sanitizeError(error));
@@ -169,7 +186,11 @@ export async function getPraatplaatSubmissions(
   const params: Record<string, string> = { p_praatplaat_id: praatplaatId };
   if (classId) params.p_class_id = classId;
 
-  const { data, error } = await supabase.rpc('get_praatplaat_submissions', params);
+  const { data, error } = await withTimeout(
+    supabase.rpc('get_praatplaat_submissions', params),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij ophalen praatplaat-composities:', sanitizeError(error));
@@ -199,9 +220,13 @@ export async function getActivePraatplaat(
   classCode: string
 ): Promise<ActivePraatplaatInfo | null> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('get_active_praatplaat', {
-    p_class_code: classCode.trim(),
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('get_active_praatplaat', {
+      p_class_code: classCode.trim(),
+    }),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij ophalen actieve praatplaat:', sanitizeError(error));
@@ -256,15 +281,19 @@ export async function submitPraatplaatComposition(params: {
   const supabase = await getSupabase();
   const finalStudentName = studentName?.trim() || generateRandomDutchName();
 
-  const { data, error } = await supabase.rpc('submit_praatplaat_composition', {
-    p_class_code: classCode.trim(),
-    p_praatplaat_id: praatplaatId,
-    p_position_x: positionX,
-    p_position_y: positionY,
-    p_student_name: finalStudentName,
-    p_composition_name: compositionName,
-    p_composition_data: compositionData,
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('submit_praatplaat_composition', {
+      p_class_code: classCode.trim(),
+      p_praatplaat_id: praatplaatId,
+      p_position_x: positionX,
+      p_position_y: positionY,
+      p_student_name: finalStudentName,
+      p_composition_name: compositionName,
+      p_composition_data: compositionData,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij insturen praatplaat-compositie:', sanitizeError(error));
@@ -304,9 +333,13 @@ export interface SharedPraatplaatData {
  */
 export async function sharePraatplaat(praatplaatId: string): Promise<string> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('share_praatplaat', {
-    p_praatplaat_id: praatplaatId,
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('share_praatplaat', {
+      p_praatplaat_id: praatplaatId,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij delen praatplaat:', sanitizeError(error));
@@ -327,9 +360,13 @@ export async function getSharedPraatplaat(
   code: string
 ): Promise<SharedPraatplaatData | null> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.rpc('get_shared_praatplaat', {
-    p_code: code.trim().toUpperCase(),
-  });
+  const { data, error } = await withTimeout(
+    supabase.rpc('get_shared_praatplaat', {
+      p_code: code.trim().toUpperCase(),
+    }),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij ophalen gedeelde praatplaat:', sanitizeError(error));

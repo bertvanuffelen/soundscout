@@ -561,6 +561,9 @@
     "autoSubmitUpdated": "Bijgewerkt bij {{className}}",
     "autoSubmitFailed": "Inleveren mislukt — wordt opnieuw geprobeerd bij volgende opslaan"
   },
+  "errors": {
+    "networkTimeout": "De verbinding is te traag. Probeer opnieuw."
+  },
   "teacher": {
     "common": {
       "backToSoundScout": "Terug naar SoundScout"

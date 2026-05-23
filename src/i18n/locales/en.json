@@ -561,6 +561,9 @@
     "autoSubmitUpdated": "Updated at {{className}}",
     "autoSubmitFailed": "Submission failed — will retry on next save"
   },
+  "errors": {
+    "networkTimeout": "The connection is too slow. Please try again."
+  },
   "teacher": {
     "common": {
       "backToSoundScout": "Back to SoundScout"

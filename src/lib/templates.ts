@@ -7,6 +7,7 @@
  */
 
 import { getSupabase } from './supabase';
+import { withTimeout } from '../utils/withTimeout';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
@@ -64,9 +65,13 @@ function parseLockOptions(row: { lock_options?: TemplateLockOptions | null; clip
 export async function getTemplateByCode(code: string): Promise<Template | null> {
   try {
     const supabase = await getSupabase();
-    const { data, error } = await supabase.rpc('get_template_by_code', {
-      p_code: code.toUpperCase().trim(),
-    });
+    const { data, error } = await withTimeout(
+      supabase.rpc('get_template_by_code', {
+        p_code: code.toUpperCase().trim(),
+      }),
+      15_000,
+      'errors.networkTimeout'
+    );
 
     if (error) {
       logger.error('Fout bij ophalen template:', sanitizeError(error));
@@ -144,7 +149,11 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Teac
   if (!user) throw new Error('Je moet ingelogd zijn');
 
   // Genereer unieke code
-  const { data: codeData, error: codeError } = await supabase.rpc('generate_template_code');
+  const { data: codeData, error: codeError } = await withTimeout(
+    supabase.rpc('generate_template_code'),
+    15_000,
+    'errors.networkTimeout'
+  );
   if (codeError || typeof codeData !== 'string' || !codeData) {
     logger.error('Code generatie mislukt:', sanitizeError(codeError));
     throw new Error('Kon template-code niet genereren');
