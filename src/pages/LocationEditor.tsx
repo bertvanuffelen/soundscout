@@ -82,15 +82,6 @@ export function LocationEditor() {
     [allThemeLocations, themeId],
   );
 
-  // Load location from URL param on mount
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const locationParam = params.get('location');
-    if (locationParam) {
-      loadExistingLocation(locationParam);
-    }
-  }, []);
-
   // File input ref
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -108,6 +99,46 @@ export function LocationEditor() {
     },
     [t, i18n],
   );
+
+  const loadExistingLocation = useCallback((locId: string) => {
+    // Find location across all themes
+    for (const group of allThemeLocations) {
+      const loc = group.locations.find((l) => l.id === locId);
+      if (loc) {
+        setThemeId(group.themeId);
+        setLocationId(loc.id);
+
+        // Translate i18n keys to actual text
+        setNameNl(translateKey(loc.name, 'nl'));
+        setNameEn(translateKey(loc.name, 'en'));
+        setDescriptionNl(translateKey(loc.description, 'nl'));
+        setDescriptionEn(translateKey(loc.description, 'en'));
+
+        setBackgroundImage(loc.backgroundImage);
+        setBackgroundFileName(loc.backgroundImage.split('/').pop() || '');
+
+        // Convert hotspots
+        setHotspots(loc.hotspots.map((h) => ({
+          id: h.id,
+          sampleId: h.sampleId,
+          x: h.x,
+          y: h.y,
+        })));
+        return;
+      }
+    }
+
+    alert(`Locatie "${locId}" niet gevonden`);
+  }, [allThemeLocations, translateKey]);
+
+  // Load location from URL param on mount
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const locationParam = params.get('location');
+    if (locationParam) {
+      loadExistingLocation(locationParam);
+    }
+  }, [loadExistingLocation]);
 
   // --- Handlers ---
 
@@ -202,37 +233,6 @@ export function LocationEditor() {
     setBackgroundFileName('');
     setHotspots([]);
   }, []);
-
-  const loadExistingLocation = useCallback((locId: string) => {
-    // Find location across all themes
-    for (const group of allThemeLocations) {
-      const loc = group.locations.find((l) => l.id === locId);
-      if (loc) {
-        setThemeId(group.themeId);
-        setLocationId(loc.id);
-
-        // Translate i18n keys to actual text
-        setNameNl(translateKey(loc.name, 'nl'));
-        setNameEn(translateKey(loc.name, 'en'));
-        setDescriptionNl(translateKey(loc.description, 'nl'));
-        setDescriptionEn(translateKey(loc.description, 'en'));
-
-        setBackgroundImage(loc.backgroundImage);
-        setBackgroundFileName(loc.backgroundImage.split('/').pop() || '');
-
-        // Convert hotspots
-        setHotspots(loc.hotspots.map((h) => ({
-          id: h.id,
-          sampleId: h.sampleId,
-          x: h.x,
-          y: h.y,
-        })));
-        return;
-      }
-    }
-
-    alert(`Locatie "${locId}" niet gevonden`);
-  }, [allThemeLocations, translateKey]);
 
   const handleThemeChange = useCallback((newThemeId: string) => {
     setThemeId(newThemeId);
