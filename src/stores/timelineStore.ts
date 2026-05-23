@@ -653,17 +653,18 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   },
 
   setLooping: (looping) => {
-    set({ isLooping: looping });
+    set((prev) => ({ isLooping: looping, audioVersion: prev.audioVersion + 1 }));
   },
 
   loadTimeline: (timeline) => {
-    set({
+    set((prev) => ({
       tracks: timeline.tracks,
       bpm: timeline.bpm,
       totalBeats: timeline.totalBeats,
       isLooping: timeline.isLooping,
       sections: timeline.sections ?? [],
-    });
+      audioVersion: prev.audioVersion + 1,
+    }));
   },
 
   getTimelineState: () => {
