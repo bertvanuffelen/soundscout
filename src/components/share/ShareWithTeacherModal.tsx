@@ -74,7 +74,7 @@ export function ShareWithTeacherModal({
       setClassName(classInfo.name);
       setTeacherName(classInfo.teacher_name);
       setStep('name');
-    } catch (err) {
+    } catch {
       setError(t('teacher.shareWithTeacher.sendError'));
     }
   };
