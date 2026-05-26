@@ -128,7 +128,6 @@ export function PraatplaatSelectScreen() {
           onKeyDown={handleKeyDown}
           role="button"
           tabIndex={0}
-          // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus
           aria-label={t('praatplaat.select.imageAria')}
         >
