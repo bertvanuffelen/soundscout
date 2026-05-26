@@ -9,12 +9,11 @@ import { signUpTeacher } from '../../lib/auth';
 import { Button } from '../ui/Button';
 
 interface TeacherRegisterProps {
-  onSuccess: () => void;
   onSwitchToLogin: () => void;
   onBack: () => void;
 }
 
-export function TeacherRegister({ onSuccess: _onSuccess, onSwitchToLogin, onBack }: TeacherRegisterProps) {
+export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProps) {
   const { t } = useTranslation();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');

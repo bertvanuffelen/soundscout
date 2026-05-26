@@ -67,7 +67,6 @@ export function TeacherPage() {
   if (view === 'register') {
     return (
       <TeacherRegister
-        onSuccess={() => setView('dashboard')}
         onSwitchToLogin={() => setView('login')}
         onBack={goToStart}
       />
