@@ -9,7 +9,7 @@
  */
 
 import { useState } from 'react';
-import { useAuth } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/useAuth';
 import { useAppStore } from '../stores/appStore';
 import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
 import type { TeacherClass } from '../hooks/useClasses';

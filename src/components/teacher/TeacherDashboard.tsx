@@ -12,7 +12,7 @@ import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText, MapPin, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
-import { useAuth } from '../../contexts/AuthContext';
+import { useAuth } from '../../contexts/useAuth';
 import { useClasses } from '../../hooks/useClasses';
 import { useTemplates } from '../../hooks/useTemplates';
 import { usePraatplaten } from '../../hooks/usePraatplaten';

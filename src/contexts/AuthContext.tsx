@@ -6,7 +6,7 @@
  * - Gebruik useAuth() hook om auth state te lezen
  */
 
-import { createContext, useContext, useEffect, useState, useRef } from 'react';
+import { createContext, useEffect, useState, useRef } from 'react';
 import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { getSupabase } from '../lib/supabase';
@@ -14,7 +14,7 @@ import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 
 // Types
-interface AuthContextType {
+export interface AuthContextType {
   user: User | null;
   session: Session | null;
   loading: boolean;
@@ -26,7 +26,7 @@ interface AuthProviderProps {
 }
 
 // Context aanmaken
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
+export const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 /**
  * AuthProvider component
@@ -92,21 +92,3 @@ export function AuthProvider({ children }: AuthProviderProps) {
   );
 }
 
-/**
- * useAuth hook
- * Gebruik deze hook om auth state te lezen in componenten
- *
- * @example
- * const { user, isTeacher, loading } = useAuth();
- */
-export function useAuth(): AuthContextType {
-  const context = useContext(AuthContext);
-
-  if (context === undefined) {
-    throw new Error('useAuth moet binnen een AuthProvider gebruikt worden');
-  }
-
-  return context;
-}
-
-export default AuthContext;
