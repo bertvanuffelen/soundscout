@@ -35,10 +35,13 @@ export function CompositionsView() {
   const loadLibrary = useLibraryStore((s) => s.loadLibrary);
 
   const [compositions, setCompositions] = useState<SavedComposition[]>([]);
+  const [droppedCount, setDroppedCount] = useState(0);
 
   // Load compositions on mount
   useEffect(() => {
     const saved = storageService.getCompositions();
+    // Aantal corrupte/weggefilterde entries zichtbaar maken (mirror lastSaveError)
+    setDroppedCount(storageService.lastLoadDroppedCount);
     // Sort by updatedAt descending (newest first)
     saved.sort(
       (a, b) =>
@@ -145,6 +148,19 @@ export function CompositionsView() {
 
       {/* Content */}
       <main className="max-w-2xl mx-auto px-3 sm:px-4 py-4 sm:py-6">
+        {/* Corrupte/onleesbare composities zichtbaar maken (buiten de empty/list-
+            conditional zodat hij ook bij volledig corrupte opslag verschijnt) */}
+        {droppedCount > 0 && (
+          <div
+            className="mb-4 p-4 bg-warning-50 border border-warning-500 rounded-xl flex items-start gap-3"
+            role="alert"
+          >
+            <AlertTriangle className="w-5 h-5 text-warning-600 flex-shrink-0 mt-0.5" />
+            <p className="text-sm text-warning-600">
+              {t('compositions.corruptLoadWarning', { count: droppedCount })}
+            </p>
+          </div>
+        )}
         {compositions.length === 0 ? (
           /* Empty state */
           <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">

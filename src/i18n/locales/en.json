@@ -316,7 +316,9 @@
     "emptyTitle": "No compositions yet",
     "emptyDescription": "Your saved compositions will appear here.",
     "startNew": "Create new composition",
-    "storageWarning": "Compositions are saved locally in your browser. If you clear your browser data, your compositions will be lost."
+    "storageWarning": "Compositions are saved locally in your browser. If you clear your browser data, your compositions will be lost.",
+    "corruptLoadWarning_one": "{{count}} composition could not be loaded.",
+    "corruptLoadWarning_other": "{{count}} compositions could not be loaded."
   },
   "locations": {
     "boerderij": {

@@ -49,12 +49,16 @@ class StorageServiceImpl {
    * Get all saved compositions
    */
   getCompositions(): SavedComposition[] {
+    this.lastLoadDroppedCount = 0;
     try {
       const raw = this.getRaw('soundscout:compositions');
       if (!raw) return [];
       const validated = parseSavedCompositions(raw);
-      if (validated.length !== (raw as unknown[]).length) {
-        logger.warn('Some compositions failed validation, filtered out invalid entries');
+      const originalCount = Array.isArray(raw) ? raw.length : 0;
+      const dropped = originalCount - validated.length;
+      if (dropped > 0) {
+        this.lastLoadDroppedCount = dropped;
+        logger.warn('Some compositions failed validation, filtered out invalid entries', { dropped });
       }
       return validated as SavedComposition[];
     } catch (error) {
@@ -373,6 +377,10 @@ class StorageServiceImpl {
 
   /** Last save error type, readable by callers for user-facing feedback (TP5-11) */
   lastSaveError: StorageSaveError | null = null;
+
+  /** Aantal composities dat bij de laatste getCompositions()-load is weggefilterd
+   *  wegens validatiefout. Leesbaar door UI voor feedback (mirror van lastSaveError). */
+  lastLoadDroppedCount = 0;
 
   private set<T>(key: StorageKey, value: T): boolean {
     try {

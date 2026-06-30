@@ -316,7 +316,9 @@
     "emptyTitle": "Nog geen composities",
     "emptyDescription": "Je opgeslagen composities verschijnen hier.",
     "startNew": "Nieuwe compositie maken",
-    "storageWarning": "Composities worden lokaal opgeslagen in je browser. Als je browsergegevens wist, gaan je composities verloren."
+    "storageWarning": "Composities worden lokaal opgeslagen in je browser. Als je browsergegevens wist, gaan je composities verloren.",
+    "corruptLoadWarning_one": "{{count}} compositie kon niet geladen worden.",
+    "corruptLoadWarning_other": "{{count}} composities konden niet geladen worden."
   },
   "locations": {
     "boerderij": {
