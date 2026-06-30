@@ -301,6 +301,9 @@
     "syncSuccess": "Online kopie bijgewerkt",
     "syncFailed": "Online kopie niet bijgewerkt — controleer je internetverbinding"
   },
+  "editor": {
+    "copyFailed": "Kopiëren mislukt. Gebruik de download knop."
+  },
   "compositions": {
     "title": "Mijn Composities",
     "back": "Terug",

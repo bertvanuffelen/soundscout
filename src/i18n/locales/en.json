@@ -301,6 +301,9 @@
     "syncSuccess": "Online copy updated",
     "syncFailed": "Online copy not updated — check your internet connection"
   },
+  "editor": {
+    "copyFailed": "Copy failed. Use the download button."
+  },
   "compositions": {
     "title": "My Compositions",
     "back": "Back",

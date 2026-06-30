@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { Copy, Check, Trash2, Lock, Unlock } from 'lucide-react';
 import type { TeacherTemplate } from '../../lib/templates';
 import { Button } from '../ui/Button';
+import { copyToClipboard } from '../../utils/copyToClipboard';
 
 interface TemplateCardProps {
   template: TeacherTemplate;
@@ -28,12 +29,9 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
   });
 
   const handleCopyCode = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(code);
+    if (await copyToClipboard(code)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback: select text
     }
   }, [code]);
 

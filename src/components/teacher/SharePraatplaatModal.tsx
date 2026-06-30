@@ -13,6 +13,7 @@ import { sharePraatplaat } from '../../lib/praatplaat';
 import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { logger } from '../../utils/logger';
+import { copyToClipboard } from '../../utils/copyToClipboard';
 
 interface SharePraatplaatModalProps {
   isOpen: boolean;
@@ -97,35 +98,14 @@ export function SharePraatplaatModal({
 
   const handleCopyShareLink = useCallback(async () => {
     if (!shareUrl2) return;
-    try {
-      await navigator.clipboard.writeText(shareUrl2);
-      setShareCopied(true);
-      setTimeout(() => setShareCopied(false), 2000);
-    } catch {
-      const input = document.createElement('input');
-      input.value = shareUrl2;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
+    if (await copyToClipboard(shareUrl2)) {
       setShareCopied(true);
       setTimeout(() => setShareCopied(false), 2000);
     }
   }, [shareUrl2]);
 
   const handleCopy = useCallback(async () => {
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback: select text in a temporary input
-      const input = document.createElement('input');
-      input.value = shareUrl;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
+    if (await copyToClipboard(shareUrl)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }

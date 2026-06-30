@@ -13,6 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { X, Save, Copy, Check, Loader2, AlertCircle, Mail, QrCode } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { saveCompositionOnline } from '../../lib/submissions';
+import { copyToClipboard } from '../../utils/copyToClipboard';
 import type { CompositionData } from '../../types';
 import QRCode from 'qrcode';
 
@@ -81,18 +82,7 @@ export function SaveOnlineModal({
 
   const handleCopy = useCallback(async () => {
     if (!saveCode) return;
-    try {
-      await navigator.clipboard.writeText(saveCode);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback
-      const textarea = document.createElement('textarea');
-      textarea.value = saveCode;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
+    if (await copyToClipboard(saveCode)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }

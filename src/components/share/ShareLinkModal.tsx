@@ -14,6 +14,7 @@ import { X, Link2, Copy, Check, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { shareComposition } from '../../lib/submissions';
 import { canShare, markShare, getShareCooldownRemaining } from '../../utils/rateLimit';
+import { copyToClipboard } from '../../utils/copyToClipboard';
 import type { CompositionData } from '../../types';
 
 interface ShareLinkModalProps {
@@ -84,19 +85,7 @@ export function ShareLinkModal({
   // Copy link to clipboard
   const handleCopy = useCallback(async () => {
     if (!shareUrl) return;
-
-    try {
-      await navigator.clipboard.writeText(shareUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback for older browsers
-      const textarea = document.createElement('textarea');
-      textarea.value = shareUrl;
-      document.body.appendChild(textarea);
-      textarea.select();
-      document.execCommand('copy');
-      document.body.removeChild(textarea);
+    if (await copyToClipboard(shareUrl)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }

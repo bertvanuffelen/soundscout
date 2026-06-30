@@ -13,6 +13,7 @@ import { useAppStore } from '../../stores/appStore';
 import type { CompositionData, TemplateLockOptions } from '../../types';
 import { DEFAULT_LOCK_OPTIONS } from '../../types';
 import { logger } from '../../utils/logger';
+import { copyToClipboard } from '../../utils/copyToClipboard';
 
 interface SaveAsTemplateModalProps {
   compositionData: CompositionData;
@@ -62,12 +63,9 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
 
   const handleCopyCode = useCallback(async () => {
     if (!createdCode) return;
-    try {
-      await navigator.clipboard.writeText(createdCode);
+    if (await copyToClipboard(createdCode)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      // Fallback
     }
   }, [createdCode]);
 

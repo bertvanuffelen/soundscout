@@ -3,8 +3,10 @@
  */
 
 import { useState, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Copy, Download, Check } from 'lucide-react';
 import { Button } from '../ui';
+import { copyToClipboard } from '../../utils/copyToClipboard';
 
 interface JsonExportPanelProps {
   generateJson: () => object;
@@ -17,6 +19,7 @@ export function JsonExportPanel({
   locationId,
   isValid,
 }: JsonExportPanelProps) {
+  const { t } = useTranslation();
   const [copied, setCopied] = useState(false);
   const [showPreview, setShowPreview] = useState(false);
 
@@ -24,15 +27,13 @@ export function JsonExportPanel({
     const json = generateJson();
     const jsonString = JSON.stringify(json, null, 2);
 
-    try {
-      await navigator.clipboard.writeText(jsonString);
+    if (await copyToClipboard(jsonString)) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    } catch (err) {
-      console.error('Failed to copy:', err);
-      alert('Kopiëren mislukt. Gebruik de download knop.');
+    } else {
+      alert(t('editor.copyFailed'));
     }
-  }, [generateJson]);
+  }, [generateJson, t]);
 
   const handleDownload = useCallback(() => {
     const json = generateJson();
