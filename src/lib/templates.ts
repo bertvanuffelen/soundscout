@@ -114,14 +114,22 @@ export async function getTemplateByCode(code: string): Promise<Template | null> 
  */
 export async function fetchTeacherTemplates(): Promise<TeacherTemplate[]> {
   const supabase = await getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await withTimeout(
+    supabase.auth.getUser(),
+    15_000,
+    'errors.networkTimeout'
+  );
   if (!user) return [];
 
-  const { data, error } = await supabase
-    .from('templates')
-    .select('id, name, description, code, instructions, clips_locked, lock_options, is_active, created_at')
-    .eq('teacher_id', user.id)
-    .order('created_at', { ascending: false });
+  const { data, error } = await withTimeout(
+    supabase
+      .from('templates')
+      .select('id, name, description, code, instructions, clips_locked, lock_options, is_active, created_at')
+      .eq('teacher_id', user.id)
+      .order('created_at', { ascending: false }),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Fout bij ophalen templates:', sanitizeError(error));
@@ -145,7 +153,11 @@ export async function fetchTeacherTemplates(): Promise<TeacherTemplate[]> {
  */
 export async function createTemplate(params: CreateTemplateParams): Promise<TeacherTemplate> {
   const supabase = await getSupabase();
-  const { data: { user } } = await supabase.auth.getUser();
+  const { data: { user } } = await withTimeout(
+    supabase.auth.getUser(),
+    15_000,
+    'errors.networkTimeout'
+  );
   if (!user) throw new Error('Je moet ingelogd zijn');
 
   // Genereer unieke code
@@ -159,20 +171,24 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Teac
     throw new Error('Kon template-code niet genereren');
   }
 
-  const { data, error } = await supabase
-    .from('templates')
-    .insert({
-      teacher_id: user.id,
-      name: params.name.trim(),
-      description: params.description?.trim() || null,
-      code: codeData,
-      composition_data: params.compositionData,
-      instructions: params.instructions?.trim() || null,
-      clips_locked: params.lockOptions.clipsLocked, // backward compat column
-      lock_options: params.lockOptions, // new JSONB column (#59)
-    })
-    .select()
-    .single();
+  const { data, error } = await withTimeout(
+    supabase
+      .from('templates')
+      .insert({
+        teacher_id: user.id,
+        name: params.name.trim(),
+        description: params.description?.trim() || null,
+        code: codeData,
+        composition_data: params.compositionData,
+        instructions: params.instructions?.trim() || null,
+        clips_locked: params.lockOptions.clipsLocked, // backward compat column
+        lock_options: params.lockOptions, // new JSONB column (#59)
+      })
+      .select()
+      .single(),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Template aanmaken mislukt:', sanitizeError(error));
@@ -196,10 +212,14 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Teac
  */
 export async function deleteTemplate(id: string): Promise<void> {
   const supabase = await getSupabase();
-  const { error } = await supabase
-    .from('templates')
-    .delete()
-    .eq('id', id);
+  const { error } = await withTimeout(
+    supabase
+      .from('templates')
+      .delete()
+      .eq('id', id),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Template verwijderen mislukt:', sanitizeError(error));
@@ -212,10 +232,14 @@ export async function deleteTemplate(id: string): Promise<void> {
  */
 export async function toggleTemplate(id: string, isActive: boolean): Promise<void> {
   const supabase = await getSupabase();
-  const { error } = await supabase
-    .from('templates')
-    .update({ is_active: isActive, updated_at: new Date().toISOString() })
-    .eq('id', id);
+  const { error } = await withTimeout(
+    supabase
+      .from('templates')
+      .update({ is_active: isActive, updated_at: new Date().toISOString() })
+      .eq('id', id),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('Template toggle mislukt:', sanitizeError(error));

@@ -20,6 +20,7 @@ import {
 } from './supabaseErrors';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
+import { withTimeout } from '../utils/withTimeout';
 import i18n from '../i18n';
 
 /**
@@ -36,15 +37,19 @@ export async function signUpTeacher(
   displayName: string
 ) {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
-        display_name: displayName,
+  const { data, error } = await withTimeout(
+    supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: {
+          display_name: displayName,
+        },
       },
-    },
-  });
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
@@ -72,10 +77,14 @@ export async function signUpTeacher(
  */
 export async function signInTeacher(email: string, password: string) {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
+  const { data, error } = await withTimeout(
+    supabase.auth.signInWithPassword({
+      email,
+      password,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands
@@ -96,7 +105,11 @@ export async function signInTeacher(email: string, password: string) {
  */
 export async function signOut() {
   const supabase = await getSupabase();
-  const { error } = await supabase.auth.signOut();
+  const { error } = await withTimeout(
+    supabase.auth.signOut(),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     throw new Error(i18n.t('auth.logoutError'));
@@ -110,14 +123,24 @@ export async function signOut() {
  */
 export async function getCurrentUser() {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.auth.getUser();
+  try {
+    const { data, error } = await withTimeout(
+      supabase.auth.getUser(),
+      15_000,
+      'errors.networkTimeout'
+    );
 
-  if (error) {
-    logger.error('Fout bij ophalen gebruiker:', sanitizeError(error));
+    if (error) {
+      logger.error('Fout bij ophalen gebruiker:', sanitizeError(error));
+      return null;
+    }
+
+    return data.user;
+  } catch (err) {
+    // Behoud het "return null"-contract, ook bij timeout (TimeoutError).
+    logger.error('Fout bij ophalen gebruiker:', sanitizeError(err));
     return null;
   }
-
-  return data.user;
 }
 
 /**
@@ -127,14 +150,24 @@ export async function getCurrentUser() {
  */
 export async function getCurrentSession() {
   const supabase = await getSupabase();
-  const { data, error } = await supabase.auth.getSession();
+  try {
+    const { data, error } = await withTimeout(
+      supabase.auth.getSession(),
+      15_000,
+      'errors.networkTimeout'
+    );
 
-  if (error) {
-    logger.error('Fout bij ophalen sessie:', sanitizeError(error));
+    if (error) {
+      logger.error('Fout bij ophalen sessie:', sanitizeError(error));
+      return null;
+    }
+
+    return data.session;
+  } catch (err) {
+    // Behoud het "return null"-contract, ook bij timeout (TimeoutError).
+    logger.error('Fout bij ophalen sessie:', sanitizeError(err));
     return null;
   }
-
-  return data.session;
 }
 
 /**
@@ -144,9 +177,13 @@ export async function getCurrentSession() {
  */
 export async function resetPassword(email: string) {
   const supabase = await getSupabase();
-  const { error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo: `${window.location.origin}/#reset-password`,
-  });
+  const { error } = await withTimeout(
+    supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/#reset-password`,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     // Vertaal veelvoorkomende fouten naar Nederlands

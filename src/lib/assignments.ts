@@ -208,22 +208,26 @@ export async function deactivateAssignment(classId: string): Promise<void> {
  */
 export async function fetchClassAssignment(classId: string): Promise<ClassAssignmentRow | null> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from('class_assignments')
-    .select(`
-      id,
-      class_id,
-      teacher_id,
-      template_id,
-      praatplaat_id,
-      is_active,
-      activated_at,
-      templates:template_id ( name ),
-      praatplaten:praatplaat_id ( name )
-    `)
-    .eq('class_id', classId)
-    .eq('is_active', true)
-    .maybeSingle();
+  const { data, error } = await withTimeout(
+    supabase
+      .from('class_assignments')
+      .select(`
+        id,
+        class_id,
+        teacher_id,
+        template_id,
+        praatplaat_id,
+        is_active,
+        activated_at,
+        templates:template_id ( name ),
+        praatplaten:praatplaat_id ( name )
+      `)
+      .eq('class_id', classId)
+      .eq('is_active', true)
+      .maybeSingle(),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('fetchClassAssignment error:', sanitizeError(error));
@@ -257,22 +261,26 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
  */
 export async function fetchPastAssignments(classId: string): Promise<ClassAssignmentRow[]> {
   const supabase = await getSupabase();
-  const { data, error } = await supabase
-    .from('class_assignments')
-    .select(`
-      id,
-      class_id,
-      teacher_id,
-      template_id,
-      praatplaat_id,
-      is_active,
-      activated_at,
-      templates:template_id ( name ),
-      praatplaten:praatplaat_id ( name )
-    `)
-    .eq('class_id', classId)
-    .eq('is_active', false)
-    .order('activated_at', { ascending: false });
+  const { data, error } = await withTimeout(
+    supabase
+      .from('class_assignments')
+      .select(`
+        id,
+        class_id,
+        teacher_id,
+        template_id,
+        praatplaat_id,
+        is_active,
+        activated_at,
+        templates:template_id ( name ),
+        praatplaten:praatplaat_id ( name )
+      `)
+      .eq('class_id', classId)
+      .eq('is_active', false)
+      .order('activated_at', { ascending: false }),
+    15_000,
+    'errors.networkTimeout'
+  );
 
   if (error) {
     logger.error('fetchPastAssignments error:', sanitizeError(error));
