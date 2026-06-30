@@ -143,7 +143,7 @@ export function ShareCodeInput() {
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <p className="text-sm text-brand-300 md:text-text-muted text-center mb-2">
+      <p className="text-sm text-text-muted text-center mb-2">
         {t('share.listenTitle')}
       </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
@@ -158,7 +158,7 @@ export function ShareCodeInput() {
             onChange={(e) => handleChange(e.target.value)}
             placeholder={t('share.listenPlaceholder')}
             disabled={isLoading}
-            className="w-full px-3 py-2 bg-white/10 md:bg-neutral-100 border border-white/20 md:border-neutral-300 rounded-lg text-center text-white md:text-text-main font-mono text-sm tracking-wider placeholder:text-white/30 md:placeholder:text-neutral-400 focus:outline-none focus:border-accent-400 transition-colors disabled:opacity-50"
+            className="w-full px-3 py-3 min-h-11 bg-bg-app border-2 border-neutral-300 rounded-lg text-center text-text-main font-mono text-base tracking-wider placeholder:text-text-muted focus:outline-none focus:border-accent-500 focus:ring-2 focus:ring-accent-200 transition-colors disabled:opacity-50"
           />
           {isLoading && (
             <button
@@ -189,7 +189,7 @@ export function ShareCodeInput() {
           )}
         </Button>
       </form>
-      <p className="text-white/40 md:text-text-muted text-[10px] sm:text-xs text-center mt-1.5">
+      <p className="text-text-muted text-[10px] sm:text-xs text-center mt-1.5">
         {t('share.codeFormatHint')}
       </p>
       {error && (
