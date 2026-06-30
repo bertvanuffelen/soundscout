@@ -137,6 +137,22 @@ export function useStageSave() {
 
       // --- Universele klascode auto-submit ---
       if (classSession) {
+        // Guard: een praatplaat-opdracht zonder gekozen positie levert een
+        // ongeldige inzending op (geen plek op de kaart). De lokale opslag is
+        // hierboven al gebeurd; sla alleen de remote-submit over en informeer
+        // de leerling met een toast. (#72)
+        if (classSession.assignmentType === 'praatplaat' && !praatplaatPosition) {
+          logger.warn('Praatplaat-inzending zonder positie — submit overgeslagen', {
+            classCode: classSession.classCode,
+          });
+          setSubmitFeedback({
+            type: 'error',
+            message: i18n.t('submissions.praatplaatNoPosition'),
+          });
+          setTimeout(() => setSubmitFeedback(null), 4000);
+          return;
+        }
+
         const { isSubmitting } = useAppStore.getState();
         if (!isSubmitting) {
           useAppStore.getState().setIsSubmitting(true);

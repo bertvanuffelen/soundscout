@@ -559,7 +559,8 @@
     "rateLimitError": "Te veel verzoeken. Wacht even en probeer opnieuw.",
     "autoSubmitSuccess": "Ingeleverd bij {{className}}",
     "autoSubmitUpdated": "Bijgewerkt bij {{className}}",
-    "autoSubmitFailed": "Inleveren mislukt — wordt opnieuw geprobeerd bij volgende opslaan"
+    "autoSubmitFailed": "Inleveren mislukt — wordt opnieuw geprobeerd bij volgende opslaan",
+    "praatplaatNoPosition": "Kies eerst een plek op de praatplaat voordat je inlevert."
   },
   "errors": {
     "networkTimeout": "De verbinding is te traag. Probeer opnieuw."

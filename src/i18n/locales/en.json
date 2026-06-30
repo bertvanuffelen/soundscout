@@ -559,7 +559,8 @@
     "rateLimitError": "Too many requests. Please wait and try again.",
     "autoSubmitSuccess": "Submitted to {{className}}",
     "autoSubmitUpdated": "Updated at {{className}}",
-    "autoSubmitFailed": "Submission failed — will retry on next save"
+    "autoSubmitFailed": "Submission failed — will retry on next save",
+    "praatplaatNoPosition": "Choose a spot on the sound map before you submit."
   },
   "errors": {
     "networkTimeout": "The connection is too slow. Please try again."
