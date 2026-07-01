@@ -469,6 +469,7 @@
     "deactivateConfirm": "Are you sure you want to deactivate this assignment? Students will no longer be able to work on this assignment via the class code.",
     "deactivateError": "Could not deactivate assignment",
     "noAssignments": "No assignments available yet. Create a template or sound map first.",
+    "goToDashboard": "Go to dashboard",
     "activeTitle": "Active assignment for this class",
     "activeDescription": "Students who log in with the class code will go directly to this assignment.",
     "noActive": "No active assignment for this class.",

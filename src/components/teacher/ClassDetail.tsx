@@ -485,6 +485,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         onClose={() => setShowActivateModal(false)}
         onActivateTemplate={handleActivateTemplate}
         onActivatePraatplaat={handleActivatePraatplaat}
+        onGoToDashboard={onBack}
       />
 
       {/* Praatplaat viewer */}

@@ -20,6 +20,9 @@ interface ActivateAssignmentModalProps {
   onClose: () => void;
   onActivateTemplate: (templateId: string) => Promise<void>;
   onActivatePraatplaat: (praatplaatId: string) => Promise<void>;
+  /** Optioneel: leidt de docent naar het dashboard (waar de aanmaakknoppen staan)
+   *  wanneer er nog geen opdrachten zijn om te activeren. */
+  onGoToDashboard?: () => void;
 }
 
 type Selection = { type: 'template'; id: string } | { type: 'praatplaat'; id: string } | null;
@@ -29,6 +32,7 @@ export function ActivateAssignmentModal({
   onClose,
   onActivateTemplate,
   onActivatePraatplaat,
+  onGoToDashboard,
 }: ActivateAssignmentModalProps) {
   const { t } = useTranslation();
   const { templates, loading: templatesLoading } = useTemplates();
@@ -82,9 +86,21 @@ export function ActivateAssignmentModal({
 
         {!loading && activeTemplates.length === 0 && praatplaten.length === 0 && (
           <div className="text-center py-8">
-            <p className="text-text-muted text-sm">
+            <p className="text-text-muted text-sm mb-4">
               {t('assignments.noAssignments')}
             </p>
+            {onGoToDashboard && (
+              <Button
+                variant="primary"
+                size="md"
+                onClick={() => {
+                  onClose();
+                  onGoToDashboard();
+                }}
+              >
+                {t('assignments.goToDashboard')}
+              </Button>
+            )}
           </div>
         )}
 

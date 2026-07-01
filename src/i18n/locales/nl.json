@@ -469,6 +469,7 @@
     "deactivateConfirm": "Weet je zeker dat je deze opdracht wilt deactiveren? Leerlingen kunnen dan niet meer via de klascode aan deze opdracht werken.",
     "deactivateError": "Kon opdracht niet deactiveren",
     "noAssignments": "Nog geen opdrachten beschikbaar. Maak eerst een template of praatplaat aan.",
+    "goToDashboard": "Naar dashboard",
     "activeTitle": "Actieve opdracht voor deze klas",
     "activeDescription": "Leerlingen die inloggen met de klascode komen direct in deze opdracht terecht.",
     "noActive": "Geen actieve opdracht voor deze klas.",
