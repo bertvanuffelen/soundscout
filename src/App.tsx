@@ -306,8 +306,9 @@ function App() {
     };
   }, []);
 
-  // Render LocationEditor for /editor route (admin tool)
-  if (isEditorRoute()) {
+  // Render LocationEditor for /editor route (dev-only content-authoring tool).
+  // In productie valt /editor door naar de normale app-render (AppContent).
+  if (isEditorRoute() && import.meta.env.DEV) {
     return (
       <ErrorBoundary>
         <LocationEditor />
