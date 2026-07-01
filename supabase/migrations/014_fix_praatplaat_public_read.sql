@@ -1,0 +1,24 @@
+-- ============================================
+-- Migratie 014: Dicht publiek leeslek op praatplaten
+-- Datum: 2026-06-10
+-- ============================================
+--
+-- Zelfde patroon als migratie 013 (submissions): de SELECT-policy
+-- "Anyone can read shared praatplaten" eist alleen dat share_code gevuld
+-- en niet verlopen is — niet dat de aanvrager de code kent. Iedereen met
+-- de anon-key kon zo alle gedeelde praatplaten uitlezen, inclusief de
+-- share_codes zelf. Daarmee werd "delen via link" feitelijk publiek
+-- vindbaar, en via een code zijn leerlingcomposities te beluisteren.
+--
+-- Publieke toegang loopt al volledig via de SECURITY DEFINER RPC
+-- get_shared_praatplaat (rate-limited, geeft alleen juiste kolommen).
+-- De enige directe tabel-lezing in de app (fetchPraatplaten,
+-- src/lib/praatplaat.ts) is de docentenflow en valt onder
+-- "Teachers can read own praatplaten" — blijft ongewijzigd.
+--
+-- VERIFICATIE NA UITVOEREN (moet [] geven):
+--   curl "https://<project>.supabase.co/rest/v1/praatplaten?select=share_code&limit=1" \
+--     -H "apikey: <anon-key>" -H "Authorization: Bearer <anon-key>"
+-- ============================================
+
+DROP POLICY IF EXISTS "Anyone can read shared praatplaten" ON public.praatplaten;

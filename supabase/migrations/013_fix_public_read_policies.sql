@@ -1,0 +1,31 @@
+-- ============================================
+-- Migratie 013: Dicht publiek leeslek op submissions
+-- Datum: 2026-06-10
+-- ============================================
+--
+-- PROBLEEM (geverifieerd live op 2026-06-10):
+-- De twee onderstaande SELECT-policies eisen alleen dat share_code/save_code
+-- gevuld is — niet dat de aanvrager de code KENT. RLS filtert rijen, geen
+-- kolommen. Gevolg: iedereen met de publieke anon-key kon via PostgREST
+-- (`from('submissions').select('*')`) alle gedeelde/bewaarde composities
+-- uitlezen, inclusief save_secret, student_name en student_email.
+--
+-- OPLOSSING:
+-- Beide policies droppen. Alle legitieme publieke leestoegang loopt al via
+-- SECURITY DEFINER RPC's (get_shared_composition, load_saved_composition,
+-- get_shared_praatplaat, get_praatplaat_submissions) — die negeren RLS en
+-- geven alleen de juiste kolommen terug aan wie de juiste code aanlevert.
+--
+-- BLIJFT ONGEWIJZIGD:
+-- - "Teachers can read submissions of own classes"  (docentendashboard,
+--   gebruikt door directe tabel-reads in src/hooks/useSubmissions.ts)
+-- - "Teachers can delete submissions of own classes"
+-- - "Anyone can submit compositions" (INSERT; legacy-pad naast RPC)
+--
+-- VERIFICATIE NA UITVOEREN (moet 0 rijen of een fout geven):
+--   curl "https://<project>.supabase.co/rest/v1/submissions?select=save_secret&limit=1" \
+--     -H "apikey: <anon-key>" -H "Authorization: Bearer <anon-key>"
+-- ============================================
+
+DROP POLICY IF EXISTS "Anyone can read shared compositions" ON public.submissions;
+DROP POLICY IF EXISTS "Anyone can read saved compositions by save_code" ON public.submissions;
