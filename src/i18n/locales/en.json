@@ -472,6 +472,7 @@
     "activeTitle": "Active assignment for this class",
     "activeDescription": "Students who log in with the class code will go directly to this assignment.",
     "noActive": "No active assignment for this class.",
+    "noActiveGuidance": "Choose what your class will do. Students with code {{code}} join instantly.",
     "activateButton": "Activate assignment",
     "changeButton": "Change",
     "activatedAt": "Activated on {{date}}",

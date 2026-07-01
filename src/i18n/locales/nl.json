@@ -472,6 +472,7 @@
     "activeTitle": "Actieve opdracht voor deze klas",
     "activeDescription": "Leerlingen die inloggen met de klascode komen direct in deze opdracht terecht.",
     "noActive": "Geen actieve opdracht voor deze klas.",
+    "noActiveGuidance": "Kies wat je klas gaat doen. Leerlingen met code {{code}} komen er direct in.",
     "activateButton": "Opdracht activeren",
     "changeButton": "Wijzig",
     "activatedAt": "Geactiveerd op {{date}}",

@@ -216,8 +216,11 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             {/* Geen actieve opdracht */}
             {!assignmentLoading && !activeAssignment && (
               <div className="bg-bg-surface rounded-xl p-6 text-center border border-border-subtle">
-                <p className="text-text-muted text-sm mb-4">
+                <p className="text-text-muted text-sm mb-1">
                   {t('assignments.noActive')}
+                </p>
+                <p className="text-text-main text-sm font-medium mb-4">
+                  {t('assignments.noActiveGuidance', { code: classData.code })}
                 </p>
                 <Button
                   variant="primary"
