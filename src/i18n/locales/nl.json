@@ -556,7 +556,7 @@
   },
   "submissions": {
     "validateClassCodeError": "Kon klas niet controleren",
-    "classCodeNotFound": "Klas-code niet gevonden. Controleer de code en probeer opnieuw.",
+    "classCodeNotFound": "Klascode niet gevonden. Controleer de code en probeer opnieuw.",
     "submitError": "Kon compositie niet versturen. Probeer opnieuw.",
     "shareLinkError": "Kon link niet aanmaken. Probeer opnieuw.",
     "loadError": "Kon compositie niet laden.",
@@ -760,15 +760,16 @@
       "step3": "3. Leerlingen maken een compositie en voeren de code in bij \"Delen\"",
       "step4": "4. Bekijk alle composities hier in je dashboard"
     },
+    "classCodeMeaning": "Leerlingen typen deze code in om mee te doen.",
     "classDetail": {
       "back": "Terug naar overzicht",
       "compositionCount": "{{count}} compositie",
       "compositionCount_plural": "{{count}} composities",
       "refreshTitle": "Ververs composities",
-      "classCodeLabel": "Klas-code",
+      "classCodeLabel": "Klascode",
       "loading": "Composities laden...",
       "emptyTitle": "Nog geen composities",
-      "emptyDescription": "Deel de klas-code {{code}} met je leerlingen. Zodra leerlingen hun compositie delen, verschijnen ze hier.",
+      "emptyDescription": "Deel de klascode {{code}} met je leerlingen. Zodra leerlingen hun compositie delen, verschijnen ze hier.",
       "deleteTitle": "Compositie verwijderen",
       "deleteConfirm": "Weet je zeker dat je deze compositie wilt verwijderen?",
       "deleteError": "Kon niet verwijderen",
@@ -873,7 +874,7 @@
     },
     "shareWithTeacher": {
       "title": "Deel met docent",
-      "step1Title": "Klas-code",
+      "step1Title": "Klascode",
       "step1Description": "Voer de code in die je van je docent hebt gekregen",
       "codePlaceholder": "4-cijferige code",
       "step2Title": "Gevonden!",

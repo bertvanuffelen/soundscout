@@ -41,19 +41,22 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
             </p>
           </div>
 
-          {/* Klas-code badge with show button */}
-          <div className="flex items-center gap-2">
-            <div className="bg-accent-100 text-accent-800 px-3 py-1 rounded-lg font-mono font-bold text-lg">
-              {code}
+          {/* Klascode badge with show button */}
+          <div className="flex flex-col items-end gap-1">
+            <div className="flex items-center gap-2">
+              <div className="bg-accent-100 text-accent-800 px-3 py-1 rounded-lg font-mono font-bold text-lg">
+                {code}
+              </div>
+              <button
+                onClick={() => setShowCodeOverlay(true)}
+                className="flex-shrink-0 p-2 rounded-lg bg-accent-50 text-accent-700 hover:bg-accent-100 transition-colors"
+                title={t('teacher.classCard.showOnScreen')}
+                aria-label={t('teacher.classCard.showOnScreen')}
+              >
+                <Monitor className="w-5 h-5" />
+              </button>
             </div>
-            <button
-              onClick={() => setShowCodeOverlay(true)}
-              className="flex-shrink-0 p-2 rounded-lg bg-accent-50 text-accent-700 hover:bg-accent-100 transition-colors"
-              title={t('teacher.classCard.showOnScreen')}
-              aria-label={t('teacher.classCard.showOnScreen')}
-            >
-              <Monitor className="w-5 h-5" />
-            </button>
+            <p className="text-xs text-text-muted text-right max-w-36 leading-tight">{t('teacher.classCodeMeaning')}</p>
           </div>
         </div>
 

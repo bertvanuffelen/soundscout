@@ -760,6 +760,7 @@
       "step3": "3. Students create a composition and enter the code under \"Share\"",
       "step4": "4. View all compositions here in your dashboard"
     },
+    "classCodeMeaning": "Students type this code to join.",
     "classDetail": {
       "back": "Back to overview",
       "compositionCount": "{{count}} composition",

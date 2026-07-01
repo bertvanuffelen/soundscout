@@ -146,12 +146,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                 <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
               </Button>
 
-              {/* Klas-code prominent weergeven */}
+              {/* Klascode prominent weergeven */}
               <div className="text-center">
                 <p className="text-xs text-text-muted uppercase tracking-wide">{t('teacher.classDetail.classCodeLabel')}</p>
                 <div className="bg-primary-100 text-primary-800 px-4 py-2 rounded-xl font-mono font-bold text-2xl">
                   {classData.code}
                 </div>
+                <p className="text-xs text-text-muted mt-1">{t('teacher.classCodeMeaning')}</p>
               </div>
             </div>
           </div>

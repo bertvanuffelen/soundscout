@@ -194,6 +194,7 @@ function PraatplaatOption({
   isSelected: boolean;
   onSelect: () => void;
 }) {
+  const { t } = useTranslation();
   return (
     <button
       onClick={onSelect}
@@ -211,7 +212,7 @@ function PraatplaatOption({
           <p className="font-medium text-text-main text-sm truncate">{praatplaat.name}</p>
           <p className="text-text-muted text-xs flex items-center gap-1">
             <MapPin className="w-3 h-3" />
-            Praatplaat
+            {t('templates.typePraatplaat')}
           </p>
         </div>
         {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0" />}
