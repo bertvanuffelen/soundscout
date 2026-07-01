@@ -11,12 +11,15 @@ import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
+import { useTemplates } from '../../hooks/useTemplates';
+import { usePraatplaten } from '../../hooks/usePraatplaten';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
+import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { SharePraatplaatModal } from './SharePraatplaatModal';
-import type { PraatplaatRow } from '../../lib/praatplaat';
+import { createPraatplaat, type PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { logger } from '../../utils/logger';
@@ -46,7 +49,14 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     activatePraatplaat: activatePraatplaatAssignment,
     deactivate: deactivateAssignment,
   } = useClassAssignment(classData.id);
+
+  // Resources bepalen de knop-hiërarchie in de lege staat (zie hasResources).
+  const { templates } = useTemplates();
+  const { praatplaten } = usePraatplaten();
+  const hasResources = templates.some((tmpl) => tmpl.isActive) || praatplaten.length > 0;
+
   const [showActivateModal, setShowActivateModal] = useState(false);
+  const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [showActivatedCode, setShowActivatedCode] = useState(false);
   const [showSharePraatplaatModal, setShowSharePraatplaatModal] = useState(false);
@@ -62,6 +72,22 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setShowActivatedCode(true);
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activatePraatplaatAssignment]);
+
+  // Fase 2: praatplaat maken + activeren in één handeling. De praatplaat wordt aan
+  // deze klas gebonden en meteen als opdracht geactiveerd (activate_assignment →
+  // class_assignments, wat de leerling-lookup leest). Fouten propageren naar de
+  // CreatePraatplaatModal, die ze inline toont en open blijft.
+  const handleCreateAndActivatePraatplaat = useCallback(async (params: {
+    name: string;
+    themeId: string;
+    locationId: string;
+    imageUrl: string;
+  }) => {
+    const newId = await createPraatplaat({ classId: classData.id, ...params });
+    await activatePraatplaatAssignment(newId);
+    setShowActivatedCode(true);
+    setTimeout(() => setShowActivatedCode(false), 8000);
+  }, [classData.id, activatePraatplaatAssignment]);
 
   const handleDeactivateAssignment = useCallback(async () => {
     try {
@@ -222,13 +248,25 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                 <p className="text-text-main text-sm font-medium mb-4">
                   {t('assignments.noActiveGuidance', { code: classData.code })}
                 </p>
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => setShowActivateModal(true)}
-                >
-                  {t('assignments.activateButton')}
-                </Button>
+                {/* Eén primaire actie: zonder resources is 'Nieuwe praatplaat'
+                    het nuttigst (de activeer-modal is dan toch leeg); met
+                    resources is 'Opdracht activeren' de logische primaire actie. */}
+                <div className="flex flex-col sm:flex-row gap-3 justify-center">
+                  <Button
+                    variant={hasResources ? 'primary' : 'secondary'}
+                    size="md"
+                    onClick={() => setShowActivateModal(true)}
+                  >
+                    {t('assignments.activateButton')}
+                  </Button>
+                  <Button
+                    variant={hasResources ? 'secondary' : 'primary'}
+                    size="md"
+                    onClick={() => setShowCreatePraatplaat(true)}
+                  >
+                    {t('assignments.createPraatplaatForClass')}
+                  </Button>
+                </div>
               </div>
             )}
 
@@ -485,7 +523,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         onClose={() => setShowActivateModal(false)}
         onActivateTemplate={handleActivateTemplate}
         onActivatePraatplaat={handleActivatePraatplaat}
-        onGoToDashboard={onBack}
+        onCreatePraatplaat={() => {
+          setShowActivateModal(false);
+          setShowCreatePraatplaat(true);
+        }}
+      />
+
+      <CreatePraatplaatModal
+        isOpen={showCreatePraatplaat}
+        onClose={() => setShowCreatePraatplaat(false)}
+        onCreate={handleCreateAndActivatePraatplaat}
       />
 
       {/* Praatplaat viewer */}
