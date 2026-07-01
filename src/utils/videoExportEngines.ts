@@ -53,7 +53,15 @@ export interface EngineRenderData {
  * Retourneert null als geen enkele engine beschikbaar is.
  */
 export async function detectBestEngine(): Promise<VideoEngine | null> {
-  if (typeof VideoEncoder !== 'undefined' && typeof VideoFrame !== 'undefined') {
+  // De WebCodecs-engine rendert naar een OffscreenCanvas; zonder die API zou hij
+  // pas bij render-tijd crashen. Neem 'm daarom op in de capability-check, zodat we
+  // netjes doorvallen naar de MediaRecorder-fallback (die een DOM-canvas gebruikt).
+  const hasOffscreenCanvas = typeof OffscreenCanvas !== 'undefined';
+  if (
+    hasOffscreenCanvas &&
+    typeof VideoEncoder !== 'undefined' &&
+    typeof VideoFrame !== 'undefined'
+  ) {
     // Probeer H.264 met hardware acceleratie (snel, GPU-based)
     const hwCodec = await checkH264Support('no-preference');
     if (hwCodec) {
@@ -70,7 +78,8 @@ export async function detectBestEngine(): Promise<VideoEngine | null> {
 
     logger.info('[videoEngine] H.264 not supported (neither hardware nor software)');
   } else {
-    logger.info('[videoEngine] WebCodecs API not available', {
+    logger.info('[videoEngine] WebCodecs/OffscreenCanvas not available', {
+      OffscreenCanvas: typeof OffscreenCanvas,
       VideoEncoder: typeof VideoEncoder,
       VideoFrame: typeof VideoFrame,
     });

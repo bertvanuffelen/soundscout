@@ -20,6 +20,7 @@ import { preloadImages, computeImageTimeline } from './canvasFrameRenderer';
 import { detectBestEngine } from './videoExportEngines';
 import type { EngineName } from './videoExportEngines';
 import { logger } from './logger';
+import i18n from '../i18n';
 
 // =============================================================================
 // Types
@@ -87,7 +88,7 @@ export async function exportToVideo(
   const engine = await detectBestEngine();
 
   if (!engine) {
-    throw new Error('Video export is niet beschikbaar op deze browser');
+    throw new Error(i18n.t('stage.videoNotSupported'));
   }
 
   logger.info(`[videoExport] Using engine: ${engine.name}`);
