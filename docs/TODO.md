@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-05-01
+**Laatst bijgewerkt**: 2026-05-23
 
 ---
 
@@ -8,7 +8,7 @@
 
 > Plaats hier ideeën, bugs of verzoeken. Claude verwerkt ze later naar de juiste prioriteit.
 
-_(Leeg — alle items zijn verwerkt naar de juiste prioriteit of afgerond)_
+_Inbox is leeg — handmatige bugs/ideeën hier toevoegen._
 
 ---
 
@@ -28,12 +28,13 @@ Vereist hands-on device testen (iPad, Android, Chromebook). Issues hangen samen.
 | UX-LOOP | Loop resize handle te klein op touch | Klein-Medium |
 | UX-LANDSCAPE | Landscape-hint tonen op tablet/telefoon | Laag |
 
-### Bundel D — Code-kwaliteit quick wins (~3 uur)
+### Bundel D — Code-kwaliteit quick wins (~5 uur)
 Kleine verbeteringen die in rustiger momenten opgepakt kunnen worden.
 
 | Issue | Titel | Complexiteit |
 |-------|-------|-------------|
 | #MOBILE-AUDIT-MONITOR | Aandachtspunten uit mobile audit | Klein-Medium |
+| #AUDIT-LINT-RESIDUE (cluster A) | Recursieve useCallback TDZ in StorytellingPanel/Display | Klein (1-2 uur, handtest vereist) |
 | #38 | i18n review (terugkerend) | Laag |
 | PERF-4 | Theme images ongeoptimaliseerd | Laag |
 
@@ -168,6 +169,13 @@ De rechterrand van een looping clip is op iPad moeilijk te pakken om de loopduur
 
 ---
 
+#### BUG-MAXCLASSES-MODAL — Modal "max klassen bereikt" is niet wegklikbaar
+**Complexiteit:** Laag · **Bron:** Inbox (handmatig toegevoegd) · **Status:** Open
+
+Wanneer een docent het maximum aantal klassen heeft bereikt en probeert een nieuwe aan te maken, verschijnt een melding-modal die niet weggeklikt kan worden — gebruiker moet de pagina opnieuw laden om verder te kunnen. Waarschijnlijk ontbrekende `onClose`-handler of een conditie die de modal forceert open te blijven.
+
+**Te checken:** `CreateClassModal.tsx` en `TeacherDashboard.tsx` rond de max-classes-validatie.
+
 ---
 
 #### #69 — Storyboard ↔ vrij modus wisselen zonder clips te verliezen
@@ -253,16 +261,85 @@ Kleine nuisances en consistentie-items. Pak op wanneer in de buurt of bij klacht
   - ~94 matches in codebase; voorbeelden: `StudioView.tsx:348`, `StartScreen.tsx:93-95`, `MapView.tsx:75`, `Modal.tsx:34`
   - Fix: per geval beslissen — migreren of CLAUDE.md bijwerken
 - [ ] **Geen detectie iOS silent-switch** — studenten denken dat audio kapot is.
-- [ ] **Supabase-calls zonder timeout** — UI hangt op trage netwerken.
-  - `src/lib/praatplaat.ts`, `src/lib/submissions.ts`, saved compositions
-  - Fix: 15s `AbortController` timeout + feedback
+- [x] **Supabase-calls zonder timeout** — opgelost (2026-05-22) via `withTimeout` helper + `TimeoutError` class; alle 23 RPC-calls in `src/lib/` (submissions, praatplaat, templates, assignments) hebben nu 15s/20s timeout + afbreekknop in `ShareCodeInput`. Auth-flow expliciet skipped. Zie Pre-release audit (2026-05-22) Fix 6/7.
 - [ ] **FeedbackModal categorie-grid krap op 320 px.**
   - `src/components/feedback/FeedbackModal.tsx:210` — `grid grid-cols-3`
   - Fix: `grid-cols-1 sm:grid-cols-3`
 
-- **Bestanden:** `src/components/share/ShareCodeInput.tsx`, `src/components/share/ShareCodeModal.tsx`
+#### #AUDIT-LINT-RESIDUE — Restant lint-errors na pre-release audit
+**Complexiteit:** Medium · **Bron:** Pre-release audit (2026-05-22) · **Type:** Code-kwaliteit · **Status:** Open
 
-- **Bestanden:** `src/components/teacher/TeacherDashboard.tsx`, `src/components/teacher/ClassDetail.tsx`, `src/components/admin/LocationEditor.tsx`
+Na de pre-release fixes (commits 8a36097 t/m bdaed27) en de aansluitende categorie-1-poets staan er nog ~31 lint-errors. Twee duidelijke clusters; per cluster afzonderlijk te plannen.
+
+**Achtergrond:** ESLint draait nu schoon op `dist`, `.claude/**`, `node_modules/**`, `supabase/**` (Fix 1 van audit). Alle nieuw zichtbare errors zitten in échte `src/`-bestanden. tsc is groen, 227/227 tests groen — geen runtime-bugs, alleen linter-waarschuwingen die fundamenteel architectuur-keuzes raken.
+
+##### Cluster A — Recursieve `useCallback` TDZ (~1-2 uur)
+
+- [ ] **2× "Cannot access variable before it is declared"** — recursieve self-reference in `requestAnimationFrame(syncWithPlayback)` binnen de useCallback-body
+  - `src/components/studio/storytelling/StorytellingPanel.tsx:69` (syncWithPlayback regels 48-70)
+  - `src/components/stage/StorytellingDisplay.tsx:62` (zelfde patroon)
+  - Runtime werkt prima — JS-hoisting maakt de const-binding beschikbaar zodra de functie-body wordt geëvalueerd. ESLint v7+ markeert de zelf-referentie als TDZ-risico.
+  - **Fix-patroon:** vervang door een `useRef<() => void>()` die in een `useEffect` met de actuele callback gevuld wordt. RAF-aanroep gaat via `rafCallbackRef.current?.()`.
+  - **Vereist handmatige test:** storyboard-playback moet nog steeds 60fps image-sync hebben (zie Tone.js-valkuil #3 in CLAUDE.md). Zonder testdekking op deze flow is een handtest verplicht.
+
+##### Cluster B — React Compiler-linter waarschuwingen (~4-8 uur, regressie-risico)
+
+Dit zijn defensieve waarschuwingen van `eslint-plugin-react-hooks` v7+ (de React Compiler-aware linter). Geen actuele bugs in React 19; potentieel relevant voor toekomstige React Compiler-versies. Niet ongericht aan een AI-agent delegeren — sommige refs/effects staan bewust zo om audio-render-storms te voorkomen (zie CLAUDE.md "Tone.js Pitfalls" #3).
+
+- [ ] **20× "Cannot access refs during render"** — refs gelezen in render-fase i.p.v. in effect/callback
+  - `src/components/studio/Timeline.tsx` (regels 213, 533, 537, 538 — meerdere refs voor inline edit-actions)
+  - `src/components/studio/Track.tsx` (148, 152, 153)
+  - `src/components/studio/EditToolbar.tsx` (142, 146, 147)
+  - `src/components/studio/SectionBar.tsx:199`
+  - **Aanpak:** pad-voor-pad. Per file: begrijp waarom de huidige ref er staat (audio-timing? DOM-meting? drag-state?), dan beslissen: refactor naar state, naar useEffect, of laten staan met `// eslint-disable-next-line` plus inline-comment waarom.
+- [ ] **7× "Calling setState synchronously within an effect"** — kan cascading renders triggeren
+  - `src/components/compositions/CompositionsView.tsx:47`
+  - `src/components/feedback/FeedbackModal.tsx:53`
+  - `src/components/start/StoryboardLightbox.tsx:32`
+  - `src/components/studio/EffectsModal.tsx:72`
+  - `src/components/studio/TrimModal.tsx:64`
+  - `src/hooks/useStageSave.ts:62` (compositionName-load-effect)
+  - **Aanpak:** sommige zijn legitieme afgeleide-state-berekeningen (kan met `useMemo` of `useSyncExternalStore`); andere duiden op een echte ordering-bug. Per geval beoordelen.
+
+**Voorwaarde voor cluster B:** liefst eerst testdekking uitbreiden op hooks/services/components (zie audit C5 "Testdekking", post-promotie ~8-12 uur). Zonder tests is een refactor in Timeline/Track/EditToolbar het soort wijziging dat audio-timing-regressies kan introduceren die je niet vangt voor productie.
+
+**Niet doen:**
+- Bulkfix in één commit. Per file commit, per file handtest.
+- Refs domweg naar state kantelen — dat is precies de anti-pattern die Tone.js-valkuil #3 beschrijft.
+- jsx-a11y plugin installeren om de autofocus-comment-noise op te lossen — die is al opgelost in categorie 1.
+
+**Bestanden:** zie bovenstaande lijst per cluster.
+
+---
+
+#### #AUDIT-RESTANT — Open audit-bevindingen voor later (M2/M3/M4a/C4)
+**Complexiteit:** Klein-Medium · **Bron:** Pre-release audit (2026-05-22) · **Type:** Robuustheid + UX · **Status:** Open
+
+Vier afzonderlijke audit-bevindingen die niet kritisch waren voor de pre-release ronde maar wel verbeteren wat we beloven aan docenten. Geen onderlinge afhankelijkheid — pak in willekeurige volgorde op.
+
+- [ ] **M2 — Clipboard-fallback unificeren** (~0,5 uur)
+  - Mét fallback: `ShareLinkModal.tsx:88-102`, `SaveOnlineModal.tsx:85-94`, `SharePraatplaatModal.tsx:101-127`
+  - Zónder fallback (lege catch, geen UI-feedback): `SaveAsTemplateModal.tsx:65-72`, `TemplateCard.tsx:30-38`
+  - Fix: nieuwe util `src/utils/copyToClipboard.ts` met execCommand-fallback; vervang de drie lege catches. Zorg dat `setCopied(true)` ook in het fallback-pad wordt aangeroepen.
+
+- [ ] **M3 — Stille drop van corrupte composities** (~1,5 uur)
+  - `src/utils/schemas.ts:182-185` (`parseSavedCompositions`) filtert items die de Zod-validatie niet passeren stilzwijgend weg. `StorageService.getCompositions` logt enkel naar `logger.warn`; geen UI-feedback aan het kind.
+  - Risico: bij toekomstige schema-wijziging zonder migratie-pad verdwijnen oude composities ongezien. Vertrouwens-killer voor docenten.
+  - Fix: laat `parseSavedCompositions` `{ valid, invalidCount, invalidRaw? }` retourneren; toon in `CompositionsView` een dismissable banner met optie tot JSON-export van `invalidRaw` voor recovery.
+  - **Gerelateerd:** TP5-6 (StorageService migratiestrategie) — daar is de structurele oplossing.
+
+- [ ] **M4a — OffscreenCanvas feature-detect ontbreekt in video-export** (~0,25 uur)
+  - `src/utils/videoExportEngines.ts:55-87` checkt `VideoEncoder` en `VideoFrame` maar niet `OffscreenCanvas`. Regel 175 gebruikt het rechtstreeks → ReferenceError op browsers met WebCodecs zonder OffscreenCanvas (oude iPads, iOS 16.0-16.3).
+  - Fix: voeg `typeof OffscreenCanvas !== 'undefined'` toe aan de check. Bij ontbreken val terug op MediaRecorder.
+
+- [ ] **C4 — Video-export op iPad: hardware-detectie timeout + iOS-UA-check** (~2-3 uur)
+  - `VideoEncoder.isConfigSupported()` heeft geen timeout — op iPad kan dit "hangen". MediaRecorder-fallback produceert WebM, wat iOS Safari niet natief afspeelt.
+  - Fix: (a) `Promise.race` met 5s timeout rond `isConfigSupported`. (b) Detecteer iOS user-agent en verberg/disable de MP4-export-knop met uitleg "Werkt het beste op Chromebook of laptop" — of bied alleen MP3-export als fallback op iOS.
+  - Relevant nu we marketing-video's gaan tonen waarmee docenten op iPad kunnen experimenteren.
+
+**Niet in deze lijst** (bewust elders geplaatst): M1 (RPC-timeout) is opgelost, C1/C2/C3-deel/B1 ook opgelost. C5 (testdekking) is een grotere investering en wordt apart gepland.
+
+---
 
 #### PERF-4 — Theme images ongeoptimaliseerd (860K-1.1M JPG)
 **Complexiteit:** Laag · **Bron:** Externe frontend-analyse (2026-04-14) · **Type:** Performance
@@ -398,6 +475,7 @@ Periodiek nalopen na elke feature: hardcoded teksten, NL/EN pariteit, vertaaldek
 
 #### TP5-6 — StorageService migratiestrategie
 **Bron:** Architectuur-analyse (P2) · `StorageService.ts` — `STORAGE_VERSION` is uitgecommentarieerd. Schema-wijzigingen veroorzaken stille data loss (composities die Zod-validatie falen worden stil gefilterd). Fix: implementeer `migrateIfNeeded()` met versioned transformers.
+**Verwant aan:** #AUDIT-RESTANT M3 (P3) — tussenstap die de gebruiker waarschuwt vóór deze structurele fix er is.
 
 #### TP5-7 — Extraheer useCompositionPlayer() hook
 **Bron:** Architectuur-analyse (P2) · `SharedPlayer.tsx` (381 regels) en `SubmissionPlayer.tsx` (353 regels) zijn ~95% identiek. Extraheer gedeelde playback-logica (data fetching, audio init, transport controls, beat tracking) naar een herbruikbare hook.
@@ -563,6 +641,13 @@ Periodiek nalopen na elke feature: hardcoded teksten, NL/EN pariteit, vertaaldek
 | TP5-15 | Supabase error strings gecentraliseerd | 2026-04-14 |
 | TP5-16 | `as any` verwijderd uit assignments.ts | 2026-04-14 |
 | TP5-14 | timelineStore decoupling van libraryStore | 2026-04-14 |
+| PRE-REL-1 | ESLint config sluit worktrees/node_modules/supabase uit | 2026-05-22 |
+| PRE-REL-2 | LocationEditor TDZ-bug — `loadExistingLocation` boven useEffect | 2026-05-22 |
+| PRE-REL-3 | Rules-of-hooks fix in StorytellingPanel (9 hooks) + StorytellingDisplay (7 hooks) — early return naar ná de hooks via optional chaining | 2026-05-22 |
+| PRE-REL-4 | `audioVersion` ophogen bij `setLooping` + `loadTimeline` (defense-in-depth voor `useRescheduleOnChange`-protocol) | 2026-05-22 |
+| PRE-REL-5 | RPC-timeout helper (`withTimeout` + `TimeoutError`) op alle 23 Supabase-calls; 15s lookups / 20s submits; auth-flow expliciet skipped | 2026-05-22 |
+| PRE-REL-6 | Afbreek/retry-UX: `AbortController`-knop in `ShareCodeInput` + `TimeoutError instanceof`-detectie met aparte foutmelding in `useStageSave` | 2026-05-22 |
+| PRE-REL-7 | Lint-poets categorie 1: ongebruikte `err`/`_onSuccess` weggehaald, `jsx-a11y/no-autofocus` disable-comment verwijderd, `useAuth` hook naar apart bestand (`src/contexts/useAuth.ts`) voor fast-refresh-compat | 2026-05-23 |
 
 ### UX & Accessibility (afgerond)
 
