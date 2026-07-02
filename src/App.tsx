@@ -26,10 +26,17 @@ const TeacherGuideScreen = lazy(() => import('./components/teacher/TeacherGuideS
 const PraatplaatSelectScreen = lazy(() => import('./components/praatplaat/PraatplaatSelectScreen'));
 const AssignmentLandingScreen = lazy(() => import('./components/assignment/AssignmentLandingScreen'));
 const SharedPraatplaatViewer = lazy(() => import('./components/praatplaat/SharedPraatplaatViewer'));
+const TeacherLandingPage = lazy(() => import('./pages/TeacherLandingPage'));
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
   return window.location.pathname === '/editor';
+}
+
+// Check if we're on the public teacher landing route (#docentenpagina, stap 1).
+// Losse, ontkoppelde pagina — geen dev-gate (publiek), geen AuthProvider nodig.
+function isTeacherLandingRoute(): boolean {
+  return window.location.pathname === '/teacher';
 }
 
 // Loading fallback for lazy-loaded components
@@ -312,6 +319,18 @@ function App() {
     return (
       <ErrorBoundary>
         <LocationEditor />
+      </ErrorBoundary>
+    );
+  }
+
+  // Publieke docentenpagina (#docentenpagina) — losse route, ontkoppeld van de
+  // reguliere app-flow (geen theme-init, geen AuthProvider, geen audio).
+  if (isTeacherLandingRoute()) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <TeacherLandingPage />
+        </Suspense>
       </ErrorBoundary>
     );
   }

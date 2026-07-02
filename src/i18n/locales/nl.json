@@ -1035,5 +1035,107 @@
     "startListening": "Luister naar de praatplaat",
     "emptyTitle": "Nog geen composities",
     "emptyDescription": "Er zijn nog geen composities op deze praatplaat geplaatst."
+  },
+  "teacherLanding": {
+    "hero": {
+      "eyebrow": "Gratis · in de browser · Nederlands",
+      "title": "Laat je klas samen muziek maken bij één beeld",
+      "subtitle": "SoundScout is een lesomgeving waarin leerlingen van 8–12 geluiden verzamelen en samen componeren. Jij deelt een klascode, zij beginnen meteen.",
+      "ctaPrimary": "Maak een gratis account",
+      "ctaSecondary": "Inloggen"
+    },
+    "compose": {
+      "title": "Drie manieren om te componeren",
+      "subtitle": "Kies per opdracht de vorm die bij je les past — van samen op het digibord tot vrij experimenteren.",
+      "variants": {
+        "praatplaat": {
+          "tag": "Samen · digibord",
+          "title": "Praatplaat",
+          "description": "De hele klas op één beeld. Elk tweetal verklankt een plek."
+        },
+        "storyboard": {
+          "tag": "Verhaal in scènes",
+          "title": "Storyboard",
+          "description": "Drie tot vier beelden vormen een verhaal — soundtrack per scène."
+        },
+        "vrij": {
+          "tag": "Open",
+          "title": "Vrij componeren",
+          "description": "Een klankcompositie zonder beeld — pure verkenning."
+        }
+      },
+      "captions": {
+        "praatplaat": "De hele klas werkt op één beeld en verklankt samen een klanklandschap.",
+        "storyboard": "Een verhaal in drie tot vier scènes — leerlingen maken een soundtrack per beeld.",
+        "vrij": "Een klankcompositie zonder beeld — leerlingen bouwen vrij op de tijdlijn."
+      }
+    },
+    "steps": {
+      "title": "Zo zet je een klas op",
+      "step1": {
+        "title": "Maak een klas",
+        "description": "Je krijgt meteen een klascode van vier cijfers."
+      },
+      "step2": {
+        "title": "Kies een opdracht",
+        "description": "Activeer een praatplaat, storyboard of template voor je klas."
+      },
+      "step3": {
+        "title": "Deel de klascode",
+        "description": "Leerlingen typen de code in en komen er direct in."
+      },
+      "ctaDashboard": "Ga naar je dashboard"
+    },
+    "lessons": {
+      "title": "Kant-en-klare leskaarten",
+      "soon": "Binnenkort",
+      "soonDetail": "Deze leskaart komt binnenkort beschikbaar. Kies links Robotfabriek om een uitgewerkt voorbeeld te zien.",
+      "download": "Download pdf",
+      "robotfactory": {
+        "level": "Groep 6–7",
+        "title": "Robotfabriek",
+        "tag": "Praatplaat",
+        "subtitle": "Groep 6–7 · in tweetallen",
+        "goalLabel": "Lesdoel.",
+        "goal": "Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken.",
+        "phasesTitle": "De vier fasen van het creatief proces",
+        "phases": {
+          "orient": { "name": "Oriënteren", "text": "klassikaal gesprek; tweetallen kiezen een plek." },
+          "research": { "name": "Onderzoeken", "text": "geluiden verzamelen en in de studio componeren." },
+          "perform": { "name": "Uitvoeren", "text": "inleveren en klassikaal laten klinken." },
+          "evaluate": { "name": "Evalueren", "text": "samen nabespreken." }
+        }
+      },
+      "storyboard": {
+        "title": "Storyboard-verhaal"
+      },
+      "free": {
+        "title": "Vrij componeren"
+      }
+    },
+    "curriculum": {
+      "title": "Sluit aan op de leerlijn muziek",
+      "intro": "SoundScout raakt drie kerndoelen muziek — zo maak je de inzet richting directie en ICC'er verantwoord.",
+      "pill1": "54 · luisteren",
+      "pill2": "55 · spelen en maken",
+      "pill3": "56 · vastleggen en ontwerpen"
+    },
+    "workshops": {
+      "text": "SoundScout in je team introduceren? Bert verzorgt workshops voor lerarenteams en pabo's.",
+      "cta": "Bekijk de workshops"
+    },
+    "videos": {
+      "title": "Zo werkt het — in beeld",
+      "subtitle": "Twee korte demo's: één vanuit de leerling, één vanuit jou als docent.",
+      "play": "Speel video af",
+      "student": {
+        "title": "Zo componeert een leerling",
+        "description": "Van geluiden verzamelen tot een compositie op de tijdlijn."
+      },
+      "teacher": {
+        "title": "Zo beheer je je klas",
+        "description": "Klassen, opdrachten en inzendingen in het dashboard."
+      }
+    }
   }
 }
