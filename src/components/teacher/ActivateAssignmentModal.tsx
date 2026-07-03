@@ -5,13 +5,14 @@
  * De docent selecteert er één en bevestigt → activateAssignment().
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText, MapPin, Clapperboard, Check, Loader2 } from 'lucide-react';
+import { FileText, MapPin, Clapperboard, Plus, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { usePraatplaten } from '../../hooks/usePraatplaten';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { getAllMultiImageStoryboards, type StoryboardWithTheme } from '../../data/themes';
+import type { AssignmentType } from '../../lib/assignments';
 import type { TeacherTemplate } from '../../lib/templates';
 import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
@@ -23,8 +24,10 @@ interface ActivateAssignmentModalProps {
   onActivateTemplate: (templateId: string, cardId?: string | null) => Promise<void>;
   onActivatePraatplaat: (praatplaatId: string, cardId?: string | null) => Promise<void>;
   onActivateStoryboard: (storyboardRef: string, cardId?: string | null) => Promise<void>;
-  /** Optioneel: maak in-place een nieuwe praatplaat voor deze klas aan wanneer er
-   *  nog geen opdrachten zijn om te activeren (sluit deze modal, opent de create-modal). */
+  /** Beperk de modal tot één opdracht-type. Undefined = alle types (legacy). */
+  typeFilter?: AssignmentType;
+  /** Optioneel: maak in-place een nieuwe praatplaat voor deze klas aan (sluit deze
+   *  modal, opent de create-modal). */
   onCreatePraatplaat?: () => void;
 }
 
@@ -43,6 +46,7 @@ export function ActivateAssignmentModal({
   onActivateTemplate,
   onActivatePraatplaat,
   onActivateStoryboard,
+  typeFilter,
   onCreatePraatplaat,
 }: ActivateAssignmentModalProps) {
   const { t } = useTranslation();
@@ -55,8 +59,24 @@ export function ActivateAssignmentModal({
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
+  // Reset keuze bij (her)openen of wisselen van type-scope, zodat een selectie
+  // van een vorig type niet blijft hangen.
+  useEffect(() => {
+    if (!isOpen) return;
+    setSelected(null);
+    setSelectedCardId('');
+    setError(null);
+  }, [isOpen, typeFilter]);
+
   const loading = templatesLoading || praatplatenLoading;
   const activeTemplates = templates.filter((t) => t.isActive);
+
+  // Type-scoping: undefined = toon alles (legacy); anders alleen dat type.
+  const showTemplates = !typeFilter || typeFilter === 'template';
+  const showPraatplaten = !typeFilter || typeFilter === 'praatplaat';
+  const showStoryboards = !typeFilter || typeFilter === 'storyboard';
+  const scoped = !!typeFilter;
+  const modalTitle = typeFilter ? t(`assignments.types.${typeFilter}.pickTitle`) : t('assignments.chooseTitle');
 
   const handleConfirm = async () => {
     if (!selected) return;
@@ -82,10 +102,12 @@ export function ActivateAssignmentModal({
   };
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('assignments.chooseTitle')} size="md">
-      <p className="text-text-muted text-sm mb-4">
-        {t('assignments.chooseDescription')}
-      </p>
+    <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} size="md">
+      {!scoped && (
+        <p className="text-text-muted text-sm mb-4">
+          {t('assignments.chooseDescription')}
+        </p>
+      )}
 
       {error && (
         <div className="bg-error-50 border border-error-200 text-error-700 px-3 py-2 rounded-lg mb-4 text-sm">
@@ -101,7 +123,8 @@ export function ActivateAssignmentModal({
           </div>
         )}
 
-        {!loading && activeTemplates.length === 0 && praatplaten.length === 0 && storyboards.length === 0 && (
+        {/* Lege staat (alleen ongescooped): geen enkele resource */}
+        {!loading && !scoped && activeTemplates.length === 0 && praatplaten.length === 0 && storyboards.length === 0 && (
           <div className="text-center py-8">
             <p className="text-text-muted text-sm mb-4">
               {t('assignments.noAssignments')}
@@ -122,11 +145,13 @@ export function ActivateAssignmentModal({
         )}
 
         {/* Templates */}
-        {!loading && activeTemplates.length > 0 && (
+        {!loading && showTemplates && (
           <>
-            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1">
-              {t('templates.typeTemplate')}
-            </p>
+            {!scoped && activeTemplates.length > 0 && (
+              <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1">
+                {t('templates.typeTemplate')}
+              </p>
+            )}
             {activeTemplates.map((tmpl) => (
               <TemplateOption
                 key={tmpl.id}
@@ -135,15 +160,22 @@ export function ActivateAssignmentModal({
                 onSelect={() => setSelected({ type: 'template', id: tmpl.id })}
               />
             ))}
+            {scoped && activeTemplates.length === 0 && (
+              <p className="text-text-muted text-sm text-center py-6">
+                {t('templates.templatesEmpty')}
+              </p>
+            )}
           </>
         )}
 
         {/* Praatplaten */}
-        {!loading && praatplaten.length > 0 && (
+        {!loading && showPraatplaten && (
           <>
-            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
-              {t('templates.typePraatplaat')}
-            </p>
+            {!scoped && praatplaten.length > 0 && (
+              <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
+                {t('templates.typePraatplaat')}
+              </p>
+            )}
             {praatplaten.map((pp) => (
               <PraatplaatOption
                 key={pp.id}
@@ -152,15 +184,29 @@ export function ActivateAssignmentModal({
                 onSelect={() => setSelected({ type: 'praatplaat', id: pp.id })}
               />
             ))}
+            {/* In praatplaat-scope altijd de create-actie tonen */}
+            {scoped && onCreatePraatplaat && (
+              <button
+                onClick={() => { onClose(); onCreatePraatplaat(); }}
+                className="w-full text-left px-3 py-3 rounded-xl border border-dashed border-border-subtle bg-white hover:border-accent-300 transition-colors flex items-center gap-3"
+              >
+                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-accent-100 text-accent-700">
+                  <Plus className="w-4 h-4" />
+                </div>
+                <p className="font-medium text-text-main text-sm">{t('assignments.createPraatplaatForClass')}</p>
+              </button>
+            )}
           </>
         )}
 
         {/* Storyboards (app-content) */}
-        {!loading && storyboards.length > 0 && (
+        {!loading && showStoryboards && (
           <>
-            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
-              {t('templates.typeStoryboard')}
-            </p>
+            {!scoped && storyboards.length > 0 && (
+              <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
+                {t('templates.typeStoryboard')}
+              </p>
+            )}
             {storyboards.map((sb) => (
               <StoryboardOption
                 key={sb.storyboard.id}
