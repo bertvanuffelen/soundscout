@@ -87,6 +87,38 @@ export async function createPraatplaat(params: {
 }
 
 /**
+ * Activeer een praatplaat uit de catalogus voor een klas.
+ * Vindt-of-maakt één praatplaat-instance per (klas + afbeelding) en activeert die
+ * als opdracht. Retourneert het class_assignments-id.
+ */
+export async function activatePraatplaatFromCatalog(
+  classId: string,
+  entry: { name: string; themeId: string; locationId: string; imageUrl: string },
+  cardId?: string | null,
+): Promise<string> {
+  const supabase = await getSupabase();
+  const { data, error } = await withTimeout(
+    supabase.rpc('activate_praatplaat_from_catalog', {
+      p_class_id: classId,
+      p_name: entry.name.trim(),
+      p_theme_id: entry.themeId,
+      p_location_id: entry.locationId,
+      p_image_url: entry.imageUrl,
+      p_card_id: cardId || null,
+    }),
+    20_000,
+    'errors.networkTimeout'
+  );
+
+  if (error) {
+    logger.error('Fout bij activeren praatplaat uit catalogus:', sanitizeError(error));
+    throw new Error(i18n.t('teacher.praatplaat.createError'));
+  }
+
+  return data as string;
+}
+
+/**
  * Activeer een praatplaat (deactiveert automatisch andere praatplaten van dezelfde klas).
  */
 export async function activatePraatplaat(praatplaatId: string): Promise<boolean> {

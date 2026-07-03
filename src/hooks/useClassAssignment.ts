@@ -13,6 +13,7 @@ import {
   deactivateAssignment,
 } from '../lib/assignments';
 import type { ClassAssignmentRow } from '../lib/assignments';
+import { activatePraatplaatFromCatalog } from '../lib/praatplaat';
 import { logger } from '../utils/logger';
 
 interface UseClassAssignmentReturn {
@@ -25,8 +26,13 @@ interface UseClassAssignmentReturn {
   operationError: string | null;
   /** Activeer een template voor deze klas (optioneel met opdrachtkaart) */
   activateTemplate: (templateId: string, cardId?: string | null) => Promise<void>;
-  /** Activeer een praatplaat voor deze klas (optioneel met opdrachtkaart) */
+  /** Heractiveer een bestaande praatplaat-instance voor deze klas (optioneel met opdrachtkaart) */
   activatePraatplaat: (praatplaatId: string, cardId?: string | null) => Promise<void>;
+  /** Activeer een praatplaat uit de catalogus (find-or-create instance) */
+  activatePraatplaatFromCatalog: (
+    entry: { name: string; themeId: string; locationId: string; imageUrl: string },
+    cardId?: string | null,
+  ) => Promise<void>;
   /** Activeer een storyboard voor deze klas (optioneel met opdrachtkaart) */
   activateStoryboard: (storyboardRef: string, cardId?: string | null) => Promise<void>;
   /** Deactiveer de huidige opdracht */
@@ -89,6 +95,21 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     }
   }, [classId, fetch]);
 
+  const activatePraatplaatCatalog = useCallback(async (
+    entry: { name: string; themeId: string; locationId: string; imageUrl: string },
+    cardId?: string | null,
+  ) => {
+    setOperationError(null);
+    try {
+      await activatePraatplaatFromCatalog(classId, entry, cardId);
+      await fetch();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Kon praatplaat niet activeren';
+      setOperationError(msg);
+      throw err;
+    }
+  }, [classId, fetch]);
+
   const activateStoryboard = useCallback(async (storyboardRef: string, cardId?: string | null) => {
     setOperationError(null);
     try {
@@ -121,6 +142,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     operationError,
     activateTemplate,
     activatePraatplaat,
+    activatePraatplaatFromCatalog: activatePraatplaatCatalog,
     activateStoryboard,
     deactivate,
     refetch: fetch,
