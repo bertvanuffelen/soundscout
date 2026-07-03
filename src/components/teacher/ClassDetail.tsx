@@ -11,11 +11,11 @@ import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
-import { useTemplates } from '../../hooks/useTemplates';
-import { usePraatplaten } from '../../hooks/usePraatplaten';
+import type { AssignmentType } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
+import { AssignmentTypeCards } from './AssignmentTypeCards';
 import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { SharePraatplaatModal } from './SharePraatplaatModal';
@@ -88,12 +88,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     deactivate: deactivateAssignment,
   } = useClassAssignment(classData.id);
 
-  // Resources bepalen de knop-hiërarchie in de lege staat (zie hasResources).
-  const { templates } = useTemplates();
-  const { praatplaten } = usePraatplaten();
-  const hasResources = templates.some((tmpl) => tmpl.isActive) || praatplaten.length > 0;
-
   const [showActivateModal, setShowActivateModal] = useState(false);
+  // Type-eerste flow: welk type toont de scoped modal + welk type wacht op vervang-bevestiging.
+  const [activateType, setActivateType] = useState<AssignmentType | null>(null);
+  const [pendingType, setPendingType] = useState<AssignmentType | null>(null);
   const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [showActivatedCode, setShowActivatedCode] = useState(false);
@@ -116,6 +114,29 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setShowActivatedCode(true);
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activateStoryboardAssignment]);
+
+  // Klik op een type-kaart. Staat er al een opdracht → eerst vervang-melding;
+  // anders direct de type-gescoopte keuze-modal openen.
+  const handlePickType = useCallback((type: AssignmentType) => {
+    if (activeAssignment) {
+      setPendingType(type);
+    } else {
+      setActivateType(type);
+      setShowActivateModal(true);
+    }
+  }, [activeAssignment]);
+
+  const confirmReplace = useCallback(() => {
+    if (!pendingType) return;
+    setActivateType(pendingType);
+    setPendingType(null);
+    setShowActivateModal(true);
+  }, [pendingType]);
+
+  const closeActivateModal = useCallback(() => {
+    setShowActivateModal(false);
+    setActivateType(null);
+  }, []);
 
   // Fase 2: praatplaat maken + activeren in één handeling. De praatplaat wordt aan
   // deze klas gebonden en meteen als opdracht geactiveerd (activate_assignment →
@@ -277,34 +298,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               </div>
             )}
 
-            {/* Geen actieve opdracht */}
+            {/* Geen actieve opdracht → kies een type */}
             {!assignmentLoading && !activeAssignment && (
-              <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
-                <p className="text-text-muted text-sm mb-1">
-                  {t('assignments.noActive')}
-                </p>
+              <div className="bg-bg-surface rounded-2xl p-5 sm:p-6 border border-border-subtle">
                 <p className="text-text-main text-sm font-medium mb-4">
-                  {t('assignments.noActiveGuidance', { code: classData.code })}
+                  {t('assignments.pickPrompt', { code: classData.code })}
                 </p>
-                {/* Eén primaire actie: zonder resources is 'Nieuwe praatplaat'
-                    het nuttigst (de activeer-modal is dan toch leeg); met
-                    resources is 'Opdracht activeren' de logische primaire actie. */}
-                <div className="flex flex-col sm:flex-row gap-3 justify-center">
-                  <Button
-                    variant={hasResources ? 'primary' : 'secondary'}
-                    size="md"
-                    onClick={() => setShowActivateModal(true)}
-                  >
-                    {t('assignments.activateButton')}
-                  </Button>
-                  <Button
-                    variant={hasResources ? 'secondary' : 'primary'}
-                    size="md"
-                    onClick={() => setShowCreatePraatplaat(true)}
-                  >
-                    {t('assignments.createPraatplaatForClass')}
-                  </Button>
-                </div>
+                <AssignmentTypeCards onSelect={handlePickType} />
               </div>
             )}
 
@@ -378,13 +378,6 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     </Button>
                   )}
                   <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setShowActivateModal(true)}
-                  >
-                    {t('assignments.changeButton')}
-                  </Button>
-                  <Button
                     variant="ghost"
                     size="sm"
                     onClick={() => setShowDeactivateModal(true)}
@@ -394,6 +387,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     {t('assignments.deactivate')}
                   </Button>
                 </div>
+              </div>
+            )}
+
+            {/* Wijzig opdracht → dezelfde type-kaarten, altijd zichtbaar */}
+            {!assignmentLoading && activeAssignment && (
+              <div className="mt-6">
+                <p className="text-sm font-semibold text-text-main mb-3">
+                  {t('assignments.changeAssignment')}
+                </p>
+                <AssignmentTypeCards onSelect={handlePickType} />
               </div>
             )}
           </div>
@@ -545,18 +548,39 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         />
       )}
 
-      {/* Opdracht activeren modal */}
+      {/* Opdracht activeren modal (type-gescoopt) */}
       <ActivateAssignmentModal
         isOpen={showActivateModal}
-        onClose={() => setShowActivateModal(false)}
+        onClose={closeActivateModal}
+        typeFilter={activateType ?? undefined}
         onActivateTemplate={handleActivateTemplate}
         onActivatePraatplaat={handleActivatePraatplaat}
         onActivateStoryboard={handleActivateStoryboard}
         onCreatePraatplaat={() => {
-          setShowActivateModal(false);
+          closeActivateModal();
           setShowCreatePraatplaat(true);
         }}
       />
+
+      {/* Vervang-bevestiging: klik op een type-kaart terwijl er al een opdracht actief is */}
+      <Modal
+        isOpen={!!pendingType}
+        onClose={() => setPendingType(null)}
+        title={t('assignments.replaceConfirmTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed">
+          {t('assignments.replaceConfirmBody', { name: activeAssignment?.assignmentName ?? '' })}
+        </p>
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => setPendingType(null)} className="flex-1">
+            {t('common.cancel')}
+          </Button>
+          <Button variant="primary" onClick={confirmReplace} className="flex-1">
+            {t('assignments.replaceConfirmButton')}
+          </Button>
+        </div>
+      </Modal>
 
       <CreatePraatplaatModal
         isOpen={showCreatePraatplaat}
