@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2 } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2 } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -22,6 +22,7 @@ import { SharePraatplaatModal } from './SharePraatplaatModal';
 import { createPraatplaat, type PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
+import { SectionTitle, TeacherPageHeader } from './common';
 import { logger } from '../../utils/logger';
 
 interface ClassDetailProps {
@@ -44,22 +45,25 @@ const ASSIGNMENT_LABEL_KEY = {
   storyboard: 'templates.typeStoryboard',
 } as const;
 
+// Kleurcodering per opdracht-type, in lijn met de compose-mode-kleuren van de
+// landingspagina: template = accent (amber), praatplaat = teal, storyboard =
+// paars. Zo zijn de drie types visueel duidelijk te onderscheiden.
 const ASSIGNMENT_ICON_WRAP = {
-  template: 'bg-warning-100 text-warning-700',
-  praatplaat: 'bg-primary-100 text-primary-700',
-  storyboard: 'bg-accent-100 text-accent-700',
+  template: 'bg-accent-100 text-accent-700',
+  praatplaat: 'bg-teal-100 text-teal-700',
+  storyboard: 'bg-purple-100 text-purple-700',
 } as const;
 
 const ASSIGNMENT_BADGE = {
-  template: 'bg-warning-100 text-warning-800',
-  praatplaat: 'bg-primary-100 text-primary-800',
-  storyboard: 'bg-accent-100 text-accent-800',
+  template: 'bg-accent-100 text-accent-800',
+  praatplaat: 'bg-teal-100 text-teal-700',
+  storyboard: 'bg-purple-100 text-purple-700',
 } as const;
 
 const ASSIGNMENT_ICON_WRAP_SM = {
-  template: 'bg-warning-100 text-warning-600',
-  praatplaat: 'bg-primary-100 text-primary-600',
-  storyboard: 'bg-accent-100 text-accent-600',
+  template: 'bg-accent-100 text-accent-600',
+  praatplaat: 'bg-teal-100 text-teal-600',
+  storyboard: 'bg-purple-100 text-purple-600',
 } as const;
 
 export function ClassDetail({ classData, onBack }: ClassDetailProps) {
@@ -180,53 +184,47 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
 
   return (
     <div className="min-h-screen bg-bg-app">
-      {/* Header */}
-      <header className="bg-bg-surface border-b border-border-subtle">
-        <div className="max-w-4xl mx-auto px-4 py-4">
-          <button
-            onClick={onBack}
-            className="text-text-muted hover:text-text-main text-sm mb-2 flex items-center gap-1"
+      {/* Header - gedeelde brand-900 shell met broodkruimel */}
+      <TeacherPageHeader
+        title={classData.name}
+        subtitle={t('teacher.classDetail.compositionCount', { count: submitted.length })}
+        onBack={onBack}
+        backLabel={t('teacher.classDetail.back')}
+        breadcrumb={
+          <>
+            {t('teacher.classDetail.dashboardCrumb')} <span className="opacity-60">›</span> {classData.name}
+          </>
+        }
+        actions={
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={handleRefresh}
+            disabled={refreshing || loading}
+            title={t('teacher.classDetail.refreshTitle')}
           >
-            <ArrowLeft className="w-4 h-4" />
-            {t('teacher.classDetail.back')}
-          </button>
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-xl sm:text-2xl font-bold text-text-main">
-                {classData.name}
-              </h1>
-              <p className="text-sm text-text-muted">
-                {t('teacher.classDetail.compositionCount', { count: submitted.length })}
-              </p>
-            </div>
-
-            <div className="flex items-center gap-3">
-              {/* Ververs knop */}
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleRefresh}
-                disabled={refreshing || loading}
-                title={t('teacher.classDetail.refreshTitle')}
-              >
-                <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
-              </Button>
-
-              {/* Klascode prominent weergeven */}
-              <div className="text-center">
-                <p className="text-xs text-text-muted uppercase tracking-wide">{t('teacher.classDetail.classCodeLabel')}</p>
-                <div className="bg-primary-100 text-primary-800 px-4 py-2 rounded-xl font-mono font-bold text-2xl">
-                  {classData.code}
-                </div>
-                <p className="text-xs text-text-muted mt-1">{t('teacher.classCodeMeaning')}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </header>
+            <RefreshCw className={`w-4 h-4 ${refreshing ? 'animate-spin' : ''}`} />
+          </Button>
+        }
+      />
 
       {/* Main content */}
       <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
+        {/* Klascode als 'held' — het belangrijkste dat de docent deelt */}
+        <div className="mb-8 bg-bg-surface rounded-2xl border border-border-subtle p-5 sm:p-6 flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-xs text-text-muted uppercase tracking-wide mb-1.5">
+              {t('teacher.classDetail.classCodeLabel')}
+            </p>
+            <span className="inline-flex items-center bg-accent-100 text-accent-800 px-4 py-2 rounded-full font-mono font-extrabold text-2xl sm:text-3xl tracking-wider">
+              {classData.code}
+            </span>
+          </div>
+          <p className="text-sm text-text-muted max-w-xs leading-relaxed">
+            {t('teacher.classCodeMeaning')}
+          </p>
+        </div>
+
         {/* Error message */}
         {(error || actionError) && (
           <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
@@ -243,7 +241,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {/* Loading state */}
         {loading && (
           <div className="text-center py-12">
-            <Loader2 className="w-10 h-10 text-primary-500 animate-spin mx-auto mb-4" />
+            <Loader2 className="w-10 h-10 text-accent-500 animate-spin mx-auto mb-4" />
             <p className="text-text-muted">{t('teacher.classDetail.loading')}</p>
           </div>
         )}
@@ -251,10 +249,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {/* --- Actieve opdracht blok --- */}
         {!loading && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-1">
-              <Play className="w-5 h-5 text-primary-500" />
+            <SectionTitle as="h2" size="md" className="flex items-center gap-2 mb-1">
+              <Play className="w-5 h-5 text-accent-600" />
               {t('assignments.activeTitle')}
-            </h2>
+            </SectionTitle>
             <p className="text-sm text-text-muted mb-4 ml-7">
               {t('assignments.activeDescription')}
             </p>
@@ -267,7 +265,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
 
             {/* Klascode tonen na activeren */}
             {showActivatedCode && (
-              <div className="bg-primary-50 border border-primary-200 text-primary-800 px-4 py-3 rounded-xl mb-4 text-sm flex items-center justify-between">
+              <div className="bg-success-50 border border-success-200 text-success-600 px-4 py-3 rounded-xl mb-4 text-sm flex items-center justify-between">
                 <span>{t('teacher.praatplaat.activatedMessage')}</span>
                 <span className="font-mono font-bold text-lg ml-3">{classData.code}</span>
               </div>
@@ -275,13 +273,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
 
             {assignmentLoading && (
               <div className="text-center py-6">
-                <Loader2 className="w-6 h-6 text-primary-500 animate-spin mx-auto" />
+                <Loader2 className="w-6 h-6 text-accent-500 animate-spin mx-auto" />
               </div>
             )}
 
             {/* Geen actieve opdracht */}
             {!assignmentLoading && !activeAssignment && (
-              <div className="bg-bg-surface rounded-xl p-6 text-center border border-border-subtle">
+              <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
                 <p className="text-text-muted text-sm mb-1">
                   {t('assignments.noActive')}
                 </p>
@@ -312,7 +310,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
 
             {/* Actieve opdracht kaart */}
             {!assignmentLoading && activeAssignment && (
-              <div className="bg-bg-surface rounded-xl p-4 sm:p-5 border border-primary-200 shadow-sm">
+              <div className="bg-bg-surface rounded-2xl p-4 sm:p-5 border border-border-subtle shadow-sm">
                 <div className="flex items-start gap-3">
                   {/* Type icoon */}
                   <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${ASSIGNMENT_ICON_WRAP[activeAssignment.type as AssignmentKind]}`}>
@@ -328,7 +326,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                         {t(ASSIGNMENT_LABEL_KEY[activeAssignment.type as AssignmentKind])}
                       </span>
                     </div>
-                    <h3 className="font-semibold text-text-main text-lg">
+                    <h3 className="font-bold text-text-main text-lg">
                       {activeAssignment.assignmentName}
                     </h3>
                     <p className="text-text-muted text-sm">
@@ -404,10 +402,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {/* --- Eerdere opdrachten --- */}
         {!loading && !assignmentLoading && pastAssignments.length > 0 && (
           <div className="mb-8">
-            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-1">
-              <FileText className="w-5 h-5 text-primary-500" />
+            <SectionTitle as="h2" size="md" className="flex items-center gap-2 mb-1">
+              <FileText className="w-5 h-5 text-accent-600" />
               {t('assignments.pastTitle')}
-            </h2>
+            </SectionTitle>
             <p className="text-sm text-text-muted mb-4 ml-7">
               {t('assignments.pastDescription')}
             </p>
@@ -415,7 +413,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               {pastAssignments.map((pa) => (
                 <div
                   key={pa.id}
-                  className="bg-bg-surface rounded-lg p-3 border border-border-subtle flex items-center gap-3"
+                  className="bg-bg-surface rounded-xl p-3 border border-border-subtle flex items-center gap-3"
                 >
                   <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${ASSIGNMENT_ICON_WRAP_SM[pa.type as AssignmentKind]}`}>
                     {(() => {
@@ -438,10 +436,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {/* --- Inzendingen van leerlingen --- */}
         {!loading && (
           <div className="mb-4">
-            <h2 className="text-lg font-semibold text-text-main flex items-center gap-2 mb-1">
-              <Music className="w-5 h-5 text-primary-500" />
+            <SectionTitle as="h2" size="md" className="flex items-center gap-2 mb-1">
+              <Music className="w-5 h-5 text-accent-600" />
               {t('teacher.classDetail.submissionsTitle')}
-            </h2>
+            </SectionTitle>
             <p className="text-sm text-text-muted ml-7">
               {t('teacher.classDetail.submissionsDescription')}
             </p>
@@ -482,8 +480,8 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             {/* Empty state */}
             {submitted.length === 0 && (
               <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
-                <Music className="w-16 h-16 text-primary-500 mx-auto mb-4" />
-                <h3 className="text-xl font-semibold text-text-main mb-2">
+                <Music className="w-16 h-16 text-accent-500 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-text-main mb-2">
                   {t('teacher.classDetail.emptyTitle')}
                 </h3>
                 <p className="text-text-muted mb-4">

@@ -402,7 +402,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               <div className="mt-8">
                 <div className="flex items-center justify-between gap-3 mb-2">
                   <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                    <ClipboardList className="w-5 h-5 text-primary-500" />
+                    <ClipboardList className="w-5 h-5 text-accent-600" />
                     {t('assignmentCards.sectionTitle')}
                   </SectionTitle>
                   <Button
@@ -433,14 +433,14 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                     {cards.map((card) => (
                       <div
                         key={card.id}
-                        className="bg-bg-surface rounded-xl p-4 border border-border-subtle flex flex-col"
+                        className="bg-bg-surface rounded-2xl p-4 border border-border-subtle flex flex-col"
                       >
                         <div className="flex items-start justify-between gap-2 mb-2">
                           <h4 className="font-semibold text-text-main text-sm min-w-0 truncate">{card.title}</h4>
                           <div className="flex items-center gap-1 shrink-0">
                             <button
                               onClick={() => { setEditCard(card); setShowCardEditor(true); }}
-                              className="text-xs text-primary-600 hover:text-primary-700 font-medium px-1"
+                              className="text-xs text-accent-600 hover:text-accent-700 font-medium px-1"
                             >
                               {t('common.edit')}
                             </button>

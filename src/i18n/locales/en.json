@@ -836,6 +836,7 @@
     "classCodeMeaning": "Students type this code to join.",
     "classDetail": {
       "back": "Back to overview",
+      "dashboardCrumb": "Dashboard",
       "compositionCount": "{{count}} composition",
       "compositionCount_plural": "{{count}} compositions",
       "refreshTitle": "Refresh compositions",

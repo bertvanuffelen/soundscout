@@ -836,6 +836,7 @@
     "classCodeMeaning": "Leerlingen typen deze code in om mee te doen.",
     "classDetail": {
       "back": "Terug naar overzicht",
+      "dashboardCrumb": "Dashboard",
       "compositionCount": "{{count}} compositie",
       "compositionCount_plural": "{{count}} composities",
       "refreshTitle": "Ververs composities",
