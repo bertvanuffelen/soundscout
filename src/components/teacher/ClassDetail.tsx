@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2 } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -301,9 +301,17 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             {/* Geen actieve opdracht → kies een type */}
             {!assignmentLoading && !activeAssignment && (
               <div className="bg-bg-surface rounded-2xl p-5 sm:p-6 border border-border-subtle">
-                <p className="text-text-main text-sm font-medium mb-4">
-                  {t('assignments.pickPrompt', { code: classData.code })}
-                </p>
+                <div className="flex items-start gap-3 mb-4">
+                  <div className="shrink-0 w-9 h-9 rounded-lg bg-warning-100 text-warning-700 flex items-center justify-center">
+                    <Info className="w-5 h-5" />
+                  </div>
+                  <div className="min-w-0">
+                    <h3 className="font-bold text-text-main">{t('assignments.noActiveTitle')}</h3>
+                    <p className="text-text-muted text-sm mt-0.5">
+                      {t('assignments.noActiveExplain', { code: classData.code })}
+                    </p>
+                  </div>
+                </div>
                 <AssignmentTypeCards onSelect={handlePickType} />
               </div>
             )}
@@ -340,6 +348,17 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     </p>
                   </div>
                 </div>
+
+                {/* Preview-afbeelding: welke praatplaat/storyboard is dit precies */}
+                {activeAssignment.imageUrl && (
+                  <div className="mt-4 rounded-xl overflow-hidden bg-neutral-100 aspect-video max-w-xs border border-border-subtle">
+                    <img
+                      src={activeAssignment.imageUrl}
+                      alt={activeAssignment.assignmentName}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-2 mt-4">
