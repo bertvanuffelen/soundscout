@@ -10,7 +10,7 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Plus, LogOut, FileText, MapPin, ClipboardList, HelpCircle } from 'lucide-react';
+import { Loader2, BookOpen, Plus, LogOut, FileText, MapPin, ClipboardList, Clapperboard, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useAuth } from '../../contexts/useAuth';
 import { useClasses } from '../../hooks/useClasses';
@@ -30,8 +30,10 @@ import { TemplateCard } from './TemplateCard';
 import { PraatplaatCard } from './PraatplaatCard';
 import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
-import { SectionTitle, HowItWorksSteps, TeacherPageHeader } from './common';
+import { StoryboardCard } from './StoryboardCard';
+import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs } from './common';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
+import { getAllMultiImageStoryboards } from '../../data/themes';
 import { logger } from '../../utils/logger';
 
 interface TeacherDashboardProps {
@@ -69,6 +71,11 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editCard, setEditCard] = useState<Opdrachtkaart | null>(null);
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
+  // Tabs: 'classes' (Mijn klassen) vs 'assignments' (Mijn opdrachten). Standaard klassen.
+  const [activeTab, setActiveTab] = useState<'classes' | 'assignments'>('classes');
+
+  // Storyboards zijn vaste app-content (geen hook/CRUD) — alleen-lezen lijst.
+  const storyboards = getAllMultiImageStoryboards();
 
   // Haal display name op uit user metadata
   const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Docent';
@@ -190,81 +197,8 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
 
       {/* Main content */}
       <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
-        {/* Title + Create button */}
-        <div className="flex items-center justify-between gap-3 mb-6">
-          <SectionTitle>{t('teacher.dashboard.myClasses')}</SectionTitle>
-          <Button
-            variant="primary"
-            size="md"
-            onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
-          >
-            <Plus className="w-4 h-4" />
-            {t('teacher.dashboard.newClass')}
-          </Button>
-        </div>
-
-        {/* Error message */}
-        {(error || actionError) && (
-          <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
-            {error || actionError}
-            <button
-              onClick={() => { setActionError(null); refetch(); }}
-              className="ml-2 underline"
-            >
-              {t('common.retry')}
-            </button>
-          </div>
-        )}
-
-        {/* Loading state */}
-        {loading && (
-          <div className="text-center py-12">
-            <Loader2 className="w-10 h-10 text-accent-500 animate-spin mx-auto mb-4" />
-            <p className="text-text-muted">{t('teacher.dashboard.loading')}</p>
-          </div>
-        )}
-
-        {/* Empty state */}
-        {!loading && classes.length === 0 && (
-          <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
-            <BookOpen className="w-16 h-16 text-accent-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-text-main mb-2">
-              {t('teacher.dashboard.emptyTitle')}
-            </h3>
-            <p className="text-text-muted mb-6">
-              {t('teacher.dashboard.emptyDescription')}
-            </p>
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => setShowCreateModal(true)}
-              className="inline-flex items-center gap-1"
-            >
-              <Plus className="w-4 h-4" />
-              {t('teacher.dashboard.createFirstClass')}
-            </Button>
-          </div>
-        )}
-
-        {/* Classes grid */}
-        {!loading && classes.length > 0 && (
-          <div className="grid gap-4 sm:grid-cols-2">
-            {classes.map((classData) => (
-              <ClassCard
-                key={classData.id}
-                classData={classData}
-                onOpen={() => onSelectClass(classData)}
-                onDelete={() => setDeleteClassId(classData.id)}
-              />
-            ))}
-          </div>
-        )}
-
-        {/* "Zo werkt het" — landing-stijl stap-kaarten, inklapbaar. Open bij
-            een nieuwe docent (nog geen klassen), daarna inklapbaar. */}
+        {/* "Zo werkt het" — bovenaan, inklapbaar. Open bij een nieuwe docent. */}
         <HowItWorksSteps
-          className="mt-8"
           title={t('teacher.dashboard.setup.title')}
           storageKey="ss-teacher-dashboard-setup"
           defaultOpen={classes.length === 0}
@@ -284,197 +218,306 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           ]}
         />
 
-        {/* --- Opdrachten sectie --- */}
-        <div className="mt-10">
-          <SectionTitle className="flex items-center gap-2 mb-6">
-            <FileText className="w-6 h-6 text-text-muted" />
-            {t('templates.dashboardTitle')}
-          </SectionTitle>
-
-          {/* Errors */}
-          {(templatesError || praatplatenError || cardsError) && (
-            <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
-              {templatesError || praatplatenError || cardsError}
-              <button onClick={() => { refetchTemplates(); refetchPraatplaten(); refetchCards(); }} className="ml-2 underline">
-                {t('common.retry')}
-              </button>
-            </div>
-          )}
-
-          {/* Loading */}
-          {(templatesLoading || praatplatenLoading || cardsLoading) && (
-            <div className="text-center py-8">
-              <Loader2 className="w-8 h-8 text-accent-500 animate-spin mx-auto mb-2" />
-            </div>
-          )}
-
-          {!templatesLoading && !praatplatenLoading && !cardsLoading && (
-            <>
-              {/* --- Praatplaten subsectie --- */}
-              <div className="mb-8">
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                    <MapPin className="w-5 h-5 text-teal-500" />
-                    {t('templates.praatplatenTitle')}
-                  </SectionTitle>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setShowCreatePraatplaat(true)}
-                    className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
-                  >
-                    <Plus className="w-4 h-4" />
-                    {t('templates.newPraatplaat')}
-                  </Button>
-                </div>
-                <p className="text-text-muted text-sm mb-4">
-                  {t('templates.praatplatenDescription')}
-                </p>
-
-                {praatplaten.length === 0 && (
-                  <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
-                    <MapPin className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
-                    <p className="text-text-muted text-sm">
-                      {t('templates.praatplatenEmpty')}
-                    </p>
-                  </div>
-                )}
-
-                {praatplaten.length > 0 && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {praatplaten.map((pp) => (
-                      <PraatplaatCard
-                        key={pp.id}
-                        praatplaat={pp}
-                        classCode={classes.find((c) => c.id === pp.class_id)?.code}
-                        onDelete={() => setDeletePraatplaatId(pp.id)}
-                        onView={() => setViewingPraatplaat(pp)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* --- Templates subsectie --- */}
-              <div>
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                    <FileText className="w-5 h-5 text-accent-600" />
-                    {t('templates.templatesTitle')}
-                  </SectionTitle>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => setShowTemplateInfo(true)}
-                    className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
-                  >
-                    <Plus className="w-4 h-4" />
-                    {t('templates.newTemplate')}
-                  </Button>
-                </div>
-                <p className="text-text-muted text-sm mb-4">
-                  {t('templates.templatesDescription')}
-                </p>
-
-                {templates.length === 0 && (
-                  <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
-                    <FileText className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
-                    <p className="text-text-muted text-sm">
-                      {t('templates.templatesEmpty')}
-                    </p>
-                  </div>
-                )}
-
-                {templates.length > 0 && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {templates.map((tmpl) => (
-                      <TemplateCard
-                        key={tmpl.id}
-                        template={tmpl}
-                        onDelete={() => setDeleteTemplateId(tmpl.id)}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              {/* --- Opdrachtkaarten subsectie --- */}
-              <div className="mt-8">
-                <div className="flex items-center justify-between gap-3 mb-2">
-                  <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                    <ClipboardList className="w-5 h-5 text-accent-600" />
-                    {t('assignmentCards.sectionTitle')}
-                  </SectionTitle>
-                  <Button
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => { setEditCard(null); setShowCardEditor(true); }}
-                    className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
-                  >
-                    <Plus className="w-4 h-4" />
-                    {t('assignmentCards.newButton')}
-                  </Button>
-                </div>
-                <p className="text-text-muted text-sm mb-4">
-                  {t('assignmentCards.sectionDescription')}
-                </p>
-
-                {cards.length === 0 && (
-                  <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
-                    <ClipboardList className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
-                    <p className="text-text-muted text-sm">
-                      {t('assignmentCards.empty')}
-                    </p>
-                  </div>
-                )}
-
-                {cards.length > 0 && (
-                  <div className="grid gap-4 sm:grid-cols-2">
-                    {cards.map((card) => (
-                      <div
-                        key={card.id}
-                        className="bg-bg-surface rounded-2xl p-4 border border-border-subtle flex flex-col"
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-2">
-                          <h4 className="font-semibold text-text-main text-sm min-w-0 truncate">{card.title}</h4>
-                          <div className="flex items-center gap-1 shrink-0">
-                            <button
-                              onClick={() => { setEditCard(card); setShowCardEditor(true); }}
-                              className="text-xs text-accent-600 hover:text-accent-700 font-medium px-1"
-                            >
-                              {t('common.edit')}
-                            </button>
-                            <button
-                              onClick={() => setDeleteCardId(card.id)}
-                              className="text-text-muted hover:text-error-500 p-1 transition-colors"
-                              title={t('common.delete')}
-                            >
-                              <Plus className="w-4 h-4 rotate-45" />
-                            </button>
-                          </div>
-                        </div>
-                        {card.bullets.length > 0 ? (
-                          <ul className="text-text-muted text-xs space-y-1 list-disc pl-4">
-                            {card.bullets.slice(0, 4).map((b, i) => (
-                              <li key={i} className="truncate">{b}</li>
-                            ))}
-                            {card.bullets.length > 4 && (
-                              <li className="list-none text-text-muted/70">
-                                {t('assignmentCards.moreBullets', { count: card.bullets.length - 4 })}
-                              </li>
-                            )}
-                          </ul>
-                        ) : (
-                          <p className="text-text-muted/70 text-xs italic">{t('assignmentCards.noBullets')}</p>
-                        )}
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            </>
-          )}
+        {/* Tabs: Mijn klassen vs. Mijn opdrachten */}
+        <div className="mt-8 mb-6">
+          <SegmentedTabs
+            value={activeTab}
+            onChange={setActiveTab}
+            tabs={[
+              { id: 'classes', label: t('teacher.dashboard.tabClasses'), count: classes.length },
+              {
+                id: 'assignments',
+                label: t('teacher.dashboard.tabAssignments'),
+                count: praatplaten.length + templates.length + cards.length,
+              },
+            ]}
+          />
         </div>
+
+        {/* ===== Tab: Mijn klassen ===== */}
+        {activeTab === 'classes' && (
+          <>
+            {!loading && classes.length > 0 && (
+              <div className="flex justify-end mb-4">
+                <Button
+                  variant="primary"
+                  size="md"
+                  onClick={() => setShowCreateModal(true)}
+                  className="inline-flex items-center gap-1 rounded-full"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('teacher.dashboard.newClass')}
+                </Button>
+              </div>
+            )}
+
+            {(error || actionError) && (
+              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
+                {error || actionError}
+                <button
+                  onClick={() => { setActionError(null); refetch(); }}
+                  className="ml-2 underline"
+                >
+                  {t('common.retry')}
+                </button>
+              </div>
+            )}
+
+            {loading && (
+              <div className="text-center py-12">
+                <Loader2 className="w-10 h-10 text-accent-500 animate-spin mx-auto mb-4" />
+                <p className="text-text-muted">{t('teacher.dashboard.loading')}</p>
+              </div>
+            )}
+
+            {!loading && classes.length === 0 && (
+              <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
+                <BookOpen className="w-16 h-16 text-accent-500 mx-auto mb-4" />
+                <h3 className="text-xl font-bold text-text-main mb-2">
+                  {t('teacher.dashboard.emptyTitle')}
+                </h3>
+                <p className="text-text-muted mb-6">
+                  {t('teacher.dashboard.emptyDescription')}
+                </p>
+                <Button
+                  variant="primary"
+                  size="lg"
+                  onClick={() => setShowCreateModal(true)}
+                  className="inline-flex items-center gap-1 rounded-full"
+                >
+                  <Plus className="w-4 h-4" />
+                  {t('teacher.dashboard.createFirstClass')}
+                </Button>
+              </div>
+            )}
+
+            {!loading && classes.length > 0 && (
+              <div className="grid gap-4 sm:grid-cols-2">
+                {classes.map((classData) => (
+                  <ClassCard
+                    key={classData.id}
+                    classData={classData}
+                    onOpen={() => onSelectClass(classData)}
+                    onDelete={() => setDeleteClassId(classData.id)}
+                  />
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {/* ===== Tab: Mijn opdrachten ===== */}
+        {activeTab === 'assignments' && (
+          <>
+            {(templatesError || praatplatenError || cardsError) && (
+              <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
+                {templatesError || praatplatenError || cardsError}
+                <button onClick={() => { refetchTemplates(); refetchPraatplaten(); refetchCards(); }} className="ml-2 underline">
+                  {t('common.retry')}
+                </button>
+              </div>
+            )}
+
+            {(templatesLoading || praatplatenLoading || cardsLoading) && (
+              <div className="text-center py-8">
+                <Loader2 className="w-8 h-8 text-accent-500 animate-spin mx-auto mb-2" />
+              </div>
+            )}
+
+            {!templatesLoading && !praatplatenLoading && !cardsLoading && (
+              <>
+                {/* 1. Opdrachtkaarten */}
+                <div className="mb-8">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                      <ClipboardList className="w-5 h-5 text-accent-600" />
+                      {t('assignmentCards.sectionTitle')}
+                    </SectionTitle>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => { setEditCard(null); setShowCardEditor(true); }}
+                      className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                      {t('assignmentCards.newButton')}
+                    </Button>
+                  </div>
+                  <p className="text-text-muted text-sm mb-4">
+                    {t('assignmentCards.sectionDescription')}
+                  </p>
+
+                  {cards.length === 0 && (
+                    <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
+                      <ClipboardList className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                      <p className="text-text-muted text-sm">
+                        {t('assignmentCards.empty')}
+                      </p>
+                    </div>
+                  )}
+
+                  {cards.length > 0 && (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {cards.map((card) => (
+                        <div
+                          key={card.id}
+                          className="bg-bg-surface rounded-2xl p-4 border border-border-subtle flex flex-col"
+                        >
+                          <div className="flex items-start justify-between gap-2 mb-2">
+                            <h4 className="font-semibold text-text-main text-sm min-w-0 truncate">{card.title}</h4>
+                            <div className="flex items-center gap-1 shrink-0">
+                              <button
+                                onClick={() => { setEditCard(card); setShowCardEditor(true); }}
+                                className="text-xs text-accent-600 hover:text-accent-700 font-medium px-1"
+                              >
+                                {t('common.edit')}
+                              </button>
+                              <button
+                                onClick={() => setDeleteCardId(card.id)}
+                                className="text-text-muted hover:text-error-500 p-1 transition-colors"
+                                title={t('common.delete')}
+                              >
+                                <Plus className="w-4 h-4 rotate-45" />
+                              </button>
+                            </div>
+                          </div>
+                          {card.bullets.length > 0 ? (
+                            <ul className="text-text-muted text-xs space-y-1 list-disc pl-4">
+                              {card.bullets.slice(0, 4).map((b, i) => (
+                                <li key={i} className="truncate">{b}</li>
+                              ))}
+                              {card.bullets.length > 4 && (
+                                <li className="list-none text-text-muted/70">
+                                  {t('assignmentCards.moreBullets', { count: card.bullets.length - 4 })}
+                                </li>
+                              )}
+                            </ul>
+                          ) : (
+                            <p className="text-text-muted/70 text-xs italic">{t('assignmentCards.noBullets')}</p>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 2. Praatplaten */}
+                <div className="mb-8">
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                      <MapPin className="w-5 h-5 text-teal-500" />
+                      {t('templates.praatplatenTitle')}
+                    </SectionTitle>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setShowCreatePraatplaat(true)}
+                      className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                      {t('templates.newPraatplaat')}
+                    </Button>
+                  </div>
+                  <p className="text-text-muted text-sm mb-4">
+                    {t('templates.praatplatenDescription')}
+                  </p>
+
+                  {praatplaten.length === 0 && (
+                    <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
+                      <MapPin className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                      <p className="text-text-muted text-sm">
+                        {t('templates.praatplatenEmpty')}
+                      </p>
+                    </div>
+                  )}
+
+                  {praatplaten.length > 0 && (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {praatplaten.map((pp) => (
+                        <PraatplaatCard
+                          key={pp.id}
+                          praatplaat={pp}
+                          classCode={classes.find((c) => c.id === pp.class_id)?.code}
+                          onDelete={() => setDeletePraatplaatId(pp.id)}
+                          onView={() => setViewingPraatplaat(pp)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 3. Storyboards (vaste app-content, alleen-lezen) */}
+                <div className="mb-8">
+                  <SectionTitle as="h3" size="md" className="flex items-center gap-2 mb-2">
+                    <Clapperboard className="w-5 h-5 text-purple-500" />
+                    {t('templates.storyboardsTitle')}
+                  </SectionTitle>
+                  <p className="text-text-muted text-sm mb-4">
+                    {t('templates.storyboardsDescription')}
+                  </p>
+
+                  {storyboards.length === 0 ? (
+                    <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
+                      <Clapperboard className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                      <p className="text-text-muted text-sm">
+                        {t('templates.storyboardsEmpty')}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {storyboards.map((entry) => (
+                        <StoryboardCard key={`${entry.themeId}-${entry.storyboard.id}`} entry={entry} />
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* 4. Templates */}
+                <div>
+                  <div className="flex items-center justify-between gap-3 mb-2">
+                    <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                      <FileText className="w-5 h-5 text-accent-600" />
+                      {t('templates.templatesTitle')}
+                    </SectionTitle>
+                    <Button
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => setShowTemplateInfo(true)}
+                      className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
+                    >
+                      <Plus className="w-4 h-4" />
+                      {t('templates.newTemplate')}
+                    </Button>
+                  </div>
+                  <p className="text-text-muted text-sm mb-4">
+                    {t('templates.templatesDescription')}
+                  </p>
+
+                  {templates.length === 0 && (
+                    <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
+                      <FileText className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                      <p className="text-text-muted text-sm">
+                        {t('templates.templatesEmpty')}
+                      </p>
+                    </div>
+                  )}
+
+                  {templates.length > 0 && (
+                    <div className="grid gap-4 sm:grid-cols-2">
+                      {templates.map((tmpl) => (
+                        <TemplateCard
+                          key={tmpl.id}
+                          template={tmpl}
+                          onDelete={() => setDeleteTemplateId(tmpl.id)}
+                        />
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
       </main>
 
       {/* Create class modal */}

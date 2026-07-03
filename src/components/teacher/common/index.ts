@@ -6,3 +6,4 @@
 export { SectionTitle } from './SectionTitle';
 export { HowItWorksSteps, type HowItWorksStep } from './HowItWorksSteps';
 export { TeacherPageHeader } from './TeacherPageHeader';
+export { SegmentedTabs, type SegmentedTab } from './SegmentedTabs';
