@@ -72,6 +72,8 @@ export interface ClassAssignmentRow {
   activatedAt: string;
   // Joined / resolved names
   assignmentName: string;
+  /** Preview-afbeelding: praatplaat-image (join) of storyboard-cover (registry); null bij template. */
+  imageUrl: string | null;
 }
 
 /**
@@ -112,10 +114,11 @@ function parseCard(raw: unknown): OpdrachtkaartContent | null {
   return { title, bullets };
 }
 
-/** Shape of Supabase joined relation select `template_id ( name )` / `praatplaat_id ( name )`.
+/** Shape of Supabase joined relation select `template_id ( name )` / `praatplaat_id ( name, image_url )`.
  *  Supabase types FK joins as arrays, but `.maybeSingle()` returns a single object at runtime. */
 interface JoinedName {
   name: string;
+  image_url?: string | null;
 }
 
 /** Safely extract name from a Supabase FK join (typed as array, returned as object) */
@@ -123,6 +126,13 @@ function getJoinedName(data: JoinedName | JoinedName[] | null, fallback: string)
   if (!data) return fallback;
   if (Array.isArray(data)) return data[0]?.name || fallback;
   return data.name || fallback;
+}
+
+/** Safely extract image_url from a Supabase FK join (typed as array, returned as object) */
+function getJoinedImage(data: JoinedName | JoinedName[] | null): string | null {
+  if (!data) return null;
+  if (Array.isArray(data)) return data[0]?.image_url ?? null;
+  return data.image_url ?? null;
 }
 
 // --- Lock options parsing (shared with templates.ts) ---
@@ -305,7 +315,7 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
         is_active,
         activated_at,
         templates:template_id ( name ),
-        praatplaten:praatplaat_id ( name )
+        praatplaten:praatplaat_id ( name, image_url )
       `)
       .eq('class_id', classId)
       .eq('is_active', true)
@@ -343,12 +353,16 @@ interface RawAssignmentRow {
 function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
   const type = row.assignment_type;
   let assignmentName: string;
+  let imageUrl: string | null = null;
   if (type === 'template') {
     assignmentName = getJoinedName(row.templates, 'Template');
+    // Template-preview vergt composition_data (niet in deze metadata-fetch) → geen image.
   } else if (type === 'praatplaat') {
     assignmentName = getJoinedName(row.praatplaten, 'Praatplaat');
+    imageUrl = getJoinedImage(row.praatplaten);
   } else {
     assignmentName = storyboardDisplayName(row.storyboard_ref);
+    imageUrl = resolveStoryboardRef(row.storyboard_ref)?.coverImage ?? null;
   }
 
   return {
@@ -362,6 +376,7 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
     isActive: row.is_active,
     activatedAt: row.activated_at,
     assignmentName,
+    imageUrl,
   };
 }
 
@@ -385,7 +400,7 @@ export async function fetchPastAssignments(classId: string): Promise<ClassAssign
         is_active,
         activated_at,
         templates:template_id ( name ),
-        praatplaten:praatplaat_id ( name )
+        praatplaten:praatplaat_id ( name, image_url )
       `)
       .eq('class_id', classId)
       .eq('is_active', false)
