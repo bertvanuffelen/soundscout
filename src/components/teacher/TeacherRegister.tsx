@@ -63,16 +63,16 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
       <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
         <div className="bg-bg-surface rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md text-center">
           <div className="flex justify-center mb-4">
-            <Mail className="w-16 h-16 text-primary-500" />
+            <Mail className="w-16 h-16 text-accent-500" />
           </div>
-          <h2 className="text-2xl font-bold text-text-main mb-2">
+          <h2 className="text-2xl font-extrabold tracking-tight text-text-main mb-2">
             {t('teacher.register.successTitle')}
           </h2>
           <p className="text-text-muted mb-4">
             {t('teacher.register.successMessage')} <strong className="text-text-main">{email}</strong>
           </p>
-          <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-4">
-            <p className="text-primary-800 text-sm flex items-center justify-center gap-2">
+          <div className="bg-accent-50 border border-accent-200 rounded-xl p-4 mb-4">
+            <p className="text-accent-800 text-sm flex items-center justify-center gap-2">
               <Lightbulb className="w-4 h-4 shrink-0" />
               <span><strong>{t('teacher.register.tipLabel')}</strong> {t('teacher.register.successHint')}</span>
             </p>
@@ -84,7 +84,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
             variant="primary"
             size="md"
             onClick={onSwitchToLogin}
-            className="w-full"
+            className="w-full rounded-full"
           >
             {t('teacher.register.hasAccount')} {t('teacher.register.loginLink')}
           </Button>
@@ -99,8 +99,8 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <Music className="w-7 h-7 sm:w-8 sm:h-8 text-primary-500" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-text-main">
+            <Music className="w-7 h-7 sm:w-8 sm:h-8 text-accent-500" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-main">
               SoundScout
             </h1>
           </div>
@@ -128,7 +128,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
               value={displayName}
               onChange={(e) => setDisplayName(e.target.value)}
               placeholder={t('teacher.register.namePlaceholder')}
-              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
+              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="name"
             />
@@ -144,7 +144,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('teacher.register.emailPlaceholder')}
-              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
+              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="email"
             />
@@ -160,7 +160,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder={t('teacher.register.passwordPlaceholder')}
-              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
+              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="new-password"
             />
@@ -176,7 +176,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
               value={confirmPassword}
               onChange={(e) => setConfirmPassword(e.target.value)}
               placeholder={t('teacher.register.confirmPasswordPlaceholder')}
-              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
+              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="new-password"
             />
@@ -186,7 +186,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full"
+            className="w-full rounded-full"
             disabled={loading}
           >
             {loading ? t('teacher.register.submitLoading') : t('teacher.register.submit')}
@@ -200,7 +200,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
             <button
               type="button"
               onClick={onSwitchToLogin}
-              className="text-primary-600 hover:text-primary-700 font-medium"
+              className="text-accent-600 hover:text-accent-700 font-medium"
               disabled={loading}
             >
               {t('teacher.register.loginLink')}

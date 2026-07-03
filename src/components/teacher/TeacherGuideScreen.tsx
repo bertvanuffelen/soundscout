@@ -248,9 +248,9 @@ export default function TeacherGuideScreen() {
           </div>
 
           {/* --- Link naar algemene tutorials --- */}
-          <div className="mt-8 bg-primary-50 border border-primary-200 rounded-xl p-4 text-sm text-primary-800">
+          <div className="mt-8 bg-accent-50 border border-accent-200 rounded-xl p-4 text-sm text-accent-800">
             <p className="mb-2 font-medium">{t('teacher.guide.moreVideosTitle')}</p>
-            <p className="text-primary-700">{t('teacher.guide.moreVideosDescription')}</p>
+            <p className="text-accent-700">{t('teacher.guide.moreVideosDescription')}</p>
           </div>
 
           {/* --- Bottom back button --- */}

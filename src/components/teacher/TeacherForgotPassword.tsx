@@ -47,16 +47,16 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
       <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
         <div className="bg-bg-surface rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md text-center">
           <div className="flex justify-center mb-4">
-            <Mail className="w-16 h-16 text-primary-500" />
+            <Mail className="w-16 h-16 text-accent-500" />
           </div>
-          <h2 className="text-2xl font-bold text-text-main mb-2">
+          <h2 className="text-2xl font-extrabold tracking-tight text-text-main mb-2">
             {t('teacher.forgotPassword.successTitle')}
           </h2>
           <p className="text-text-muted mb-4">
             {t('teacher.forgotPassword.successMessage')} <strong className="text-text-main">{email}</strong>
           </p>
-          <div className="bg-primary-50 border border-primary-200 rounded-xl p-4 mb-4">
-            <p className="text-primary-800 text-sm flex items-center justify-center gap-2">
+          <div className="bg-accent-50 border border-accent-200 rounded-xl p-4 mb-4">
+            <p className="text-accent-800 text-sm flex items-center justify-center gap-2">
               <Lightbulb className="w-4 h-4 shrink-0" />
               <span><strong>{t('teacher.forgotPassword.tipLabel')}</strong> {t('teacher.forgotPassword.successHint')}</span>
             </p>
@@ -68,7 +68,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
             variant="primary"
             size="md"
             onClick={onSwitchToLogin}
-            className="w-full"
+            className="w-full rounded-full"
           >
             {t('teacher.forgotPassword.backToLogin')}
           </Button>
@@ -83,8 +83,8 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <KeyRound className="w-7 h-7 sm:w-8 sm:h-8 text-primary-500" />
-            <h1 className="text-2xl sm:text-3xl font-bold text-text-main">
+            <KeyRound className="w-7 h-7 sm:w-8 sm:h-8 text-accent-500" />
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-main">
               {t('teacher.forgotPassword.title')}
             </h1>
           </div>
@@ -112,7 +112,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('teacher.forgotPassword.emailPlaceholder')}
-              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
+              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="email"
               autoFocus
@@ -123,7 +123,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full"
+            className="w-full rounded-full"
             disabled={loading}
           >
             {loading ? t('teacher.forgotPassword.submitLoading') : t('teacher.forgotPassword.submit')}
@@ -135,7 +135,7 @@ export function TeacherForgotPassword({ onBack, onSwitchToLogin }: TeacherForgot
           <button
             type="button"
             onClick={onSwitchToLogin}
-            className="text-primary-600 hover:text-primary-700 font-medium text-sm inline-flex items-center gap-1"
+            className="text-accent-600 hover:text-accent-700 font-medium text-sm inline-flex items-center gap-1"
             disabled={loading}
           >
             <ArrowLeft className="w-4 h-4" />
