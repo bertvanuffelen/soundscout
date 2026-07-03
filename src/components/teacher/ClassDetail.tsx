@@ -11,7 +11,7 @@ import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
-import type { AssignmentType } from '../../lib/assignments';
+import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
@@ -91,7 +91,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [showActivateModal, setShowActivateModal] = useState(false);
   // Type-eerste flow: welk type toont de scoped modal + welk type wacht op vervang-bevestiging.
   const [activateType, setActivateType] = useState<AssignmentType | null>(null);
-  const [pendingType, setPendingType] = useState<AssignmentType | null>(null);
+  // Wacht op vervang-bevestiging: een nieuw type kiezen ('pick') of een eerdere opdracht heractiveren ('reactivate').
+  const [pendingAction, setPendingAction] = useState<
+    { kind: 'pick'; type: AssignmentType } | { kind: 'reactivate'; row: ClassAssignmentRow } | null
+  >(null);
   const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [showActivatedCode, setShowActivatedCode] = useState(false);
@@ -115,23 +118,51 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activateStoryboardAssignment]);
 
+  // Heractiveer een eerdere opdracht direct (standaard-opdrachtkaart; de rij draagt geen card-info).
+  const runReactivate = useCallback(async (row: ClassAssignmentRow) => {
+    try {
+      if (row.type === 'template' && row.templateId) {
+        await handleActivateTemplate(row.templateId);
+      } else if (row.type === 'praatplaat' && row.praatplaatId) {
+        await handleActivatePraatplaat(row.praatplaatId);
+      } else if (row.type === 'storyboard' && row.storyboardRef) {
+        await handleActivateStoryboard(row.storyboardRef);
+      }
+    } catch (err) {
+      logger.error('Reactiveren mislukt:', err);
+    }
+  }, [handleActivateTemplate, handleActivatePraatplaat, handleActivateStoryboard]);
+
   // Klik op een type-kaart. Staat er al een opdracht → eerst vervang-melding;
   // anders direct de type-gescoopte keuze-modal openen.
   const handlePickType = useCallback((type: AssignmentType) => {
     if (activeAssignment) {
-      setPendingType(type);
+      setPendingAction({ kind: 'pick', type });
     } else {
       setActivateType(type);
       setShowActivateModal(true);
     }
   }, [activeAssignment]);
 
+  // Klik op "Activeer" bij een eerdere opdracht. Bij een actieve opdracht eerst vervang-melding.
+  const handleReactivate = useCallback((row: ClassAssignmentRow) => {
+    if (activeAssignment) {
+      setPendingAction({ kind: 'reactivate', row });
+    } else {
+      runReactivate(row);
+    }
+  }, [activeAssignment, runReactivate]);
+
   const confirmReplace = useCallback(() => {
-    if (!pendingType) return;
-    setActivateType(pendingType);
-    setPendingType(null);
-    setShowActivateModal(true);
-  }, [pendingType]);
+    if (!pendingAction) return;
+    if (pendingAction.kind === 'pick') {
+      setActivateType(pendingAction.type);
+      setShowActivateModal(true);
+    } else {
+      runReactivate(pendingAction.row);
+    }
+    setPendingAction(null);
+  }, [pendingAction, runReactivate]);
 
   const closeActivateModal = useCallback(() => {
     setShowActivateModal(false);
@@ -437,18 +468,32 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   key={pa.id}
                   className="bg-bg-surface rounded-xl p-3 border border-border-subtle flex items-center gap-3"
                 >
-                  <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${ASSIGNMENT_ICON_WRAP_SM[pa.type as AssignmentKind]}`}>
-                    {(() => {
-                      const Icon = ASSIGNMENT_ICON[pa.type as AssignmentKind];
-                      return <Icon className="w-4 h-4" />;
-                    })()}
-                  </div>
+                  {pa.imageUrl ? (
+                    <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 bg-neutral-100">
+                      <img src={pa.imageUrl} alt="" className="w-full h-full object-cover" />
+                    </div>
+                  ) : (
+                    <div className={`w-9 h-9 rounded-md flex items-center justify-center shrink-0 ${ASSIGNMENT_ICON_WRAP_SM[pa.type as AssignmentKind]}`}>
+                      {(() => {
+                        const Icon = ASSIGNMENT_ICON[pa.type as AssignmentKind];
+                        return <Icon className="w-4 h-4" />;
+                      })()}
+                    </div>
+                  )}
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-text-main truncate">{pa.assignmentName}</p>
                     <p className="text-xs text-text-muted">
                       {new Date(pa.activatedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => handleReactivate(pa)}
+                    className="shrink-0"
+                  >
+                    {t('assignments.reactivate')}
+                  </Button>
                 </div>
               ))}
             </div>
@@ -581,10 +626,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         }}
       />
 
-      {/* Vervang-bevestiging: klik op een type-kaart terwijl er al een opdracht actief is */}
+      {/* Vervang-bevestiging: nieuw type kiezen of eerdere opdracht heractiveren terwijl er al een opdracht actief is */}
       <Modal
-        isOpen={!!pendingType}
-        onClose={() => setPendingType(null)}
+        isOpen={!!pendingAction}
+        onClose={() => setPendingAction(null)}
         title={t('assignments.replaceConfirmTitle')}
         size="sm"
       >
@@ -592,7 +637,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           {t('assignments.replaceConfirmBody', { name: activeAssignment?.assignmentName ?? '' })}
         </p>
         <div className="flex gap-3">
-          <Button variant="secondary" onClick={() => setPendingType(null)} className="flex-1">
+          <Button variant="secondary" onClick={() => setPendingAction(null)} className="flex-1">
             {t('common.cancel')}
           </Button>
           <Button variant="primary" onClick={confirmReplace} className="flex-1">
