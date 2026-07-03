@@ -483,7 +483,32 @@
     "changeButton": "Wijzig",
     "activatedAt": "Geactiveerd op {{date}}",
     "pastTitle": "Eerdere opdrachten",
-    "pastDescription": "Opdrachten die eerder zijn uitgevoerd. Je kunt deze opnieuw activeren."
+    "pastDescription": "Opdrachten die eerder zijn uitgevoerd. Je kunt deze opnieuw activeren.",
+    "changeAssignment": "Wijzig opdracht",
+    "pickPrompt": "Kies wat je klas gaat doen. Leerlingen met code {{code}} komen er direct in.",
+    "replaceConfirmTitle": "Opdracht vervangen?",
+    "replaceConfirmBody": "De klas werkt nu aan \"{{name}}\". Als je een nieuwe opdracht kiest, vervang je die — de leerlingen werken daarna aan de nieuwe opdracht. Eerdere inzendingen blijven bewaard.",
+    "replaceConfirmButton": "Kies nieuwe opdracht",
+    "types": {
+      "praatplaat": {
+        "tag": "Samen · digibord",
+        "title": "Praatplaat",
+        "description": "De hele klas op één beeld. Elk tweetal verklankt een plek.",
+        "pickTitle": "Kies een praatplaat"
+      },
+      "storyboard": {
+        "tag": "Verhaal in scènes",
+        "title": "Storyboard",
+        "description": "Drie tot vier beelden vormen een verhaal — soundtrack per scène.",
+        "pickTitle": "Kies een storyboard"
+      },
+      "template": {
+        "tag": "Docent-opzet",
+        "title": "Template van docent",
+        "description": "Een voorbereide compositie die leerlingen afmaken.",
+        "pickTitle": "Kies een template"
+      }
+    }
   },
   "assignmentCards": {
     "sectionTitle": "Opdrachtkaarten",

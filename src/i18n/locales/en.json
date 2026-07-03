@@ -483,7 +483,32 @@
     "changeButton": "Change",
     "activatedAt": "Activated on {{date}}",
     "pastTitle": "Previous assignments",
-    "pastDescription": "Assignments that were previously used. You can reactivate these."
+    "pastDescription": "Assignments that were previously used. You can reactivate these.",
+    "changeAssignment": "Change assignment",
+    "pickPrompt": "Choose what your class will do. Students with code {{code}} join instantly.",
+    "replaceConfirmTitle": "Replace assignment?",
+    "replaceConfirmBody": "The class is currently working on \"{{name}}\". Choosing a new assignment replaces it — students will then work on the new one. Earlier submissions are kept.",
+    "replaceConfirmButton": "Choose new assignment",
+    "types": {
+      "praatplaat": {
+        "tag": "Together · whiteboard",
+        "title": "Sound map",
+        "description": "The whole class on one image. Each pair gives voice to a spot.",
+        "pickTitle": "Choose a sound map"
+      },
+      "storyboard": {
+        "tag": "Story in scenes",
+        "title": "Storyboard",
+        "description": "Three to four images form a story — a soundtrack per scene.",
+        "pickTitle": "Choose a storyboard"
+      },
+      "template": {
+        "tag": "Teacher setup",
+        "title": "Teacher template",
+        "description": "A prepared composition students finish.",
+        "pickTitle": "Choose a template"
+      }
+    }
   },
   "assignmentCards": {
     "sectionTitle": "Assignment cards",
