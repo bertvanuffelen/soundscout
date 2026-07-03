@@ -197,8 +197,31 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
 
       {/* Main content */}
       <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
-        {/* "Zo werkt het" — bovenaan, inklapbaar. Open bij een nieuwe docent. */}
+        {/* Grote tabs bovenaan — Mijn klassen vs. Mijn opdrachten */}
+        <SegmentedTabs
+          variant="large"
+          className="mb-6"
+          value={activeTab}
+          onChange={setActiveTab}
+          tabs={[
+            {
+              id: 'classes',
+              label: t('teacher.dashboard.tabClasses'),
+              count: classes.length,
+              icon: BookOpen,
+            },
+            {
+              id: 'assignments',
+              label: t('teacher.dashboard.tabAssignments'),
+              count: praatplaten.length + templates.length + cards.length,
+              icon: ClipboardList,
+            },
+          ]}
+        />
+
+        {/* "Zo zet je een klas op" — inklapbaar, onder de tabs. */}
         <HowItWorksSteps
+          className="mb-8"
           title={t('teacher.dashboard.setup.title')}
           storageKey="ss-teacher-dashboard-setup"
           defaultOpen={classes.length === 0}
@@ -217,22 +240,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
             },
           ]}
         />
-
-        {/* Tabs: Mijn klassen vs. Mijn opdrachten */}
-        <div className="mt-8 mb-6">
-          <SegmentedTabs
-            value={activeTab}
-            onChange={setActiveTab}
-            tabs={[
-              { id: 'classes', label: t('teacher.dashboard.tabClasses'), count: classes.length },
-              {
-                id: 'assignments',
-                label: t('teacher.dashboard.tabAssignments'),
-                count: praatplaten.length + templates.length + cards.length,
-              },
-            ]}
-          />
-        </div>
 
         {/* ===== Tab: Mijn klassen ===== */}
         {activeTab === 'classes' && (
