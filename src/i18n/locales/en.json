@@ -9,6 +9,8 @@
     "retry": "Try again",
     "cancel": "Cancel",
     "delete": "Delete",
+    "save": "Save",
+    "edit": "Edit",
     "tracks": "Tracks",
     "clips": "Clips",
     "samples": "Samples",
@@ -462,7 +464,10 @@
   },
   "assignments": {
     "chooseTitle": "Activate assignment",
-    "chooseDescription": "Choose a template or sound map to activate for this class.",
+    "chooseDescription": "Choose a template, sound map or story in pictures to activate for this class.",
+    "cardLabel": "Assignment card (optional)",
+    "cardDefault": "Default explanation",
+    "cardNone": "No custom card — show default explanation",
     "activate": "Activate",
     "activateError": "Could not activate assignment",
     "deactivate": "Deactivate",
@@ -479,6 +484,56 @@
     "activatedAt": "Activated on {{date}}",
     "pastTitle": "Previous assignments",
     "pastDescription": "Assignments that were previously used. You can reactivate these."
+  },
+  "assignmentCards": {
+    "sectionTitle": "Assignment cards",
+    "sectionDescription": "Short explanation cards (title + points) students see before they start. Make one and reuse it across assignments.",
+    "newButton": "New card",
+    "empty": "No assignment cards yet. Create one to help students get started.",
+    "moreBullets": "+{{count}} more",
+    "noBullets": "No points",
+    "newTitle": "New assignment card",
+    "editTitle": "Edit assignment card",
+    "editorDescription": "Give the card a title and up to 10 short points.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "E.g. How to make your composition",
+    "bulletsLabel": "Points",
+    "bulletPlaceholder": "A short instruction...",
+    "addBullet": "Add point",
+    "removeBullet": "Remove point",
+    "saveError": "Could not save assignment card",
+    "deleteTitle": "Delete assignment card",
+    "deleteConfirm": "Are you sure you want to delete this assignment card? Assignments using this card will fall back to the default explanation.",
+    "deleteError": "Could not delete assignment card",
+    "defaults": {
+      "template": {
+        "title": "How this assignment works",
+        "bullets": [
+          "Your teacher has set up some music already.",
+          "Listen carefully and finish it.",
+          "Drag sounds onto the timeline.",
+          "Done? Save your composition."
+        ]
+      },
+      "praatplaat": {
+        "title": "How this assignment works",
+        "bullets": [
+          "You'll pick a spot on the image next.",
+          "Collect sounds on the map.",
+          "Make music that fits your spot.",
+          "Done? Save your composition."
+        ]
+      },
+      "storyboard": {
+        "title": "How this assignment works",
+        "bullets": [
+          "Look at the scenes of the story.",
+          "Collect sounds on the map.",
+          "Make music that fits each scene.",
+          "Done? Save your composition."
+        ]
+      }
+    }
   },
   "templates": {
     "activeBanner": "Assignment:",

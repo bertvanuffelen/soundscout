@@ -10,14 +10,17 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Lightbulb, Plus, LogOut, ArrowLeft, FileText, MapPin, HelpCircle } from 'lucide-react';
+import { Loader2, BookOpen, Plus, LogOut, FileText, MapPin, ClipboardList, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useAuth } from '../../contexts/useAuth';
 import { useClasses } from '../../hooks/useClasses';
 import { useTemplates } from '../../hooks/useTemplates';
 import { usePraatplaten } from '../../hooks/usePraatplaten';
+import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import type { TeacherClass } from '../../hooks/useClasses';
 import type { PraatplaatRow } from '../../lib/praatplaat';
+import type { CreateCardParams } from '../../lib/assignmentCards';
+import type { Opdrachtkaart } from '../../types';
 import { signOut } from '../../lib/auth';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -26,6 +29,8 @@ import { ClassCard } from './ClassCard';
 import { TemplateCard } from './TemplateCard';
 import { PraatplaatCard } from './PraatplaatCard';
 import { CreatePraatplaatModal } from './CreatePraatplaatModal';
+import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
+import { SectionTitle, HowItWorksSteps, TeacherPageHeader } from './common';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { logger } from '../../utils/logger';
 
@@ -48,6 +53,10 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     praatplaten, loading: praatplatenLoading, error: praatplatenError,
     create: createPraatplaatHook, remove: removePraatplaat, refetch: refetchPraatplaten,
   } = usePraatplaten(); // Alle docent-praatplaten (geen classId)
+  const {
+    cards, loading: cardsLoading, error: cardsError,
+    create: createCard, update: updateCard, remove: removeCard, refetch: refetchCards,
+  } = useAssignmentCards();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
   const [showTemplateInfo, setShowTemplateInfo] = useState(false);
@@ -56,6 +65,10 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
   const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
   const [deletePraatplaatId, setDeletePraatplaatId] = useState<string | null>(null);
+  // Opdrachtkaart-editor: showCardEditor stuurt de modal; editCard = te bewerken kaart (null = nieuw)
+  const [showCardEditor, setShowCardEditor] = useState(false);
+  const [editCard, setEditCard] = useState<Opdrachtkaart | null>(null);
+  const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
 
   // Haal display name op uit user metadata
   const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Docent';
@@ -101,6 +114,25 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     setDeleteTemplateId(null);
   };
 
+  const handleSaveCard = useCallback(async (params: CreateCardParams) => {
+    if (editCard) {
+      await updateCard(editCard.id, params);
+    } else {
+      await createCard(params);
+    }
+  }, [editCard, updateCard, createCard]);
+
+  const handleDeleteCardConfirm = async () => {
+    if (!deleteCardId) return;
+    try {
+      setActionError(null);
+      await removeCard(deleteCardId);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : t('assignmentCards.deleteError'));
+    }
+    setDeleteCardId(null);
+  };
+
   const handleCreatePraatplaat = useCallback(async (params: {
     name: string;
     themeId: string;
@@ -130,59 +162,42 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
 
   return (
     <div className="min-h-screen bg-bg-app">
-      {/* Header - branding donkerblauw */}
-      <header className="bg-brand-900">
-        <div className="max-w-4xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div>
-            {onBack && (
-              <button
-                onClick={onBack}
-                className="text-brand-300 hover:text-white text-sm mb-2 flex items-center gap-1"
-              >
-                <ArrowLeft className="w-4 h-4" />
-                {t('teacher.common.backToSoundScout')}
-              </button>
-            )}
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl sm:text-2xl font-bold text-white">
-                {t('teacher.dashboard.title')}
-              </h1>
-            </div>
-            <p className="text-sm text-brand-300">
-              {t('teacher.dashboard.welcome', { name: displayName })}
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
+      {/* Header - gedeelde brand-900 shell */}
+      <TeacherPageHeader
+        title={t('teacher.dashboard.title')}
+        subtitle={t('teacher.dashboard.welcome', { name: displayName })}
+        onBack={onBack}
+        backLabel={t('teacher.common.backToSoundScout')}
+        actions={
+          <>
             <button
               onClick={goToTeacherGuide}
-              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
+              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
             >
               <HelpCircle className="w-4 h-4" />
               {t('teacher.dashboard.guide')}
             </button>
             <button
               onClick={handleLogout}
-              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1"
+              className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
             >
               <LogOut className="w-4 h-4" />
               {t('teacher.dashboard.logout')}
             </button>
-          </div>
-        </div>
-      </header>
+          </>
+        }
+      />
 
       {/* Main content */}
       <main className="max-w-4xl mx-auto px-4 py-6 sm:py-8">
         {/* Title + Create button */}
-        <div className="flex items-center justify-between mb-6">
-          <h2 className="text-lg sm:text-xl font-semibold text-text-main">
-            {t('teacher.dashboard.myClasses')}
-          </h2>
+        <div className="flex items-center justify-between gap-3 mb-6">
+          <SectionTitle>{t('teacher.dashboard.myClasses')}</SectionTitle>
           <Button
             variant="primary"
             size="md"
             onClick={() => setShowCreateModal(true)}
-            className="inline-flex items-center gap-1"
+            className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
           >
             <Plus className="w-4 h-4" />
             {t('teacher.dashboard.newClass')}
@@ -205,7 +220,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         {/* Loading state */}
         {loading && (
           <div className="text-center py-12">
-            <Loader2 className="w-10 h-10 text-primary-500 animate-spin mx-auto mb-4" />
+            <Loader2 className="w-10 h-10 text-accent-500 animate-spin mx-auto mb-4" />
             <p className="text-text-muted">{t('teacher.dashboard.loading')}</p>
           </div>
         )}
@@ -213,8 +228,8 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         {/* Empty state */}
         {!loading && classes.length === 0 && (
           <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
-            <BookOpen className="w-16 h-16 text-primary-500 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-text-main mb-2">
+            <BookOpen className="w-16 h-16 text-accent-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-text-main mb-2">
               {t('teacher.dashboard.emptyTitle')}
             </h3>
             <p className="text-text-muted mb-6">
@@ -246,58 +261,67 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           </div>
         )}
 
-        {/* Info box */}
-        <div className="mt-8 bg-primary-50 border border-primary-200 rounded-xl p-4">
-          <h4 className="font-medium text-primary-800 mb-2 flex items-center gap-2">
-            <Lightbulb className="w-5 h-5" />
-            {t('teacher.dashboard.howItWorks')}
-          </h4>
-          <ol className="text-primary-700 text-sm space-y-1">
-            <li>{t('teacher.dashboard.step1')}</li>
-            <li>{t('teacher.dashboard.step2')}</li>
-            <li>{t('teacher.dashboard.step3')}</li>
-            <li>{t('teacher.dashboard.step4')}</li>
-          </ol>
-        </div>
+        {/* "Zo werkt het" — landing-stijl stap-kaarten, inklapbaar. Open bij
+            een nieuwe docent (nog geen klassen), daarna inklapbaar. */}
+        <HowItWorksSteps
+          className="mt-8"
+          title={t('teacher.dashboard.setup.title')}
+          storageKey="ss-teacher-dashboard-setup"
+          defaultOpen={classes.length === 0}
+          steps={[
+            {
+              title: t('teacher.dashboard.setup.step1.title'),
+              description: t('teacher.dashboard.setup.step1.description'),
+            },
+            {
+              title: t('teacher.dashboard.setup.step2.title'),
+              description: t('teacher.dashboard.setup.step2.description'),
+            },
+            {
+              title: t('teacher.dashboard.setup.step3.title'),
+              description: t('teacher.dashboard.setup.step3.description'),
+            },
+          ]}
+        />
 
         {/* --- Opdrachten sectie --- */}
         <div className="mt-10">
-          <h2 className="text-lg sm:text-xl font-semibold text-text-main flex items-center gap-2 mb-6">
-            <FileText className="w-5 h-5" />
+          <SectionTitle className="flex items-center gap-2 mb-6">
+            <FileText className="w-6 h-6 text-text-muted" />
             {t('templates.dashboardTitle')}
-          </h2>
+          </SectionTitle>
 
           {/* Errors */}
-          {(templatesError || praatplatenError) && (
+          {(templatesError || praatplatenError || cardsError) && (
             <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
-              {templatesError || praatplatenError}
-              <button onClick={() => { refetchTemplates(); refetchPraatplaten(); }} className="ml-2 underline">
+              {templatesError || praatplatenError || cardsError}
+              <button onClick={() => { refetchTemplates(); refetchPraatplaten(); refetchCards(); }} className="ml-2 underline">
                 {t('common.retry')}
               </button>
             </div>
           )}
 
           {/* Loading */}
-          {(templatesLoading || praatplatenLoading) && (
+          {(templatesLoading || praatplatenLoading || cardsLoading) && (
             <div className="text-center py-8">
-              <Loader2 className="w-8 h-8 text-primary-500 animate-spin mx-auto mb-2" />
+              <Loader2 className="w-8 h-8 text-accent-500 animate-spin mx-auto mb-2" />
             </div>
           )}
 
-          {!templatesLoading && !praatplatenLoading && (
+          {!templatesLoading && !praatplatenLoading && !cardsLoading && (
             <>
               {/* --- Praatplaten subsectie --- */}
               <div className="mb-8">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-base font-semibold text-text-main flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-primary-500" />
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                    <MapPin className="w-5 h-5 text-teal-500" />
                     {t('templates.praatplatenTitle')}
-                  </h3>
+                  </SectionTitle>
                   <Button
                     variant="secondary"
                     size="sm"
                     onClick={() => setShowCreatePraatplaat(true)}
-                    className="inline-flex items-center gap-1"
+                    className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
                   >
                     <Plus className="w-4 h-4" />
                     {t('templates.newPraatplaat')}
@@ -308,7 +332,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                 </p>
 
                 {praatplaten.length === 0 && (
-                  <div className="bg-bg-surface rounded-xl p-5 text-center border border-border-subtle">
+                  <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
                     <MapPin className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
                     <p className="text-text-muted text-sm">
                       {t('templates.praatplatenEmpty')}
@@ -333,16 +357,16 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
 
               {/* --- Templates subsectie --- */}
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-base font-semibold text-text-main flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-accent-600" />
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-accent-600" />
                     {t('templates.templatesTitle')}
-                  </h3>
+                  </SectionTitle>
                   <Button
                     variant="secondary"
                     size="sm"
                     onClick={() => setShowTemplateInfo(true)}
-                    className="inline-flex items-center gap-1"
+                    className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
                   >
                     <Plus className="w-4 h-4" />
                     {t('templates.newTemplate')}
@@ -353,7 +377,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                 </p>
 
                 {templates.length === 0 && (
-                  <div className="bg-bg-surface rounded-xl p-5 text-center border border-border-subtle">
+                  <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
                     <FileText className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
                     <p className="text-text-muted text-sm">
                       {t('templates.templatesEmpty')}
@@ -369,6 +393,81 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                         template={tmpl}
                         onDelete={() => setDeleteTemplateId(tmpl.id)}
                       />
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              {/* --- Opdrachtkaarten subsectie --- */}
+              <div className="mt-8">
+                <div className="flex items-center justify-between gap-3 mb-2">
+                  <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                    <ClipboardList className="w-5 h-5 text-primary-500" />
+                    {t('assignmentCards.sectionTitle')}
+                  </SectionTitle>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => { setEditCard(null); setShowCardEditor(true); }}
+                    className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('assignmentCards.newButton')}
+                  </Button>
+                </div>
+                <p className="text-text-muted text-sm mb-4">
+                  {t('assignmentCards.sectionDescription')}
+                </p>
+
+                {cards.length === 0 && (
+                  <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
+                    <ClipboardList className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
+                    <p className="text-text-muted text-sm">
+                      {t('assignmentCards.empty')}
+                    </p>
+                  </div>
+                )}
+
+                {cards.length > 0 && (
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    {cards.map((card) => (
+                      <div
+                        key={card.id}
+                        className="bg-bg-surface rounded-xl p-4 border border-border-subtle flex flex-col"
+                      >
+                        <div className="flex items-start justify-between gap-2 mb-2">
+                          <h4 className="font-semibold text-text-main text-sm min-w-0 truncate">{card.title}</h4>
+                          <div className="flex items-center gap-1 shrink-0">
+                            <button
+                              onClick={() => { setEditCard(card); setShowCardEditor(true); }}
+                              className="text-xs text-primary-600 hover:text-primary-700 font-medium px-1"
+                            >
+                              {t('common.edit')}
+                            </button>
+                            <button
+                              onClick={() => setDeleteCardId(card.id)}
+                              className="text-text-muted hover:text-error-500 p-1 transition-colors"
+                              title={t('common.delete')}
+                            >
+                              <Plus className="w-4 h-4 rotate-45" />
+                            </button>
+                          </div>
+                        </div>
+                        {card.bullets.length > 0 ? (
+                          <ul className="text-text-muted text-xs space-y-1 list-disc pl-4">
+                            {card.bullets.slice(0, 4).map((b, i) => (
+                              <li key={i} className="truncate">{b}</li>
+                            ))}
+                            {card.bullets.length > 4 && (
+                              <li className="list-none text-text-muted/70">
+                                {t('assignmentCards.moreBullets', { count: card.bullets.length - 4 })}
+                              </li>
+                            )}
+                          </ul>
+                        ) : (
+                          <p className="text-text-muted/70 text-xs italic">{t('assignmentCards.noBullets')}</p>
+                        )}
+                      </div>
                     ))}
                   </div>
                 )}
@@ -512,6 +611,42 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           <Button
             variant="primary"
             onClick={handleDeletePraatplaatConfirm}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
+
+      {/* Opdrachtkaart editor */}
+      <AssignmentCardEditorModal
+        isOpen={showCardEditor}
+        card={editCard}
+        onClose={() => setShowCardEditor(false)}
+        onSave={handleSaveCard}
+      />
+
+      {/* Verwijder opdrachtkaart bevestiging (UX-DEST-2) */}
+      <Modal
+        isOpen={!!deleteCardId}
+        onClose={() => setDeleteCardId(null)}
+        title={t('assignmentCards.deleteTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line">
+          {t('assignmentCards.deleteConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="secondary"
+            onClick={() => setDeleteCardId(null)}
+            className="flex-1"
+          >
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={handleDeleteCardConfirm}
             className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
           >
             {t('common.delete')}
