@@ -16,10 +16,9 @@ import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { AssignmentTypeCards } from './AssignmentTypeCards';
-import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { SharePraatplaatModal } from './SharePraatplaatModal';
-import { createPraatplaat, type PraatplaatRow } from '../../lib/praatplaat';
+import { type PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { SectionTitle, TeacherPageHeader } from './common';
@@ -84,6 +83,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     operationError: assignmentError,
     activateTemplate,
     activatePraatplaat: activatePraatplaatAssignment,
+    activatePraatplaatFromCatalog: activatePraatplaatFromCatalogAssignment,
     activateStoryboard: activateStoryboardAssignment,
     deactivate: deactivateAssignment,
   } = useClassAssignment(classData.id);
@@ -95,7 +95,6 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [pendingAction, setPendingAction] = useState<
     { kind: 'pick'; type: AssignmentType } | { kind: 'reactivate'; row: ClassAssignmentRow } | null
   >(null);
-  const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [showActivatedCode, setShowActivatedCode] = useState(false);
   const [showSharePraatplaatModal, setShowSharePraatplaatModal] = useState(false);
@@ -106,11 +105,22 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activateTemplate]);
 
+  // Heractiveren van een bestaande praatplaat-instance (via "Eerder gebruikt").
   const handleActivatePraatplaat = useCallback(async (praatplaatId: string, cardId?: string | null) => {
     await activatePraatplaatAssignment(praatplaatId, cardId);
     setShowActivatedCode(true);
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activatePraatplaatAssignment]);
+
+  // Activeren van een praatplaat uit de catalogus (find-or-create instance).
+  const handleActivatePraatplaatFromCatalog = useCallback(async (
+    entry: { name: string; themeId: string; locationId: string; imageUrl: string },
+    cardId?: string | null,
+  ) => {
+    await activatePraatplaatFromCatalogAssignment(entry, cardId);
+    setShowActivatedCode(true);
+    setTimeout(() => setShowActivatedCode(false), 8000);
+  }, [activatePraatplaatFromCatalogAssignment]);
 
   const handleActivateStoryboard = useCallback(async (storyboardRef: string, cardId?: string | null) => {
     await activateStoryboardAssignment(storyboardRef, cardId);
@@ -168,22 +178,6 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setShowActivateModal(false);
     setActivateType(null);
   }, []);
-
-  // Fase 2: praatplaat maken + activeren in één handeling. De praatplaat wordt aan
-  // deze klas gebonden en meteen als opdracht geactiveerd (activate_assignment →
-  // class_assignments, wat de leerling-lookup leest). Fouten propageren naar de
-  // CreatePraatplaatModal, die ze inline toont en open blijft.
-  const handleCreateAndActivatePraatplaat = useCallback(async (params: {
-    name: string;
-    themeId: string;
-    locationId: string;
-    imageUrl: string;
-  }) => {
-    const newId = await createPraatplaat({ classId: classData.id, ...params });
-    await activatePraatplaatAssignment(newId);
-    setShowActivatedCode(true);
-    setTimeout(() => setShowActivatedCode(false), 8000);
-  }, [classData.id, activatePraatplaatAssignment]);
 
   const handleDeactivateAssignment = useCallback(async () => {
     try {
@@ -618,12 +612,8 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         onClose={closeActivateModal}
         typeFilter={activateType ?? undefined}
         onActivateTemplate={handleActivateTemplate}
-        onActivatePraatplaat={handleActivatePraatplaat}
+        onActivatePraatplaatFromCatalog={handleActivatePraatplaatFromCatalog}
         onActivateStoryboard={handleActivateStoryboard}
-        onCreatePraatplaat={() => {
-          closeActivateModal();
-          setShowCreatePraatplaat(true);
-        }}
       />
 
       {/* Vervang-bevestiging: nieuw type kiezen of eerdere opdracht heractiveren terwijl er al een opdracht actief is */}
@@ -645,12 +635,6 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           </Button>
         </div>
       </Modal>
-
-      <CreatePraatplaatModal
-        isOpen={showCreatePraatplaat}
-        onClose={() => setShowCreatePraatplaat(false)}
-        onCreate={handleCreateAndActivatePraatplaat}
-      />
 
       {/* Praatplaat viewer */}
       {viewingPraatplaat && (

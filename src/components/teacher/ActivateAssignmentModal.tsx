@@ -1,20 +1,19 @@
 /**
  * ActivateAssignmentModal - Modal om een opdracht te activeren voor een klas
  *
- * Toont alle beschikbare templates en praatplaten van de docent.
- * De docent selecteert er één en bevestigt → activateAssignment().
+ * Toont de beschikbare templates, praatplaat-catalogus en storyboards. De docent
+ * selecteert er één (+ optionele opdrachtkaart) en bevestigt → activeren.
  */
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText, MapPin, Clapperboard, Plus, Check, Loader2 } from 'lucide-react';
+import { FileText, MapPin, Clapperboard, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
-import { usePraatplaten } from '../../hooks/usePraatplaten';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { getAllMultiImageStoryboards, type StoryboardWithTheme } from '../../data/themes';
+import { getPraatplaatCatalog, type PraatplaatCatalogEntry } from '../../data/praatplaatCatalog';
 import type { AssignmentType } from '../../lib/assignments';
 import type { TeacherTemplate } from '../../lib/templates';
-import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 
@@ -22,13 +21,13 @@ interface ActivateAssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
   onActivateTemplate: (templateId: string, cardId?: string | null) => Promise<void>;
-  onActivatePraatplaat: (praatplaatId: string, cardId?: string | null) => Promise<void>;
+  onActivatePraatplaatFromCatalog: (
+    entry: { name: string; themeId: string; locationId: string; imageUrl: string },
+    cardId?: string | null,
+  ) => Promise<void>;
   onActivateStoryboard: (storyboardRef: string, cardId?: string | null) => Promise<void>;
   /** Beperk de modal tot één opdracht-type. Undefined = alle types (legacy). */
   typeFilter?: AssignmentType;
-  /** Optioneel: maak in-place een nieuwe praatplaat voor deze klas aan (sluit deze
-   *  modal, opent de create-modal). */
-  onCreatePraatplaat?: () => void;
 }
 
 type Selection =
@@ -37,21 +36,20 @@ type Selection =
   | { type: 'storyboard'; id: string }
   | null;
 
-// Storyboards zijn app-content (registry) — voor elke docent hetzelfde, geen hook nodig.
+// App-content (registry/catalogus) — voor elke docent hetzelfde, geen hook nodig.
 const storyboards: StoryboardWithTheme[] = getAllMultiImageStoryboards();
+const praatplaatCatalog: PraatplaatCatalogEntry[] = getPraatplaatCatalog();
 
 export function ActivateAssignmentModal({
   isOpen,
   onClose,
   onActivateTemplate,
-  onActivatePraatplaat,
+  onActivatePraatplaatFromCatalog,
   onActivateStoryboard,
   typeFilter,
-  onCreatePraatplaat,
 }: ActivateAssignmentModalProps) {
   const { t } = useTranslation();
-  const { templates, loading: templatesLoading } = useTemplates();
-  const { praatplaten, loading: praatplatenLoading } = usePraatplaten();
+  const { templates, loading } = useTemplates();
   const { cards } = useAssignmentCards();
 
   const [selected, setSelected] = useState<Selection>(null);
@@ -68,8 +66,7 @@ export function ActivateAssignmentModal({
     setError(null);
   }, [isOpen, typeFilter]);
 
-  const loading = templatesLoading || praatplatenLoading;
-  const activeTemplates = templates.filter((t) => t.isActive);
+  const activeTemplates = templates.filter((tmpl) => tmpl.isActive);
 
   // Type-scoping: undefined = toon alles (legacy); anders alleen dat type.
   const showTemplates = !typeFilter || typeFilter === 'template';
@@ -80,12 +77,12 @@ export function ActivateAssignmentModal({
 
   // Voorbeeldpaneel: grote weergave van het geselecteerde item (praatplaat/storyboard).
   const selectedPraatplaat = selected?.type === 'praatplaat'
-    ? praatplaten.find((p) => p.id === selected.id) ?? null
+    ? praatplaatCatalog.find((e) => e.ref === selected.id) ?? null
     : null;
   const selectedStoryboard = selected?.type === 'storyboard'
     ? storyboards.find((s) => s.storyboard.id === selected.id)?.storyboard ?? null
     : null;
-  const previewImage = selectedPraatplaat?.image_url ?? selectedStoryboard?.coverImage ?? null;
+  const previewImage = selectedPraatplaat?.imageUrl ?? selectedStoryboard?.coverImage ?? null;
 
   const handleConfirm = async () => {
     if (!selected) return;
@@ -96,7 +93,13 @@ export function ActivateAssignmentModal({
       if (selected.type === 'template') {
         await onActivateTemplate(selected.id, cardId);
       } else if (selected.type === 'praatplaat') {
-        await onActivatePraatplaat(selected.id, cardId);
+        const entry = praatplaatCatalog.find((e) => e.ref === selected.id);
+        if (entry) {
+          await onActivatePraatplaatFromCatalog(
+            { name: t(entry.nameKey), themeId: entry.themeId, locationId: entry.locationId, imageUrl: entry.imageUrl },
+            cardId,
+          );
+        }
       } else {
         await onActivateStoryboard(selected.id, cardId);
       }
@@ -132,27 +135,6 @@ export function ActivateAssignmentModal({
           </div>
         )}
 
-        {/* Lege staat (alleen ongescooped): geen enkele resource */}
-        {!loading && !scoped && activeTemplates.length === 0 && praatplaten.length === 0 && storyboards.length === 0 && (
-          <div className="text-center py-8">
-            <p className="text-text-muted text-sm mb-4">
-              {t('assignments.noAssignments')}
-            </p>
-            {onCreatePraatplaat && (
-              <Button
-                variant="primary"
-                size="md"
-                onClick={() => {
-                  onClose();
-                  onCreatePraatplaat();
-                }}
-              >
-                {t('assignments.createPraatplaatForClass')}
-              </Button>
-            )}
-          </div>
-        )}
-
         {/* Templates */}
         {!loading && showTemplates && (
           <>
@@ -177,34 +159,22 @@ export function ActivateAssignmentModal({
           </>
         )}
 
-        {/* Praatplaten */}
+        {/* Praatplaat-catalogus */}
         {!loading && showPraatplaten && (
           <>
-            {!scoped && praatplaten.length > 0 && (
+            {!scoped && praatplaatCatalog.length > 0 && (
               <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
                 {t('templates.typePraatplaat')}
               </p>
             )}
-            {praatplaten.map((pp) => (
-              <PraatplaatOption
-                key={pp.id}
-                praatplaat={pp}
-                isSelected={selected?.type === 'praatplaat' && selected.id === pp.id}
-                onSelect={() => setSelected({ type: 'praatplaat', id: pp.id })}
+            {praatplaatCatalog.map((entry) => (
+              <PraatplaatCatalogOption
+                key={entry.ref}
+                entry={entry}
+                isSelected={selected?.type === 'praatplaat' && selected.id === entry.ref}
+                onSelect={() => setSelected({ type: 'praatplaat', id: entry.ref })}
               />
             ))}
-            {/* In praatplaat-scope altijd de create-actie tonen */}
-            {scoped && onCreatePraatplaat && (
-              <button
-                onClick={() => { onClose(); onCreatePraatplaat(); }}
-                className="w-full text-left px-3 py-3 rounded-xl border border-dashed border-border-subtle bg-white hover:border-accent-300 transition-colors flex items-center gap-3"
-              >
-                <div className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 bg-accent-100 text-accent-700">
-                  <Plus className="w-4 h-4" />
-                </div>
-                <p className="font-medium text-text-main text-sm">{t('assignments.createPraatplaatForClass')}</p>
-              </button>
-            )}
           </>
         )}
 
@@ -333,12 +303,12 @@ function TemplateOption({
   );
 }
 
-function PraatplaatOption({
-  praatplaat,
+function PraatplaatCatalogOption({
+  entry,
   isSelected,
   onSelect,
 }: {
-  praatplaat: PraatplaatRow;
+  entry: PraatplaatCatalogEntry;
   isSelected: boolean;
   onSelect: () => void;
 }) {
@@ -354,10 +324,10 @@ function PraatplaatOption({
     >
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
-          <img src={praatplaat.image_url} alt={praatplaat.name} className="w-full h-full object-cover" />
+          <img src={entry.imageUrl} alt={t(entry.nameKey)} className="w-full h-full object-cover" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-medium text-text-main text-sm truncate">{praatplaat.name}</p>
+          <p className="font-medium text-text-main text-sm truncate">{t(entry.nameKey)}</p>
           <p className="text-text-muted text-xs flex items-center gap-1">
             <MapPin className="w-3 h-3" />
             {t('templates.typePraatplaat')}
