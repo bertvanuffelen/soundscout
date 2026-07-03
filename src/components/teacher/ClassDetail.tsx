@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Play, XCircle, Share2 } from 'lucide-react';
+import { ArrowLeft, RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2 } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -29,6 +29,39 @@ interface ClassDetailProps {
   onBack: () => void;
 }
 
+type AssignmentKind = 'template' | 'praatplaat' | 'storyboard';
+
+// Type-geleide presentatie (icoon/kleur/label) voor de opdracht-kaarten.
+const ASSIGNMENT_ICON = {
+  template: FileText,
+  praatplaat: MapPin,
+  storyboard: Clapperboard,
+} as const;
+
+const ASSIGNMENT_LABEL_KEY = {
+  template: 'templates.typeTemplate',
+  praatplaat: 'templates.typePraatplaat',
+  storyboard: 'templates.typeStoryboard',
+} as const;
+
+const ASSIGNMENT_ICON_WRAP = {
+  template: 'bg-warning-100 text-warning-700',
+  praatplaat: 'bg-primary-100 text-primary-700',
+  storyboard: 'bg-accent-100 text-accent-700',
+} as const;
+
+const ASSIGNMENT_BADGE = {
+  template: 'bg-warning-100 text-warning-800',
+  praatplaat: 'bg-primary-100 text-primary-800',
+  storyboard: 'bg-accent-100 text-accent-800',
+} as const;
+
+const ASSIGNMENT_ICON_WRAP_SM = {
+  template: 'bg-warning-100 text-warning-600',
+  praatplaat: 'bg-primary-100 text-primary-600',
+  storyboard: 'bg-accent-100 text-accent-600',
+} as const;
+
 export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const { t } = useTranslation();
   const { submissions, loading, error, deleteSubmission, refetch } = useSubmissions(classData.id);
@@ -47,6 +80,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     operationError: assignmentError,
     activateTemplate,
     activatePraatplaat: activatePraatplaatAssignment,
+    activateStoryboard: activateStoryboardAssignment,
     deactivate: deactivateAssignment,
   } = useClassAssignment(classData.id);
 
@@ -72,6 +106,12 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setShowActivatedCode(true);
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activatePraatplaatAssignment]);
+
+  const handleActivateStoryboard = useCallback(async (storyboardRef: string) => {
+    await activateStoryboardAssignment(storyboardRef);
+    setShowActivatedCode(true);
+    setTimeout(() => setShowActivatedCode(false), 8000);
+  }, [activateStoryboardAssignment]);
 
   // Fase 2: praatplaat maken + activeren in één handeling. De praatplaat wordt aan
   // deze klas gebonden en meteen als opdracht geactiveerd (activate_assignment →
@@ -275,28 +315,17 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               <div className="bg-bg-surface rounded-xl p-4 sm:p-5 border border-primary-200 shadow-sm">
                 <div className="flex items-start gap-3">
                   {/* Type icoon */}
-                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${
-                    activeAssignment.type === 'template'
-                      ? 'bg-warning-100 text-warning-700'
-                      : 'bg-primary-100 text-primary-700'
-                  }`}>
-                    {activeAssignment.type === 'template' ? (
-                      <FileText className="w-5 h-5" />
-                    ) : (
-                      <MapPin className="w-5 h-5" />
-                    )}
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center shrink-0 ${ASSIGNMENT_ICON_WRAP[activeAssignment.type as AssignmentKind]}`}>
+                    {(() => {
+                      const Icon = ASSIGNMENT_ICON[activeAssignment.type as AssignmentKind];
+                      return <Icon className="w-5 h-5" />;
+                    })()}
                   </div>
 
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2 mb-1">
-                      <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium ${
-                        activeAssignment.type === 'template'
-                          ? 'bg-warning-100 text-warning-800'
-                          : 'bg-primary-100 text-primary-800'
-                      }`}>
-                        {activeAssignment.type === 'template'
-                          ? t('templates.typeTemplate')
-                          : t('templates.typePraatplaat')}
+                      <span className={`inline-flex items-center text-xs px-2 py-0.5 rounded-full font-medium ${ASSIGNMENT_BADGE[activeAssignment.type as AssignmentKind]}`}>
+                        {t(ASSIGNMENT_LABEL_KEY[activeAssignment.type as AssignmentKind])}
                       </span>
                     </div>
                     <h3 className="font-semibold text-text-main text-lg">
@@ -388,10 +417,11 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   key={pa.id}
                   className="bg-bg-surface rounded-lg p-3 border border-border-subtle flex items-center gap-3"
                 >
-                  <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${
-                    pa.type === 'template' ? 'bg-warning-100 text-warning-600' : 'bg-primary-100 text-primary-600'
-                  }`}>
-                    {pa.type === 'template' ? <FileText className="w-4 h-4" /> : <MapPin className="w-4 h-4" />}
+                  <div className={`w-8 h-8 rounded-md flex items-center justify-center shrink-0 ${ASSIGNMENT_ICON_WRAP_SM[pa.type as AssignmentKind]}`}>
+                    {(() => {
+                      const Icon = ASSIGNMENT_ICON[pa.type as AssignmentKind];
+                      return <Icon className="w-4 h-4" />;
+                    })()}
                   </div>
                   <div className="min-w-0 flex-1">
                     <p className="text-sm font-medium text-text-main truncate">{pa.assignmentName}</p>
@@ -523,6 +553,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         onClose={() => setShowActivateModal(false)}
         onActivateTemplate={handleActivateTemplate}
         onActivatePraatplaat={handleActivatePraatplaat}
+        onActivateStoryboard={handleActivateStoryboard}
         onCreatePraatplaat={() => {
           setShowActivateModal(false);
           setShowCreatePraatplaat(true);

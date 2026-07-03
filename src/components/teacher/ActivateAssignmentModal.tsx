@@ -7,9 +7,10 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText, MapPin, Check, Loader2 } from 'lucide-react';
+import { FileText, MapPin, Clapperboard, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { usePraatplaten } from '../../hooks/usePraatplaten';
+import { getAllMultiImageStoryboards, type StoryboardWithTheme } from '../../data/themes';
 import type { TeacherTemplate } from '../../lib/templates';
 import type { PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
@@ -20,18 +21,27 @@ interface ActivateAssignmentModalProps {
   onClose: () => void;
   onActivateTemplate: (templateId: string) => Promise<void>;
   onActivatePraatplaat: (praatplaatId: string) => Promise<void>;
+  onActivateStoryboard: (storyboardRef: string) => Promise<void>;
   /** Optioneel: maak in-place een nieuwe praatplaat voor deze klas aan wanneer er
    *  nog geen opdrachten zijn om te activeren (sluit deze modal, opent de create-modal). */
   onCreatePraatplaat?: () => void;
 }
 
-type Selection = { type: 'template'; id: string } | { type: 'praatplaat'; id: string } | null;
+type Selection =
+  | { type: 'template'; id: string }
+  | { type: 'praatplaat'; id: string }
+  | { type: 'storyboard'; id: string }
+  | null;
+
+// Storyboards zijn app-content (registry) — voor elke docent hetzelfde, geen hook nodig.
+const storyboards: StoryboardWithTheme[] = getAllMultiImageStoryboards();
 
 export function ActivateAssignmentModal({
   isOpen,
   onClose,
   onActivateTemplate,
   onActivatePraatplaat,
+  onActivateStoryboard,
   onCreatePraatplaat,
 }: ActivateAssignmentModalProps) {
   const { t } = useTranslation();
@@ -52,8 +62,10 @@ export function ActivateAssignmentModal({
     try {
       if (selected.type === 'template') {
         await onActivateTemplate(selected.id);
-      } else {
+      } else if (selected.type === 'praatplaat') {
         await onActivatePraatplaat(selected.id);
+      } else {
+        await onActivateStoryboard(selected.id);
       }
       setSelected(null);
       onClose();
@@ -84,7 +96,7 @@ export function ActivateAssignmentModal({
           </div>
         )}
 
-        {!loading && activeTemplates.length === 0 && praatplaten.length === 0 && (
+        {!loading && activeTemplates.length === 0 && praatplaten.length === 0 && storyboards.length === 0 && (
           <div className="text-center py-8">
             <p className="text-text-muted text-sm mb-4">
               {t('assignments.noAssignments')}
@@ -133,6 +145,23 @@ export function ActivateAssignmentModal({
                 praatplaat={pp}
                 isSelected={selected?.type === 'praatplaat' && selected.id === pp.id}
                 onSelect={() => setSelected({ type: 'praatplaat', id: pp.id })}
+              />
+            ))}
+          </>
+        )}
+
+        {/* Storyboards (app-content) */}
+        {!loading && storyboards.length > 0 && (
+          <>
+            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
+              {t('templates.typeStoryboard')}
+            </p>
+            {storyboards.map((sb) => (
+              <StoryboardOption
+                key={sb.storyboard.id}
+                storyboard={sb}
+                isSelected={selected?.type === 'storyboard' && selected.id === sb.storyboard.id}
+                onSelect={() => setSelected({ type: 'storyboard', id: sb.storyboard.id })}
               />
             ))}
           </>
@@ -229,6 +258,43 @@ function PraatplaatOption({
           <p className="text-text-muted text-xs flex items-center gap-1">
             <MapPin className="w-3 h-3" />
             {t('templates.typePraatplaat')}
+          </p>
+        </div>
+        {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0" />}
+      </div>
+    </button>
+  );
+}
+
+function StoryboardOption({
+  storyboard,
+  isSelected,
+  onSelect,
+}: {
+  storyboard: StoryboardWithTheme;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const { t } = useTranslation();
+  const sb = storyboard.storyboard;
+  return (
+    <button
+      onClick={onSelect}
+      className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${
+        isSelected
+          ? 'border-primary-500 bg-primary-50'
+          : 'border-border-subtle bg-white hover:border-primary-300'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
+          <img src={sb.coverImage} alt={t(sb.name)} className="w-full h-full object-cover" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-text-main text-sm truncate">{t(sb.name)}</p>
+          <p className="text-text-muted text-xs flex items-center gap-1">
+            <Clapperboard className="w-3 h-3" />
+            {t('assignmentLanding.template.storyboardCount', { count: sb.images.length })}
           </p>
         </div>
         {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0" />}
