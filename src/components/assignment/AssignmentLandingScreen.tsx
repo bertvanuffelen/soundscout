@@ -19,12 +19,13 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, BookOpen, Image as ImageIcon, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, AlertCircle, Loader2 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment } from '../../utils/compositionInit';
 import { findStoryboardById } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { logger } from '../../utils/logger';
+import type { AssignmentStoryboard } from '../../lib/assignments';
 import type { Template } from '../../types';
 
 export default function AssignmentLandingScreen() {
@@ -92,6 +93,9 @@ export default function AssignmentLandingScreen() {
         )}
         {assignment?.type === 'praatplaat' && assignment.praatplaat && (
           <PraatplaatBody praatplaat={assignment.praatplaat} />
+        )}
+        {assignment?.type === 'storyboard' && assignment.storyboard && (
+          <StoryboardBody storyboard={assignment.storyboard} />
         )}
         {!assignment && <RouteCBody />}
 
@@ -248,6 +252,42 @@ function PraatplaatBody({ praatplaat }: { praatplaat: { name: string; imageUrl: 
       </div>
       <p className="text-sm text-brand-300 md:text-text-muted">
         {t('assignmentLanding.praatplaat.description')}
+      </p>
+    </div>
+  );
+}
+
+function StoryboardBody({ storyboard }: { storyboard: AssignmentStoryboard }) {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <div className="flex items-start gap-3 mb-4">
+        <div className="shrink-0 w-12 h-12 rounded-xl bg-accent-500/20 md:bg-accent-100 text-accent-400 md:text-accent-600 flex items-center justify-center">
+          <Clapperboard size={24} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-wider text-brand-300 md:text-text-muted mb-0.5">
+            {t('assignmentLanding.storyboard.kind')}
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white md:text-text-main truncate">
+            {t(storyboard.nameKey)}
+          </h1>
+        </div>
+      </div>
+      <div className="relative rounded-xl overflow-hidden bg-neutral-100 aspect-video mb-4">
+        <img
+          src={storyboard.coverImage}
+          alt={t(storyboard.nameKey)}
+          className="w-full h-full object-cover"
+        />
+        {storyboard.imageCount > 1 && (
+          <span className="absolute top-2 right-2 px-2 py-1 rounded-full bg-black/60 text-white text-xs font-medium">
+            {t('assignmentLanding.template.storyboardCount', { count: storyboard.imageCount })}
+          </span>
+        )}
+      </div>
+      <p className="text-sm text-brand-300 md:text-text-muted">
+        {t('assignmentLanding.storyboard.description')}
       </p>
     </div>
   );

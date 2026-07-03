@@ -118,10 +118,10 @@ interface SubmitOrUpdateParams {
   compositionData: CompositionData;
   /** Client-generated UUID for idempotent UPSERT (reuse across retries) */
   clientId?: string;
-  /** UUID of the assignment (template or praatplaat) */
+  /** Identifier of the assignment: template_id/praatplaat_id (UUID) or storyboard-registry-id (TEXT) */
   assignmentId?: string;
   /** Type of assignment */
-  assignmentType?: 'template' | 'praatplaat';
+  assignmentType?: 'template' | 'praatplaat' | 'storyboard';
   /** Praatplaat position (only for praatplaat assignments) */
   praatplaatPositionX?: number;
   praatplaatPositionY?: number;
@@ -157,8 +157,16 @@ export async function submitOrUpdateComposition(
 
   // Only include optional params when they have a value (avoids PostgREST ambiguity)
   if (clientId) rpcParams.p_client_id = clientId;
-  if (assignmentId) rpcParams.p_assignment_id = assignmentId;
   if (assignmentType) rpcParams.p_assignment_type = assignmentType;
+  // Storyboard-ref is een tekst-registry-id (geen UUID) → naar p_assignment_ref;
+  // template/praatplaat leveren een UUID → naar p_assignment_id.
+  if (assignmentId) {
+    if (assignmentType === 'storyboard') {
+      rpcParams.p_assignment_ref = assignmentId;
+    } else {
+      rpcParams.p_assignment_id = assignmentId;
+    }
+  }
   if (praatplaatPositionX != null) rpcParams.p_praatplaat_position_x = praatplaatPositionX;
   if (praatplaatPositionY != null) rpcParams.p_praatplaat_position_y = praatplaatPositionY;
 

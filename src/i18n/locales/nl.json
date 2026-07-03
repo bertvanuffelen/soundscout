@@ -760,7 +760,22 @@
       "step1": "1. Maak een klas aan en krijg een 4-cijferige code",
       "step2": "2. Deel de code met je leerlingen",
       "step3": "3. Leerlingen maken een compositie en voeren de code in bij \"Delen\"",
-      "step4": "4. Bekijk alle composities hier in je dashboard"
+      "step4": "4. Bekijk alle composities hier in je dashboard",
+    "setup": {
+      "title": "Zo zet je een klas op",
+      "step1": {
+        "title": "Maak een klas",
+        "description": "Je krijgt meteen een klascode van vier cijfers."
+      },
+      "step2": {
+        "title": "Kies een opdracht",
+        "description": "Activeer een praatplaat, storyboard of template voor je klas."
+      },
+      "step3": {
+        "title": "Deel de klascode",
+        "description": "Leerlingen typen de code in en je ziet hun composities hier."
+      }
+    }
     },
     "classCodeMeaning": "Leerlingen typen deze code in om mee te doen.",
     "classDetail": {
@@ -1011,6 +1026,10 @@
     "praatplaat": {
       "kind": "Praatplaat",
       "description": "Je kiest straks een plek op deze afbeelding. Daar hoort jouw compositie bij."
+    },
+    "storyboard": {
+      "kind": "Verhaal in beeld",
+      "description": "Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart."
     },
     "none": {
       "heading": "Nog geen opdracht klaar",

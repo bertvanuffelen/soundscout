@@ -760,7 +760,22 @@
       "step1": "1. Create a class and get a 4-digit code",
       "step2": "2. Share the code with your students",
       "step3": "3. Students create a composition and enter the code under \"Share\"",
-      "step4": "4. View all compositions here in your dashboard"
+      "step4": "4. View all compositions here in your dashboard",
+    "setup": {
+      "title": "How to set up a class",
+      "step1": {
+        "title": "Create a class",
+        "description": "You get a four-digit class code straight away."
+      },
+      "step2": {
+        "title": "Choose an assignment",
+        "description": "Activate a sound map, storyboard or template for your class."
+      },
+      "step3": {
+        "title": "Share the class code",
+        "description": "Students type in the code and you see their compositions here."
+      }
+    }
     },
     "classCodeMeaning": "Students type this code to join.",
     "classDetail": {
@@ -1011,6 +1026,10 @@
     "praatplaat": {
       "kind": "Praatplaat",
       "description": "You'll pick a spot on this image next. Your composition belongs there."
+    },
+    "storyboard": {
+      "kind": "Story in pictures",
+      "description": "Make music that fits each scene of this story. First collect sounds on the map."
     },
     "none": {
       "heading": "No assignment ready yet",

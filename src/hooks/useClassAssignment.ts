@@ -27,6 +27,8 @@ interface UseClassAssignmentReturn {
   activateTemplate: (templateId: string) => Promise<void>;
   /** Activeer een praatplaat voor deze klas */
   activatePraatplaat: (praatplaatId: string) => Promise<void>;
+  /** Activeer een storyboard voor deze klas */
+  activateStoryboard: (storyboardRef: string) => Promise<void>;
   /** Deactiveer de huidige opdracht */
   deactivate: () => Promise<void>;
   /** Herlaad data */
@@ -65,7 +67,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
   const activateTemplate = useCallback(async (templateId: string) => {
     setOperationError(null);
     try {
-      await activateAssignment(classId, templateId, undefined);
+      await activateAssignment(classId, { templateId });
       // Refetch to get the full assignment with joined name
       await fetch();
     } catch (err) {
@@ -78,10 +80,22 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
   const activatePraatplaat = useCallback(async (praatplaatId: string) => {
     setOperationError(null);
     try {
-      await activateAssignment(classId, undefined, praatplaatId);
+      await activateAssignment(classId, { praatplaatId });
       await fetch();
     } catch (err) {
       const msg = err instanceof Error ? err.message : 'Kon praatplaat niet activeren';
+      setOperationError(msg);
+      throw err;
+    }
+  }, [classId, fetch]);
+
+  const activateStoryboard = useCallback(async (storyboardRef: string) => {
+    setOperationError(null);
+    try {
+      await activateAssignment(classId, { storyboardRef });
+      await fetch();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Kon storyboard niet activeren';
       setOperationError(msg);
       throw err;
     }
@@ -107,6 +121,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     operationError,
     activateTemplate,
     activatePraatplaat,
+    activateStoryboard,
     deactivate,
     refetch: fetch,
   };
