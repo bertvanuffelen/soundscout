@@ -243,7 +243,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
  */
 export async function activateAssignment(
   classId: string,
-  opts: { templateId?: string; praatplaatId?: string; storyboardRef?: string },
+  opts: { templateId?: string; praatplaatId?: string; storyboardRef?: string; cardId?: string | null },
 ): Promise<string> {
   const supabase = await getSupabase();
   const { data, error } = await withTimeout(
@@ -252,6 +252,7 @@ export async function activateAssignment(
       p_template_id: opts.templateId || null,
       p_praatplaat_id: opts.praatplaatId || null,
       p_storyboard_ref: opts.storyboardRef || null,
+      p_card_id: opts.cardId || null,
     }),
     20_000,
     'errors.networkTimeout'

@@ -24,9 +24,11 @@ import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment } from '../../utils/compositionInit';
 import { findStoryboardById } from '../../data/themes';
 import { Button } from '../ui/Button';
+import { OpdrachtkaartCard } from './OpdrachtkaartCard';
 import { logger } from '../../utils/logger';
-import type { AssignmentStoryboard } from '../../lib/assignments';
-import type { Template } from '../../types';
+import type { TFunction } from 'i18next';
+import type { ActiveAssignment, AssignmentStoryboard } from '../../lib/assignments';
+import type { OpdrachtkaartContent, Template } from '../../types';
 
 export default function AssignmentLandingScreen() {
   const { t } = useTranslation();
@@ -87,6 +89,9 @@ export default function AssignmentLandingScreen() {
           )}
         </div>
 
+        {/* Opdrachtkaart (docent-kaart of per-type default) — vorm-onafhankelijk */}
+        {assignment && <OpdrachtkaartCard card={resolveCard(t, assignment)} />}
+
         {/* Body per assignment-type */}
         {assignment?.type === 'template' && assignment.template && (
           <TemplateBody template={assignment.template} />
@@ -145,6 +150,20 @@ function RouteCActions() {
       </Button>
     </div>
   );
+}
+
+/**
+ * Bepaalt welke opdrachtkaart de leerling ziet: de door de docent gekoppelde
+ * kaart, of anders de per-type default-kaart (i18n). Vorm-onafhankelijk.
+ */
+function resolveCard(t: TFunction, assignment: ActiveAssignment): OpdrachtkaartContent {
+  if (assignment.card && (assignment.card.title || assignment.card.bullets.length > 0)) {
+    return assignment.card;
+  }
+  const base = `assignmentCards.defaults.${assignment.type}`;
+  const raw: unknown = t(`${base}.bullets`, { returnObjects: true });
+  const bullets = Array.isArray(raw) ? raw.filter((x): x is string => typeof x === 'string') : [];
+  return { title: t(`${base}.title`), bullets };
 }
 
 // --- Sub-components ---

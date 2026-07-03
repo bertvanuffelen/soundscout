@@ -95,20 +95,20 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [showActivatedCode, setShowActivatedCode] = useState(false);
   const [showSharePraatplaatModal, setShowSharePraatplaatModal] = useState(false);
 
-  const handleActivateTemplate = useCallback(async (templateId: string) => {
-    await activateTemplate(templateId);
+  const handleActivateTemplate = useCallback(async (templateId: string, cardId?: string | null) => {
+    await activateTemplate(templateId, cardId);
     setShowActivatedCode(true);
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activateTemplate]);
 
-  const handleActivatePraatplaat = useCallback(async (praatplaatId: string) => {
-    await activatePraatplaatAssignment(praatplaatId);
+  const handleActivatePraatplaat = useCallback(async (praatplaatId: string, cardId?: string | null) => {
+    await activatePraatplaatAssignment(praatplaatId, cardId);
     setShowActivatedCode(true);
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activatePraatplaatAssignment]);
 
-  const handleActivateStoryboard = useCallback(async (storyboardRef: string) => {
-    await activateStoryboardAssignment(storyboardRef);
+  const handleActivateStoryboard = useCallback(async (storyboardRef: string, cardId?: string | null) => {
+    await activateStoryboardAssignment(storyboardRef, cardId);
     setShowActivatedCode(true);
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activateStoryboardAssignment]);

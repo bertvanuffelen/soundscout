@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { FileText, MapPin, Clapperboard, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { usePraatplaten } from '../../hooks/usePraatplaten';
+import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { getAllMultiImageStoryboards, type StoryboardWithTheme } from '../../data/themes';
 import type { TeacherTemplate } from '../../lib/templates';
 import type { PraatplaatRow } from '../../lib/praatplaat';
@@ -19,9 +20,9 @@ import { Modal } from '../ui/Modal';
 interface ActivateAssignmentModalProps {
   isOpen: boolean;
   onClose: () => void;
-  onActivateTemplate: (templateId: string) => Promise<void>;
-  onActivatePraatplaat: (praatplaatId: string) => Promise<void>;
-  onActivateStoryboard: (storyboardRef: string) => Promise<void>;
+  onActivateTemplate: (templateId: string, cardId?: string | null) => Promise<void>;
+  onActivatePraatplaat: (praatplaatId: string, cardId?: string | null) => Promise<void>;
+  onActivateStoryboard: (storyboardRef: string, cardId?: string | null) => Promise<void>;
   /** Optioneel: maak in-place een nieuwe praatplaat voor deze klas aan wanneer er
    *  nog geen opdrachten zijn om te activeren (sluit deze modal, opent de create-modal). */
   onCreatePraatplaat?: () => void;
@@ -47,8 +48,10 @@ export function ActivateAssignmentModal({
   const { t } = useTranslation();
   const { templates, loading: templatesLoading } = useTemplates();
   const { praatplaten, loading: praatplatenLoading } = usePraatplaten();
+  const { cards } = useAssignmentCards();
 
   const [selected, setSelected] = useState<Selection>(null);
+  const [selectedCardId, setSelectedCardId] = useState<string>(''); // '' = standaard uitleg
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -59,15 +62,17 @@ export function ActivateAssignmentModal({
     if (!selected) return;
     setSaving(true);
     setError(null);
+    const cardId = selectedCardId || null;
     try {
       if (selected.type === 'template') {
-        await onActivateTemplate(selected.id);
+        await onActivateTemplate(selected.id, cardId);
       } else if (selected.type === 'praatplaat') {
-        await onActivatePraatplaat(selected.id);
+        await onActivatePraatplaat(selected.id, cardId);
       } else {
-        await onActivateStoryboard(selected.id);
+        await onActivateStoryboard(selected.id, cardId);
       }
       setSelected(null);
+      setSelectedCardId('');
       onClose();
     } catch (err) {
       setError(err instanceof Error ? err.message : t('assignments.activateError'));
@@ -167,6 +172,25 @@ export function ActivateAssignmentModal({
           </>
         )}
       </div>
+
+      {/* Opdrachtkaart-keuze (vorm-onafhankelijk) */}
+      {!loading && (
+        <div className="mt-4 pt-4 border-t border-border-subtle">
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">
+            {t('assignments.cardLabel')}
+          </label>
+          <select
+            value={selectedCardId}
+            onChange={(e) => setSelectedCardId(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm focus:outline-none focus:border-primary-400"
+          >
+            <option value="">{t('assignments.cardNone')}</option>
+            {cards.map((card) => (
+              <option key={card.id} value={card.id}>{card.title}</option>
+            ))}
+          </select>
+        </div>
+      )}
 
       {/* Footer */}
       <div className="flex gap-3 mt-4 pt-4 border-t border-border-subtle">
