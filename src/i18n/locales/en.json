@@ -487,6 +487,7 @@
     "changeAssignment": "Change assignment",
     "pickPrompt": "Choose what your class will do. Students with code {{code}} join instantly.",
     "previewLabel": "Preview",
+    "activatedMessage": "Assignment is active! Students enter this class code:",
     "noActiveTitle": "No active assignment",
     "noActiveExplain": "Nothing is set up for this class. Students who enter code {{code}} can compose freely for now. Choose an assignment below to set something up.",
     "reactivate": "Activate",

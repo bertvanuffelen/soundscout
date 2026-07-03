@@ -318,7 +318,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             {/* Klascode tonen na activeren */}
             {showActivatedCode && (
               <div className="bg-success-50 border border-success-200 text-success-600 px-4 py-3 rounded-xl mb-4 text-sm flex items-center justify-between">
-                <span>{t('teacher.praatplaat.activatedMessage')}</span>
+                <span>{t('assignments.activatedMessage')}</span>
                 <span className="font-mono font-bold text-lg ml-3">{classData.code}</span>
               </div>
             )}
