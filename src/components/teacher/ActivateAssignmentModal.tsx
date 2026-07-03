@@ -78,6 +78,15 @@ export function ActivateAssignmentModal({
   const scoped = !!typeFilter;
   const modalTitle = typeFilter ? t(`assignments.types.${typeFilter}.pickTitle`) : t('assignments.chooseTitle');
 
+  // Voorbeeldpaneel: grote weergave van het geselecteerde item (praatplaat/storyboard).
+  const selectedPraatplaat = selected?.type === 'praatplaat'
+    ? praatplaten.find((p) => p.id === selected.id) ?? null
+    : null;
+  const selectedStoryboard = selected?.type === 'storyboard'
+    ? storyboards.find((s) => s.storyboard.id === selected.id)?.storyboard ?? null
+    : null;
+  const previewImage = selectedPraatplaat?.image_url ?? selectedStoryboard?.coverImage ?? null;
+
   const handleConfirm = async () => {
     if (!selected) return;
     setSaving(true);
@@ -218,6 +227,30 @@ export function ActivateAssignmentModal({
           </>
         )}
       </div>
+
+      {/* Voorbeeldpaneel: beweegt mee met de selectie */}
+      {!loading && previewImage && (
+        <div className="mt-4 pt-4 border-t border-border-subtle">
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">
+            {t('assignments.previewLabel')}
+          </label>
+          <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video border border-border-subtle">
+            <img src={previewImage} alt="" className="w-full h-full object-cover" />
+          </div>
+          {selectedStoryboard && selectedStoryboard.images.length > 1 && (
+            <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
+              {selectedStoryboard.images.map((img) => (
+                <img
+                  key={img.id}
+                  src={img.url}
+                  alt=""
+                  className="w-16 h-12 rounded-md object-cover shrink-0 border border-border-subtle"
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Opdrachtkaart-keuze (vorm-onafhankelijk) */}
       {!loading && (
