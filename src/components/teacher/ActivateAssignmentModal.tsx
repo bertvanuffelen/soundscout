@@ -97,7 +97,7 @@ export function ActivateAssignmentModal({
       <div className="max-h-[50vh] overflow-y-auto space-y-2">
         {loading && (
           <div className="text-center py-8">
-            <Loader2 className="w-6 h-6 text-primary-500 animate-spin mx-auto" />
+            <Loader2 className="w-6 h-6 text-accent-500 animate-spin mx-auto" />
           </div>
         )}
 
@@ -182,7 +182,7 @@ export function ActivateAssignmentModal({
           <select
             value={selectedCardId}
             onChange={(e) => setSelectedCardId(e.target.value)}
-            className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm focus:outline-none focus:border-primary-400"
+            className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm focus:outline-none focus:border-accent-400"
           >
             <option value="">{t('assignments.cardNone')}</option>
             {cards.map((card) => (
@@ -232,13 +232,13 @@ function TemplateOption({
       onClick={onSelect}
       className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${
         isSelected
-          ? 'border-primary-500 bg-primary-50'
-          : 'border-border-subtle bg-white hover:border-primary-300'
+          ? 'border-accent-500 bg-accent-50'
+          : 'border-border-subtle bg-white hover:border-accent-300'
       }`}
     >
       <div className="flex items-center gap-3">
         <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${
-          isSelected ? 'bg-primary-500 text-white' : 'bg-accent-100 text-accent-700'
+          isSelected ? 'bg-accent-500 text-white' : 'bg-accent-100 text-accent-700'
         }`}>
           <FileText className="w-4 h-4" />
         </div>
@@ -248,7 +248,7 @@ function TemplateOption({
             <p className="text-text-muted text-xs truncate">{template.description}</p>
           )}
         </div>
-        {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0" />}
+        {isSelected && <Check className="w-4 h-4 text-accent-500 shrink-0" />}
       </div>
     </button>
   );
@@ -269,8 +269,8 @@ function PraatplaatOption({
       onClick={onSelect}
       className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${
         isSelected
-          ? 'border-primary-500 bg-primary-50'
-          : 'border-border-subtle bg-white hover:border-primary-300'
+          ? 'border-accent-500 bg-accent-50'
+          : 'border-border-subtle bg-white hover:border-accent-300'
       }`}
     >
       <div className="flex items-center gap-3">
@@ -284,7 +284,7 @@ function PraatplaatOption({
             {t('templates.typePraatplaat')}
           </p>
         </div>
-        {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0" />}
+        {isSelected && <Check className="w-4 h-4 text-accent-500 shrink-0" />}
       </div>
     </button>
   );
@@ -306,8 +306,8 @@ function StoryboardOption({
       onClick={onSelect}
       className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${
         isSelected
-          ? 'border-primary-500 bg-primary-50'
-          : 'border-border-subtle bg-white hover:border-primary-300'
+          ? 'border-accent-500 bg-accent-50'
+          : 'border-border-subtle bg-white hover:border-accent-300'
       }`}
     >
       <div className="flex items-center gap-3">
@@ -321,7 +321,7 @@ function StoryboardOption({
             {t('assignmentLanding.template.storyboardCount', { count: sb.images.length })}
           </p>
         </div>
-        {isSelected && <Check className="w-4 h-4 text-primary-500 shrink-0" />}
+        {isSelected && <Check className="w-4 h-4 text-accent-500 shrink-0" />}
       </div>
     </button>
   );

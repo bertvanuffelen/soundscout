@@ -94,7 +94,7 @@ export function AssignmentCardEditorModal({
         onChange={(e) => setTitle(e.target.value)}
         maxLength={120}
         placeholder={t('assignmentCards.titlePlaceholder')}
-        className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm mb-5 focus:outline-none focus:border-primary-400"
+        className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm mb-5 focus:outline-none focus:border-accent-400"
       />
 
       {/* Bullets */}
@@ -116,7 +116,7 @@ export function AssignmentCardEditorModal({
               onChange={(e) => updateBullet(index, e.target.value)}
               maxLength={200}
               placeholder={t('assignmentCards.bulletPlaceholder')}
-              className="flex-1 px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm focus:outline-none focus:border-primary-400"
+              className="flex-1 px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm focus:outline-none focus:border-accent-400"
             />
             <button
               onClick={() => removeBullet(index)}
@@ -132,7 +132,7 @@ export function AssignmentCardEditorModal({
       {bullets.length < MAX_CARD_BULLETS && (
         <button
           onClick={addBullet}
-          className="mt-2 inline-flex items-center gap-1 text-sm text-primary-600 hover:text-primary-700 font-medium"
+          className="mt-2 inline-flex items-center gap-1 text-sm text-accent-600 hover:text-accent-700 font-medium"
         >
           <Plus className="w-4 h-4" />
           {t('assignmentCards.addBullet')}

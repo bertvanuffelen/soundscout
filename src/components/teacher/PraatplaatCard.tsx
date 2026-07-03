@@ -34,7 +34,7 @@ export function PraatplaatCard({ praatplaat, submissionCount, classCode, onDelet
   });
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow overflow-hidden">
+    <div className="bg-bg-surface rounded-2xl shadow-md hover:shadow-lg transition-shadow overflow-hidden">
       {/* Thumbnail */}
       <div className="aspect-video w-full overflow-hidden bg-neutral-100">
         <img
@@ -48,7 +48,7 @@ export function PraatplaatCard({ praatplaat, submissionCount, classCode, onDelet
       <div className="p-4 sm:p-5">
         {/* Header */}
         <div className="mb-3">
-          <h3 className="font-semibold text-text-main text-lg truncate">
+          <h3 className="font-bold text-text-main text-lg truncate">
             {name}
           </h3>
           <p className="text-text-muted text-sm">
@@ -69,7 +69,7 @@ export function PraatplaatCard({ praatplaat, submissionCount, classCode, onDelet
             variant="primary"
             size="sm"
             onClick={onView}
-            className="flex-1 inline-flex items-center justify-center gap-1.5"
+            className="flex-1 inline-flex items-center justify-center gap-1.5 rounded-full"
           >
             <Volume2 className="w-4 h-4" />
             {t('teacher.praatplaat.openPraatplaat')}

@@ -28,7 +28,7 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
   });
 
   return (
-    <div className="bg-white rounded-xl shadow-md p-4 flex items-center gap-4">
+    <div className="bg-bg-surface rounded-2xl shadow-md p-4 flex items-center gap-4">
       {/* Play button */}
       <button
         onClick={onPlay}
@@ -41,29 +41,29 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
       {/* Info */}
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2">
-          <h3 className="font-semibold text-text-main truncate">
+          <h3 className="font-bold text-text-main truncate">
             {composition_name}
           </h3>
           {isWip && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-warning-100 text-warning-700 text-xs font-medium shrink-0">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-100 text-warning-700 text-xs font-medium shrink-0">
               <PenLine className="w-3 h-3" />
               {t('teacher.submissionCard.wip')}
             </span>
           )}
           {hasStoryboard && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent-100 text-accent-700 text-xs font-medium shrink-0">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-medium shrink-0">
               <Image className="w-3 h-3" />
               {t('teacher.submissionCard.withStoryboard')}
             </span>
           )}
           {submission.assignment_type === 'template' && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-accent-50 text-accent-700 text-xs font-medium shrink-0">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-50 text-accent-700 text-xs font-medium shrink-0">
               <FileText className="w-3 h-3" />
               {t('teacher.submissionCard.fromTemplate')}
             </span>
           )}
           {submission.assignment_type === 'praatplaat' && (
-            <span className="inline-flex items-center gap-1 px-1.5 py-0.5 rounded-md bg-primary-50 text-primary-700 text-xs font-medium shrink-0">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 text-xs font-medium shrink-0">
               <MapPin className="w-3 h-3" />
               {t('teacher.submissionCard.fromPraatplaat')}
             </span>

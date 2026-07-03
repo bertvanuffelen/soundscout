@@ -36,14 +36,14 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
   }, [code]);
 
   return (
-    <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
+    <div className="bg-bg-surface rounded-2xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
       {/* Header met naam en code */}
       <div className="flex items-start justify-between mb-2">
         <div className="min-w-0 flex-1 mr-3">
-          <h3 className="font-semibold text-text-main text-lg truncate">
+          <h3 className="font-bold text-text-main text-lg truncate">
             {name}
           </h3>
-          <p className="text-neutral-500 text-sm">
+          <p className="text-text-muted text-sm">
             {formattedDate}
           </p>
         </div>
@@ -51,7 +51,7 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
         {/* Template code badge + copy */}
         <button
           onClick={handleCopyCode}
-          className="flex items-center gap-1.5 bg-accent-100 text-accent-800 px-3 py-1 rounded-lg font-mono font-bold text-sm hover:bg-accent-200 transition-colors shrink-0"
+          className="flex items-center gap-1.5 bg-accent-100 text-accent-800 px-3 py-1 rounded-full font-mono font-bold text-sm hover:bg-accent-200 transition-colors shrink-0"
           title={t('templates.copyCode')}
         >
           {code}
