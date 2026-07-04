@@ -23,6 +23,8 @@ import { LessonCardEditorModal } from './LessonCardEditorModal';
 interface LessonCardsTabProps {
   classes: TeacherClass[];
   onCreateClass: (name: string) => Promise<TeacherClass>;
+  /** builtin_key van een leskaart om standaard te selecteren (landing-deeplink). */
+  initialSelectKey?: string | null;
 }
 
 const TYPE_META: Record<AssignmentType, { Icon: LucideIcon; badge: string; labelKey: string }> = {
@@ -32,7 +34,7 @@ const TYPE_META: Record<AssignmentType, { Icon: LucideIcon; badge: string; label
   free: { Icon: Music, badge: 'bg-rose-100 text-rose-700', labelKey: 'templates.typeFree' },
 };
 
-export function LessonCardsTab({ classes, onCreateClass }: LessonCardsTabProps) {
+export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: LessonCardsTabProps) {
   const { t } = useTranslation();
   const { cards, loading, error, create, update, remove, refetch } = useLessonCards();
 
@@ -42,12 +44,16 @@ export function LessonCardsTab({ classes, onCreateClass }: LessonCardsTabProps) 
   const [editCard, setEditCard] = useState<LessonCard | null>(null);
   const [deleteCard, setDeleteCard] = useState<LessonCard | null>(null);
 
-  // Geen effect nodig: `selected` valt terug op de eerste kaart zolang er niets
-  // expliciet gekozen is (de lijst-highlight volgt `selected`).
-  const selected = useMemo(
-    () => cards.find((c) => c.id === selectedId) ?? cards[0] ?? null,
-    [cards, selectedId],
-  );
+  // Geen effect nodig: `selected` valt terug op de deeplink-kaart (indien nog
+  // niets expliciet gekozen), anders op de eerste kaart. De highlight volgt dit.
+  const selected = useMemo(() => {
+    if (selectedId) return cards.find((c) => c.id === selectedId) ?? cards[0] ?? null;
+    if (initialSelectKey) {
+      const match = cards.find((c) => c.builtinKey === initialSelectKey);
+      if (match) return match;
+    }
+    return cards[0] ?? null;
+  }, [cards, selectedId, initialSelectKey]);
 
   const handleSave = async (input: LessonCardInput) => {
     if (editCard) {

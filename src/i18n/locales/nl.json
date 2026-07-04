@@ -1275,6 +1275,10 @@
       "soon": "Binnenkort",
       "soonDetail": "Deze leskaart komt binnenkort beschikbaar. Kies links Robotfabriek om een uitgewerkt voorbeeld te zien.",
       "download": "Download pdf",
+      "openForClass": "Open voor je klas",
+      "goalLabel": "Lesdoel.",
+      "phasesTitle": "Fasen",
+      "empty": "Leskaarten worden binnenkort geladen.",
       "robotfactory": {
         "level": "Groep 6–7",
         "title": "Robotfabriek",

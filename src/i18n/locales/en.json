@@ -1275,6 +1275,10 @@
       "soon": "Coming soon",
       "soonDetail": "This lesson card is coming soon. Pick Robot factory on the left to see a worked example.",
       "download": "Download pdf",
+      "openForClass": "Open for your class",
+      "goalLabel": "Goal.",
+      "phasesTitle": "Phases",
+      "empty": "Lesson cards are loading soon.",
       "robotfactory": {
         "level": "Grade 6–7",
         "title": "Robot factory",

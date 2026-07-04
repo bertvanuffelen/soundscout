@@ -102,6 +102,11 @@ interface AppStore {
   setPendingAssignment: (pending: PendingAssignment) => void;
   clearPendingAssignment: () => void;
   goToAssignmentLanding: (pending: PendingAssignment) => void;
+
+  // Leskaart activeren vanaf de landingspagina: builtin_key overleeft de
+  // login-hop; het dashboard opent dan de Leskaarten-tab op deze kaart.
+  pendingLessonCardKey: string | null;
+  setPendingLessonCardKey: (key: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -122,6 +127,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   submissionSynced: false,
   isSubmitting: false,
   pendingAssignment: null,
+  pendingLessonCardKey: null,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -129,7 +135,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -188,5 +194,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   // Assignment landing actions (#78)
   setPendingAssignment: (pending) => set({ pendingAssignment: pending }),
   clearPendingAssignment: () => set({ pendingAssignment: null }),
+
+  setPendingLessonCardKey: (key) => set({ pendingLessonCardKey: key }),
   goToAssignmentLanding: (pending) => set({ currentScreen: 'assignment-landing', pendingAssignment: pending }),
 }));

@@ -8,7 +8,7 @@
  * - Mogelijkheid om klas te openen voor details
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Loader2, BookOpen, Plus, LogOut, FileText, MapPin, ClipboardList, Clapperboard, GraduationCap, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
@@ -72,8 +72,17 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editCard, setEditCard] = useState<Opdrachtkaart | null>(null);
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
-  // Tabs: Mijn klassen / Mijn opdrachten / Leskaarten. Standaard klassen.
-  const [activeTab, setActiveTab] = useState<'classes' | 'assignments' | 'lessons'>('classes');
+  // Leskaart-deeplink vanaf de landingspagina (?lesson=<builtin_key>): open de
+  // Leskaarten-tab op die kaart. Eenmalig lezen bij mount, daarna wissen.
+  const [initialLessonKey] = useState<string | null>(() => useAppStore.getState().pendingLessonCardKey);
+  useEffect(() => {
+    if (initialLessonKey) useAppStore.getState().setPendingLessonCardKey(null);
+  }, [initialLessonKey]);
+
+  // Tabs: Mijn klassen / Mijn opdrachten / Leskaarten. Deeplink → leskaarten.
+  const [activeTab, setActiveTab] = useState<'classes' | 'assignments' | 'lessons'>(
+    initialLessonKey ? 'lessons' : 'classes',
+  );
 
   // Storyboards zijn vaste app-content (geen hook/CRUD) — alleen-lezen lijst.
   const storyboards = getAllMultiImageStoryboards();
@@ -534,7 +543,11 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
 
         {/* ===== Tab: Leskaarten ===== */}
         {activeTab === 'lessons' && (
-          <LessonCardsTab classes={classes} onCreateClass={createClass} />
+          <LessonCardsTab
+            classes={classes}
+            onCreateClass={createClass}
+            initialSelectKey={initialLessonKey}
+          />
         )}
       </main>
 

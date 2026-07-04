@@ -13,9 +13,9 @@
  * 1) via lokale React-state.
  */
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileDown, Bot, Film, Music, type LucideIcon } from 'lucide-react';
+import { FileDown, Film, Music, MapPin, FileText, Play, Loader2, type LucideIcon } from 'lucide-react';
 import { Button, Card } from '../components/ui';
 import { cn } from '../utils/cn';
 import { HeroPreview } from '../components/teacher-landing/HeroPreview';
@@ -24,6 +24,20 @@ import {
   COMPOSE_VARIANTS,
   type ComposeVariant,
 } from '../components/teacher-landing/composeVariants';
+import { fetchBuiltinLessonCards, type PublicLessonCard } from '../lib/lessonCards';
+import type { AssignmentType } from '../lib/assignments';
+
+/**
+ * Navigeer van de losse landingsroute naar het docentgedeelte van de app
+ * (`/?screen=teacher`). Met een leskaart-sleutel opent het dashboard straks de
+ * Leskaarten-tab op die kaart (na login/registratie).
+ */
+function navigateToTeacherApp(lessonKey?: string) {
+  const url = new URL(window.location.origin);
+  url.searchParams.set('screen', 'teacher');
+  if (lessonKey) url.searchParams.set('lesson', lessonKey);
+  window.location.href = url.toString();
+}
 
 export default function TeacherLandingPage() {
   const [activeVariant, setActiveVariant] = useState<ComposeVariant>('praatplaat');
@@ -59,11 +73,20 @@ function HeroSection({ activeVariant }: { activeVariant: ComposeVariant }) {
           {t('teacherLanding.hero.subtitle')}
         </p>
         <div className="flex flex-col sm:flex-row gap-3 mt-1">
-          {/* Placeholder-CTA's — koppeling aan login/registratie volgt in stap 2 */}
-          <Button variant="primary" size="lg" className="rounded-full w-full sm:w-auto">
+          <Button
+            variant="primary"
+            size="lg"
+            className="rounded-full w-full sm:w-auto"
+            onClick={() => navigateToTeacherApp()}
+          >
             {t('teacherLanding.hero.ctaPrimary')}
           </Button>
-          <Button variant="secondary" size="lg" className="rounded-full w-full sm:w-auto">
+          <Button
+            variant="secondary"
+            size="lg"
+            className="rounded-full w-full sm:w-auto"
+            onClick={() => navigateToTeacherApp()}
+          >
             {t('teacherLanding.hero.ctaSecondary')}
           </Button>
         </div>
@@ -204,9 +227,12 @@ function StepsSection() {
         ))}
       </div>
       <div className="flex justify-center">
-        {/* Placeholder — redirect-wiring in stap 2 (auth):
-            → /?screen=teacher; TeacherPage toont zelf login als uitgelogd. */}
-        <Button variant="primary" size="lg" className="rounded-full">
+        <Button
+          variant="primary"
+          size="lg"
+          className="rounded-full"
+          onClick={() => navigateToTeacherApp()}
+        >
           {t('teacherLanding.steps.ctaDashboard')}
         </Button>
       </div>
@@ -214,18 +240,40 @@ function StepsSection() {
   );
 }
 
-// --- Sectie 5: Kant-en-klare leskaarten (master-detail) ---
-type LessonId = 'robotfactory' | 'storyboard' | 'free';
+// --- Sectie 5: Kant-en-klare leskaarten (master-detail, DB-gedreven) ---
+// Leest de ingebouwde leskaarten publiek via get_builtin_lesson_cards() → één
+// bron van waarheid met het docentendashboard. "Open voor je klas" stuurt de
+// docent naar het dashboard (met login) om de leskaart in één klik te activeren.
 
-const LESSONS: Array<{ id: LessonId; Icon: LucideIcon; available: boolean }> = [
-  { id: 'robotfactory', Icon: Bot, available: true },
-  { id: 'storyboard', Icon: Film, available: false },
-  { id: 'free', Icon: Music, available: false },
-];
+const LESSON_TYPE_ICON: Record<AssignmentType, LucideIcon> = {
+  praatplaat: MapPin,
+  storyboard: Film,
+  free: Music,
+  template: FileText,
+};
+
+const LESSON_TYPE_TAG: Record<AssignmentType, { labelKey: string; classes: string }> = {
+  praatplaat: { labelKey: 'templates.typePraatplaat', classes: 'bg-teal-50 text-teal-600' },
+  storyboard: { labelKey: 'templates.typeStoryboard', classes: 'bg-purple-50 text-purple-600' },
+  free: { labelKey: 'templates.typeFree', classes: 'bg-rose-50 text-rose-600' },
+  template: { labelKey: 'templates.typeTemplate', classes: 'bg-accent-50 text-accent-700' },
+};
 
 function LessonsSection() {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<LessonId>('robotfactory');
+  const [lessons, setLessons] = useState<PublicLessonCard[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchBuiltinLessonCards()
+      .then((data) => { if (!cancelled) { setLessons(data); setLoading(false); } })
+      .catch(() => { if (!cancelled) setLoading(false); });
+    return () => { cancelled = true; };
+  }, []);
+
+  const selected = lessons.find((l) => l.id === selectedId) ?? lessons[0] ?? null;
 
   return (
     <section className="flex flex-col gap-6 sm:gap-8">
@@ -233,117 +281,115 @@ function LessonsSection() {
         {t('teacherLanding.lessons.title')}
       </h2>
 
-      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,18rem)_1fr] gap-4 sm:gap-6 items-start">
-        {/* Links: selecteerbare lijst */}
-        <div className="flex flex-col gap-3">
-          {LESSONS.map(({ id, Icon, available }) => {
-            const isActive = id === selected;
-            return (
-              <button
-                key={id}
-                type="button"
-                aria-pressed={isActive}
-                onClick={() => setSelected(id)}
-                className={cn(
-                  'flex items-center gap-3 text-left p-4 rounded-2xl border-2 bg-bg-surface',
-                  'transition-all duration-200 min-h-[44px] cursor-pointer',
-                  isActive ? 'border-brand-300 shadow-md' : 'border-border-subtle hover:shadow-sm'
-                )}
-              >
-                <span className="text-text-muted flex-shrink-0">
-                  <Icon size={22} />
-                </span>
-                <span className="flex flex-col">
-                  <span className="font-bold text-text-main leading-tight">
-                    {t(`teacherLanding.lessons.${id}.title`)}
-                  </span>
-                  <span className="text-xs text-text-muted">
-                    {available
-                      ? t('teacherLanding.lessons.robotfactory.level')
-                      : t('teacherLanding.lessons.soon')}
-                  </span>
-                </span>
-              </button>
-            );
-          })}
+      {loading ? (
+        <div className="flex justify-center py-10">
+          <Loader2 className="w-7 h-7 text-accent-500 animate-spin" />
         </div>
+      ) : lessons.length === 0 ? (
+        <p className="text-center text-text-muted">{t('teacherLanding.lessons.empty')}</p>
+      ) : (
+        <div className="grid grid-cols-1 md:grid-cols-[minmax(0,18rem)_1fr] gap-4 sm:gap-6 items-start">
+          {/* Links: selecteerbare lijst */}
+          <div className="flex flex-col gap-3">
+            {lessons.map((lesson) => {
+              const isActive = selected?.id === lesson.id;
+              const Icon = LESSON_TYPE_ICON[lesson.assignmentType];
+              return (
+                <button
+                  key={lesson.id}
+                  type="button"
+                  aria-pressed={isActive}
+                  onClick={() => setSelectedId(lesson.id)}
+                  className={cn(
+                    'flex items-center gap-3 text-left p-4 rounded-2xl border-2 bg-bg-surface',
+                    'transition-all duration-200 min-h-[44px] cursor-pointer',
+                    isActive ? 'border-brand-300 shadow-md' : 'border-border-subtle hover:shadow-sm'
+                  )}
+                >
+                  <span className="text-text-muted flex-shrink-0">
+                    <Icon size={22} />
+                  </span>
+                  <span className="flex flex-col min-w-0">
+                    <span className="font-bold text-text-main leading-tight truncate">
+                      {lesson.title}
+                    </span>
+                    {lesson.level && (
+                      <span className="text-xs text-text-muted truncate">{lesson.level}</span>
+                    )}
+                  </span>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Rechts: detail in kader */}
-        <Card padding="lg" className="border border-border-subtle">
-          {selected === 'robotfactory' ? (
-            <RobotfactoryDetail />
-          ) : (
-            <SoonDetail title={t(`teacherLanding.lessons.${selected}.title`)} />
-          )}
-        </Card>
-      </div>
+          {/* Rechts: detail in kader */}
+          <Card padding="lg" className="border border-border-subtle">
+            {selected && <LessonDetail lesson={selected} />}
+          </Card>
+        </div>
+      )}
     </section>
   );
 }
 
-function RobotfactoryDetail() {
+function LessonDetail({ lesson }: { lesson: PublicLessonCard }) {
   const { t } = useTranslation();
-  const phases = ['orient', 'research', 'perform', 'evaluate'] as const;
+  const tag = LESSON_TYPE_TAG[lesson.assignmentType];
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 flex-wrap">
-          <h3 className="text-xl font-extrabold text-text-main">
-            {t('teacherLanding.lessons.robotfactory.title')}
-          </h3>
-          <span className="inline-flex items-center rounded-full bg-teal-50 text-teal-600 text-xs font-bold px-2.5 py-0.5">
-            {t('teacherLanding.lessons.robotfactory.tag')}
+          <h3 className="text-xl font-extrabold text-text-main">{lesson.title}</h3>
+          <span className={cn('inline-flex items-center rounded-full text-xs font-bold px-2.5 py-0.5', tag.classes)}>
+            {t(tag.labelKey)}
           </span>
         </div>
-        <p className="text-sm text-text-muted">
-          {t('teacherLanding.lessons.robotfactory.subtitle')}
+        {lesson.level && <p className="text-sm text-text-muted">{lesson.level}</p>}
+      </div>
+
+      {lesson.lessonGoal && (
+        <p className="text-sm sm:text-base text-text-main leading-relaxed">
+          <span className="font-bold">{t('teacherLanding.lessons.goalLabel')} </span>
+          {lesson.lessonGoal}
         </p>
+      )}
+
+      {lesson.phases.length > 0 && (
+        <div className="flex flex-col gap-2">
+          <h4 className="font-bold text-text-main">{t('teacherLanding.lessons.phasesTitle')}</h4>
+          <ul className="flex flex-col gap-2">
+            {lesson.phases.map((p, i) => (
+              <li key={i} className="border-l-2 border-accent-400 pl-3 text-sm sm:text-base">
+                <span className="font-bold text-text-main">{p.name}</span>
+                {p.name && p.text ? <span className="text-text-muted">{' — '}{p.text}</span> : null}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+
+      <div className="flex flex-wrap gap-3 mt-1">
+        <Button
+          variant="primary"
+          size="md"
+          className="rounded-full"
+          onClick={() => navigateToTeacherApp(lesson.builtinKey)}
+        >
+          <Play className="w-4 h-4 mr-2" />
+          {t('teacherLanding.lessons.openForClass')}
+        </Button>
+        {lesson.pdfUrl && (
+          <a
+            href={lesson.pdfUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center rounded-full px-5 py-2.5 text-sm font-semibold border border-border-subtle text-text-main hover:bg-neutral-50 transition-colors"
+          >
+            <FileDown className="w-4 h-4 mr-2" />
+            {t('teacherLanding.lessons.download')}
+          </a>
+        )}
       </div>
-
-      <p className="text-sm sm:text-base text-text-main leading-relaxed">
-        <span className="font-bold">{t('teacherLanding.lessons.robotfactory.goalLabel')} </span>
-        {t('teacherLanding.lessons.robotfactory.goal')}
-      </p>
-
-      <div className="flex flex-col gap-2">
-        <h4 className="font-bold text-text-main">
-          {t('teacherLanding.lessons.robotfactory.phasesTitle')}
-        </h4>
-        <ul className="flex flex-col gap-2">
-          {phases.map((p) => (
-            <li key={p} className="border-l-2 border-accent-400 pl-3 text-sm sm:text-base">
-              <span className="font-bold text-text-main">
-                {t(`teacherLanding.lessons.robotfactory.phases.${p}.name`)}
-              </span>
-              <span className="text-text-muted">
-                {' — '}
-                {t(`teacherLanding.lessons.robotfactory.phases.${p}.text`)}
-              </span>
-            </li>
-          ))}
-        </ul>
-      </div>
-
-      {/* Placeholder-download — echte PDF komt apart */}
-      <Button variant="primary" size="md" className="rounded-full self-start mt-1">
-        <FileDown className="w-4 h-4 mr-2" />
-        {t('teacherLanding.lessons.download')}
-      </Button>
-    </div>
-  );
-}
-
-function SoonDetail({ title }: { title: string }) {
-  const { t } = useTranslation();
-  return (
-    <div className="flex flex-col gap-3 items-start">
-      <span className="inline-flex items-center rounded-full bg-neutral-100 text-text-muted text-xs font-bold px-2.5 py-0.5">
-        {t('teacherLanding.lessons.soon')}
-      </span>
-      <h3 className="text-xl font-extrabold text-text-main">{title}</h3>
-      <p className="text-sm text-text-muted leading-relaxed">
-        {t('teacherLanding.lessons.soonDetail')}
-      </p>
     </div>
   );
 }

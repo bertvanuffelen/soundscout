@@ -51,6 +51,19 @@ export interface LessonCard {
   createdAt: string;
 }
 
+/** Publieke (marketing) weergave van een ingebouwde leskaart — landingspagina. */
+export interface PublicLessonCard {
+  id: string;
+  builtinKey: string;
+  assignmentType: AssignmentType;
+  title: string;
+  level: string | null;
+  lessonGoal: string | null;
+  phases: LessonPhase[];
+  coverImage: string | null;
+  pdfUrl: string | null;
+}
+
 /** Invoer voor het aanmaken/bijwerken van een docent-eigen leskaart. */
 export interface LessonCardInput {
   assignmentType: AssignmentType;
@@ -257,6 +270,46 @@ export async function deleteLessonCard(id: string): Promise<void> {
     logger.error('Leskaart verwijderen mislukt:', sanitizeError(error));
     throw new Error('Kon leskaart niet verwijderen');
   }
+}
+
+/**
+ * Haal de ingebouwde leskaarten op voor de publieke landingspagina (geen login).
+ * Gebruikt een SECURITY DEFINER-RPC zodat de tabel dicht blijft.
+ */
+export async function fetchBuiltinLessonCards(): Promise<PublicLessonCard[]> {
+  const supabase = await getSupabase();
+  const { data, error } = await withTimeout(
+    supabase.rpc('get_builtin_lesson_cards'),
+    15_000,
+    'errors.networkTimeout',
+  );
+
+  if (error) {
+    logger.error('get_builtin_lesson_cards error:', sanitizeError(error));
+    return [];
+  }
+
+  return (data as Array<{
+    id: string;
+    builtin_key: string;
+    assignment_type: AssignmentType;
+    title: string;
+    level: string | null;
+    lesson_goal: string | null;
+    phases: unknown;
+    cover_image: string | null;
+    pdf_url: string | null;
+  }> | null ?? []).map((row) => ({
+    id: row.id,
+    builtinKey: row.builtin_key,
+    assignmentType: row.assignment_type,
+    title: row.title,
+    level: row.level,
+    lessonGoal: row.lesson_goal,
+    phases: parsePhases(row.phases),
+    coverImage: row.cover_image,
+    pdfUrl: row.pdf_url,
+  }));
 }
 
 /**
