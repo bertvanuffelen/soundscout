@@ -487,6 +487,7 @@
     "changeAssignment": "Wijzig opdracht",
     "pickPrompt": "Kies wat je klas gaat doen. Leerlingen met code {{code}} komen er direct in.",
     "previewLabel": "Voorbeeld",
+    "previewEmpty": "Kies links een optie om een voorbeeld te zien.",
     "activatedMessage": "Opdracht is actief! Leerlingen voeren deze klascode in:",
     "noActiveTitle": "Geen actieve opdracht",
     "noActiveExplain": "Er staat niets klaar voor deze klas. Leerlingen die code {{code}} invoeren kunnen nu vrij componeren. Kies hieronder een opdracht om er wél iets voor klaar te zetten.",

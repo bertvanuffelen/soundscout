@@ -113,8 +113,76 @@ export function ActivateAssignmentModal({
     }
   };
 
+  // Lijst met keuze-opties (links). Eén type per keer in de type-first flow;
+  // de sectiekopjes tonen alleen in de legacy "alles"-weergave.
+  const optionList = (
+    <>
+      {/* Templates */}
+      {showTemplates && (
+        <>
+          {!scoped && activeTemplates.length > 0 && (
+            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1">
+              {t('templates.typeTemplate')}
+            </p>
+          )}
+          {activeTemplates.map((tmpl) => (
+            <TemplateOption
+              key={tmpl.id}
+              template={tmpl}
+              isSelected={selected?.type === 'template' && selected.id === tmpl.id}
+              onSelect={() => setSelected({ type: 'template', id: tmpl.id })}
+            />
+          ))}
+          {scoped && activeTemplates.length === 0 && (
+            <p className="text-text-muted text-sm text-center py-6">
+              {t('templates.templatesEmpty')}
+            </p>
+          )}
+        </>
+      )}
+
+      {/* Praatplaat-catalogus */}
+      {showPraatplaten && (
+        <>
+          {!scoped && praatplaatCatalog.length > 0 && (
+            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
+              {t('templates.typePraatplaat')}
+            </p>
+          )}
+          {praatplaatCatalog.map((entry) => (
+            <PraatplaatCatalogOption
+              key={entry.ref}
+              entry={entry}
+              isSelected={selected?.type === 'praatplaat' && selected.id === entry.ref}
+              onSelect={() => setSelected({ type: 'praatplaat', id: entry.ref })}
+            />
+          ))}
+        </>
+      )}
+
+      {/* Storyboards (app-content) */}
+      {showStoryboards && (
+        <>
+          {!scoped && storyboards.length > 0 && (
+            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
+              {t('templates.typeStoryboard')}
+            </p>
+          )}
+          {storyboards.map((sb) => (
+            <StoryboardOption
+              key={sb.storyboard.id}
+              storyboard={sb}
+              isSelected={selected?.type === 'storyboard' && selected.id === sb.storyboard.id}
+              onSelect={() => setSelected({ type: 'storyboard', id: sb.storyboard.id })}
+            />
+          ))}
+        </>
+      )}
+    </>
+  );
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} size="md">
+    <Modal isOpen={isOpen} onClose={onClose} title={modalTitle} size="xl">
       {!scoped && (
         <p className="text-text-muted text-sm mb-4">
           {t('assignments.chooseDescription')}
@@ -127,102 +195,44 @@ export function ActivateAssignmentModal({
         </div>
       )}
 
-      {/* Content */}
-      <div className="max-h-[50vh] overflow-y-auto space-y-2">
-        {loading && (
-          <div className="text-center py-8">
-            <Loader2 className="w-6 h-6 text-accent-500 animate-spin mx-auto" />
-          </div>
-        )}
-
-        {/* Templates */}
-        {!loading && showTemplates && (
-          <>
-            {!scoped && activeTemplates.length > 0 && (
-              <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1">
-                {t('templates.typeTemplate')}
-              </p>
-            )}
-            {activeTemplates.map((tmpl) => (
-              <TemplateOption
-                key={tmpl.id}
-                template={tmpl}
-                isSelected={selected?.type === 'template' && selected.id === tmpl.id}
-                onSelect={() => setSelected({ type: 'template', id: tmpl.id })}
-              />
-            ))}
-            {scoped && activeTemplates.length === 0 && (
-              <p className="text-text-muted text-sm text-center py-6">
-                {t('templates.templatesEmpty')}
-              </p>
-            )}
-          </>
-        )}
-
-        {/* Praatplaat-catalogus */}
-        {!loading && showPraatplaten && (
-          <>
-            {!scoped && praatplaatCatalog.length > 0 && (
-              <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
-                {t('templates.typePraatplaat')}
-              </p>
-            )}
-            {praatplaatCatalog.map((entry) => (
-              <PraatplaatCatalogOption
-                key={entry.ref}
-                entry={entry}
-                isSelected={selected?.type === 'praatplaat' && selected.id === entry.ref}
-                onSelect={() => setSelected({ type: 'praatplaat', id: entry.ref })}
-              />
-            ))}
-          </>
-        )}
-
-        {/* Storyboards (app-content) */}
-        {!loading && showStoryboards && (
-          <>
-            {!scoped && storyboards.length > 0 && (
-              <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
-                {t('templates.typeStoryboard')}
-              </p>
-            )}
-            {storyboards.map((sb) => (
-              <StoryboardOption
-                key={sb.storyboard.id}
-                storyboard={sb}
-                isSelected={selected?.type === 'storyboard' && selected.id === sb.storyboard.id}
-                onSelect={() => setSelected({ type: 'storyboard', id: sb.storyboard.id })}
-              />
-            ))}
-          </>
-        )}
-      </div>
-
-      {/* Voorbeeldpaneel: beweegt mee met de selectie */}
-      {!loading && previewImage && (
-        <div className="mt-4 pt-4 border-t border-border-subtle">
-          <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">
-            {t('assignments.previewLabel')}
-          </label>
-          <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video border border-border-subtle">
-            <img src={previewImage} alt="" className="w-full h-full object-cover" />
-          </div>
-          {selectedStoryboard && selectedStoryboard.images.length > 1 && (
-            <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
-              {selectedStoryboard.images.map((img) => (
-                <img
-                  key={img.id}
-                  src={img.url}
-                  alt=""
-                  className="w-16 h-12 rounded-md object-cover shrink-0 border border-border-subtle"
-                />
-              ))}
-            </div>
-          )}
+      {loading && (
+        <div className="text-center py-12">
+          <Loader2 className="w-6 h-6 text-accent-500 animate-spin mx-auto" />
         </div>
       )}
 
-      {/* Opdrachtkaart-keuze (vorm-onafhankelijk) */}
+      {/* Twee kolommen: links de scrollbare keuzelijst, rechts het voorbeeld.
+          Op mobiel stapelt de lijst boven, met het voorbeeld eronder. */}
+      {!loading && (
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Kolom 1 — scrollbare optielijst (eigen scroll-container) */}
+          <div className="space-y-2 max-h-[30dvh] md:max-h-[48dvh] overflow-y-auto pr-1 -mr-1">
+            {optionList}
+          </div>
+
+          {/* Kolom 2 — voorbeeldpaneel (alleen desktop; mobiel hieronder) */}
+          <div className="hidden md:block">
+            <div className="sticky top-0">
+              {previewImage ? (
+                <PreviewPanel previewImage={previewImage} storyboard={selectedStoryboard} />
+              ) : (
+                <div className="rounded-xl border border-dashed border-border-subtle bg-neutral-50 aspect-video flex items-center justify-center px-6 text-center">
+                  <p className="text-text-muted text-sm">{t('assignments.previewEmpty')}</p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Voorbeeld op mobiel: onder de lijst, alleen bij selectie */}
+      {!loading && previewImage && (
+        <div className="md:hidden mt-4 pt-4 border-t border-border-subtle">
+          <PreviewPanel previewImage={previewImage} storyboard={selectedStoryboard} />
+        </div>
+      )}
+
+      {/* Opdrachtkaart-keuze (vorm-onafhankelijk) — volle breedte */}
       {!loading && (
         <div className="mt-4 pt-4 border-t border-border-subtle">
           <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">
@@ -262,6 +272,40 @@ export function ActivateAssignmentModal({
         </Button>
       </div>
     </Modal>
+  );
+}
+
+// --- Voorbeeldpaneel ---
+
+function PreviewPanel({
+  previewImage,
+  storyboard,
+}: {
+  previewImage: string;
+  storyboard: { images: { id: string; url: string }[] } | null;
+}) {
+  const { t } = useTranslation();
+  return (
+    <div>
+      <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">
+        {t('assignments.previewLabel')}
+      </label>
+      <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video border border-border-subtle">
+        <img src={previewImage} alt="" className="w-full h-full object-cover" />
+      </div>
+      {storyboard && storyboard.images.length > 1 && (
+        <div className="flex gap-1.5 mt-2 overflow-x-auto pb-1">
+          {storyboard.images.map((img) => (
+            <img
+              key={img.id}
+              src={img.url}
+              alt=""
+              className="w-16 h-12 rounded-md object-cover shrink-0 border border-border-subtle"
+            />
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
