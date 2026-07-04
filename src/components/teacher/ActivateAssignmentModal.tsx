@@ -7,10 +7,11 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileText, MapPin, Clapperboard, Check, Loader2 } from 'lucide-react';
+import { FileText, MapPin, Clapperboard, Music, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
-import { getAllMultiImageStoryboards, type StoryboardWithTheme } from '../../data/themes';
+import { getAllMultiImageStoryboards, getAssignableThemes, type StoryboardWithTheme } from '../../data/themes';
+import type { ThemeConfig } from '../../data/themes';
 import { getPraatplaatCatalog, type PraatplaatCatalogEntry } from '../../data/praatplaatCatalog';
 import type { AssignmentType } from '../../lib/assignments';
 import type { TeacherTemplate } from '../../lib/templates';
@@ -26,6 +27,8 @@ interface ActivateAssignmentModalProps {
     cardId?: string | null,
   ) => Promise<void>;
   onActivateStoryboard: (storyboardRef: string, cardId?: string | null) => Promise<void>;
+  /** Activeer een vrije-compositie-opdracht binnen het gekozen thema. */
+  onActivateFree: (themeId: string, cardId?: string | null) => Promise<void>;
   /** Beperk de modal tot één opdracht-type. Undefined = alle types (legacy). */
   typeFilter?: AssignmentType;
 }
@@ -34,11 +37,13 @@ type Selection =
   | { type: 'template'; id: string }
   | { type: 'praatplaat'; id: string }
   | { type: 'storyboard'; id: string }
+  | { type: 'free'; id: string }
   | null;
 
 // App-content (registry/catalogus) — voor elke docent hetzelfde, geen hook nodig.
 const storyboards: StoryboardWithTheme[] = getAllMultiImageStoryboards();
 const praatplaatCatalog: PraatplaatCatalogEntry[] = getPraatplaatCatalog();
+const assignableThemes: ThemeConfig[] = getAssignableThemes();
 
 export function ActivateAssignmentModal({
   isOpen,
@@ -46,6 +51,7 @@ export function ActivateAssignmentModal({
   onActivateTemplate,
   onActivatePraatplaatFromCatalog,
   onActivateStoryboard,
+  onActivateFree,
   typeFilter,
 }: ActivateAssignmentModalProps) {
   const { t } = useTranslation();
@@ -72,17 +78,25 @@ export function ActivateAssignmentModal({
   const showTemplates = !typeFilter || typeFilter === 'template';
   const showPraatplaten = !typeFilter || typeFilter === 'praatplaat';
   const showStoryboards = !typeFilter || typeFilter === 'storyboard';
+  const showFree = !typeFilter || typeFilter === 'free';
   const scoped = !!typeFilter;
   const modalTitle = typeFilter ? t(`assignments.types.${typeFilter}.pickTitle`) : t('assignments.chooseTitle');
 
-  // Voorbeeldpaneel: grote weergave van het geselecteerde item (praatplaat/storyboard).
+  // Voorbeeldpaneel: grote weergave van het geselecteerde item.
   const selectedPraatplaat = selected?.type === 'praatplaat'
     ? praatplaatCatalog.find((e) => e.ref === selected.id) ?? null
     : null;
   const selectedStoryboard = selected?.type === 'storyboard'
     ? storyboards.find((s) => s.storyboard.id === selected.id)?.storyboard ?? null
     : null;
-  const previewImage = selectedPraatplaat?.imageUrl ?? selectedStoryboard?.coverImage ?? null;
+  const selectedFreeTheme = selected?.type === 'free'
+    ? assignableThemes.find((th) => th.id === selected.id) ?? null
+    : null;
+  const previewImage =
+    selectedPraatplaat?.imageUrl ??
+    selectedStoryboard?.coverImage ??
+    selectedFreeTheme?.map.backgroundImage ??
+    null;
 
   const handleConfirm = async () => {
     if (!selected) return;
@@ -100,8 +114,10 @@ export function ActivateAssignmentModal({
             cardId,
           );
         }
-      } else {
+      } else if (selected.type === 'storyboard') {
         await onActivateStoryboard(selected.id, cardId);
+      } else {
+        await onActivateFree(selected.id, cardId);
       }
       setSelected(null);
       setSelectedCardId('');
@@ -174,6 +190,25 @@ export function ActivateAssignmentModal({
               storyboard={sb}
               isSelected={selected?.type === 'storyboard' && selected.id === sb.storyboard.id}
               onSelect={() => setSelected({ type: 'storyboard', id: sb.storyboard.id })}
+            />
+          ))}
+        </>
+      )}
+
+      {/* Vrije compositie — thema-keuze */}
+      {showFree && (
+        <>
+          {!scoped && assignableThemes.length > 0 && (
+            <p className="text-xs font-medium text-text-muted uppercase tracking-wide px-1 mt-3">
+              {t('templates.typeFree')}
+            </p>
+          )}
+          {assignableThemes.map((theme) => (
+            <FreeThemeOption
+              key={theme.id}
+              theme={theme}
+              isSelected={selected?.type === 'free' && selected.id === theme.id}
+              onSelect={() => setSelected({ type: 'free', id: theme.id })}
             />
           ))}
         </>
@@ -412,6 +447,42 @@ function StoryboardOption({
           <p className="text-text-muted text-xs flex items-center gap-1">
             <Clapperboard className="w-3 h-3" />
             {t('assignmentLanding.template.storyboardCount', { count: sb.images.length })}
+          </p>
+        </div>
+        {isSelected && <Check className="w-4 h-4 text-accent-500 shrink-0" />}
+      </div>
+    </button>
+  );
+}
+
+function FreeThemeOption({
+  theme,
+  isSelected,
+  onSelect,
+}: {
+  theme: ThemeConfig;
+  isSelected: boolean;
+  onSelect: () => void;
+}) {
+  const { t } = useTranslation();
+  return (
+    <button
+      onClick={onSelect}
+      className={`w-full text-left px-3 py-3 rounded-xl border transition-colors ${
+        isSelected
+          ? 'border-accent-500 bg-accent-50'
+          : 'border-border-subtle bg-white hover:border-accent-300'
+      }`}
+    >
+      <div className="flex items-center gap-3">
+        <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
+          <img src={theme.map.backgroundImage} alt={t(theme.name)} className="w-full h-full object-cover" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="font-medium text-text-main text-sm truncate">{t(theme.name)}</p>
+          <p className="text-text-muted text-xs flex items-center gap-1">
+            <Music className="w-3 h-3" />
+            {t('templates.typeFree')}
           </p>
         </div>
         {isSelected && <Check className="w-4 h-4 text-accent-500 shrink-0" />}

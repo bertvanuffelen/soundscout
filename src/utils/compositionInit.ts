@@ -404,6 +404,25 @@ export async function activatePendingAssignment(): Promise<void> {
     return;
   }
 
+  if (assignment.type === 'free' && assignment.free) {
+    // Klascode-sessie vastleggen — assignmentId draagt de thema-id (geen UUID)
+    useAppStore.getState().setClassSession({
+      classCode,
+      classId: assignment.classId,
+      className: assignment.className,
+      assignmentType: 'free',
+      assignmentId: assignment.free.themeId,
+      assignmentName: assignment.free.themeName,
+    });
+
+    // Vrije compositie binnen het gekozen thema: geen praatplaat/storyboard-
+    // context. Zet compose-mode 'free' → initializeNewComposition navigeert
+    // direct naar de map zodat de leerling geluiden kan verzamelen.
+    useAppStore.getState().setComposeMode('free');
+    await initializeNewComposition({ themeId: assignment.free.themeId });
+    return;
+  }
+
   logger.warn('[activatePendingAssignment] Onbekend assignment-type', { type: assignment.type });
 }
 

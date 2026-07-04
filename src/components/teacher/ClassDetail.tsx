@@ -29,40 +29,45 @@ interface ClassDetailProps {
   onBack: () => void;
 }
 
-type AssignmentKind = 'template' | 'praatplaat' | 'storyboard';
+type AssignmentKind = 'template' | 'praatplaat' | 'storyboard' | 'free';
 
 // Type-geleide presentatie (icoon/kleur/label) voor de opdracht-kaarten.
 const ASSIGNMENT_ICON = {
   template: FileText,
   praatplaat: MapPin,
   storyboard: Clapperboard,
+  free: Music,
 } as const;
 
 const ASSIGNMENT_LABEL_KEY = {
   template: 'templates.typeTemplate',
   praatplaat: 'templates.typePraatplaat',
   storyboard: 'templates.typeStoryboard',
+  free: 'templates.typeFree',
 } as const;
 
 // Kleurcodering per opdracht-type, in lijn met de compose-mode-kleuren van de
 // landingspagina: template = accent (amber), praatplaat = teal, storyboard =
-// paars. Zo zijn de drie types visueel duidelijk te onderscheiden.
+// paars, vrij = rose. Zo zijn de types visueel duidelijk te onderscheiden.
 const ASSIGNMENT_ICON_WRAP = {
   template: 'bg-accent-100 text-accent-700',
   praatplaat: 'bg-teal-100 text-teal-700',
   storyboard: 'bg-purple-100 text-purple-700',
+  free: 'bg-rose-100 text-rose-700',
 } as const;
 
 const ASSIGNMENT_BADGE = {
   template: 'bg-accent-100 text-accent-800',
   praatplaat: 'bg-teal-100 text-teal-700',
   storyboard: 'bg-purple-100 text-purple-700',
+  free: 'bg-rose-100 text-rose-700',
 } as const;
 
 const ASSIGNMENT_ICON_WRAP_SM = {
   template: 'bg-accent-100 text-accent-600',
   praatplaat: 'bg-teal-100 text-teal-600',
   storyboard: 'bg-purple-100 text-purple-600',
+  free: 'bg-rose-100 text-rose-600',
 } as const;
 
 export function ClassDetail({ classData, onBack }: ClassDetailProps) {
@@ -85,6 +90,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     activatePraatplaat: activatePraatplaatAssignment,
     activatePraatplaatFromCatalog: activatePraatplaatFromCatalogAssignment,
     activateStoryboard: activateStoryboardAssignment,
+    activateFree: activateFreeAssignment,
     deactivate: deactivateAssignment,
   } = useClassAssignment(classData.id);
 
@@ -128,6 +134,12 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     setTimeout(() => setShowActivatedCode(false), 8000);
   }, [activateStoryboardAssignment]);
 
+  const handleActivateFree = useCallback(async (themeId: string, cardId?: string | null) => {
+    await activateFreeAssignment(themeId, cardId);
+    setShowActivatedCode(true);
+    setTimeout(() => setShowActivatedCode(false), 8000);
+  }, [activateFreeAssignment]);
+
   // Heractiveer een eerdere opdracht direct (standaard-opdrachtkaart; de rij draagt geen card-info).
   const runReactivate = useCallback(async (row: ClassAssignmentRow) => {
     try {
@@ -137,11 +149,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         await handleActivatePraatplaat(row.praatplaatId);
       } else if (row.type === 'storyboard' && row.storyboardRef) {
         await handleActivateStoryboard(row.storyboardRef);
+      } else if (row.type === 'free' && row.freeThemeId) {
+        await handleActivateFree(row.freeThemeId);
       }
     } catch (err) {
       logger.error('Reactiveren mislukt:', err);
     }
-  }, [handleActivateTemplate, handleActivatePraatplaat, handleActivateStoryboard]);
+  }, [handleActivateTemplate, handleActivatePraatplaat, handleActivateStoryboard, handleActivateFree]);
 
   // Klik op een type-kaart. Staat er al een opdracht → eerst vervang-melding;
   // anders direct de type-gescoopte keuze-modal openen.
@@ -614,6 +628,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         onActivateTemplate={handleActivateTemplate}
         onActivatePraatplaatFromCatalog={handleActivatePraatplaatFromCatalog}
         onActivateStoryboard={handleActivateStoryboard}
+        onActivateFree={handleActivateFree}
       />
 
       {/* Vervang-bevestiging: nieuw type kiezen of eerdere opdracht heractiveren terwijl er al een opdracht actief is */}

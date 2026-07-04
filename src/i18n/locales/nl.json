@@ -513,6 +513,12 @@
         "title": "Template van docent",
         "description": "Een voorbereide compositie die leerlingen afmaken.",
         "pickTitle": "Kies een template"
+      },
+      "free": {
+        "tag": "Puur geluid",
+        "title": "Vrije compositie",
+        "description": "Leerlingen componeren vrij binnen een thema — enkel gericht op de geluiden.",
+        "pickTitle": "Kies een thema"
       }
     }
   },
@@ -563,6 +569,15 @@
           "Maak muziek die bij elke scène past.",
           "Klaar? Sla je compositie op."
         ]
+      },
+      "free": {
+        "title": "Zo werkt deze opdracht",
+        "bullets": [
+          "Verzamel geluiden op de kaart.",
+          "Experimenteer met de klanken.",
+          "Maak je eigen compositie.",
+          "Klaar? Sla je compositie op."
+        ]
       }
     }
   },
@@ -591,6 +606,7 @@
     "typeTemplate": "Template",
     "typePraatplaat": "Praatplaat",
     "typeStoryboard": "Verhaal in beeld",
+    "typeFree": "Vrije compositie",
     "copyCode": "Kopieer code",
     "active": "Actief",
     "inactive": "Inactief",
@@ -1125,6 +1141,10 @@
     "storyboard": {
       "kind": "Verhaal in beeld",
       "description": "Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart."
+    },
+    "free": {
+      "kind": "Vrije compositie",
+      "description": "Verzamel geluiden op de kaart en maak je eigen compositie. Laat je fantasie de vrije loop."
     },
     "none": {
       "heading": "Nog geen opdracht klaar",

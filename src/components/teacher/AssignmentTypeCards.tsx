@@ -7,7 +7,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { MapPin, Clapperboard, FileText, type LucideIcon } from 'lucide-react';
+import { MapPin, Clapperboard, FileText, Music, type LucideIcon } from 'lucide-react';
 import type { AssignmentType } from '../../lib/assignments';
 import { cn } from '../../utils/cn';
 
@@ -43,6 +43,13 @@ const TYPE_CARDS: TypeCardConfig[] = [
     icon: 'text-accent-500',
     tag: 'bg-accent-50 text-accent-700',
   },
+  {
+    type: 'free',
+    Icon: Music,
+    hover: 'hover:border-rose-400 hover:bg-rose-50',
+    icon: 'text-rose-500',
+    tag: 'bg-rose-50 text-rose-600',
+  },
 ];
 
 interface AssignmentTypeCardsProps {
@@ -54,7 +61,7 @@ export function AssignmentTypeCards({ onSelect, className }: AssignmentTypeCards
   const { t } = useTranslation();
 
   return (
-    <div className={cn('grid grid-cols-1 sm:grid-cols-3 gap-4', className)}>
+    <div className={cn('grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4', className)}>
       {TYPE_CARDS.map(({ type, Icon, hover, icon, tag }) => (
         <button
           key={type}

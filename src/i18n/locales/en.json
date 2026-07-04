@@ -513,6 +513,12 @@
         "title": "Teacher template",
         "description": "A prepared composition students finish.",
         "pickTitle": "Choose a template"
+      },
+      "free": {
+        "tag": "Pure sound",
+        "title": "Free composition",
+        "description": "Students compose freely within a theme — focused purely on the sounds.",
+        "pickTitle": "Choose a theme"
       }
     }
   },
@@ -563,6 +569,15 @@
           "Make music that fits each scene.",
           "Done? Save your composition."
         ]
+      },
+      "free": {
+        "title": "How this assignment works",
+        "bullets": [
+          "Collect sounds on the map.",
+          "Experiment with the sounds.",
+          "Create your own composition.",
+          "Done? Save your composition."
+        ]
       }
     }
   },
@@ -591,6 +606,7 @@
     "typeTemplate": "Template",
     "typePraatplaat": "Sound map",
     "typeStoryboard": "Story in pictures",
+    "typeFree": "Free composition",
     "copyCode": "Copy code",
     "active": "Active",
     "inactive": "Inactive",
@@ -1125,6 +1141,10 @@
     "storyboard": {
       "kind": "Story in pictures",
       "description": "Make music that fits each scene of this story. First collect sounds on the map."
+    },
+    "free": {
+      "kind": "Free composition",
+      "description": "Collect sounds on the map and create your own composition. Let your imagination run free."
     },
     "none": {
       "heading": "No assignment ready yet",

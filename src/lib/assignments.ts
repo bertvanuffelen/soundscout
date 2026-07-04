@@ -14,7 +14,7 @@ import { withTimeout } from '../utils/withTimeout';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
-import { findStoryboardById } from '../data/themes';
+import { findStoryboardById, getTheme } from '../data/themes';
 import i18n from '../i18n';
 import type { Template, TemplateLockOptions, OpdrachtkaartContent } from '../types';
 import { DEFAULT_LOCK_OPTIONS } from '../types';
@@ -22,7 +22,7 @@ import { DEFAULT_LOCK_OPTIONS } from '../types';
 // --- Types ---
 
 /** Assignment type discriminator */
-export type AssignmentType = 'template' | 'praatplaat' | 'storyboard';
+export type AssignmentType = 'template' | 'praatplaat' | 'storyboard' | 'free';
 
 /** Storyboard-opdracht info (registry-content, opgelost uit storyboard_ref) */
 export interface AssignmentStoryboard {
@@ -57,6 +57,20 @@ export interface ActiveAssignment {
   };
   // Storyboard fields (present when type = 'storyboard')
   storyboard?: AssignmentStoryboard;
+  // Free-composition fields (present when type = 'free')
+  free?: {
+    /** Theme-registry-id waarin de leerling vrij componeert */
+    themeId: string;
+    /** Leesbare themanaam (vertaald) */
+    themeName: string;
+  };
+}
+
+/** Los een thema-registry-id op naar een leesbare naam (via i18n-key). */
+function themeDisplayName(themeId: string | null | undefined): string {
+  if (!themeId) return 'Vrije compositie';
+  const theme = getTheme(themeId);
+  return theme ? i18n.t(theme.name) : themeId;
 }
 
 /** Class assignment row for teacher dashboard */
@@ -68,11 +82,12 @@ export interface ClassAssignmentRow {
   templateId: string | null;
   praatplaatId: string | null;
   storyboardRef: string | null;
+  freeThemeId: string | null;
   isActive: boolean;
   activatedAt: string;
   // Joined / resolved names
   assignmentName: string;
-  /** Preview-afbeelding: praatplaat-image (join) of storyboard-cover (registry); null bij template. */
+  /** Preview-afbeelding: praatplaat-image (join), storyboard-cover of thema-map (registry); null bij template. */
   imageUrl: string | null;
 }
 
@@ -238,6 +253,18 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
       };
     }
 
+    if (row.assignment_type === 'free') {
+      const themeId = String(payload.free_theme_id ?? '');
+      if (!themeId) return null;
+      return {
+        type: 'free',
+        classId: row.class_id,
+        className: row.class_name,
+        card,
+        free: { themeId, themeName: themeDisplayName(themeId) },
+      };
+    }
+
     return null;
   } catch (err) {
     logger.error('getActiveAssignment failed:', err);
@@ -253,7 +280,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
  */
 export async function activateAssignment(
   classId: string,
-  opts: { templateId?: string; praatplaatId?: string; storyboardRef?: string; cardId?: string | null },
+  opts: { templateId?: string; praatplaatId?: string; storyboardRef?: string; freeThemeId?: string; cardId?: string | null },
 ): Promise<string> {
   const supabase = await getSupabase();
   const { data, error } = await withTimeout(
@@ -263,6 +290,7 @@ export async function activateAssignment(
       p_praatplaat_id: opts.praatplaatId || null,
       p_storyboard_ref: opts.storyboardRef || null,
       p_card_id: opts.cardId || null,
+      p_free_theme_id: opts.freeThemeId || null,
     }),
     20_000,
     'errors.networkTimeout'
@@ -312,6 +340,7 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
         template_id,
         praatplaat_id,
         storyboard_ref,
+        free_theme_id,
         is_active,
         activated_at,
         templates:template_id ( name ),
@@ -343,6 +372,7 @@ interface RawAssignmentRow {
   template_id: string | null;
   praatplaat_id: string | null;
   storyboard_ref: string | null;
+  free_theme_id: string | null;
   is_active: boolean;
   activated_at: string;
   templates: JoinedName | JoinedName[] | null;
@@ -360,9 +390,13 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
   } else if (type === 'praatplaat') {
     assignmentName = getJoinedName(row.praatplaten, 'Praatplaat');
     imageUrl = getJoinedImage(row.praatplaten);
-  } else {
+  } else if (type === 'storyboard') {
     assignmentName = storyboardDisplayName(row.storyboard_ref);
     imageUrl = resolveStoryboardRef(row.storyboard_ref)?.coverImage ?? null;
+  } else {
+    // free: naam + preview volgen uit het thema (app-content)
+    assignmentName = themeDisplayName(row.free_theme_id);
+    imageUrl = (row.free_theme_id ? getTheme(row.free_theme_id)?.map.backgroundImage : null) ?? null;
   }
 
   return {
@@ -373,6 +407,7 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
     templateId: row.template_id,
     praatplaatId: row.praatplaat_id,
     storyboardRef: row.storyboard_ref,
+    freeThemeId: row.free_theme_id,
     isActive: row.is_active,
     activatedAt: row.activated_at,
     assignmentName,
@@ -397,6 +432,7 @@ export async function fetchPastAssignments(classId: string): Promise<ClassAssign
         template_id,
         praatplaat_id,
         storyboard_ref,
+        free_theme_id,
         is_active,
         activated_at,
         templates:template_id ( name ),

@@ -19,10 +19,10 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment } from '../../utils/compositionInit';
-import { findStoryboardById } from '../../data/themes';
+import { findStoryboardById, getTheme } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { OpdrachtkaartCard } from './OpdrachtkaartCard';
 import { logger } from '../../utils/logger';
@@ -101,6 +101,9 @@ export default function AssignmentLandingScreen() {
         )}
         {assignment?.type === 'storyboard' && assignment.storyboard && (
           <StoryboardBody storyboard={assignment.storyboard} />
+        )}
+        {assignment?.type === 'free' && assignment.free && (
+          <FreeBody free={assignment.free} />
         )}
         {!assignment && <RouteCBody />}
 
@@ -307,6 +310,37 @@ function StoryboardBody({ storyboard }: { storyboard: AssignmentStoryboard }) {
       </div>
       <p className="text-sm text-brand-300 md:text-text-muted">
         {t('assignmentLanding.storyboard.description')}
+      </p>
+    </div>
+  );
+}
+
+function FreeBody({ free }: { free: { themeId: string; themeName: string } }) {
+  const { t } = useTranslation();
+  const theme = getTheme(free.themeId);
+  const preview = theme?.map.backgroundImage ?? null;
+  return (
+    <div>
+      <div className="flex items-start gap-3 mb-4">
+        <div className="shrink-0 w-12 h-12 rounded-xl bg-accent-500/20 md:bg-accent-100 text-accent-400 md:text-accent-600 flex items-center justify-center">
+          <Music size={24} />
+        </div>
+        <div className="min-w-0">
+          <p className="text-xs uppercase tracking-wider text-brand-300 md:text-text-muted mb-0.5">
+            {t('assignmentLanding.free.kind')}
+          </p>
+          <h1 className="text-2xl sm:text-3xl font-bold text-white md:text-text-main truncate">
+            {free.themeName}
+          </h1>
+        </div>
+      </div>
+      {preview && (
+        <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video mb-4">
+          <img src={preview} alt={free.themeName} className="w-full h-full object-cover" />
+        </div>
+      )}
+      <p className="text-sm text-brand-300 md:text-text-muted">
+        {t('assignmentLanding.free.description')}
       </p>
     </div>
   );

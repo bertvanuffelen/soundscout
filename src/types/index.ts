@@ -67,8 +67,8 @@ export interface ClassSession {
   /** Display name of the class (e.g. "Groep 5") */
   className: string;
   /** Type of assignment linked to this class entry */
-  assignmentType: 'template' | 'praatplaat' | 'storyboard';
-  /** Identifier of the active assignment: template_id/praatplaat_id (UUID) or storyboard-registry-id (TEXT) */
+  assignmentType: 'template' | 'praatplaat' | 'storyboard' | 'free';
+  /** Identifier of the active assignment: template_id/praatplaat_id (UUID), storyboard-registry-id or theme-id (TEXT) */
   assignmentId: string;
   /** Display name of the assignment */
   assignmentName: string;

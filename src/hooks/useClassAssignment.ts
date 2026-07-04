@@ -35,6 +35,8 @@ interface UseClassAssignmentReturn {
   ) => Promise<void>;
   /** Activeer een storyboard voor deze klas (optioneel met opdrachtkaart) */
   activateStoryboard: (storyboardRef: string, cardId?: string | null) => Promise<void>;
+  /** Activeer een vrije-compositie-opdracht (thema-gebonden) voor deze klas */
+  activateFree: (themeId: string, cardId?: string | null) => Promise<void>;
   /** Deactiveer de huidige opdracht */
   deactivate: () => Promise<void>;
   /** Herlaad data */
@@ -122,6 +124,18 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     }
   }, [classId, fetch]);
 
+  const activateFree = useCallback(async (themeId: string, cardId?: string | null) => {
+    setOperationError(null);
+    try {
+      await activateAssignment(classId, { freeThemeId: themeId, cardId });
+      await fetch();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : 'Kon vrije opdracht niet activeren';
+      setOperationError(msg);
+      throw err;
+    }
+  }, [classId, fetch]);
+
   const deactivate = useCallback(async () => {
     setOperationError(null);
     try {
@@ -144,6 +158,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     activatePraatplaat,
     activatePraatplaatFromCatalog: activatePraatplaatCatalog,
     activateStoryboard,
+    activateFree,
     deactivate,
     refetch: fetch,
   };
