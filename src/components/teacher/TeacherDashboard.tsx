@@ -10,7 +10,7 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Plus, LogOut, FileText, MapPin, ClipboardList, Clapperboard, HelpCircle } from 'lucide-react';
+import { Loader2, BookOpen, Plus, LogOut, FileText, MapPin, ClipboardList, Clapperboard, GraduationCap, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useAuth } from '../../contexts/useAuth';
 import { useClasses } from '../../hooks/useClasses';
@@ -31,6 +31,7 @@ import { PraatplaatCard } from './PraatplaatCard';
 import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
 import { StoryboardCard } from './StoryboardCard';
+import { LessonCardsTab } from './LessonCardsTab';
 import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs } from './common';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { getAllMultiImageStoryboards } from '../../data/themes';
@@ -71,8 +72,8 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editCard, setEditCard] = useState<Opdrachtkaart | null>(null);
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
-  // Tabs: 'classes' (Mijn klassen) vs 'assignments' (Mijn opdrachten). Standaard klassen.
-  const [activeTab, setActiveTab] = useState<'classes' | 'assignments'>('classes');
+  // Tabs: Mijn klassen / Mijn opdrachten / Leskaarten. Standaard klassen.
+  const [activeTab, setActiveTab] = useState<'classes' | 'assignments' | 'lessons'>('classes');
 
   // Storyboards zijn vaste app-content (geen hook/CRUD) — alleen-lezen lijst.
   const storyboards = getAllMultiImageStoryboards();
@@ -215,6 +216,11 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               label: t('teacher.dashboard.tabAssignments'),
               count: praatplaten.length + templates.length + cards.length,
               icon: ClipboardList,
+            },
+            {
+              id: 'lessons',
+              label: t('teacher.dashboard.tabLessons'),
+              icon: GraduationCap,
             },
           ]}
         />
@@ -524,6 +530,11 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               </>
             )}
           </>
+        )}
+
+        {/* ===== Tab: Leskaarten ===== */}
+        {activeTab === 'lessons' && (
+          <LessonCardsTab classes={classes} onCreateClass={createClass} />
         )}
       </main>
 
