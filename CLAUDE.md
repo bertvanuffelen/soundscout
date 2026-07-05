@@ -237,17 +237,16 @@ A praatplaat (sound map) is a class activity where students create compositions 
 
 **Architecture**: Separate path from existing compose modes (Hypothesis C). Entry via class code → praatplaat detection → dedicated flow. No code overlap with "Bij een afbeelding" mode.
 
-**Database**: `praatplaten` table (incl. `share_code`, `share_expires_at`, `share_view_count` for #73) + 3 nullable columns on `submissions` (`praatplaat_id`, `position_x`, `position_y`). One active praatplaat per class (enforced by trigger + partial unique index). Migrations: `supabase/migrations/005_praatplaten.sql` + `012_praatplaat_share.sql`. 7 core RPC functions (SECURITY DEFINER) + 2 share RPCs (`share_praatplaat`, `get_shared_praatplaat`).
+**Database**: `praatplaten` table (incl. `share_code`, `share_expires_at`, `share_view_count` for #73) + 3 nullable columns on `submissions` (`praatplaat_id`, `position_x`, `position_y`). **Activation is now driven by `class_assignments`** (migration 006 removed the old `praatplaten.is_active` trigger + partial unique index); the catalog find-or-create keys one instance per (class + image). Migrations: `005_praatplaten.sql`, `012_praatplaat_share.sql` (share), `017` (catalog). Share RPCs `share_praatplaat` / `get_shared_praatplaat` (SECURITY DEFINER); `get_active_praatplaat` remains a backward-compat wrapper.
 
-**Teacher flow**:
-- `ClassDetail` → praatplaat section with `PraatplaatCard` grid + `CreatePraatplaatModal`
-- `CreatePraatplaatModal`: name input + location image grid from active theme
-- `PraatplaatCard`: thumbnail, active/inactive badge, toggle, delete, view buttons
-- `PraatplaatViewer`: fullscreen presentation with `PraatplaatSpot` icons on x,y positions, clustering (5% threshold), hover tooltips, click to play via `SubmissionPlayer`
-- `usePraatplaten` hook: CRUD with optimistic updates (follows `useTemplates` pattern)
+**Teacher flow** (updated by praatplaat-catalogus, migration 017 — see **Assignments** above):
+- Class-level activation is **catalog-based**: the teacher picks an image from `getPraatplaatCatalog()` (`src/data/praatplaatCatalog.ts` = praatplaatImages + theme locations) inside `ActivateAssignmentModal`; `activate_praatplaat_from_catalog` find-or-creates one praatplaat instance per (class + image), then delegates to `activate_assignment`. `ClassDetail` no longer creates praatplaten per activation.
+- `CreatePraatplaatModal` + `PraatplaatCard` are retained only for the **dashboard praatplaat library** (own/future-uploaded praatplaten), class-independent.
+- `PraatplaatViewer` (opened from the active-assignment card in `ClassDetail`): fullscreen presentation with `PraatplaatSpot` icons on x,y positions, clustering (5% threshold), hover tooltips, click to play via `SubmissionPlayer`.
+- `usePraatplaten` hook: dashboard-library CRUD with optimistic updates (follows `useTemplates` pattern)
 
 **Student flow**:
-- `ShareCodeInput`: 4-digit class code → `getActivePraatplaat()` → route to `praatplaat-select`
+- `ShareCodeInput`: 4-digit class code → `getActiveAssignment()` → `AssignmentLandingScreen` (#78) → on "Starten" `activatePendingAssignment()` sets the praatplaat context → `praatplaat-select`. (`getActivePraatplaat()` remains only as a backward-compat wrapper RPC.)
 - `PraatplaatSelectScreen`: fullscreen image, click/tap to choose position (normalized 0-1)
 - Position stored in `appStore.praatplaatPosition`
 - Normal flow: map → studio → stage
@@ -266,7 +265,7 @@ Translation files at `src/i18n/locales/{nl,en}.json`. Uses `useTranslation()` ho
 
 ### Types
 
-All shared interfaces in `src/types/index.ts`. Key types: `GameScreen`, `Location`, `Hotspot`, `Sample`, `Clip`, `Track`, `ClipEffects`, `SavedComposition` (localStorage) vs `SharedComposition` (Supabase), `Praatplaat`, `ActivePraatplaat`, `PraatplaatPosition`.
+All shared interfaces in `src/types/index.ts`. Key types: `GameScreen`, `Location`, `Hotspot`, `Sample`, `Clip`, `Track`, `ClipEffects`, `SavedComposition` (localStorage) vs `SharedComposition` (Supabase), `Praatplaat`, `ActivePraatplaat`, `PraatplaatPosition`, `Opdrachtkaart` / `OpdrachtkaartContent` (assignment card), `ClassSession`. The assignment-type union lives in `src/lib/assignments.ts` (`AssignmentType = 'template' | 'praatplaat' | 'storyboard' | 'free'`).
 
 ### Design System
 
