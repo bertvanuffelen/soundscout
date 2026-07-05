@@ -14,19 +14,37 @@ import { withTimeout } from '../utils/withTimeout';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
-import type { Template, TemplateLockOptions } from '../types';
+import { findStoryboardById, getTheme } from '../data/themes';
+import i18n from '../i18n';
+import type { Template, TemplateLockOptions, OpdrachtkaartContent } from '../types';
 import { DEFAULT_LOCK_OPTIONS } from '../types';
 
 // --- Types ---
 
 /** Assignment type discriminator */
-export type AssignmentType = 'template' | 'praatplaat';
+export type AssignmentType = 'template' | 'praatplaat' | 'storyboard' | 'free';
+
+/** Storyboard-opdracht info (registry-content, opgelost uit storyboard_ref) */
+export interface AssignmentStoryboard {
+  /** Registry-id van het storyboard */
+  ref: string;
+  /** i18n-key voor de naam (component vertaalt) */
+  nameKey: string;
+  /** Cover-afbeelding voor preview */
+  coverImage: string;
+  /** Aantal scènes/afbeeldingen */
+  imageCount: number;
+  /** Thema dat impliciet volgt uit het storyboard */
+  themeId: string;
+}
 
 /** Active assignment info returned by get_active_assignment RPC */
 export interface ActiveAssignment {
   type: AssignmentType;
   classId: string;
   className: string;
+  /** Vorm-onafhankelijke opdrachtkaart (null → toon per-type default) */
+  card: OpdrachtkaartContent | null;
   // Template fields (present when type = 'template')
   template?: Template;
   // Praatplaat fields (present when type = 'praatplaat')
@@ -37,6 +55,22 @@ export interface ActiveAssignment {
     themeId: string;
     locationId: string;
   };
+  // Storyboard fields (present when type = 'storyboard')
+  storyboard?: AssignmentStoryboard;
+  // Free-composition fields (present when type = 'free')
+  free?: {
+    /** Theme-registry-id waarin de leerling vrij componeert */
+    themeId: string;
+    /** Leesbare themanaam (vertaald) */
+    themeName: string;
+  };
+}
+
+/** Los een thema-registry-id op naar een leesbare naam (via i18n-key). */
+function themeDisplayName(themeId: string | null | undefined): string {
+  if (!themeId) return 'Vrije compositie';
+  const theme = getTheme(themeId);
+  return theme ? i18n.t(theme.name) : themeId;
 }
 
 /** Class assignment row for teacher dashboard */
@@ -47,16 +81,59 @@ export interface ClassAssignmentRow {
   type: AssignmentType;
   templateId: string | null;
   praatplaatId: string | null;
+  storyboardRef: string | null;
+  freeThemeId: string | null;
   isActive: boolean;
   activatedAt: string;
-  // Joined names
+  // Joined / resolved names
   assignmentName: string;
+  /** Preview-afbeelding: praatplaat-image (join), storyboard-cover of thema-map (registry); null bij template. */
+  imageUrl: string | null;
 }
 
-/** Shape of Supabase joined relation select `template_id ( name )` / `praatplaat_id ( name )`.
+/**
+ * Los een storyboard-registry-ref op naar de velden die de opdracht-UI nodig heeft.
+ * Retourneert null als de ref onbekend is (bv. storyboard verwijderd uit de registry).
+ */
+function resolveStoryboardRef(ref: string | null | undefined): AssignmentStoryboard | null {
+  if (!ref) return null;
+  const found = findStoryboardById(ref);
+  if (!found) {
+    logger.warn('Onbekende storyboard-ref in opdracht:', ref);
+    return null;
+  }
+  return {
+    ref,
+    nameKey: found.storyboard.name,
+    coverImage: found.storyboard.coverImage,
+    imageCount: found.storyboard.images.length,
+    themeId: found.themeId,
+  };
+}
+
+/** Vertaal een storyboard-ref naar een leesbare naam (docent-dashboard). */
+function storyboardDisplayName(ref: string | null | undefined): string {
+  const resolved = resolveStoryboardRef(ref);
+  return resolved ? i18n.t(resolved.nameKey) : 'Storyboard';
+}
+
+/** Valideer en normaliseer de opdrachtkaart uit een RPC-payload. */
+function parseCard(raw: unknown): OpdrachtkaartContent | null {
+  if (!raw || typeof raw !== 'object') return null;
+  const obj = raw as { title?: unknown; bullets?: unknown };
+  const title = typeof obj.title === 'string' ? obj.title : '';
+  const bullets = Array.isArray(obj.bullets)
+    ? obj.bullets.filter((b): b is string => typeof b === 'string').slice(0, 10)
+    : [];
+  if (!title && bullets.length === 0) return null;
+  return { title, bullets };
+}
+
+/** Shape of Supabase joined relation select `template_id ( name )` / `praatplaat_id ( name, image_url )`.
  *  Supabase types FK joins as arrays, but `.maybeSingle()` returns a single object at runtime. */
 interface JoinedName {
   name: string;
+  image_url?: string | null;
 }
 
 /** Safely extract name from a Supabase FK join (typed as array, returned as object) */
@@ -64,6 +141,13 @@ function getJoinedName(data: JoinedName | JoinedName[] | null, fallback: string)
   if (!data) return fallback;
   if (Array.isArray(data)) return data[0]?.name || fallback;
   return data.name || fallback;
+}
+
+/** Safely extract image_url from a Supabase FK join (typed as array, returned as object) */
+function getJoinedImage(data: JoinedName | JoinedName[] | null): string | null {
+  if (!data) return null;
+  if (Array.isArray(data)) return data[0]?.image_url ?? null;
+  return data.image_url ?? null;
 }
 
 // --- Lock options parsing (shared with templates.ts) ---
@@ -104,11 +188,20 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
 
     if (!data || data.length === 0) return null;
 
-    const row = data[0];
+    // Nieuwe type-stabiele RPC-vorm: { assignment_type, payload, card, class_id, class_name }
+    const row = data[0] as {
+      assignment_type: AssignmentType;
+      payload: Record<string, unknown> | null;
+      card: unknown;
+      class_id: string;
+      class_name: string;
+    };
+    const payload = row.payload ?? {};
+    const card = parseCard(row.card);
 
     if (row.assignment_type === 'template') {
-      // Parse composition data via Zod
-      const compositionData = parseCompositionData(row.composition_data);
+      // Behoud runtime Zod-validatie op de template-compositie (sharpening #1)
+      const compositionData = parseCompositionData(payload.composition_data);
       if (!compositionData) {
         logger.warn('Invalid composition_data in assignment template');
         return null;
@@ -118,14 +211,15 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         type: 'template',
         classId: row.class_id,
         className: row.class_name,
+        card,
         template: {
-          id: row.template_id,
-          name: row.template_name || '',
-          description: row.template_description || undefined,
-          teacherName: row.template_teacher_name || '',
+          id: String(payload.template_id ?? ''),
+          name: (payload.name as string) || '',
+          description: (payload.description as string) || undefined,
+          teacherName: (payload.teacher_name as string) || '',
           compositionData,
-          instructions: row.instructions || undefined,
-          lockOptions: parseLockOptions(row.lock_options),
+          instructions: (payload.instructions as string) || undefined,
+          lockOptions: parseLockOptions(payload.lock_options as TemplateLockOptions | null),
           createdAt: '',
         },
       };
@@ -136,13 +230,38 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         type: 'praatplaat',
         classId: row.class_id,
         className: row.class_name,
+        card,
         praatplaat: {
-          id: row.praatplaat_id,
-          name: row.praatplaat_name || '',
-          imageUrl: row.image_url || '',
-          themeId: row.theme_id || '',
-          locationId: row.location_id || '',
+          id: String(payload.praatplaat_id ?? ''),
+          name: (payload.name as string) || '',
+          imageUrl: (payload.image_url as string) || '',
+          themeId: (payload.theme_id as string) || '',
+          locationId: (payload.location_id as string) || '',
         },
+      };
+    }
+
+    if (row.assignment_type === 'storyboard') {
+      const storyboard = resolveStoryboardRef(payload.storyboard_ref as string);
+      if (!storyboard) return null;
+      return {
+        type: 'storyboard',
+        classId: row.class_id,
+        className: row.class_name,
+        card,
+        storyboard,
+      };
+    }
+
+    if (row.assignment_type === 'free') {
+      const themeId = String(payload.free_theme_id ?? '');
+      if (!themeId) return null;
+      return {
+        type: 'free',
+        classId: row.class_id,
+        className: row.class_name,
+        card,
+        free: { themeId, themeName: themeDisplayName(themeId) },
       };
     }
 
@@ -161,15 +280,17 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
  */
 export async function activateAssignment(
   classId: string,
-  templateId?: string,
-  praatplaatId?: string,
+  opts: { templateId?: string; praatplaatId?: string; storyboardRef?: string; freeThemeId?: string; cardId?: string | null },
 ): Promise<string> {
   const supabase = await getSupabase();
   const { data, error } = await withTimeout(
     supabase.rpc('activate_assignment', {
       p_class_id: classId,
-      p_template_id: templateId || null,
-      p_praatplaat_id: praatplaatId || null,
+      p_template_id: opts.templateId || null,
+      p_praatplaat_id: opts.praatplaatId || null,
+      p_storyboard_ref: opts.storyboardRef || null,
+      p_card_id: opts.cardId || null,
+      p_free_theme_id: opts.freeThemeId || null,
     }),
     20_000,
     'errors.networkTimeout'
@@ -215,12 +336,15 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
         id,
         class_id,
         teacher_id,
+        assignment_type,
         template_id,
         praatplaat_id,
+        storyboard_ref,
+        free_theme_id,
         is_active,
         activated_at,
         templates:template_id ( name ),
-        praatplaten:praatplaat_id ( name )
+        praatplaten:praatplaat_id ( name, image_url )
       `)
       .eq('class_id', classId)
       .eq('is_active', true)
@@ -236,22 +360,58 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
 
   if (!data) return null;
 
-  // Determine type and name from joined data
-  const type: AssignmentType = data.template_id ? 'template' : 'praatplaat';
-  const assignmentName = type === 'template'
-    ? getJoinedName(data.templates as JoinedName | JoinedName[] | null, 'Template')
-    : getJoinedName(data.praatplaten as JoinedName | JoinedName[] | null, 'Praatplaat');
+  return mapAssignmentRow(data as RawAssignmentRow);
+}
+
+/** Raw shape of a class_assignments select (met FK-joins). */
+interface RawAssignmentRow {
+  id: string;
+  class_id: string;
+  teacher_id: string;
+  assignment_type: AssignmentType;
+  template_id: string | null;
+  praatplaat_id: string | null;
+  storyboard_ref: string | null;
+  free_theme_id: string | null;
+  is_active: boolean;
+  activated_at: string;
+  templates: JoinedName | JoinedName[] | null;
+  praatplaten: JoinedName | JoinedName[] | null;
+}
+
+/** Map een class_assignments-rij naar ClassAssignmentRow (type-geleide naam-resolutie). */
+function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
+  const type = row.assignment_type;
+  let assignmentName: string;
+  let imageUrl: string | null = null;
+  if (type === 'template') {
+    assignmentName = getJoinedName(row.templates, 'Template');
+    // Template-preview vergt composition_data (niet in deze metadata-fetch) → geen image.
+  } else if (type === 'praatplaat') {
+    assignmentName = getJoinedName(row.praatplaten, 'Praatplaat');
+    imageUrl = getJoinedImage(row.praatplaten);
+  } else if (type === 'storyboard') {
+    assignmentName = storyboardDisplayName(row.storyboard_ref);
+    imageUrl = resolveStoryboardRef(row.storyboard_ref)?.coverImage ?? null;
+  } else {
+    // free: naam + preview volgen uit het thema (app-content)
+    assignmentName = themeDisplayName(row.free_theme_id);
+    imageUrl = (row.free_theme_id ? getTheme(row.free_theme_id)?.map.backgroundImage : null) ?? null;
+  }
 
   return {
-    id: data.id,
-    classId: data.class_id,
-    teacherId: data.teacher_id,
+    id: row.id,
+    classId: row.class_id,
+    teacherId: row.teacher_id,
     type,
-    templateId: data.template_id,
-    praatplaatId: data.praatplaat_id,
-    isActive: data.is_active,
-    activatedAt: data.activated_at,
+    templateId: row.template_id,
+    praatplaatId: row.praatplaat_id,
+    storyboardRef: row.storyboard_ref,
+    freeThemeId: row.free_theme_id,
+    isActive: row.is_active,
+    activatedAt: row.activated_at,
     assignmentName,
+    imageUrl,
   };
 }
 
@@ -268,12 +428,15 @@ export async function fetchPastAssignments(classId: string): Promise<ClassAssign
         id,
         class_id,
         teacher_id,
+        assignment_type,
         template_id,
         praatplaat_id,
+        storyboard_ref,
+        free_theme_id,
         is_active,
         activated_at,
         templates:template_id ( name ),
-        praatplaten:praatplaat_id ( name )
+        praatplaten:praatplaat_id ( name, image_url )
       `)
       .eq('class_id', classId)
       .eq('is_active', false)
@@ -289,22 +452,5 @@ export async function fetchPastAssignments(classId: string): Promise<ClassAssign
 
   if (!data) return [];
 
-  return data.map((row) => {
-    const type: AssignmentType = row.template_id ? 'template' : 'praatplaat';
-    const assignmentName = type === 'template'
-      ? getJoinedName(row.templates as JoinedName | JoinedName[] | null, 'Template')
-      : getJoinedName(row.praatplaten as JoinedName | JoinedName[] | null, 'Praatplaat');
-
-    return {
-      id: row.id,
-      classId: row.class_id,
-      teacherId: row.teacher_id,
-      type,
-      templateId: row.template_id,
-      praatplaatId: row.praatplaat_id,
-      isActive: row.is_active,
-      activatedAt: row.activated_at,
-      assignmentName,
-    };
-  });
+  return (data as RawAssignmentRow[]).map(mapAssignmentRow);
 }

@@ -67,11 +67,26 @@ export interface ClassSession {
   /** Display name of the class (e.g. "Groep 5") */
   className: string;
   /** Type of assignment linked to this class entry */
-  assignmentType: 'template' | 'praatplaat';
-  /** UUID of the active assignment (template_id or praatplaat_id) */
+  assignmentType: 'template' | 'praatplaat' | 'storyboard' | 'free';
+  /** Identifier of the active assignment: template_id/praatplaat_id (UUID), storyboard-registry-id or theme-id (TEXT) */
   assignmentId: string;
   /** Display name of the assignment */
   assignmentName: string;
+}
+
+// --- Opdrachtkaart (vorm-onafhankelijke instructiekaart) ---
+
+/** De inhoud van een opdrachtkaart zoals de leerling die ziet (titel + bullets). */
+export interface OpdrachtkaartContent {
+  title: string;
+  bullets: string[];
+}
+
+/** Een herbruikbare opdrachtkaart uit de docent-bibliotheek (assignment_cards). */
+export interface Opdrachtkaart extends OpdrachtkaartContent {
+  id: string;
+  isActive: boolean;
+  createdAt: string;
 }
 
 // --- Storytelling (#41) ---

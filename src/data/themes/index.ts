@@ -42,6 +42,14 @@ export function getDefaultTheme(): ThemeConfig {
 }
 
 /**
+ * Alle thema's die een docent aan een vrije-compositie-opdracht kan koppelen.
+ * Alleen publieke thema's (verborgen ?theme=-only thema's tellen niet mee).
+ */
+export function getAssignableThemes(): ThemeConfig[] {
+  return Object.values(themes).filter((theme) => theme.isPublic);
+}
+
+/**
  * Get theme ID from URL parameter.
  * Falls back to default if param missing or invalid.
  *

@@ -9,6 +9,8 @@
     "retry": "Try again",
     "cancel": "Cancel",
     "delete": "Delete",
+    "save": "Save",
+    "edit": "Edit",
     "tracks": "Tracks",
     "clips": "Clips",
     "samples": "Samples",
@@ -462,7 +464,10 @@
   },
   "assignments": {
     "chooseTitle": "Activate assignment",
-    "chooseDescription": "Choose a template or sound map to activate for this class.",
+    "chooseDescription": "Choose a template, sound map or story in pictures to activate for this class.",
+    "cardLabel": "Assignment card (optional)",
+    "cardDefault": "Default explanation",
+    "cardNone": "No custom card — show default explanation",
     "activate": "Activate",
     "activateError": "Could not activate assignment",
     "deactivate": "Deactivate",
@@ -478,7 +483,180 @@
     "changeButton": "Change",
     "activatedAt": "Activated on {{date}}",
     "pastTitle": "Previous assignments",
-    "pastDescription": "Assignments that were previously used. You can reactivate these."
+    "pastDescription": "Assignments that were previously used. You can reactivate these.",
+    "changeAssignment": "Change assignment",
+    "pickPrompt": "Choose what your class will do. Students with code {{code}} join instantly.",
+    "previewLabel": "Preview",
+    "previewEmpty": "Select an option on the left to see a preview.",
+    "activatedMessage": "Assignment is active! Students enter this class code:",
+    "noActiveTitle": "No active assignment",
+    "noActiveExplain": "Nothing is set up for this class. Students who enter code {{code}} can compose freely for now. Choose an assignment below to set something up.",
+    "reactivate": "Activate",
+    "replaceConfirmTitle": "Replace assignment?",
+    "replaceConfirmBody": "The class is currently working on \"{{name}}\". Choosing a new assignment replaces it — students will then work on the new one. Earlier submissions are kept.",
+    "replaceConfirmButton": "Choose new assignment",
+    "types": {
+      "praatplaat": {
+        "tag": "Together · whiteboard",
+        "title": "Sound map",
+        "description": "The whole class on one image. Each pair gives voice to a spot.",
+        "pickTitle": "Choose a sound map"
+      },
+      "storyboard": {
+        "tag": "Story in scenes",
+        "title": "Storyboard",
+        "description": "Three to four images form a story — a soundtrack per scene.",
+        "pickTitle": "Choose a storyboard"
+      },
+      "template": {
+        "tag": "Teacher setup",
+        "title": "Teacher template",
+        "description": "A prepared composition students finish.",
+        "pickTitle": "Choose a template"
+      },
+      "free": {
+        "tag": "Pure sound",
+        "title": "Free composition",
+        "description": "Students compose freely within a theme — focused purely on the sounds.",
+        "pickTitle": "Choose a theme"
+      }
+    }
+  },
+  "assignmentCards": {
+    "sectionTitle": "Assignment cards",
+    "sectionDescription": "Short explanation cards (title + points) students see before they start. Make one and reuse it across assignments.",
+    "newButton": "New card",
+    "empty": "No assignment cards yet. Create one to help students get started.",
+    "moreBullets": "+{{count}} more",
+    "noBullets": "No points",
+    "newTitle": "New assignment card",
+    "editTitle": "Edit assignment card",
+    "editorDescription": "Give the card a title and up to 10 short points.",
+    "titleLabel": "Title",
+    "titlePlaceholder": "E.g. How to make your composition",
+    "bulletsLabel": "Points",
+    "bulletPlaceholder": "A short instruction...",
+    "addBullet": "Add point",
+    "removeBullet": "Remove point",
+    "saveError": "Could not save assignment card",
+    "deleteTitle": "Delete assignment card",
+    "deleteConfirm": "Are you sure you want to delete this assignment card? Assignments using this card will fall back to the default explanation.",
+    "deleteError": "Could not delete assignment card",
+    "defaults": {
+      "template": {
+        "title": "How this assignment works",
+        "bullets": [
+          "Your teacher has set up some music already.",
+          "Listen carefully and finish it.",
+          "Drag sounds onto the timeline.",
+          "Done? Save your composition."
+        ]
+      },
+      "praatplaat": {
+        "title": "How this assignment works",
+        "bullets": [
+          "You'll pick a spot on the image next.",
+          "Collect sounds on the map.",
+          "Make music that fits your spot.",
+          "Done? Save your composition."
+        ]
+      },
+      "storyboard": {
+        "title": "How this assignment works",
+        "bullets": [
+          "Look at the scenes of the story.",
+          "Collect sounds on the map.",
+          "Make music that fits each scene.",
+          "Done? Save your composition."
+        ]
+      },
+      "free": {
+        "title": "How this assignment works",
+        "bullets": [
+          "Collect sounds on the map.",
+          "Experiment with the sounds.",
+          "Create your own composition.",
+          "Done? Save your composition."
+        ]
+      }
+    }
+  },
+  "lessonCards": {
+    "tabTitle": "Lesson cards",
+    "builtin": {
+      "robotfabriek": {
+        "title": "Robot factory",
+        "level": "Grade 6–7",
+        "goal": "Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere.",
+        "phases": [
+          { "name": "Orient", "text": "class discussion; pairs choose a spot." },
+          { "name": "Explore", "text": "collect sounds and compose in the studio." },
+          { "name": "Perform", "text": "hand in and play for the class." },
+          { "name": "Evaluate", "text": "reflect together." }
+        ]
+      },
+      "verspringen": {
+        "title": "Long jump",
+        "level": "Grade 5–8",
+        "goal": "Students create a soundtrack for each scene and experience how music supports a visual story."
+      },
+      "vrij-basis": {
+        "title": "Free composing",
+        "level": "All grades",
+        "goal": "Students freely explore the sounds of a theme and create their own composition — focused purely on sound."
+      },
+      "drumbeat": {
+        "title": "Drum beat",
+        "level": "All grades",
+        "goal": "Students build on a ready-made rhythm and discover how layers and repetition combine into a beat."
+      }
+    },
+    "sectionSubtitle": "Ready-made packages: pick one and set it up for a class in a single click. Or create your own.",
+    "newButton": "New lesson card",
+    "builtinBadge": "Built-in",
+    "goalLabel": "Goal.",
+    "phasesTitle": "Phases",
+    "download": "Download pdf",
+    "activate": "Set up for a class",
+    "empty": "No lesson cards yet.",
+    "deleteTitle": "Delete lesson card",
+    "deleteConfirm": "Are you sure you want to delete this lesson card?\nThis does not affect assignments that are already active.",
+    "activateModal": {
+      "title": "Activate lesson card",
+      "description": "Pick a class for \"{{title}}\", or create a new class.",
+      "newClass": "Create a new class",
+      "newClassPlaceholder": "Class name",
+      "nameRequired": "Give the new class a name.",
+      "confirm": "Activate",
+      "error": "Could not activate the lesson card. Please try again.",
+      "successTitle": "Lesson card activated!",
+      "successBody": "\"{{title}}\" is ready for {{className}}. Students enter the class code.",
+      "codeLabel": "Class code"
+    },
+    "editor": {
+      "newTitle": "New lesson card",
+      "editTitle": "Edit lesson card",
+      "typeLabel": "Assignment type",
+      "resourceLabel": "Source",
+      "resourcePlaceholder": "Choose a source…",
+      "resourceRequired": "Choose a source for this lesson card.",
+      "cardLabel": "Assignment card (optional)",
+      "titleLabel": "Title",
+      "titlePlaceholder": "E.g. Robot factory",
+      "titleRequired": "Give the lesson card a title.",
+      "levelLabel": "Level (optional)",
+      "levelPlaceholder": "E.g. Grade 4–5",
+      "pdfLabel": "Pdf link (optional)",
+      "pdfPlaceholder": "https://…",
+      "goalLabel": "Goal (optional)",
+      "goalPlaceholder": "What do students learn?",
+      "phasesLabel": "Phases (optional)",
+      "addPhase": "Add phase",
+      "noPhases": "No phases added yet.",
+      "phaseNamePlaceholder": "Name",
+      "phaseTextPlaceholder": "Description",
+      "saveError": "Could not save the lesson card."
+    }
   },
   "templates": {
     "activeBanner": "Assignment:",
@@ -487,6 +665,11 @@
     "praatplatenTitle": "Sound maps",
     "praatplatenDescription": "Students pick a spot on the image and create a composition for it.",
     "praatplatenEmpty": "No sound maps yet. Create one to get started.",
+    "storyboardsTitle": "Storyboards",
+    "storyboardsDescription": "Ready-made picture stories; students make a soundtrack per scene. Activate one per class.",
+    "storyboardsEmpty": "No storyboards available yet.",
+    "storyboardFrames_one": "{{count}} image",
+    "storyboardFrames_other": "{{count}} images",
     "templatesTitle": "Templates",
     "templatesDescription": "A pre-built composition that students work with.",
     "templatesEmpty": "No templates yet. Create a composition in SoundScout and save it as an assignment from the stage.",
@@ -499,6 +682,8 @@
     "newTemplateModalButton": "Go to SoundScout",
     "typeTemplate": "Template",
     "typePraatplaat": "Sound map",
+    "typeStoryboard": "Story in pictures",
+    "typeFree": "Free composition",
     "copyCode": "Copy code",
     "active": "Active",
     "inactive": "Inactive",
@@ -747,6 +932,9 @@
       "logout": "Log out",
       "guide": "Guide",
       "myClasses": "My Classes",
+      "tabClasses": "My classes",
+      "tabAssignments": "My assignments",
+      "tabLessons": "Lesson cards",
       "newClass": "New Class",
       "loading": "Loading classes...",
       "emptyTitle": "No classes yet",
@@ -760,11 +948,27 @@
       "step1": "1. Create a class and get a 4-digit code",
       "step2": "2. Share the code with your students",
       "step3": "3. Students create a composition and enter the code under \"Share\"",
-      "step4": "4. View all compositions here in your dashboard"
+      "step4": "4. View all compositions here in your dashboard",
+    "setup": {
+      "title": "How to set up a class",
+      "step1": {
+        "title": "Create a class",
+        "description": "You get a four-digit class code straight away."
+      },
+      "step2": {
+        "title": "Choose an assignment",
+        "description": "Activate a sound map, storyboard or template for your class."
+      },
+      "step3": {
+        "title": "Share the class code",
+        "description": "Students type in the code and you see their compositions here."
+      }
+    }
     },
     "classCodeMeaning": "Students type this code to join.",
     "classDetail": {
       "back": "Back to overview",
+      "dashboardCrumb": "Dashboard",
       "compositionCount": "{{count}} composition",
       "compositionCount_plural": "{{count}} compositions",
       "refreshTitle": "Refresh compositions",
@@ -1012,6 +1216,14 @@
       "kind": "Praatplaat",
       "description": "You'll pick a spot on this image next. Your composition belongs there."
     },
+    "storyboard": {
+      "kind": "Story in pictures",
+      "description": "Make music that fits each scene of this story. First collect sounds on the map."
+    },
+    "free": {
+      "kind": "Free composition",
+      "description": "Collect sounds on the map and create your own composition. Let your imagination run free."
+    },
     "none": {
       "heading": "No assignment ready yet",
       "message": "This class doesn't have an active assignment yet. Wait a moment or ask your teacher. You can also compose freely.",
@@ -1088,30 +1300,11 @@
     },
     "lessons": {
       "title": "Ready-made lesson cards",
-      "soon": "Coming soon",
-      "soonDetail": "This lesson card is coming soon. Pick Robot factory on the left to see a worked example.",
       "download": "Download pdf",
-      "robotfactory": {
-        "level": "Grade 6–7",
-        "title": "Robot factory",
-        "tag": "Sound map",
-        "subtitle": "Grade 6–7 · in pairs",
-        "goalLabel": "Goal.",
-        "goal": "Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere.",
-        "phasesTitle": "The four phases of the creative process",
-        "phases": {
-          "orient": { "name": "Orient", "text": "class discussion; pairs choose a spot." },
-          "research": { "name": "Explore", "text": "collect sounds and compose in the studio." },
-          "perform": { "name": "Perform", "text": "hand in and play for the class." },
-          "evaluate": { "name": "Evaluate", "text": "reflect together." }
-        }
-      },
-      "storyboard": {
-        "title": "Storyboard story"
-      },
-      "free": {
-        "title": "Free composing"
-      }
+      "openForClass": "Open for your class",
+      "goalLabel": "Goal.",
+      "phasesTitle": "Phases",
+      "empty": "Lesson cards are loading soon."
     },
     "curriculum": {
       "title": "Connects to the music curriculum",

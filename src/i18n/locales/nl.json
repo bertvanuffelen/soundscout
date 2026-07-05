@@ -9,6 +9,8 @@
     "retry": "Opnieuw proberen",
     "cancel": "Annuleren",
     "delete": "Verwijderen",
+    "save": "Opslaan",
+    "edit": "Bewerken",
     "tracks": "Tracks",
     "clips": "Clips",
     "samples": "Samples",
@@ -462,7 +464,10 @@
   },
   "assignments": {
     "chooseTitle": "Opdracht activeren",
-    "chooseDescription": "Kies een template of praatplaat om te activeren voor deze klas.",
+    "chooseDescription": "Kies een template, praatplaat of verhaal in beeld om te activeren voor deze klas.",
+    "cardLabel": "Opdrachtkaart (optioneel)",
+    "cardDefault": "Standaard uitleg",
+    "cardNone": "Geen eigen kaart — toon standaard uitleg",
     "activate": "Activeren",
     "activateError": "Kon opdracht niet activeren",
     "deactivate": "Deactiveren",
@@ -478,7 +483,180 @@
     "changeButton": "Wijzig",
     "activatedAt": "Geactiveerd op {{date}}",
     "pastTitle": "Eerdere opdrachten",
-    "pastDescription": "Opdrachten die eerder zijn uitgevoerd. Je kunt deze opnieuw activeren."
+    "pastDescription": "Opdrachten die eerder zijn uitgevoerd. Je kunt deze opnieuw activeren.",
+    "changeAssignment": "Wijzig opdracht",
+    "pickPrompt": "Kies wat je klas gaat doen. Leerlingen met code {{code}} komen er direct in.",
+    "previewLabel": "Voorbeeld",
+    "previewEmpty": "Kies links een optie om een voorbeeld te zien.",
+    "activatedMessage": "Opdracht is actief! Leerlingen voeren deze klascode in:",
+    "noActiveTitle": "Geen actieve opdracht",
+    "noActiveExplain": "Er staat niets klaar voor deze klas. Leerlingen die code {{code}} invoeren kunnen nu vrij componeren. Kies hieronder een opdracht om er wél iets voor klaar te zetten.",
+    "reactivate": "Activeer",
+    "replaceConfirmTitle": "Opdracht vervangen?",
+    "replaceConfirmBody": "De klas werkt nu aan \"{{name}}\". Als je een nieuwe opdracht kiest, vervang je die — de leerlingen werken daarna aan de nieuwe opdracht. Eerdere inzendingen blijven bewaard.",
+    "replaceConfirmButton": "Kies nieuwe opdracht",
+    "types": {
+      "praatplaat": {
+        "tag": "Samen · digibord",
+        "title": "Praatplaat",
+        "description": "De hele klas op één beeld. Elk tweetal verklankt een plek.",
+        "pickTitle": "Kies een praatplaat"
+      },
+      "storyboard": {
+        "tag": "Verhaal in scènes",
+        "title": "Storyboard",
+        "description": "Drie tot vier beelden vormen een verhaal — soundtrack per scène.",
+        "pickTitle": "Kies een storyboard"
+      },
+      "template": {
+        "tag": "Docent-opzet",
+        "title": "Template van docent",
+        "description": "Een voorbereide compositie die leerlingen afmaken.",
+        "pickTitle": "Kies een template"
+      },
+      "free": {
+        "tag": "Puur geluid",
+        "title": "Vrije compositie",
+        "description": "Leerlingen componeren vrij binnen een thema — enkel gericht op de geluiden.",
+        "pickTitle": "Kies een thema"
+      }
+    }
+  },
+  "assignmentCards": {
+    "sectionTitle": "Opdrachtkaarten",
+    "sectionDescription": "Korte uitlegkaarten (titel + punten) die leerlingen zien vóór ze beginnen. Maak er een en hergebruik hem bij elke opdracht.",
+    "newButton": "Nieuwe kaart",
+    "empty": "Nog geen opdrachtkaarten. Maak er een om leerlingen op weg te helpen.",
+    "moreBullets": "+{{count}} meer",
+    "noBullets": "Geen punten",
+    "newTitle": "Nieuwe opdrachtkaart",
+    "editTitle": "Opdrachtkaart bewerken",
+    "editorDescription": "Geef de kaart een titel en maximaal 10 korte punten.",
+    "titleLabel": "Titel",
+    "titlePlaceholder": "Bijv. Zo maak je jouw compositie",
+    "bulletsLabel": "Punten",
+    "bulletPlaceholder": "Een korte instructie...",
+    "addBullet": "Punt toevoegen",
+    "removeBullet": "Punt verwijderen",
+    "saveError": "Kon opdrachtkaart niet opslaan",
+    "deleteTitle": "Opdrachtkaart verwijderen",
+    "deleteConfirm": "Weet je zeker dat je deze opdrachtkaart wilt verwijderen? Opdrachten die deze kaart gebruiken vallen terug op de standaarduitleg.",
+    "deleteError": "Kon opdrachtkaart niet verwijderen",
+    "defaults": {
+      "template": {
+        "title": "Zo werkt deze opdracht",
+        "bullets": [
+          "Je docent heeft alvast muziek klaargezet.",
+          "Luister goed en maak het af.",
+          "Sleep geluiden op de tijdlijn.",
+          "Klaar? Sla je compositie op."
+        ]
+      },
+      "praatplaat": {
+        "title": "Zo werkt deze opdracht",
+        "bullets": [
+          "Je kiest straks een plek op de afbeelding.",
+          "Verzamel geluiden op de kaart.",
+          "Maak muziek die bij jouw plek past.",
+          "Klaar? Sla je compositie op."
+        ]
+      },
+      "storyboard": {
+        "title": "Zo werkt deze opdracht",
+        "bullets": [
+          "Bekijk de scènes van het verhaal.",
+          "Verzamel geluiden op de kaart.",
+          "Maak muziek die bij elke scène past.",
+          "Klaar? Sla je compositie op."
+        ]
+      },
+      "free": {
+        "title": "Zo werkt deze opdracht",
+        "bullets": [
+          "Verzamel geluiden op de kaart.",
+          "Experimenteer met de klanken.",
+          "Maak je eigen compositie.",
+          "Klaar? Sla je compositie op."
+        ]
+      }
+    }
+  },
+  "lessonCards": {
+    "tabTitle": "Leskaarten",
+    "builtin": {
+      "robotfabriek": {
+        "title": "Robotfabriek",
+        "level": "Groep 6–7",
+        "goal": "Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken.",
+        "phases": [
+          { "name": "Oriënteren", "text": "klassikaal gesprek; tweetallen kiezen een plek." },
+          { "name": "Onderzoeken", "text": "geluiden verzamelen en in de studio componeren." },
+          { "name": "Uitvoeren", "text": "inleveren en klassikaal laten klinken." },
+          { "name": "Evalueren", "text": "samen nabespreken." }
+        ]
+      },
+      "verspringen": {
+        "title": "Verspringen",
+        "level": "Groep 5–8",
+        "goal": "Leerlingen maken een soundtrack per scène en ervaren hoe muziek een verhaal in beeld ondersteunt."
+      },
+      "vrij-basis": {
+        "title": "Vrij componeren",
+        "level": "Alle groepen",
+        "goal": "Leerlingen verkennen vrij de geluiden van een thema en maken hun eigen compositie — puur gericht op klank."
+      },
+      "drumbeat": {
+        "title": "Drum beat",
+        "level": "Alle groepen",
+        "goal": "Leerlingen bouwen voort op een kant-en-klaar ritme en ontdekken hoe lagen en herhaling samen een beat maken."
+      }
+    },
+    "sectionSubtitle": "Kant-en-klare pakketten: kies er een en zet 'm in één klik klaar voor een klas. Maak ook je eigen leskaarten.",
+    "newButton": "Nieuwe leskaart",
+    "builtinBadge": "Ingebouwd",
+    "goalLabel": "Lesdoel.",
+    "phasesTitle": "Fasen",
+    "download": "Download pdf",
+    "activate": "Activeer in klas",
+    "empty": "Nog geen leskaarten.",
+    "deleteTitle": "Leskaart verwijderen",
+    "deleteConfirm": "Weet je zeker dat je deze leskaart wilt verwijderen?\nDit heeft geen invloed op al geactiveerde opdrachten.",
+    "activateModal": {
+      "title": "Leskaart activeren",
+      "description": "Kies een klas voor \"{{title}}\", of maak een nieuwe klas aan.",
+      "newClass": "Maak een nieuwe klas",
+      "newClassPlaceholder": "Naam van de klas",
+      "nameRequired": "Geef de nieuwe klas een naam.",
+      "confirm": "Activeren",
+      "error": "Kon de leskaart niet activeren. Probeer het opnieuw.",
+      "successTitle": "Leskaart geactiveerd!",
+      "successBody": "\"{{title}}\" staat klaar voor {{className}}. Leerlingen typen de klascode in.",
+      "codeLabel": "Klascode"
+    },
+    "editor": {
+      "newTitle": "Nieuwe leskaart",
+      "editTitle": "Leskaart bewerken",
+      "typeLabel": "Type opdracht",
+      "resourceLabel": "Bron",
+      "resourcePlaceholder": "Kies een bron…",
+      "resourceRequired": "Kies een bron voor deze leskaart.",
+      "cardLabel": "Opdrachtkaart (optioneel)",
+      "titleLabel": "Titel",
+      "titlePlaceholder": "Bijv. Robotfabriek",
+      "titleRequired": "Geef de leskaart een titel.",
+      "levelLabel": "Niveau (optioneel)",
+      "levelPlaceholder": "Bijv. Groep 6–7",
+      "pdfLabel": "Pdf-link (optioneel)",
+      "pdfPlaceholder": "https://…",
+      "goalLabel": "Lesdoel (optioneel)",
+      "goalPlaceholder": "Wat leren de leerlingen?",
+      "phasesLabel": "Fasen (optioneel)",
+      "addPhase": "Fase toevoegen",
+      "noPhases": "Nog geen fasen toegevoegd.",
+      "phaseNamePlaceholder": "Naam",
+      "phaseTextPlaceholder": "Omschrijving",
+      "saveError": "Kon de leskaart niet opslaan."
+    }
   },
   "templates": {
     "activeBanner": "Opdracht:",
@@ -487,6 +665,11 @@
     "praatplatenTitle": "Praatplaten",
     "praatplatenDescription": "Leerlingen kiezen een plek op de afbeelding en maken daar een compositie voor.",
     "praatplatenEmpty": "Nog geen praatplaten. Maak er een aan om te beginnen.",
+    "storyboardsTitle": "Storyboards",
+    "storyboardsDescription": "Kant-en-klare beeldverhalen; leerlingen maken een soundtrack per scène. Activeer er een per klas.",
+    "storyboardsEmpty": "Er zijn nog geen storyboards beschikbaar.",
+    "storyboardFrames_one": "{{count}} beeld",
+    "storyboardFrames_other": "{{count}} beelden",
     "templatesTitle": "Templates",
     "templatesDescription": "Een voorgebouwde compositie waar leerlingen mee aan de slag gaan.",
     "templatesEmpty": "Nog geen templates. Maak een compositie in SoundScout en sla deze op als opdracht via het podium.",
@@ -499,6 +682,8 @@
     "newTemplateModalButton": "Ga naar SoundScout",
     "typeTemplate": "Template",
     "typePraatplaat": "Praatplaat",
+    "typeStoryboard": "Verhaal in beeld",
+    "typeFree": "Vrije compositie",
     "copyCode": "Kopieer code",
     "active": "Actief",
     "inactive": "Inactief",
@@ -747,6 +932,9 @@
       "logout": "Uitloggen",
       "guide": "Handleiding",
       "myClasses": "Mijn Klassen",
+      "tabClasses": "Mijn klassen",
+      "tabAssignments": "Mijn opdrachten",
+      "tabLessons": "Leskaarten",
       "newClass": "Nieuwe Klas",
       "loading": "Klassen laden...",
       "emptyTitle": "Nog geen klassen",
@@ -760,11 +948,27 @@
       "step1": "1. Maak een klas aan en krijg een 4-cijferige code",
       "step2": "2. Deel de code met je leerlingen",
       "step3": "3. Leerlingen maken een compositie en voeren de code in bij \"Delen\"",
-      "step4": "4. Bekijk alle composities hier in je dashboard"
+      "step4": "4. Bekijk alle composities hier in je dashboard",
+    "setup": {
+      "title": "Zo zet je een klas op",
+      "step1": {
+        "title": "Maak een klas",
+        "description": "Je krijgt meteen een klascode van vier cijfers."
+      },
+      "step2": {
+        "title": "Kies een opdracht",
+        "description": "Activeer een praatplaat, storyboard of template voor je klas."
+      },
+      "step3": {
+        "title": "Deel de klascode",
+        "description": "Leerlingen typen de code in en je ziet hun composities hier."
+      }
+    }
     },
     "classCodeMeaning": "Leerlingen typen deze code in om mee te doen.",
     "classDetail": {
       "back": "Terug naar overzicht",
+      "dashboardCrumb": "Dashboard",
       "compositionCount": "{{count}} compositie",
       "compositionCount_plural": "{{count}} composities",
       "refreshTitle": "Ververs composities",
@@ -1012,6 +1216,14 @@
       "kind": "Praatplaat",
       "description": "Je kiest straks een plek op deze afbeelding. Daar hoort jouw compositie bij."
     },
+    "storyboard": {
+      "kind": "Verhaal in beeld",
+      "description": "Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart."
+    },
+    "free": {
+      "kind": "Vrije compositie",
+      "description": "Verzamel geluiden op de kaart en maak je eigen compositie. Laat je fantasie de vrije loop."
+    },
     "none": {
       "heading": "Nog geen opdracht klaar",
       "message": "Deze klas heeft nog geen opdracht actief. Wacht even of vraag je docent. Je kunt ook vrij gaan componeren.",
@@ -1088,30 +1300,11 @@
     },
     "lessons": {
       "title": "Kant-en-klare leskaarten",
-      "soon": "Binnenkort",
-      "soonDetail": "Deze leskaart komt binnenkort beschikbaar. Kies links Robotfabriek om een uitgewerkt voorbeeld te zien.",
       "download": "Download pdf",
-      "robotfactory": {
-        "level": "Groep 6–7",
-        "title": "Robotfabriek",
-        "tag": "Praatplaat",
-        "subtitle": "Groep 6–7 · in tweetallen",
-        "goalLabel": "Lesdoel.",
-        "goal": "Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken.",
-        "phasesTitle": "De vier fasen van het creatief proces",
-        "phases": {
-          "orient": { "name": "Oriënteren", "text": "klassikaal gesprek; tweetallen kiezen een plek." },
-          "research": { "name": "Onderzoeken", "text": "geluiden verzamelen en in de studio componeren." },
-          "perform": { "name": "Uitvoeren", "text": "inleveren en klassikaal laten klinken." },
-          "evaluate": { "name": "Evalueren", "text": "samen nabespreken." }
-        }
-      },
-      "storyboard": {
-        "title": "Storyboard-verhaal"
-      },
-      "free": {
-        "title": "Vrij componeren"
-      }
+      "openForClass": "Open voor je klas",
+      "goalLabel": "Lesdoel.",
+      "phasesTitle": "Fasen",
+      "empty": "Leskaarten worden binnenkort geladen."
     },
     "curriculum": {
       "title": "Sluit aan op de leerlijn muziek",

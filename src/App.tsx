@@ -59,6 +59,8 @@ function AppContent() {
   const goToShared = useAppStore((s) => s.goToShared);
   const goToSharedPraatplaat = useAppStore((s) => s.goToSharedPraatplaat);
   const goToStart = useAppStore((s) => s.goToStart);
+  const goToTeacher = useAppStore((s) => s.goToTeacher);
+  const setPendingLessonCardKey = useAppStore((s) => s.setPendingLessonCardKey);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
 
@@ -145,6 +147,23 @@ function AppContent() {
       });
     }
   }, [goToStart]);
+
+  // Check for ?screen=teacher (+ optioneel ?lesson=<builtin_key>) op mount.
+  // De publieke landingspagina stuurt docenten hierheen; met ?lesson= opent het
+  // dashboard straks de Leskaarten-tab op de gekozen ingebouwde leskaart.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('screen') !== 'teacher') return;
+
+    const lessonKey = params.get('lesson');
+    if (lessonKey) setPendingLessonCardKey(lessonKey);
+    goToTeacher();
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('screen');
+    url.searchParams.delete('lesson');
+    window.history.replaceState({}, '', url.pathname + url.search);
+  }, [goToTeacher, setPendingLessonCardKey]);
 
   // Check for ?pp-share= query parameter on mount (#73 — publieke praatplaat-viewer)
   useEffect(() => {

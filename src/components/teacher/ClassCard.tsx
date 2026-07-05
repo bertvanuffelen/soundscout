@@ -29,14 +29,14 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
 
   return (
     <>
-      <div className="bg-white rounded-xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
+      <div className="bg-bg-surface rounded-2xl shadow-md hover:shadow-lg transition-shadow p-4 sm:p-5">
         {/* Header met naam en code */}
         <div className="flex items-start justify-between mb-3">
           <div>
-            <h3 className="font-semibold text-text-main text-lg">
+            <h3 className="font-bold text-text-main text-lg">
               {name}
             </h3>
-            <p className="text-neutral-500 text-sm">
+            <p className="text-text-muted text-sm">
               {t('teacher.classCard.createdOn', { date: formattedDate })}
             </p>
           </div>
@@ -44,12 +44,12 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
           {/* Klascode badge with show button */}
           <div className="flex flex-col items-end gap-1">
             <div className="flex items-center gap-2">
-              <div className="bg-accent-100 text-accent-800 px-3 py-1 rounded-lg font-mono font-bold text-lg">
+              <div className="bg-accent-100 text-accent-800 px-3 py-1 rounded-full font-mono font-bold text-lg tracking-wider">
                 {code}
               </div>
               <button
                 onClick={() => setShowCodeOverlay(true)}
-                className="flex-shrink-0 p-2 rounded-lg bg-accent-50 text-accent-700 hover:bg-accent-100 transition-colors"
+                className="flex-shrink-0 p-2 rounded-full bg-accent-50 text-accent-700 hover:bg-accent-100 transition-colors"
                 title={t('teacher.classCard.showOnScreen')}
                 aria-label={t('teacher.classCard.showOnScreen')}
               >
@@ -74,7 +74,7 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
           variant="primary"
           size="sm"
           onClick={onOpen}
-          className="flex-1"
+          className="flex-1 rounded-full"
         >
           {t('teacher.classCard.view')}
         </Button>

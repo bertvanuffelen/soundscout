@@ -116,7 +116,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
             onChange={(e) => setName(e.target.value)}
             placeholder={t('teacher.praatplaat.namePlaceholder')}
             maxLength={200}
-            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-primary-400"
+            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-accent-400"
             disabled={saving}
           />
         </div>
@@ -135,7 +135,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                 disabled={saving}
                 className={`group relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
                   selected?.id === img.id
-                    ? 'border-primary-400 ring-2 ring-primary-200'
+                    ? 'border-accent-400 ring-2 ring-accent-200'
                     : 'border-transparent hover:border-neutral-300'
                 } disabled:opacity-50 disabled:cursor-not-allowed`}
               >
@@ -161,7 +161,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                 </button>
                 {/* Selectie check */}
                 {selected?.id === img.id && (
-                  <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-primary-400 flex items-center justify-center">
+                  <div className="absolute top-1 right-1 w-5 h-5 rounded-full bg-accent-400 flex items-center justify-center">
                     <Check className="w-3 h-3 text-white" />
                   </div>
                 )}
@@ -197,7 +197,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                           disabled={saving}
                           className={`group relative aspect-video rounded-lg overflow-hidden border-2 transition-all ${
                             selected?.id === location.id && selected?.source === 'theme' && selected?.themeId === group.themeId
-                              ? 'border-primary-400 ring-2 ring-primary-200'
+                              ? 'border-accent-400 ring-2 ring-accent-200'
                               : 'border-transparent hover:border-neutral-300'
                           } disabled:opacity-50 disabled:cursor-not-allowed`}
                         >
@@ -221,7 +221,7 @@ export function CreatePraatplaatModal({ isOpen, onClose, onCreate }: CreatePraat
                             <ZoomIn className="w-3.5 h-3.5 text-white" />
                           </button>
                           {selected?.id === location.id && selected?.source === 'theme' && selected?.themeId === group.themeId && (
-                            <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-primary-400 flex items-center justify-center">
+                            <div className="absolute top-1.5 right-1.5 w-6 h-6 rounded-full bg-accent-400 flex items-center justify-center">
                               <Check className="w-4 h-4 text-white" />
                             </div>
                           )}

@@ -20,6 +20,7 @@ import { logger } from './logger';
 import { praatplaatToStoryboard } from './praatplaatStoryboard';
 import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, Storyboard, ComposeMode } from '../types';
 import { storageService } from '../services/StorageService';
+import i18n from '../i18n';
 
 /**
  * Payload voor `hydrateCompositionContext`: alle velden van een compositie die
@@ -376,6 +377,49 @@ export async function activatePendingAssignment(): Promise<void> {
     });
 
     useAppStore.getState().goToPraatplaatSelect();
+    return;
+  }
+
+  if (assignment.type === 'storyboard' && assignment.storyboard) {
+    const found = findStoryboardById(assignment.storyboard.ref);
+    if (!found) {
+      logger.warn('[activatePendingAssignment] Storyboard-ref niet gevonden', {
+        ref: assignment.storyboard.ref,
+      });
+      return;
+    }
+
+    // Klascode-sessie vastleggen — assignmentId draagt de registry-ref (geen UUID)
+    useAppStore.getState().setClassSession({
+      classCode,
+      classId: assignment.classId,
+      className: assignment.className,
+      assignmentType: 'storyboard',
+      assignmentId: assignment.storyboard.ref,
+      assignmentName: i18n.t(assignment.storyboard.nameKey),
+    });
+
+    // Hergebruik de bestaande vrije-modus storyboard-init (thema + scènes → map)
+    await initializeCompositionFromStoryboard(found.storyboard);
+    return;
+  }
+
+  if (assignment.type === 'free' && assignment.free) {
+    // Klascode-sessie vastleggen — assignmentId draagt de thema-id (geen UUID)
+    useAppStore.getState().setClassSession({
+      classCode,
+      classId: assignment.classId,
+      className: assignment.className,
+      assignmentType: 'free',
+      assignmentId: assignment.free.themeId,
+      assignmentName: assignment.free.themeName,
+    });
+
+    // Vrije compositie binnen het gekozen thema: geen praatplaat/storyboard-
+    // context. Zet compose-mode 'free' → initializeNewComposition navigeert
+    // direct naar de map zodat de leerling geluiden kan verzamelen.
+    useAppStore.getState().setComposeMode('free');
+    await initializeNewComposition({ themeId: assignment.free.themeId });
     return;
   }
 

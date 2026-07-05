@@ -53,7 +53,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
         {/* Header */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <h1 className="text-2xl sm:text-3xl font-bold text-text-main">
+            <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-text-main">
               SoundScout
             </h1>
           </div>
@@ -81,7 +81,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               placeholder={t('teacher.login.emailPlaceholder')}
-              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
+              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none transition-all text-text-main placeholder:text-text-muted/50 bg-neutral-50"
               disabled={loading}
               autoComplete="email"
             />
@@ -95,7 +95,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
               <button
                 type="button"
                 onClick={onForgotPassword}
-                className="text-sm text-primary-600 hover:text-primary-700"
+                className="text-sm text-accent-600 hover:text-accent-700"
                 disabled={loading}
               >
                 {t('teacher.login.forgotPassword')}
@@ -107,7 +107,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="••••••••"
-              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-primary-400 focus:border-primary-400 outline-none transition-all text-text-main bg-neutral-50"
+              className="w-full px-4 py-3 border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none transition-all text-text-main bg-neutral-50"
               disabled={loading}
               autoComplete="current-password"
             />
@@ -117,7 +117,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
             type="submit"
             variant="primary"
             size="lg"
-            className="w-full"
+            className="w-full rounded-full"
             disabled={loading}
           >
             {loading ? t('teacher.login.submitLoading') : t('teacher.login.submit')}
@@ -131,7 +131,7 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
             <button
               type="button"
               onClick={onSwitchToRegister}
-              className="text-primary-600 hover:text-primary-700 font-medium"
+              className="text-accent-600 hover:text-accent-700 font-medium"
               disabled={loading}
             >
               {t('teacher.login.registerLink')}
