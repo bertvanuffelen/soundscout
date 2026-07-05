@@ -1035,5 +1035,107 @@
     "startListening": "Listen to the sound map",
     "emptyTitle": "No compositions yet",
     "emptyDescription": "No compositions have been placed on this sound map yet."
+  },
+  "teacherLanding": {
+    "hero": {
+      "eyebrow": "Free · in the browser · Dutch",
+      "title": "Let your class make music together around a single image",
+      "subtitle": "SoundScout is a learning space where kids aged 8–12 collect sounds and compose together. You share a class code, they start right away.",
+      "ctaPrimary": "Create a free account",
+      "ctaSecondary": "Log in"
+    },
+    "compose": {
+      "title": "Three ways to compose",
+      "subtitle": "Pick the form that fits your lesson — from working together on the whiteboard to free experimentation.",
+      "variants": {
+        "praatplaat": {
+          "tag": "Together · whiteboard",
+          "title": "Sound map",
+          "description": "The whole class on one image. Each pair gives voice to a spot."
+        },
+        "storyboard": {
+          "tag": "Story in scenes",
+          "title": "Storyboard",
+          "description": "Three to four images form a story — a soundtrack per scene."
+        },
+        "vrij": {
+          "tag": "Open",
+          "title": "Free composing",
+          "description": "A sound composition without an image — pure exploration."
+        }
+      },
+      "captions": {
+        "praatplaat": "The whole class works on one image and gives voice to a soundscape together.",
+        "storyboard": "A story in three to four scenes — students make a soundtrack for each image.",
+        "vrij": "A sound composition without an image — students build freely on the timeline."
+      }
+    },
+    "steps": {
+      "title": "How to set up a class",
+      "step1": {
+        "title": "Create a class",
+        "description": "You get a four-digit class code straight away."
+      },
+      "step2": {
+        "title": "Choose an assignment",
+        "description": "Activate a sound map, storyboard or template for your class."
+      },
+      "step3": {
+        "title": "Share the class code",
+        "description": "Students type in the code and get in right away."
+      },
+      "ctaDashboard": "Go to your dashboard"
+    },
+    "lessons": {
+      "title": "Ready-made lesson cards",
+      "soon": "Coming soon",
+      "soonDetail": "This lesson card is coming soon. Pick Robot factory on the left to see a worked example.",
+      "download": "Download pdf",
+      "robotfactory": {
+        "level": "Grade 6–7",
+        "title": "Robot factory",
+        "tag": "Sound map",
+        "subtitle": "Grade 6–7 · in pairs",
+        "goalLabel": "Goal.",
+        "goal": "Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere.",
+        "phasesTitle": "The four phases of the creative process",
+        "phases": {
+          "orient": { "name": "Orient", "text": "class discussion; pairs choose a spot." },
+          "research": { "name": "Explore", "text": "collect sounds and compose in the studio." },
+          "perform": { "name": "Perform", "text": "hand in and play for the class." },
+          "evaluate": { "name": "Evaluate", "text": "reflect together." }
+        }
+      },
+      "storyboard": {
+        "title": "Storyboard story"
+      },
+      "free": {
+        "title": "Free composing"
+      }
+    },
+    "curriculum": {
+      "title": "Connects to the music curriculum",
+      "intro": "SoundScout touches three music curriculum goals — so you can justify using it to your school leadership and coordinator.",
+      "pill1": "54 · listening",
+      "pill2": "55 · playing and making",
+      "pill3": "56 · capturing and designing"
+    },
+    "workshops": {
+      "text": "Want to introduce SoundScout to your team? Bert runs workshops for teaching teams and teacher-training colleges.",
+      "cta": "See the workshops"
+    },
+    "videos": {
+      "title": "How it works — in pictures",
+      "subtitle": "Two short demos: one from the student's side, one from yours as a teacher.",
+      "play": "Play video",
+      "student": {
+        "title": "How a student composes",
+        "description": "From collecting sounds to a composition on the timeline."
+      },
+      "teacher": {
+        "title": "How you manage your class",
+        "description": "Classes, assignments and submissions in the dashboard."
+      }
+    }
   }
 }
