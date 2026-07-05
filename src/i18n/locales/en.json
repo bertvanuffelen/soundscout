@@ -604,6 +604,11 @@
         "title": "Free composing",
         "level": "All grades",
         "goal": "Students freely explore the sounds of a theme and create their own composition — focused purely on sound."
+      },
+      "drumbeat": {
+        "title": "Drum beat",
+        "level": "All grades",
+        "goal": "Students build on a ready-made rhythm and discover how layers and repetition combine into a beat."
       }
     },
     "sectionSubtitle": "Ready-made packages: pick one and set it up for a class in a single click. Or create your own.",
