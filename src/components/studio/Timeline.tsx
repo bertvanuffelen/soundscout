@@ -10,7 +10,7 @@ import { VolumePopover } from './VolumePopover';
 import { EffectsModal } from './EffectsModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration } from '../../utils/audio';
-import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, ZOOM_DEFAULT_DESKTOP, ZOOM_DEFAULT_MOBILE } from '../../constants/config';
+import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from '../../constants/config';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
@@ -207,12 +207,10 @@ export const Timeline = memo(function Timeline({
     updateSection(sectionId, { endBeat: newEndBeat });
   }, [updateSection]);
 
-  // --- Zoom state ---
-  // Detect mobile once on mount for default zoom level
-  const isMobileRef = useRef(typeof window !== 'undefined' && window.innerWidth < 640);
-  const [zoomLevel, setZoomLevel] = useState(() =>
-    isMobileRef.current ? ZOOM_DEFAULT_MOBILE : ZOOM_DEFAULT_DESKTOP,
-  );
+  // --- Zoom state (gedeeld via timelineStore, Feature F) ---
+  // Zit in de store zodat de studio-filmstrip dezelfde horizontale schaal gebruikt.
+  const zoomLevel = useTimelineStore((s) => s.zoomLevel);
+  const setZoomLevel = useTimelineStore((s) => s.setZoomLevel);
 
   // widthMultiplier: 1.0 = fit all beats in viewport, 2.0 = half visible, etc.
   const widthMultiplier = zoomLevel;
@@ -237,7 +235,7 @@ export const Timeline = memo(function Timeline({
     } else {
       setZoomLevel(clamped);
     }
-  }, [totalBeats]);
+  }, [totalBeats, setZoomLevel]);
 
   const handleZoomIn = useCallback(() => applyZoom(zoomLevel + ZOOM_STEP), [zoomLevel, applyZoom]);
   const handleZoomOut = useCallback(() => applyZoom(zoomLevel - ZOOM_STEP), [zoomLevel, applyZoom]);
