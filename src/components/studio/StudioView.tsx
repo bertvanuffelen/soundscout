@@ -24,7 +24,7 @@ import { useUndoRedoTimeline } from '../../hooks/useUndoRedoTimeline';
 import { SampleLibrary } from './SampleLibrary';
 import { Timeline } from './Timeline';
 import { TransportControls } from './TransportControls';
-import { StorytellingPanel, StorytellingToggle } from './storytelling';
+import { StorytellingPanel, StorytellingToggle, StorytellingFilmstrip } from './storytelling';
 import type { StudioViewMode } from './storytelling';
 // EditToolbar is now integrated into Timeline header bar
 import { TrimModal } from './TrimModal';
@@ -63,8 +63,13 @@ export function StudioView() {
 
   // Storytelling state (#41)
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
+  const composeMode = useAppStore((s) => s.composeMode);
   const hasStorytelling = activeStoryboard !== null;
+  // 'Scènes'-filmstrip (Feature F) alleen zinvol bij een multi-image storyboard.
+  const allowScenes = composeMode === 'storyboard' && (activeStoryboard?.images.length ?? 0) > 1;
   const [viewMode, setViewMode] = useState<StudioViewMode>('split');
+  // Val terug op 'split' als 'scenes' geselecteerd is maar niet (meer) toegestaan.
+  const effectiveMode: StudioViewMode = viewMode === 'scenes' && !allowScenes ? 'split' : viewMode;
   // Mobile tab: only 'library' or 'image' (no split on small screens)
   const [mobileTab, setMobileTab] = useState<'library' | 'image'>('library');
   // Gedeelde scroll-container van de timeline (Feature F): de scène-filmstrip spiegelt hem.
@@ -308,7 +313,7 @@ export function StudioView() {
           {/* Desktop storytelling toggle (hidden on mobile — mobile uses tab bar below) */}
           {hasStorytelling && (
             <div className="hidden sm:block">
-              <StorytellingToggle viewMode={viewMode} onViewModeChange={setViewMode} />
+              <StorytellingToggle viewMode={viewMode} onViewModeChange={setViewMode} allowScenes={allowScenes} />
             </div>
           )}
           <h1 className="text-base sm:text-lg font-bold text-text-main">{t('studio.title')}</h1>
@@ -386,16 +391,23 @@ export function StudioView() {
           <>
             {/* Desktop layout (sm+) */}
             <div className="hidden sm:flex flex-1 min-h-0">
-              {viewMode !== 'image' && (
-                <SampleLibrary
-                  samples={librarySamples}
-                  onPreview={handlePreview}
-                  selectedSampleId={selectedLibrarySampleId}
-                  onSelectSample={setSelectedLibrarySampleId}
-                />
-              )}
-              {viewMode !== 'library' && (
-                <StorytellingPanel className={viewMode === 'split' ? 'flex-1 min-w-0 border-l border-border-subtle bg-white/90 md:bg-bg-surface' : 'flex-1'} />
+              {effectiveMode === 'scenes' ? (
+                /* Scènes-modus: alle storyboard-beelden als filmstrip, uitgelijnd op de timeline */
+                <StorytellingFilmstrip syncScrollFrom={timelineScrollRef} className="flex-1 min-w-0" />
+              ) : (
+                <>
+                  {effectiveMode !== 'image' && (
+                    <SampleLibrary
+                      samples={librarySamples}
+                      onPreview={handlePreview}
+                      selectedSampleId={selectedLibrarySampleId}
+                      onSelectSample={setSelectedLibrarySampleId}
+                    />
+                  )}
+                  {effectiveMode !== 'library' && (
+                    <StorytellingPanel className={effectiveMode === 'split' ? 'flex-1 min-w-0 border-l border-border-subtle bg-white/90 md:bg-bg-surface' : 'flex-1'} />
+                  )}
+                </>
               )}
             </div>
 
