@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { Check, Loader2, Plus } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import type { LessonCard } from '../../lib/lessonCards';
-import { activateLessonCard } from '../../lib/lessonCards';
+import { activateLessonCard, localizeLessonCard } from '../../lib/lessonCards';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { logger } from '../../utils/logger';
@@ -57,6 +57,7 @@ export function ActivateLessonCardModal({
   if (!lessonCard) return null;
 
   const isNew = choice === NEW_CLASS;
+  const lessonTitle = localizeLessonCard(t, lessonCard).title;
 
   const handleConfirm = async () => {
     setSaving(true);
@@ -103,7 +104,7 @@ export function ActivateLessonCardModal({
             <Check className="w-6 h-6" />
           </div>
           <p className="text-text-main text-sm mb-4">
-            {t('lessonCards.activateModal.successBody', { title: lessonCard.title, className: success.className })}
+            {t('lessonCards.activateModal.successBody', { title: lessonTitle, className: success.className })}
           </p>
           <div className="inline-flex flex-col items-center gap-1 bg-neutral-100 rounded-xl px-6 py-3 mb-6">
             <span className="text-xs uppercase tracking-wide text-text-muted">
@@ -120,7 +121,7 @@ export function ActivateLessonCardModal({
       ) : (
         <>
           <p className="text-text-muted text-sm mb-4">
-            {t('lessonCards.activateModal.description', { title: lessonCard.title })}
+            {t('lessonCards.activateModal.description', { title: lessonTitle })}
           </p>
 
           {error && (

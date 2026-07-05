@@ -583,6 +583,29 @@
   },
   "lessonCards": {
     "tabTitle": "Leskaarten",
+    "builtin": {
+      "robotfabriek": {
+        "title": "Robotfabriek",
+        "level": "Groep 6–7",
+        "goal": "Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken.",
+        "phases": [
+          { "name": "Oriënteren", "text": "klassikaal gesprek; tweetallen kiezen een plek." },
+          { "name": "Onderzoeken", "text": "geluiden verzamelen en in de studio componeren." },
+          { "name": "Uitvoeren", "text": "inleveren en klassikaal laten klinken." },
+          { "name": "Evalueren", "text": "samen nabespreken." }
+        ]
+      },
+      "verspringen": {
+        "title": "Verspringen",
+        "level": "Groep 5–8",
+        "goal": "Leerlingen maken een soundtrack per scène en ervaren hoe muziek een verhaal in beeld ondersteunt."
+      },
+      "vrij-basis": {
+        "title": "Vrij componeren",
+        "level": "Alle groepen",
+        "goal": "Leerlingen verkennen vrij de geluiden van een thema en maken hun eigen compositie — puur gericht op klank."
+      }
+    },
     "sectionSubtitle": "Kant-en-klare pakketten: kies er een en zet 'm in één klik klaar voor een klas. Maak ook je eigen leskaarten.",
     "newButton": "Nieuwe leskaart",
     "builtinBadge": "Ingebouwd",
@@ -1272,34 +1295,11 @@
     },
     "lessons": {
       "title": "Kant-en-klare leskaarten",
-      "soon": "Binnenkort",
-      "soonDetail": "Deze leskaart komt binnenkort beschikbaar. Kies links Robotfabriek om een uitgewerkt voorbeeld te zien.",
       "download": "Download pdf",
       "openForClass": "Open voor je klas",
       "goalLabel": "Lesdoel.",
       "phasesTitle": "Fasen",
-      "empty": "Leskaarten worden binnenkort geladen.",
-      "robotfactory": {
-        "level": "Groep 6–7",
-        "title": "Robotfabriek",
-        "tag": "Praatplaat",
-        "subtitle": "Groep 6–7 · in tweetallen",
-        "goalLabel": "Lesdoel.",
-        "goal": "Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken.",
-        "phasesTitle": "De vier fasen van het creatief proces",
-        "phases": {
-          "orient": { "name": "Oriënteren", "text": "klassikaal gesprek; tweetallen kiezen een plek." },
-          "research": { "name": "Onderzoeken", "text": "geluiden verzamelen en in de studio componeren." },
-          "perform": { "name": "Uitvoeren", "text": "inleveren en klassikaal laten klinken." },
-          "evaluate": { "name": "Evalueren", "text": "samen nabespreken." }
-        }
-      },
-      "storyboard": {
-        "title": "Storyboard-verhaal"
-      },
-      "free": {
-        "title": "Vrij componeren"
-      }
+      "empty": "Leskaarten worden binnenkort geladen."
     },
     "curriculum": {
       "title": "Sluit aan op de leerlijn muziek",

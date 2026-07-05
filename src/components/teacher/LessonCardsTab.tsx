@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Loader2, Plus, Download, Play, FileText, MapPin, Clapperboard, Music, Pencil, Trash2, type LucideIcon } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useLessonCards } from '../../hooks/useLessonCards';
-import type { LessonCard, LessonCardInput } from '../../lib/lessonCards';
+import { localizeLessonCard, type LessonCard, type LessonCardInput } from '../../lib/lessonCards';
 import type { AssignmentType } from '../../lib/assignments';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -111,6 +111,7 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
             {cards.map((c) => {
               const meta = TYPE_META[c.assignmentType];
               const active = selected?.id === c.id;
+              const loc = localizeLessonCard(t, c);
               return (
                 <button
                   key={c.id}
@@ -130,12 +131,12 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
                     )}
                   </div>
                   <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-text-main text-sm truncate">{c.title}</p>
+                    <p className="font-semibold text-text-main text-sm truncate">{loc.title}</p>
                     <div className="flex items-center gap-1.5 mt-0.5">
                       <span className={`inline-flex items-center rounded-full text-[10px] font-bold px-2 py-0.5 ${meta.badge}`}>
                         {t(meta.labelKey)}
                       </span>
-                      {c.level && <span className="text-xs text-text-muted truncate">{c.level}</span>}
+                      {loc.level && <span className="text-xs text-text-muted truncate">{loc.level}</span>}
                     </div>
                   </div>
                 </button>
@@ -218,6 +219,7 @@ function LessonDetail({
 }) {
   const { t } = useTranslation();
   const meta = TYPE_META[card.assignmentType];
+  const loc = localizeLessonCard(t, card);
 
   return (
     <div className="bg-bg-surface rounded-2xl border border-border-subtle p-5 sm:p-6">
@@ -234,7 +236,7 @@ function LessonDetail({
           <meta.Icon className="w-3.5 h-3.5" />
           {t(meta.labelKey)}
         </span>
-        {card.level && <span className="text-sm text-text-muted">{card.level}</span>}
+        {loc.level && <span className="text-sm text-text-muted">{loc.level}</span>}
         {card.isBuiltin && (
           <span className="inline-flex items-center rounded-full text-[10px] font-bold px-2 py-0.5 bg-neutral-100 text-text-muted uppercase tracking-wide">
             {t('lessonCards.builtinBadge')}
@@ -242,20 +244,20 @@ function LessonDetail({
         )}
       </div>
 
-      <h2 className="text-2xl font-extrabold tracking-tight text-text-main mb-3">{card.title}</h2>
+      <h2 className="text-2xl font-extrabold tracking-tight text-text-main mb-3">{loc.title}</h2>
 
-      {card.lessonGoal && (
+      {loc.lessonGoal && (
         <p className="text-sm text-text-main mb-4 leading-relaxed">
           <span className="font-bold">{t('lessonCards.goalLabel')} </span>
-          {card.lessonGoal}
+          {loc.lessonGoal}
         </p>
       )}
 
-      {card.phases.length > 0 && (
+      {loc.phases.length > 0 && (
         <div className="mb-5">
           <h3 className="text-sm font-bold text-text-main mb-2">{t('lessonCards.phasesTitle')}</h3>
           <ul className="space-y-2">
-            {card.phases.map((p, i) => (
+            {loc.phases.map((p, i) => (
               <li key={i} className="flex gap-2.5">
                 <span className="mt-1.5 w-1.5 h-1.5 rounded-full bg-accent-400 shrink-0" />
                 <p className="text-sm text-text-muted">

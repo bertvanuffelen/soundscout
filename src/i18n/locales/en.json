@@ -583,6 +583,29 @@
   },
   "lessonCards": {
     "tabTitle": "Lesson cards",
+    "builtin": {
+      "robotfabriek": {
+        "title": "Robot factory",
+        "level": "Grade 6–7",
+        "goal": "Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere.",
+        "phases": [
+          { "name": "Orient", "text": "class discussion; pairs choose a spot." },
+          { "name": "Explore", "text": "collect sounds and compose in the studio." },
+          { "name": "Perform", "text": "hand in and play for the class." },
+          { "name": "Evaluate", "text": "reflect together." }
+        ]
+      },
+      "verspringen": {
+        "title": "Long jump",
+        "level": "Grade 5–8",
+        "goal": "Students create a soundtrack for each scene and experience how music supports a visual story."
+      },
+      "vrij-basis": {
+        "title": "Free composing",
+        "level": "All grades",
+        "goal": "Students freely explore the sounds of a theme and create their own composition — focused purely on sound."
+      }
+    },
     "sectionSubtitle": "Ready-made packages: pick one and set it up for a class in a single click. Or create your own.",
     "newButton": "New lesson card",
     "builtinBadge": "Built-in",
@@ -1272,34 +1295,11 @@
     },
     "lessons": {
       "title": "Ready-made lesson cards",
-      "soon": "Coming soon",
-      "soonDetail": "This lesson card is coming soon. Pick Robot factory on the left to see a worked example.",
       "download": "Download pdf",
       "openForClass": "Open for your class",
       "goalLabel": "Goal.",
       "phasesTitle": "Phases",
-      "empty": "Lesson cards are loading soon.",
-      "robotfactory": {
-        "level": "Grade 6–7",
-        "title": "Robot factory",
-        "tag": "Sound map",
-        "subtitle": "Grade 6–7 · in pairs",
-        "goalLabel": "Goal.",
-        "goal": "Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere.",
-        "phasesTitle": "The four phases of the creative process",
-        "phases": {
-          "orient": { "name": "Orient", "text": "class discussion; pairs choose a spot." },
-          "research": { "name": "Explore", "text": "collect sounds and compose in the studio." },
-          "perform": { "name": "Perform", "text": "hand in and play for the class." },
-          "evaluate": { "name": "Evaluate", "text": "reflect together." }
-        }
-      },
-      "storyboard": {
-        "title": "Storyboard story"
-      },
-      "free": {
-        "title": "Free composing"
-      }
+      "empty": "Lesson cards are loading soon."
     },
     "curriculum": {
       "title": "Connects to the music curriculum",

@@ -10,6 +10,7 @@
  * Ingebouwde leskaarten (teacher_id NULL) zijn read-only en worden meegeleverd.
  */
 
+import type { TFunction } from 'i18next';
 import { getSupabase } from './supabase';
 import { withTimeout } from '../utils/withTimeout';
 import { sanitizeError } from '../utils/errorSanitize';
@@ -49,6 +50,47 @@ export interface LessonCard {
   coverImage: string | null;
   pdfUrl: string | null;
   createdAt: string;
+}
+
+/** Presentatie-velden die per taal kunnen verschillen (ingebouwde leskaarten). */
+export interface LocalizedLessonFields {
+  title: string;
+  level: string | null;
+  lessonGoal: string | null;
+  phases: LessonPhase[];
+}
+
+/**
+ * Vertaal de presentatie-velden van een leskaart.
+ *
+ * Docent-eigen kaarten (geen builtin_key) tonen hun letterlijke tekst.
+ * Ingebouwde kaarten overlayen een vertaling uit `lessonCards.builtin.<key>.*`
+ * (in nl én en gedefinieerd), met de DB-tekst als fallback voor kaarten zonder
+ * i18n-entry. Zo blijft de DB de bron voor docent-content en zijn built-ins
+ * tweetalig zonder de tabel te dupliceren.
+ */
+export function localizeLessonCard(
+  t: TFunction,
+  card: { builtinKey: string | null; title: string; level: string | null; lessonGoal: string | null; phases: LessonPhase[] },
+): LocalizedLessonFields {
+  if (!card.builtinKey) {
+    return { title: card.title, level: card.level, lessonGoal: card.lessonGoal, phases: card.phases };
+  }
+  const base = `lessonCards.builtin.${card.builtinKey}`;
+  const rawPhases = t(`${base}.phases`, { returnObjects: true, defaultValue: card.phases }) as unknown;
+  const phases: LessonPhase[] = Array.isArray(rawPhases)
+    ? rawPhases
+        .filter((p): p is { name?: unknown; text?: unknown } => !!p && typeof p === 'object')
+        .map((p) => ({ name: typeof p.name === 'string' ? p.name : '', text: typeof p.text === 'string' ? p.text : '' }))
+    : card.phases;
+  const level = t(`${base}.level`, { defaultValue: card.level ?? '' });
+  const goal = t(`${base}.goal`, { defaultValue: card.lessonGoal ?? '' });
+  return {
+    title: t(`${base}.title`, { defaultValue: card.title }),
+    level: level || null,
+    lessonGoal: goal || null,
+    phases,
+  };
 }
 
 /** Publieke (marketing) weergave van een ingebouwde leskaart — landingspagina. */

@@ -24,7 +24,7 @@ import {
   COMPOSE_VARIANTS,
   type ComposeVariant,
 } from '../components/teacher-landing/composeVariants';
-import { fetchBuiltinLessonCards, type PublicLessonCard } from '../lib/lessonCards';
+import { fetchBuiltinLessonCards, localizeLessonCard, type PublicLessonCard } from '../lib/lessonCards';
 import type { AssignmentType } from '../lib/assignments';
 
 /**
@@ -294,6 +294,7 @@ function LessonsSection() {
             {lessons.map((lesson) => {
               const isActive = selected?.id === lesson.id;
               const Icon = LESSON_TYPE_ICON[lesson.assignmentType];
+              const loc = localizeLessonCard(t, lesson);
               return (
                 <button
                   key={lesson.id}
@@ -311,10 +312,10 @@ function LessonsSection() {
                   </span>
                   <span className="flex flex-col min-w-0">
                     <span className="font-bold text-text-main leading-tight truncate">
-                      {lesson.title}
+                      {loc.title}
                     </span>
-                    {lesson.level && (
-                      <span className="text-xs text-text-muted truncate">{lesson.level}</span>
+                    {loc.level && (
+                      <span className="text-xs text-text-muted truncate">{loc.level}</span>
                     )}
                   </span>
                 </button>
@@ -335,30 +336,31 @@ function LessonsSection() {
 function LessonDetail({ lesson }: { lesson: PublicLessonCard }) {
   const { t } = useTranslation();
   const tag = LESSON_TYPE_TAG[lesson.assignmentType];
+  const loc = localizeLessonCard(t, lesson);
   return (
     <div className="flex flex-col gap-4">
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 flex-wrap">
-          <h3 className="text-xl font-extrabold text-text-main">{lesson.title}</h3>
+          <h3 className="text-xl font-extrabold text-text-main">{loc.title}</h3>
           <span className={cn('inline-flex items-center rounded-full text-xs font-bold px-2.5 py-0.5', tag.classes)}>
             {t(tag.labelKey)}
           </span>
         </div>
-        {lesson.level && <p className="text-sm text-text-muted">{lesson.level}</p>}
+        {loc.level && <p className="text-sm text-text-muted">{loc.level}</p>}
       </div>
 
-      {lesson.lessonGoal && (
+      {loc.lessonGoal && (
         <p className="text-sm sm:text-base text-text-main leading-relaxed">
           <span className="font-bold">{t('teacherLanding.lessons.goalLabel')} </span>
-          {lesson.lessonGoal}
+          {loc.lessonGoal}
         </p>
       )}
 
-      {lesson.phases.length > 0 && (
+      {loc.phases.length > 0 && (
         <div className="flex flex-col gap-2">
           <h4 className="font-bold text-text-main">{t('teacherLanding.lessons.phasesTitle')}</h4>
           <ul className="flex flex-col gap-2">
-            {lesson.phases.map((p, i) => (
+            {loc.phases.map((p, i) => (
               <li key={i} className="border-l-2 border-accent-400 pl-3 text-sm sm:text-base">
                 <span className="font-bold text-text-main">{p.name}</span>
                 {p.name && p.text ? <span className="text-text-muted">{' — '}{p.text}</span> : null}
