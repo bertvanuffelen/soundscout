@@ -33,13 +33,14 @@ BEGIN
   SELECT id INTO v_sys_id FROM public.templates WHERE builtin_key = 'drumbeat';
 
   IF v_sys_id IS NULL THEN
+    -- code is NOT NULL + uniek → nieuwe genereren (bron-code kopiëren mag niet).
     INSERT INTO public.templates (
       teacher_id, builtin_key, name, description, composition_data,
-      instructions, clips_locked, lock_options, is_active
+      instructions, clips_locked, lock_options, is_active, code
     )
     VALUES (
       NULL, 'drumbeat', v_src.name, v_src.description, v_src.composition_data,
-      v_src.instructions, v_src.clips_locked, v_src.lock_options, TRUE
+      v_src.instructions, v_src.clips_locked, v_src.lock_options, TRUE, generate_template_code()
     )
     RETURNING id INTO v_sys_id;
   ELSE
