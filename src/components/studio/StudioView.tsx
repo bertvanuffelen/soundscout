@@ -7,7 +7,7 @@
  * - Cleanup (useAudioCleanup)
  */
 
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, pointerWithin, closestCenter, MeasuringStrategy, type CollisionDetection } from '@dnd-kit/core';
 import { Music, Image } from 'lucide-react';
@@ -67,6 +67,8 @@ export function StudioView() {
   const [viewMode, setViewMode] = useState<StudioViewMode>('split');
   // Mobile tab: only 'library' or 'image' (no split on small screens)
   const [mobileTab, setMobileTab] = useState<'library' | 'image'>('library');
+  // Gedeelde scroll-container van de timeline (Feature F): de scène-filmstrip spiegelt hem.
+  const timelineScrollRef = useRef<HTMLDivElement>(null);
 
   // Timeline state
   const tracks = useTimelineStore((s) => s.tracks);
@@ -421,6 +423,7 @@ export function StudioView() {
           isPlaying={isPlaying}
           onSeek={handleSeek}
           snapPreview={snapPreview}
+          externalScrollRef={timelineScrollRef}
           onUndo={undo}
           onRedo={redo}
           canUndo={canUndo}

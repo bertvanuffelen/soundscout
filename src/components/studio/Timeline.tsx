@@ -1,4 +1,4 @@
-import { memo, useRef, useEffect, useCallback, useMemo, useState } from 'react';
+import { memo, useRef, useEffect, useCallback, useMemo, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles } from 'lucide-react';
@@ -50,6 +50,9 @@ interface TimelineProps {
   onAddToTrack?: () => void;
   // Clip editing (inline in header bar)
   clipEdit?: ClipEditProps | null;
+  /** Optionele externe scroll-container-ref (Feature F): laat de studio-filmstrip
+   *  dezelfde horizontale scroll delen. Default = interne ref. */
+  externalScrollRef?: RefObject<HTMLDivElement | null>;
 }
 
 export const Timeline = memo(function Timeline({
@@ -70,9 +73,12 @@ export const Timeline = memo(function Timeline({
   onAddToTrack,
   clipEdit,
   sections: propSections,
+  externalScrollRef,
 }: TimelineProps) {
   const { t } = useTranslation();
-  const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const internalScrollRef = useRef<HTMLDivElement>(null);
+  // Deel de scroll-container met de studio-filmstrip als een externe ref is meegegeven.
+  const scrollContainerRef = externalScrollRef ?? internalScrollRef;
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
