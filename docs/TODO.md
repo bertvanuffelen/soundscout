@@ -242,6 +242,17 @@ Leerlingen werken aan verschillende afbeeldingen van een storyboard die later sa
 
 ### P3 — Middel prioriteit
 
+#### HELP-TOUR — Geleide eerste-keer-tour voor het docent-dashboard
+**Complexiteit:** Medium · **Bron:** Docent-helpdesk-traject (2026-07-06) · **Status:** Concept
+
+Een interactieve spotlight-rondleiding die bij de eerste login stap voor stap de belangrijkste knoppen van het dashboard aanwijst ("Maak hier je klas", "Kies hier een opdracht", "Hier vinden leerlingen de code"). Bouwt voort op de helpdesk-basis die al gemaakt is: complete handleiding (`TeacherGuideScreen`, 12 secties), contextuele `?`-deeplinks (`GuideLink` → `goToTeacherGuide(sectionId)`) en de "Zo zet je een klas op"-stappen (`HowItWorksSteps`).
+
+Grotere bouw dan de rest van het helpdesk-traject: vereist een overlay/spotlight-systeem (element-highlighting, positionering, volgorde-state, "overslaan"/"volgende", onthouden-in-localStorage). Respecteer `prefers-reduced-motion`. Overwegen ná de helpdesk-basis; bewust uitgesteld bij het traject van 2026-07-06.
+
+**Verwant aan:** de handleiding + `GuideLink`-hulplinks (gebouwd 2026-07-06), #78 (startscherm-UX).
+
+---
+
 #### UX-LANDSCAPE — Landscape-hint tonen op tablet/telefoon
 **Complexiteit:** Laag · **Bron:** iPad-test (2026-04-23) · **Status:** Open
 
