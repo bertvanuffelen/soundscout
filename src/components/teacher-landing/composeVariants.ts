@@ -33,17 +33,18 @@ export interface VariantConfig {
   key: ComposeVariant;
 }
 
-// Kleuren exact zoals ComposeModeModal.tsx (teal/purple bewust rauwe Tailwind —
-// geen semantische token-equivalent; vrij gebruikt het accent-token).
+// Warme drieklank die harmonieert met de amber-hoofdkleur (rose/oranje/amber),
+// i.p.v. de eerdere teal/paars. Bewuste rauwe Tailwind-kleuren op de
+// marketing-landing; vrij gebruikt het accent-token (amber).
 export const COMPOSE_VARIANTS: VariantConfig[] = [
   {
     id: 'praatplaat',
     key: 'praatplaat',
     Icon: ImageIcon,
     colors: {
-      active: 'border-teal-400 bg-teal-50',
-      icon: 'text-teal-500',
-      tag: 'bg-teal-50 text-teal-600',
+      active: 'border-rose-400 bg-rose-50',
+      icon: 'text-rose-500',
+      tag: 'bg-rose-50 text-rose-600',
     },
   },
   {
@@ -51,9 +52,9 @@ export const COMPOSE_VARIANTS: VariantConfig[] = [
     key: 'storyboard',
     Icon: Film,
     colors: {
-      active: 'border-purple-400 bg-purple-50',
-      icon: 'text-purple-500',
-      tag: 'bg-purple-50 text-purple-600',
+      active: 'border-orange-400 bg-orange-50',
+      icon: 'text-orange-500',
+      tag: 'bg-orange-50 text-orange-600',
     },
   },
   {

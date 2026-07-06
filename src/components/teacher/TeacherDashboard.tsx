@@ -72,16 +72,19 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editCard, setEditCard] = useState<Opdrachtkaart | null>(null);
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
-  // Leskaart-deeplink vanaf de landingspagina (?lesson=<builtin_key>): open de
-  // Leskaarten-tab op die kaart. Eenmalig lezen bij mount, daarna wissen.
+  // Deeplinks vanaf de landingspagina (na de login-hop): ?lesson=<builtin_key>
+  // opent de Leskaarten-tab op die kaart; ?tab=lessons opent alleen de tab.
+  // Eenmalig lezen bij mount, daarna wissen.
   const [initialLessonKey] = useState<string | null>(() => useAppStore.getState().pendingLessonCardKey);
+  const [initialTeacherTab] = useState<string | null>(() => useAppStore.getState().pendingTeacherTab);
   useEffect(() => {
     if (initialLessonKey) useAppStore.getState().setPendingLessonCardKey(null);
-  }, [initialLessonKey]);
+    if (initialTeacherTab) useAppStore.getState().setPendingTeacherTab(null);
+  }, [initialLessonKey, initialTeacherTab]);
 
   // Tabs: Mijn klassen / Mijn opdrachten / Leskaarten. Deeplink → leskaarten.
   const [activeTab, setActiveTab] = useState<'classes' | 'assignments' | 'lessons'>(
-    initialLessonKey ? 'lessons' : 'classes',
+    initialLessonKey || initialTeacherTab === 'lessons' ? 'lessons' : 'classes',
   );
 
   // Storyboards zijn vaste app-content (geen hook/CRUD) — alleen-lezen lijst.

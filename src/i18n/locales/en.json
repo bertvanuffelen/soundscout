@@ -1251,9 +1251,9 @@
   },
   "teacherLanding": {
     "hero": {
-      "eyebrow": "Free · in the browser · Dutch",
-      "title": "Let your class make music together around a single image",
-      "subtitle": "SoundScout is a learning space where kids aged 8–12 collect sounds and compose together. You share a class code, they start right away.",
+      "eyebrow": "A composition tool for primary education",
+      "title": "SoundScout",
+      "subtitle": "A classroom environment where pupils collect sounds and compose together. Pick the form that fits each assignment: free experimenting, with a sound map, with a storyboard, or with an assignment you build yourself. You share a class code, they start right away.",
       "ctaPrimary": "Create a free account",
       "ctaSecondary": "Log in"
     },
@@ -1303,6 +1303,7 @@
       "title": "Ready-made lesson cards",
       "download": "Download pdf",
       "openForClass": "Open for your class",
+      "viewAll": "View all lesson cards",
       "goalLabel": "Goal.",
       "phasesTitle": "Phases",
       "empty": "Lesson cards are loading soon."

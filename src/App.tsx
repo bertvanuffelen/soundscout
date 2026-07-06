@@ -61,6 +61,7 @@ function AppContent() {
   const goToStart = useAppStore((s) => s.goToStart);
   const goToTeacher = useAppStore((s) => s.goToTeacher);
   const setPendingLessonCardKey = useAppStore((s) => s.setPendingLessonCardKey);
+  const setPendingTeacherTab = useAppStore((s) => s.setPendingTeacherTab);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
 
@@ -157,13 +158,16 @@ function AppContent() {
 
     const lessonKey = params.get('lesson');
     if (lessonKey) setPendingLessonCardKey(lessonKey);
+    const tab = params.get('tab');
+    if (tab) setPendingTeacherTab(tab);
     goToTeacher();
 
     const url = new URL(window.location.href);
     url.searchParams.delete('screen');
     url.searchParams.delete('lesson');
+    url.searchParams.delete('tab');
     window.history.replaceState({}, '', url.pathname + url.search);
-  }, [goToTeacher, setPendingLessonCardKey]);
+  }, [goToTeacher, setPendingLessonCardKey, setPendingTeacherTab]);
 
   // Check for ?pp-share= query parameter on mount (#73 — publieke praatplaat-viewer)
   useEffect(() => {
