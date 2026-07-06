@@ -15,7 +15,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileDown, Film, Music, MapPin, FileText, Play, Loader2, type LucideIcon } from 'lucide-react';
+import { FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, type LucideIcon } from 'lucide-react';
 import { Button, Card } from '../components/ui';
 import { cn } from '../utils/cn';
 import { HeroPreview } from '../components/teacher-landing/HeroPreview';
@@ -32,10 +32,11 @@ import type { AssignmentType } from '../lib/assignments';
  * (`/?screen=teacher`). Met een leskaart-sleutel opent het dashboard straks de
  * Leskaarten-tab op die kaart (na login/registratie).
  */
-function navigateToTeacherApp(lessonKey?: string) {
+function navigateToTeacherApp(params?: { lesson?: string; tab?: string }) {
   const url = new URL(window.location.origin);
   url.searchParams.set('screen', 'teacher');
-  if (lessonKey) url.searchParams.set('lesson', lessonKey);
+  if (params?.lesson) url.searchParams.set('lesson', params.lesson);
+  if (params?.tab) url.searchParams.set('tab', params.tab);
   window.location.href = url.toString();
 }
 
@@ -329,6 +330,21 @@ function LessonsSection() {
           </Card>
         </div>
       )}
+
+      {/* Dit is maar een greep — verwijs naar de volledige lijst in het dashboard. */}
+      {!loading && (
+        <div className="flex justify-center">
+          <Button
+            variant="secondary"
+            size="lg"
+            className="rounded-full"
+            onClick={() => navigateToTeacherApp({ tab: 'lessons' })}
+          >
+            {t('teacherLanding.lessons.viewAll')}
+            <ArrowRight className="w-4 h-4 ml-2" />
+          </Button>
+        </div>
+      )}
     </section>
   );
 }
@@ -375,7 +391,7 @@ function LessonDetail({ lesson }: { lesson: PublicLessonCard }) {
           variant="primary"
           size="md"
           className="rounded-full"
-          onClick={() => navigateToTeacherApp(lesson.builtinKey)}
+          onClick={() => navigateToTeacherApp({ lesson: lesson.builtinKey })}
         >
           <Play className="w-4 h-4 mr-2" />
           {t('teacherLanding.lessons.openForClass')}

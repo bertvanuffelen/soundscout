@@ -107,6 +107,11 @@ interface AppStore {
   // login-hop; het dashboard opent dan de Leskaarten-tab op deze kaart.
   pendingLessonCardKey: string | null;
   setPendingLessonCardKey: (key: string | null) => void;
+
+  // Dashboard-tab die na de login-hop geopend moet worden (bv. 'lessons' via de
+  // "Bekijk alle leskaarten"-knop op de landingspagina).
+  pendingTeacherTab: string | null;
+  setPendingTeacherTab: (tab: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -128,6 +133,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   isSubmitting: false,
   pendingAssignment: null,
   pendingLessonCardKey: null,
+  pendingTeacherTab: null,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -135,7 +141,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null, pendingTeacherTab: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -196,5 +202,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   clearPendingAssignment: () => set({ pendingAssignment: null }),
 
   setPendingLessonCardKey: (key) => set({ pendingLessonCardKey: key }),
+
+  setPendingTeacherTab: (tab) => set({ pendingTeacherTab: tab }),
   goToAssignmentLanding: (pending) => set({ currentScreen: 'assignment-landing', pendingAssignment: pending }),
 }));

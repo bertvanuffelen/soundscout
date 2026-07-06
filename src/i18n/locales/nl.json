@@ -1251,9 +1251,9 @@
   },
   "teacherLanding": {
     "hero": {
-      "eyebrow": "Gratis · in de browser · Nederlands",
-      "title": "Laat je klas samen muziek maken bij één beeld",
-      "subtitle": "SoundScout is een lesomgeving waarin leerlingen van 8–12 geluiden verzamelen en samen componeren. Jij deelt een klascode, zij beginnen meteen.",
+      "eyebrow": "Compositietool voor het basisonderwijs",
+      "title": "SoundScout",
+      "subtitle": "Een lesomgeving waarin leerlingen samen geluiden verzamelen en componeren. Kies per opdracht de vorm die past: vrij experimenteren, bij een praatplaat, bij een storyboard, of bij een opdracht die je zelf samenstelt. Jij deelt een klascode, zij beginnen meteen.",
       "ctaPrimary": "Maak een gratis account",
       "ctaSecondary": "Inloggen"
     },
@@ -1303,6 +1303,7 @@
       "title": "Kant-en-klare leskaarten",
       "download": "Download pdf",
       "openForClass": "Open voor je klas",
+      "viewAll": "Bekijk alle leskaarten",
       "goalLabel": "Lesdoel.",
       "phasesTitle": "Fasen",
       "empty": "Leskaarten worden binnenkort geladen."
