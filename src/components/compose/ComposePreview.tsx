@@ -1,9 +1,10 @@
 /**
- * HeroPreview — gestileerde placeholder-visual voor de hero, gestuurd door de
- * actieve compositievorm (sectie 2 stuurt dit via lokale state).
+ * ComposePreview — gestileerde, geanimeerde placeholder-visual per compositievorm
+ * (praatplaat / storyboard / vrij). Gedeeld tussen de publieke docentenlanding
+ * (hero-switcher) en de leerling "Nieuwe compositie"-wizard.
  *
- * Stap 1: puur CSS/Tailwind met bestaande tokens + de mode-kleuren, geen echte
- * screenshots of assets. Decoratief → aria-hidden.
+ * Puur CSS/Tailwind met bestaande tokens + de mode-kleuren, geen echte
+ * screenshots of assets. Decoratief → aria-hidden. rAF-gedreven loops.
  */
 
 import { useEffect, useRef } from 'react';
@@ -25,11 +26,11 @@ import {
 } from 'lucide-react';
 import type { ComposeVariant } from './composeVariants';
 
-interface HeroPreviewProps {
+interface ComposePreviewProps {
   variant: ComposeVariant;
 }
 
-export function HeroPreview({ variant }: HeroPreviewProps) {
+export function ComposePreview({ variant }: ComposePreviewProps) {
   return (
     <div
       aria-hidden="true"

@@ -14,12 +14,10 @@ import {
 } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
 import { FeedbackModal } from './feedback';
-import { ThemeSelectionModal } from './ThemeSelectionModal';
-import { ComposeModeModal } from './start/ComposeModeModal';
-import { StoryboardPickerModal } from './start/StoryboardPickerModal';
+import { NewCompositionWizard } from './start/NewCompositionWizard';
 import { ShareCodeModal } from './share';
 import { PrivacyModal } from './PrivacyModal';
-import type { ComposeMode, Storyboard } from '../types';
+import type { Storyboard } from '../types';
 
 export function StartScreen() {
   const { t } = useTranslation();
@@ -35,10 +33,7 @@ export function StartScreen() {
   // Sketch A (#78): "Nieuwe compositie" doorloopt twee modals achter elkaar:
   // eerst soort compositie kiezen, dáárna pas thema. "Ik heb een code" opent
   // een aparte modal met dezelfde chrome.
-  const [showComposeMode, setShowComposeMode] = useState(false);
-  const [showThemeSelection, setShowThemeSelection] = useState(false);
-  const [showImagePicker, setShowImagePicker] = useState(false);
-  const [showStoryboardPicker, setShowStoryboardPicker] = useState(false);
+  const [showComposeWizard, setShowComposeWizard] = useState(false);
   const [showCodeModal, setShowCodeModal] = useState(false);
   const [showNewConfirm, setShowNewConfirm] = useState(false);
 
@@ -53,36 +48,21 @@ export function StartScreen() {
       // Waarschuw dat de huidige compositie verloren gaat
       setShowNewConfirm(true);
     } else {
-      // Geen actieve compositie — ga direct door
-      setShowComposeMode(true);
+      // Geen actieve compositie — open de wizard
+      setShowComposeWizard(true);
     }
   };
 
   const handleConfirmNewComposition = () => {
     setShowNewConfirm(false);
-    setShowComposeMode(true);
-  };
-
-  const handleModeSelected = (mode: ComposeMode) => {
-    // Stap 2 hangt af van de gekozen mode (#78):
-    // - 'free' → thema kiezen, dan map
-    // - 'image' → afbeelding kiezen (thema impliciet), dan map
-    // - 'storyboard' → storyboard kiezen (thema impliciet), dan map
-    setShowComposeMode(false);
-    if (mode === 'free') {
-      setShowThemeSelection(true);
-    } else if (mode === 'image') {
-      setShowImagePicker(true);
-    } else {
-      setShowStoryboardPicker(true);
-    }
+    setShowComposeWizard(true);
   };
 
   const handleSelectTheme = async (themeId: string) => {
     setIsLoading(true);
     try {
       await initializeNewComposition({ themeId });
-      setShowThemeSelection(false);
+      setShowComposeWizard(false);
     } finally {
       setIsLoading(false);
     }
@@ -92,8 +72,7 @@ export function StartScreen() {
     setIsLoading(true);
     try {
       await initializeCompositionFromStoryboard(storyboard);
-      setShowImagePicker(false);
-      setShowStoryboardPicker(false);
+      setShowComposeWizard(false);
     } finally {
       setIsLoading(false);
     }
@@ -338,38 +317,16 @@ export function StartScreen() {
         </div>
       </Modal>
 
-      {/* Compose mode modal — stap 1 van Nieuwe compositie */}
-      <ComposeModeModal
-        isOpen={showComposeMode}
-        onClose={() => setShowComposeMode(false)}
-        onModeSelected={handleModeSelected}
-      />
-
-      {/* Theme selection modal — stap 2 voor 'vrij componeren' */}
-      <ThemeSelectionModal
-        isOpen={showThemeSelection}
-        onClose={() => setShowThemeSelection(false)}
-        onSelectTheme={handleSelectTheme}
-        isLoading={isLoading}
-      />
-
-      {/* Image picker — stap 2 voor 'bij een afbeelding' */}
-      <StoryboardPickerModal
-        isOpen={showImagePicker}
-        onClose={() => setShowImagePicker(false)}
-        variant="image"
-        onSelect={handleSelectStoryboard}
-        isLoading={isLoading}
-      />
-
-      {/* Storyboard picker — stap 2 voor 'bij een storyboard' */}
-      <StoryboardPickerModal
-        isOpen={showStoryboardPicker}
-        onClose={() => setShowStoryboardPicker(false)}
-        variant="storyboard"
-        onSelect={handleSelectStoryboard}
-        isLoading={isLoading}
-      />
+      {/* Nieuwe compositie — begeleide wizard (modus → bijpassende keuze).
+          Alleen gemount wanneer open, zodat de stap-state elke keer vers is. */}
+      {showComposeWizard && (
+        <NewCompositionWizard
+          onClose={() => setShowComposeWizard(false)}
+          onStartFree={handleSelectTheme}
+          onStartStoryboard={handleSelectStoryboard}
+          isLoading={isLoading}
+        />
+      )}
 
       {/* Code modal — "Ik heb een code" */}
       <ShareCodeModal
