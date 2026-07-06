@@ -25,7 +25,6 @@ export function StartScreen() {
   const { t } = useTranslation();
   const goToCompositions = useAppStore((s) => s.goToCompositions);
   const goToStudio = useAppStore((s) => s.goToStudio);
-  const goToTeacher = useAppStore((s) => s.goToTeacher);
   const goToTutorial = useAppStore((s) => s.goToTutorial);
   const hasClipsInProgress = useTimelineStore((s) => s.selectHasClips());
   const [isLoading, setIsLoading] = useState(false);
@@ -197,7 +196,7 @@ export function StartScreen() {
         {/* Teacher link - subtle at bottom */}
         <div className="mt-6 sm:mt-8">
           <button
-            onClick={goToTeacher}
+            onClick={() => { window.location.href = '/teacher'; }}
             className="text-brand-400 hover:text-white md:text-text-muted md:hover:text-text-main text-sm underline underline-offset-2 transition-colors"
           >
             {t('start.teacherLink')}
