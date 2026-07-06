@@ -1175,6 +1175,7 @@
   "composeMode": {
     "title": "Hoe wil je componeren?",
     "subtitle": "Kies een manier om je compositie te maken",
+    "next": "Volgende",
     "free": "Vrij componeren",
     "freeDescription": "Maak je eigen compositie zonder afbeeldingen",
     "image": "Bij een afbeelding",
