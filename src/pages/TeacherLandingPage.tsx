@@ -18,12 +18,12 @@ import { useTranslation } from 'react-i18next';
 import { FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft, type LucideIcon } from 'lucide-react';
 import { Button, Card } from '../components/ui';
 import { cn } from '../utils/cn';
-import { HeroPreview } from '../components/teacher-landing/HeroPreview';
+import { ComposePreview } from '../components/compose/ComposePreview';
 import { LandingVideo } from '../components/teacher-landing/LandingVideo';
 import {
   COMPOSE_VARIANTS,
   type ComposeVariant,
-} from '../components/teacher-landing/composeVariants';
+} from '../components/compose/composeVariants';
 import { fetchBuiltinLessonCards, localizeLessonCard, type PublicLessonCard } from '../lib/lessonCards';
 import type { AssignmentType } from '../lib/assignments';
 
@@ -122,7 +122,7 @@ function HeroSection({ activeVariant }: { activeVariant: ComposeVariant }) {
       </div>
 
       <div className="order-1 md:order-2 flex flex-col gap-3">
-        <HeroPreview variant={activeVariant} />
+        <ComposePreview variant={activeVariant} />
         <p className="text-sm sm:text-base text-text-muted text-center leading-relaxed px-2">
           {t(`teacherLanding.compose.captions.${activeVariant}`)}
         </p>
