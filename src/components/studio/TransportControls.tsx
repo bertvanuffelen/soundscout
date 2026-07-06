@@ -33,7 +33,7 @@ export const TransportControls = memo(function TransportControls({
         aria-label={isPlaying ? t('transport.pause') : t('transport.play')}
         className={cn(
           'w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer',
-          'bg-primary-500 hover:bg-primary-600 active:bg-primary-700 active:scale-95 text-white',
+          'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 active:scale-95 text-white',
           'disabled:bg-neutral-300 disabled:cursor-not-allowed disabled:active:scale-100'
         )}
         title={isPlaying ? t('transport.pause') : t('transport.play')}

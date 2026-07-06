@@ -221,7 +221,7 @@ export function StageView() {
               value={compositionName}
               onChange={(e) => setCompositionName(e.target.value)}
               placeholder={t('stage.namePlaceholder')}
-              className="w-full px-4 py-3 bg-neutral-50 border-2 border-border-subtle rounded-xl text-center text-text-main text-lg font-semibold placeholder:text-text-muted/50 focus:outline-none focus:border-primary-400 transition-colors"
+              className="w-full px-4 py-3 bg-neutral-50 border-2 border-border-subtle rounded-xl text-center text-text-main text-lg font-semibold placeholder:text-text-muted/50 focus:outline-none focus:border-accent-400 transition-colors"
             />
           </div>
 

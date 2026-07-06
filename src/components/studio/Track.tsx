@@ -112,7 +112,7 @@ export const Track = memo(function Track({
       onClick={handleTrackClick}
       className={`
         relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150 touch-none
-        ${isOver && !readOnly ? 'bg-primary-100/60' : 'bg-white/40'}
+        ${isOver && !readOnly ? 'bg-accent-100/60' : 'bg-white/40'}
       `}
       style={track.color ? { backgroundColor: `${track.color}12` } : undefined}
     >

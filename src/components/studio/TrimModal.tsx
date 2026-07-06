@@ -266,7 +266,7 @@ export const TrimModal = memo(function TrimModal({
                   style={{ left: `clamp(0px, calc(${startPercent}% - 12px), calc(100% - 24px))` }}
                   onPointerDown={handlePointerDown('start')}
                 >
-                  <div className="w-1.5 h-12 bg-primary-500 rounded-full shadow-md" />
+                  <div className="w-1.5 h-12 bg-accent-500 rounded-full shadow-md" />
                 </div>
 
                 {/* Right trim handle */}
@@ -275,7 +275,7 @@ export const TrimModal = memo(function TrimModal({
                   style={{ left: `clamp(0px, calc(${endPercent}% - 12px), calc(100% - 24px))` }}
                   onPointerDown={handlePointerDown('end')}
                 >
-                  <div className="w-1.5 h-12 bg-primary-500 rounded-full shadow-md" />
+                  <div className="w-1.5 h-12 bg-accent-500 rounded-full shadow-md" />
                 </div>
               </>
             ) : (
@@ -339,7 +339,7 @@ export const TrimModal = memo(function TrimModal({
             {/* Apply button */}
             <button
               onClick={handleApply}
-              className="px-4 py-1.5 text-sm font-medium text-white bg-primary-500 hover:bg-primary-600 rounded-lg transition-colors"
+              className="px-4 py-1.5 text-sm font-medium text-white bg-accent-500 hover:bg-accent-600 rounded-lg transition-colors"
             >
               {t('studio.trimModal.apply')}
             </button>

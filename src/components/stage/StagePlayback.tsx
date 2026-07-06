@@ -100,7 +100,7 @@ export function StagePlayback() {
           onClick={isPlaying ? handleStop : handlePlay}
           className={cn(
             'w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full transition-all cursor-pointer',
-            'bg-primary-500 hover:bg-primary-600 active:bg-primary-700 text-white',
+            'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 text-white',
             'shadow-[0_6px_0_0_rgba(180,83,9,0.5)] hover:shadow-[0_6px_0_0_rgba(146,64,14,0.5)]',
             'active:shadow-[0_2px_0_0_rgba(180,83,9,0.5)] active:translate-y-[4px]'
           )}
@@ -123,7 +123,7 @@ export function StagePlayback() {
 
       {/* Now playing indicator */}
       {isPlaying && (
-        <p className="text-primary-600 text-sm font-semibold animate-pulse">
+        <p className="text-accent-600 text-sm font-semibold animate-pulse">
           {t('stage.nowPlaying')}
         </p>
       )}

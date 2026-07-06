@@ -68,17 +68,17 @@ export function CompositionCard({
     <>
       <div
         onClick={handleCardClick}
-        className="bg-bg-surface hover:bg-neutral-50 border border-border-subtle hover:border-primary-300 rounded-2xl p-4 cursor-pointer transition-all group shadow-sm hover:shadow-md"
+        className="bg-bg-surface hover:bg-neutral-50 border border-border-subtle hover:border-accent-300 rounded-2xl p-4 cursor-pointer transition-all group shadow-sm hover:shadow-md"
       >
         <div className="flex items-start gap-3">
           {/* Icon */}
-          <div className="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center flex-shrink-0">
-            <Music size={20} className="text-primary-600" />
+          <div className="w-10 h-10 rounded-xl bg-accent-100 flex items-center justify-center flex-shrink-0">
+            <Music size={20} className="text-accent-600" />
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <h3 className="font-semibold text-text-main truncate group-hover:text-primary-700 transition-colors">
+            <h3 className="font-semibold text-text-main truncate group-hover:text-accent-700 transition-colors">
               {composition.name}
             </h3>
             <p className="text-sm text-text-muted mt-0.5">
