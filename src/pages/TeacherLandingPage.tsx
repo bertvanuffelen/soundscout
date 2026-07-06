@@ -15,15 +15,15 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, type LucideIcon } from 'lucide-react';
+import { FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft, type LucideIcon } from 'lucide-react';
 import { Button, Card } from '../components/ui';
 import { cn } from '../utils/cn';
-import { HeroPreview } from '../components/teacher-landing/HeroPreview';
+import { ComposePreview } from '../components/compose/ComposePreview';
 import { LandingVideo } from '../components/teacher-landing/LandingVideo';
 import {
   COMPOSE_VARIANTS,
   type ComposeVariant,
-} from '../components/teacher-landing/composeVariants';
+} from '../components/compose/composeVariants';
 import { fetchBuiltinLessonCards, localizeLessonCard, type PublicLessonCard } from '../lib/lessonCards';
 import type { AssignmentType } from '../lib/assignments';
 
@@ -41,10 +41,21 @@ function navigateToTeacherApp(params?: { lesson?: string; tab?: string }) {
 }
 
 export default function TeacherLandingPage() {
+  const { t } = useTranslation();
   const [activeVariant, setActiveVariant] = useState<ComposeVariant>('praatplaat');
 
   return (
     <div className="min-h-screen bg-bg-app text-text-main">
+      {/* Terug naar de SoundScout-app (losse route → volledige navigatie) */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
+        <button
+          onClick={() => { window.location.href = '/'; }}
+          className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-main transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          {t('teacher.common.backToSoundScout')}
+        </button>
+      </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col gap-16 sm:gap-24">
         <HeroSection activeVariant={activeVariant} />
         <ComposeSection activeVariant={activeVariant} onSelect={setActiveVariant} />
@@ -111,7 +122,7 @@ function HeroSection({ activeVariant }: { activeVariant: ComposeVariant }) {
       </div>
 
       <div className="order-1 md:order-2 flex flex-col gap-3">
-        <HeroPreview variant={activeVariant} />
+        <ComposePreview variant={activeVariant} />
         <p className="text-sm sm:text-base text-text-muted text-center leading-relaxed px-2">
           {t(`teacherLanding.compose.captions.${activeVariant}`)}
         </p>
