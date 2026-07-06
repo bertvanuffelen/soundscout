@@ -47,6 +47,7 @@ export function ComposePreview({ variant }: ComposePreviewProps) {
         {variant === 'praatplaat' && <PraatplaatPreview />}
         {variant === 'storyboard' && <StoryboardPreview />}
         {variant === 'vrij' && <VrijPreview />}
+        {variant === 'image' && <ImagePreview />}
       </div>
     </div>
   );
@@ -759,6 +760,225 @@ function VrijPreview() {
       >
         <span className="absolute -top-0.5 -left-[3px] w-2 h-2 rounded-full bg-error-500" />
       </span>
+    </div>
+  );
+}
+
+// --- Bij een afbeelding: één beeld + soundtrack-tijdlijn ---
+// Sequentie: het beeld (illustratie) popt bovenaan in → geluidsblokjes poppen één
+// voor één in op de tijdlijn → de rode afspeellijn veegt eroverheen, clips lichten
+// op en het beeld pulseert zacht mee ("dit beeld klinkt") → alles faadt → lus.
+// Bewust ANDERS dan de praatplaat (geen hotspots/cursor/modal = samenwerken): hier
+// maakt één leerling een soundtrack bij één beeld.
+const IMG_COLS = 12;
+const IMG_ROWS = 3;
+
+const IMG_CLIPS: SbClip[] = [
+  { row: 1, col: 1, span: 3, color: '#efc14e' },
+  { row: 2, col: 2, span: 3, color: '#29b6c9' },
+  { row: 3, col: 1, span: 2, color: '#9b59b6' },
+  { row: 1, col: 5, span: 4, color: '#e0a56e' },
+  { row: 2, col: 6, span: 3, color: '#68bf59' },
+  { row: 3, col: 4, span: 3, color: '#4c9ad6' },
+  { row: 1, col: 10, span: 3, color: '#4c9ad6' },
+  { row: 2, col: 10, span: 3, color: '#efc14e' },
+  { row: 3, col: 8, span: 4, color: '#29b6c9' },
+];
+
+function ImagePreview() {
+  const rootRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const root = rootRef.current;
+    if (!root) return;
+    const imageEl = root.querySelector<HTMLElement>('[data-image]');
+    const clips = Array.from(root.querySelectorAll<HTMLElement>('[data-clip]'));
+    const playhead = root.querySelector<HTMLElement>('[data-playhead]');
+    const N = clips.length;
+
+    // --- Vaste tijdlijn (ms) ---
+    const START = 300;
+    const IMG_APP = 460;
+    const CLIP_GAP = 180;
+    const clipStart = START + IMG_APP + CLIP_GAP;
+    const CLIP_STAG = 140;
+    const CLIP_APP = 420;
+    const clipEnd = clipStart + (N - 1) * CLIP_STAG + CLIP_APP;
+    const HOLD = 420;
+    const PLAY_START = clipEnd + HOLD;
+    const SWEEP = 2800;
+    const SWEEP_END = PLAY_START + SWEEP;
+    const PH_FADE = 350;
+    const FADE = 420;
+    const PERIOD = SWEEP_END + FADE + 800;
+
+    const clamp01 = (x: number) => Math.max(0, Math.min(1, x));
+    const easeOut = (p: number) => 1 - (1 - p) ** 3;
+
+    // Reduced motion: statische, gevulde staat.
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      if (imageEl) {
+        imageEl.style.opacity = '1';
+        imageEl.style.transform = 'none';
+        imageEl.style.filter = 'none';
+      }
+      clips.forEach((c) => {
+        c.style.opacity = '1';
+        c.style.transform = 'none';
+        c.style.filter = 'none';
+      });
+      if (playhead) playhead.style.opacity = '0';
+      return;
+    }
+
+    let raf = 0;
+    let startTime: number | null = null;
+
+    const frame = (now: number) => {
+      if (startTime === null) startTime = now;
+      const t = (now - startTime) % PERIOD;
+
+      // beeld
+      if (imageEl) {
+        let op = 0;
+        let ty = 8;
+        let sc = 0.94;
+        let br = 1;
+        if (t >= START && t < START + IMG_APP) {
+          const p = (t - START) / IMG_APP;
+          const e = easeOut(p);
+          op = clamp01(p * 1.6);
+          ty = 8 * (1 - e);
+          sc = 0.94 + 0.06 * e + 0.03 * Math.sin(p * Math.PI);
+        } else if (t >= START + IMG_APP && t < SWEEP_END) {
+          op = 1;
+          ty = 0;
+          sc = 1;
+          // zachte helderheids-puls terwijl de soundtrack speelt
+          if (t >= PLAY_START && t <= SWEEP_END) {
+            const s = Math.abs(Math.sin(((t - PLAY_START) / SWEEP) * Math.PI * 2));
+            br = 1 + 0.05 * s;
+          }
+        } else if (t >= SWEEP_END && t < SWEEP_END + FADE) {
+          const p = (t - SWEEP_END) / FADE;
+          op = 1 - p;
+          sc = 1 - 0.03 * p;
+        }
+        imageEl.style.opacity = op.toFixed(3);
+        imageEl.style.transform = `translateY(${ty.toFixed(2)}px) scale(${sc.toFixed(3)})`;
+        imageEl.style.filter = `brightness(${br.toFixed(3)})`;
+      }
+
+      // clips op de tijdlijn
+      clips.forEach((c, i) => {
+        const a = clipStart + i * CLIP_STAG;
+        const aEnd = a + CLIP_APP;
+        let op = 0;
+        let ty = 7;
+        let sc = 0.9;
+        let br = 1;
+        if (t >= a && t < aEnd) {
+          const p = (t - a) / CLIP_APP;
+          const e = easeOut(p);
+          op = clamp01(p * 1.7);
+          ty = 7 * (1 - e);
+          sc = 0.9 + 0.1 * e + 0.05 * Math.sin(p * Math.PI);
+        } else if (t >= aEnd && t < SWEEP_END) {
+          op = 1;
+          ty = 0;
+          sc = 1;
+          const g0 = PLAY_START + ((Number(c.dataset.start) - 1) / IMG_COLS) * SWEEP;
+          if (t >= g0 && t < g0 + 420) {
+            const s = Math.sin(((t - g0) / 420) * Math.PI);
+            sc = 1 + 0.05 * s;
+            br = 1 + 0.15 * s;
+          }
+        } else if (t >= SWEEP_END && t < SWEEP_END + FADE) {
+          const p = (t - SWEEP_END) / FADE;
+          op = 1 - p;
+          sc = 1 - 0.04 * p;
+        }
+        c.style.opacity = op.toFixed(3);
+        c.style.transform = `translateY(${ty.toFixed(2)}px) scale(${sc.toFixed(3)})`;
+        c.style.filter = `brightness(${br.toFixed(3)})`;
+      });
+
+      // afspeellijn
+      if (playhead) {
+        if (t >= PLAY_START && t <= SWEEP_END) {
+          playhead.style.opacity = '1';
+          playhead.style.left = `${((t - PLAY_START) / SWEEP) * 100}%`;
+        } else if (t > SWEEP_END && t < SWEEP_END + PH_FADE) {
+          playhead.style.opacity = (1 - (t - SWEEP_END) / PH_FADE).toFixed(3);
+        } else {
+          playhead.style.opacity = '0';
+        }
+      }
+
+      raf = requestAnimationFrame(frame);
+    };
+
+    raf = requestAnimationFrame(frame);
+    return () => cancelAnimationFrame(raf);
+  }, []);
+
+  return (
+    <div ref={rootRef} className="flex flex-col gap-1.5 h-full">
+      {/* één beeld (illustratie) */}
+      <div
+        data-image
+        className="relative rounded-lg overflow-hidden border border-border-subtle opacity-0"
+        style={{ height: '44%', background: 'linear-gradient(160deg,#cfe9f2 0%,#a9d3e8 52%,#dcefd3 100%)' }}
+      >
+        <span className="absolute" style={{ top: 6, right: 12, color: '#f6b73c' }}>
+          <Sun size={18} strokeWidth={2} />
+        </span>
+        <span className="absolute" style={{ top: 11, left: 16, color: 'rgba(255,255,255,0.85)' }}>
+          <Bird size={13} strokeWidth={2} />
+        </span>
+        <span className="absolute" style={{ bottom: 7, right: 24, color: 'rgba(255,255,255,0.7)' }}>
+          <Waves size={14} strokeWidth={2} />
+        </span>
+      </div>
+
+      {/* soundtrack-tijdlijn */}
+      <div
+        className="relative flex-1 rounded-lg bg-white border border-border-subtle overflow-hidden"
+        style={{
+          display: 'grid',
+          gridTemplateColumns: `repeat(${IMG_COLS}, 1fr)`,
+          gridTemplateRows: `repeat(${IMG_ROWS}, 1fr)`,
+          backgroundImage:
+            'repeating-linear-gradient(to right, #eef1f4 0 1px, transparent 1px calc(100% / 12)),' +
+            'repeating-linear-gradient(to bottom, #eef1f4 0 1px, transparent 1px calc(100% / 3))',
+        }}
+      >
+        {IMG_CLIPS.map((clip, i) => (
+          <span
+            key={i}
+            data-clip
+            data-start={clip.col}
+            className="m-[2px] rounded shadow-sm opacity-0"
+            style={{
+              gridColumn: `${clip.col} / span ${clip.span}`,
+              gridRow: clip.row,
+              backgroundColor: clip.color,
+            }}
+          />
+        ))}
+
+        {/* rode afspeellijn */}
+        <span
+          data-playhead
+          className="absolute top-0 bottom-0 left-0 w-[2px] opacity-0 pointer-events-none"
+          style={{ backgroundColor: '#e5342b' }}
+        >
+          <span
+            className="absolute -top-0.5 -left-[3px] w-2 h-2 rounded-full"
+            style={{ backgroundColor: '#e5342b' }}
+          />
+        </span>
+      </div>
     </div>
   );
 }

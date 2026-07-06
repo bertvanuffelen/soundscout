@@ -10,7 +10,7 @@
 
 import { Image as ImageIcon, Film, Music, type LucideIcon } from 'lucide-react';
 
-export type ComposeVariant = 'praatplaat' | 'storyboard' | 'vrij';
+export type ComposeVariant = 'praatplaat' | 'storyboard' | 'vrij' | 'image';
 
 interface VariantColors {
   /**
