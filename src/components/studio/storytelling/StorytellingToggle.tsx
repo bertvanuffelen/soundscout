@@ -1,30 +1,36 @@
 /**
- * StorytellingToggle - Three-state toggle for studio layout (#41)
+ * StorytellingToggle - Studio layout view toggle (#41)
  *
  * Controls what's visible in the studio content area:
  * - 'library': Only sample library (default/current experience)
  * - 'split': Library + storytelling panel side by side
  * - 'image': Only storytelling panel (image fullscreen)
+ * - 'scenes': All storyboard scenes as a filmstrip aligned to the timeline
+ *   (Feature F) — only offered when `allowScenes` (multi-image storyboard).
  */
 
 import { useTranslation } from 'react-i18next';
-import { Music, Columns2, Image } from 'lucide-react';
+import { Music, Columns2, Image, GalleryHorizontal } from 'lucide-react';
 
-export type StudioViewMode = 'library' | 'split' | 'image';
+export type StudioViewMode = 'library' | 'split' | 'image' | 'scenes';
 
 interface StorytellingToggleProps {
   viewMode: StudioViewMode;
   onViewModeChange: (mode: StudioViewMode) => void;
+  /** Toon de 'Scènes'-modus (alleen zinvol bij een multi-image storyboard). */
+  allowScenes?: boolean;
 }
 
 const MODES: { value: StudioViewMode; icon: typeof Music; labelKey: string }[] = [
   { value: 'library', icon: Music, labelKey: 'composeMode.viewLibrary' },
   { value: 'split', icon: Columns2, labelKey: 'composeMode.viewSplit' },
   { value: 'image', icon: Image, labelKey: 'composeMode.viewImage' },
+  { value: 'scenes', icon: GalleryHorizontal, labelKey: 'composeMode.viewScenes' },
 ];
 
-export function StorytellingToggle({ viewMode, onViewModeChange }: StorytellingToggleProps) {
+export function StorytellingToggle({ viewMode, onViewModeChange, allowScenes = false }: StorytellingToggleProps) {
   const { t } = useTranslation();
+  const modes = allowScenes ? MODES : MODES.filter((m) => m.value !== 'scenes');
 
   return (
     <div
@@ -32,7 +38,7 @@ export function StorytellingToggle({ viewMode, onViewModeChange }: StorytellingT
       role="radiogroup"
       aria-label={t('composeMode.viewMode')}
     >
-      {MODES.map(({ value, icon: Icon, labelKey }) => {
+      {modes.map(({ value, icon: Icon, labelKey }) => {
         const isActive = viewMode === value;
         return (
           <button

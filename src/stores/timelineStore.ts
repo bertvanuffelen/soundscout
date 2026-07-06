@@ -8,6 +8,10 @@ import {
   VOLUME_MIN_DB,
   VOLUME_MAX_DB,
   MAX_SECTIONS,
+  ZOOM_MIN,
+  ZOOM_MAX,
+  ZOOM_DEFAULT_DESKTOP,
+  ZOOM_DEFAULT_MOBILE,
 } from '../constants/config';
 import {
   findSmartSnapPosition,
@@ -30,6 +34,10 @@ interface TimelineStore {
   totalBeats: number;
   isLooping: boolean;
   sections: Section[];
+
+  /** Horizontale zoom van de timeline (widthMultiplier). Gedeeld met de studio-filmstrip (Feature F). */
+  zoomLevel: number;
+  setZoomLevel: (zoom: number) => void;
 
   /** Incremented on every audio-relevant change (#22). Used by useRescheduleOnChange. */
   audioVersion: number;
@@ -118,6 +126,12 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   totalBeats: DEFAULT_TOTAL_BEATS,
   isLooping: false,
   sections: [],
+  // Init net als de oude lokale Timeline-state: mobiel ingezoomd, desktop fit-all.
+  zoomLevel: (typeof window !== 'undefined' && window.innerWidth < 640)
+    ? ZOOM_DEFAULT_MOBILE
+    : ZOOM_DEFAULT_DESKTOP,
+  setZoomLevel: (zoom) =>
+    set({ zoomLevel: Math.round(Math.min(ZOOM_MAX, Math.max(ZOOM_MIN, zoom)) * 100) / 100 }),
   audioVersion: 0,
 
   // --- Section Actions ---
