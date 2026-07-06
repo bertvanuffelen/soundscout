@@ -54,7 +54,24 @@ export default function TeacherLandingPage() {
         <CurriculumSection />
       </div>
       <WorkshopsBand />
+      <LandingFooter />
     </div>
+  );
+}
+
+// --- Slanke footer: wordmark + attributie ---
+function LandingFooter() {
+  const { t } = useTranslation();
+  return (
+    <footer className="bg-bg-app py-8 sm:py-10">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-1.5 text-center">
+        <span className="inline-flex items-center gap-1.5 text-text-main font-extrabold tracking-tight">
+          <Music className="w-4 h-4 text-accent-500" />
+          SoundScout
+        </span>
+        <p className="text-sm text-text-muted">{t('teacherLanding.footer.madeBy')}</p>
+      </div>
+    </footer>
   );
 }
 

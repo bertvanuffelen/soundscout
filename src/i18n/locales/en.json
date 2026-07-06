@@ -1319,6 +1319,9 @@
       "text": "Want to introduce SoundScout to your team? Bert runs workshops for teaching teams and teacher-training colleges.",
       "cta": "See the workshops"
     },
+    "footer": {
+      "madeBy": "Made by Bert van Uffelen"
+    },
     "videos": {
       "title": "How it works — in pictures",
       "subtitle": "Two short demos: one from the student's side, one from yours as a teacher.",
