@@ -17,7 +17,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Music, Image as ImageIcon, Film, ArrowRight, ArrowLeft, type LucideIcon } from 'lucide-react';
+import { Music, Image as ImageIcon, Film, ArrowRight, ArrowLeft, KeyRound, type LucideIcon } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { ComposePreview } from '../compose/ComposePreview';
 import type { ComposeVariant } from '../compose/composeVariants';
@@ -34,6 +34,8 @@ interface NewCompositionWizardProps {
   onStartFree: (themeId: string) => void;
   /** Bij afbeelding/storyboard: gekozen storyboard → start (StartScreen.handleSelectStoryboard). */
   onStartStoryboard: (storyboard: Storyboard) => void;
+  /** "Ik heb een code" — sluit de wizard en opent de klascode/deelcode-invoer. */
+  onHaveCode: () => void;
   isLoading?: boolean;
 }
 
@@ -54,7 +56,7 @@ const MODES: ModeConfig[] = [
   { mode: 'storyboard', variant: 'storyboard', Icon: Film, active: 'border-orange-400 bg-orange-50', icon: 'text-orange-500' },
 ];
 
-export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, isLoading = false }: NewCompositionWizardProps) {
+export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, onHaveCode, isLoading = false }: NewCompositionWizardProps) {
   const { t } = useTranslation();
   const setComposeMode = useAppStore((s) => s.setComposeMode);
 
@@ -117,9 +119,17 @@ export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, 
             })}
           </div>
 
-          {/* Footer: bevestigen */}
-          <div className="flex justify-end pt-1">
-            <Button variant="primary" size="lg" onClick={handleNext} className="inline-flex items-center gap-1.5">
+          {/* Footer: "Ik heb een code" (secundair) + bevestigen */}
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
+            <button
+              type="button"
+              onClick={onHaveCode}
+              className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-text-muted hover:text-text-main transition-colors"
+            >
+              <KeyRound className="w-4 h-4" />
+              {t('start.haveCode')}
+            </button>
+            <Button variant="primary" size="lg" onClick={handleNext} className="inline-flex items-center justify-center gap-1.5">
               {t('composeMode.next')}
               <ArrowRight className="w-5 h-5" />
             </Button>

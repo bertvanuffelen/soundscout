@@ -324,6 +324,7 @@ export function StartScreen() {
           onClose={() => setShowComposeWizard(false)}
           onStartFree={handleSelectTheme}
           onStartStoryboard={handleSelectStoryboard}
+          onHaveCode={() => { setShowComposeWizard(false); setShowCodeModal(true); }}
           isLoading={isLoading}
         />
       )}
