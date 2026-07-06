@@ -4,7 +4,7 @@
 
 import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, Shield, KeyRound, Sparkles } from 'lucide-react';
+import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, Shield, KeyRound, Sparkles, GraduationCap } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
@@ -172,14 +172,17 @@ export function StartScreen() {
           </button>
         </div>
 
-        {/* Teacher link - subtle at bottom */}
-        <div className="mt-6 sm:mt-8">
-          <button
+        {/* Teacher link — als knop, gelijkgetrokken met de andere CTA's */}
+        <div className="mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
+          <Button
             onClick={() => { window.location.href = '/teacher'; }}
-            className="text-brand-400 hover:text-white md:text-text-muted md:hover:text-text-main text-sm underline underline-offset-2 transition-colors"
+            variant="secondary"
+            size="lg"
+            className="w-full"
           >
+            <GraduationCap className="w-5 h-5 mr-1.5 sm:mr-2" />
             {t('start.teacherLink')}
-          </button>
+          </Button>
         </div>
 
       </div>
