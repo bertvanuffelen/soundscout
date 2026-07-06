@@ -32,7 +32,7 @@ import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
 import { StoryboardCard } from './StoryboardCard';
 import { LessonCardsTab } from './LessonCardsTab';
-import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs } from './common';
+import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs, GuideLink } from './common';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { getAllMultiImageStoryboards } from '../../data/themes';
 import { logger } from '../../utils/logger';
@@ -257,6 +257,13 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
               description: t('teacher.dashboard.setup.step3.description'),
             },
           ]}
+          action={
+            <GuideLink
+              sectionId="getting-started"
+              variant="inline"
+              label={t('teacher.guide.openFullGuide')}
+            />
+          }
         />
 
         {/* ===== Tab: Mijn klassen ===== */}
@@ -354,10 +361,13 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                 {/* 1. Opdrachtkaarten */}
                 <div className="mb-8">
                   <div className="flex items-center justify-between gap-3 mb-2">
-                    <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                      <ClipboardList className="w-5 h-5 text-accent-600" />
-                      {t('assignmentCards.sectionTitle')}
-                    </SectionTitle>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                        <ClipboardList className="w-5 h-5 text-accent-600" />
+                        {t('assignmentCards.sectionTitle')}
+                      </SectionTitle>
+                      <GuideLink sectionId="assignment-cards" />
+                    </div>
                     <Button
                       variant="secondary"
                       size="sm"
@@ -429,10 +439,13 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                 {/* 2. Praatplaten */}
                 <div className="mb-8">
                   <div className="flex items-center justify-between gap-3 mb-2">
-                    <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                      <MapPin className="w-5 h-5 text-teal-500" />
-                      {t('templates.praatplatenTitle')}
-                    </SectionTitle>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                        <MapPin className="w-5 h-5 text-teal-500" />
+                        {t('templates.praatplatenTitle')}
+                      </SectionTitle>
+                      <GuideLink sectionId="praatplaat" />
+                    </div>
                     <Button
                       variant="secondary"
                       size="sm"
@@ -500,10 +513,13 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                 {/* 4. Templates */}
                 <div>
                   <div className="flex items-center justify-between gap-3 mb-2">
-                    <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                      <FileText className="w-5 h-5 text-accent-600" />
-                      {t('templates.templatesTitle')}
-                    </SectionTitle>
+                    <div className="flex items-center gap-1 min-w-0">
+                      <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+                        <FileText className="w-5 h-5 text-accent-600" />
+                        {t('templates.templatesTitle')}
+                      </SectionTitle>
+                      <GuideLink sectionId="templates" />
+                    </div>
                     <Button
                       variant="secondary"
                       size="sm"
@@ -588,6 +604,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           <p>{t('templates.newTemplateModalStep1')}</p>
           <p>{t('templates.newTemplateModalStep2')}</p>
           <p>{t('templates.newTemplateModalStep3')}</p>
+          <GuideLink sectionId="templates" variant="inline" className="mt-1" />
         </div>
         <div className="mt-6 flex gap-3">
           <Button

@@ -16,7 +16,7 @@ import { localizeLessonCard, type LessonCard, type LessonCardInput } from '../..
 import type { AssignmentType } from '../../lib/assignments';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
-import { SectionTitle } from './common';
+import { SectionTitle, GuideLink } from './common';
 import { ActivateLessonCardModal } from './ActivateLessonCardModal';
 import { LessonCardEditorModal } from './LessonCardEditorModal';
 
@@ -75,10 +75,13 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
   return (
     <>
       <div className="flex items-center justify-between gap-3 mb-2">
-        <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-          <FileText className="w-5 h-5 text-accent-600" />
-          {t('lessonCards.tabTitle')}
-        </SectionTitle>
+        <div className="flex items-center gap-1 min-w-0">
+          <SectionTitle as="h3" size="md" className="flex items-center gap-2">
+            <FileText className="w-5 h-5 text-accent-600" />
+            {t('lessonCards.tabTitle')}
+          </SectionTitle>
+          <GuideLink sectionId="lesson-cards" />
+        </div>
         <Button
           variant="secondary"
           size="sm"

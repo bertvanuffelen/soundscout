@@ -21,7 +21,7 @@ import { SharePraatplaatModal } from './SharePraatplaatModal';
 import { type PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
-import { SectionTitle, TeacherPageHeader } from './common';
+import { SectionTitle, TeacherPageHeader, GuideLink } from './common';
 import { logger } from '../../utils/logger';
 
 interface ClassDetailProps {
@@ -280,9 +280,12 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               {classData.code}
             </span>
           </div>
-          <p className="text-sm text-text-muted max-w-xs leading-relaxed">
-            {t('teacher.classCodeMeaning')}
-          </p>
+          <div className="max-w-xs">
+            <p className="text-sm text-text-muted leading-relaxed">
+              {t('teacher.classCodeMeaning')}
+            </p>
+            <GuideLink sectionId="classes" variant="inline" className="mt-1" />
+          </div>
         </div>
 
         {/* Error message */}
@@ -309,10 +312,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {/* --- Actieve opdracht blok --- */}
         {!loading && (
           <div className="mb-8">
-            <SectionTitle as="h2" size="md" className="flex items-center gap-2 mb-1">
-              <Play className="w-5 h-5 text-accent-600" />
-              {t('assignments.activeTitle')}
-            </SectionTitle>
+            <div className="flex items-center gap-1">
+              <SectionTitle as="h2" size="md" className="flex items-center gap-2 mb-1">
+                <Play className="w-5 h-5 text-accent-600" />
+                {t('assignments.activeTitle')}
+              </SectionTitle>
+              <GuideLink sectionId="assignments" />
+            </div>
             <p className="text-sm text-text-muted mb-4 ml-7">
               {t('assignments.activeDescription')}
             </p>
