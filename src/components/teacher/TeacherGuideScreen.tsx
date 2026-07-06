@@ -1,7 +1,7 @@
 /**
  * TeacherGuideScreen — Docentenhandleiding met accordeon-secties.
  *
- * Structuur: 8 onderwerpen als collapsible accordeons, één tegelijk open.
+ * Structuur: 12 onderwerpen als collapsible accordeons, één tegelijk open.
  * Elke sectie bevat prose-tekst en optioneel een ingebedde YouTube-video
  * (dezelfde videopool als TutorialScreen, maar hier contextueel per onderwerp).
  */
@@ -47,11 +47,18 @@ interface GuideSection {
   videoTitleKey?: string;
 }
 
+// Volgorde volgt de docent-reis: oriëntatie → opzetten → content maken →
+// uitdelen → oogsten → praktijk. De genummerde badge volgt de array-index.
 const SECTIONS: GuideSection[] = [
   {
     id: 'getting-started',
     titleKey: 'teacher.guide.sections.getting-started.title',
     contentKey: 'teacher.guide.sections.getting-started.content',
+  },
+  {
+    id: 'dashboard-tour',
+    titleKey: 'teacher.guide.sections.dashboard-tour.title',
+    contentKey: 'teacher.guide.sections.dashboard-tour.content',
   },
   {
     id: 'classes',
@@ -74,9 +81,19 @@ const SECTIONS: GuideSection[] = [
     contentKey: 'teacher.guide.sections.templates.content',
   },
   {
+    id: 'assignment-cards',
+    titleKey: 'teacher.guide.sections.assignment-cards.title',
+    contentKey: 'teacher.guide.sections.assignment-cards.content',
+  },
+  {
     id: 'praatplaat',
     titleKey: 'teacher.guide.sections.praatplaat.title',
     contentKey: 'teacher.guide.sections.praatplaat.content',
+  },
+  {
+    id: 'lesson-cards',
+    titleKey: 'teacher.guide.sections.lesson-cards.title',
+    contentKey: 'teacher.guide.sections.lesson-cards.content',
   },
   {
     id: 'submissions',
