@@ -788,12 +788,59 @@
             "Click a class to open the detail view. There you see all student submissions, can activate assignments (template or praatplaat), and see compositions still 'In progress'."
           ]
         },
-        "assignments": {
-          "title": "Setting up assignments",
+        "dashboard-tour": {
+          "title": "Your dashboard at a glance",
           "content": [
-            "SoundScout has two types of assignments: templates and praatplaten (sound maps). Templates are pre-structured compositions students build on — ideal for focused exercises. Praatplaten are collaborative activities where students place their composition on a location on an image, which you as teacher can present afterwards.",
-            "Each class can have one active assignment at a time. Students entering the class code are automatically routed: with a template they start in the studio using your composition as a starting point; with a praatplaat they first choose a position on the image.",
-            "Set up assignments in the class detail screen. It has tabs for templates and praatplaten, with buttons to create new ones or activate existing ones."
+            "After logging in you land on your dashboard. At the top are three tabs that divide all of your teacher work.",
+            { "type": "heading", "text": "The three tabs" },
+            "My classes — all your classes with their class codes. Click a class to view submissions and activate an assignment.",
+            "My assignments — your reusable building blocks: assignment cards, sound maps, storyboards and templates. You use these across classes.",
+            "Lesson cards — ready-made lesson packages (built-in or your own) that you activate for a class in one click.",
+            { "type": "heading", "text": "Help and logout" },
+            "Top right you'll find the 'Guide' (this screen) and 'Log out' buttons. Throughout the dashboard you'll see small ? buttons; they take you straight to the right chapter of this guide.",
+            { "type": "heading", "text": "How to set up a class" },
+            "Below the tabs is a collapsible block 'How to set up a class' with the three basic steps: create a class → choose an assignment → students enter the code. For a new class this block opens automatically."
+          ]
+        },
+        "assignments": {
+          "title": "The four assignment types",
+          "content": [
+            "You prepare one active assignment per class at a time. There are four types; students entering the class code are automatically routed to the right flow. You choose and activate the type in the class detail screen via the four type cards.",
+            { "type": "heading", "text": "Free composition" },
+            "The student composes freely within a theme you choose (for example The City or Winter Games). No image or story — just exploring and building. Ideal for open, independent assignments.",
+            { "type": "heading", "text": "With an image (sound map)" },
+            "The whole class works on one shared image: each student places their composition on a spot, and you present the result to the class on the smartboard. See the 'Using a sound map' chapter.",
+            { "type": "heading", "text": "Storyboard" },
+            "The student sets a multi-scene story to sound; the timeline is automatically divided into sections. Good for structure, contrast and form.",
+            { "type": "heading", "text": "Teacher template" },
+            "The student builds on a composition you made, with optional lock options. See the 'Creating templates' chapter.",
+            "You can attach an assignment card with instructions to any assignment, which the student sees before starting — see 'Creating assignment cards'."
+          ]
+        },
+        "assignment-cards": {
+          "title": "Creating assignment cards",
+          "content": [
+            "An assignment card is a short instruction card — a title and up to ten bullets — that the student sees after entering the class code and before starting. So the student knows right away what the task is.",
+            { "type": "heading", "text": "Form-independent and reusable" },
+            "The same assignment card works with any assignment type (free, sound map, storyboard or template) and you reuse it across classes. The card is attached to the assignment, not the type.",
+            { "type": "heading", "text": "Creating and managing" },
+            "Go to the 'My assignments' tab → 'Assignment cards' section. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later.",
+            { "type": "heading", "text": "Linking to an assignment" },
+            "When activating an assignment you optionally choose an assignment card. If you pick none, the app shows a default explanation matching the assignment type."
+          ]
+        },
+        "lesson-cards": {
+          "title": "Using lesson cards",
+          "content": [
+            "A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). In one click you activate this complete package for a class.",
+            { "type": "heading", "text": "Built-in and your own lesson cards" },
+            "There are built-in lesson cards (for example Robot Factory, Long Jump, Free composition and Drum beat) ready for every teacher. You can also compose your own lesson cards.",
+            { "type": "heading", "text": "Activating" },
+            "Go to the 'Lesson cards' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Activate in class' and choose an existing class or create one on the spot. You get the class code right away.",
+            { "type": "heading", "text": "Creating your own lesson card" },
+            "Click 'New lesson card'. Choose the type, the resource from the catalogue, optionally an assignment card, and fill in title, level, learning goal and phases. A cover image is derived automatically from the chosen resource. You can edit and delete your own lesson cards; built-in ones you cannot.",
+            { "type": "heading", "text": "PDF with the lesson" },
+            "If a PDF is attached to the lesson card, you open it from the detail panel — handy to print or share with colleagues."
           ]
         },
         "compose-modes": {
@@ -817,7 +864,14 @@
             { "type": "heading", "text": "Creating a template" },
             "Build a composition in the studio, then choose 'Save as template' (in the Stage screen, under 'Share & Export'). You can give it a name and description, and choose lock options: can students modify existing clips? Can they add tracks? Is the sample library locked?",
             { "type": "heading", "text": "Activating a template" },
-            "After saving, the template appears in your dashboard. Activate it for a specific class via the class detail screen. Note: a template is linked to a theme — students automatically get the same theme you used."
+            "After saving, the template appears in your dashboard. Activate it for a specific class via the class detail screen. Note: a template is linked to a theme — students automatically get the same theme you used.",
+            { "type": "heading", "text": "Lock options" },
+            "When saving you decide with four lock options how much freedom the student gets:",
+            "Lock clips — the student cannot move, trim or delete your existing clips.",
+            "Lock sections — the section layout (the form) is fixed.",
+            "Lock library — the student cannot collect new sounds; only the provided samples are available.",
+            "Allow new clips — if turned off, the student cannot add anything to the timeline and can only edit existing clips.",
+            "Combine them as you like: from a fully open starting point to a tightly bounded exercise."
           ]
         },
         "praatplaat": {

@@ -788,12 +788,59 @@
             "Klik op een klas om de detailweergave te openen. Daar zie je alle inzendingen van leerlingen, kun je opdrachten activeren (template of praatplaat), en zie je compositions die nog 'In bewerking' zijn."
           ]
         },
-        "assignments": {
-          "title": "Opdrachten klaarzetten",
+        "dashboard-tour": {
+          "title": "Je dashboard in één oogopslag",
           "content": [
-            "SoundScout kent twee soorten opdrachten: templates en praatplaten. Templates zijn voorgestructureerde compositions waar leerlingen op verder bouwen — ideaal voor gerichte oefeningen. Praatplaten zijn samenwerkingsactiviteiten waarbij leerlingen hun composition op een locatie op een afbeelding plaatsen, en jij als docent die achteraf kunt presenteren.",
-            "Per klas kun je één opdracht tegelijk actief hebben. Leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid: bij een template starten ze in de studio met jouw compositie als startpunt; bij een praatplaat kiezen ze eerst een positie op de afbeelding.",
-            "Opdrachten klaarzetten doe je in het klas-detailscherm. Daar vind je tabbladen voor templates en praatplaten, en knoppen om nieuwe aan te maken of bestaande te activeren."
+            "Na het inloggen kom je op je dashboard. Bovenaan staan drie tabbladen die je hele docent-werk verdelen.",
+            { "type": "heading", "text": "De drie tabbladen" },
+            "Mijn klassen — al je klassen met hun klascodes. Klik op een klas om inzendingen te bekijken en een opdracht te activeren.",
+            "Mijn opdrachten — je herbruikbare bouwstenen: opdrachtkaarten, praatplaten, storyboards en templates. Deze gebruik je over klassen heen.",
+            "Leskaarten — kant-en-klare lespakketten (ingebouwd of zelfgemaakt) die je met één klik voor een klas activeert.",
+            { "type": "heading", "text": "Hulp en uitloggen" },
+            "Rechtsboven vind je de knoppen 'Handleiding' (dit scherm) en 'Uitloggen'. Verspreid over het dashboard zie je kleine ?-knopjes; die brengen je meteen naar het juiste hoofdstuk van deze handleiding.",
+            { "type": "heading", "text": "Zo zet je een klas op" },
+            "Onder de tabbladen staat een inklapbaar blok 'Zo zet je een klas op' met de drie basisstappen: maak een klas → kies een opdracht → leerlingen voeren de code in. Bij een nieuwe klas staat dit blok automatisch open."
+          ]
+        },
+        "assignments": {
+          "title": "De vier opdracht-types",
+          "content": [
+            "Je zet per klas één opdracht tegelijk klaar. Er zijn vier types; leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid. Je kiest en activeert het type in het klas-detailscherm via de vier type-kaarten.",
+            { "type": "heading", "text": "Vrij componeren" },
+            "De leerling componeert vrij binnen een thema dat jij kiest (bijvoorbeeld De Stad of Winterspelen). Geen afbeelding of verhaal — puur ontdekken en bouwen. Ideaal voor open, zelfstandige opdrachten.",
+            { "type": "heading", "text": "Bij een afbeelding (praatplaat)" },
+            "De hele klas werkt op één gedeelde afbeelding: elke leerling plaatst zijn compositie op een plek, en jij presenteert het resultaat klassikaal op het digibord. Zie het hoofdstuk 'Praatplaat gebruiken'.",
+            { "type": "heading", "text": "Storyboard" },
+            "De leerling verklankt een verhaal van meerdere scènes; de tijdlijn wordt automatisch in secties verdeeld. Goed voor opbouw, contrast en vormschema.",
+            { "type": "heading", "text": "Template van docent" },
+            "De leerling bouwt verder op een compositie die jij hebt gemaakt, met optionele slotopties. Zie het hoofdstuk 'Templates maken'.",
+            "Aan elke opdracht kun je een opdrachtkaart met instructies koppelen die de leerling vóór het starten ziet — zie 'Opdrachtkaarten maken'."
+          ]
+        },
+        "assignment-cards": {
+          "title": "Opdrachtkaarten maken",
+          "content": [
+            "Een opdrachtkaart is een korte instructiekaart — een titel en maximaal tien bullets — die de leerling ziet ná het invoeren van de klascode en vóór het starten. Zo weet de leerling meteen wat de bedoeling is.",
+            { "type": "heading", "text": "Vorm-onafhankelijk en herbruikbaar" },
+            "Dezelfde opdrachtkaart werkt bij elk opdracht-type (vrij, praatplaat, storyboard of template) en je hergebruikt hem over klassen heen. De kaart hangt aan de opdracht, niet aan het type.",
+            { "type": "heading", "text": "Aanmaken en beheren" },
+            "Ga naar het tabblad 'Mijn opdrachten' → sectie 'Opdrachtkaarten'. Klik op 'Nieuwe opdrachtkaart', geef een titel en voeg bullets toe (bijvoorbeeld 'Gebruik minstens drie verschillende geluiden'). Kaarten kun je later bewerken en verwijderen.",
+            { "type": "heading", "text": "Koppelen aan een opdracht" },
+            "Bij het activeren van een opdracht kies je optioneel een opdrachtkaart. Kies je er geen, dan toont de app een standaard-uitleg die bij het opdracht-type past."
+          ]
+        },
+        "lesson-cards": {
+          "title": "Leskaarten gebruiken",
+          "content": [
+            "Een leskaart is een kant-en-klaar lespakket: een opdracht-type + de gekozen bron (bijvoorbeeld een storyboard of praatplaat) + een opdrachtkaart + presentatie-info (titel, niveau, lesdoel, fasen). Met één klik activeer je zo'n compleet pakket voor een klas.",
+            { "type": "heading", "text": "Ingebouwde en eigen leskaarten" },
+            "Er zijn ingebouwde leskaarten (bijvoorbeeld Robotfabriek, Verspringen, Vrij componeren en Drum beat) die voor elke docent klaarstaan. Daarnaast kun je zelf leskaarten samenstellen.",
+            { "type": "heading", "text": "Activeren" },
+            "Ga naar het tabblad 'Leskaarten', kies een kaart in de lijst en bekijk rechts de details (lesdoel, fasen, eventueel een PDF). Klik op 'Activeer in klas' en kies een bestaande klas of maak er direct een aan. Je krijgt meteen de klascode.",
+            { "type": "heading", "text": "Zelf een leskaart maken" },
+            "Klik op 'Nieuwe leskaart'. Kies het type, de bron uit de catalogus, optioneel een opdrachtkaart, en vul titel, niveau, lesdoel en fasen in. Een cover-afbeelding wordt automatisch afgeleid uit de gekozen bron. Je eigen leskaarten kun je bewerken en verwijderen; de ingebouwde niet.",
+            { "type": "heading", "text": "PDF bij de les" },
+            "Hangt er een PDF aan de leskaart, dan open je die vanuit het detailpaneel — handig om te printen of te delen met collega's."
           ]
         },
         "compose-modes": {
@@ -817,7 +864,14 @@
             { "type": "heading", "text": "Template aanmaken" },
             "Bouw een compositie op in de studio en kies vervolgens 'Opslaan als template' (in het Stage-scherm, onder 'Delen & Exporteren'). Je kunt een naam en beschrijving geven, en slotopties kiezen: wil je dat leerlingen de bestaande clips kunnen aanpassen? Mogen ze tracks toevoegen? Wordt de sample-bibliotheek vastgezet?",
             { "type": "heading", "text": "Template activeren" },
-            "Na opslaan verschijnt de template in je dashboard. Activeer hem voor een specifieke klas via het klas-detailscherm. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt."
+            "Na opslaan verschijnt de template in je dashboard. Activeer hem voor een specifieke klas via het klas-detailscherm. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt.",
+            { "type": "heading", "text": "Slotopties" },
+            "Bij het opslaan bepaal je met vier slotopties hoeveel vrijheid de leerling krijgt:",
+            "Clips vergrendelen — de leerling kan jouw bestaande clips niet verplaatsen, trimmen of verwijderen.",
+            "Secties vergrendelen — de sectie-indeling (het vormschema) ligt vast.",
+            "Bibliotheek vastzetten — de leerling kan geen nieuwe geluiden verzamelen; alleen de meegegeven samples zijn beschikbaar.",
+            "Nieuwe clips toestaan — staat dit uit, dan kan de leerling niets aan de timeline toevoegen en alleen bestaande clips bewerken.",
+            "Combineer ze naar wens: van een volledig open startpunt tot een strak afgebakende oefening."
           ]
         },
         "praatplaat": {
