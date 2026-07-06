@@ -90,7 +90,7 @@
     "startGame": "Start Game",
     "continueComposition": "Continue",
     "newComposition": "New Composition",
-    "newCompositionConfirm": "You already have a composition in progress. Starting a new one will discard your current work.",
+    "newCompositionConfirm": "You already have a composition in progress. Starting a new one will permanently discard your collected sounds and current composition.",
     "newCompositionStart": "Start over",
     "haveCode": "I have a code",
     "backToChoices": "Back",

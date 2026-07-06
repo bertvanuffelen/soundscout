@@ -90,7 +90,7 @@
     "startGame": "Start Spel",
     "continueComposition": "Ga verder",
     "newComposition": "Nieuwe Compositie",
-    "newCompositionConfirm": "Je hebt al een compositie waar je aan werkt. Als je een nieuwe start, gaat je huidige werk verloren.",
+    "newCompositionConfirm": "Je hebt al een compositie waar je aan werkt. Als je een nieuwe start, gaan je verzamelde geluiden en je huidige compositie verloren en kunnen niet worden teruggehaald.",
     "newCompositionStart": "Opnieuw beginnen",
     "haveCode": "Ik heb een code",
     "backToChoices": "Terug",

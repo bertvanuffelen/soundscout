@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-05-23
+**Laatst bijgewerkt**: 2026-07-06
 
 ---
 
@@ -178,13 +178,18 @@ Wanneer een docent het maximum aantal klassen heeft bereikt en probeert een nieu
 
 ---
 
-#### #69 — Storyboard ↔ vrij modus wisselen zonder clips te verliezen
-**Complexiteit:** Medium · **Status:** Concept · **Opgewaardeerd:** van P3 naar P2 (2026-04-14)
+#### #69 — Compose-modus & thema wisselen: besluit (single-theme, single-mode) ✅ BESLUIT
+**Complexiteit:** Laag (alleen copy) · **Status:** Besluit genomen (2026-07-06) · **Verlaagd:** P2 → P3
 
-Momenteel wist `ComposeModeScreen` altijd de volledige timeline (`clearAllTracks` + `clearSections`) bij elke moduswissel. Gebruikers zouden vanuit de studio moeten kunnen wisselen tussen storyboard/image/vrij modus, waarbij clips behouden blijven en alleen secties + afbeeldingen resetten. Vereist een in-studio mode-switcher (momenteel alleen beschikbaar op het keuzescherm vóór de kaart).
+**Herzien (2026-07-06):** de oorspronkelijke issue bundelde twee losse draden; die zijn nu apart beoordeeld en grotendeels als "won't-do by design" afgehandeld.
 
-**Docentenfeedback (2026-04-14):**
-Docent meldt dat leerlingen geluiden uit meerdere thema's willen combineren (bijv. De Stad + Winterspelen). Dit raakt het bredere vraagstuk van cross-thema compositie: nu is een compositie gekoppeld aan één `themeId`. Verder uitdenken: is cross-thema pedagogisch wenselijk? Wordt het onoverzichtelijk voor jonge kinderen? Architectureel: meerdere locatiereeksen binnen één compositie, of een universele samplebibliotheek los van thema's.
+**Draad 1 — compose-modus wisselen (vrij / afbeelding / storyboard).**
+Nu wist `ComposeModeScreen` de hele timeline bij elke moduswissel (`ComposeModeScreen.tsx:60-76` → `clearAllTracks` + `clearSections`). Een in-studio modus-wisselaar mét clip-behoud wordt **niet gebouwd**: de modus is niet mid-compositie bereikbaar (de keuze ligt vóór de studio, op het compose-scherm) en clip-behoud roept een lastige secties/afbeeldingen-mapping op zonder concrete vraag ernaar. → **Modus blijft vast per compositie.**
+
+**Draad 2 — cross-thema (bijv. De Stad + Winterspelen).**
+**Won't-do by design.** Eén compositie = één thema/klanklandschap — pedagogisch helder, en het datamodel leunt erop (samples zijn thema-/locatiegebonden; `themeStore.getSamples()` leest altijd het actieve thema). Er is bewust géén in-app themawisselaar; het thema ligt vast via `?theme=` / startscherm. Het enige thema-wisselpad is **Nieuwe compositie** (start-/podiumscherm), dat al een confirm-modal toont bij bestaande clips.
+
+**Enige actie (gedaan 2026-07-06):** de "Nieuwe compositie"-confirmtekst op het startscherm aangescherpt zodat "je verzamelde geluiden en compositie gaan verloren" expliciet is (gelijkgetrokken met de podium-variant). `start.newCompositionConfirm` in `nl.json`/`en.json`.
 
 **Verwant aan:** #41 ✅ (storyboard basis), #48 (video-storyboard), #78 (startscherm UX — confirmatie bij "Nieuwe compositie")
 
