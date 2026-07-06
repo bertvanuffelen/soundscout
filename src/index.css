@@ -205,6 +205,24 @@ input:focus:not(:focus-visible),
   animation: hotspot-collect 500ms ease-out forwards;
 }
 
+/* --- Docent-CTA attention-puls (lege staat: nog geen klas) --- */
+/* Subtiel: alleen transform + box-shadow (geen layout-shift). De globale
+   prefers-reduced-motion-regel hieronder schakelt dit automatisch uit. */
+@keyframes cta-pulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(251, 191, 36, 0);
+  }
+  50% {
+    transform: scale(1.02);
+    box-shadow: 0 0 0 6px rgba(251, 191, 36, 0.18);
+  }
+}
+
+.animate-cta-pulse {
+  animation: cta-pulse 2.2s ease-in-out infinite;
+}
+
 /* Respect prefers-reduced-motion */
 @media (prefers-reduced-motion: reduce) {
   *,

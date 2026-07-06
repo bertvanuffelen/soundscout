@@ -315,7 +315,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                   variant="primary"
                   size="lg"
                   onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center gap-1 rounded-full"
+                  className="inline-flex items-center gap-1 rounded-full animate-cta-pulse"
                 >
                   <Plus className="w-4 h-4" />
                   {t('teacher.dashboard.createFirstClass')}
