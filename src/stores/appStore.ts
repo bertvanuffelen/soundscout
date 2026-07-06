@@ -65,7 +65,7 @@ interface AppStore {
   goToShared: (code: string) => void;
   goToSharedPraatplaat: (code: string) => void;
   goToTutorial: () => void;
-  goToTeacherGuide: () => void;
+  goToTeacherGuide: (sectionId?: string) => void;
   // Template actions
   loadTemplate: (template: Template) => void;
   clearTemplate: () => void;
@@ -112,6 +112,11 @@ interface AppStore {
   // "Bekijk alle leskaarten"-knop op de landingspagina).
   pendingTeacherTab: string | null;
   setPendingTeacherTab: (tab: string | null) => void;
+
+  // Handleiding-sectie waarop de guide moet openen (contextuele "?"-deeplinks).
+  // Eenmalig gelezen bij mount van TeacherGuideScreen, daarna gewist.
+  pendingGuideSection: string | null;
+  setPendingGuideSection: (id: string | null) => void;
 }
 
 export const useAppStore = create<AppStore>()((set) => ({
@@ -134,6 +139,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   pendingAssignment: null,
   pendingLessonCardKey: null,
   pendingTeacherTab: null,
+  pendingGuideSection: null,
 
   setScreen: (screen) => set({ currentScreen: screen }),
 
@@ -141,7 +147,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null, pendingTeacherTab: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null, pendingTeacherTab: null, pendingGuideSection: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -162,7 +168,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   goToTutorial: () => set({ currentScreen: 'tutorial' }),
 
-  goToTeacherGuide: () => set({ currentScreen: 'teacher-guide' }),
+  goToTeacherGuide: (sectionId) => set({ currentScreen: 'teacher-guide', pendingGuideSection: sectionId ?? null }),
 
   // Template actions
   loadTemplate: (template) => set({ activeTemplate: template, templateLockOptions: template.lockOptions }),
@@ -204,5 +210,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   setPendingLessonCardKey: (key) => set({ pendingLessonCardKey: key }),
 
   setPendingTeacherTab: (tab) => set({ pendingTeacherTab: tab }),
+
+  setPendingGuideSection: (id) => set({ pendingGuideSection: id }),
   goToAssignmentLanding: (pending) => set({ currentScreen: 'assignment-landing', pendingAssignment: pending }),
 }));

@@ -191,7 +191,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         actions={
           <>
             <button
-              onClick={goToTeacherGuide}
+              onClick={() => goToTeacherGuide()}
               className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
             >
               <HelpCircle className="w-4 h-4" />

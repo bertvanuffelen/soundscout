@@ -6,7 +6,7 @@
  * (dezelfde videopool als TutorialScreen, maar hier contextueel per onderwerp).
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ChevronDown, Play } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
@@ -104,8 +104,26 @@ const SECTIONS: GuideSection[] = [
 export default function TeacherGuideScreen() {
   const { t } = useTranslation();
   const goToTeacher = useAppStore((s) => s.goToTeacher);
-  const [openId, setOpenId] = useState<string | null>(SECTIONS[0]?.id ?? null);
+  // Open op de contextuele deeplink-sectie als die gezet is (patroon: pending-state
+  // eenmalig lezen bij mount, daarna wissen — net als pendingLessonCardKey).
+  const [openId, setOpenId] = useState<string | null>(() => {
+    const target = useAppStore.getState().pendingGuideSection;
+    if (target && SECTIONS.some((s) => s.id === target)) return target;
+    return SECTIONS[0]?.id ?? null;
+  });
   const [playingVideoId, setPlayingVideoId] = useState<string | null>(null);
+
+  useEffect(() => {
+    const { pendingGuideSection, setPendingGuideSection } = useAppStore.getState();
+    if (!pendingGuideSection) return;
+    setPendingGuideSection(null);
+    // Scroll de geopende sectie in beeld (deeplink kan diep in de lijst zitten).
+    requestAnimationFrame(() => {
+      document
+        .getElementById(`guide-section-${pendingGuideSection}`)
+        ?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+    });
+  }, []);
 
   const handleToggle = useCallback((id: string) => {
     setOpenId((current) => (current === id ? null : id));
