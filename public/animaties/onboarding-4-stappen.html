@@ -1,0 +1,499 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>SoundScout — In 4 stappen aan de slag</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ===================================================================
+     SOUNDSCOUT — onboarding "In 4 stappen aan de slag"
+     Eén samengestelde, herhalende animatie (4 acts). Eén rAF-klok:
+     elke frame wordt de staat volledig berekend uit t = (now-start) % PERIOD.
+     Huisstijl: Nunito, egale sample-kleuren (vaste hex), Lucide-iconen,
+     rode afspeellijn #e5342b, radii 13/14px.
+     =================================================================== */
+  :root{
+    --ss-font: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --line:#eceef1; --ruler:#9aa0a6; --playhead:#e5342b;
+    --gold:#e8a200; --badge:#f08a24;
+    --ink:#243244; --muted:#6b7280;
+    --accent:#efc14e;              /* SoundScout-geel */
+    --c-skate:#efc14e; --c-zand:#e0a56e; --c-drone:#4c9ad6;
+    --c-vissen:#29b6c9; --c-voetbal:#68bf59; --c-robot:#9b59b6;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:transparent; font-family:var(--ss-font); color:var(--ink); }
+
+  .film{ max-width:940px; margin:0 auto; background:#fff; position:relative;
+    border:1px solid var(--line); border-radius:16px; overflow:hidden;
+    box-shadow:0 8px 30px rgba(20,30,50,.08); }
+
+  /* ---- kopbalk met "Stap N" ---- */
+  .stepbar{ display:flex; align-items:center; gap:14px; padding:16px 20px;
+    border-bottom:1px solid var(--line); }
+  .stepnum{ flex:0 0 auto; width:46px; height:46px; border-radius:50%;
+    background:var(--accent); color:#4a3b00; font-weight:800; font-size:20px;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 3px 10px rgba(239,193,78,.5); }
+  .steptxt .k{ font-size:12px; font-weight:800; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; }
+  .steptxt .t{ font-size:19px; font-weight:800; color:var(--ink); line-height:1.15; margin-top:1px; }
+
+  /* ---- witte titelkaart vóór elke stap ---- */
+  .titlecard{ position:absolute; inset:0; background:#fff; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; text-align:center; padding:0 10%; opacity:0; z-index:50; }
+  .tc-num{ width:96px; height:96px; border-radius:50%; background:var(--accent); color:#4a3b00;
+    font-weight:800; font-size:44px; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 6px 20px rgba(239,193,78,.55); margin-bottom:22px; }
+  .tc-k{ font-size:14px; font-weight:800; letter-spacing:.18em; color:var(--muted); text-transform:uppercase; }
+  .tc-t{ font-size:40px; font-weight:800; color:var(--ink); line-height:1.15; margin:10px 0 14px; }
+  .tc-d{ font-size:18px; color:var(--muted); line-height:1.5; max-width:620px; }
+
+  /* ---- podium met acts ---- */
+  .stage{ position:relative; width:100%; aspect-ratio:16/9; overflow:hidden; background:#fbfcfd; }
+  .act{ position:absolute; inset:0; opacity:0; will-change:opacity,transform; }
+  .pad{ position:absolute; inset:24px; }
+
+  /* ---- gedeeld: sample-chip / clip ---- */
+  .chip{ display:inline-flex; align-items:center; gap:7px; padding:0 12px; height:34px;
+    border-radius:11px; color:#fff; font-weight:700; font-size:14px; white-space:nowrap;
+    box-shadow:0 2px 6px rgba(0,0,0,.14); }
+  .chip svg, .lib svg, .clip svg, .slot svg{ width:15px; height:15px; }
+  .c-skate{background:var(--c-skate)} .c-drone{background:var(--c-drone)}
+  .c-vissen{background:var(--c-vissen)} .c-voetbal{background:var(--c-voetbal)}
+  .c-robot{background:var(--c-robot)} .c-zand{background:var(--c-zand)}
+
+  /* ---- ACT 1 : locatie + hotspots ---- */
+  .loc{ position:absolute; inset:0; border-radius:14px; overflow:hidden; border:1px solid var(--line);
+    background:
+      radial-gradient(120% 90% at 50% 8%, #fff5e0 0%, transparent 45%),
+      radial-gradient(90% 70% at 80% 90%, #ffe6cf 0%, transparent 50%),
+      linear-gradient(#fef4e2, #f6ead6); }
+  .floor{ position:absolute; left:0; right:0; bottom:0; height:38%;
+    background:linear-gradient(#f0c98d,#e9b877); border-top:2px solid #e2a95f; }
+  .obj{ position:absolute; border-radius:50%; box-shadow:0 4px 10px rgba(0,0,0,.10); }
+  .bench{ position:absolute; border-radius:8px; background:#c98a4e; box-shadow:0 4px 10px rgba(0,0,0,.12); }
+  .rope{ position:absolute; width:4px; background:#d8b98f; border-radius:2px; }
+  .hot{ position:absolute; transform:translate(-50%,-50%) scale(0); opacity:0; width:46px; height:46px; will-change:transform,opacity; z-index:6;}
+  .hot .ring{ width:100%; height:100%; border-radius:50%; background:rgba(255,255,255,.94);
+    border:3px solid var(--gold); box-shadow:0 3px 9px rgba(0,0,0,.20); display:flex; align-items:center; justify-content:center; }
+  .hot .ring svg{ width:20px; height:20px; color:#6b5300; }
+  .hot .pulse{ position:absolute; inset:0; border-radius:50%; border:3px solid var(--gold); opacity:0; }
+  .cursor{ position:absolute; left:0; top:0; width:30px; height:30px; opacity:0; z-index:30; pointer-events:none;
+    filter:drop-shadow(0 1px 2px rgba(0,0,0,.4)); }
+
+  /* ---- ACT 2 : recorder ---- */
+  .rec{ position:absolute; left:0; right:0; top:50%; transform:translateY(-50%);
+    background:#fff; border:1px solid var(--line); border-radius:16px; padding:16px 18px;
+    box-shadow:0 6px 20px rgba(20,30,50,.06); }
+  .rec-h{ display:flex; align-items:center; gap:8px; font-weight:800; color:var(--ink); margin-bottom:12px; }
+  .rec-h .cnt{ margin-left:8px; font-size:13px; font-weight:800; color:var(--muted); }
+  .rec-h svg{ width:18px; height:18px; color:var(--c-drone); }
+  .slots{ display:grid; grid-template-columns:repeat(6,1fr); gap:12px; }
+  .slot{ position:relative; height:66px; border-radius:12px; border:2px dashed #d3d7dc; overflow:hidden; }
+  .slot .leeg{ position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    color:#aab0b6; font-size:13px; font-weight:700; }
+  .slot .cin{ position:absolute; inset:0; border-radius:10px; display:flex; flex-direction:column;
+    align-items:center; justify-content:center; gap:5px; color:#fff; font-size:12px; font-weight:700;
+    box-shadow:0 2px 6px rgba(0,0,0,.14); opacity:0; transform:translateY(-110%); }
+  .slot .cin svg{ width:20px; height:20px; }
+  .slot.fill{ border-style:solid; border-color:transparent; }
+
+  /* ---- ACT 3 + 4 : studio / tijdlijn ---- */
+  .lib-h,.tl-h{ font-size:11px; font-weight:800; letter-spacing:.13em; color:var(--muted); margin:0 0 8px 2px; }
+  .lib{ display:flex; gap:10px; }
+  .lib .chip{ opacity:1; }
+  .tl{ position:relative; border:1px solid var(--line); border-radius:12px; overflow:hidden; background:#fff; }
+  .ruler{ margin-left:30px; display:grid; grid-template-columns:repeat(9,1fr); height:20px; border-bottom:1px solid var(--line); }
+  .ruler span{ font-size:10px; color:var(--ruler); padding-left:5px; border-left:1px solid var(--line); line-height:20px; }
+  .grid-wrap{ display:grid; grid-template-columns:30px 1fr; }
+  .rnums{ display:grid; grid-auto-rows:42px; }
+  .rnums div{ display:flex; align-items:center; justify-content:center; font-size:11px; color:var(--ruler); border-bottom:1px solid var(--line); }
+  .area{ position:relative; display:grid; grid-template-columns:repeat(9,1fr); grid-auto-rows:42px;
+    background-image:
+      repeating-linear-gradient(to right,var(--line) 0 1px,transparent 1px calc(100%/9)),
+      repeating-linear-gradient(to bottom,var(--line) 0 1px,transparent 1px 42px); }
+  .clip{ margin:5px 3px; border-radius:11px; color:#fff; display:flex; align-items:center; gap:6px; padding:0 10px;
+    font-size:12px; font-weight:700; box-shadow:0 2px 5px rgba(0,0,0,.14); opacity:0; overflow:hidden; white-space:nowrap;
+    will-change:transform,opacity,filter; }
+  .playhead{ position:absolute; top:-20px; bottom:0; left:0; width:2px; background:var(--playhead); opacity:0; }
+  .playhead::before{ content:""; position:absolute; top:-4px; left:-4px; width:10px; height:10px; border-radius:50%; background:var(--playhead); }
+  .drag{ position:absolute; left:0; top:0; opacity:0; z-index:20; }
+  .tlbg{ position:absolute; left:10%; right:10%; top:9%; height:46%; border:1px solid var(--line);
+    border-radius:10px; overflow:hidden; background:#fff;
+    background-image:
+      repeating-linear-gradient(to right,#eef1f4 0 1px,transparent 1px calc(100%/8)),
+      repeating-linear-gradient(to bottom,#eef1f4 0 1px,transparent 1px calc(100%/3)); }
+  .tlbg::before{ content:""; position:absolute; left:0; top:0; bottom:0; width:2px; background:rgba(229,52,43,.35); }
+
+  /* ---- ACT 4 : bewerken ---- */
+  .editclip{ position:absolute; left:14%; top:16%; height:56px; width:44%; border-radius:13px; color:#fff;
+    display:flex; align-items:center; gap:8px; padding:0 14px; font-weight:700; font-size:15px;
+    box-shadow:0 3px 10px rgba(0,0,0,.16); outline:3px solid rgba(76,154,214,.55); outline-offset:2px; }
+  .handle{ position:absolute; right:-3px; top:50%; transform:translateY(-50%); width:12px; height:70%;
+    border-radius:6px; background:rgba(255,255,255,.85); box-shadow:0 1px 3px rgba(0,0,0,.25); }
+  .vol{ position:absolute; left:14%; right:14%; top:62%; }
+  .vol-lab{ font-size:12px; font-weight:800; color:var(--muted); display:flex; align-items:center; gap:6px; margin-bottom:10px; }
+  .vol-lab svg{ width:16px; height:16px; color:var(--c-drone); }
+  .track{ position:relative; height:8px; border-radius:5px; background:#e7ebf0; }
+  .fill{ position:absolute; left:0; top:0; bottom:0; border-radius:5px; background:var(--c-drone); width:50%; }
+  .thumb{ position:absolute; top:50%; left:50%; width:22px; height:22px; border-radius:50%; background:#fff;
+    border:3px solid var(--c-drone); transform:translate(-50%,-50%); box-shadow:0 2px 6px rgba(0,0,0,.2); }
+  .bars{ position:absolute; right:0; top:-46px; display:flex; align-items:flex-end; gap:3px; height:34px; }
+  .bars i{ width:5px; background:var(--c-drone); border-radius:2px; display:block; }
+  .done{ position:absolute; left:50%; top:50%; transform:translate(-50%,-50%); text-align:center; opacity:0; }
+  .done .ic{ width:52px; height:52px; margin:0 auto 6px; color:var(--c-voetbal); } .done .ic svg{ width:52px; height:52px; }
+  .done .t{ font-weight:800; font-size:18px; color:var(--ink); }
+
+  /* ---- voortgangsstippen ---- */
+  .dots{ display:flex; gap:8px; justify-content:center; padding:14px 0 16px; }
+  .dots i{ width:8px; height:8px; border-radius:50%; background:#dfe3e8; transition:none; }
+</style>
+
+<div class="film">
+  <div class="stepbar">
+    <div class="stepnum" id="stepnum">1</div>
+    <div class="steptxt"><div class="k">Stap <span id="stepk">1</span> van 4</div><div class="t" id="steptitle">Verken een locatie en klik op geluiden</div></div>
+  </div>
+
+  <div class="stage" id="stage">
+    <!-- ACT 1 -->
+    <div class="act" id="act1">
+      <div class="pad">
+        <div class="loc">
+          <div class="floor"></div>
+          <div class="rope"  style="left:34%; top:6%; height:26%"></div>
+          <div class="rope"  style="left:40%; top:6%; height:26%"></div>
+          <div class="obj" style="left:60%; top:70%; width:56px; height:56px; background:radial-gradient(circle at 35% 30%,#fff,#e77 60%,#b33)"></div>
+          <div class="bench" style="left:8%; top:60%; width:150px; height:16px"></div>
+          <div class="obj" style="left:80%; top:40%; width:30px; height:30px; background:radial-gradient(circle at 35% 30%,#fff,#5bd 60%,#37a)"></div>
+        </div>
+        <svg class="cursor" id="cursor1" viewBox="0 0 24 24"><path d="M4 2 L4 19 L8.5 14.6 L11.6 21.4 L14.3 20.2 L11.2 13.6 L17.5 13.6 Z" fill="#fff" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </div>
+    </div>
+
+    <!-- ACT 2 -->
+    <div class="act" id="act2"><div class="pad">
+      <div class="rec">
+        <div class="rec-h"><span class="ic-mic"></span><span>Recorder</span><span class="cnt" id="reccnt">0/6</span></div>
+        <div class="slots" id="slots"></div>
+      </div>
+    </div></div>
+
+    <!-- ACT 3 -->
+    <div class="act" id="act3"><div class="pad">
+      <div class="lib-h">BIBLIOTHEEK</div>
+      <div class="lib" id="lib"></div>
+      <div class="tl-h" style="margin-top:18px">TIJDLIJN</div>
+      <div class="tl">
+        <div class="ruler" id="ruler"></div>
+        <div class="grid-wrap">
+          <div class="rnums" id="rnums"></div>
+          <div class="area" id="area"><div class="playhead" id="playhead"></div></div>
+        </div>
+      </div>
+      <div class="drag chip" id="drag"></div>
+    </div></div>
+
+    <!-- ACT 4 -->
+    <div class="act" id="act4"><div class="pad">
+      <div class="tlbg"></div>
+      <div class="editclip c-drone" id="editclip"><span class="ic-waves"></span><span>Rolschaatsen</span><div class="handle"></div></div>
+      <div class="vol" id="vol">
+        <div class="vol-lab"><span class="ic-vol"></span>Volume</div>
+        <div class="track"><div class="fill" id="volfill"></div><div class="thumb" id="volthumb"></div>
+          <div class="bars" id="bars"></div>
+        </div>
+      </div>
+      <div class="done" id="done"><div class="ic ic-spark"></div><div class="t">Jouw compositie!</div></div>
+      <svg class="cursor" id="cursor4" viewBox="0 0 24 24"><path d="M4 2 L4 19 L8.5 14.6 L11.6 21.4 L14.3 20.2 L11.2 13.6 L17.5 13.6 Z" fill="#fff" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/></svg>
+    </div></div>
+
+  </div>
+
+  <div class="dots" id="dots"><i></i><i></i><i></i><i></i></div>
+
+  <div class="titlecard" id="titlecard">
+    <div class="tc-num" id="tcNum">1</div>
+    <div class="tc-k" id="tcK">Stap 1 van 4</div>
+    <div class="tc-t" id="tcT"></div>
+    <div class="tc-d" id="tcD"></div>
+  </div>
+</div>
+
+<script>
+/* ---------------- inline Lucide-iconen (currentColor) ---------------- */
+const IC = {
+  'circle-dot':'<circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="1"/>',
+  'zap':'<path d="M4 14a1 1 0 0 1-.78-1.63l9.9-10.2a.5.5 0 0 1 .86.46l-1.92 6.02A1 1 0 0 0 13 10h7a1 1 0 0 1 .78 1.63l-9.9 10.2a.5.5 0 0 1-.86-.46l1.92-6.02A1 1 0 0 0 11 14z"/>',
+  'bike':'<circle cx="18.5" cy="17.5" r="3.5"/><circle cx="5.5" cy="17.5" r="3.5"/><circle cx="15" cy="5" r="1"/><path d="M12 17.5V14l-3-3 4-3 2 3h2"/>',
+  'waves':'<path d="M2 12q2.5 2 5 0t5 0 5 0 5 0"/><path d="M2 19q2.5 2 5 0t5 0 5 0 5 0"/><path d="M2 5q2.5 2 5 0t5 0 5 0 5 0"/>',
+  'sparkles':'<path d="M11.017 2.814a1 1 0 0 1 1.966 0l1.051 5.558a2 2 0 0 0 1.594 1.594l5.558 1.051a1 1 0 0 1 0 1.966l-5.558 1.051a2 2 0 0 0-1.594 1.594l-1.051 5.558a1 1 0 0 1-1.966 0l-1.051-5.558a2 2 0 0 0-1.594-1.594l-5.558-1.051a1 1 0 0 1 0-1.966l5.558-1.051a2 2 0 0 0 1.594-1.594z"/><path d="M20 2v4"/><path d="M22 4h-4"/><circle cx="4" cy="20" r="2"/>',
+  'volume-2':'<path d="M11 4.7a.7.7 0 0 0-1.2-.5L6.4 7.6A1.4 1.4 0 0 1 5.4 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.4a1.4 1.4 0 0 1 1 .4l3.4 3.4A.7.7 0 0 0 11 19.3z"/><path d="M16 9a5 5 0 0 1 0 6"/><path d="M19.4 18.4a9 9 0 0 0 0-12.8"/>',
+  'mic':'<path d="M12 19v3"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><rect x="9" y="2" width="6" height="13" rx="3"/>'
+};
+function svg(name, extra){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'+(extra||'')+'>'+IC[name]+'</svg>'; }
+
+/* ---------------- data ---------------- */
+// De drie geluiden die door alle stappen lopen (kleur uit de vaste palet-hex).
+const SND = [
+  {label:'Rolschaatsen', cls:'c-drone',  icon:'bike'},
+  {label:'Bal',          cls:'c-vissen', icon:'circle-dot'},
+  {label:'Vallen',       cls:'c-voetbal',icon:'waves'}
+];
+// Bibliotheek in stap 3 (5 chips).
+const LIBSND = [
+  {label:'Voetbal',     cls:'c-voetbal',icon:'circle-dot'},
+  {label:'Skateboard',  cls:'c-skate',  icon:'zap'},
+  {label:'Rolschaatsen',cls:'c-drone',  icon:'bike'},
+  {label:'Bal',         cls:'c-vissen', icon:'circle-dot'},
+  {label:'Vallen',      cls:'c-robot',  icon:'sparkles'}
+];
+const STEPS = [
+  'Verken een locatie en klik op geluiden',
+  'Verzamel geluiden in je recorder',
+  'Sleep je geluiden op de tijdlijn in de studio',
+  'Combineer, bewerk en maak je eigen compositie!'
+];
+const TOEL = [
+  'Elke locatie zit vol geluiden. Klik ze aan om ze te verzamelen.',
+  'Je recorder heeft plek voor zes geluiden. Vul ’m met je favorieten.',
+  'In de studio sleep je je geluiden op de sporen van de tijdlijn.',
+  'Maak geluiden langer of korter en pas het volume aan — klaar is je compositie!'
+];
+
+/* ---------------- opbouw DOM ---------------- */
+// losse icoontjes injecteren
+document.querySelector('.ic-mic').outerHTML   = svg('mic','  style="width:18px;height:18px"');
+document.querySelector('.ic-waves').outerHTML = svg('waves','style="width:16px;height:16px"');
+document.querySelector('.ic-vol').outerHTML   = svg('volume-2','style="width:16px;height:16px"');
+document.querySelector('.ic-spark').innerHTML = svg('sparkles');
+
+// Act 1 — hotspots op objecten (posities in % van de act)
+const HOT = [{x:63,y:73},{x:38,y:22},{x:81,y:44}];
+const act1 = document.querySelector('#act1 .loc');
+const hotEls = HOT.map(h=>{ const el=document.createElement('div'); el.className='hot';
+  el.style.left=h.x+'%'; el.style.top=h.y+'%';
+  el.innerHTML='<div class="pulse"></div><div class="ring">'+svg('volume-2')+'</div>';
+  act1.appendChild(el); return el; });
+const rings=hotEls.map(e=>e.querySelector('.ring')), pulses=hotEls.map(e=>e.querySelector('.pulse'));
+
+// Act 2 — 6 slots
+const slotsEl=document.getElementById('slots'); const slotEls=[];
+for(let i=0;i<6;i++){ const s=document.createElement('div'); s.className='slot';
+  s.innerHTML='<span class="leeg">Leeg</span><div class="cin"><span class="ic"></span><span class="lb"></span></div>';
+  slotsEl.appendChild(s); slotEls.push(s); }
+
+// Act 3 — bibliotheek + tijdlijn
+const libEl=document.getElementById('lib'); const libEls=[];
+LIBSND.forEach(s=>{ const c=document.createElement('div'); c.className='chip '+s.cls;
+  c.innerHTML=svg(s.icon)+'<span>'+s.label+'</span>'; libEl.appendChild(c); libEls.push(c); });
+const ruler=document.getElementById('ruler'); for(let i=1;i<=9;i++){ const sp=document.createElement('span'); sp.textContent=i; ruler.appendChild(sp); }
+const rnums=document.getElementById('rnums'); for(let i=1;i<=4;i++){ const d=document.createElement('div'); d.textContent=i; rnums.appendChild(d); }
+const area=document.getElementById('area'), playhead=document.getElementById('playhead');
+// drie clips die "gesleept" worden — bibliotheek-index, spoor(rij), maat-start/eind
+const PLACE=[ {li:2,row:1,c0:1,c1:4}, {li:3,row:2,c0:3,c1:6}, {li:4,row:3,c0:2,c1:5} ];
+const clipEls=PLACE.map(p=>{ const s=LIBSND[p.li]; const el=document.createElement('div');
+  el.className='clip '+s.cls; el.style.gridColumn=p.c0+'/'+p.c1; el.style.gridRow=p.row;
+  el.innerHTML=svg(s.icon)+'<span>'+s.label+'</span>'; area.appendChild(el); return el; });
+const dragEl=document.getElementById('drag');
+
+// Act 4 — volumebalkjes
+const barsEl=document.getElementById('bars'); const barEls=[];
+for(let i=0;i<5;i++){ const b=document.createElement('i'); barsEl.appendChild(b); barEls.push(b); }
+
+const dots=[...document.querySelectorAll('#dots i')];
+const cursor1=document.getElementById('cursor1'), cursor4=document.getElementById('cursor4');
+const acts=[document.getElementById('act1'),document.getElementById('act2'),document.getElementById('act3'),document.getElementById('act4')];
+const tcEl=document.getElementById('titlecard'), tcNum=document.getElementById('tcNum'), tcK=document.getElementById('tcK'), tcT=document.getElementById('tcT'), tcD=document.getElementById('tcD');
+
+/* ---------------- helpers ---------------- */
+const clamp01=v=>v<0?0:v>1?1:v;
+const easeOut=p=>1-Math.pow(1-p,3);
+const easeInOut=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2;
+const lerp=(a,b,p)=>a+(b-a)*p;
+
+/* ---------------- tijdlijn van de film ---------------- */
+// Elke stap = eerst een witte titelkaart (TITLE), daarna de animatie (ANIM).
+const TITLE=4000;                               // witte titelkaart: 4 seconden per stap
+const ANIM=[7500,4200,9100,6900];               // rustige animatie per stap
+const LEN=ANIM.map(a=>TITLE+a);
+const START=[0]; for(let i=0;i<3;i++) START.push(START[i]+LEN[i]);
+const ANIMEND=START[3]+LEN[3];
+const REST=2200;                                // outro: enkele seconden wit vóór de herhaling
+const PERIOD=ANIMEND+REST;
+
+// scene-laag: onzichtbaar tijdens de titelkaart, faadt in als de kaart uitfadet en aan het eind weer uit
+function actVisible(i,t){ const as=START[i]+TITLE, ae=START[i]+LEN[i];
+  if(t<as-350 || t>ae) return 0;
+  if(t<as) return clamp01((t-(as-350))/350);
+  if(t>ae-300) return clamp01((ae-t)/300);
+  return 1; }
+const localA=(i,t)=>t-START[i]-TITLE;           // animatie-lokale tijd (ná de titelkaart)
+
+function render(t){
+  let cur=3; for(let i=0;i<4;i++){ if(t<START[i]+LEN[i]){ cur=i; break; } }
+  for(let i=0;i<4;i++){ acts[i].style.opacity=actVisible(i,t); }
+  document.getElementById('stepnum').textContent=cur+1;
+  document.getElementById('stepk').textContent=cur+1;
+  document.getElementById('steptitle').textContent=STEPS[cur];
+  dots.forEach((d,i)=>{ d.style.background=i===cur?'var(--accent)':'#dfe3e8';
+    d.style.transform='scale('+(i===cur?1.25:1)+')'; });
+
+  // witte titelkaart — dekt de HELE kaart af (dus ook de kopbalk). Plus outro-wit aan het eind.
+  let tco=0, blank=false;
+  if(t>=ANIMEND){ tco=clamp01((t-ANIMEND)/350); blank=true; }          // outro: leeg wit scherm
+  else { const tl=t-START[cur];
+    if(tl<TITLE){ const fin=(cur===0)?1:(tl<350?tl/350:1);             // stap 1 sluit naadloos aan op het outro-wit
+      const fout=(tl>TITLE-350)?clamp01((TITLE-tl)/350):1;
+      tco=Math.min(fin,fout); } }
+  tcEl.style.opacity=tco;
+  if(tco>0){
+    if(blank){ tcNum.style.opacity=0; tcK.textContent=''; tcT.textContent=''; tcD.textContent=''; }
+    else { tcNum.style.opacity=1; tcNum.textContent=cur+1; tcK.textContent='Stap '+(cur+1)+' van 4';
+      tcT.textContent=STEPS[cur]; tcD.textContent=TOEL[cur]; }
+  }
+
+  renderAct1(localA(0,t));
+  renderAct2(localA(1,t));
+  renderAct3(localA(2,t));
+  renderAct4(localA(3,t));
+}
+
+/* ===== ACT 1 : verkennen + klikken ===== */
+const A1={ empty:500, stag:400, app:520, hold:550, move:980, clickGap:560 };
+A1.appearEnd=A1.empty+2*A1.stag+A1.app;
+A1.c1=A1.appearEnd+A1.hold;                     // cursor start
+// drie klikmomenten
+A1.click=[A1.c1+A1.move, A1.c1+A1.move+A1.clickGap+A1.move, A1.c1+A1.move+2*(A1.clickGap+A1.move)];
+function renderAct1(t){
+  for(let i=0;i<3;i++){ const el=hotEls[i]; const s=A1.empty+i*A1.stag, e=s+A1.app;
+    let op=0,sc=0;
+    if(t<s){op=0;sc=0;} else if(t<e){ const p=(t-s)/A1.app,ez=easeOut(p); op=clamp01(p*1.8); sc=ez+0.14*Math.sin(p*Math.PI);}
+    else {op=1;sc=1;}
+    el.style.opacity=op; el.style.transform='translate(-50%,-50%) scale('+sc+')';
+    // klik-puls op de bijbehorende hotspot
+    const ct=A1.click[i]; let rs=1;
+    if(t>=ct&&t<ct+300) rs=1-0.13*Math.sin(((t-ct)/300)*Math.PI);
+    rings[i].style.transform='scale('+rs+')';
+    if(t>=ct&&t<ct+620){ const p=(t-ct)/620; pulses[i].style.opacity=0.7*(1-p); pulses[i].style.transform='scale('+(1+0.9*p)+')'; }
+    else pulses[i].style.opacity=0;
+  }
+  // cursor: van buiten beeld langs de 3 hotspots
+  let op=0;
+  if(t>=A1.c1&&t<A1.c1+220) op=(t-A1.c1)/220;
+  else if(t>=A1.c1+220) op=1;
+  let x=104,y=118;
+  const seg=[ [ {x:104,y:118}, HOT[0], A1.c1, A1.c1+A1.move ],
+              [ HOT[0], HOT[1], A1.click[0], A1.click[0]+A1.clickGap+A1.move ],
+              [ HOT[1], HOT[2], A1.click[1], A1.click[1]+A1.clickGap+A1.move ] ];
+  if(t<A1.c1){ x=104;y=118; }
+  else { x=HOT[2].x;y=HOT[2].y;
+    for(const [a,b,ts,te] of seg){ if(t>=ts&&t<te){ const p=easeInOut(clamp01((t-ts)/(te-ts))); x=lerp(a.x,b.x,p); y=lerp(a.y,b.y,p); break; } if(t<ts){ x=a.x;y=a.y; break; } } }
+  let cs=1; for(const ct of A1.click){ if(t>=ct&&t<ct+200){ cs=1-0.2*Math.sin(((t-ct)/200)*Math.PI); } }
+  cursor1.style.opacity=op; cursor1.style.left=x+'%'; cursor1.style.top=y+'%';
+  cursor1.style.transform='scale('+cs+')';
+}
+
+/* ===== ACT 2 : samples vallen ÍN hun vakje (geclipt) en blijven daar ===== */
+const A2={ empty:700, stag:1150, drop:720 };
+function renderAct2(t){
+  for(let i=0;i<3;i++){ const start=A2.empty+i*A2.stag; const el=slotEls[i];
+    const cin=el.querySelector('.cin'), leeg=el.querySelector('.leeg'), ic=el.querySelector('.ic'), lb=el.querySelector('.lb');
+    if(t<start){ el.classList.remove('fill'); leeg.style.opacity=1; cin.style.opacity=0; cin.style.transform='translateY(-110%)'; }
+    else {
+      if(cin.dataset.on!=='1'){ ic.innerHTML=svg(SND[i].icon,'style="width:20px;height:20px"'); lb.textContent=SND[i].label;
+        cin.style.background='var(--'+SND[i].cls+')'; cin.dataset.on='1'; }
+      const p=clamp01((t-start)/A2.drop), e=easeOut(p);
+      cin.style.opacity=1;
+      cin.style.transform='translateY('+(lerp(-110,0,e)+5*Math.sin(p*Math.PI))+'%)';   // valt in + kleine settle
+      leeg.style.opacity=1-clamp01(p*2.2);
+      el.classList.toggle('fill', p>0.85);
+    }
+  }
+  let c=0; for(let i=0;i<3;i++){ if(t>=A2.empty+i*A2.stag+A2.drop*0.45) c++; }
+  document.getElementById('reccnt').textContent=c+'/6';
+}
+
+/* ===== ACT 3 : slepen naar de tijdlijn + sweep ===== */
+const A3={ empty:600, stag:1300, drag:1100, drop:320, holdBeforeSweep:700, sweep:3000, phFade:460 };
+A3.dragEnd=A3.empty+2*A3.stag+A3.drag+A3.drop;
+A3.sweepStart=A3.dragEnd+A3.holdBeforeSweep;
+A3.sweepEnd=A3.sweepStart+A3.sweep;
+function centerOf(el,rel){ const r=el.getBoundingClientRect(), R=rel.getBoundingClientRect();
+  return { x:(r.left+r.width/2-R.left)/R.width*100, y:(r.top+r.height/2-R.top)/R.height*100 }; }
+function renderAct3(t){
+  const padEl=document.querySelector('#act3 .pad');
+  // clips verschijnen zodra ze "gedropt" zijn
+  let dragging=-1, dragP=0;
+  for(let i=0;i<3;i++){ const s=A3.empty+i*A3.stag; const dEnd=s+A3.drag; const dropEnd=dEnd+A3.drop;
+    const clip=clipEls[i];
+    if(t<dEnd){ clip.style.opacity=0; if(t>=s){ dragging=i; dragP=clamp01((t-s)/A3.drag); } }
+    else if(t<dropEnd){ const p=(t-dEnd)/A3.drop; clip.style.opacity=clamp01(p*1.6); clip.style.transform='scale('+(0.92+0.08*easeOut(p))+')'; }
+    else { clip.style.opacity=1; clip.style.transform='scale(1)';
+      // glow bij passeren afspeellijn
+      if(t>=A3.sweepStart&&t<=A3.sweepEnd){ const g0=A3.sweepStart+(PLACE[i].c0-1)/9*A3.sweep;
+        if(t>=g0&&t<g0+420){ const sg=Math.sin(((t-g0)/420)*Math.PI); clip.style.transform='scale('+(1+0.05*sg)+')'; clip.style.filter='brightness('+(1+0.16*sg)+')'; }
+        else clip.style.filter='brightness(1)'; }
+      else clip.style.filter='brightness(1)';
+    }
+  }
+  // sleep-chip die van bibliotheek naar spoor beweegt
+  if(dragging>=0){ const p=easeInOut(dragP); const s=LIBSND[PLACE[dragging].li];
+    dragEl.className='drag chip '+s.cls; dragEl.innerHTML=svg(s.icon)+'<span>'+s.label+'</span>';
+    const from=centerOf(libEls[PLACE[dragging].li], padEl);
+    const to=centerOf(clipEls[dragging], padEl);
+    dragEl.style.opacity=1; dragEl.style.transform='translate(-50%,-50%) scale(.96)';
+    dragEl.style.left=lerp(from.x,to.x,p)+'%'; dragEl.style.top=lerp(from.y,to.y,p)+'%';
+    // cursor mee (hergebruik cursor1 verborgen? nee — teken geen tweede; laat de chip zelf de beweging zijn)
+  } else dragEl.style.opacity=0;
+  // afspeellijn
+  let po=0,pl=0;
+  if(t>=A3.sweepStart&&t<=A3.sweepEnd){ po=1; pl=(t-A3.sweepStart)/A3.sweep*100; }
+  else if(t>A3.sweepEnd&&t<A3.sweepEnd+A3.phFade){ po=1-(t-A3.sweepEnd)/A3.phFade; pl=100; }
+  playhead.style.opacity=po; playhead.style.left=pl+'%';
+}
+
+/* ===== ACT 4 : rekken + volume ===== */
+const A4={ in:500, grow:1200, shrink:1200, gap:450, volIn:450, volMove:2000 };
+A4.growS=A4.in+300; A4.growE=A4.growS+A4.grow;
+A4.shrinkS=A4.growE+250; A4.shrinkE=A4.shrinkS+A4.shrink;
+A4.volS=A4.shrinkE+A4.gap; A4.volE=A4.volS+A4.volMove;
+A4.doneS=A4.volE+250;
+const editclip=document.getElementById('editclip'), volEl=document.getElementById('vol');
+const volfill=document.getElementById('volfill'), volthumb=document.getElementById('volthumb'), doneEl=document.getElementById('done');
+function renderAct4(t){
+  // clip verschijnt
+  let cop=clamp01((t-A4.in)/300); editclip.style.opacity=cop;
+  // breedte: 44% -> 62% (langer) -> 30% (korter) -> 46%
+  let w=44;
+  if(t<A4.growS) w=44;
+  else if(t<A4.growE) w=lerp(44,62,easeInOut((t-A4.growS)/A4.grow));
+  else if(t<A4.shrinkS) w=62;
+  else if(t<A4.shrinkE) w=lerp(62,30,easeInOut((t-A4.shrinkS)/A4.shrink));
+  else w=lerp(30,46,easeOut(clamp01((t-A4.shrinkE)/300)));
+  editclip.style.width=w+'%';
+  // cursor4 bij de handle
+  const handleX=14+w, hy=16+ (56/ (document.querySelector('#act4 .pad')?.clientHeight||360))*100*0.5;
+  let c4op=0; if(t>=A4.growS-200&&t<A4.shrinkE+200) c4op=1;
+  cursor4.style.opacity=c4op; cursor4.style.left=handleX+'%'; cursor4.style.top='23%';
+  // volume
+  let vo=clamp01((t-A4.volS)/A4.volIn); volEl.style.opacity=vo;
+  let lvl=0.5;
+  if(t>=A4.volS&&t<A4.volE){ const p=(t-A4.volS)/A4.volMove; lvl=0.5+0.42*Math.sin(p*Math.PI*1.5); }
+  else if(t>=A4.volE) lvl=0.72;
+  lvl=clamp01(lvl);
+  volfill.style.width=(lvl*100)+'%'; volthumb.style.left=(lvl*100)+'%';
+  barEls.forEach((b,i)=>{ const base=[.4,.7,1,.6,.85][i]; b.style.height=(6+28*lvl*base)+'px'; b.style.opacity=vo; });
+  // geen "klaar"-splash meer; de scene faadt netjes uit via actVisible → daarna outro-wit
+}
+
+/* ---------------- rAF-klok ---------------- */
+const REDUCE=window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+let raf=0, startT=null;
+function loop(now){ if(startT===null) startT=now; render((now-startT)%PERIOD); raf=requestAnimationFrame(loop); }
+function begin(){ cancelAnimationFrame(raf);
+  if(REDUCE){ render(START[2]+TITLE+A3.sweepStart+A3.sweep*0.5); return; }  // nette statische staat
+  startT=null; raf=requestAnimationFrame(loop); }
+window.addEventListener('pagehide',()=>cancelAnimationFrame(raf));
+begin();
+</script>
