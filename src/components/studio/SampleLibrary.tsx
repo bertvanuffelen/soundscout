@@ -54,7 +54,7 @@ const DraggableSample = memo(function DraggableSample({
       {...listeners}
       {...attributes}
       className={`
-        flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-md sm:rounded-xl border sm:border-2
+        flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border sm:border-2
         transition-all duration-150 select-none shrink-0 cursor-grab active:cursor-grabbing
         ${isDragging ? 'opacity-30 scale-95' : 'hover:shadow-md active:shadow-sm'}
         ${isSelected ? 'ring-2 ring-accent-400 border-accent-400 bg-accent-50' : ''}

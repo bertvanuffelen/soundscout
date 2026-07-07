@@ -26,7 +26,7 @@ export function RecorderBar({ slots, onEject, onPreview }: RecorderBarProps) {
           <div key={i} className="flex-1 min-w-[48px] sm:min-w-[56px]">
             {slot ? (
               <div
-                className="flex flex-col items-center gap-0.5 sm:gap-1 rounded-lg sm:rounded-xl p-1.5 sm:p-2 transition-colors duration-150 cursor-pointer hover:bg-neutral-50 active:bg-neutral-100"
+                className="flex flex-col items-center gap-0.5 sm:gap-1 rounded-xl p-1.5 sm:p-2 transition-colors duration-150 cursor-pointer hover:bg-neutral-50 active:bg-neutral-100"
                 style={{
                   backgroundColor: `${slot.color}15`,
                   borderColor: slot.color,
