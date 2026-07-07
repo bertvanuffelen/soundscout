@@ -13,7 +13,7 @@ export function RecorderBar({ slots, onEject, onPreview }: RecorderBarProps) {
   const count = slots.filter((s) => s !== null).length;
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 md:bottom-2 md:left-2 md:right-2 bg-white/95 backdrop-blur-sm border-t border-border-subtle md:border md:rounded-2xl md:shadow-lg px-2 sm:px-4 py-2 sm:py-3 z-10">
+    <div className="absolute bottom-0 left-0 right-0 md:bottom-2 md:left-2 md:right-2 bg-bg-surface/95 backdrop-blur-sm border-t border-border-subtle md:border md:rounded-2xl md:shadow-lg px-2 sm:px-4 py-2 sm:py-3 z-10">
       <div className="flex items-center gap-2 mb-1.5 sm:mb-2">
         <h3 className="text-xs sm:text-sm font-bold text-text-main">{t('recorder.title')}</h3>
         <span className="text-[10px] sm:text-xs font-semibold text-text-muted bg-neutral-100 px-1.5 sm:px-2 py-0.5 rounded-full">

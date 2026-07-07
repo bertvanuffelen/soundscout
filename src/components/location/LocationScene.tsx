@@ -255,7 +255,7 @@ export function LocationScene() {
           {/* Loading overlay with progress */}
           {isLoading && (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-30">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
+              <div className="bg-bg-surface/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
                 <p className="text-accent-700 font-semibold mb-3">{t('start.loading')}</p>
                 {/* Progress bar */}
                 <div className="w-full bg-neutral-200 rounded-full h-2 mb-2">
@@ -272,7 +272,7 @@ export function LocationScene() {
           {/* Error state with retry button */}
           {!isLoading && hasError && (
             <div className="absolute inset-0 bg-black/40 flex items-center justify-center z-30">
-              <div className="bg-white/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
+              <div className="bg-bg-surface/95 backdrop-blur-sm rounded-2xl px-8 py-6 shadow-xl max-w-xs text-center">
                 <AlertCircle className="w-12 h-12 text-accent-500 mx-auto mb-3" />
                 <p className="text-text-main font-medium mb-2">
                   {t('location.loadingError', { count: failedCount })}
