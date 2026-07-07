@@ -33,7 +33,9 @@ interface AudienceMember {
   className: string;
 }
 
-// Decorative audience colors — intentionally diverse for playful stage effect, not semantic tokens
+// Decorative audience colors — intentionally diverse for the playful "concert" stage effect.
+// DELIBERATE exception to the design-token rule (like the per-screen gradients and the map
+// fallback): these raw hues give the podium its varied, festive audience and are not semantic.
 const AUDIENCE: AudienceMember[] = [
   { icon: Baby, className: 'text-pink-400' },
   { icon: User, className: 'text-blue-400' },

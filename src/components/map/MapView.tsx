@@ -58,7 +58,7 @@ export function MapView() {
           <ArrowLeft className="w-4 h-4 mr-0.5 sm:mr-1" />
           {t('common.back')}
         </Button>
-        <h1 className="text-base sm:text-lg font-bold text-white md:text-text-main flex items-center gap-1.5 sm:gap-2">
+        <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-white md:text-text-main flex items-center gap-1.5 sm:gap-2">
           <MapPin className="w-4 h-4 sm:w-5 sm:h-5 text-accent-400" />
           <span className="hidden sm:inline">{t('map.title')}</span>
         </h1>
@@ -83,7 +83,10 @@ export function MapView() {
                 className="absolute inset-0 w-full h-full object-cover"
               />
             ) : (
-              <>{/* Decorative map fallback gradient — intentional raw colors */}<div className="absolute inset-0 bg-gradient-to-br from-green-200 via-blue-100 to-green-100" /></>
+              <>{/* Decorative map fallback (only shown if the map image fails to load).
+                     DELIBERATE exception to the design-token rule: the soft green/blue reads as
+                     "outdoors/map"; there is no token equivalent and neutral grey would degrade it. */}
+                <div className="absolute inset-0 bg-gradient-to-br from-green-200 via-blue-100 to-green-100" /></>
             )}
 
             {/* Map overlay for better marker visibility */}

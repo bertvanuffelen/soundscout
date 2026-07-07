@@ -66,7 +66,7 @@ export function StageActionsModal({
       <div className="bg-bg-surface rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between p-4 pb-2 sticky top-0 bg-bg-surface rounded-t-2xl z-10">
-          <h2 className="text-lg font-bold text-text-main">
+          <h2 className="text-lg font-extrabold tracking-tight text-text-main">
             {t('stage.actionsTitle')}
           </h2>
           <button

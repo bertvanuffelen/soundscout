@@ -316,7 +316,7 @@ export function StudioView() {
               <StorytellingToggle viewMode={viewMode} onViewModeChange={setViewMode} allowScenes={allowScenes} />
             </div>
           )}
-          <h1 className="text-base sm:text-lg font-bold text-text-main">{t('studio.title')}</h1>
+          <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-text-main">{t('studio.title')}</h1>
           <ClassSessionBadge variant="light" />
         </div>
         <Button

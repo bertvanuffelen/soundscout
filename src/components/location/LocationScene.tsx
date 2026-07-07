@@ -181,7 +181,7 @@ export function LocationScene() {
 
           {/* Location name */}
           <div className="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 z-20">
-            <h2 className="text-sm sm:text-base font-bold text-white bg-black/30 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">
+            <h2 className="text-sm sm:text-base font-extrabold tracking-tight text-white bg-black/30 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">
               {t(location.name)}
             </h2>
           </div>

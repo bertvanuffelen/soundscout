@@ -49,7 +49,7 @@ export function LocationMarker({
         'absolute transform -translate-x-1/2 -translate-y-1/2',
         'flex flex-col items-center gap-0.5 sm:gap-1',
         'transition-transform duration-200 hover:scale-110 active:scale-95',
-        'cursor-pointer focus:outline-none focus:ring-2 focus:ring-sky-400 focus:ring-offset-2 rounded-xl' // sky: three-state visual distinction
+        'cursor-pointer focus:outline-none focus:ring-2 focus:ring-accent-400 focus:ring-offset-2 rounded-xl' // focus ring = accent (app-brede conventie); sky blijft de 3-statenkleur op de rand
       )}
       style={{
         left: `${position.x}%`,
