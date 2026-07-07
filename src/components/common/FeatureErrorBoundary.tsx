@@ -67,7 +67,7 @@ export class FeatureErrorBoundary extends Component<
             </p>
             <button
               onClick={this.handleRetry}
-              className="px-5 py-2.5 bg-primary-500 hover:bg-primary-600 text-white font-semibold rounded-xl transition-colors cursor-pointer"
+              className="px-5 py-2.5 bg-accent-500 hover:bg-accent-600 text-white font-semibold rounded-xl transition-colors cursor-pointer"
             >
               {i18n.t('error.retryButton')}
             </button>

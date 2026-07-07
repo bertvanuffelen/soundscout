@@ -114,7 +114,7 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
             onChange={(e) => setName(e.target.value)}
             placeholder={t('templates.namePlaceholder')}
             maxLength={200}
-            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-primary-400 transition-colors"
+            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-accent-400 transition-colors"
           />
         </div>
 
@@ -130,7 +130,7 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
             placeholder={t('templates.descriptionPlaceholder')}
             maxLength={1000}
             rows={2}
-            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-primary-400 transition-colors resize-none"
+            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-accent-400 transition-colors resize-none"
           />
         </div>
 
@@ -146,7 +146,7 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
             placeholder={t('templates.instructionsPlaceholder')}
             maxLength={5000}
             rows={3}
-            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-primary-400 transition-colors resize-none"
+            className="w-full px-3 py-2 border border-border-subtle rounded-lg text-text-main text-sm focus:outline-none focus:border-accent-400 transition-colors resize-none"
           />
         </div>
 

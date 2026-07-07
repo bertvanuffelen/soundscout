@@ -354,7 +354,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
             <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 border-t border-border-subtle shrink-0">
               <button
                 onClick={handlePlayPause}
-                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer bg-primary-500 hover:bg-primary-600 active:bg-primary-700 active:scale-95 text-white"
+                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer bg-accent-500 hover:bg-accent-600 active:bg-accent-700 active:scale-95 text-white"
                 title={isPlaying ? t('common.pause') : t('common.play')}
               >
                 {isPlaying ? (

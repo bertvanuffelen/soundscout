@@ -347,7 +347,7 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
                     key={sub.id}
                     type="button"
                     onClick={() => handleSubmissionSelect(sub)}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-primary-50 transition-colors truncate"
+                    className="w-full text-left px-4 py-2 text-sm hover:bg-accent-50 transition-colors truncate"
                   >
                     {sub.student_name}
                   </button>
