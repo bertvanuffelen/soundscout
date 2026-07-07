@@ -65,6 +65,9 @@ export async function fetchTeacherCards(): Promise<Opdrachtkaart[]> {
       .from('assignment_cards')
       .select('id, title, bullets, is_active, created_at')
       .eq('teacher_id', user.id)
+      // Afgeleide kaarten (aangemaakt door activate_lesson_card uit een inline
+      // opdrachtkaart) blijven uit de bibliotheek/keuzelijst — zie migratie 024.
+      .eq('is_derived', false)
       .order('created_at', { ascending: false }),
     15_000,
     'errors.networkTimeout'
