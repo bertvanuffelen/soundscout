@@ -14,8 +14,10 @@ import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { getPraatplaatCatalog } from '../../data/praatplaatCatalog';
 import { getAllMultiImageStoryboards, getAssignableThemes } from '../../data/themes';
+import { MAX_CARD_BULLETS } from '../../lib/assignmentCards';
 import type { AssignmentType } from '../../lib/assignments';
 import type { LessonCard, LessonCardInput, LessonPhase } from '../../lib/lessonCards';
+import type { OpdrachtkaartContent } from '../../types';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 
@@ -36,7 +38,7 @@ const assignableThemes = getAssignableThemes();
 export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonCardEditorModalProps) {
   const { t } = useTranslation();
   const { templates } = useTemplates();
-  const { cards: assignmentCards } = useAssignmentCards();
+  const { cards: assignmentCards, create: createOpdrachtkaart } = useAssignmentCards();
   const activeTemplates = useMemo(() => templates.filter((tmpl) => tmpl.isActive), [templates]);
 
   const [assignmentType, setAssignmentType] = useState<AssignmentType>('praatplaat');
@@ -45,7 +47,12 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
   const [praatplaatRef, setPraatplaatRef] = useState('');
   const [storyboardRef, setStoryboardRef] = useState('');
   const [freeThemeId, setFreeThemeId] = useState('');
+  // Opdrachtkaart (leerling-tekst): geen / kies bestaande / zelf maken
+  const [cardMode, setCardMode] = useState<'none' | 'existing' | 'inline'>('none');
   const [cardId, setCardId] = useState('');
+  const [inlineCardTitle, setInlineCardTitle] = useState('');
+  const [inlineBullets, setInlineBullets] = useState<string[]>(['']);
+  const [saveToLibrary, setSaveToLibrary] = useState(false);
   const [title, setTitle] = useState('');
   const [level, setLevel] = useState('');
   const [lessonGoal, setLessonGoal] = useState('');
@@ -66,6 +73,21 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
       setStoryboardRef(card.storyboardRef ?? '');
       setFreeThemeId(card.freeThemeId ?? '');
       setCardId(card.cardId ?? '');
+      // Opdrachtkaart-modus afleiden uit de bestaande leskaart
+      if (card.cardId) {
+        setCardMode('existing');
+        setInlineCardTitle('');
+        setInlineBullets(['']);
+      } else if (card.cardInline) {
+        setCardMode('inline');
+        setInlineCardTitle(card.cardInline.title);
+        setInlineBullets(card.cardInline.bullets.length > 0 ? [...card.cardInline.bullets] : ['']);
+      } else {
+        setCardMode('none');
+        setInlineCardTitle('');
+        setInlineBullets(['']);
+      }
+      setSaveToLibrary(false);
       setTitle(card.title);
       setLevel(card.level ?? '');
       setLessonGoal(card.lessonGoal ?? '');
@@ -78,6 +100,10 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
       setStoryboardRef('');
       setFreeThemeId('');
       setCardId('');
+      setCardMode('none');
+      setInlineCardTitle('');
+      setInlineBullets(['']);
+      setSaveToLibrary(false);
       setTitle('');
       setLevel('');
       setLessonGoal('');
@@ -96,15 +122,27 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
     setPhases((prev) => prev.map((p, idx) => (idx === i ? { ...p, [field]: value } : p)));
   const removePhase = (i: number) => setPhases((prev) => prev.filter((_, idx) => idx !== i));
 
+  // Bullets van de inline opdrachtkaart (leerling-tekst)
+  const updateBullet = (i: number, value: string) =>
+    setInlineBullets((prev) => prev.map((b, idx) => (idx === i ? value : b)));
+  const addBullet = () =>
+    setInlineBullets((prev) => (prev.length >= MAX_CARD_BULLETS ? prev : [...prev, '']));
+  const removeBullet = (i: number) =>
+    setInlineBullets((prev) => (prev.length <= 1 ? [''] : prev.filter((_, idx) => idx !== i)));
+
   /** Bouw de LessonCardInput; retourneert null bij ontbrekende verplichte velden. */
-  const buildInput = (): LessonCardInput | null => {
+  const buildInput = (
+    resolvedCardId: string | null,
+    resolvedCardInline: OpdrachtkaartContent | null,
+  ): LessonCardInput | null => {
     if (!title.trim()) {
       setError(t('lessonCards.editor.titleRequired'));
       return null;
     }
     const base = {
       assignmentType,
-      cardId: cardId || null,
+      cardId: resolvedCardId,
+      cardInline: resolvedCardInline,
       title: title.trim(),
       level: level.trim() || null,
       lessonGoal: lessonGoal.trim() || null,
@@ -140,11 +178,37 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
   };
 
   const handleSave = async () => {
-    const input = buildInput();
-    if (!input) return;
-    setSaving(true);
     setError(null);
+    setSaving(true);
     try {
+      // Opdrachtkaart (leerling-tekst) oplossen op basis van de gekozen modus
+      let resolvedCardId: string | null = null;
+      let resolvedCardInline: OpdrachtkaartContent | null = null;
+      if (cardMode === 'existing') {
+        resolvedCardId = cardId || null;
+      } else if (cardMode === 'inline') {
+        const cardTitle = inlineCardTitle.trim();
+        const bullets = inlineBullets.map((b) => b.trim()).filter((b) => b.length > 0);
+        if (!cardTitle) {
+          setError(t('lessonCards.editor.inlineCardTitleRequired'));
+          setSaving(false);
+          return;
+        }
+        if (saveToLibrary) {
+          // Herbruikbare opdrachtkaart aanmaken in de bibliotheek → koppel via id
+          const created = await createOpdrachtkaart({ title: cardTitle, bullets });
+          resolvedCardId = created.id;
+        } else {
+          // Alleen aan deze leskaart gebonden (card_inline)
+          resolvedCardInline = { title: cardTitle, bullets };
+        }
+      }
+
+      const input = buildInput(resolvedCardId, resolvedCardInline);
+      if (!input) {
+        setSaving(false);
+        return;
+      }
       await onSave(input);
       onClose();
     } catch (err) {
@@ -262,19 +326,115 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
           )}
         </div>
 
-        {/* 3. Opdrachtkaart */}
+        {/* 3. Opdrachtkaart (leerling-tekst) */}
         <div>
           <label className={labelCls}>{t('lessonCards.editor.cardLabel')}</label>
-          <select value={cardId} onChange={(e) => setCardId(e.target.value)} className={inputCls}>
-            <option value="">{t('assignments.cardNone')}</option>
-            {assignmentCards.map((c) => (
-              <option key={c.id} value={c.id}>{c.title}</option>
+          <p className="text-xs text-text-muted -mt-1 mb-2">{t('lessonCards.editor.cardStudentHint')}</p>
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+            {(['none', 'existing', 'inline'] as const).map((mode) => (
+              <button
+                key={mode}
+                type="button"
+                onClick={() => setCardMode(mode)}
+                className={`px-3 py-2 rounded-xl border text-sm font-medium transition-colors ${
+                  cardMode === mode
+                    ? 'border-accent-500 bg-accent-50 text-text-main'
+                    : 'border-border-subtle bg-white text-text-muted hover:border-accent-300'
+                }`}
+              >
+                {t(`lessonCards.editor.cardMode.${mode}`)}
+              </button>
             ))}
-          </select>
+          </div>
+
+          {cardMode === 'existing' && (
+            <div className="mt-3">
+              {assignmentCards.length > 0 ? (
+                <select value={cardId} onChange={(e) => setCardId(e.target.value)} className={inputCls}>
+                  <option value="">{t('assignments.cardNone')}</option>
+                  {assignmentCards.map((c) => (
+                    <option key={c.id} value={c.id}>{c.title}</option>
+                  ))}
+                </select>
+              ) : (
+                <p className="text-sm text-text-muted">{t('lessonCards.editor.cardNoLibrary')}</p>
+              )}
+            </div>
+          )}
+
+          {cardMode === 'inline' && (
+            <div className="mt-3 space-y-3 rounded-xl border border-border-subtle bg-bg-app/40 p-3">
+              <div>
+                <label className={labelCls}>{t('lessonCards.editor.inlineCardTitleLabel')}</label>
+                <input
+                  type="text"
+                  value={inlineCardTitle}
+                  onChange={(e) => setInlineCardTitle(e.target.value)}
+                  placeholder={t('lessonCards.editor.inlineCardTitlePlaceholder')}
+                  maxLength={120}
+                  className={inputCls}
+                />
+              </div>
+              <div>
+                <div className="flex items-center justify-between mb-1.5">
+                  <label className={labelCls + ' mb-0'}>{t('lessonCards.editor.inlineBulletsLabel')}</label>
+                  <span className="text-xs text-text-muted">
+                    {inlineBullets.filter((b) => b.trim()).length}/{MAX_CARD_BULLETS}
+                  </span>
+                </div>
+                <div className="space-y-2">
+                  {inlineBullets.map((bullet, index) => (
+                    <div key={index} className="flex items-center gap-2">
+                      <span className="text-text-muted text-sm shrink-0 w-4 text-center">•</span>
+                      <input
+                        type="text"
+                        value={bullet}
+                        onChange={(e) => updateBullet(index, e.target.value)}
+                        maxLength={200}
+                        placeholder={t('lessonCards.editor.inlineBulletPlaceholder')}
+                        className={inputCls}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => removeBullet(index)}
+                        className="text-text-muted hover:text-error-500 p-1.5 transition-colors shrink-0"
+                        title={t('assignmentCards.removeBullet')}
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                </div>
+                {inlineBullets.length < MAX_CARD_BULLETS && (
+                  <button
+                    type="button"
+                    onClick={addBullet}
+                    className="mt-2 inline-flex items-center gap-1 text-sm text-accent-600 hover:text-accent-700 font-medium"
+                  >
+                    <Plus className="w-4 h-4" />
+                    {t('assignmentCards.addBullet')}
+                  </button>
+                )}
+              </div>
+              <label className="flex items-start gap-2 cursor-pointer pt-1">
+                <input
+                  type="checkbox"
+                  checked={saveToLibrary}
+                  onChange={(e) => setSaveToLibrary(e.target.checked)}
+                  className="mt-0.5 w-4 h-4 accent-accent-500 cursor-pointer"
+                />
+                <span className="text-sm text-text-main">
+                  {t('lessonCards.editor.saveToLibraryLabel')}
+                  <span className="block text-xs text-text-muted">{t('lessonCards.editor.saveToLibraryHint')}</span>
+                </span>
+              </label>
+            </div>
+          )}
         </div>
 
-        {/* 4. Presentatie */}
+        {/* 4. Presentatie (docent-facing) */}
         <div className="border-t border-border-subtle pt-5 space-y-4">
+          <p className="text-xs text-text-muted -mt-1">{t('lessonCards.editor.presentationHint')}</p>
           <div>
             <label className={labelCls}>{t('lessonCards.editor.titleLabel')}</label>
             <input
