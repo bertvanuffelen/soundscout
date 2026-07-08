@@ -137,7 +137,7 @@
   .vol-lab{ font-size:12px; font-weight:800; color:var(--muted); display:flex; align-items:center; gap:6px; margin-bottom:10px; }
   .vol-lab svg{ width:16px; height:16px; color:var(--c-drone); }
   .track{ position:relative; height:8px; border-radius:5px; background:#e7ebf0; }
-  .fill{ position:absolute; left:0; top:0; bottom:0; border-radius:5px; background:var(--c-drone); width:50%; }
+  .vol-fill{ position:absolute; left:0; top:0; bottom:0; border-radius:5px; background:var(--c-drone); width:50%; }
   .thumb{ position:absolute; top:50%; left:50%; width:22px; height:22px; border-radius:50%; background:#fff;
     border:3px solid var(--c-drone); transform:translate(-50%,-50%); box-shadow:0 2px 6px rgba(0,0,0,.2); }
   .bars{ position:absolute; right:0; top:-46px; display:flex; align-items:flex-end; gap:3px; height:34px; }
@@ -202,7 +202,7 @@
       <div class="editclip c-drone" id="editclip"><span class="ic-waves"></span><span>Rolschaatsen</span><div class="handle"></div></div>
       <div class="vol" id="vol">
         <div class="vol-lab"><span class="ic-vol"></span>Volume</div>
-        <div class="track"><div class="fill" id="volfill"></div><div class="thumb" id="volthumb"></div>
+        <div class="track"><div class="vol-fill" id="volfill"></div><div class="thumb" id="volthumb"></div>
           <div class="bars" id="bars"></div>
         </div>
       </div>
