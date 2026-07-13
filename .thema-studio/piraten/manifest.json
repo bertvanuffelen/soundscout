@@ -1,26 +1,109 @@
 {
   "themeId": "piraten",
-  "fase": "B-gate (wacht op goedkeuring themaplan)",
+  "fase": "C — beeldproductie (grogkroeg+haven goedgekeurd)",
   "model": "nano_banana_pro",
   "engine": "higgsfield-cli",
   "credits_start": 150,
   "begroting_credits": 56,
   "stijlanker": "stijlanker/anker-01.jpg (grogkroeg-v1, goedgekeurd 2026-07-13)",
   "beelden": {
-    "grogkroeg": {"type": "locatie", "rol": "anker", "status": "goedgekeurd", "iteraties": 1, "job_id": "cb50b6f9-57f1-4492-857e-7360e4b45244", "eindpad": "package/public/images/themes/piraten/grogkroeg.jpg"},
-    "haven": {"type": "locatie", "status": "v1-wacht-op-bert (dieren organisch)", "iteraties": 1, "job_id": "e8b33bf6-85fe-4141-952f-78b175aa1a59", "kandidaat": "kandidaten/haven-v1.jpg"},
-    "schip": {"type": "locatie", "status": "todo", "iteraties": 0},
-    "jungle": {"type": "locatie", "status": "todo", "iteraties": 0},
-    "voodoohut": {"type": "locatie", "status": "todo", "iteraties": 0},
-    "plattegrond": {"type": "plattegrond", "status": "todo", "iteraties": 0},
-    "pp-piratenmarkt": {"type": "praatplaat", "status": "todo", "iteraties": 0},
-    "sb-kaart": {"type": "storyboard", "status": "todo", "iteraties": 0},
-    "sb-jungle": {"type": "storyboard", "status": "todo", "iteraties": 0},
-    "sb-graven": {"type": "storyboard", "status": "todo", "iteraties": 0},
-    "sb-schat": {"type": "storyboard", "status": "todo", "iteraties": 0}
+    "grogkroeg": {
+      "type": "locatie",
+      "rol": "anker",
+      "status": "goedgekeurd",
+      "iteraties": 1,
+      "job_id": "cb50b6f9-57f1-4492-857e-7360e4b45244",
+      "eindpad": "package/public/images/themes/piraten/grogkroeg.jpg"
+    },
+    "haven": {
+      "type": "locatie",
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "ff55f38d-27b3-4c30-b3f2-b689d3a383e6",
+      "eindpad": "package/public/images/themes/piraten/haven.jpg"
+    },
+    "schip": {
+      "type": "locatie",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "jungle": {
+      "type": "locatie",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "voodoohut": {
+      "type": "locatie",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "plattegrond": {
+      "type": "plattegrond",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "pp-piratenmarkt": {
+      "type": "praatplaat",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "sb-kaart": {
+      "type": "storyboard",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "sb-jungle": {
+      "type": "storyboard",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "sb-graven": {
+      "type": "storyboard",
+      "status": "todo",
+      "iteraties": 0
+    },
+    "sb-schat": {
+      "type": "storyboard",
+      "status": "todo",
+      "iteraties": 0
+    }
   },
   "samples_totaal": 36,
-  "loops": ["grogkroeg-accordeon", "haven-golven", "schip-zeemanslied", "jungle-waterval", "jungle-trommels", "voodoohut-ketel"],
-  "nieuwe_iconen": ["Beer", "DoorOpen", "Dice5", "Waves", "Bell", "Anchor", "Package", "Sailboat", "Wind", "Droplet", "Bug", "Skull"],
-  "api_calls": []
+  "loops": [
+    "grogkroeg-accordeon",
+    "haven-golven",
+    "schip-zeemanslied",
+    "jungle-waterval",
+    "jungle-trommels",
+    "voodoohut-ketel"
+  ],
+  "nieuwe_iconen": [
+    "Beer",
+    "DoorOpen",
+    "Dice5",
+    "Waves",
+    "Bell",
+    "Anchor",
+    "Package",
+    "Sailboat",
+    "Wind",
+    "Droplet",
+    "Bug",
+    "Skull"
+  ],
+  "api_calls": [
+    {
+      "tijd": "2026-07-13T20:42:20",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "ff55f38d-27b3-4c30-b3f2-b689d3a383e6",
+      "out": ".thema-studio/piraten/kandidaten/haven-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/haven-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    }
+  ]
 }

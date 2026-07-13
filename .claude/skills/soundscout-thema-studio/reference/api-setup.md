@@ -26,6 +26,18 @@ python3 scripts/genereer-afbeelding-higgsfield.py --cost-only --prompt "test"  #
 ```
 Bij "Not authenticated": `higgsfield auth login` (opent browser, alleen als token verlopen is).
 
+### Herstel bij onderbroken generatie (geen dubbele credits!)
+
+Als een generatie een job aanmaakt (2 credits weg) maar de download/afhandeling hapert,
+genereer dan **niet opnieuw** — de job draait al. Herstel 'm:
+```bash
+higgsfield generate list --json | python3 -c "import json,sys;print(json.load(sys.stdin)[0]['id'])"  # nieuwste job-id
+higgsfield generate wait <job_id> --timeout 8m
+higgsfield generate get <job_id> --json   # lees result_url → download met curl → verwerk-afbeelding.py
+```
+`generate create --json` geeft de job-id terug als JSON-string, soms als `["<id>"]` of dict;
+de wrapper vangt alle vormen af.
+
 ## Beeld — FALLBACK: Gemini API (optioneel)
 
 Alleen nodig als je Higgsfield-credits wilt sparen of de CLI onbereikbaar is. Zelfde

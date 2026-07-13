@@ -66,6 +66,18 @@ herkomst.** Bijwerken na élke generatie, geluidskeuze en beslissing. Het plan z
 - **Wijzigingen per versie**: (v2 volgt als Bert een edit-ronde wil — gezichten barman/
   accordeonist naar scherm/visor, gloed consistenter, wat meer kleur.)
 
+### haven — locatie
+- **Status**: ✅ GOEDGEKEURD door Bert (2026-07-13, v2). Gekopieerd naar
+  `package/public/images/themes/piraten/haven.jpg`.
+- **Job-id(s)**: v1 `e8b33bf6-…` (verworpen: dieren organisch), v2 `ff55f38d-27b3-4c30-b3f2-b689d3a383e6` · **Iteraties**: 2
+- **Stijlref**: `stijlanker/anker-01.jpg` (grogkroeg)
+- **Mini-wizard**: shot=totaalshot kade · drukte=extreem druk (32 acties) · belichting=heldere middagzon
+- **Volledige prompt (v2)**: [prompts/haven-v2.txt](prompts/haven-v2.txt) — goedgekeurde
+  32-actielijst, houten derrick (geen stalen kraan), mechanische robot-dieren.
+- **Leerpunten die v2 opleverde (nu in de skill)**: elementenlijst eerst tonen; drukte-target
+  ≥30 + crowding-instructie; periode-echtheid (age-of-sail props); robot-dieren nadrukkelijk
+  mechanisch forceren. Restpunt: meeuwen nog iets vogelachtig; belboei niet zichtbaar (klein).
+
 ## Geluiden
 
 Nog niet geproduceerd (fase D). Geplande samples + routes: zie [themaplan.md](themaplan.md) §2.
