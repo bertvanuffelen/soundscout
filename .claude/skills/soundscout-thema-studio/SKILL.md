@@ -83,20 +83,25 @@ Stijlcontracten: [stijl-praatplaat](reference/stijl-praatplaat.md) ·
 
 **Ankersysteem:**
 - Thema in de bestaande basis-stijl → gebruik de 3 bestaande praatplaten
-  (`public/images/praatplaten/*.jpg`) als style-refs.
+  (`public/images/praatplaten/*.jpg`) als referenties.
 - Nieuw thema → genereer eerst één **ankerbeeld** (het beeld dat de sfeer het best
   draagt, meestal een locatie of praatplaat) zónder anker, puur op het stijlcontract.
   Na Berts goedkeuring: kopieer naar `stijlanker/anker-01.jpg`. Daarna gaat het anker
-  **verplicht** mee als `--style-ref` in elke generatie (max 3 refs; vul aan met het
-  meest verwante goedgekeurde beeld).
+  **verplicht** mee als `--image-reference` in elke generatie (vul aan met het meest
+  verwante goedgekeurde beeld; `nano_banana_pro` accepteert tot 14 referenties, maar 2-3
+  gerichte volstaat meestal).
 - Storyboards: frame 1 goedgekeurd → frames 2-5 met frame 1 als extra referentie
   (character consistency).
-- **Eén model per thema** voor finale beelden (advies `gemini-3-pro-image`; flash mag
+- **Eén model per thema** voor finale beelden (`nano_banana_pro`; lichtere modellen mogen
   voor drafts, nooit mixen in het eindresultaat).
 
-**Kwaliteitslus per beeld:**
+**Kwaliteitslus per beeld** (primaire engine = Higgsfield CLI, `nano_banana_pro`, 2
+credits/beeld — geen key nodig; zie [reference/api-setup.md](reference/api-setup.md)):
 1. Schrijf de prompt naar `prompts/{beeld-id}-v{n}.txt`.
-2. `python3 scripts/genereer-afbeelding.py --prompt-file … --out … --style-ref …`
+2. `python3 scripts/genereer-afbeelding-higgsfield.py --prompt-file … --out …
+   --image-reference stijlanker/anker-01.jpg --manifest .thema-studio/{id}/manifest.json`
+   (Gemini-fallback: `scripts/genereer-afbeelding.py … --style-ref …`, alleen als de
+   `GEMINI_API_KEY` gezet is / je Higgsfield-credits wilt sparen.)
 3. `python3 scripts/verwerk-afbeelding.py --in … --out kandidaten/{beeld-id}-v{n}.jpg`
 4. **Read** het jpg en loop de checklist af: per criterium ✓/✗ met één regel toelichting;
    log het resultaat in manifest.json.
@@ -110,7 +115,9 @@ Stijlcontracten: [stijl-praatplaat](reference/stijl-praatplaat.md) ·
    stijlanker.
 
 **Kostenbewaking**: begroot in fase B het aantal generaties (~2,5× het aantal finale
-beelden). Meld het Bert expliciet zodra je op 2× de begroting zit.
+beelden). Higgsfield rekent **2 credits per beeld** — check het saldo met
+`higgsfield account status` (start 150 ≈ ~75 generaties ≈ ~1 thema). Meld Bert zodra je
+op 2× de begroting zit of het saldo onder ~30 credits zakt.
 
 ## Fase D — Geluidsproductie
 
@@ -150,7 +157,7 @@ Afsluiter: `python3 scripts/check-audio.py --map package/public/audio/themes/{th
 ## Bekende beperkingen (eerlijk benoemen)
 
 - Activiteiten tellen op een drukke praatplaat is een schatting; de Bert-gate ondervangt dit.
-- Gemini levert geen exacte pixelmaat; `verwerk-afbeelding.py` maakt er altijd
-  1920×1072 JPG van.
-- Higgsfield heeft geen stijlreferentie-input: alleen inzetten als tweede mening, nooit
-  voor serie-consistentie.
+- De beeld-engine levert geen exacte pixelmaat (resolutie-tiers); `verwerk-afbeelding.py`
+  maakt er altijd 1920×1072 JPG van.
+- Higgsfield-credits zijn eindig (2/beeld, gedeeld saldo) — bewaak het saldo en schakel
+  desnoods naar de Gemini-fallback als de credits opraken.
