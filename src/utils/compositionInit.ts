@@ -14,11 +14,11 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
 import { getThemeStoryboards, findStoryboardById } from '../data/themes';
-import { getActiveAssignment } from '../lib/assignments';
+import { getActiveAssignment, type ActiveAssignment } from '../lib/assignments';
 import { MAX_SECTIONS } from '../constants/config';
 import { logger } from './logger';
 import { praatplaatToStoryboard } from './praatplaatStoryboard';
-import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, Storyboard, ComposeMode } from '../types';
+import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, Storyboard, ComposeMode, ClassSession } from '../types';
 import { storageService } from '../services/StorageService';
 import i18n from '../i18n';
 
@@ -315,6 +315,36 @@ export async function lookupAndRouteAssignment(classCode: string): Promise<boole
     logger.error('lookupAndRouteAssignment failed:', err);
     return false;
   }
+}
+
+/**
+ * Bouw een ClassSession uit een ActiveAssignment (per opdracht-type de
+ * juiste id/naam). Gedeeld door `activatePendingAssignment` en het
+ * bewaarcode-sessie-herstel in ShareCodeInput (migratie 028).
+ */
+export function classSessionFromAssignment(
+  classCode: string,
+  assignment: ActiveAssignment,
+): ClassSession | null {
+  const base = {
+    classCode,
+    classId: assignment.classId,
+    className: assignment.className,
+    peerReview: assignment.peerReview,
+  };
+  if (assignment.type === 'template' && assignment.template) {
+    return { ...base, assignmentType: 'template', assignmentId: assignment.template.id, assignmentName: assignment.template.name };
+  }
+  if (assignment.type === 'praatplaat' && assignment.praatplaat) {
+    return { ...base, assignmentType: 'praatplaat', assignmentId: assignment.praatplaat.id, assignmentName: assignment.praatplaat.name };
+  }
+  if (assignment.type === 'storyboard' && assignment.storyboard) {
+    return { ...base, assignmentType: 'storyboard', assignmentId: assignment.storyboard.ref, assignmentName: i18n.t(assignment.storyboard.nameKey) };
+  }
+  if (assignment.type === 'free' && assignment.free) {
+    return { ...base, assignmentType: 'free', assignmentId: assignment.free.themeId, assignmentName: assignment.free.themeName };
+  }
+  return null;
 }
 
 /**

@@ -29,6 +29,7 @@ export function CompositionsView() {
   const setCurrentCompositionId = useAppStore((s) => s.setCurrentCompositionId);
   const setClassSession = useAppStore((s) => s.setClassSession);
   const setSubmissionId = useAppStore((s) => s.setSubmissionId);
+  const setSubmissionSynced = useAppStore((s) => s.setSubmissionSynced);
   const clearClassSession = useAppStore((s) => s.clearClassSession);
 
   const loadTimeline = useTimelineStore((s) => s.loadTimeline);
@@ -61,12 +62,16 @@ export function CompositionsView() {
         setClassSession(composition.classSession);
         if (composition.submissionId) {
           setSubmissionId(composition.submissionId);
+          // Een bewaarde submissionId = eerder succesvol ingeleverd. Zonder
+          // deze herstelstap bleef submissionSynced false en verdween de
+          // peer-feedback-knop na heropenen (bugfix sessie-herstel).
+          setSubmissionSynced(true);
         }
       } else {
         clearClassSession();
       }
     },
-    [setClassSession, setSubmissionId, clearClassSession]
+    [setClassSession, setSubmissionId, setSubmissionSynced, clearClassSession]
   );
 
   const handleOpenComposition = useCallback(

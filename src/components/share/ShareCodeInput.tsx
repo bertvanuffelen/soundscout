@@ -17,7 +17,8 @@ import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
 import { getSharedPraatplaat } from '../../lib/praatplaat';
 import { useAppStore } from '../../stores/appStore';
-import { initializeFromTemplate, initializeFromSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
+import { initializeFromTemplate, initializeFromSavedComposition, lookupAndRouteAssignment, classSessionFromAssignment } from '../../utils/compositionInit';
+import { getActiveAssignment } from '../../lib/assignments';
 import { storageService } from '../../services/StorageService';
 import { logger } from '../../utils/logger';
 
@@ -84,6 +85,25 @@ export function ShareCodeInput() {
                 code,
                 newSecret,
               );
+              // Klas-sessie herstellen (migratie 028): de bewaarcode is de
+              // universele terugkeerroute — ook peer-feedback werkt dan weer
+              // op elk apparaat. Faalt geruisloos (sessie is nice-to-have).
+              if (saved.class_code) {
+                try {
+                  const assignment = await getActiveAssignment(saved.class_code);
+                  const session = assignment ? classSessionFromAssignment(saved.class_code, assignment) : null;
+                  if (session) {
+                    // Volgorde: setClassSession reset submissionId/synced,
+                    // dus die twee erná zetten.
+                    useAppStore.getState().setClassSession(session);
+                    useAppStore.getState().setSubmissionId(saved.id);
+                    useAppStore.getState().setSubmissionSynced(true);
+                  }
+                } catch (err) {
+                  logger.warn('Klas-sessie herstellen via bewaarcode mislukt', err);
+                }
+              }
+
               // Docent-feedback (migratie 026) + klasgenoot-complimenten
               // (migratie 027) meenemen naar de studio: banner met de reactie.
               const { getPeerCompliments } = await import('../../lib/peerFeedback');
