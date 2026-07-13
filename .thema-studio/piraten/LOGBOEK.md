@@ -78,6 +78,14 @@ herkomst.** Bijwerken na élke generatie, geluidskeuze en beslissing. Het plan z
   ≥30 + crowding-instructie; periode-echtheid (age-of-sail props); robot-dieren nadrukkelijk
   mechanisch forceren. Restpunt: meeuwen nog iets vogelachtig; belboei niet zichtbaar (klein).
 
+### schip — locatie
+- **Status**: ✅ GOEDGEKEURD (2026-07-13, v2). → `package/public/images/themes/piraten/schip.jpg`.
+- **Job-id(s)**: v1 `320a90f4-…` (verworpen: "BOOM"-tekst in beeld), v2 `8f485e30-71dd-4daa-98ac-94b37bfabbe1` · **Iteraties**: 2
+- **Mini-wizard**: shot=totaalshot dek · drukte=extreem druk (32 acties) · belichting=heldere winderige dag
+- **Volledige prompt (v2)**: [prompts/schip-v2.txt](prompts/schip-v2.txt)
+- **Leerpunt (nu in skill)**: onomatopee/geluidswoorden (BOOM) expliciet verbieden in het
+  negatief-blok. Restpunt: papegaaien/aap bleven organisch (koppig; door Bert geaccepteerd).
+
 ## Geluiden
 
 Nog niet geproduceerd (fase D). Geplande samples + routes: zie [themaplan.md](themaplan.md) §2.

@@ -24,8 +24,10 @@
     },
     "schip": {
       "type": "locatie",
-      "status": "todo",
-      "iteraties": 0
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "8f485e30-71dd-4daa-98ac-94b37bfabbe1",
+      "eindpad": "package/public/images/themes/piraten/schip.jpg"
     },
     "jungle": {
       "type": "locatie",
@@ -100,6 +102,32 @@
       "job_id": "ff55f38d-27b3-4c30-b3f2-b689d3a383e6",
       "out": ".thema-studio/piraten/kandidaten/haven-v2.png",
       "prompt_file": ".thema-studio/piraten/prompts/haven-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T20:51:24",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "320a90f4-425e-45f5-ba71-b4a70e6c9cc3",
+      "out": ".thema-studio/piraten/kandidaten/schip-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/schip-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T20:54:47",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "8f485e30-71dd-4daa-98ac-94b37bfabbe1",
+      "out": ".thema-studio/piraten/kandidaten/schip-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/schip-v2.txt",
       "edit": false,
       "image_references": [
         ".thema-studio/piraten/stijlanker/anker-01.jpg"
