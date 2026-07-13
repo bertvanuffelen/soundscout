@@ -15,7 +15,7 @@
 |---|---|---|
 | 1 | Fundament & fixes (reset-flow, SEO, CI, modals, bundle, analytics) | ✅ Af (code-kant; migratie 025 + Supabase-redirect-check bij Bert) |
 | 2 | Docent-feedback (kernfeature) + inzendingen-workflow | ✅ Af (code-kant; migratie 026 + E2E-test bij Bert) |
-| 3 | Leerlingflow & studio-onboarding | ⏳ Gepland |
+| 3 | Leerlingflow & studio-onboarding | ✅ Af (animatie-item 3.5 doorgeschoven naar aparte sessie) |
 | 4 | Thema-wizard (admin-editor) + content-pipeline | ⏳ Gepland |
 | 5 | Content-sprint + peer-feedback + landingspagina | ⏳ Gepland |
 | 6 | Monetisatie-voorbereiding, internationaal, PWA, eind-QA | ⏳ Gepland |
@@ -44,12 +44,24 @@
 
 **E2E-testscript voor Bert** (na migratie 026): zie `docs/PLAN-FEEDBACK.md` §"E2E-test" — 5 stappen van inleveren t/m RLS-check.
 
+## Week 3 — Leerlingflow & studio-onboarding
+
+| # | Stap | Status | Commit |
+|---|---|---|---|
+| 3.1 | First-run intro: "In 4 stappen"-animatie bij de allereerste "Nieuwe compositie" (modal → "Aan de slag" → wizard), eenmalig | ✅ Af | `a2f0549` |
+| 3.2 | Studio-hint: eenmalige tip dat clip-tools (knippen/effecten/volume) achter clip-selectie zitten; vervalt bij eerste selectie | ✅ Af | `a2f0549` |
+| 3.3 | Taal-pas: neutrale taal voor alle leeftijden (géén kindertaal — besluit Bert): "juf of meester" → "docent", volwassen formuleringen | ✅ Af | `a2f0549` |
+| 3.4 | Kaart-hint: "Klik op een locatie om geluiden te verzamelen", vervalt bij eerste locatiebezoek | ✅ Af | `a2f0549` |
+| 3.5 | Nieuwe uitleg-animaties (studio-tools, delen/inleveren) via de soundscout-animatie-skill | ⏭️ Doorgeschoven — eigen sessie (standalone HTML-maakwerk), kan parallel aan week 4 |
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
 - **2026-07-13** — Werkomgeving: git worktree `masterplan-6-weken`, dit logboek, Notion-verslag op de SoundScout-pagina.
 - **2026-07-13 (week 2)** — Keuzes Bert: feedback = sticker + **1-3 sterren** + tekstje · terugweg = **digibord + automatische bewaarcode** (elke klas-inzending mint een code) · peer-feedback via **docent-instelbare feedbackkaarten** (bouw week 5) · geen printblad.
 - **2026-07-13 (week 2)** — Architectuur: `submit_or_update_composition_v2` als nieuwe functie naast v1 (return-type wijzigen zou live clients breken); WIP-splitsing verplaatst van save_code-aanwezigheid naar `submitted_at` (elke v2-inzending heeft nu een code).
+- **2026-07-13 (week 3)** — Besluit Bert: **geen kindertaal** — neutrale, heldere taal die alle leeftijden aanspreekt. Toegepast op alle nieuwe teksten en de week-2-feedbackteksten.
+- **2026-07-13 (week 3)** — Migraties 025+026 kunnen samen in één keer gedraaid worden (beide additief/idempotent, geen invloed op bestaande docent-data; live oude frontend blijft werken).
 
 ## Voor Bert (acties buiten de code)
 
