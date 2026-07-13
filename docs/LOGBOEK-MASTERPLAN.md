@@ -24,8 +24,8 @@
 
 | # | Stap | Status | Commit |
 |---|---|---|---|
-| 1.1 | Wachtwoord-reset repareren (`#reset-password`-handler + nieuw scherm) + "verificatiemail opnieuw sturen" | 🔄 Bezig | — |
-| 1.2 | SEO-basis: robots.txt, sitemap.xml, JSON-LD, summary_large_image, betere title/description | ⏳ | — |
+| 1.1 | Wachtwoord-reset repareren (`?screen=reset-password`-flow + `TeacherResetPassword`) + "bevestigingsmail opnieuw sturen" | ✅ Af | `1bda39d` |
+| 1.2 | SEO-basis: robots.txt, sitemap.xml, JSON-LD, summary_large_image, betere title/description | 🔄 Bezig | — |
 | 1.3 | CI: GitHub Actions (tsc + lint + vitest) | ⏳ | — |
 | 1.4 | Modal-a11y: StageActionsModal, TrimModal, EffectsModal, share-modals → gedeelde `<Modal>` of `useModalBehavior` | ⏳ | — |
 | 1.5 | Bundle-trim: ComposePreview lazy, doel main < 500 KB | ⏳ | — |
@@ -36,6 +36,12 @@
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
 - **2026-07-13** — Werkomgeving: git worktree `masterplan-6-weken`, dit logboek, Notion-verslag op de SoundScout-pagina.
+
+## Voor Bert (acties buiten de code)
+
+- **Supabase Auth → URL Configuration**: controleer dat de Redirect URLs `https://soundscout.nl/*` (of expliciet `https://soundscout.nl/?screen=reset-password`) bevatten, anders weigert Supabase de nieuwe reset-redirect. De volledige reset-flow (echte e-mail → nieuw wachtwoord) één keer end-to-end testen na deploy.
+- **Hoofdrepo `.claude/launch.json`**: er is een `dev-worktree`-configuratie toegevoegd (poort 5199) zodat de browser-verificatie tegen de worktree kan draaien. Dit is de enige wijziging in `main`; na de 6 weken terug te draaien of te behouden.
+- **Opruimkandidaat ontdekt**: de oude worktree `.claude/worktrees/competent-neumann-1ac6a2/` staat volledig in git gecommit (honderden bestanden incl. mp3's). Verwijderen in stap 1.6.
 
 ## Openstaande vragen / blokkades
 

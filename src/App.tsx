@@ -36,7 +36,10 @@ function isEditorRoute(): boolean {
 // Check if we're on the public teacher landing route (#docentenpagina, stap 1).
 // Losse, ontkoppelde pagina — geen dev-gate (publiek), geen AuthProvider nodig.
 function isTeacherLandingRoute(): boolean {
-  return window.location.pathname === '/teacher';
+  // /teacher.html is de multi-page build-output (eigen SEO-meta); Apache
+  // rewrite't /teacher daarnaartoe, maar direct openen moet ook werken.
+  const path = window.location.pathname;
+  return path === '/teacher' || path === '/teacher.html';
 }
 
 // Loading fallback for lazy-loaded components
