@@ -23,6 +23,10 @@ scène uit een kort verhaal.
   *pose + expressie*. Een personage kan dus per frame anders staan en kijken — bv. eng/
   dreigend in frame 1-3 en vriendelijk in frame 4 (plottwist) — en tóch duidelijk dezelfde
   robot zijn. Beschrijf per frame expliciet een andere, dynamische houding.
+  Dit geldt óók voor **terugkerende secundaire elementen** (ledematen/tentakels, de
+  bemanning/menigte): laat die per frame een andere pose aannemen, anders oogt het als
+  copy-paste. Overweeg ook per frame een ander camerastandpunt (frontaal / zijkant /
+  laag / detail).
 - Elk frame moet **in één oogopslag leesbaar** zijn wat er gebeurt (digibord-afstand).
 - Kies één frame als `coverImage` (het meest dynamische — cf. `verspringen` gebruikt
   frame 2).
