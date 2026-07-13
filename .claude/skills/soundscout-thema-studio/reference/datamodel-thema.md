@@ -46,7 +46,11 @@ in `/editor`; het pakket levert alleen x/y-startadvies in INTEGRATIE.md.
 `audioUrl: '/audio/themes/{themeId}/{locationId}/{sampleId}.mp3'` (**bestandsnaam =
 sampleId, altijd mechanisch afleidbaar**) · `duration` (seconden, gemeten met
 `check-audio.py`, nooit geschat) · `icon` (Lucide-naam, bv. `'Dog'`, `'Zap'`,
-`'Megaphone'`) · `color` (hex; gebruik het 400-tint-palet zoals bestaande thema's:
+`'Megaphone'`) — **LET OP: `src/utils/iconMap.tsx` is een whitelist**; een icoon dat er
+niet in staat rendert als `?`. Elk nieuw icoon moet bij integratie worden geïmporteerd
+én in `sampleIconMap` gezet. Nu geldig: `ArrowDownRight, AudioWaveform, Bird, Bot, Castle,
+Cat, Circle, CircleDot, Disc3, Dog, Fish, Guitar, Megaphone, Music, Piano, Plane, Rabbit,
+Smile, SmilePlus, Swords, Target, Volume2, Zap`. · `color` (hex; gebruik het 400-tint-palet zoals bestaande thema's:
 `#FBBF24` amber, `#F472B6` pink, `#F87171` red, `#FB923C` orange, `#60A5FA` blue,
 `#34D399` emerald, `#A78BFA` violet, `#38BDF8` sky — varieer binnen een locatie).
 
@@ -101,5 +105,7 @@ Beide talen (nl.json én en.json), identieke keysets. Sample-namen kort en kindv
 4. i18n-fragmenten mergen in `nl.json`/`en.json`.
 5. Praatplaat-entries toevoegen aan `praatplaatImages.ts`; storyboard-entry aan
    `storyboards.ts`.
-6. `BRONNEN.md` meekopiëren naar `src/data/themes/{themeId}/`.
-7. `npm run build` (tsc-gate) → hotspots plaatsen in `/editor` → testen via `?theme={themeId}`.
+6. **Nieuwe sample-iconen registreren** in `src/utils/iconMap.tsx` (import + in
+   `sampleIconMap`), anders tonen ze `?`.
+7. `BRONNEN.md` meekopiëren naar `src/data/themes/{themeId}/`.
+8. `npm run build` (tsc-gate) → hotspots plaatsen in `/editor` → testen via `?theme={themeId}`.

@@ -18,7 +18,10 @@ dit uitvoeren, fase E2):
    (geneste keys onder `themes.{{THEME_ID}}`, `storyboards.*`, `praatplaatImages.*`).
 4. **Praatplaat-entries** uit `praatplaat-entries.ts.txt` toevoegen aan
    `src/data/praatplaatImages.ts`; **storyboard-entry** aan `src/data/storyboards.ts`.
-5. **Rooktest**: `npm run build` moet groen zijn.
+5. **Nieuwe sample-iconen registreren** in `src/utils/iconMap.tsx` (import uit
+   `lucide-react` + toevoegen aan `sampleIconMap`) — anders renderen ze als `?`.
+   Nieuwe iconen in dit thema: {{NIEUWE_ICONEN}}
+6. **Rooktest**: `npm run build` moet groen zijn.
 6. **Hotspots plaatsen** in `/editor` (dev-server → `/editor`). Startadvies per locatie:
 
 ### {{LOCATION_ID}}

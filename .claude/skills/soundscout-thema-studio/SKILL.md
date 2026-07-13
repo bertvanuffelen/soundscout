@@ -67,10 +67,11 @@ Eisen (details in [reference/datamodel-thema.md](reference/datamodel-thema.md)):
   `sfx-2-8s`), Lucide-icon, hex-kleur, verwervingsroute **F**=Freesound / **E**=ElevenLabs
   / **C**=checklist (Bert zelf).
 - Per locatie een achtergrondbeschrijving waarin de 6-8 geluidsbronnen zichtbaar zijn.
-- Per praatplaat: category, availableFor, **20-30 activiteiten elk gemapt op ≥1
-  sample-id** (dekkingseis: elke sample van de gekoppelde locaties minstens 1× als
-  activiteit) + 3-5 verborgen zoekdetails + shot-keuze (straatscène / dwarsdoorsnede /
-  overzicht).
+- Per praatplaat: category, availableFor, **20-30 activiteiten, elk sonificeerbaar met
+  ≥1 sample uit het thema** (richting: activiteit → sample). Streef naar spreiding over
+  alle locatie-klankwerelden; niet elke sample hoeft afgebeeld (een thema met 30+ samples
+  past niet op één plaat). + 3-5 verborgen zoekdetails + shot-keuze (straatscène /
+  dwarsdoorsnede / overzicht).
 - Storyboard: 3-5 frames met per frame de handeling + i18n-labels.
 - Map: lay-outbeschrijving + voorlopige `locationPositions`.
 - Concept-prompts voor álle beelden (opbouw per beeldtype: zie `reference/stijl-*.md`).

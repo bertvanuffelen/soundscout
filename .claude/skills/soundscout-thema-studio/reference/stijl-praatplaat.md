@@ -26,9 +26,9 @@ variëren in shot: straatscène / dwarsdoorsnede / overzicht — kies per plaat 
 3. **Omgeving**: zones en niveaus, staat van de locatie (nieuw/versleten/besneeuwd/…).
 4. **Activiteiten**: 20-30 specifieke, chaotische activiteiten, **elk geformuleerd als
    personage + werkwoord + hoorbaar geluid** ("een robot laat een stapel pannen kletterend
-   vallen"). De lijst wordt gegenereerd **uít de sample-lijst van het themaplan**:
-   elke sample van de gekoppelde locaties komt minstens 1× terug als activiteit; geen
-   activiteit die niet sonificeerbaar is.
+   vallen"). Elke activiteit is **sonificeerbaar met ≥1 sample uit het thema** (richting:
+   activiteit → sample). Streef naar spreiding over alle locatie-klankwerelden; bij een
+   thema met veel samples hoeft niet elke sample afgebeeld te worden.
 5. **Diversiteit**: neem het robot-standaardblok uit
    [stijl-robots.md](stijl-robots.md) op — brede kleurmix (geen kleur > ~20%), variatie
    in vorm (blik/android/chibi) en grootte.
