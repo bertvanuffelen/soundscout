@@ -1116,6 +1116,17 @@
       "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet.",
       "newCount": "{{count}} new"
     },
+    "presentation": {
+      "title": "Presentation mode",
+      "openButton": "Present",
+      "nowPlaying": "Now playing",
+      "previous": "Previous composition",
+      "next": "Next composition",
+      "autoAdvance": "Play through",
+      "autoAdvanceHint": "Automatically play the next composition when one ends",
+      "feedbackRow": "Give feedback",
+      "togglePlaylist": "Show/hide playlist"
+    },
     "peerOverview": {
       "title": "Feedback overview",
       "openButton": "Feedback overview",

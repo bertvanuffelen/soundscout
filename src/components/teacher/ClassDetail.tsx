@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -16,6 +16,7 @@ import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { PeerReviewSettings } from './PeerReviewSettings';
 import { PeerFeedbackOverview } from './PeerFeedbackOverview';
+import { ClassPresentationView } from './ClassPresentationView';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { AssignmentTypeCards } from './AssignmentTypeCards';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
@@ -80,6 +81,8 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [refreshing, setRefreshing] = useState(false);
   // Peer-feedback-overzicht + top 3 (migratie 028)
   const [showPeerOverview, setShowPeerOverview] = useState(false);
+  // Presentatiemodus: ids in presentatievolgorde (null = gesloten)
+  const [presentIds, setPresentIds] = useState<string[] | null>(null);
   const [activeTab, setActiveTab] = useState<'submitted' | 'wip'>('submitted');
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -546,6 +549,15 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   {t('teacher.peerOverview.openButton')}
                 </button>
               )}
+              {submitted.length > 0 && (
+                <button
+                  onClick={() => setPresentIds(submitted.map((s) => s.id))}
+                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-900 text-text-inverse hover:bg-brand-800 text-sm font-medium transition-colors"
+                >
+                  <MonitorPlay className="w-3.5 h-3.5" aria-hidden="true" />
+                  {t('teacher.presentation.openButton')}
+                </button>
+              )}
             </SectionTitle>
             <p className="text-sm text-text-muted ml-7">
               {t('teacher.classDetail.submissionsDescription')}
@@ -649,7 +661,22 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         isOpen={showPeerOverview}
         onClose={() => setShowPeerOverview(false)}
         submissions={submissions}
+        onPresentTop3={(ids) => {
+          setShowPeerOverview(false);
+          setPresentIds(ids);
+        }}
       />
+
+      {/* Universele presentatiemodus (digibord) */}
+      {presentIds && (
+        <ClassPresentationView
+          playlist={presentIds
+            .map((id) => submissions.find((s) => s.id === id))
+            .filter((s): s is Submission => !!s)}
+          onClose={() => setPresentIds(null)}
+          onSetFeedback={(id, feedback) => setFeedback(id, feedback)}
+        />
+      )}
 
       {/* Player modal — met feedback-paneel + gezien-stempel (migratie 026) */}
       {selectedSubmission && (

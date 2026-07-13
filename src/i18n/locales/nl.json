@@ -1116,6 +1116,17 @@
       "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd.",
       "newCount": "{{count}} nieuw"
     },
+    "presentation": {
+      "title": "Presentatiemodus",
+      "openButton": "Presenteren",
+      "nowPlaying": "Nu te horen",
+      "previous": "Vorige compositie",
+      "next": "Volgende compositie",
+      "autoAdvance": "Doorspelen",
+      "autoAdvanceHint": "Speel na afloop automatisch de volgende compositie",
+      "feedbackRow": "Feedback geven",
+      "togglePlaylist": "Afspeellijst tonen/verbergen"
+    },
     "peerOverview": {
       "title": "Feedback-overzicht",
       "openButton": "Feedback-overzicht",
