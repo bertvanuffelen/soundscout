@@ -1116,6 +1116,18 @@
       "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd.",
       "newCount": "{{count}} nieuw"
     },
+    "peerOverview": {
+      "title": "Feedback-overzicht",
+      "openButton": "Feedback-overzicht",
+      "empty": "Nog geen beoordelingen van klasgenoten. Zet \"Klasgenoten luisteren\" aan bij de actieve opdracht.",
+      "top3Title": "Top 3 — door de klas gekozen",
+      "presentTop3": "Presenteer top 3",
+      "starsTotal": "{{stars}} sterren · {{raters}} beoordelaars",
+      "tabReceived": "Ontvangen",
+      "tabGiven": "Gegeven",
+      "gaveCount": "{{count}} gegeven",
+      "unknownGiver": "Onbekend"
+    },
     "peerReview": {
       "title": "Klasgenoten luisteren",
       "hint": "Leerlingen die ingeleverd hebben, beluisteren 3 anonieme klasgenoot-composities en geven complimenten.",

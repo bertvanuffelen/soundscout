@@ -1116,6 +1116,18 @@
       "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet.",
       "newCount": "{{count}} new"
     },
+    "peerOverview": {
+      "title": "Feedback overview",
+      "openButton": "Feedback overview",
+      "empty": "No peer reviews yet. Enable \"Classmates listen\" on the active assignment.",
+      "top3Title": "Top 3 — chosen by the class",
+      "presentTop3": "Present top 3",
+      "starsTotal": "{{stars}} stars · {{raters}} reviewers",
+      "tabReceived": "Received",
+      "tabGiven": "Given",
+      "gaveCount": "{{count}} given",
+      "unknownGiver": "Unknown"
+    },
     "peerReview": {
       "title": "Classmates listen",
       "hint": "Students who submitted listen to 3 anonymous classmates' compositions and give compliments.",
