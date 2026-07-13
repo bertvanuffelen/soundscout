@@ -4,8 +4,8 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft } from 'lucide-react';
-import { signInTeacher } from '../../lib/auth';
+import { ArrowLeft, MailCheck } from 'lucide-react';
+import { signInTeacher, resendConfirmationEmail } from '../../lib/auth';
 import { Button } from '../ui/Button';
 
 interface TeacherLoginProps {
@@ -21,10 +21,15 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // Onbevestigd e-mailadres: bied aan de verificatiemail opnieuw te sturen
+  const [showResend, setShowResend] = useState(false);
+  const [resendState, setResendState] = useState<'idle' | 'sending' | 'sent'>('idle');
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+    setShowResend(false);
+    setResendState('idle');
 
     // Validatie
     if (!email.trim()) {
@@ -41,9 +46,24 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
       await signInTeacher(email, password);
       onSuccess();
     } catch (err) {
-      setError(err instanceof Error ? err.message : t('teacher.validation.genericError'));
+      const message = err instanceof Error ? err.message : t('teacher.validation.genericError');
+      setError(message);
+      if (message === t('auth.emailNotConfirmed')) {
+        setShowResend(true);
+      }
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleResend = async () => {
+    try {
+      setResendState('sending');
+      await resendConfirmationEmail(email);
+      setResendState('sent');
+    } catch (err) {
+      setResendState('idle');
+      setError(err instanceof Error ? err.message : t('teacher.validation.genericError'));
     }
   };
 
@@ -66,6 +86,27 @@ export function TeacherLogin({ onSuccess, onSwitchToRegister, onForgotPassword, 
         {error && (
           <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
             {error}
+            {showResend && (
+              <div className="mt-2">
+                {resendState === 'sent' ? (
+                  <span className="inline-flex items-center gap-1.5 text-success-700 text-sm font-medium">
+                    <MailCheck className="w-4 h-4" />
+                    {t('teacher.login.resendSuccess')}
+                  </span>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={handleResend}
+                    disabled={resendState === 'sending'}
+                    className="text-accent-600 hover:text-accent-700 font-medium text-sm underline underline-offset-2"
+                  >
+                    {resendState === 'sending'
+                      ? t('teacher.login.resendLoading')
+                      : t('teacher.login.resendConfirmation')}
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
 

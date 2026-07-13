@@ -178,8 +178,10 @@ export async function getCurrentSession() {
 export async function resetPassword(email: string) {
   const supabase = await getSupabase();
   const { error } = await withTimeout(
+    // Query-param i.p.v. hash-fragment: Supabase plakt zijn recovery-token
+    // zelf als #fragment achter de redirect-URL, dus een eigen #hash botst.
     supabase.auth.resetPasswordForEmail(email, {
-      redirectTo: `${window.location.origin}/#reset-password`,
+      redirectTo: `${window.location.origin}/?screen=reset-password`,
     }),
     20_000,
     'errors.networkTimeout'
@@ -191,5 +193,55 @@ export async function resetPassword(email: string) {
       throw new Error(i18n.t('auth.rateLimited'));
     }
     throw new Error(i18n.t('auth.resetEmailFailed'));
+  }
+}
+
+/**
+ * Stel een nieuw wachtwoord in (na klikken op de reset-link)
+ *
+ * Vereist een actieve sessie — de recovery-link uit de e-mail logt de
+ * docent tijdelijk in, waarna dit het wachtwoord definitief wijzigt.
+ *
+ * @param newPassword - Het nieuwe wachtwoord (min 6 tekens)
+ */
+export async function updatePassword(newPassword: string) {
+  const supabase = await getSupabase();
+  const { error } = await withTimeout(
+    supabase.auth.updateUser({ password: newPassword }),
+    20_000,
+    'errors.networkTimeout'
+  );
+
+  if (error) {
+    if (matchesError(error, ERR_AUTH_PASSWORD_TOO_SHORT)) {
+      throw new Error(i18n.t('auth.passwordTooShort'));
+    }
+    if (matchesError(error, ERR_AUTH_RATE_LIMIT)) {
+      throw new Error(i18n.t('auth.rateLimited'));
+    }
+    throw new Error(i18n.t('auth.updatePasswordFailed'));
+  }
+}
+
+/**
+ * Verstuur de bevestigingsmail (verificatie) opnieuw
+ *
+ * Voor docenten die zich registreerden maar de mail kwijt zijn.
+ *
+ * @param email - Email adres van de docent
+ */
+export async function resendConfirmationEmail(email: string) {
+  const supabase = await getSupabase();
+  const { error } = await withTimeout(
+    supabase.auth.resend({ type: 'signup', email }),
+    20_000,
+    'errors.networkTimeout'
+  );
+
+  if (error) {
+    if (matchesError(error, ERR_AUTH_RATE_LIMIT)) {
+      throw new Error(i18n.t('auth.rateLimited'));
+    }
+    throw new Error(i18n.t('auth.resendConfirmationFailed'));
   }
 }

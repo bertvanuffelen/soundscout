@@ -169,6 +169,28 @@ function AppContent() {
     window.history.replaceState({}, '', url.pathname + url.search);
   }, [goToTeacher, setPendingLessonCardKey, setPendingTeacherTab]);
 
+  // Wachtwoord-reset: de e-maillink verwijst naar ?screen=reset-password en
+  // Supabase plakt zijn recovery-token (of otp_expired-fout) als #fragment.
+  // Route naar het docentenscherm; AuthContext heeft de recovery-status al
+  // gelezen (vóór deze cleanup) en TeacherPage toont het reset-formulier.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const hash = window.location.hash;
+    const isRecovery =
+      params.get('screen') === 'reset-password' ||
+      hash.includes('type=recovery') ||
+      hash.includes('error_code=otp_expired');
+    if (!isRecovery) return;
+
+    goToTeacher();
+
+    if (params.get('screen') === 'reset-password') {
+      const url = new URL(window.location.href);
+      url.searchParams.delete('screen');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, [goToTeacher]);
+
   // Check for ?pp-share= query parameter on mount (#73 — publieke praatplaat-viewer)
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);

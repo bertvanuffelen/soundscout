@@ -11,7 +11,11 @@
       "Bash(ffprobe:*)",
       "Bash(ls:*)",
       "Bash(for f in /Users/bertvanuffelen/Documents/gebouwde-apps/SoundScout/public/audio/themes/winterspelen/winterdorp/*.mp3)",
-      "Bash(wc:*)"
+      "Bash(wc:*)",
+      "Bash(node -e \"const j=require\\('./src/i18n/locales/nl.json'\\); console.log\\(Object.keys\\(j\\).join\\('\\\\n'\\)\\)\")",
+      "Bash(node -e \"const j=require\\('./src/i18n/locales/nl.json'\\); console.log\\(JSON.stringify\\(j.composeMode,null,1\\)\\)\")",
+      "mcp__a6a4179e-dd42-4705-982e-20c86b5a868b__notion-fetch",
+      "mcp__a6a4179e-dd42-4705-982e-20c86b5a868b__notion-query-data-sources"
     ]
   }
 }

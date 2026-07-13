@@ -6,6 +6,7 @@
 export { TeacherLogin } from './TeacherLogin';
 export { TeacherRegister } from './TeacherRegister';
 export { TeacherForgotPassword } from './TeacherForgotPassword';
+export { TeacherResetPassword } from './TeacherResetPassword';
 export { TeacherDashboard } from './TeacherDashboard';
 export { ClassCard } from './ClassCard';
 export { ClassDetail } from './ClassDetail';

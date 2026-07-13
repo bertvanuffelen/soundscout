@@ -11,13 +11,13 @@
 import { useState } from 'react';
 import { useAuth } from '../contexts/useAuth';
 import { useAppStore } from '../stores/appStore';
-import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
+import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherResetPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
 import type { TeacherClass } from '../hooks/useClasses';
 
 type TeacherView = 'login' | 'register' | 'forgot-password' | 'dashboard' | 'class-detail';
 
 export function TeacherPage() {
-  const { user, loading } = useAuth();
+  const { user, loading, passwordRecovery, clearPasswordRecovery } = useAuth();
   const goToStart = useAppStore((s) => s.goToStart);
 
   // Bepaal welke view te tonen
@@ -38,6 +38,24 @@ export function TeacherPage() {
       <div className="min-h-screen bg-bg-app flex items-center justify-center">
         <div className="text-text-muted text-lg">Laden...</div>
       </div>
+    );
+  }
+
+  // Wachtwoord-reset view (binnengekomen via de reset-link uit de e-mail).
+  // Gaat vóór alle andere views: de recovery-sessie logt de docent al in,
+  // maar die moet eerst een nieuw wachtwoord instellen.
+  if (passwordRecovery) {
+    return (
+      <TeacherResetPassword
+        onDone={() => {
+          clearPasswordRecovery();
+          setView('dashboard');
+        }}
+        onRequestNew={() => {
+          clearPasswordRecovery();
+          setView('forgot-password');
+        }}
+      />
     );
   }
 

@@ -754,7 +754,9 @@
     "emailNotConfirmed": "Please confirm your email address first",
     "logoutError": "Error logging out",
     "rateLimited": "Too many requests. Please try again later.",
-    "resetEmailFailed": "Could not send reset email. Please try again."
+    "resetEmailFailed": "Could not send reset email. Please try again.",
+    "updatePasswordFailed": "Could not change the password. Please try again.",
+    "resendConfirmationFailed": "Could not send the confirmation email. Please try again."
   },
   "submissions": {
     "validateClassCodeError": "Could not verify class",
@@ -961,7 +963,25 @@
       "submit": "Log in",
       "submitLoading": "Logging in...",
       "noAccount": "Don't have an account?",
-      "registerLink": "Register here"
+      "registerLink": "Register here",
+      "resendConfirmation": "Resend confirmation email",
+      "resendLoading": "Sending...",
+      "resendSuccess": "Sent! Check your inbox (and spam folder)."
+    },
+    "resetPassword": {
+      "title": "New password",
+      "subtitle": "Choose a new password for your account",
+      "newPasswordLabel": "New password",
+      "confirmPasswordLabel": "Confirm new password",
+      "submit": "Change password",
+      "submitLoading": "Changing...",
+      "mismatch": "The passwords do not match",
+      "successTitle": "Password changed!",
+      "successMessage": "You can now continue with your new password.",
+      "toDashboard": "Go to dashboard",
+      "expiredTitle": "Link expired",
+      "expiredMessage": "This reset link has expired or was already used. Request a new link to change your password.",
+      "requestNew": "Request new link"
     },
     "register": {
       "subtitle": "Create Teacher Account",

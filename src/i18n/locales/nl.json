@@ -754,7 +754,9 @@
     "emailNotConfirmed": "Bevestig eerst je e-mailadres",
     "logoutError": "Fout bij uitloggen",
     "rateLimited": "Te veel verzoeken. Probeer het later opnieuw.",
-    "resetEmailFailed": "Kon reset-email niet versturen. Probeer het opnieuw."
+    "resetEmailFailed": "Kon reset-email niet versturen. Probeer het opnieuw.",
+    "updatePasswordFailed": "Kon het wachtwoord niet wijzigen. Probeer het opnieuw.",
+    "resendConfirmationFailed": "Kon de bevestigingsmail niet versturen. Probeer het opnieuw."
   },
   "submissions": {
     "validateClassCodeError": "Kon klas niet controleren",
@@ -961,7 +963,25 @@
       "submit": "Inloggen",
       "submitLoading": "Inloggen...",
       "noAccount": "Nog geen account?",
-      "registerLink": "Registreer hier"
+      "registerLink": "Registreer hier",
+      "resendConfirmation": "Bevestigingsmail opnieuw sturen",
+      "resendLoading": "Versturen...",
+      "resendSuccess": "Verstuurd! Kijk in je inbox (en spam-map)."
+    },
+    "resetPassword": {
+      "title": "Nieuw wachtwoord",
+      "subtitle": "Kies een nieuw wachtwoord voor je account",
+      "newPasswordLabel": "Nieuw wachtwoord",
+      "confirmPasswordLabel": "Bevestig nieuw wachtwoord",
+      "submit": "Wachtwoord wijzigen",
+      "submitLoading": "Wijzigen...",
+      "mismatch": "De wachtwoorden komen niet overeen",
+      "successTitle": "Wachtwoord gewijzigd!",
+      "successMessage": "Je kunt nu verder met je nieuwe wachtwoord.",
+      "toDashboard": "Naar het dashboard",
+      "expiredTitle": "Link verlopen",
+      "expiredMessage": "Deze reset-link is verlopen of al gebruikt. Vraag een nieuwe link aan om je wachtwoord te wijzigen.",
+      "requestNew": "Nieuwe link aanvragen"
     },
     "register": {
       "subtitle": "Docent Account Aanmaken",
