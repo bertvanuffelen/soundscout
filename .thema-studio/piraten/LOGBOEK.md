@@ -147,6 +147,19 @@ job-id volgen bij generatie.
 
 ## Storyboards
 
+### kraken (De Vriendelijke Kraken) — ✅ COMPLEET (4 frames)
+- **Status**: goedgekeurd. → `package/public/images/storyboards/kraken/kraken-1..4.jpg`. Cover = frame 2.
+- **Kraken** (consistent via referentie frame 2): reuze robot-kraken, teal-paarse metalen
+  panelen, ronde gloeiende ogen, gelede tentakels.
+- **Frames**: 1 Schrik (alleen ronde gloeiende ogen in stormwater) · 2 Vlucht (enge reveal,
+  rode ogen + gekartelde grijns) · 3 Cadeaus (bemanning geeft ingepakte cadeaus, kraken
+  verbaasd) · 4 Feest (kraken maakt muziek met de uitgepakte instrumenten, iedereen danst).
+- **Verhaalboog**: eng → verrast → feest; motivatie = de cadeaus met instrumenten.
+- **Iteraties/leerpunten**: pose+expressie per frame variëren (ook tentakels/crew); referentie
+  = ontwerp, prompt = pose/expressie (eng vs. vriendelijk); frame 1 opnieuw met frame 2 als
+  ref zodat crew + kraken-ogen matchen.
+- **Prompts**: prompts/sb-kraken-{1-v4,2-v2,3-v4,4-v1}.txt
+
 ### schattenjacht — ✅ COMPLEET (4 frames)
 - **Status**: goedgekeurd. → `package/public/images/storyboards/schattenjacht/schattenjacht-1..4.jpg`. Cover = frame 4.
 - **Held** (consistent via referentie frame 1): koperkleurige robot-piraat, metalen driekante
