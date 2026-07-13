@@ -105,6 +105,20 @@ herkomst.** Bijwerken na élke generatie, geluidskeuze en beslissing. Het plan z
 
 > **Mijlpaal: alle 5 locaties compleet** (grogkroeg·haven·schip·jungle·voodoohut). Credits over: 132.
 
+### plattegrond — schatkaart (NL + EN)
+- **Status**: ✅ GOEDGEKEURD (2026-07-13). → `package/.../plattegrond.jpg` (NL) +
+  `plattegrond-en.jpg` (EN).
+- **Job-id(s)**: NL `4c603dfd-8ea4-4b0f-833c-85943ef02e6f` · EN-edit `745539fe-8679-4155-aa59-dc7ce45bee61`
+- **Kaartstijl**: platte perkament-schatkaart · 7 zones met banner-labels · kompas met
+  robot-schedel-N · legenda-rol · gestippelde route → rode X op Schedelrots.
+- **Prompt**: [prompts/plattegrond-v1.txt](prompts/plattegrond-v1.txt) (NL); EN via label-edit.
+- **Labels (foutloos gerenderd)**: NL: DE DORSTIGE PAPEGAAI / DE KADE / HET SCHIP / HET
+  JUNGLEPAD / DE VOODOO-HUT / SCHEEPSWRAK-BAAI / SCHEDELROTS · EN: THE THIRSTY PARROT / THE
+  HARBOR / THE SHIP / THE JUNGLE / THE VOODOO HUT / SHIPWRECK COVE / SKULL ROCK.
+- **⚠️ INTEGRATIE-actie**: `MapConfig.backgroundImage` is nu één pad → kleine codewijziging
+  nodig om `plattegrond-{lang}.jpg` te kiezen op i18n-taal. (Plattegrond is het enige
+  tekst-beeld; leerpunt staat in stijl-plattegrond.md.)
+
 ## Geluiden
 
 Nog niet geproduceerd (fase D). Geplande samples + routes: zie [themaplan.md](themaplan.md) §2.

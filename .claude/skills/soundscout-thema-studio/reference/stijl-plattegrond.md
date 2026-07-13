@@ -28,6 +28,17 @@ locatie, wegen/paden die de zones verbinden. **Twee toegestane kaartstijlen:**
 - Compositie houdt rekening met `locationPositions` uit het themaplan — plan de zones
   op die posities (of stel na goedkeuring bijgestelde posities voor).
 
+## Taalvarianten (plattegrond = enige beeld met tekst)
+
+Omdat alle andere beeldtypes tekstloos zijn, is de **plattegrond het enige beeld dat een
+per-taal-variant nodig heeft**. Lever bij een tweetalig thema **beide** aan:
+`plattegrond.jpg` (NL) + `plattegrond-en.jpg` (EN). Maak de EN-versie het snelst met een
+**gerichte edit** van de goedgekeurde NL-kaart ("vervang alleen de labels door de Engelse,
+rest identiek") — dat lukt betrouwbaar (tekstvervanging = accessoire-achtige edit).
+**App-implicatie**: `MapConfig.backgroundImage` is nu één pad; om de EN-kaart te tonen bij
+Engelse taal is een kleine codewijziging nodig (map-achtergrond kiezen op i18n-taal, bv.
+`plattegrond-{lang}.jpg`). Noteer dit in INTEGRATIE.md.
+
 ## Tekstbeleid (uitzondering op de andere beeldtypes!)
 
 Tekstlabels zijn hier functioneel gewenst. `gemini-3-pro-image` (Nano Banana Pro) kan

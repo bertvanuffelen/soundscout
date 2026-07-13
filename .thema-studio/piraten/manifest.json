@@ -48,8 +48,12 @@
     },
     "plattegrond": {
       "type": "plattegrond",
-      "status": "todo",
-      "iteraties": 0
+      "status": "goedgekeurd",
+      "iteraties": 1,
+      "job_id": "4c603dfd-8ea4-4b0f-833c-85943ef02e6f",
+      "en_job": "745539fe-8679-4155-aa59-dc7ce45bee61",
+      "eindpad": "package/public/images/themes/piraten/plattegrond.jpg + plattegrond-en.jpg",
+      "opmerking": "NL+EN varianten; app-codewijziging nodig voor locale-map"
     },
     "pp-piratenmarkt": {
       "type": "praatplaat",
@@ -190,6 +194,30 @@
       "edit": true,
       "image_references": [
         ".thema-studio/piraten/kandidaten/voodoohut-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:26:00",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "4c603dfd-8ea4-4b0f-833c-85943ef02e6f",
+      "out": ".thema-studio/piraten/kandidaten/plattegrond-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/plattegrond-v1.txt",
+      "edit": false,
+      "image_references": []
+    },
+    {
+      "tijd": "2026-07-13T21:29:37",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "745539fe-8679-4155-aa59-dc7ce45bee61",
+      "out": ".thema-studio/piraten/kandidaten/plattegrond-en-v1.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/plattegrond-v1.png"
       ]
     }
   ]
