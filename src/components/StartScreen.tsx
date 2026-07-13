@@ -2,7 +2,7 @@
  * StartScreen - Welcome screen with game start and tutorial
  */
 
-import { useState, useEffect, lazy, Suspense } from 'react';
+import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, Shield, KeyRound, Sparkles, GraduationCap } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
@@ -18,6 +18,7 @@ import type { ReceivedFeedback } from '../types';
 import { getStickerEmoji } from './teacher/FeedbackPanel';
 import { OnboardingAnimation } from './common/OnboardingAnimation';
 import { hasSeenFirstRun, markFirstRunSeen } from '../utils/firstRun';
+import { getPublicThemes } from '../data/themes';
 // Lazy: FeedbackModal sleept @emailjs/browser mee — pas laden bij openen.
 const FeedbackModal = lazy(() =>
   import('./feedback').then((m) => ({ default: m.FeedbackModal }))
@@ -126,6 +127,7 @@ export function StartScreen() {
   };
 
   const handleNewComposition = () => {
+    seasonalPendingRef.current = false;
     if (hasClipsInProgress) {
       // Waarschuw dat de huidige compositie verloren gaat
       setShowNewConfirm(true);
@@ -135,9 +137,33 @@ export function StartScreen() {
     }
   };
 
+  // Seizoensthema-chip: alléén zichtbaar als een publiek thema een
+  // seizoensvenster heeft (week 4). Klik = direct een nieuwe compositie in
+  // dat thema; met werk-in-uitvoering eerst de bestaande waarschuwing.
+  const seasonalTheme = useMemo(
+    () => getPublicThemes().find((th) => th.activeFrom && th.activeUntil) ?? null,
+    []
+  );
+  const seasonalPendingRef = useRef(false);
+
+  const handleSeasonalTheme = () => {
+    if (!seasonalTheme) return;
+    if (hasClipsInProgress) {
+      seasonalPendingRef.current = true;
+      setShowNewConfirm(true);
+    } else {
+      void handleSelectTheme(seasonalTheme.id);
+    }
+  };
+
   const handleConfirmNewComposition = () => {
     setShowNewConfirm(false);
-    openWizard();
+    if (seasonalPendingRef.current && seasonalTheme) {
+      seasonalPendingRef.current = false;
+      void handleSelectTheme(seasonalTheme.id);
+    } else {
+      openWizard();
+    }
   };
 
   const handleSelectTheme = async (themeId: string) => {
@@ -197,6 +223,19 @@ export function StartScreen() {
             <span className="text-sm font-bold text-text-main">
               {t('studentFeedback.noticeButton', { name: feedbackNotice.compositionName })}
             </span>
+          </button>
+        )}
+
+        {/* Seizoensthema-chip: verschijnt alleen als een publiek thema een
+            seizoensvenster heeft — "de app leeft" zonder extra ruis */}
+        {seasonalTheme && (
+          <button
+            type="button"
+            onClick={handleSeasonalTheme}
+            className="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-accent-300 bg-accent-50 px-4 py-2 text-sm font-bold text-accent-800 shadow-md hover:bg-accent-100 transition-colors"
+          >
+            <Sparkles className="w-4 h-4 text-accent-600" />
+            {t('start.newTheme', { name: t(seasonalTheme.name) })}
           </button>
         )}
 
@@ -395,7 +434,7 @@ export function StartScreen() {
       {/* Waarschuwing: actieve compositie wordt gewist */}
       <Modal
         isOpen={showNewConfirm}
-        onClose={() => setShowNewConfirm(false)}
+        onClose={() => { seasonalPendingRef.current = false; setShowNewConfirm(false); }}
         title={t('start.newComposition')}
         size="sm"
       >

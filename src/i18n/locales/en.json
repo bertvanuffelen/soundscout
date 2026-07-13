@@ -93,6 +93,7 @@
     "newComposition": "New Composition",
     "introTitle": "How SoundScout works",
     "introStart": "Get started",
+    "newTheme": "New theme: {{name}}",
     "newCompositionConfirm": "You already have a composition in progress. Starting a new one will permanently discard your collected sounds and current composition.",
     "newCompositionStart": "Start over",
     "haveCode": "I have a code",
@@ -1414,7 +1415,7 @@
       "title": "SoundScout",
       "subtitle": "A classroom environment where pupils collect sounds and compose together. Pick the form that fits each assignment: free experimenting, with a sound map, with a storyboard, or with an assignment you build yourself. You share a class code, they start right away.",
       "ctaPrimary": "Create a free account",
-      "ctaSecondary": "Log in"
+      "ctaSecondary": "Watch the demo"
     },
     "compose": {
       "title": "Three ways to compose",
@@ -1478,7 +1479,106 @@
       "text": "Want to introduce SoundScout to your team? Bert runs workshops for teaching teams and teacher-training colleges.",
       "cta": "See the workshops"
     },
+    "trust": {
+      "noAccounts": "No student accounts needed",
+      "byTeacher": "Made by a music teacher",
+      "curriculum": "Aligned with the curriculum"
+    },
+    "usp": {
+      "title": "Why SoundScout",
+      "subtitle": "Four things you won't find anywhere else.",
+      "collect": {
+        "title": "Collecting sounds as a game",
+        "description": "Students explore locations and catch sounds — making music starts with careful listening."
+      },
+      "noAccounts": {
+        "title": "No student accounts",
+        "description": "One class code is enough. We only store a first name and the composition — GDPR-proof without the hassle."
+      },
+      "praatplaat": {
+        "title": "Sound map on the smartboard",
+        "description": "The whole class places compositions on one shared picture. Listen, discuss and celebrate together."
+      },
+      "feedback": {
+        "title": "Feedback that closes the loop",
+        "description": "You give stickers, stars and a message; classmates give each other anonymous compliments using your feedback card."
+      }
+    },
+    "feedbackCycle": {
+      "title": "The feedback loop",
+      "subtitle": "From assignment to improving — without student accounts.",
+      "steps": {
+        "assign": "Assignment",
+        "create": "Create",
+        "submit": "Submit",
+        "feedback": "Feedback",
+        "improve": "Improve"
+      },
+      "description": "Students submit with the class code and automatically receive a personal save code. You give feedback from your dashboard; with \"classmates listen\" students hear each other's work anonymously and give compliments using the chips you configure."
+    },
+    "themes": {
+      "title": "Current themes",
+      "subtitle": "New worlds to collect sounds in, every season.",
+      "seasonal": "Seasonal theme",
+      "stats": "{{locations}} locations · {{sounds}} sounds",
+      "try": "Try this theme"
+    },
+    "faq": {
+      "title": "Frequently asked questions",
+      "items": {
+        "accounts": {
+          "q": "Do students need to create an account?",
+          "a": "No. Students use their teacher's class code and automatically receive a personal save code when they submit. No account, email address or password is required."
+        },
+        "avg": {
+          "q": "Is SoundScout GDPR-compliant?",
+          "a": "Yes. We only store a student's first name and the composition itself — no email addresses, no tracking, no ads. Saved work also expires automatically."
+        },
+        "devices": {
+          "q": "Does SoundScout work on Chromebooks, iPads and the smartboard?",
+          "a": "Yes. SoundScout runs entirely in the browser and is built for Chromebooks, iPads, laptops and the smartboard. The sound map view is designed for whole-class use on the smartboard."
+        },
+        "install": {
+          "q": "Do I need to install anything?",
+          "a": "No. SoundScout is a website — open it and start. No installation, no updates, no admin rights needed."
+        },
+        "groups": {
+          "q": "Which grades is SoundScout for?",
+          "a": "SoundScout is designed for ages 8-12, and also works for younger students (with guidance) and early secondary school."
+        },
+        "knowledge": {
+          "q": "Do I need musical knowledge?",
+          "a": "No. The lesson cards guide you step by step, and the app handles the musical side (beat, tempo, matching sounds). You guide the creative process."
+        },
+        "duration": {
+          "q": "How long does a lesson take?",
+          "a": "A complete lesson — collecting sounds, composing and submitting — fits in 45 to 60 minutes. The lesson cards include timing per phase."
+        },
+        "submit": {
+          "q": "How do students hand in their work?",
+          "a": "You set up an assignment and share your 4-digit class code. Students enter it, compose and submit — their work appears directly in your dashboard."
+        },
+        "home": {
+          "q": "Can students continue working at home?",
+          "a": "Yes. With their personal save code, students can open their composition on any device — at home, in class or at the library."
+        },
+        "cost": {
+          "q": "What does SoundScout cost?",
+          "a": "SoundScout is free to use. Create a free teacher account and get started with your class right away."
+        }
+      }
+    },
+    "privacyBand": {
+      "title": "Privacy by design",
+      "point1": "No student accounts",
+      "point2": "No tracking or ads",
+      "point3": "Only a first name and the composition",
+      "link": "Read how we handle data"
+    },
     "footer": {
+      "privacy": "Privacy",
+      "guide": "For teachers",
+      "contact": "Contact",
       "madeBy": "Made by Bert van Uffelen"
     },
     "videos": {

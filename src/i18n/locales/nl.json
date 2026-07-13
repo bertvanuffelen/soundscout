@@ -93,6 +93,7 @@
     "newComposition": "Nieuwe Compositie",
     "introTitle": "Zo werkt SoundScout",
     "introStart": "Aan de slag",
+    "newTheme": "Nieuw thema: {{name}}",
     "newCompositionConfirm": "Je hebt al een compositie waar je aan werkt. Als je een nieuwe start, gaan je verzamelde geluiden en je huidige compositie verloren en kunnen niet worden teruggehaald.",
     "newCompositionStart": "Opnieuw beginnen",
     "haveCode": "Ik heb een code",
@@ -1414,7 +1415,7 @@
       "title": "SoundScout",
       "subtitle": "Een lesomgeving waarin leerlingen samen geluiden verzamelen en componeren. Kies per opdracht de vorm die past: vrij experimenteren, bij een praatplaat, bij een storyboard, of bij een opdracht die je zelf samenstelt. Jij deelt een klascode, zij beginnen meteen.",
       "ctaPrimary": "Maak een gratis account",
-      "ctaSecondary": "Inloggen"
+      "ctaSecondary": "Bekijk de demo"
     },
     "compose": {
       "title": "Drie manieren om te componeren",
@@ -1478,7 +1479,106 @@
       "text": "SoundScout in je team introduceren? Bert verzorgt workshops voor lerarenteams en pabo's.",
       "cta": "Bekijk de workshops"
     },
+    "trust": {
+      "noAccounts": "Geen leerlingaccounts nodig",
+      "byTeacher": "Gemaakt door een muziekdocent",
+      "curriculum": "Sluit aan bij de kerndoelen"
+    },
+    "usp": {
+      "title": "Waarom SoundScout",
+      "subtitle": "Vier dingen die je nergens anders vindt.",
+      "collect": {
+        "title": "Geluiden verzamelen als spel",
+        "description": "Leerlingen verkennen locaties en vangen geluiden — muziek maken begint met goed luisteren."
+      },
+      "noAccounts": {
+        "title": "Geen leerlingaccounts",
+        "description": "Eén klascode is genoeg. We bewaren alleen een voornaam en de compositie — AVG-proof zonder gedoe."
+      },
+      "praatplaat": {
+        "title": "Praatplaat op het digibord",
+        "description": "De hele klas plaatst composities op één kijkplaat. Samen luisteren, bespreken en vieren."
+      },
+      "feedback": {
+        "title": "Feedback die de cirkel rondmaakt",
+        "description": "Jij geeft stickers, sterren en een bericht; klasgenoten geven elkaar anoniem complimenten via jouw feedbackkaart."
+      }
+    },
+    "feedbackCycle": {
+      "title": "De feedback-cirkel",
+      "subtitle": "Van opdracht tot verbeteren — zonder leerlingaccounts.",
+      "steps": {
+        "assign": "Opdracht",
+        "create": "Maken",
+        "submit": "Inleveren",
+        "feedback": "Feedback",
+        "improve": "Verbeteren"
+      },
+      "description": "Leerlingen leveren in met de klascode en krijgen automatisch een persoonlijke bewaarcode. Jij geeft feedback vanuit je dashboard; met \"klasgenoten luisteren\" beluisteren leerlingen elkaars werk anoniem en geven ze complimenten met de chips die jij instelt."
+    },
+    "themes": {
+      "title": "Actuele thema's",
+      "subtitle": "Elk seizoen nieuwe werelden om geluiden in te verzamelen.",
+      "seasonal": "Seizoensthema",
+      "stats": "{{locations}} locaties · {{sounds}} geluiden",
+      "try": "Probeer dit thema"
+    },
+    "faq": {
+      "title": "Veelgestelde vragen",
+      "items": {
+        "accounts": {
+          "q": "Moeten leerlingen een account aanmaken?",
+          "a": "Nee. Leerlingen werken met de klascode van hun docent en krijgen bij het inleveren automatisch een persoonlijke bewaarcode. Er wordt geen account, e-mailadres of wachtwoord gevraagd."
+        },
+        "avg": {
+          "q": "Is SoundScout AVG-proof?",
+          "a": "Ja. We bewaren van leerlingen alleen een voornaam en de compositie zelf — geen e-mailadressen, geen tracking, geen advertenties. Opgeslagen werk verloopt bovendien automatisch."
+        },
+        "devices": {
+          "q": "Werkt SoundScout op Chromebooks, iPads en het digibord?",
+          "a": "Ja. SoundScout draait volledig in de browser en is gebouwd voor Chromebooks, iPads, laptops en het digibord. De praatplaat-weergave is speciaal gemaakt voor klassikaal gebruik op het digibord."
+        },
+        "install": {
+          "q": "Moet ik iets installeren?",
+          "a": "Nee. SoundScout is een website — openen en beginnen. Geen installatie, geen updates, geen beheerdersrechten nodig."
+        },
+        "groups": {
+          "q": "Voor welke groepen is SoundScout?",
+          "a": "SoundScout is ontworpen voor groep 5 t/m 8, maar ook bruikbaar in groep 4 (met begeleiding) en de onderbouw van het VO."
+        },
+        "knowledge": {
+          "q": "Heb ik muzikale voorkennis nodig?",
+          "a": "Nee. De leskaarten begeleiden je stap voor stap, en de app doet het muzikale werk (maat, tempo, passende geluiden). Jij begeleidt het creatieve proces."
+        },
+        "duration": {
+          "q": "Hoe lang duurt een les?",
+          "a": "Een complete les — geluiden verzamelen, componeren en inleveren — past in 45 tot 60 minuten. De leskaarten geven per fase een tijdsindicatie."
+        },
+        "submit": {
+          "q": "Hoe leveren leerlingen hun werk in?",
+          "a": "Jij zet een opdracht klaar en deelt je 4-cijferige klascode. Leerlingen voeren die in, componeren en leveren in — hun werk verschijnt direct in jouw dashboard."
+        },
+        "home": {
+          "q": "Kunnen leerlingen thuis verder werken?",
+          "a": "Ja. Met hun persoonlijke bewaarcode openen leerlingen hun compositie op elk apparaat — thuis, in de klas of in de bibliotheek."
+        },
+        "cost": {
+          "q": "Wat kost SoundScout?",
+          "a": "SoundScout is gratis te gebruiken. Je maakt als docent een gratis account aan en kunt direct met je klas aan de slag."
+        }
+      }
+    },
+    "privacyBand": {
+      "title": "Privacy als uitgangspunt",
+      "point1": "Geen leerlingaccounts",
+      "point2": "Geen tracking of advertenties",
+      "point3": "Alleen een voornaam en de compositie",
+      "link": "Lees hoe we met gegevens omgaan"
+    },
     "footer": {
+      "privacy": "Privacy",
+      "guide": "Voor docenten",
+      "contact": "Contact",
       "madeBy": "Gemaakt door Bert van Uffelen"
     },
     "videos": {

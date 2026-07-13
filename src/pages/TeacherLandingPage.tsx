@@ -15,7 +15,11 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft, type LucideIcon } from 'lucide-react';
+import {
+  FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft,
+  Lock, GraduationCap, BadgeCheck, MonitorPlay, MessagesSquare, ClipboardList,
+  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, type LucideIcon,
+} from 'lucide-react';
 import { Button, Card } from '../components/ui';
 import { cn } from '../utils/cn';
 import { ComposePreview } from '../components/compose/ComposePreview';
@@ -26,6 +30,9 @@ import {
 } from '../components/compose/composeVariants';
 import { fetchBuiltinLessonCards, localizeLessonCard, type PublicLessonCard } from '../lib/lessonCards';
 import type { AssignmentType } from '../lib/assignments';
+import { getPublicThemes } from '../data/themes';
+import { PrivacyModal } from '../components/PrivacyModal';
+import { FeedbackModal } from '../components/feedback/FeedbackModal';
 
 /**
  * Navigeer van de losse landingsroute naar het docentgedeelte van de app
@@ -43,6 +50,9 @@ function navigateToTeacherApp(params?: { lesson?: string; tab?: string }) {
 export default function TeacherLandingPage() {
   const { t } = useTranslation();
   const [activeVariant, setActiveVariant] = useState<ComposeVariant>('praatplaat');
+  // Privacy + contact (hergebruik bestaande modals — geen dubbele content)
+  const [showPrivacy, setShowPrivacy] = useState(false);
+  const [showContact, setShowContact] = useState(false);
 
   return (
     <div className="min-h-screen bg-bg-app text-text-main">
@@ -58,28 +68,49 @@ export default function TeacherLandingPage() {
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col gap-16 sm:gap-24">
         <HeroSection activeVariant={activeVariant} />
+        <UspSection />
         <ComposeSection activeVariant={activeVariant} onSelect={setActiveVariant} />
         <VideosSection />
+        <FeedbackCycleSection />
+        <ThemesSection />
         <StepsSection />
         <LessonsSection />
+        <FaqSection />
         <CurriculumSection />
       </div>
+      <PrivacyBand onOpenPrivacy={() => setShowPrivacy(true)} />
       <WorkshopsBand />
-      <LandingFooter />
+      <LandingFooter onOpenPrivacy={() => setShowPrivacy(true)} onOpenContact={() => setShowContact(true)} />
+
+      <PrivacyModal isOpen={showPrivacy} onClose={() => setShowPrivacy(false)} />
+      {showContact && (
+        <FeedbackModal isOpen={showContact} onClose={() => setShowContact(false)} mode="feedback" />
+      )}
     </div>
   );
 }
 
-// --- Slanke footer: wordmark + attributie ---
-function LandingFooter() {
+// --- Footer: wordmark + links (privacy/handleiding/contact) + attributie ---
+function LandingFooter({ onOpenPrivacy, onOpenContact }: { onOpenPrivacy: () => void; onOpenContact: () => void }) {
   const { t } = useTranslation();
   return (
     <footer className="bg-bg-app py-8 sm:py-10">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-1.5 text-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 flex flex-col items-center gap-3 text-center">
         <span className="inline-flex items-center gap-1.5 text-text-main font-extrabold tracking-tight">
           <Music className="w-4 h-4 text-accent-500" />
           SoundScout
         </span>
+        <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 text-sm">
+          <button onClick={onOpenPrivacy} className="text-text-muted hover:text-text-main underline underline-offset-2 transition-colors">
+            {t('teacherLanding.footer.privacy')}
+          </button>
+          <button onClick={() => navigateToTeacherApp()} className="text-text-muted hover:text-text-main underline underline-offset-2 transition-colors">
+            {t('teacherLanding.footer.guide')}
+          </button>
+          <button onClick={onOpenContact} className="text-text-muted hover:text-text-main underline underline-offset-2 transition-colors">
+            {t('teacherLanding.footer.contact')}
+          </button>
+        </nav>
         <p className="text-sm text-text-muted">{t('teacherLanding.footer.madeBy')}</p>
       </div>
     </footer>
@@ -114,10 +145,25 @@ function HeroSection({ activeVariant }: { activeVariant: ComposeVariant }) {
             variant="secondary"
             size="lg"
             className="rounded-full w-full sm:w-auto"
-            onClick={() => navigateToTeacherApp()}
+            onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
           >
+            <Play className="w-4 h-4 mr-2" />
             {t('teacherLanding.hero.ctaSecondary')}
           </Button>
+        </div>
+
+        {/* Trust-strip: de drie redenen om door te lezen */}
+        <div className="flex flex-wrap gap-x-5 gap-y-2 mt-2 pt-4 border-t border-border-subtle">
+          {([
+            { Icon: Lock, key: 'noAccounts' },
+            { Icon: GraduationCap, key: 'byTeacher' },
+            { Icon: BadgeCheck, key: 'curriculum' },
+          ] as const).map(({ Icon, key }) => (
+            <span key={key} className="inline-flex items-center gap-1.5 text-sm text-text-muted">
+              <Icon className="w-4 h-4 text-accent-600" />
+              {t(`teacherLanding.trust.${key}`)}
+            </span>
+          ))}
         </div>
       </div>
 
@@ -126,6 +172,213 @@ function HeroSection({ activeVariant }: { activeVariant: ComposeVariant }) {
         <p className="text-sm sm:text-base text-text-muted text-center leading-relaxed px-2">
           {t(`teacherLanding.compose.captions.${activeVariant}`)}
         </p>
+      </div>
+    </section>
+  );
+}
+
+// --- Sectie: Waarom SoundScout (USP's — de uniciteit in vier kaarten) ---
+const USP_ITEMS = [
+  { key: 'collect', Icon: MapPin },
+  { key: 'noAccounts', Icon: Lock },
+  { key: 'praatplaat', Icon: MonitorPlay },
+  { key: 'feedback', Icon: MessagesSquare },
+] as const;
+
+function UspSection() {
+  const { t } = useTranslation();
+  return (
+    <section className="flex flex-col gap-6 sm:gap-8">
+      <div className="text-center max-w-2xl mx-auto flex flex-col gap-2">
+        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          {t('teacherLanding.usp.title')}
+        </h2>
+        <p className="text-text-muted text-base sm:text-lg">
+          {t('teacherLanding.usp.subtitle')}
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        {USP_ITEMS.map(({ key, Icon }) => (
+          <Card key={key} padding="lg" className="flex items-start gap-4">
+            <span className="w-11 h-11 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center shrink-0">
+              <Icon size={22} />
+            </span>
+            <div>
+              <h3 className="text-lg font-bold text-text-main mb-1">
+                {t(`teacherLanding.usp.${key}.title`)}
+              </h3>
+              <p className="text-sm text-text-muted leading-relaxed">
+                {t(`teacherLanding.usp.${key}.description`)}
+              </p>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// --- Sectie: De feedback-cirkel (slanke band — docent- + peer-feedback) ---
+const CYCLE_STEPS = [
+  { key: 'assign', Icon: ClipboardList },
+  { key: 'create', Icon: Music },
+  { key: 'submit', Icon: Send },
+  { key: 'feedback', Icon: Star },
+  { key: 'improve', Icon: RefreshCw },
+] as const;
+
+function FeedbackCycleSection() {
+  const { t } = useTranslation();
+  return (
+    <section className="flex flex-col gap-6 sm:gap-8">
+      <div className="text-center max-w-2xl mx-auto flex flex-col gap-2">
+        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          {t('teacherLanding.feedbackCycle.title')}
+        </h2>
+        <p className="text-text-muted text-base sm:text-lg">
+          {t('teacherLanding.feedbackCycle.subtitle')}
+        </p>
+      </div>
+      <div className="flex flex-wrap sm:flex-nowrap items-stretch justify-center gap-2">
+        {CYCLE_STEPS.map(({ key, Icon }, i) => (
+          <div key={key} className="flex items-center gap-2 flex-1 min-w-[100px]">
+            <div className="flex-1 bg-accent-50 border border-accent-200 rounded-2xl px-3 py-4 text-center">
+              <Icon className="w-5 h-5 text-accent-700 mx-auto mb-1.5" />
+              <p className="text-xs sm:text-sm font-bold text-accent-800">
+                {t(`teacherLanding.feedbackCycle.steps.${key}`)}
+              </p>
+            </div>
+            {i < CYCLE_STEPS.length - 1 && (
+              <ArrowRight className="w-4 h-4 text-text-muted shrink-0 hidden sm:block" />
+            )}
+          </div>
+        ))}
+      </div>
+      <p className="text-center text-sm sm:text-base text-text-muted max-w-3xl mx-auto leading-relaxed">
+        {t('teacherLanding.feedbackCycle.description')}
+      </p>
+    </section>
+  );
+}
+
+// --- Sectie: Actuele thema's (leest het thema-register incl. seizoensrooster —
+//     nieuwe/seizoensgebonden thema's verschijnen hier automatisch) ---
+function ThemesSection() {
+  const { t } = useTranslation();
+  const themes = getPublicThemes();
+  return (
+    <section className="flex flex-col gap-6 sm:gap-8">
+      <div className="text-center max-w-2xl mx-auto flex flex-col gap-2">
+        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          {t('teacherLanding.themes.title')}
+        </h2>
+        <p className="text-text-muted text-base sm:text-lg">
+          {t('teacherLanding.themes.subtitle')}
+        </p>
+      </div>
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+        {themes.map((theme) => {
+          const isSeasonal = !!(theme.activeFrom && theme.activeUntil);
+          return (
+            <a
+              key={theme.id}
+              href={`/?theme=${theme.id}`}
+              className="group rounded-2xl border-2 border-border-subtle bg-bg-surface overflow-hidden hover:shadow-md transition-all hover:scale-[1.01]"
+            >
+              <div className="relative aspect-video bg-neutral-100 overflow-hidden">
+                <img
+                  src={theme.map.backgroundImage}
+                  alt={t(theme.name)}
+                  loading="lazy"
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                />
+                {isSeasonal && (
+                  <span className="absolute top-3 left-3 inline-flex items-center gap-1 rounded-full bg-accent-400 text-accent-900 text-xs font-bold px-2.5 py-1">
+                    <Sparkles className="w-3 h-3" />
+                    {t('teacherLanding.themes.seasonal')}
+                  </span>
+                )}
+              </div>
+              <div className="p-4 sm:p-5">
+                <h3 className="text-lg font-bold text-text-main mb-1">{t(theme.name)}</h3>
+                <p className="text-sm text-text-muted leading-relaxed mb-2">{t(theme.description)}</p>
+                <p className="text-xs text-text-muted">
+                  {t('teacherLanding.themes.stats', {
+                    locations: theme.locations.length,
+                    sounds: theme.samples.length,
+                  })}
+                  <span className="text-accent-700 font-semibold ml-2 inline-flex items-center gap-0.5">
+                    {t('teacherLanding.themes.try')}
+                    <ArrowRight className="w-3 h-3" />
+                  </span>
+                </p>
+              </div>
+            </a>
+          );
+        })}
+      </div>
+    </section>
+  );
+}
+
+// --- Sectie: Veelgestelde vragen (native details/summary — a11y gratis) ---
+const FAQ_KEYS = [
+  'accounts', 'avg', 'devices', 'install', 'groups',
+  'knowledge', 'duration', 'submit', 'home', 'cost',
+] as const;
+
+function FaqSection() {
+  const { t } = useTranslation();
+  return (
+    <section id="faq" className="flex flex-col gap-6 sm:gap-8 scroll-mt-24">
+      <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-center">
+        {t('teacherLanding.faq.title')}
+      </h2>
+      <div className="flex flex-col gap-2.5 max-w-3xl mx-auto w-full">
+        {FAQ_KEYS.map((key) => (
+          <details
+            key={key}
+            className="group rounded-2xl border border-border-subtle bg-bg-surface px-4 sm:px-5 py-3.5 open:shadow-sm"
+          >
+            <summary className="flex items-center justify-between gap-3 cursor-pointer list-none font-bold text-text-main text-sm sm:text-base [&::-webkit-details-marker]:hidden">
+              {t(`teacherLanding.faq.items.${key}.q`)}
+              <ChevronDown className="w-4 h-4 text-text-muted shrink-0 transition-transform group-open:rotate-180" />
+            </summary>
+            <p className="text-sm sm:text-base text-text-muted leading-relaxed mt-2.5">
+              {t(`teacherLanding.faq.items.${key}.a`)}
+            </p>
+          </details>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+// --- Band: Privacy als uitgangspunt (opent bestaande PrivacyModal) ---
+function PrivacyBand({ onOpenPrivacy }: { onOpenPrivacy: () => void }) {
+  const { t } = useTranslation();
+  const points = ['point1', 'point2', 'point3'] as const;
+  return (
+    <section className="bg-brand-900 text-text-inverse mt-16 sm:mt-24">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-14 flex flex-col items-center text-center gap-5">
+        <h2 className="inline-flex items-center gap-2 text-xl sm:text-2xl font-extrabold tracking-tight">
+          <ShieldCheck className="w-6 h-6 text-accent-400" />
+          {t('teacherLanding.privacyBand.title')}
+        </h2>
+        <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
+          {points.map((point) => (
+            <span key={point} className="inline-flex items-center gap-1.5 text-sm sm:text-base text-brand-100">
+              <BadgeCheck className="w-4 h-4 text-accent-400 shrink-0" />
+              {t(`teacherLanding.privacyBand.${point}`)}
+            </span>
+          ))}
+        </div>
+        <button
+          onClick={onOpenPrivacy}
+          className="text-sm text-brand-200 hover:text-white underline underline-offset-2 transition-colors"
+        >
+          {t('teacherLanding.privacyBand.link')}
+        </button>
       </div>
     </section>
   );
@@ -207,7 +460,7 @@ const LANDING_VIDEOS = [
 function VideosSection() {
   const { t } = useTranslation();
   return (
-    <section className="flex flex-col gap-6 sm:gap-8">
+    <section id="demo" className="flex flex-col gap-6 sm:gap-8 scroll-mt-24">
       <div className="text-center max-w-2xl mx-auto flex flex-col gap-2">
         <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
           {t('teacherLanding.videos.title')}
