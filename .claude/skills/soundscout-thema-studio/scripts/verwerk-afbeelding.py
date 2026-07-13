@@ -15,7 +15,7 @@ import sys
 import tempfile
 from pathlib import Path
 
-DOEL_B, DOEL_H = 1920, 1072
+DOEL_B, DOEL_H = 1920, 1080  # exact 16:9 — matcht de app-container (aspect-video + object-cover)
 
 
 def sips_dims(path: Path) -> tuple[int, int]:

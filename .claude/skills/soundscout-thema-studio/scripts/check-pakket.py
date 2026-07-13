@@ -4,7 +4,7 @@
   python3 check-pakket.py --pakket .thema-studio/{themeId}/package [--json]
 
 Checkt:
- 1. Alle beelden onder package/public/images: exact 1920x1072 JPG.
+ 1. Alle beelden onder package/public/images: exact 1920x1080 JPG.
  2. Alle audio onder package/public/audio: mp3, leesbaar (via ffprobe indien aanwezig).
  3. samples.ts <-> locations.ts <-> audiobestanden: id-consistentie (heuristische
     TS-parsing met regex — bij twijfel handmatig nalopen).
@@ -76,10 +76,10 @@ def main() -> None:
             fouten.append(f"beeld {p.name}: geen jpg")
             continue
         w, h = sips_dims(p)
-        if (w, h) != (1920, 1072):
-            fouten.append(f"beeld {p.name}: {w}x{h} != 1920x1072")
+        if (w, h) != (1920, 1080):
+            fouten.append(f"beeld {p.name}: {w}x{h} != 1920x1080")
         else:
-            oks.append(f"beeld {p.name}: 1920x1072 jpg")
+            oks.append(f"beeld {p.name}: 1920x1080 jpg")
     if not beelden:
         waarschuwingen.append("geen beelden gevonden onder public/images")
 

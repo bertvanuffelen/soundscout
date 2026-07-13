@@ -90,9 +90,10 @@ Beide talen (nl.json én en.json), identieke keysets. Sample-namen kort en kindv
 
 ## Asset-specificaties
 
-- **Alle beelden: 1920×1072 JPG** (~0,5-1,1 MB). Let op: `docs/NIEUWE-LOCATIE-THEMA.md`
-  zegt ten onrechte 1920×1080/png — de echte assets zijn 1072/jpg. `verwerk-afbeelding.py`
-  dwingt dit af.
+- **Alle beelden: 1920×1080 JPG** (exact 16:9, ~0,5-1,1 MB) — de app rendert in een
+  `aspect-video` + `object-cover`-container, dus 1080 past crop-vrij en houdt hotspot-%'s
+  exact op hun plek. `verwerk-afbeelding.py` dwingt dit af. (Bestaande oudere assets zijn
+  1920×1072, een historische quirk; object-cover vangt die op — niet opnieuw genereren.)
 - **Audio: mp3**, sfx 2-8 s (~50-200 KB), muziekloops **exact 8.0 s** (= 4 maten @
   120 BPM, het vaste tempo van de app).
 - 6-8 samples per locatie; 4-5 locaties per thema (richtlijn).

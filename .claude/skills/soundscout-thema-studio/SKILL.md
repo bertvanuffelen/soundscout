@@ -165,6 +165,6 @@ Afsluiter: `python3 scripts/check-audio.py --map package/public/audio/themes/{th
 
 - Activiteiten tellen op een drukke praatplaat is een schatting; de Bert-gate ondervangt dit.
 - De beeld-engine levert geen exacte pixelmaat (resolutie-tiers); `verwerk-afbeelding.py`
-  maakt er altijd 1920×1072 JPG van.
+  maakt er altijd 1920×1080 JPG van (exact 16:9).
 - Higgsfield-credits zijn eindig (2/beeld, gedeeld saldo) — bewaak het saldo en schakel
   desnoods naar de Gemini-fallback als de credits opraken.
