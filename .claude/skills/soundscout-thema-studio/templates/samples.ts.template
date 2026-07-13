@@ -1,0 +1,21 @@
+/**
+ * Samples for the '{{THEME_ID}}' theme.
+ *
+ * duration = gemeten door check-audio.py (nooit schatten).
+ * Bestandsnaam = sampleId (mechanisch afleidbaar).
+ */
+
+import type { Sample } from '../../../types';
+
+export const samples: Sample[] = [
+  // === {{LOCATIE_NAAM}} ===
+  {
+    id: '{{SAMPLE_ID}}',
+    locationId: '{{LOCATION_ID}}',
+    name: 'themes.{{THEME_ID}}.samples.{{SAMPLE_ID}}',
+    audioUrl: '/audio/themes/{{THEME_ID}}/{{LOCATION_ID}}/{{SAMPLE_ID}}.mp3',
+    duration: {{DURATION_GEMETEN}},
+    icon: '{{LUCIDE_ICON}}',
+    color: '{{HEX_KLEUR}}',
+  },
+];

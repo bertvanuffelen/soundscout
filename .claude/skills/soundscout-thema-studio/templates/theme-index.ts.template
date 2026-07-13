@@ -1,0 +1,27 @@
+/**
+ * {{THEMA_NAAM_NL}} Theme
+ *
+ * {{KORTE_BESCHRIJVING}}
+ */
+
+import type { ThemeConfig } from '../types';
+import { locations } from './locations';
+import { samples } from './samples';
+import { mapConfig } from './map';
+
+export const {{THEME_ID_CAMEL}}Theme: ThemeConfig = {
+  id: '{{THEME_ID}}',
+  name: 'themes.{{THEME_ID}}.name',
+  description: 'themes.{{THEME_ID}}.description',
+  isPublic: {{IS_PUBLIC}},
+
+  locations,
+  samples,
+  map: mapConfig,
+
+  colors: {
+    primary: '{{COLOR_PRIMARY}}',
+    accent: '{{COLOR_ACCENT}}',
+    mapBackground: '{{COLOR_MAP_BG}}',
+  },
+};

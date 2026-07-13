@@ -1,0 +1,21 @@
+# Bronnen & licenties — thema `{{THEME_ID}}`
+
+> Dit bestand hoort bij het thema en versioneert mee in `src/data/themes/{{THEME_ID}}/BRONNEN.md`.
+
+## Afbeeldingen
+
+| Bestand | Gegenereerd met | Prompt-referentie | Datum |
+|---|---|---|---|
+| {{PAD}} | Gemini {{MODEL}} | prompts/{{BEELD_ID}}-v{{N}}.txt | {{DATUM}} |
+
+## Geluiden
+
+| Bestand | Bron | Auteur | Licentie |
+|---|---|---|---|
+| {{SAMPLE_ID}}.mp3 | https://freesound.org/s/{{ID}}/ | {{AUTEUR}} | {{CC0/CC-BY}} |
+| {{SAMPLE_ID}}.mp3 | ElevenLabs (gegenereerd) | — | eigen gebruik |
+| {{SAMPLE_ID}}.mp3 | Eigen opname | Bert van Uffelen | — |
+
+## Verplichte naamsvermeldingen (CC-BY)
+
+{{PER_CC_BY_GELUID_EEN_REGEL_OF_"geen"}}

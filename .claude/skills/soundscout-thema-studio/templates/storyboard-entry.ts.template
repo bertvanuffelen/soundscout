@@ -1,0 +1,15 @@
+// Toevoegen aan het storyboards-array in src/data/storyboards.ts
+{
+  id: '{{SB_ID}}',
+  themeId: '{{THEME_ID}}',
+  name: 'storyboards.{{SB_ID}}.name',
+  description: 'storyboards.{{SB_ID}}.description',
+  coverImage: '/images/storyboards/{{SB_ID}}/{{SB_ID}}-{{COVER_N}}.jpg',
+  images: [
+    {
+      id: '{{FRAME_ID}}',
+      url: '/images/storyboards/{{SB_ID}}/{{SB_ID}}-{{N}}.jpg',
+      label: 'storyboards.{{SB_ID}}.{{FRAME_ID}}',
+    },
+  ],
+},

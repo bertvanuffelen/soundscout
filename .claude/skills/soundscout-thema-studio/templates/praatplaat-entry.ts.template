@@ -1,0 +1,9 @@
+// Toevoegen aan het praatplaatImages-array in src/data/praatplaatImages.ts
+{
+  id: 'pp-{{NAAM}}',
+  nameKey: 'praatplaatImages.{{NAAM}}',
+  imageUrl: '/images/praatplaten/{{NAAM}}.jpg',
+  category: '{{CATEGORY}}', // 'natuur' | 'stad' | 'gebouw' | 'feest' | 'fictie' | 'overig'
+  availableFor: '{{AVAILABLE_FOR}}', // 'teacher' | 'student' | 'both'
+  themeId: '{{THEME_ID}}', // verplicht bij student/both
+},
