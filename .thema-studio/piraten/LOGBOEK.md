@@ -86,6 +86,15 @@ herkomst.** Bijwerken na élke generatie, geluidskeuze en beslissing. Het plan z
 - **Leerpunt (nu in skill)**: onomatopee/geluidswoorden (BOOM) expliciet verbieden in het
   negatief-blok. Restpunt: papegaaien/aap bleven organisch (koppig; door Bert geaccepteerd).
 
+### jungle — locatie
+- **Status**: ✅ GOEDGEKEURD (2026-07-13, v1). → `package/public/images/themes/piraten/jungle.jpg`.
+- **Job-id(s)**: v1 `6dbabf70-3714-424f-9c46-18f2b33ac43d` (gekozen) · edit-poging `9e9c3e8b-…` (geen winst)
+- **Mini-wizard**: shot=totaalshot jungle · drukte=extreem druk (32 acties) · belichting=mysterieus/mistig
+- **Volledige prompt (v1)**: [prompts/jungle-v1.txt](prompts/jungle-v1.txt)
+- **Leerpunt (nu in skill)**: kleurrijke tropische dieren (papegaai/aap/toekan) blijven
+  organisch — óók na gerichte edit. Slang/krab/insect lukken wél. → ontwerp eromheen.
+  Bert accepteerde de organische papegaaien/apen hier.
+
 ## Geluiden
 
 Nog niet geproduceerd (fase D). Geplande samples + routes: zie [themaplan.md](themaplan.md) §2.

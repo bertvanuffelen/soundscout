@@ -31,8 +31,12 @@
     },
     "jungle": {
       "type": "locatie",
-      "status": "todo",
-      "iteraties": 0
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "6dbabf70-3714-424f-9c46-18f2b33ac43d",
+      "edit_job": "9e9c3e8b-1e6c-48a4-ba4b-24627d783fcf (edit: geen winst)",
+      "eindpad": "package/public/images/themes/piraten/jungle.jpg",
+      "opmerking": "v1 gekozen; dieren-edit gaf geen verbetering"
     },
     "voodoohut": {
       "type": "locatie",
@@ -131,6 +135,32 @@
       "edit": false,
       "image_references": [
         ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:02:13",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "6dbabf70-3714-424f-9c46-18f2b33ac43d",
+      "out": ".thema-studio/piraten/kandidaten/jungle-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/jungle-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:04:13",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "9e9c3e8b-1e6c-48a4-ba4b-24627d783fcf",
+      "out": ".thema-studio/piraten/kandidaten/jungle-v2.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/jungle-v1.png"
       ]
     }
   ]
