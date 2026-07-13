@@ -5,10 +5,20 @@ isometrische stad met tekstbordjes). Bekijk met Read vóór de eerste prompt.
 
 ## Waargenomen huisstijl
 
-Isometrisch overzicht, cartoon line-art met nette contouren, gedempt warm palet,
-duidelijk gescheiden zones per locatie, wegen/paden die de zones verbinden,
-**functionele Nederlandse tekstlabels op bordjes** ("GYMZAAL", "MUZIEKLOKAAL",
-banner "ONZE SPEELSTAD").
+Cartoon line-art met nette contouren, gedempt/warm palet, duidelijk gescheiden zones per
+locatie, wegen/paden die de zones verbinden. **Twee toegestane kaartstijlen:**
+- **(a) Landschapskaart** (winterspelen-stijl): een overzicht van een landschap
+  (bergen/eilanden/velden) met per zone een **lint-banner** als naamlabel, kronkelende
+  **wegen/route** ertussen, kleine **wegwijzer-bordjes** (met humor), en sfeer-vignetten
+  (bomen, gebouwtjes, bergen).
+- **(b) Isometrische stad** (basis-stijl, `public/images/themes/basis/plattegrond.jpg`):
+  gebouwen als zones met straatnaam-/gevelbordjes en een titel-banner ("ONZE SPEELSTAD").
+
+**Vaste kaart-elementen (beide stijlen):**
+- **Lint-banners** met de zone-namen (nette leesbare letters).
+- Een **legenda-kader** linksonder (bv. Wegen / Route / Locaties / Schip).
+- Een **kompasroos** in een hoek (mag een thema-twist hebben, bv. een robot- of schedel-'N').
+- Verbindende **route/wegen** + een paar **bordjes** (ruimte voor humor).
 
 ## Functionele eisen
 
@@ -31,11 +41,14 @@ leesbare tekst renderen:
 
 ## Promptstructuur
 
-1. "Wide horizontal illustration, isometric map view" + naam/sfeer van de themawereld.
-2. Per locatie: zone-beschrijving + positie-indicatie (linksboven/midden/…) + exact label.
-3. Verbindende elementen (paden, rivier, lift, …) + kleine sfeerdetails.
-4. Stijl: isometrische cartoonstijl, nette contouren, palet passend bij
-   `colors.mapBackground`, kindvriendelijk, 4k.
+1. "Wide horizontal illustration" + kaartstijl (landschapskaart óf isometrische stad) +
+   naam/sfeer van de themawereld.
+2. Per locatie: zone-beschrijving + positie-indicatie (linksboven/midden/…) + exact
+   **banner-label**.
+3. Vaste elementen: kronkelende route/wegen tussen de zones · **legenda-kader** linksonder ·
+   **kompasroos** in een hoek · een paar wegwijzer-bordjes · sfeer-vignetten.
+4. Stijl: cartoonstijl, nette contouren, palet passend bij `colors.mapBackground`,
+   kindvriendelijk, 4k.
 
 ## Negatieve prompt
 
