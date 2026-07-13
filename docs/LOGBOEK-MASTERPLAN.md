@@ -72,9 +72,7 @@
 | 5.1 | Migratie 027: feedback_cards (5 ingebouwde + docent-eigen), peer_review-instelling op class_assignments, peer_feedback-tabel, RPC's (batch/submit/complimenten/instellen), get_active_assignment + peer_review-kolom | ✅ Af — **door Bert uit te voeren ná 026** | `a82bfb1` |
 | 5.2 | Client: PeerReviewModal (leerling-luisterflow op het podium), PeerReviewSettings (docent-toggle + kaartkeuze + eigen-kaart-editor in ClassDetail), complimenten in FeedbackBanner via bewaarcode, ClassSession.peerReview-doorvoer | ✅ Af | `1f1f584` |
 | 5.3 | Content-sprint: 6-8 praatplaten, 2-3 storyboards, winterspelen-leerlingcontent — via de Thema-wizard | ⏳ Wacht op Bert (thema-ideeën + beelden/geluiden maken) |
-| 5.4 | Landingspagina-uitbreiding (FAQ, gratis/betaald, AVG-blok, testimonial-structuur) | ⏳ Volgende sessie |
-
-| 5.4 | Landingspagina-uitbreiding: trust-strip, USP's, feedback-cirkel, actuele-thema's (leest seizoensrooster), FAQ-accordion + FAQPage JSON-LD, privacyband + footerlinks (hergebruik PrivacyModal/FeedbackModal), seizoenschip op startscherm | ✅ Af | `c4c77d1` |
+| 5.4 | Landingspagina-uitbreiding: trust-strip, USP's, feedback-cirkel, actuele-thema's (leest seizoensrooster), FAQ-accordion + FAQPage JSON-LD, privacyband + footerlinks (hergebruik PrivacyModal/FeedbackModal), seizoenschip op startscherm. Testimonials weglaten + pricing geparkeerd (keuzes Bert) | ✅ Af | `c4c77d1` |
 | 5.5 | Volledig testplan (`docs/TESTPLAN-MASTERPLAN.md`) voor week 1-5 | ✅ Af | — |
 
 **E2E-test peer-feedback (Bert, na migratie 027)**: (1) activeer een opdracht → zet "Klasgenoten luisteren" aan in het klasscherm; (2) lever met 2+ browsers/apparaten in via de klascode; (3) na inleveren verschijnt "Luister naar klasgenoten" op het podium → beluister + kies chips; (4) laad een inzending via de bewaarcode → banner toont "Complimenten van klasgenoten".
