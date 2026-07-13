@@ -49,7 +49,10 @@ kindergroep:
 > Wide diversity of robot COLORS (silver, orange, red, blue, teal, gold, green, purple,
 > pink, copper) with no single color dominating (max ~20% per color); mix of body SHAPES
 > (boxy retro tin-robots, sleek visor androids, small round chibi bots) and SIZES
-> (large, medium, tiny). Animals are robot-animals (e.g. robot parrot, robot monkey)."
+> (large, medium, tiny). EVERY animal is a clearly MECHANICAL robot-animal built from metal
+> panels with glowing eyes and visible joints, seams and bolts — NEVER an organic or real
+> animal, no fur, no feathers, no real skin (e.g. a metal robot seagull with panel wings, a
+> jointed robot monkey, a riveted-metal robot crab)."
 
 ## Thema-flavor
 

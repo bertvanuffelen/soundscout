@@ -101,14 +101,16 @@ def main() -> None:
     if not args.out:
         ap.error("--out is verplicht")
 
-    # 1. Job aanmaken. `generate create --json` geeft de job-id als JSON-string terug
-    # (soms een dict/lijst); vang alle vormen af.
+    # 1. Job aanmaken. `generate create --json` geeft de job-id terug als JSON-string,
+    # soms verpakt in een lijst (["<id>"]) of als dict; vang alle vormen af.
     created = run_cli(["generate", "create"] + base, capture_json=True)
-    if isinstance(created, str):
-        job_id = created
+    node = created[0] if isinstance(created, list) and created else created
+    if isinstance(node, str):
+        job_id = node
+    elif isinstance(node, dict):
+        job_id = node.get("id") or node.get("job_id")
     else:
-        job = created[0] if isinstance(created, list) else created
-        job_id = job.get("id") or job.get("job_id") if isinstance(job, dict) else None
+        job_id = None
     if not job_id:
         sys.exit(f"FOUT: geen job-id in antwoord: {json.dumps(created)[:800]}")
     print(f"Job {job_id} ({args.model}) gestart, wachten…")
