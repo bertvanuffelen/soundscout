@@ -54,6 +54,14 @@ kindergroep:
 > animal, no fur, no feathers, no real skin (e.g. a metal robot seagull with panel wings, a
 > jointed robot monkey, a riveted-metal robot crab)."
 
+## Operationeel — koppige dieren
+
+Dieren (vooral **papegaaien, apen, vogels**) komen hardnekkig organisch uit Nano Banana,
+óók mét de nadrukkelijke "mechanisch metaal"-instructie. Blijven ze na 1-2 pogingen
+organisch, doe dan een **gerichte edit** (`--edit-van <beeld> --prompt "maak alle dieren
+mechanische robot-dieren van metaal met gloeiende ogen, rest identiek"`) — dat is
+betrouwbaarder en goedkoper dan opnieuw genereren.
+
 ## Thema-flavor
 
 De thema-sfeer zit in accessoires/decor óp de robots, niet in hun soort: piraten-robots
