@@ -6,6 +6,7 @@ import { useThemeStore } from './stores/themeStore';
 import { useDevFlagsStore } from './stores/devFlagsStore';
 import { lookupAndRouteAssignment } from './utils/compositionInit';
 import { logger } from './utils/logger';
+import { logUsageEvent } from './utils/usageStats';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
@@ -100,6 +101,17 @@ function AppContent() {
   useEffect(() => {
     initTheme();
   }, [initTheme]);
+
+  // Anonieme sessieteller (cookieloos, geen persoonsgegevens — zie usageStats)
+  useEffect(() => {
+    logUsageEvent('app_start');
+  }, []);
+
+  // Tel schermmijlpalen (eenmalig per sessie, alleen aggregaat per dag)
+  useEffect(() => {
+    if (currentScreen === 'stage') logUsageEvent('stage_reached');
+    if (currentScreen === 'teacher') logUsageEvent('teacher_dashboard_opened');
+  }, [currentScreen]);
 
   // Initialize dev flags: ?dev=true activates, persisted in localStorage
   useEffect(() => {

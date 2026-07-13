@@ -1282,7 +1282,7 @@
     "classCodeTitle": "Klascode & docent",
     "classCodeText": "Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld.",
     "cookiesTitle": "Cookies & tracking",
-    "cookiesText": "SoundScout gebruikt geen tracking cookies, geen analytics en geen advertenties. De enige lokale opslag is voor je composities en taalvoorkeur. Er worden geen gegevens gedeeld met derden.",
+    "cookiesText": "SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities en taalvoorkeur. Er worden geen gegevens gedeeld met derden.",
     "contact": "Vragen over privacy? Neem contact op via <mail>bvanuffelen@gmail.com</mail>."
   },
   "shareCodeModal": {

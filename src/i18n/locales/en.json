@@ -1282,7 +1282,7 @@
     "classCodeTitle": "Class code & teacher",
     "classCodeText": "When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself.",
     "cookiesTitle": "Cookies & tracking",
-    "cookiesText": "SoundScout does not use tracking cookies, analytics or advertisements. The only local storage is for your compositions and language preference. No data is shared with third parties.",
+    "cookiesText": "SoundScout does not use tracking cookies or advertisements. We only count anonymously how often the app is used (daily totals, without personal data, without cookies and without third parties); your browser's 'Do Not Track' setting is respected. The only local storage is for your compositions and language preference. No data is shared with third parties.",
     "contact": "Questions about privacy? Contact us at <mail>bvanuffelen@gmail.com</mail>."
   },
   "shareCodeModal": {
