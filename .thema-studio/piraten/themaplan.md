@@ -22,6 +22,9 @@
   hout, touw, canvas, katrollen, **houten kraan/derrick**, vaten, kompas, lantaarns. **Géén
   moderne stalen machines/kranen.** Alleen de robots zijn futuristisch. Dieren = mechanische
   robot-dieren.
+- **Piraten-gear op de robots**: de meeste robots dragen zichtbaar piraten-accessoires —
+  bandana's, ooglap-panelen, driekante hoeden, gouden oorringen, sjerpen, af en toe een
+  haakhand. Zet dit expliciet in elke beeldprompt (anders komen ze te "kaal" uit de engine).
 
 ## 2. Locaties (5) — elk 6-8 sound-hotspots binnen een vólle wemelscène
 

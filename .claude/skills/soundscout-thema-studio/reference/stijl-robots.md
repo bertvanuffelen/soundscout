@@ -69,6 +69,11 @@ Praktische lijn:
    blijf er geen credits op stukslaan.
 3. Meld het eerlijk aan Bert; hij beslist per beeld of het acceptabel is.
 
+**Wél betrouwbaar met een edit**: het *toevoegen van accessoires/props* (bv. thema-gear
+zoals piratenhoeden, bandana's, ooglappen op de robots) — dat past de edit netjes toe met
+behoud van compositie. Het verschil: accessoires toevoegen lukt, materiaal/soort van een
+dier omzetten niet.
+
 ## Thema-flavor
 
 De thema-sfeer zit in accessoires/decor óp de robots, niet in hun soort: piraten-robots
