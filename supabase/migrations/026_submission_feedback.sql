@@ -25,7 +25,19 @@ ALTER TABLE public.submissions
   ADD COLUMN IF NOT EXISTS feedback_level SMALLINT,
   ADD COLUMN IF NOT EXISTS feedback_text TEXT,
   ADD COLUMN IF NOT EXISTS feedback_at TIMESTAMPTZ,
-  ADD COLUMN IF NOT EXISTS teacher_seen_at TIMESTAMPTZ;
+  ADD COLUMN IF NOT EXISTS teacher_seen_at TIMESTAMPTZ,
+  ADD COLUMN IF NOT EXISTS submitted_at TIMESTAMPTZ;
+
+-- submitted_at: expliciet "formeel ingeleverd"-stempel. Nodig omdat v2 élke
+-- klas-inzending een save_code geeft — de oude aanname "save_code aanwezig =
+-- werk-in-uitvoering" gaat dan niet meer op. Het dashboard splitst voortaan op:
+--   ingeleverd  = submitted_at IS NOT NULL, of legacy-rij zonder save_code
+--   in bewerking = save_code aanwezig en submitted_at IS NULL
+-- Legacy-rijen die via de oude submit-RPC's binnenkwamen (geen save_code)
+-- krijgen met terugwerkende kracht een stempel:
+UPDATE public.submissions
+SET submitted_at = created_at
+WHERE submitted_at IS NULL AND save_code IS NULL;
 
 -- Sticker uit vaste set (client mapt naar emoji + i18n-label), niveau 1-3,
 -- tekst kort (kindgericht bericht, geen essay).
@@ -187,7 +199,7 @@ BEGIN
     id, class_id, student_name, composition_name, composition_data,
     assignment_id, assignment_type, assignment_ref,
     praatplaat_id, position_x, position_y,
-    save_code, save_secret, last_updated_at
+    save_code, save_secret, submitted_at, last_updated_at
   )
   VALUES (
     v_submission_id,
@@ -203,6 +215,7 @@ BEGIN
     p_praatplaat_position_y,
     generate_save_code(),
     generate_save_secret(),
+    NOW(),
     NOW()
   )
   ON CONFLICT (id) DO UPDATE SET
@@ -215,6 +228,8 @@ BEGIN
     -- (bijv. eerder ingeleverd via de oude v1-RPC)
     save_code   = COALESCE(public.submissions.save_code, EXCLUDED.save_code),
     save_secret = COALESCE(public.submissions.save_secret, EXCLUDED.save_secret),
+    -- Eerste formele inlevering telt; blijft daarna staan
+    submitted_at = COALESCE(public.submissions.submitted_at, NOW()),
     last_updated_at = NOW();
 
   SELECT s.save_code INTO v_save_code

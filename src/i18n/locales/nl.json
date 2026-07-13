@@ -1075,7 +1075,25 @@
       "submissionsDescription": "Composities die leerlingen hebben ingeleverd via de klascode.",
       "tabSubmitted": "Ingeleverd ({{count}})",
       "tabWip": "In bewerking ({{count}})",
-      "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd."
+      "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd.",
+      "newCount": "{{count}} nieuw"
+    },
+    "feedback": {
+      "stickerLabel": "Kies een sticker",
+      "levelLabel": "Niveau (1-3 sterren)",
+      "levelTitle": "{{level}} van 3 sterren",
+      "textPlaceholder": "Schrijf een persoonlijk berichtje (niet verplicht)...",
+      "send": "Feedback versturen",
+      "saved": "Verstuurd",
+      "saveError": "Kon feedback niet opslaan. Probeer het opnieuw.",
+      "stickers": {
+        "star": "Knap gedaan!",
+        "rhythm": "Lekker ritme!",
+        "build": "Mooie opbouw!",
+        "teamwork": "Goed samengewerkt!",
+        "surprise": "Verrassend geluid!",
+        "target": "Past bij de opdracht!"
+      }
     },
     "createClassModal": {
       "title": "Nieuwe Klas Aanmaken",
@@ -1116,7 +1134,9 @@
       "wip": "In bewerking",
       "lastEdited": "Laatst bewerkt:",
       "fromTemplate": "Opdracht",
-      "fromPraatplaat": "Praatplaat"
+      "fromPraatplaat": "Praatplaat",
+      "new": "Nieuw",
+      "reviewed": "Beoordeeld"
     },
     "praatplaat": {
       "sectionTitle": "Praatplaten",

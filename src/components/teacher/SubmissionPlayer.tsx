@@ -12,22 +12,40 @@ import { useTranslation } from 'react-i18next';
 import { X, Music, AlertCircle, Play, Pause, SkipBack, ImageIcon } from 'lucide-react';
 import * as Tone from 'tone';
 import type { Submission } from '../../hooks/useSubmissions';
+import type { FeedbackSticker } from '../../lib/submissions';
 import { audioService } from '../../services/AudioService';
 import { audioDiag } from '../../utils/audioDiagnostics';
 import { findStoryboardById } from '../../data/themes';
 import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
+import { FeedbackPanel } from './FeedbackPanel';
 import { DEFAULT_BPM } from '../../constants/config';
 
 interface SubmissionPlayerProps {
   submission: Submission;
   onClose: () => void;
+  /** Feedback-paneel tonen + opslaan (alleen docent-context, migratie 026) */
+  onSetFeedback?: (feedback: {
+    sticker: FeedbackSticker | null;
+    level: number | null;
+    text: string | null;
+  }) => Promise<void>;
+  /** "Gezien"-stempel bij openen (alleen docent-context) */
+  onMarkSeen?: () => void;
 }
 
 type PlayerState = 'loading' | 'ready' | 'playing' | 'paused' | 'error';
 
-export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps) {
+export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSeen }: SubmissionPlayerProps) {
   const { t } = useTranslation();
+
+  // "Gezien"-stempel: eenmalig bij openen (ref zodat een wisselende callback
+  // geen tweede aanroep triggert)
+  const markSeenRef = useRef(onMarkSeen);
+  markSeenRef.current = onMarkSeen;
+  useEffect(() => {
+    markSeenRef.current?.();
+  }, []);
   const { student_name, composition_name, composition_data, created_at } = submission;
   const [playerState, setPlayerState] = useState<PlayerState>('loading');
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -323,6 +341,11 @@ export function SubmissionPlayer({ submission, onClose }: SubmissionPlayerProps)
             </div>
           )}
         </div>
+
+        {/* Docent-feedback (alleen in docent-context) */}
+        {onSetFeedback && (
+          <FeedbackPanel submission={submission} onSave={onSetFeedback} />
+        )}
 
         {/* Transport controls */}
         {showTimeline && (

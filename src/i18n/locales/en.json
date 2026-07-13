@@ -1075,7 +1075,25 @@
       "submissionsDescription": "Compositions submitted by students using the class code.",
       "tabSubmitted": "Submitted ({{count}})",
       "tabWip": "In progress ({{count}})",
-      "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet."
+      "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet.",
+      "newCount": "{{count}} new"
+    },
+    "feedback": {
+      "stickerLabel": "Choose a sticker",
+      "levelLabel": "Level (1-3 stars)",
+      "levelTitle": "{{level}} of 3 stars",
+      "textPlaceholder": "Write a personal message (optional)...",
+      "send": "Send feedback",
+      "saved": "Sent",
+      "saveError": "Could not save feedback. Please try again.",
+      "stickers": {
+        "star": "Well done!",
+        "rhythm": "Great rhythm!",
+        "build": "Nice build-up!",
+        "teamwork": "Great teamwork!",
+        "surprise": "Surprising sound!",
+        "target": "Fits the assignment!"
+      }
     },
     "createClassModal": {
       "title": "Create New Class",
@@ -1116,7 +1134,9 @@
       "wip": "In progress",
       "lastEdited": "Last edited:",
       "fromTemplate": "Assignment",
-      "fromPraatplaat": "Sound map"
+      "fromPraatplaat": "Sound map",
+      "new": "New",
+      "reviewed": "Reviewed"
     },
     "praatplaat": {
       "sectionTitle": "Sound Maps",

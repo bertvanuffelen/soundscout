@@ -3,8 +3,10 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Play, Trash2, Image, PenLine, FileText, MapPin } from 'lucide-react';
+import { Play, Trash2, Image, PenLine, FileText, MapPin, Star } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
+import { getReviewStatus } from '../../hooks/useSubmissions';
+import { getStickerEmoji } from './FeedbackPanel';
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -17,6 +19,8 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
   const { t } = useTranslation();
   const { student_name, composition_name, composition_data, created_at, last_updated_at } = submission;
   const hasStoryboard = !!composition_data?.storyboardId;
+  const reviewStatus = getReviewStatus(submission);
+  const stickerEmoji = getStickerEmoji(submission.feedback_sticker);
 
   // Show last_updated_at for work-in-progress, created_at for submissions
   const displayDate = (isWip && last_updated_at) ? last_updated_at : created_at;
@@ -48,6 +52,29 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-100 text-warning-700 text-xs font-medium shrink-0">
               <PenLine className="w-3 h-3" />
               {t('teacher.submissionCard.wip')}
+            </span>
+          )}
+          {/* Review-status (migratie 026): nieuw → beluisterd → beoordeeld */}
+          {!isWip && reviewStatus === 'new' && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-100 text-accent-700 text-xs font-bold shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent-500 animate-pulse" aria-hidden="true" />
+              {t('teacher.submissionCard.new')}
+            </span>
+          )}
+          {reviewStatus === 'reviewed' && (
+            <span
+              className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-100 text-success-700 text-xs font-medium shrink-0"
+              title={submission.feedback_text ?? undefined}
+            >
+              {stickerEmoji && <span aria-hidden="true">{stickerEmoji}</span>}
+              {submission.feedback_level != null && (
+                <span className="inline-flex items-center">
+                  {Array.from({ length: submission.feedback_level }, (_, i) => (
+                    <Star key={i} className="w-3 h-3 fill-current" />
+                  ))}
+                </span>
+              )}
+              {t('teacher.submissionCard.reviewed')}
             </span>
           )}
           {hasStoryboard && (

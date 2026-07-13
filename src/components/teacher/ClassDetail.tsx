@@ -8,7 +8,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
-import { useSubmissions } from '../../hooks/useSubmissions';
+import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
 import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
@@ -72,7 +72,7 @@ const ASSIGNMENT_ICON_WRAP_SM = {
 
 export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const { t } = useTranslation();
-  const { submissions, loading, error, deleteSubmission, refetch } = useSubmissions(classData.id);
+  const { submissions, loading, error, deleteSubmission, setFeedback, markSeen, refetch } = useSubmissions(classData.id);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
@@ -202,18 +202,22 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     }
   }, [deactivateAssignment]);
 
-  // Split submissions into submitted (no save_code) and work-in-progress (has save_code)
-  const { submitted, workInProgress } = useMemo(() => {
+  // Split: ingeleverd vs. werk-in-uitvoering. Sinds migratie 026 mint élke
+  // klas-inzending een save_code, dus het onderscheid is submitted_at:
+  //   ingeleverd   = submitted_at gezet, of legacy-rij zonder save_code
+  //   in bewerking = wel save_code (online bewaard), niet formeel ingeleverd
+  const { submitted, workInProgress, newCount } = useMemo(() => {
     const submitted: Submission[] = [];
     const workInProgress: Submission[] = [];
     for (const s of submissions) {
-      if (s.save_code) {
-        workInProgress.push(s);
-      } else {
+      if (s.submitted_at || !s.save_code) {
         submitted.push(s);
+      } else {
+        workInProgress.push(s);
       }
     }
-    return { submitted, workInProgress };
+    const newCount = submitted.filter((s) => getReviewStatus(s) === 'new').length;
+    return { submitted, workInProgress, newCount };
   }, [submissions]);
 
   const handleRefresh = async () => {
@@ -520,6 +524,12 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             <SectionTitle as="h2" size="md" className="flex items-center gap-2 mb-1">
               <Music className="w-5 h-5 text-accent-600" />
               {t('teacher.classDetail.submissionsTitle')}
+              {newCount > 0 && (
+                <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-accent-100 text-accent-700 text-sm font-bold">
+                  <span className="w-2 h-2 rounded-full bg-accent-500 animate-pulse" aria-hidden="true" />
+                  {t('teacher.classDetail.newCount', { count: newCount })}
+                </span>
+              )}
             </SectionTitle>
             <p className="text-sm text-text-muted ml-7">
               {t('teacher.classDetail.submissionsDescription')}
@@ -618,11 +628,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         </div>
       </main>
 
-      {/* Player modal */}
+      {/* Player modal — met feedback-paneel + gezien-stempel (migratie 026) */}
       {selectedSubmission && (
         <SubmissionPlayer
           submission={selectedSubmission}
           onClose={() => setSelectedSubmission(null)}
+          onSetFeedback={(feedback) => setFeedback(selectedSubmission.id, feedback)}
+          onMarkSeen={() => markSeen(selectedSubmission.id)}
         />
       )}
 

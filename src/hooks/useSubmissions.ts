@@ -25,6 +25,9 @@ export interface Submission {
   last_updated_at?: string | null;
   assignment_id?: string | null;
   assignment_type?: 'template' | 'praatplaat' | null;
+  /** Formeel ingeleverd-stempel (migratie 026). Sinds v2 heeft élke
+   *  klas-inzending een save_code, dus dít onderscheidt ingeleverd van WIP. */
+  submitted_at?: string | null;
   // Docent-feedback (migratie 026)
   feedback_sticker?: FeedbackSticker | null;
   feedback_level?: number | null;
