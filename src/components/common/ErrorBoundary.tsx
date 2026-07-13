@@ -6,6 +6,7 @@
  */
 
 import { Component, lazy, Suspense, type ReactNode } from 'react';
+import { Frown } from 'lucide-react';
 import i18n from '../../i18n';
 import { logger } from '../../utils/logger';
 
@@ -79,7 +80,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
         <div className="min-h-screen flex items-center justify-center bg-gradient-to-b from-error-50 to-white p-6">
           <div className="max-w-md w-full bg-white rounded-3xl shadow-xl p-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 rounded-full bg-error-100 flex items-center justify-center">
-              <span className="text-3xl">😵</span>
+              <Frown className="w-8 h-8 text-error-600" aria-hidden="true" />
             </div>
             <h2 className="text-xl font-bold text-error-600 mb-2">
               {i18n.t('error.title')}

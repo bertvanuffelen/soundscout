@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Play, Trash2, Image, PenLine, FileText, MapPin, Star } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 import { getReviewStatus } from '../../hooks/useSubmissions';
-import { getStickerEmoji } from './FeedbackPanel';
+import { StickerIcon } from '../../utils/stickerMap';
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -20,7 +20,6 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
   const { student_name, composition_name, composition_data, created_at, last_updated_at } = submission;
   const hasStoryboard = !!composition_data?.storyboardId;
   const reviewStatus = getReviewStatus(submission);
-  const stickerEmoji = getStickerEmoji(submission.feedback_sticker);
 
   // Show last_updated_at for work-in-progress, created_at for submissions
   const displayDate = (isWip && last_updated_at) ? last_updated_at : created_at;
@@ -66,7 +65,7 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
               className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-success-100 text-success-700 text-xs font-medium shrink-0"
               title={submission.feedback_text ?? undefined}
             >
-              {stickerEmoji && <span aria-hidden="true">{stickerEmoji}</span>}
+              <StickerIcon sticker={submission.feedback_sticker} size={12} className="text-success-700" />
               {submission.feedback_level != null && (
                 <span className="inline-flex items-center">
                   {Array.from({ length: submission.feedback_level }, (_, i) => (

@@ -318,9 +318,9 @@ export const Timeline = memo(function Timeline({
                 <span className="text-xs font-medium text-neutral-700 max-w-28 truncate">
                   {t(clipEdit.sample.name)}
                 </span>
-                <span className="text-[10px] text-neutral-400">
+                <span className="text-[10px] text-neutral-400 inline-flex items-center gap-0.5">
                   {getClipDuration(clipEdit.clip, clipEdit.sample).toFixed(1)}s
-                  {(clipEdit.clip.trimStart !== undefined || clipEdit.clip.trimEnd !== undefined) && ' ✂'}
+                  {(clipEdit.clip.trimStart !== undefined || clipEdit.clip.trimEnd !== undefined) && <Scissors size={10} aria-hidden="true" />}
                 </span>
               </div>
 

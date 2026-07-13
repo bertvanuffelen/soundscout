@@ -11,21 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { Star, Send, Check, Loader2 } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 import type { FeedbackSticker } from '../../lib/submissions';
+import { STICKER_ICONS, STICKER_KEYS } from '../../utils/stickerMap';
 import { cn } from '../../utils/cn';
-
-/** Vaste stickerset — keys matchen de CHECK-constraint in migratie 026 */
-export const FEEDBACK_STICKERS: { key: FeedbackSticker; emoji: string }[] = [
-  { key: 'star', emoji: '⭐' },
-  { key: 'rhythm', emoji: '🎵' },
-  { key: 'build', emoji: '🔊' },
-  { key: 'teamwork', emoji: '👏' },
-  { key: 'surprise', emoji: '💡' },
-  { key: 'target', emoji: '🎯' },
-];
-
-export function getStickerEmoji(key: string | null | undefined): string | null {
-  return FEEDBACK_STICKERS.find((s) => s.key === key)?.emoji ?? null;
-}
 
 interface FeedbackPanelProps {
   submission: Submission;
@@ -66,26 +53,29 @@ export function FeedbackPanel({ submission, onSave }: FeedbackPanelProps) {
   return (
     <div className="px-4 sm:px-6 py-3 border-t border-border-subtle bg-bg-surface shrink-0">
       <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
-        {/* Stickers */}
+        {/* Stickers (Lucide-iconen via stickerMap) */}
         <div className="flex items-center gap-1.5" role="radiogroup" aria-label={t('teacher.feedback.stickerLabel')}>
-          {FEEDBACK_STICKERS.map(({ key, emoji }) => (
-            <button
-              key={key}
-              type="button"
-              role="radio"
-              aria-checked={sticker === key}
-              onClick={() => { setSticker(sticker === key ? null : key); markDirty(); }}
-              title={t(`teacher.feedback.stickers.${key}`)}
-              className={cn(
-                'w-10 h-10 sm:w-11 sm:h-11 rounded-xl text-xl sm:text-2xl flex items-center justify-center transition-all',
-                sticker === key
-                  ? 'bg-accent-100 ring-2 ring-accent-400 scale-110'
-                  : 'bg-neutral-100 hover:bg-neutral-200 opacity-70 hover:opacity-100'
-              )}
-            >
-              {emoji}
-            </button>
-          ))}
+          {STICKER_KEYS.map((key) => {
+            const Icon = STICKER_ICONS[key];
+            return (
+              <button
+                key={key}
+                type="button"
+                role="radio"
+                aria-checked={sticker === key}
+                onClick={() => { setSticker(sticker === key ? null : key); markDirty(); }}
+                title={t(`teacher.feedback.stickers.${key}`)}
+                className={cn(
+                  'w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all',
+                  sticker === key
+                    ? 'bg-accent-100 text-accent-700 ring-2 ring-accent-400 scale-110'
+                    : 'bg-neutral-100 text-text-muted hover:bg-neutral-200 hover:text-text-main'
+                )}
+              >
+                <Icon className="w-5 h-5 sm:w-6 sm:h-6" aria-hidden="true" />
+              </button>
+            );
+          })}
         </div>
 
         {/* Niveau: 1-3 sterren */}

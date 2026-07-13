@@ -70,9 +70,9 @@ export const EditToolbar = memo(function EditToolbar({
         <span className="text-xs font-medium text-neutral-700 max-w-24 truncate">
           {t(sample.name)}
         </span>
-        <span className="text-[10px] text-neutral-400">
+        <span className="text-[10px] text-neutral-400 inline-flex items-center gap-0.5">
           {duration.toFixed(1)}s
-          {isTrimmed && ' ✂'}
+          {isTrimmed && <Scissors size={10} aria-hidden="true" />}
         </span>
       </div>
 

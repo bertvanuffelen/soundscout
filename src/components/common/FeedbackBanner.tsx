@@ -8,7 +8,7 @@
 import { useTranslation } from 'react-i18next';
 import { X, Star } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
-import { getStickerEmoji } from '../teacher/FeedbackPanel';
+import { StickerIcon } from '../../utils/stickerMap';
 
 export function FeedbackBanner() {
   const { t } = useTranslation();
@@ -17,16 +17,12 @@ export function FeedbackBanner() {
 
   if (!feedback) return null;
 
-  const emoji = getStickerEmoji(feedback.sticker);
-
   return (
     <div
       role="status"
       className="mx-2 sm:mx-4 mt-2 flex items-center gap-3 rounded-2xl border-2 border-accent-200 bg-accent-50 px-4 py-3 shadow-sm"
     >
-      <span className="text-2xl sm:text-3xl shrink-0" aria-hidden="true">
-        {emoji ?? '💌'}
-      </span>
+      <StickerIcon sticker={feedback.sticker} fallback size={28} className="shrink-0" />
       <div className="flex-1 min-w-0">
         {(feedback.sticker || feedback.level != null || feedback.text) && (
           <p className="font-bold text-text-main text-sm sm:text-base">

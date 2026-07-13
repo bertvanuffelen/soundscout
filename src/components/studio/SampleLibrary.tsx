@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, MapPin } from 'lucide-react';
+import { Play, MapPin, GripVertical } from 'lucide-react';
 import type { Sample } from '../../types';
 import { SampleIcon } from '../../utils/iconMap';
 
@@ -63,20 +63,7 @@ const DraggableSample = memo(function DraggableSample({
     >
       {/* Grip icon — visual indicator only */}
       <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 text-neutral-400 pointer-events-none">
-        <svg
-          width="12"
-          height="20"
-          viewBox="0 0 12 20"
-          fill="currentColor"
-          className="w-2 sm:w-3 h-3 sm:h-5"
-        >
-          <circle cx="3" cy="3" r="1.5" />
-          <circle cx="9" cy="3" r="1.5" />
-          <circle cx="3" cy="10" r="1.5" />
-          <circle cx="9" cy="10" r="1.5" />
-          <circle cx="3" cy="17" r="1.5" />
-          <circle cx="9" cy="17" r="1.5" />
-        </svg>
+        <GripVertical className="w-3 h-4 sm:w-4 sm:h-5" aria-hidden="true" />
       </div>
 
       <div

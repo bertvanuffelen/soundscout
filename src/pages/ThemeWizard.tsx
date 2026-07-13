@@ -328,7 +328,7 @@ export function ThemeWizard() {
               {draft.locations.map((loc, i) => (
                 <button key={i} onClick={() => setPlacingLocationIndex(placingLocationIndex === i ? null : i)}
                   className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${placingLocationIndex === i ? 'bg-accent-400 text-accent-900' : loc.mapX != null ? 'bg-success-100 text-success-700' : 'bg-neutral-100 text-text-muted'}`}>
-                  {loc.mapX != null ? '✓ ' : ''}{loc.nameNl || loc.id || `locatie ${i + 1}`}
+                  {loc.mapX != null && <Check size={12} className="inline -mt-0.5 mr-0.5" aria-hidden="true" />}{loc.nameNl || loc.id || `locatie ${i + 1}`}
                   {loc.mapX != null && ` (${loc.mapX}, ${loc.mapY})`}
                 </button>
               ))}

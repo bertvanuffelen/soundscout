@@ -13,9 +13,9 @@ import {
   initializeCompositionFromStoryboard,
 } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
-import { Star } from 'lucide-react';
+import { Star, Mail } from 'lucide-react';
 import type { ReceivedFeedback } from '../types';
-import { getStickerEmoji } from './teacher/FeedbackPanel';
+import { StickerIcon } from '../utils/stickerMap';
 import { OnboardingAnimation } from './common/OnboardingAnimation';
 import { hasSeenFirstRun, markFirstRunSeen } from '../utils/firstRun';
 import { getPublicThemes } from '../data/themes';
@@ -219,7 +219,7 @@ export function StartScreen() {
             onClick={() => setShowFeedbackNotice(true)}
             className="mb-4 w-full max-w-[280px] sm:max-w-xs flex items-center gap-2.5 rounded-2xl border-2 border-accent-300 bg-accent-50 px-4 py-3 text-left shadow-md hover:bg-accent-100 transition-colors animate-pulse hover:animate-none"
           >
-            <span className="text-2xl" aria-hidden="true">💌</span>
+            <Mail className="w-6 h-6 text-accent-600 shrink-0" aria-hidden="true" />
             <span className="text-sm font-bold text-text-main">
               {t('studentFeedback.noticeButton', { name: feedbackNotice.compositionName })}
             </span>
@@ -505,8 +505,8 @@ export function StartScreen() {
       >
         {feedbackNotice && (
           <div className="text-center">
-            <div className="text-5xl mb-3" aria-hidden="true">
-              {getStickerEmoji(feedbackNotice.feedback.sticker) ?? '💌'}
+            <div className="mb-3 flex justify-center" aria-hidden="true">
+              <StickerIcon sticker={feedbackNotice.feedback.sticker} fallback size={48} />
             </div>
             {feedbackNotice.feedback.sticker && (
               <p className="text-lg font-extrabold text-text-main mb-1">
