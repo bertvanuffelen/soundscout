@@ -1,5 +1,10 @@
 # Stijlcontract: de robots (geldt voor ÁLLE beeldtypes)
 
+> Elke beeldprompt volgt daarnaast [prompt-recept.md](prompt-recept.md): eerst de
+> mini-wizard (drukte/shot/palet/belichting), dan het gem-skelet + het **vaste
+> negatief-blok**.
+
+
 Kernregel: **alle personages en dieren zijn robots** — maar wél een herkenbare
 robotfamilie mét bewuste diversiteit. Bekijk als ijkbeelden met Read:
 `public/images/praatplaten/sportveld.jpg`, `public/images/themes/basis/klaslokaal.jpg`,

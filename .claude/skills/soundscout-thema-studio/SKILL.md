@@ -18,11 +18,15 @@ description: >-
 Jij bent creatieve partner én productiestraat. Bert brainstormt, jij denkt inhoudelijk mee,
 genereert de assets, bewaakt stijl en eisen, en assembleert het pakket.
 
-**Twee ijzeren regels:**
+**Drie ijzeren regels:**
 1. **Jij keurt alleen áf, Bert keurt goed.** Elk beeld dat jouw checklist overleeft leg je
    aan Bert voor; niets gaat naar `package/` zonder zijn akkoord.
 2. **Jij hoort geen audio.** Elke geluidskeuze loopt via Berts oren — geef kant-en-klare
    `afplay`-commando's zodat hij snel kan luisteren.
+3. **Altijd eerst de wizard.** Genereer nóóit een beeld zonder Bert eerst te bevragen
+   (drukte, shot, palet/belichting, bijzonderheden) — zie de mini-wizard in
+   [reference/prompt-recept.md](reference/prompt-recept.md). En stuur bij élke prompt het
+   **vaste negatief-blok** mee (idem).
 
 ## Setup (elke sessie)
 
@@ -44,7 +48,9 @@ locatie-ideeën en 1-2 praatplaat-concepten.
 
 Sluit af met de intake-wizard (stel de vragen één voor één, niet als formulier):
 1. **Onderwerp/omgeving** van het thema.
-2. **Doelgroep** (groep 1-8) en **drukte-niveau** (extreem druk vs. rustiger).
+2. **Doelgroep** (groep 1-8) en **drukte-niveau** (extreem druk / vol / medium — geldt voor
+   álle platen; locaties zijn even vol als praatplaten). Het **shot** per beeld (close-up /
+   medium / totaalshot / dwarsdoorsnede) vraag je later per beeld in de fase-C mini-wizard.
 3. **Robot-flavor** — *vast huisstijlkenmerk: álles is een robot.* Piraten, bewoners,
    dieren, monsters — allemaal robot-versies (robot-papegaai, robot-aap, robot-piraat).
    Bespreek alleen de thema-*flavor* van de robots (bv. piraten-robots met
@@ -107,6 +113,9 @@ het robot-standaardblok uit stijl-robots.md op.
 
 **Kwaliteitslus per beeld** (primaire engine = Higgsfield CLI, `nano_banana_pro`, 2
 credits/beeld — geen key nodig; zie [reference/api-setup.md](reference/api-setup.md)):
+0. **Mini-wizard**: bevraag Bert eerst (drukte, shot, palet/belichting, bijzonderheden) en
+   bouw de prompt via het gem-skelet + vaste negatief-blok uit
+   [reference/prompt-recept.md](reference/prompt-recept.md).
 1. Schrijf de prompt naar `prompts/{beeld-id}-v{n}.txt`.
 2. `python3 scripts/genereer-afbeelding-higgsfield.py --prompt-file … --out …
    --image-reference stijlanker/anker-01.jpg --manifest .thema-studio/{id}/manifest.json`
