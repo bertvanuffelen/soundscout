@@ -71,6 +71,17 @@ export interface ThemeConfig {
    */
   isPublic: boolean;
 
+  /**
+   * Seizoensvenster (optioneel), formaat 'MM-DD'. Buiten het venster
+   * verdwijnt het thema uit de publieke kiezers (thema-picker, vrije
+   * opdracht); directe toegang via ?theme= blijft altijd werken.
+   * Jaargrens-overlap wordt ondersteund (bv. activeFrom '11-15' met
+   * activeUntil '01-15' = half november t/m half januari).
+   * Beide velden samen zetten, anders geldt het venster niet.
+   */
+  activeFrom?: string;
+  activeUntil?: string;
+
   /** All locations in this theme */
   locations: Location[];
 

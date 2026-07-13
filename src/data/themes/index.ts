@@ -42,11 +42,29 @@ export function getDefaultTheme(): ThemeConfig {
 }
 
 /**
+ * Valt de huidige datum binnen het seizoensvenster van een thema?
+ * Zonder venster (activeFrom/activeUntil ontbreken) is een thema altijd
+ * in seizoen. Ondersteunt jaargrens-overlap ('11-15' t/m '01-15').
+ */
+export function isThemeInSeason(theme: ThemeConfig, date: Date = new Date()): boolean {
+  const { activeFrom, activeUntil } = theme;
+  if (!activeFrom || !activeUntil) return true;
+
+  const mmdd = `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+  if (activeFrom <= activeUntil) {
+    return mmdd >= activeFrom && mmdd <= activeUntil;
+  }
+  // Venster over de jaargrens heen (bv. november → januari)
+  return mmdd >= activeFrom || mmdd <= activeUntil;
+}
+
+/**
  * Alle thema's die een docent aan een vrije-compositie-opdracht kan koppelen.
- * Alleen publieke thema's (verborgen ?theme=-only thema's tellen niet mee).
+ * Alleen publieke thema's die in seizoen zijn (verborgen ?theme=-only
+ * thema's tellen niet mee).
  */
 export function getAssignableThemes(): ThemeConfig[] {
-  return Object.values(themes).filter((theme) => theme.isPublic);
+  return Object.values(themes).filter((theme) => theme.isPublic && isThemeInSeason(theme));
 }
 
 /**
@@ -72,10 +90,12 @@ export function getThemeIdFromUrl(): string {
 }
 
 /**
- * Get all public themes (for future dropdown).
+ * Get all public themes (for pickers). Respecteert het seizoensvenster:
+ * een thema buiten seizoen verschijnt niet in kiezers, maar blijft via
+ * ?theme= gewoon werken.
  */
 export function getPublicThemes(): ThemeConfig[] {
-  return Object.values(themes).filter((t) => t.isPublic);
+  return Object.values(themes).filter((t) => t.isPublic && isThemeInSeason(t));
 }
 
 /**
