@@ -33,6 +33,11 @@ export function useStageSave() {
   const [showSaveWarning, setShowSaveWarning] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [praatplaatSubmitted, setPraatplaatSubmitted] = useState(false);
+  // Automatisch geminte bewaarcode van de klas-inzending (migratie 026) —
+  // hiermee kan de leerling later de docent-feedback terugzien.
+  const [classSaveCode, setClassSaveCode] = useState<string | null>(
+    () => storageService.getClassFeedbackCode()?.saveCode ?? null
+  );
   const [dontShowWarningAgain, setDontShowWarningAgain] = useState(() => {
     return localStorage.getItem('soundscout:hideSaveWarning') === 'true';
   });
@@ -172,11 +177,24 @@ export function useStageSave() {
             assignmentType: classSession.assignmentType,
             praatplaatPositionX: classSession.assignmentType === 'praatplaat' ? praatplaatPosition?.x : undefined,
             praatplaatPositionY: classSession.assignmentType === 'praatplaat' ? praatplaatPosition?.y : undefined,
-          }).then((returnedId) => {
+          }).then(({ id: returnedId, saveCode }) => {
             useAppStore.getState().setSubmissionId(returnedId);
             useAppStore.getState().setSubmissionSynced(true);
             // Update clientIdRef to the server-confirmed ID for subsequent updates
             clientIdRef.current = returnedId;
+            // Bewaarcode opvangen (feedback-terugweg): tonen op het podium en
+            // onthouden zodat dit apparaat later stil op feedback kan checken.
+            if (saveCode) {
+              setClassSaveCode(saveCode);
+              const existing = storageService.getClassFeedbackCode();
+              storageService.setClassFeedbackCode({
+                saveCode,
+                compositionName: compositionName.trim(),
+                lastSeenFeedbackAt: existing?.saveCode === saveCode
+                  ? existing.lastSeenFeedbackAt
+                  : null,
+              });
+            }
             // Mark praatplaat as submitted so StageView shows success modal (#72 bugfix)
             if (classSession.assignmentType === 'praatplaat') {
               setPraatplaatSubmitted(true);
@@ -290,5 +308,6 @@ export function useStageSave() {
     submitFeedback,
     setSubmitFeedback,
     syncFeedback,
+    classSaveCode,
   };
 }

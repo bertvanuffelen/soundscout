@@ -363,6 +363,41 @@ class StorageServiceImpl {
     localStorage.removeItem('soundscout:save-online');
   }
 
+  // --- Klas-inzending bewaarcode (feedback-terugweg, migratie 026) ---
+
+  /**
+   * Bewaar de automatisch geminte bewaarcode van een klas-inzending, zodat
+   * dit apparaat later stil kan checken op docent-feedback.
+   */
+  setClassFeedbackCode(info: {
+    saveCode: string;
+    compositionName: string;
+    /** feedback_at die de leerling al gezien heeft (dedup voor de melding) */
+    lastSeenFeedbackAt?: string | null;
+  }): void {
+    this.set('soundscout:class-feedback-code', info);
+  }
+
+  getClassFeedbackCode(): {
+    saveCode: string;
+    compositionName: string;
+    lastSeenFeedbackAt: string | null;
+  } | null {
+    const raw = this.getRaw('soundscout:class-feedback-code');
+    if (!raw || typeof raw !== 'object') return null;
+    const info = raw as Record<string, unknown>;
+    if (typeof info.saveCode !== 'string') return null;
+    return {
+      saveCode: info.saveCode,
+      compositionName: (info.compositionName as string) || '',
+      lastSeenFeedbackAt: (info.lastSeenFeedbackAt as string) || null,
+    };
+  }
+
+  clearClassFeedbackCode(): void {
+    localStorage.removeItem('soundscout:class-feedback-code');
+  }
+
   // --- Private helpers ---
 
   private getRaw(key: StorageKey): unknown {

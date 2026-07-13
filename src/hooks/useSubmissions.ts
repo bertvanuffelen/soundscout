@@ -6,6 +6,11 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import { getSupabase } from '../lib/supabase';
+import {
+  setSubmissionFeedback as setSubmissionFeedbackRpc,
+  markSubmissionSeen as markSubmissionSeenRpc,
+} from '../lib/submissions';
+import type { FeedbackSticker } from '../lib/submissions';
 import { logger } from '../utils/logger';
 import type { CompositionData } from '../types';
 
@@ -20,6 +25,21 @@ export interface Submission {
   last_updated_at?: string | null;
   assignment_id?: string | null;
   assignment_type?: 'template' | 'praatplaat' | null;
+  // Docent-feedback (migratie 026)
+  feedback_sticker?: FeedbackSticker | null;
+  feedback_level?: number | null;
+  feedback_text?: string | null;
+  feedback_at?: string | null;
+  teacher_seen_at?: string | null;
+}
+
+/** Review-status van een inzending, afgeleid uit de feedback-stempels */
+export type SubmissionReviewStatus = 'new' | 'seen' | 'reviewed';
+
+export function getReviewStatus(s: Submission): SubmissionReviewStatus {
+  if (s.feedback_at) return 'reviewed';
+  if (s.teacher_seen_at) return 'seen';
+  return 'new';
 }
 
 interface UseSubmissionsReturn {
@@ -28,6 +48,11 @@ interface UseSubmissionsReturn {
   error: string | null;
   operationError: string | null;
   deleteSubmission: (id: string) => Promise<void>;
+  setFeedback: (
+    id: string,
+    feedback: { sticker: FeedbackSticker | null; level: number | null; text: string | null }
+  ) => Promise<void>;
+  markSeen: (id: string) => void;
   refetch: () => Promise<void>;
 }
 
@@ -96,6 +121,33 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
     }
   };
 
+  // Feedback zetten (migratie 026) — optimistic update van de lijst
+  const setFeedback = async (
+    id: string,
+    feedback: { sticker: FeedbackSticker | null; level: number | null; text: string | null }
+  ): Promise<void> => {
+    setOperationError(null);
+    await setSubmissionFeedbackRpc(id, feedback);
+    const isCleared = !feedback.sticker && !feedback.level && !feedback.text?.trim();
+    setSubmissions(prev => prev.map(s => s.id === id
+      ? {
+          ...s,
+          feedback_sticker: feedback.sticker,
+          feedback_level: feedback.level,
+          feedback_text: feedback.text?.trim() || null,
+          feedback_at: isCleared ? null : new Date().toISOString(),
+        }
+      : s));
+  };
+
+  // "Gezien"-stempel bij openen (fire-and-forget + optimistic)
+  const markSeen = (id: string): void => {
+    setSubmissions(prev => prev.map(s => s.id === id && !s.teacher_seen_at
+      ? { ...s, teacher_seen_at: new Date().toISOString() }
+      : s));
+    void markSubmissionSeenRpc(id);
+  };
+
   // Initial fetch
   useEffect(() => {
     fetchSubmissions();
@@ -107,6 +159,8 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
     error,
     operationError,
     deleteSubmission,
+    setFeedback,
+    markSeen,
     refetch: fetchSubmissions,
   };
 }

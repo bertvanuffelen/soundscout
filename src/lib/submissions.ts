@@ -127,6 +127,12 @@ interface SubmitOrUpdateParams {
   praatplaatPositionY?: number;
 }
 
+export interface SubmitOrUpdateResult {
+  id: string;
+  /** Automatisch geminte bewaarcode (v2) — null als de v2-RPC nog niet bestaat */
+  saveCode: string | null;
+}
+
 /**
  * Submit or update a composition via klascode (idempotent UPSERT).
  *
@@ -134,11 +140,15 @@ interface SubmitOrUpdateParams {
  * Subsequent calls (same clientId): updates the existing submission.
  * If the response is lost, retrying with the same clientId is safe.
  *
- * @returns The submission UUID
+ * Gebruikt de v2-RPC (migratie 026) die automatisch een bewaarcode mint,
+ * zodat de leerling later docent-feedback kan terugzien. Valt terug op de
+ * oude RPC als v2 nog niet bestaat (migratie nog niet uitgevoerd).
+ *
+ * @returns Submission-UUID + bewaarcode (of null bij v1-fallback)
  */
 export async function submitOrUpdateComposition(
   params: SubmitOrUpdateParams
-): Promise<string> {
+): Promise<SubmitOrUpdateResult> {
   const {
     classCode, studentName, compositionName, compositionData,
     clientId, assignmentId, assignmentType,
@@ -171,25 +181,103 @@ export async function submitOrUpdateComposition(
   if (praatplaatPositionY != null) rpcParams.p_praatplaat_position_y = praatplaatPositionY;
 
   const { data, error } = await withTimeout(
-    supabase.rpc('submit_or_update_composition', rpcParams),
+    supabase.rpc('submit_or_update_composition_v2', rpcParams),
     20_000,
     'errors.networkTimeout'
   );
 
   if (error) {
-    logger.error('Fout bij submit_or_update_composition:', sanitizeError(error));
+    // v2 bestaat nog niet (migratie 026 niet uitgevoerd) → val terug op v1
+    if (error.code === 'PGRST202' || /submit_or_update_composition_v2/.test(error.message ?? '')) {
+      logger.warn('submit_or_update_composition_v2 niet gevonden — fallback naar v1 (geen bewaarcode)');
+      const { data: v1Data, error: v1Error } = await withTimeout(
+        supabase.rpc('submit_or_update_composition', rpcParams),
+        20_000,
+        'errors.networkTimeout'
+      );
+      if (v1Error) {
+        throw translateSubmitError(v1Error);
+      }
+      return { id: v1Data as string, saveCode: null };
+    }
 
+    throw translateSubmitError(error);
+  }
+
+  // v2 geeft één rij terug: { submission_id, save_code }
+  const row = Array.isArray(data) ? data[0] : data;
+  return {
+    id: row?.submission_id as string,
+    saveCode: (row?.save_code as string | undefined) ?? null,
+  };
+}
+
+function translateSubmitError(error: { message: string }): Error {
+  logger.error('Fout bij submit_or_update_composition:', sanitizeError(error));
+
+  if (matchesError(error, ERR_RATE_LIMIT)) {
+    return new Error(i18n.t('submissions.rateLimitError'));
+  }
+  if (matchesError(error, ERR_CLASS_NOT_FOUND) || matchesError(error, ERR_NOT_ACTIVE)) {
+    return new Error(i18n.t('submissions.classCodeNotFound'));
+  }
+  return new Error(i18n.t('submissions.submitError'));
+}
+
+// --- Docent-feedback op inzendingen (migratie 026) ---
+
+export type FeedbackSticker = 'star' | 'rhythm' | 'build' | 'teamwork' | 'surprise' | 'target';
+
+export interface SubmissionFeedback {
+  sticker: FeedbackSticker | null;
+  level: number | null;
+  text: string | null;
+  at: string | null;
+}
+
+/**
+ * Zet (of wis) docent-feedback op een inzending.
+ * Server controleert dat de inzending bij een klas van de docent hoort.
+ */
+export async function setSubmissionFeedback(
+  submissionId: string,
+  feedback: { sticker: FeedbackSticker | null; level: number | null; text: string | null }
+): Promise<void> {
+  const supabase = await getSupabase();
+  const { error } = await withTimeout(
+    supabase.rpc('set_submission_feedback', {
+      p_submission_id: submissionId,
+      p_sticker: feedback.sticker,
+      p_level: feedback.level,
+      p_text: feedback.text,
+    }),
+    15_000,
+    'errors.networkTimeout'
+  );
+
+  if (error) {
+    logger.error('Fout bij opslaan feedback:', sanitizeError(error));
     if (matchesError(error, ERR_RATE_LIMIT)) {
       throw new Error(i18n.t('submissions.rateLimitError'));
     }
-    if (matchesError(error, ERR_CLASS_NOT_FOUND) || matchesError(error, ERR_NOT_ACTIVE)) {
-      throw new Error(i18n.t('submissions.classCodeNotFound'));
-    }
-
-    throw new Error(i18n.t('submissions.submitError'));
+    throw new Error(i18n.t('teacher.feedback.saveError'));
   }
+}
 
-  return data as string;
+/**
+ * Markeer een inzending als gezien door de docent (eerste keer openen).
+ * Fire-and-forget: fouten worden gelogd maar breken de flow niet.
+ */
+export async function markSubmissionSeen(submissionId: string): Promise<void> {
+  try {
+    const supabase = await getSupabase();
+    const { error } = await supabase.rpc('mark_submission_seen', {
+      p_submission_id: submissionId,
+    });
+    if (error) logger.warn('mark_submission_seen mislukt:', sanitizeError(error));
+  } catch (err) {
+    logger.warn('mark_submission_seen mislukt:', sanitizeError(err));
+  }
 }
 
 // --- Publieke luisterlinks ---
@@ -307,6 +395,12 @@ export interface SavedOnlineComposition {
   composition_data: CompositionData;
   last_updated_at: string;
   student_email: string | null;
+  // Docent-feedback (migratie 026) — null zolang er geen feedback is,
+  // undefined als de migratie nog niet is uitgevoerd (oude RPC-shape)
+  feedback_sticker?: FeedbackSticker | null;
+  feedback_level?: number | null;
+  feedback_text?: string | null;
+  feedback_at?: string | null;
 }
 
 /**
