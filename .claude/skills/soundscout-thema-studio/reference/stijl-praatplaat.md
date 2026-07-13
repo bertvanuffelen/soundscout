@@ -1,5 +1,10 @@
 # Stijlcontract: praatplaat
 
+> **HUISSTIJLREGEL (geldt voor álle beeldtypes): alles is een robot.** Piraten, bewoners,
+> dieren, monsters — uitsluitend robot-versies (robot-papegaai, robot-aap, robot-piraat).
+> De thema-flavor zit in hóe de robots eruitzien (roest, houten-been-bouten, zeewier),
+> niet in óf ze robot zijn. Nooit fotorealistische mensen of echte dieren.
+
 Referentiebeelden (bekijk ze met Read vóór je de eerste prompt schrijft; gebruik ze als
 `--style-ref` bij thema's in de basis-stijl):
 - `public/images/praatplaten/koningsdag.jpg` — straatscène, hoog standpunt, oranje domineert
@@ -31,8 +36,8 @@ variëren in shot: straatscène / dwarsdoorsnede / overzicht — kies per plaat 
 
 ## Negatieve prompt (altijd, letterlijk opnemen)
 
-- Geen fotorealistische mensen of echte dieren — uitsluitend de personage-conventie van
-  het thema (robots / robot-dieren / thema-eigen figuren).
+- **Álles is een robot** (huisstijlregel): piraten, bewoners én dieren zijn robot-versies
+  — robot-papegaai, robot-aap, robot-piraat. Geen mensen, geen echte dieren.
 - **Geen tekst, tekstballonnen, letters, cijfers, labels, logo's, borden met opschrift,
   watermerken.** (De bestaande platen bevatten wartaal-tekst zoals "SUFARD MARKT
   DRAKMFARKES" — dit is precies wat we uitbannen. Nieuwe platen wijken hier bewust en

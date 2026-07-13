@@ -23,7 +23,7 @@ dit is een zoek-en-verzamel-scherm, geen wimmelbeeld. Vriendelijk, warm, uitnodi
 
 1. "Wide horizontal illustration" + beschrijving van de locatie en sfeer.
 2. De 6-8 geluidsbronnen expliciet opsommen (personage/object + hoorbare actie).
-3. Personage-conventie van het thema.
+3. Alle figuren en dieren als robot-versie (huisstijlregel — nooit mensen/echte dieren).
 4. Stijl: zachte cartoonstijl, ronde vormen, pastelpalet + themakleur-accenten,
    vriendelijke gloed-accenten, kindvriendelijk, 4k.
 

@@ -13,7 +13,7 @@ met één regel toelichting; log in `manifest.json`. Eén ✗ = beeld gaat niet 
 | A2 | **Geen tekst**: geen letters, cijfers, tekstballonnen, logo's, watermerken (uitzondering: de expliciet opgegeven labels op de plattegrond — dan NL-spelling letter voor letter checken) |
 | A3 | Stijlmatch met het stijlanker: lijnvoering, detaildichtheid, kleurbehandeling |
 | A4 | Palet conform themaplan (dominante themakleur aanwezig, niet vals) |
-| A5 | Personage-conventie van het thema gevolgd; géén fotorealistische mensen/dieren |
+| A5 | **Álles is een robot**: piraten/bewoners/dieren/monsters zijn robot-versies; géén mensen of echte dieren |
 | A6 | Kindvriendelijk (geen enge/gewelddadige elementen) |
 | A7 | Geen AI-artefacten: extra ledematen, half gerenderde objecten, onmogelijke aansluitingen, smeltende vormen |
 

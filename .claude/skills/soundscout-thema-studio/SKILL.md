@@ -3,7 +3,7 @@ name: soundscout-thema-studio
 description: >-
   Complete AI-ondersteunde thema-creatie-pipeline voor SoundScout: brainstorm een nieuw
   thema, werk het inhoudelijk uit (locaties, samples, praatplaten, storyboards), genereer
-  de afbeeldingen via de Gemini API (Nano Banana; Higgsfield als tweede optie) met
+  de afbeeldingen via de Higgsfield CLI (Nano Banana Pro; Gemini API als fallback) met
   stijlbewaking, zoek of genereer de geluiden (Freesound / ElevenLabs / checklist), en
   lever een compleet themapakket dat 1-op-1 in de codebase past. Gebruik deze skill
   wanneer Bert een nieuw thema wil maken of brainstormen ("nieuw thema", "themapakket",
@@ -45,8 +45,11 @@ locatie-ideeën en 1-2 praatplaat-concepten.
 Sluit af met de intake-wizard (stel de vragen één voor één, niet als formulier):
 1. **Onderwerp/omgeving** van het thema.
 2. **Doelgroep** (groep 1-8) en **drukte-niveau** (extreem druk vs. rustiger).
-3. **Personage-conventie** — robots (zoals thema `basis`), of thema-eigen (dieren,
-   sneeuwpoppen, ...)? Nooit fotorealistische mensen. Dit is een keuze pér thema.
+3. **Robot-flavor** — *vast huisstijlkenmerk: álles is een robot.* Piraten, bewoners,
+   dieren, monsters — allemaal robot-versies (robot-papegaai, robot-aap, robot-piraat).
+   Bespreek alleen de thema-*flavor* van de robots (bv. piraten-robots met
+   houten-been-bouten, roest, zeewier), nooit óf het robots zijn. Nooit mensen of echte
+   dieren.
 4. **Kleurenpalet + belichting** — doe een concreet hex-voorstel voor
    `colors.primary/accent/mapBackground`.
 5. **Omvang**: aantal locaties (advies 4-5), praatplaten (1-2), storyboards (1, met 3-5

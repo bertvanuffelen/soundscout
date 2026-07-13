@@ -34,6 +34,7 @@ scène uit een kort verhaal.
 
 ## Negatieve prompt (altijd)
 
-Geen fotorealistische mensen/dieren; **geen tekst/letters/cijfers** (het bestaande
+De held én alle figuren/dieren zijn robot-versies (huisstijlregel — nooit mensen/echte
+dieren); **geen tekst/letters/cijfers** (het bestaande
 verspringen-storyboard heeft wartaal op tribuneborden — dat bannen we uit); geen
 letterbox/kaders.

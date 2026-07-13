@@ -39,5 +39,5 @@ leesbare tekst renderen:
 
 ## Negatieve prompt
 
-Geen fotorealistische mensen/dieren; geen tekst behálve de opgegeven labels; geen
-letterbox/kaders.
+Eventuele figuren/dieren zijn robot-versies (huisstijlregel — nooit mensen/echte dieren);
+geen tekst behálve de opgegeven labels; geen letterbox/kaders.
