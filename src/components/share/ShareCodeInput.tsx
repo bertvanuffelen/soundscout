@@ -84,18 +84,21 @@ export function ShareCodeInput() {
                 code,
                 newSecret,
               );
-              // Docent-feedback meenemen naar de studio (migratie 026):
-              // de leerling ziet daar een banner met de reactie.
-              if (saved.feedback_at) {
+              // Docent-feedback (migratie 026) + klasgenoot-complimenten
+              // (migratie 027) meenemen naar de studio: banner met de reactie.
+              const { getPeerCompliments } = await import('../../lib/peerFeedback');
+              const compliments = await getPeerCompliments(code);
+              if (saved.feedback_at || compliments.length > 0) {
                 useAppStore.getState().setReceivedFeedback({
                   sticker: saved.feedback_sticker ?? null,
                   level: saved.feedback_level ?? null,
                   text: saved.feedback_text ?? null,
-                  at: saved.feedback_at,
+                  at: saved.feedback_at ?? null,
+                  compliments,
                 });
                 // Dedup voor de "je hebt een reactie"-melding op het startscherm
                 const info = storageService.getClassFeedbackCode();
-                if (info?.saveCode === code) {
+                if (info?.saveCode === code && saved.feedback_at) {
                   storageService.setClassFeedbackCode({
                     ...info,
                     lastSeenFeedbackAt: saved.feedback_at,

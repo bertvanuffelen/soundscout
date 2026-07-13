@@ -764,8 +764,26 @@
     "updatePasswordFailed": "Kon het wachtwoord niet wijzigen. Probeer het opnieuw.",
     "resendConfirmationFailed": "Kon de bevestigingsmail niet versturen. Probeer het opnieuw."
   },
+  "peerReview": {
+    "title": "Luister naar klasgenoten",
+    "openButton": "Luister naar klasgenoten",
+    "loading": "Composities van klasgenoten ophalen...",
+    "emptyTitle": "Nog geen composities om te beluisteren",
+    "emptyHint": "Kom straks terug — zodra klasgenoten hebben ingeleverd kun je luisteren en complimenten geven.",
+    "loadError": "Kon geen composities ophalen. Probeer het later opnieuw.",
+    "submitError": "Kon je compliment niet versturen.",
+    "progress": "Compositie {{current}} van {{total}}",
+    "anonymous": "Compositie van een klasgenoot",
+    "anonymousHint": "Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt.",
+    "chipsLabel": "Kies 1 tot 3 complimenten:",
+    "sendAndNext": "Versturen en volgende",
+    "sendAndFinish": "Versturen en afronden",
+    "doneTitle": "Je hebt alle composities beluisterd!",
+    "doneHint": "Je complimenten zijn anoniem verstuurd. Zo help je klasgenoten met hun muziek."
+  },
   "studentFeedback": {
     "bannerTitle": "Feedback van je docent:",
+    "complimentsTitle": "Complimenten van klasgenoten:",
     "noticeButton": "Je hebt een reactie op \"{{name}}\"!",
     "modalTitle": "Feedback van je docent",
     "modalHint": "Verder werken aan je compositie? Voer je code {{code}} in bij \"Ik heb een code\".",
@@ -1090,6 +1108,22 @@
       "tabWip": "In bewerking ({{count}})",
       "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd.",
       "newCount": "{{count}} nieuw"
+    },
+    "peerReview": {
+      "title": "Klasgenoten luisteren",
+      "hint": "Leerlingen die ingeleverd hebben, beluisteren 3 anonieme klasgenoot-composities en geven complimenten.",
+      "cardLabel": "Feedbackkaart",
+      "ownCard": "eigen kaart",
+      "newCard": "Nieuwe kaart",
+      "deleteCard": "Kaart verwijderen",
+      "cardTitlePlaceholder": "Titel van de kaart (bv. Ritme & vorm)",
+      "chipsPlaceholder": "Eén compliment per regel (2-8), bv.:\nLekker ritme!\nMooie opbouw!",
+      "saveCard": "Kaart opslaan en gebruiken",
+      "cardValidation": "Geef de kaart een titel en 2 tot 8 complimenten (één per regel).",
+      "loadCardsError": "Kon feedbackkaarten niet laden.",
+      "saveCardError": "Kon de feedbackkaart niet opslaan.",
+      "deleteCardError": "Kon de feedbackkaart niet verwijderen.",
+      "settingError": "Kon de instelling niet opslaan. Probeer het opnieuw."
     },
     "feedback": {
       "stickerLabel": "Kies een sticker",

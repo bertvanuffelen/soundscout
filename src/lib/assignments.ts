@@ -38,6 +38,14 @@ export interface AssignmentStoryboard {
   themeId: string;
 }
 
+/** Peer-review-instelling van een opdracht (migratie 027) */
+export interface PeerReviewConfig {
+  /** Titel van de gekozen feedbackkaart */
+  cardTitle: string;
+  /** Complimenten-chips die leerlingen mogen geven */
+  chips: string[];
+}
+
 /** Active assignment info returned by get_active_assignment RPC */
 export interface ActiveAssignment {
   type: AssignmentType;
@@ -45,6 +53,8 @@ export interface ActiveAssignment {
   className: string;
   /** Vorm-onafhankelijke opdrachtkaart (null → toon per-type default) */
   card: OpdrachtkaartContent | null;
+  /** Peer-review ("klasgenoten luisteren") — null als uitgeschakeld */
+  peerReview: PeerReviewConfig | null;
   // Template fields (present when type = 'template')
   template?: Template;
   // Praatplaat fields (present when type = 'praatplaat')
@@ -188,16 +198,25 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
 
     if (!data || data.length === 0) return null;
 
-    // Nieuwe type-stabiele RPC-vorm: { assignment_type, payload, card, class_id, class_name }
+    // Nieuwe type-stabiele RPC-vorm: { assignment_type, payload, card, class_id, class_name, peer_review }
     const row = data[0] as {
       assignment_type: AssignmentType;
       payload: Record<string, unknown> | null;
       card: unknown;
       class_id: string;
       class_name: string;
+      peer_review?: { enabled?: boolean; card_title?: string; chips?: unknown } | null;
     };
     const payload = row.payload ?? {};
     const card = parseCard(row.card);
+    // Peer-review (migratie 027) — kolom ontbreekt op oudere databases
+    const peerReview: PeerReviewConfig | null =
+      row.peer_review?.enabled && Array.isArray(row.peer_review.chips)
+        ? {
+            cardTitle: String(row.peer_review.card_title ?? ''),
+            chips: (row.peer_review.chips as unknown[]).map(String).filter(Boolean),
+          }
+        : null;
 
     if (row.assignment_type === 'template') {
       // Behoud runtime Zod-validatie op de template-compositie (sharpening #1)
@@ -212,6 +231,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         classId: row.class_id,
         className: row.class_name,
         card,
+        peerReview,
         template: {
           id: String(payload.template_id ?? ''),
           name: (payload.name as string) || '',
@@ -231,6 +251,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         classId: row.class_id,
         className: row.class_name,
         card,
+        peerReview,
         praatplaat: {
           id: String(payload.praatplaat_id ?? ''),
           name: (payload.name as string) || '',
@@ -249,6 +270,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         classId: row.class_id,
         className: row.class_name,
         card,
+        peerReview,
         storyboard,
       };
     }
@@ -261,6 +283,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         classId: row.class_id,
         className: row.class_name,
         card,
+        peerReview,
         free: { themeId, themeName: themeDisplayName(themeId) },
       };
     }

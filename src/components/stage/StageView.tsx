@@ -16,6 +16,7 @@ import {
   ArrowLeft,
   Ellipsis,
   MapPin,
+  Headphones,
 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
@@ -32,6 +33,7 @@ import { ShareWithTeacherModal, ShareLinkModal, SaveOnlineModal } from '../share
 import { storageService } from '../../services/StorageService';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { StageActionsModal } from './StageActionsModal';
+import { PeerReviewModal } from './PeerReviewModal';
 import { StagePlayback, StageAudience } from './StagePlayback';
 import { StorytellingDisplay } from './StorytellingDisplay';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
@@ -53,6 +55,13 @@ export function StageView() {
   const { isTeacher } = useAuth();
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showActionsModal, setShowActionsModal] = useState(false);
+
+  // Peer-review "Luister naar klasgenoten" (migratie 027): beschikbaar zodra
+  // de eigen inzending gesynchroniseerd is en de docent het aan heeft staan
+  const submissionId = useAppStore((s) => s.submissionId);
+  const submissionSynced = useAppStore((s) => s.submissionSynced);
+  const [showPeerReview, setShowPeerReview] = useState(false);
+  const peerReviewAvailable = !!classSession?.peerReview?.chips?.length && !!submissionId && submissionSynced;
 
   // Audio export hook
   const { exportState, progress, error, exportMp3 } = useAudioExport();
@@ -264,6 +273,19 @@ export function StageView() {
               {t('stage.actionsButton')}
             </Button>
 
+            {/* Peer-review: luister naar klasgenoten (migratie 027) */}
+            {peerReviewAvailable && (
+              <Button
+                variant="secondary"
+                size="lg"
+                onClick={() => setShowPeerReview(true)}
+                className="w-full"
+              >
+                <Headphones size={20} className="mr-2" />
+                {t('peerReview.openButton')}
+              </Button>
+            )}
+
             {/* "Nieuwe plek" button — visible after praatplaat submission */}
             {praatplaatSubmitted && activePraatplaat && (
               <Button
@@ -469,6 +491,17 @@ export function StageView() {
           onShareTeacher={() => setShowShareModal(true)}
           onSaveTemplate={() => setShowTemplateModal(true)}
           onClose={() => setShowActionsModal(false)}
+        />
+      )}
+
+      {/* Peer-review: luister naar klasgenoten (migratie 027) */}
+      {peerReviewAvailable && classSession?.peerReview && submissionId && (
+        <PeerReviewModal
+          isOpen={showPeerReview}
+          onClose={() => setShowPeerReview(false)}
+          classCode={classSession.classCode}
+          ownSubmissionId={submissionId}
+          chips={classSession.peerReview.chips}
         />
       )}
 

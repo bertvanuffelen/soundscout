@@ -764,8 +764,26 @@
     "updatePasswordFailed": "Could not change the password. Please try again.",
     "resendConfirmationFailed": "Could not send the confirmation email. Please try again."
   },
+  "peerReview": {
+    "title": "Listen to classmates",
+    "openButton": "Listen to classmates",
+    "loading": "Loading classmates' compositions...",
+    "emptyTitle": "No compositions to listen to yet",
+    "emptyHint": "Come back later — once classmates have submitted, you can listen and give compliments.",
+    "loadError": "Could not load compositions. Please try again later.",
+    "submitError": "Could not send your compliment.",
+    "progress": "Composition {{current}} of {{total}}",
+    "anonymous": "A classmate's composition",
+    "anonymousHint": "You don't know whose this is — listen carefully and choose what you think of it.",
+    "chipsLabel": "Choose 1 to 3 compliments:",
+    "sendAndNext": "Send and next",
+    "sendAndFinish": "Send and finish",
+    "doneTitle": "You listened to all compositions!",
+    "doneHint": "Your compliments were sent anonymously. This helps your classmates with their music."
+  },
   "studentFeedback": {
     "bannerTitle": "Feedback from your teacher:",
+    "complimentsTitle": "Compliments from classmates:",
     "noticeButton": "You have a reaction to \"{{name}}\"!",
     "modalTitle": "Feedback from your teacher",
     "modalHint": "Want to keep working on your composition? Enter your code {{code}} at \"I have a code\".",
@@ -1090,6 +1108,22 @@
       "tabWip": "In progress ({{count}})",
       "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet.",
       "newCount": "{{count}} new"
+    },
+    "peerReview": {
+      "title": "Classmates listen",
+      "hint": "Students who submitted listen to 3 anonymous classmates' compositions and give compliments.",
+      "cardLabel": "Feedback card",
+      "ownCard": "own card",
+      "newCard": "New card",
+      "deleteCard": "Delete card",
+      "cardTitlePlaceholder": "Card title (e.g. Rhythm & form)",
+      "chipsPlaceholder": "One compliment per line (2-8), e.g.:\nGreat rhythm!\nNice build-up!",
+      "saveCard": "Save and use card",
+      "cardValidation": "Give the card a title and 2 to 8 compliments (one per line).",
+      "loadCardsError": "Could not load feedback cards.",
+      "saveCardError": "Could not save the feedback card.",
+      "deleteCardError": "Could not delete the feedback card.",
+      "settingError": "Could not save the setting. Please try again."
     },
     "feedback": {
       "stickerLabel": "Choose a sticker",

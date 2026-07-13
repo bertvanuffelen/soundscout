@@ -14,6 +14,7 @@ import { useClassAssignment } from '../../hooks/useClassAssignment';
 import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
+import { PeerReviewSettings } from './PeerReviewSettings';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { AssignmentTypeCards } from './AssignmentTypeCards';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
@@ -455,6 +456,9 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     {t('assignments.deactivate')}
                   </Button>
                 </div>
+
+                {/* Klasgenoten luisteren (peer-feedback, migratie 027) */}
+                <PeerReviewSettings assignmentId={activeAssignment.id} />
               </div>
             )}
 

@@ -28,24 +28,35 @@ export function FeedbackBanner() {
         {emoji ?? '💌'}
       </span>
       <div className="flex-1 min-w-0">
-        <p className="font-bold text-text-main text-sm sm:text-base">
-          {t('studentFeedback.bannerTitle')}
-          {feedback.sticker && (
-            <span className="ml-1.5 font-extrabold">
-              {t(`teacher.feedback.stickers.${feedback.sticker}`)}
-            </span>
-          )}
-          {feedback.level != null && (
-            <span className="inline-flex items-center ml-2 align-text-bottom">
-              {Array.from({ length: feedback.level }, (_, i) => (
-                <Star key={i} className="w-4 h-4 text-accent-500 fill-accent-500" />
-              ))}
-            </span>
-          )}
-        </p>
+        {(feedback.sticker || feedback.level != null || feedback.text) && (
+          <p className="font-bold text-text-main text-sm sm:text-base">
+            {t('studentFeedback.bannerTitle')}
+            {feedback.sticker && (
+              <span className="ml-1.5 font-extrabold">
+                {t(`teacher.feedback.stickers.${feedback.sticker}`)}
+              </span>
+            )}
+            {feedback.level != null && (
+              <span className="inline-flex items-center ml-2 align-text-bottom">
+                {Array.from({ length: feedback.level }, (_, i) => (
+                  <Star key={i} className="w-4 h-4 text-accent-500 fill-accent-500" />
+                ))}
+              </span>
+            )}
+          </p>
+        )}
         {feedback.text && (
           <p className="text-text-muted text-sm truncate sm:whitespace-normal">
             &ldquo;{feedback.text}&rdquo;
+          </p>
+        )}
+        {/* Klasgenoot-complimenten (anoniem geaggregeerd, migratie 027) */}
+        {feedback.compliments && feedback.compliments.length > 0 && (
+          <p className="text-text-muted text-sm truncate sm:whitespace-normal">
+            <span className="font-semibold text-text-main">{t('studentFeedback.complimentsTitle')}</span>{' '}
+            {feedback.compliments
+              .map((c) => (c.count > 1 ? `${c.chip} ×${c.count}` : c.chip))
+              .join(' · ')}
           </p>
         )}
       </div>
