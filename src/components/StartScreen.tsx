@@ -2,7 +2,7 @@
  * StartScreen - Welcome screen with game start and tutorial
  */
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, Shield, KeyRound, Sparkles, GraduationCap } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
@@ -13,8 +13,13 @@ import {
   initializeCompositionFromStoryboard,
 } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
-import { FeedbackModal } from './feedback';
-import { NewCompositionWizard } from './start/NewCompositionWizard';
+// Lazy: FeedbackModal sleept @emailjs/browser mee — pas laden bij openen.
+const FeedbackModal = lazy(() =>
+  import('./feedback').then((m) => ({ default: m.FeedbackModal }))
+);
+// Lazy: de wizard sleept ComposePreview (~1000 regels animatie) mee — pas
+// laden wanneer de leerling echt op "Nieuwe compositie" tikt.
+const NewCompositionWizard = lazy(() => import('./start/NewCompositionWizard'));
 import { ShareCodeModal } from './share';
 import { PrivacyModal } from './PrivacyModal';
 import type { Storyboard } from '../types';
@@ -286,11 +291,15 @@ export function StartScreen() {
       </Modal>
 
       {/* Feedback modal */}
-      <FeedbackModal
-        isOpen={showFeedback}
-        onClose={() => setShowFeedback(false)}
-        mode="feedback"
-      />
+      {showFeedback && (
+        <Suspense fallback={null}>
+          <FeedbackModal
+            isOpen={showFeedback}
+            onClose={() => setShowFeedback(false)}
+            mode="feedback"
+          />
+        </Suspense>
+      )}
 
       {/* Waarschuwing: actieve compositie wordt gewist */}
       <Modal
@@ -323,13 +332,15 @@ export function StartScreen() {
       {/* Nieuwe compositie — begeleide wizard (modus → bijpassende keuze).
           Alleen gemount wanneer open, zodat de stap-state elke keer vers is. */}
       {showComposeWizard && (
-        <NewCompositionWizard
-          onClose={() => setShowComposeWizard(false)}
-          onStartFree={handleSelectTheme}
-          onStartStoryboard={handleSelectStoryboard}
-          onHaveCode={() => { setShowComposeWizard(false); setShowCodeModal(true); }}
-          isLoading={isLoading}
-        />
+        <Suspense fallback={null}>
+          <NewCompositionWizard
+            onClose={() => setShowComposeWizard(false)}
+            onStartFree={handleSelectTheme}
+            onStartStoryboard={handleSelectStoryboard}
+            onHaveCode={() => { setShowComposeWizard(false); setShowCodeModal(true); }}
+            isLoading={isLoading}
+          />
+        </Suspense>
       )}
 
       {/* Code modal — "Ik heb een code" */}

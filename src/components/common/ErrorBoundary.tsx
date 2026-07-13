@@ -5,10 +5,14 @@
  * Includes option to send error report via FeedbackModal.
  */
 
-import { Component, type ReactNode } from 'react';
+import { Component, lazy, Suspense, type ReactNode } from 'react';
 import i18n from '../../i18n';
 import { logger } from '../../utils/logger';
-import { FeedbackModal } from '../feedback';
+
+// Lazy: FeedbackModal sleept @emailjs/browser mee — alleen nodig bij een crash.
+const FeedbackModal = lazy(() =>
+  import('../feedback').then((m) => ({ default: m.FeedbackModal }))
+);
 
 interface ErrorBoundaryProps {
   children: ReactNode;
@@ -116,16 +120,20 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
           </div>
 
           {/* Feedback Modal */}
-          <FeedbackModal
-            isOpen={this.state.showFeedback}
-            onClose={this.handleCloseFeedback}
-            mode="error"
-            errorData={{
-              message: this.state.error?.message || 'Unknown error',
-              stack: this.state.error?.stack,
-              componentStack: this.state.componentStack || undefined,
-            }}
-          />
+          {this.state.showFeedback && (
+            <Suspense fallback={null}>
+              <FeedbackModal
+                isOpen={this.state.showFeedback}
+                onClose={this.handleCloseFeedback}
+                mode="error"
+                errorData={{
+                  message: this.state.error?.message || 'Unknown error',
+                  stack: this.state.error?.stack,
+                  componentStack: this.state.componentStack || undefined,
+                }}
+              />
+            </Suspense>
+          )}
         </div>
       );
     }

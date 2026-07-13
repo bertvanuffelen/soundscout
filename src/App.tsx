@@ -12,7 +12,12 @@ import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
 import { StartScreen } from './components/StartScreen';
 import { MapView } from './components/map/MapView';
 import { LocationScene } from './components/location/LocationScene';
-import { LocationEditor } from './pages/LocationEditor';
+
+// Dev-only authoring tool — lazy zodat de editor (en zijn componenten)
+// niet in de productie-main-bundle belanden.
+const LocationEditor = lazy(() =>
+  import('./pages/LocationEditor').then((m) => ({ default: m.LocationEditor }))
+);
 
 // Lazy-loaded screen components for code splitting
 const StudioView = lazy(() => import('./components/studio/StudioView'));
@@ -366,7 +371,9 @@ function App() {
   if (isEditorRoute() && import.meta.env.DEV) {
     return (
       <ErrorBoundary>
-        <LocationEditor />
+        <Suspense fallback={null}>
+          <LocationEditor />
+        </Suspense>
       </ErrorBoundary>
     );
   }
