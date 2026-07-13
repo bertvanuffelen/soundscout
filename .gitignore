@@ -33,3 +33,7 @@ coverage/
 
 # Claude Code worktrees (agent-artefacten)
 .claude/worktrees/
+
+# Thema-studio werkmappen (assets-in-wording, zie .claude/skills/soundscout-thema-studio)
+.thema-studio/
+__pycache__/
