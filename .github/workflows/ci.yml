@@ -1,0 +1,38 @@
+# CI voor SoundScout — draait op elke push en PR.
+# Blokkerend: TypeScript-check, tests, productie-build.
+# Niet-blokkerend: ESLint (30 bestaande errors door de nieuwe strenge
+# react-hooks v6-regels; schoonmaken staat op de backlog — tot die tijd
+# rapporteert deze stap wel, maar laat hij de build niet falen).
+name: CI
+
+on:
+  push:
+    branches: ['**']
+  pull_request:
+
+jobs:
+  ci:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Installeer dependencies
+        run: npm ci
+
+      - name: TypeScript-check
+        run: npx tsc -b --noEmit
+
+      - name: Tests
+        run: npm run test:run
+
+      - name: Productie-build
+        run: npm run build
+
+      - name: Lint (niet-blokkerend)
+        run: npm run lint
+        continue-on-error: true
