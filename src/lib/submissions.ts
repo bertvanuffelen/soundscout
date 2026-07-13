@@ -401,6 +401,9 @@ export interface SavedOnlineComposition {
   feedback_level?: number | null;
   feedback_text?: string | null;
   feedback_at?: string | null;
+  /** Klascode van de klas waarbij deze inzending hoort (migratie 028) —
+   *  hiermee kan de bewaarcode de klas-sessie herstellen */
+  class_code?: string | null;
 }
 
 /**

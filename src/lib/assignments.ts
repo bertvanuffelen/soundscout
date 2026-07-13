@@ -38,12 +38,14 @@ export interface AssignmentStoryboard {
   themeId: string;
 }
 
-/** Peer-review-instelling van een opdracht (migratie 027) */
+/** Peer-review-instelling van een opdracht (migratie 027/028) */
 export interface PeerReviewConfig {
   /** Titel van de gekozen feedbackkaart */
   cardTitle: string;
-  /** Complimenten-chips die leerlingen mogen geven */
+  /** Criteria van de feedbackkaart (leerlingen geven 1-3 sterren per criterium) */
   chips: string[];
+  /** Automatische sluittijd van de feedbackronde (null = geen timer) */
+  closesAt?: string | null;
 }
 
 /** Active assignment info returned by get_active_assignment RPC */
@@ -205,16 +207,17 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
       card: unknown;
       class_id: string;
       class_name: string;
-      peer_review?: { enabled?: boolean; card_title?: string; chips?: unknown } | null;
+      peer_review?: { enabled?: boolean; card_title?: string; chips?: unknown; closes_at?: string | null } | null;
     };
     const payload = row.payload ?? {};
     const card = parseCard(row.card);
-    // Peer-review (migratie 027) — kolom ontbreekt op oudere databases
+    // Peer-review (migratie 027/028) — kolom ontbreekt op oudere databases
     const peerReview: PeerReviewConfig | null =
       row.peer_review?.enabled && Array.isArray(row.peer_review.chips)
         ? {
             cardTitle: String(row.peer_review.card_title ?? ''),
             chips: (row.peer_review.chips as unknown[]).map(String).filter(Boolean),
+            closesAt: row.peer_review.closes_at ?? null,
           }
         : null;
 

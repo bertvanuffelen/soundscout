@@ -7,7 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Headphones, Plus, Trash2, Loader2 } from 'lucide-react';
+import { Headphones, Plus, Trash2, Loader2, Clock } from 'lucide-react';
 import { getSupabase } from '../../lib/supabase';
 import {
   listFeedbackCards, createFeedbackCard, deleteFeedbackCard,
@@ -27,6 +27,10 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
   const [enabled, setEnabled] = useState(false);
   const [cardId, setCardId] = useState<string | null>(null);
   const [cards, setCards] = useState<FeedbackCard[]>([]);
+  // Timer (migratie 028): gekozen duur bij aanzetten + actuele sluittijd
+  const [timerMinutes, setTimerMinutes] = useState<number>(0); // 0 = geen timer
+  const [closesAt, setClosesAt] = useState<string | null>(null);
+  const [, forceTick] = useState(0);
   const [error, setError] = useState<string | null>(null);
   const [showNewCard, setShowNewCard] = useState(false);
   const [newTitle, setNewTitle] = useState('');
@@ -39,23 +43,38 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
     (async () => {
       try {
         const supabase = await getSupabase();
+        // closes_at apart proberen: kolom bestaat pas sinds migratie 028
         const [{ data: row, error: rowError }, allCards] = await Promise.all([
           supabase
             .from('class_assignments')
-            .select('peer_review_enabled, feedback_card_id')
+            .select('peer_review_enabled, feedback_card_id, peer_review_closes_at')
             .eq('id', assignmentId)
             .single(),
           listFeedbackCards(),
         ]);
         if (cancelled) return;
         if (rowError) {
-          // Kolommen bestaan nog niet → migratie 027 niet uitgevoerd; verberg stil
-          logger.warn('PeerReviewSettings: instelling laden mislukt', rowError);
-          setAvailable(false);
+          // 028-kolom ontbreekt? → zonder timer opnieuw (027-database)
+          const { data: legacyRow, error: legacyError } = await supabase
+            .from('class_assignments')
+            .select('peer_review_enabled, feedback_card_id')
+            .eq('id', assignmentId)
+            .single();
+          if (cancelled) return;
+          if (legacyError) {
+            // Kolommen bestaan niet → migratie 027 niet uitgevoerd; verberg stil
+            logger.warn('PeerReviewSettings: instelling laden mislukt', legacyError);
+            setAvailable(false);
+            return;
+          }
+          setEnabled(!!legacyRow?.peer_review_enabled);
+          setCardId((legacyRow?.feedback_card_id as string) ?? null);
+          setCards(allCards);
           return;
         }
         setEnabled(!!row?.peer_review_enabled);
         setCardId((row?.feedback_card_id as string) ?? null);
+        setClosesAt((row?.peer_review_closes_at as string) ?? null);
         setCards(allCards);
       } catch (err) {
         logger.warn('PeerReviewSettings: laden mislukt', err);
@@ -67,13 +86,20 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
     return () => { cancelled = true; };
   }, [assignmentId]);
 
-  const persist = async (nextEnabled: boolean, nextCardId: string | null) => {
+  const persist = async (
+    nextEnabled: boolean,
+    nextCardId: string | null,
+    minutes: number | null = timerMinutes > 0 ? timerMinutes : null,
+  ) => {
     setError(null);
-    const prev = { enabled, cardId };
+    const prev = { enabled, cardId, closesAt };
     setEnabled(nextEnabled);
     setCardId(nextCardId);
+    setClosesAt(
+      nextEnabled && minutes ? new Date(Date.now() + minutes * 60_000).toISOString() : null
+    );
     try {
-      await setAssignmentPeerReview(assignmentId, nextEnabled, nextCardId);
+      await setAssignmentPeerReview(assignmentId, nextEnabled, nextCardId, nextEnabled ? minutes : null);
       // Server valt bij aanzetten zonder kaart terug op de standaardkaart
       if (nextEnabled && !nextCardId) {
         const standard = cards.find((c) => c.builtinKey === 'standaard');
@@ -82,9 +108,22 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
     } catch (err) {
       setEnabled(prev.enabled);
       setCardId(prev.cardId);
+      setClosesAt(prev.closesAt);
       setError(err instanceof Error ? err.message : t('teacher.peerReview.settingError'));
     }
   };
+
+  // Aftelklok: elke 30 s opnieuw renderen zolang er een sluittijd loopt
+  useEffect(() => {
+    if (!closesAt) return;
+    const id = setInterval(() => forceTick((n) => n + 1), 30_000);
+    return () => clearInterval(id);
+  }, [closesAt]);
+
+  const minutesLeft = closesAt
+    ? Math.max(0, Math.ceil((new Date(closesAt).getTime() - Date.now()) / 60_000))
+    : null;
+  const windowClosed = closesAt != null && minutesLeft === 0;
 
   const handleCreateCard = async () => {
     const chips = newChips.split('\n').map((c) => c.trim()).filter(Boolean);
@@ -156,9 +195,45 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
         </button>
       </div>
 
-      {/* Kaartkeuze */}
+      {/* Kaartkeuze + timer */}
       {enabled && (
         <div className="mt-3 space-y-2">
+          {/* Tijdslot (migratie 028): optionele automatische sluiting */}
+          <div className="flex gap-2 items-center flex-wrap">
+            <Clock className="w-4 h-4 text-text-muted shrink-0" aria-hidden="true" />
+            <select
+              value={timerMinutes}
+              onChange={(e) => {
+                const minutes = Number(e.target.value);
+                setTimerMinutes(minutes);
+                void persist(true, cardId, minutes > 0 ? minutes : null);
+              }}
+              className="px-3 py-1.5 border-2 border-border-subtle rounded-lg text-sm bg-white focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none"
+              aria-label={t('teacher.peerReview.timerLabel')}
+            >
+              <option value={0}>{t('teacher.peerReview.timerNone')}</option>
+              {[10, 15, 30].map((m) => (
+                <option key={m} value={m}>{t('teacher.peerReview.timerMinutes', { minutes: m })}</option>
+              ))}
+            </select>
+            {minutesLeft != null && !windowClosed && (
+              <span className="text-xs font-semibold text-accent-700">
+                {t('teacher.peerReview.closesIn', { minutes: minutesLeft })}
+              </span>
+            )}
+            {windowClosed && (
+              <span className="inline-flex items-center gap-1.5 text-xs font-semibold text-text-muted">
+                {t('teacher.peerReview.windowClosed')}
+                <button
+                  onClick={() => void persist(true, cardId, timerMinutes > 0 ? timerMinutes : 10)}
+                  className="text-accent-700 hover:text-accent-800 underline underline-offset-2"
+                >
+                  {t('teacher.peerReview.reopen')}
+                </button>
+              </span>
+            )}
+          </div>
+
           <div className="flex gap-2 items-center flex-wrap">
             <select
               value={cardId ?? ''}

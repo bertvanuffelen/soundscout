@@ -8,7 +8,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play, Square, Loader2, Music, PartyPopper, Send } from 'lucide-react';
+import { Play, Square, Loader2, Music, PartyPopper, Send, Star } from 'lucide-react';
 import { Modal, Button } from '../ui';
 import { audioService } from '../../services/AudioService';
 import { getPeerReviewBatch, submitPeerFeedback, type PeerReviewItem } from '../../lib/peerFeedback';
@@ -31,7 +31,8 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
   const [phase, setPhase] = useState<Phase>('loading');
   const [items, setItems] = useState<PeerReviewItem[]>([]);
   const [index, setIndex] = useState(0);
-  const [selectedChips, setSelectedChips] = useState<string[]>([]);
+  // Peer-feedback 2.0: 1-3 sterren per criterium van de feedbackkaart
+  const [ratings, setRatings] = useState<Record<string, number>>({});
   const [audioPhase, setAudioPhase] = useState<AudioPhase>('loading');
   const [isSending, setIsSending] = useState(false);
   const abortRef = useRef<AbortController | null>(null);
@@ -46,7 +47,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
     (async () => {
       setPhase('loading');
       setIndex(0);
-      setSelectedChips([]);
+      setRatings({});
       try {
         const batch = await getPeerReviewBatch(classCode, ownSubmissionId);
         if (cancelled) return;
@@ -107,32 +108,38 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
     }
   }, [current, audioPhase]);
 
-  const toggleChip = (chip: string) => {
-    setSelectedChips((prev) =>
-      prev.includes(chip)
-        ? prev.filter((c) => c !== chip)
-        : prev.length >= 3 ? prev : [...prev, chip]
-    );
+  // Sterren zetten: nogmaals dezelfde ster klikken = criterium wissen
+  const setStars = (chip: string, stars: number) => {
+    setRatings((prev) => {
+      if (prev[chip] === stars) {
+        const next = { ...prev };
+        delete next[chip];
+        return next;
+      }
+      return { ...prev, [chip]: stars };
+    });
   };
 
+  const ratedCount = Object.keys(ratings).length;
+
   const handleSendAndNext = useCallback(async () => {
-    if (!current || selectedChips.length === 0) return;
+    if (!current || ratedCount === 0) return;
     setIsSending(true);
     audioService.stop();
     try {
-      await submitPeerFeedback(ownSubmissionId, current.submissionId, selectedChips);
+      await submitPeerFeedback(ownSubmissionId, current.submissionId, ratings);
     } catch (err) {
-      // Niet blokkeren: compliment is nice-to-have; door naar de volgende
-      logger.warn('Peer-compliment versturen mislukt', err);
+      // Niet blokkeren: beoordeling is nice-to-have; door naar de volgende
+      logger.warn('Peer-beoordeling versturen mislukt', err);
     }
     setIsSending(false);
-    setSelectedChips([]);
+    setRatings({});
     if (index + 1 < items.length) {
       setIndex(index + 1);
     } else {
       setPhase('done');
     }
-  }, [current, selectedChips, ownSubmissionId, index, items.length]);
+  }, [current, ratings, ratedCount, ownSubmissionId, index, items.length]);
 
   const handleClose = useCallback(() => {
     audioService.stop();
@@ -192,30 +199,53 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
             </div>
           </div>
 
-          {/* Complimenten-chips */}
-          <p className="text-sm font-semibold text-text-main mb-2">{t('peerReview.chipsLabel')}</p>
-          <div className="flex flex-wrap gap-2 mb-6">
-            {chips.map((chip) => (
-              <button
-                key={chip}
-                onClick={() => toggleChip(chip)}
-                aria-pressed={selectedChips.includes(chip)}
-                className={cn(
-                  'px-3 py-2 rounded-full text-sm font-semibold border-2 transition-all',
-                  selectedChips.includes(chip)
-                    ? 'bg-accent-100 border-accent-400 text-accent-800 scale-105'
-                    : 'bg-white border-border-subtle text-text-muted hover:border-accent-300'
-                )}
-              >
-                {chip}
-              </button>
-            ))}
+          {/* Sterren per criterium (peer-feedback 2.0) */}
+          <p className="text-sm font-semibold text-text-main mb-1">{t('peerReview.starsLabel')}</p>
+          <p className="text-xs text-text-muted mb-3">{t('peerReview.starsHint')}</p>
+          <div className="flex flex-col gap-2 mb-6">
+            {chips.map((chip) => {
+              const value = ratings[chip] ?? 0;
+              return (
+                <div
+                  key={chip}
+                  className={cn(
+                    'flex items-center justify-between gap-3 rounded-xl border-2 px-3 py-2 transition-colors',
+                    value > 0 ? 'border-accent-300 bg-accent-50' : 'border-border-subtle bg-white'
+                  )}
+                >
+                  <span className={cn('text-sm font-semibold', value > 0 ? 'text-accent-800' : 'text-text-muted')}>
+                    {chip}
+                  </span>
+                  <div className="flex items-center gap-0.5" role="radiogroup" aria-label={chip}>
+                    {[1, 2, 3].map((n) => (
+                      <button
+                        key={n}
+                        type="button"
+                        role="radio"
+                        aria-checked={value === n}
+                        onClick={() => setStars(chip, n)}
+                        title={t('peerReview.starTitle', { stars: n })}
+                        className="p-1 transition-transform hover:scale-110"
+                      >
+                        <Star
+                          className={cn(
+                            'w-6 h-6 transition-colors',
+                            n <= value ? 'text-accent-500 fill-accent-500' : 'text-neutral-300'
+                          )}
+                          aria-hidden="true"
+                        />
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              );
+            })}
           </div>
 
           <Button
             variant="primary"
             onClick={handleSendAndNext}
-            disabled={selectedChips.length === 0 || isSending}
+            disabled={ratedCount === 0 || isSending}
             isLoading={isSending}
             className="w-full"
           >

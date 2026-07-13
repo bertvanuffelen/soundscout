@@ -46,14 +46,25 @@ export function FeedbackBanner() {
             &ldquo;{feedback.text}&rdquo;
           </p>
         )}
-        {/* Klasgenoot-complimenten (anoniem geaggregeerd, migratie 027) */}
+        {/* Klasgenoot-beoordelingen (anoniem geaggregeerd, migratie 028):
+            gemiddelde sterren per criterium + aantal beoordelaars */}
         {feedback.compliments && feedback.compliments.length > 0 && (
-          <p className="text-text-muted text-sm truncate sm:whitespace-normal">
-            <span className="font-semibold text-text-main">{t('studentFeedback.complimentsTitle')}</span>{' '}
-            {feedback.compliments
-              .map((c) => (c.count > 1 ? `${c.chip} ×${c.count}` : c.chip))
-              .join(' · ')}
-          </p>
+          <div className="text-text-muted text-sm flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span className="font-semibold text-text-main">{t('studentFeedback.complimentsTitle')}</span>
+            {feedback.compliments.map((c) => (
+              <span key={c.chip} className="inline-flex items-center gap-1">
+                {c.chip}
+                {c.avgStars != null && (
+                  <span className="inline-flex items-center" aria-label={t('studentFeedback.avgStars', { stars: c.avgStars })}>
+                    {Array.from({ length: Math.max(1, Math.round(c.avgStars)) }, (_, i) => (
+                      <Star key={i} className="w-3.5 h-3.5 text-accent-500 fill-accent-500" aria-hidden="true" />
+                    ))}
+                  </span>
+                )}
+                <span className="text-xs">({c.count})</span>
+              </span>
+            ))}
+          </div>
         )}
       </div>
       <button

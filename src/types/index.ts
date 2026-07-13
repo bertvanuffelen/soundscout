@@ -66,9 +66,9 @@ export interface ClassSession {
   classId: string;
   /** Display name of the class (e.g. "Groep 5") */
   className: string;
-  /** Peer-review ("klasgenoten luisteren", migratie 027) — chips van de
-   *  feedbackkaart; null/undefined als uitgeschakeld */
-  peerReview?: { cardTitle: string; chips: string[] } | null;
+  /** Peer-review ("klasgenoten luisteren", migratie 027/028) — chips van de
+   *  feedbackkaart + optionele sluittijd; null/undefined als uitgeschakeld */
+  peerReview?: { cardTitle: string; chips: string[]; closesAt?: string | null } | null;
   /** Type of assignment linked to this class entry */
   assignmentType: 'template' | 'praatplaat' | 'storyboard' | 'free';
   /** Identifier of the active assignment: template_id/praatplaat_id (UUID), storyboard-registry-id or theme-id (TEXT) */
@@ -492,8 +492,9 @@ export interface ReceivedFeedback {
   level: number | null;
   text: string | null;
   at: string | null;
-  /** Anoniem geaggregeerde complimenten van klasgenoten (migratie 027) */
-  compliments?: { chip: string; count: number }[];
+  /** Anoniem geaggregeerde beoordelingen van klasgenoten (migratie 027/028):
+   *  gemiddelde sterren (1-3) per criterium; avgStars null bij oude chips-rijen */
+  compliments?: { chip: string; count: number; avgStars: number | null }[];
 }
 
 export type StorageKey =
