@@ -16,7 +16,7 @@
 | 1 | Fundament & fixes (reset-flow, SEO, CI, modals, bundle, analytics) | ✅ Af (code-kant; migratie 025 + Supabase-redirect-check bij Bert) |
 | 2 | Docent-feedback (kernfeature) + inzendingen-workflow | ✅ Af (code-kant; migratie 026 + E2E-test bij Bert) |
 | 3 | Leerlingflow & studio-onboarding | ✅ Af (animatie-item 3.5 doorgeschoven naar aparte sessie) |
-| 4 | Thema-wizard (admin-editor) + content-pipeline | ⏳ Gepland |
+| 4 | Thema-wizard (admin-editor) + content-pipeline | ✅ Af |
 | 5 | Content-sprint + peer-feedback + landingspagina | ⏳ Gepland |
 | 6 | Monetisatie-voorbereiding, internationaal, PWA, eind-QA | ⏳ Gepland |
 
@@ -53,6 +53,17 @@
 | 3.3 | Taal-pas: neutrale taal voor alle leeftijden (géén kindertaal — besluit Bert): "juf of meester" → "docent", volwassen formuleringen | ✅ Af | `a2f0549` |
 | 3.4 | Kaart-hint: "Klik op een locatie om geluiden te verzamelen", vervalt bij eerste locatiebezoek | ✅ Af | `a2f0549` |
 | 3.5 | Nieuwe uitleg-animaties (studio-tools, delen/inleveren) via de soundscout-animatie-skill | ⏭️ Doorgeschoven — eigen sessie (standalone HTML-maakwerk), kan parallel aan week 4 |
+
+## Week 4 — Thema-wizard + content-pipeline
+
+| # | Stap | Status | Commit |
+|---|---|---|---|
+| 4.1 | Seizoensrooster: `activeFrom`/`activeUntil` ('MM-DD') op thema's, filtering in publieke kiezers, `?theme=` blijft altijd werken, jaargrens-wrap-around + 10 tests | ✅ Af | `8032380` |
+| 4.2 | themeCodegen: conceptmodel, beeldprompt-generatie (stijlprofiel + soort-specs), geluid-zoekpakketten (freesound), validatie, code-export (4 themabestanden + i18n-fragmenten + Claude-opdracht) + 16 tests | ✅ Af | `f87ce61` |
+| 4.3 | Wizard-UI: 4 stappen op `/editor` (EditorHub met tabs wizard/locatie-editor), localStorage-draft, klik-op-kaart-positionering, export-gate achter validatie | ✅ Af | `5aabcd0` |
+| 4.4 | Toegang: bewust dev-only gebleven (lokaal; de output gaat tóch via code/deploy) — besluit conform plan | ✅ | — |
+
+**Workflow voor Bert (nieuw thema)**: `/editor` → Thema-wizard → stap 1-2 invullen → stap 3 prompts naar Claude/beeldgenerator + freesound → assets in `/public/...` plaatsen → stap 4 kaartposities klikken → export kopiëren → aan Claude Code geven ("plaats dit thema") → hotspots per locatie via de Locatie-editor-tab.
 
 ## Besluitenlog
 
