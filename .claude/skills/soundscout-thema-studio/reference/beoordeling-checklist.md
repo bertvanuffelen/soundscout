@@ -33,10 +33,10 @@ met één regel toelichting; log in `manifest.json`. Eén ✗ = beeld gaat niet 
 
 | # | Criterium |
 |---|---|
-| L1 | Precies 6-8 duidelijk benoembare geluidsbronnen — benoem ze élk met x/y-schatting in % (→ hotspot-startadvies INTEGRATIE.md) |
-| L2 | Geluidsbronnen ruimtelijk gespreid over het vlak |
-| L3 | Onderste ~10% visueel rustig (app-UI) |
-| L4 | Elke geluidsbron matcht 1-op-1 met een sample uit het themaplan |
+| L1 | Volle wemelscène: ~20-30 acties/elementen (net zo druk als een praatplaat) |
+| L2 | 6-8 duidelijk herkenbare sound-sources, opvallend vindbaar tussen de drukte — benoem elk met x/y-schatting in % (→ hotspot-startadvies INTEGRATIE.md) |
+| L3 | Sound-sources ruimtelijk gespreid; niet in de onderste ~8% strook (app-UI); achtergrond-gags mogen daar wel |
+| L4 | Elke sound-source matcht 1-op-1 met een sample; extra acties zijn on-theme (hoeven geen eigen sample) |
 
 ## Storyboard-frame (extra)
 

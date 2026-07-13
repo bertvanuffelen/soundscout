@@ -63,10 +63,13 @@ compositie bij maken met de samples van dit thema?
 Vul [templates/themaplan.md](templates/themaplan.md) in en initialiseer `manifest.json`.
 Eisen (details in [reference/datamodel-thema.md](reference/datamodel-thema.md)):
 
-- Per locatie **6-8 samples**: id, NL/EN-naam, geluidsbeschrijving, type (`loop-8.0s` of
-  `sfx-2-8s`), Lucide-icon, hex-kleur, verwervingsroute **F**=Freesound / **E**=ElevenLabs
-  / **C**=checklist (Bert zelf).
-- Per locatie een achtergrondbeschrijving waarin de 6-8 geluidsbronnen zichtbaar zijn.
+- Per locatie **6-8 samples** (= de sound-hotspots): id, NL/EN-naam, geluidsbeschrijving,
+  type (`loop-8.0s` of `sfx-2-8s`), Lucide-icon, hex-kleur, verwervingsroute **F**=Freesound
+  / **E**=ElevenLabs / **C**=checklist (Bert zelf).
+- Elke locatieplaat is een **vólle wemelscène (~20-30 acties, net zo druk als een
+  praatplaat)**: de 6-8 samples zijn de duidelijk herkenbare sound-hotspots, aangevuld met
+  ~15-20 extra on-theme klungel-gags (die geen eigen sample hebben). Schrijf per locatie
+  die actielijst uit (sound-sources gemarkeerd).
 - Per praatplaat: category, availableFor, **20-30 activiteiten, elk sonificeerbaar met
   ≥1 sample uit het thema** (richting: activiteit → sample). Streef naar spreiding over
   alle locatie-klankwerelden; niet elke sample hoeft afgebeeld (een thema met 30+ samples
