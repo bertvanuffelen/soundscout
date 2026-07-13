@@ -84,6 +84,7 @@ export function StageView() {
     submitFeedback,
     setSubmitFeedback,
     syncFeedback,
+    classSaveCode,
   } = useStageSave();
 
   // Modal state (extracted hook)
@@ -301,6 +302,21 @@ export function StageView() {
           )}
           {praatplaatSubmitted && !showPraatplaatSuccess && (
             <p className="text-success-600 text-sm text-center font-medium">{t('stage.praatplaatSubmitted')}</p>
+          )}
+
+          {/* Persoonlijke bewaarcode na inleveren (feedback-terugweg, migratie 026) */}
+          {classSession && classSaveCode && (
+            <div className="w-full max-w-xs rounded-2xl border-2 border-accent-200 bg-accent-50 px-4 py-3 text-center">
+              <p className="text-sm font-bold text-text-main">
+                {t('stage.yourCodeTitle')}{' '}
+                <span className="font-mono text-lg font-extrabold tracking-widest text-accent-700">
+                  {classSaveCode}
+                </span>
+              </p>
+              <p className="text-xs text-text-muted mt-1">
+                {t('stage.yourCodeHint')}
+              </p>
+            </div>
           )}
         </div>
       </div>

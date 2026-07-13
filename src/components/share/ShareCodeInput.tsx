@@ -18,6 +18,7 @@ import { getSharedComposition, loadSavedComposition, claimSavedComposition } fro
 import { getSharedPraatplaat } from '../../lib/praatplaat';
 import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, initializeFromSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
+import { storageService } from '../../services/StorageService';
 import { logger } from '../../utils/logger';
 
 export function ShareCodeInput() {
@@ -83,6 +84,24 @@ export function ShareCodeInput() {
                 code,
                 newSecret,
               );
+              // Docent-feedback meenemen naar de studio (migratie 026):
+              // de leerling ziet daar een banner met de reactie.
+              if (saved.feedback_at) {
+                useAppStore.getState().setReceivedFeedback({
+                  sticker: saved.feedback_sticker ?? null,
+                  level: saved.feedback_level ?? null,
+                  text: saved.feedback_text ?? null,
+                  at: saved.feedback_at,
+                });
+                // Dedup voor de "je hebt een reactie"-melding op het startscherm
+                const info = storageService.getClassFeedbackCode();
+                if (info?.saveCode === code) {
+                  storageService.setClassFeedbackCode({
+                    ...info,
+                    lastSeenFeedbackAt: saved.feedback_at,
+                  });
+                }
+              }
               setCode('');
               return;
             }

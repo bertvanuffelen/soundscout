@@ -481,6 +481,16 @@ export interface Composition {
 /**
  * Type-safe keys for localStorage.
  */
+/**
+ * Docent-feedback zoals de leerling die terugziet (via bewaarcode, migratie 026).
+ */
+export interface ReceivedFeedback {
+  sticker: string | null;
+  level: number | null;
+  text: string | null;
+  at: string | null;
+}
+
 export type StorageKey =
   | 'soundscout:compositions'
   | 'soundscout:library'

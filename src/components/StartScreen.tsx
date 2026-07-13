@@ -13,6 +13,9 @@ import {
   initializeCompositionFromStoryboard,
 } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
+import { Star } from 'lucide-react';
+import type { ReceivedFeedback } from '../types';
+import { getStickerEmoji } from './teacher/FeedbackPanel';
 // Lazy: FeedbackModal sleept @emailjs/browser mee — pas laden bij openen.
 const FeedbackModal = lazy(() =>
   import('./feedback').then((m) => ({ default: m.FeedbackModal }))
@@ -47,6 +50,60 @@ export function StartScreen() {
     const compositions = storageService.getCompositions();
     setHasCompositions(compositions.length > 0);
   }, []);
+
+  // Stille check op nieuwe docent-feedback (migratie 026): als dit apparaat
+  // een klas-inzending met bewaarcode heeft, kijk of de juf/meester heeft
+  // gereageerd sinds de vorige keer. Faalt geruisloos (offline, migratie
+  // nog niet gedraaid, code verlopen).
+  const [feedbackNotice, setFeedbackNotice] = useState<{
+    compositionName: string;
+    saveCode: string;
+    feedback: ReceivedFeedback;
+  } | null>(null);
+  const [showFeedbackNotice, setShowFeedbackNotice] = useState(false);
+
+  useEffect(() => {
+    const info = storageService.getClassFeedbackCode();
+    if (!info) return;
+    let cancelled = false;
+
+    (async () => {
+      try {
+        const { loadSavedComposition } = await import('../lib/submissions');
+        const saved = await loadSavedComposition(info.saveCode);
+        if (cancelled || !saved?.feedback_at) return;
+        if (saved.feedback_at === info.lastSeenFeedbackAt) return;
+        setFeedbackNotice({
+          compositionName: saved.composition_name,
+          saveCode: info.saveCode,
+          feedback: {
+            sticker: saved.feedback_sticker ?? null,
+            level: saved.feedback_level ?? null,
+            text: saved.feedback_text ?? null,
+            at: saved.feedback_at,
+          },
+        });
+      } catch {
+        // stil — melding is nice-to-have, nooit blokkerend
+      }
+    })();
+
+    return () => { cancelled = true; };
+  }, []);
+
+  const handleDismissFeedbackNotice = () => {
+    if (feedbackNotice) {
+      const info = storageService.getClassFeedbackCode();
+      if (info) {
+        storageService.setClassFeedbackCode({
+          ...info,
+          lastSeenFeedbackAt: feedbackNotice.feedback.at,
+        });
+      }
+    }
+    setShowFeedbackNotice(false);
+    setFeedbackNotice(null);
+  };
 
   const handleNewComposition = () => {
     if (hasClipsInProgress) {
@@ -108,6 +165,20 @@ export function StartScreen() {
             {t('start.tagline')}
           </p>
         </div>
+
+        {/* "Je hebt een reactie!"-melding (docent-feedback, migratie 026) */}
+        {feedbackNotice && (
+          <button
+            type="button"
+            onClick={() => setShowFeedbackNotice(true)}
+            className="mb-4 w-full max-w-[280px] sm:max-w-xs flex items-center gap-2.5 rounded-2xl border-2 border-accent-300 bg-accent-50 px-4 py-3 text-left shadow-md hover:bg-accent-100 transition-colors animate-pulse hover:animate-none"
+          >
+            <span className="text-2xl" aria-hidden="true">💌</span>
+            <span className="text-sm font-bold text-text-main">
+              {t('studentFeedback.noticeButton', { name: feedbackNotice.compositionName })}
+            </span>
+          </button>
+        )}
 
         {/* Primaire keuzes — Sketch A (#78):
             twee gelijkwaardige CTAs, plus "Verder werken" als er nog clips
@@ -348,6 +419,45 @@ export function StartScreen() {
         isOpen={showCodeModal}
         onClose={() => setShowCodeModal(false)}
       />
+
+      {/* Docent-feedback modal (migratie 026) */}
+      <Modal
+        isOpen={showFeedbackNotice && !!feedbackNotice}
+        onClose={handleDismissFeedbackNotice}
+        title={t('studentFeedback.modalTitle')}
+        size="sm"
+      >
+        {feedbackNotice && (
+          <div className="text-center">
+            <div className="text-5xl mb-3" aria-hidden="true">
+              {getStickerEmoji(feedbackNotice.feedback.sticker) ?? '💌'}
+            </div>
+            {feedbackNotice.feedback.sticker && (
+              <p className="text-lg font-extrabold text-text-main mb-1">
+                {t(`teacher.feedback.stickers.${feedbackNotice.feedback.sticker}`)}
+              </p>
+            )}
+            {feedbackNotice.feedback.level != null && (
+              <div className="flex justify-center gap-0.5 mb-2" aria-label={t('teacher.feedback.levelTitle', { level: feedbackNotice.feedback.level })}>
+                {Array.from({ length: feedbackNotice.feedback.level }, (_, i) => (
+                  <Star key={i} className="w-6 h-6 text-accent-500 fill-accent-500" />
+                ))}
+              </div>
+            )}
+            {feedbackNotice.feedback.text && (
+              <p className="text-text-muted text-sm mb-4 leading-relaxed">
+                &ldquo;{feedbackNotice.feedback.text}&rdquo;
+              </p>
+            )}
+            <p className="text-text-muted text-xs mb-5">
+              {t('studentFeedback.modalHint', { code: feedbackNotice.saveCode })}
+            </p>
+            <Button variant="primary" onClick={handleDismissFeedbackNotice} className="w-full">
+              {t('studentFeedback.modalClose')}
+            </Button>
+          </div>
+        )}
+      </Modal>
 
       {/* Privacy modal */}
       <PrivacyModal

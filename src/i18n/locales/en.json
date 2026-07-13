@@ -277,6 +277,8 @@
     "exportingVideo": "Creating video...",
     "videoExportSuccess": "Video downloaded!",
     "praatplaatSubmitted": "Your composition is on the sound map!",
+    "yourCodeTitle": "Your code:",
+    "yourCodeHint": "Keep this code safe! Use it later to see what your teacher thinks of your music (Start screen → \"I have a code\").",
     "praatplaatSuccessTitle": "Success!",
     "praatplaatSuccessMessage": "Your composition has been placed on the sound map. The teacher can now play it on the smartboard!",
     "praatplaatContinue": "Continue with this composition",
@@ -757,6 +759,13 @@
     "resetEmailFailed": "Could not send reset email. Please try again.",
     "updatePasswordFailed": "Could not change the password. Please try again.",
     "resendConfirmationFailed": "Could not send the confirmation email. Please try again."
+  },
+  "studentFeedback": {
+    "bannerTitle": "Your teacher says:",
+    "noticeButton": "You have a reaction to \"{{name}}\"!",
+    "modalTitle": "A message from your teacher",
+    "modalHint": "Want to keep working on your music? Enter your code {{code}} at \"I have a code\".",
+    "modalClose": "Nice!"
   },
   "submissions": {
     "validateClassCodeError": "Could not verify class",

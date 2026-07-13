@@ -277,6 +277,8 @@
     "exportingVideo": "Video maken...",
     "videoExportSuccess": "Video is gedownload!",
     "praatplaatSubmitted": "Je compositie staat op de praatplaat!",
+    "yourCodeTitle": "Jouw code:",
+    "yourCodeHint": "Bewaar deze code goed! Hiermee zie je later wat je juf of meester van je muziek vindt (Startscherm → \"Ik heb een code\").",
     "praatplaatSuccessTitle": "Gelukt!",
     "praatplaatSuccessMessage": "Je compositie is op de praatplaat geplaatst. De docent kan deze nu afspelen op het digibord!",
     "praatplaatContinue": "Ga verder met deze compositie",
@@ -757,6 +759,13 @@
     "resetEmailFailed": "Kon reset-email niet versturen. Probeer het opnieuw.",
     "updatePasswordFailed": "Kon het wachtwoord niet wijzigen. Probeer het opnieuw.",
     "resendConfirmationFailed": "Kon de bevestigingsmail niet versturen. Probeer het opnieuw."
+  },
+  "studentFeedback": {
+    "bannerTitle": "Je juf of meester zegt:",
+    "noticeButton": "Je hebt een reactie op \"{{name}}\"!",
+    "modalTitle": "Reactie van je juf of meester",
+    "modalHint": "Wil je verder werken aan je muziek? Typ dan je code {{code}} bij \"Ik heb een code\".",
+    "modalClose": "Leuk!"
   },
   "submissions": {
     "validateClassCodeError": "Kon klas niet controleren",

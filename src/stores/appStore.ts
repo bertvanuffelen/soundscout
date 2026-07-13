@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition, ClassSession } from '../types';
+import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition, ClassSession, ReceivedFeedback } from '../types';
 import type { ActiveAssignment } from '../lib/assignments';
 
 /**
@@ -97,6 +97,10 @@ interface AppStore {
   setIsSubmitting: (submitting: boolean) => void;
   clearClassSession: () => void;
 
+  // Docent-feedback op de geladen compositie (via bewaarcode, migratie 026)
+  receivedFeedback: ReceivedFeedback | null;
+  setReceivedFeedback: (feedback: ReceivedFeedback | null) => void;
+
   // Assignment landing (#78) — tussenscherm na klascode-invoer
   pendingAssignment: PendingAssignment | null;
   setPendingAssignment: (pending: PendingAssignment) => void;
@@ -134,6 +138,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   praatplaatPosition: null,
   classSession: null,
   submissionId: null,
+  receivedFeedback: null,
   submissionSynced: false,
   isSubmitting: false,
   pendingAssignment: null,
@@ -147,7 +152,7 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null, pendingTeacherTab: null, pendingGuideSection: null }),
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null, pendingTeacherTab: null, pendingGuideSection: null, receivedFeedback: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 
@@ -197,6 +202,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToPraatplaatSelect: () => set({ currentScreen: 'praatplaat-select' }),
 
   // Klascode-sessie actions (universele flow)
+  setReceivedFeedback: (feedback) => set({ receivedFeedback: feedback }),
   setClassSession: (session) => set({ classSession: session, submissionId: null, submissionSynced: false }),
   setSubmissionId: (id) => set({ submissionId: id }),
   setSubmissionSynced: (synced) => set({ submissionSynced: synced }),

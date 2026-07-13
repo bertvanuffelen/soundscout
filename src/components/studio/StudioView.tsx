@@ -31,6 +31,7 @@ import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
+import { FeedbackBanner } from '../common/FeedbackBanner';
 import { generateClipId } from '../../utils/uuid';
 
 /**
@@ -356,6 +357,9 @@ export function StudioView() {
           </button>
         </div>
       )}
+
+      {/* Docent-feedback banner (geladen via bewaarcode, migratie 026) */}
+      <FeedbackBanner />
 
       {/* Template info banner */}
       {activeTemplate && (
