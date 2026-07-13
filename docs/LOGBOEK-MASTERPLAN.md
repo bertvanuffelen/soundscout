@@ -17,7 +17,7 @@
 | 2 | Docent-feedback (kernfeature) + inzendingen-workflow | ✅ Af (code-kant; migratie 026 + E2E-test bij Bert) |
 | 3 | Leerlingflow & studio-onboarding | ✅ Af (animatie-item 3.5 doorgeschoven naar aparte sessie) |
 | 4 | Thema-wizard (admin-editor) + content-pipeline | ✅ Af |
-| 5 | Content-sprint + peer-feedback + landingspagina | ⏳ Gepland |
+| 5 | Content-sprint + peer-feedback + landingspagina | 🔄 Peer-feedback af; content-sprint (Bert) + landingspagina open |
 | 6 | Monetisatie-voorbereiding, internationaal, PWA, eind-QA | ⏳ Gepland |
 
 ## Week 1 — Fundament & fixes
@@ -64,6 +64,17 @@
 | 4.4 | Toegang: bewust dev-only gebleven (lokaal; de output gaat tóch via code/deploy) — besluit conform plan | ✅ | — |
 
 **Workflow voor Bert (nieuw thema)**: `/editor` → Thema-wizard → stap 1-2 invullen → stap 3 prompts naar Claude/beeldgenerator + freesound → assets in `/public/...` plaatsen → stap 4 kaartposities klikken → export kopiëren → aan Claude Code geven ("plaats dit thema") → hotspots per locatie via de Locatie-editor-tab.
+
+## Week 5 — Peer-feedback (gebouwd) + content-sprint + landingspagina
+
+| # | Stap | Status | Commit |
+|---|---|---|---|
+| 5.1 | Migratie 027: feedback_cards (5 ingebouwde + docent-eigen), peer_review-instelling op class_assignments, peer_feedback-tabel, RPC's (batch/submit/complimenten/instellen), get_active_assignment + peer_review-kolom | ✅ Af — **door Bert uit te voeren ná 026** | `a82bfb1` |
+| 5.2 | Client: PeerReviewModal (leerling-luisterflow op het podium), PeerReviewSettings (docent-toggle + kaartkeuze + eigen-kaart-editor in ClassDetail), complimenten in FeedbackBanner via bewaarcode, ClassSession.peerReview-doorvoer | ✅ Af | `1f1f584` |
+| 5.3 | Content-sprint: 6-8 praatplaten, 2-3 storyboards, winterspelen-leerlingcontent — via de Thema-wizard | ⏳ Wacht op Bert (thema-ideeën + beelden/geluiden maken) |
+| 5.4 | Landingspagina-uitbreiding (FAQ, gratis/betaald, AVG-blok, testimonial-structuur) | ⏳ Volgende sessie |
+
+**E2E-test peer-feedback (Bert, na migratie 027)**: (1) activeer een opdracht → zet "Klasgenoten luisteren" aan in het klasscherm; (2) lever met 2+ browsers/apparaten in via de klascode; (3) na inleveren verschijnt "Luister naar klasgenoten" op het podium → beluister + kies chips; (4) laad een inzending via de bewaarcode → banner toont "Complimenten van klasgenoten".
 
 ## Besluitenlog
 
