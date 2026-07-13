@@ -18,6 +18,7 @@
 | 3 | Leerlingflow & studio-onboarding | ✅ Af (animatie-item 3.5 doorgeschoven naar aparte sessie) |
 | 4 | Thema-wizard (admin-editor) + content-pipeline | ✅ Af |
 | 5 | Content-sprint + peer-feedback + landingspagina | ✅ Peer-feedback + landing af; content-sprint = Bert |
+| 5½ | Feedback 2.0 (sterren/cap/timer), presentatiemodus, feedback-overzicht+top 3, sessie-herstel, Lucide-iconen | ✅ Af (migratie 028 + E2E bij Bert) |
 | 6 | Monetisatie-voorbereiding, internationaal, PWA, eind-QA | ⏳ Gepland |
 
 ## Week 1 — Fundament & fixes
@@ -76,6 +77,20 @@
 | 5.5 | Volledig testplan (`docs/TESTPLAN-MASTERPLAN.md`) voor week 1-5 | ✅ Af | — |
 
 **E2E-test peer-feedback (Bert, na migratie 027)**: (1) activeer een opdracht → zet "Klasgenoten luisteren" aan in het klasscherm; (2) lever met 2+ browsers/apparaten in via de klascode; (3) na inleveren verschijnt "Luister naar klasgenoten" op het podium → beluister + kies chips; (4) laad een inzending via de bewaarcode → banner toont "Complimenten van klasgenoten".
+
+## Week 5½ — Feedback 2.0 + presentatiemodus + iconen (7 punten Bert)
+
+| # | Stap | Status | Commit |
+|---|---|---|---|
+| A | Lucide-iconen overal: stickerMap (patroon iconMap) + 13 emoji/unicode/hand-SVG-plekken vervangen | ✅ Af | `1c45b44` |
+| B | Migratie 028: ratings JSONB (1-3 sterren per criterium), max 3 beoordelingen p.p., server-side toggle+timer (peer_review_closes_at), get_peer_compliments→gemiddelden, load_saved_composition+class_code | ✅ Af — **door Bert uit te voeren ná 027** | `0efa900` |
+| C | Client 2.0: sterren-UI in PeerReviewModal, timer+aftelklok in PeerReviewSettings, gemiddelde-sterren in FeedbackBanner | ✅ Af | `d5447ed` |
+| D | Sessie-herstel (bug Bert): submissionSynced hersteld bij heropenen; bewaarcode herstelt volledige klas-sessie (classSessionFromAssignment) | ✅ Af | `283d328` |
+| E | PeerFeedbackOverview: top 3 podium + ontvangen/gegeven-tabs (client-side join via RLS) | ✅ Af | `e16c93b` |
+| F | ClassPresentationView: universeel digibord-scherm met playlist, auto-advance, per-vorm-visuals, toetsenbord, feedbackrij; top-3-koppeling | ✅ Af | `53c0966` |
+| G | docs/ANIMATIES-EN-PROMO.md (animatielijst + promo-script) + testplan §6 | ✅ Af | zie docs-commit |
+
+**Besluiten Bert (2026-07-13):** peer-feedback = sterren per criterium (geen losse chips meer) · vast maximum 3 · toggle + optionele timer · presentatie = nieuw universeel scherm met playlist, ook voor praatplaat.
 
 ## Besluitenlog
 

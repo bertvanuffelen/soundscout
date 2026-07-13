@@ -110,6 +110,39 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ---
 
+## 6. Week 5½ — Feedback 2.0, presentatiemodus, iconen (na migratie 028!)
+
+### 6a. Peer-feedback met sterren
+- [ ] Migratie **028** draaien in de Supabase SQL Editor (ná 027).
+- [ ] Leerling: "Luister naar klasgenoten" → per criterium van de feedbackkaart een rij met **3 sterren**; zelfde ster nogmaals klikken wist het criterium; versturen kan pas met ≥1 beoordeeld criterium.
+- [ ] **Maximum 3**: beoordeel 3 klasgenoten (evt. in meerdere sessies) → daarna toont de modal de lege-melding; de server weigert een 4e ("maximum bereikt").
+- [ ] Ontvanger (via bewaarcode): banner toont per criterium **gemiddelde sterren + aantal** ("Ritme ★★★ (3)").
+
+### 6b. Toggle + tijdslot (server-side!)
+- [ ] Docent: tijdslot instellen (10 min) → aftelling "sluit over X min" zichtbaar; na afloop "Ronde gesloten" + "Opnieuw openen".
+- [ ] Leerling ná sluiting: batch is leeg / versturen geeft nette melding ("ronde gesloten").
+- [ ] Toggle uit → zelfde server-side weigering (in 027 was dit alleen client-side!). Docent-feedback (sticker/sterren/tekst) blijft altijd werken.
+
+### 6c. Sessie-herstel (bugfix)
+- [ ] Inleveren → terug naar start → "Mijn composities" → compositie heropenen → **peer-feedback-knop is er weer** op het podium.
+- [ ] Bewaarcode op een ander apparaat/verse browser invoeren → klas-sessie hersteld → knop aanwezig; reeds beoordeelde klasgenoten komen niet opnieuw voorbij (server onthoudt).
+
+### 6d. Docent: feedback-overzicht + top 3
+- [ ] Klasscherm → "Feedback-overzicht": **top 3 podium** (Trophy/Medal/Award) klopt met de gegeven sterren.
+- [ ] Tab Ontvangen: uitklappen toont per-criterium gemiddelden + wie-gaf-wat (namen alleen hier).
+- [ ] Tab Gegeven: leerlingen met 0 gegeven staan bovenaan.
+
+### 6e. Presentatiemodus (digibord)
+- [ ] Klasscherm → "Presenteren": fullscreen met playlist-zijbalk; klik op een item springt ernaartoe.
+- [ ] **Doorspelen** aan: na afloop van een compositie start automatisch de volgende, met naam-overlay ("Nu te horen: …").
+- [ ] Per vorm: storyboard toont meebewegende beelden · praatplaat toont de plaat met pulserende spot van de spelende inzending · vrij/template toont de meebewegende tijdlijn.
+- [ ] Toetsenbord: spatie = play/pauze, ←/→ = wisselen, Esc = sluiten.
+- [ ] "Feedback geven"-toggle onderin: sticker + sterren + tekst opslaan werkt tijdens het presenteren.
+- [ ] Vanuit het feedback-overzicht: "Presenteer top 3" opent de presentatie met alleen die drie.
+
+### 6f. Lucide-iconen
+- [ ] Steekproef: feedback-stickers (dashboard + banner + startscherm-melding), foutschermen, trim-schaartje in de studio, laad-spinner in knoppen, sleepgreep in de bibliotheek — overal strakke lijn-iconen, nergens meer emoji.
+
 ## Regressie-let-op (waar bugs zich kunnen verstoppen)
 - Klas-inzending zonder migratie 026 zou terugvallen op de oude RPC (geen bewaarcode) — nu migraties gedraaid zijn: **elke** inzending hoort een code te geven. Als een code ontbreekt: check of 026 echt geslaagd is.
 - "In bewerking" vs "Ingeleverd" splitst nu op `submitted_at` (niet meer op de aanwezigheid van een code). Controleer dat een echt ingeleverde compositie onder **Ingeleverd** staat en online-bewaarde-maar-niet-ingeleverde onder **In bewerking**.
