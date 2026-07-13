@@ -14,7 +14,7 @@
 | Week | Thema | Status |
 |---|---|---|
 | 1 | Fundament & fixes (reset-flow, SEO, CI, modals, bundle, analytics) | ✅ Af (code-kant; migratie 025 + Supabase-redirect-check bij Bert) |
-| 2 | Docent-feedback (kernfeature) + inzendingen-workflow | ⏳ Gepland |
+| 2 | Docent-feedback (kernfeature) + inzendingen-workflow | ✅ Af (code-kant; migratie 026 + E2E-test bij Bert) |
 | 3 | Leerlingflow & studio-onboarding | ⏳ Gepland |
 | 4 | Thema-wizard (admin-editor) + content-pipeline | ⏳ Gepland |
 | 5 | Content-sprint + peer-feedback + landingspagina | ⏳ Gepland |
@@ -32,14 +32,30 @@
 | 1.6 | Opruiming: gecommitte oude worktree (333 bestanden) uit index, `htaccess kopie` weg. Besluit: ComposeModeScreen blijft (fallback), Card blijft (in gebruik) | ✅ Af | `c913cd3` |
 | 1.7 | Anonieme analytics: migration 025 (`usage_stats` — alleen event+dag+teller), kale-fetch-util (geen supabase-chunk-load), DNT gerespecteerd, privacytekst NL/EN eerlijk bijgewerkt | ✅ Af | `a4bc0ec` |
 
+## Week 2 — Docent-feedback (kernfeature)
+
+| # | Stap | Status | Commit |
+|---|---|---|---|
+| 2.1 | Migratie 026: feedbackkolommen + `submitted_at`, `set_submission_feedback`, `mark_submission_seen`, `submit_or_update_composition_v2` (mint bewaarcode), `load_saved_composition` + feedbackvelden | ✅ Af | `74ca552` |
+| 2.2 | Client-lib: v2-submit met v1-fallback (PGRST202), feedback-RPC's, review-status (new/seen/reviewed), classSaveCode-opvang in useStageSave | ✅ Af | `62cf327` |
+| 2.3 | Docent-UI: FeedbackPanel (sticker + 1-3 sterren + tekst) in SubmissionPlayer, gezien-stempel, Nieuw/Beoordeeld-badges, "{n} nieuw"-teller, WIP-splitsing op `submitted_at` | ✅ Af | `011fe9a` |
+| 2.4 | Leerling-kant: code-kaart op het podium, FeedbackBanner in de studio, 💌-melding + modal op het startscherm (stille check, geruisloos falen) | ✅ Af | `aab50c1` |
+| 2.5 | Peer-feedback-ontwerp vastgelegd (feedbackkaarten, docent-instelbaar — keuze Bert) in `docs/PLAN-FEEDBACK.md`; bouw in week 5 | ✅ Af | zie 2.5-commit |
+
+**E2E-testscript voor Bert** (na migratie 026): zie `docs/PLAN-FEEDBACK.md` §"E2E-test" — 5 stappen van inleveren t/m RLS-check.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
 - **2026-07-13** — Werkomgeving: git worktree `masterplan-6-weken`, dit logboek, Notion-verslag op de SoundScout-pagina.
+- **2026-07-13 (week 2)** — Keuzes Bert: feedback = sticker + **1-3 sterren** + tekstje · terugweg = **digibord + automatische bewaarcode** (elke klas-inzending mint een code) · peer-feedback via **docent-instelbare feedbackkaarten** (bouw week 5) · geen printblad.
+- **2026-07-13 (week 2)** — Architectuur: `submit_or_update_composition_v2` als nieuwe functie naast v1 (return-type wijzigen zou live clients breken); WIP-splitsing verplaatst van save_code-aanwezigheid naar `submitted_at` (elke v2-inzending heeft nu een code).
 
 ## Voor Bert (acties buiten de code)
 
 - **Migration 025 uitvoeren** in de Supabase SQL Editor (`supabase/migrations/025_anonymous_analytics.sql`) — daarna verschijnen de eerste tellingen in de tabel `usage_stats`.
+- **Migration 026 uitvoeren** (`supabase/migrations/026_submission_feedback.sql`, ná 025) en daarna het E2E-testscript in `docs/PLAN-FEEDBACK.md` doorlopen (leerling levert in → code-kaart → docent geeft feedback → leerling ziet banner + 💌-melding).
+- **Lokaal testen**: dev-server starten vanuit de wórktree-map (`cd .claude/worktrees/masterplan-6-weken && npm run dev`) — de gewone projectmap draait de oude code.
 - **Supabase Auth → URL Configuration**: controleer dat de Redirect URLs `https://soundscout.nl/*` (of expliciet `https://soundscout.nl/?screen=reset-password`) bevatten, anders weigert Supabase de nieuwe reset-redirect. De volledige reset-flow (echte e-mail → nieuw wachtwoord) één keer end-to-end testen na deploy.
 - **Deploy-notitie**: bij de eerstvolgende deploy ook de bijgewerkte `.htaccess` mee-uploaden (teacher-rewrite + frame-src-fix) én `dist/teacher.html`.
 - **Hoofdrepo `.claude/launch.json`**: er is een `dev-worktree`-configuratie toegevoegd (poort 5199) zodat de browser-verificatie tegen de worktree kan draaien. Dit is de enige wijziging in `main`; na de 6 weken terug te draaien of te behouden.
