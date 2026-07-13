@@ -54,13 +54,20 @@ kindergroep:
 > animal, no fur, no feathers, no real skin (e.g. a metal robot seagull with panel wings, a
 > jointed robot monkey, a riveted-metal robot crab)."
 
-## Operationeel — koppige dieren
+## Operationeel — koppige dieren (belangrijke beperking)
 
-Dieren (vooral **papegaaien, apen, vogels**) komen hardnekkig organisch uit Nano Banana,
-óók mét de nadrukkelijke "mechanisch metaal"-instructie. Blijven ze na 1-2 pogingen
-organisch, doe dan een **gerichte edit** (`--edit-van <beeld> --prompt "maak alle dieren
-mechanische robot-dieren van metaal met gloeiende ogen, rest identiek"`) — dat is
-betrouwbaarder en goedkoper dan opnieuw genereren.
+**Kleurrijke tropische dieren (papegaaien, apen, toekans) krijg je in Nano Banana
+nauwelijks mechanisch** — niet met een nog zo nadrukkelijke prompt, én ook niet met een
+gerichte edit (getest bij het piraten-thema: de edit behield de compositie perfect maar
+liet de papegaaien/apen organisch). Wél goed lukken: slangen, krabben, insecten, vissen,
+octopus (die worden wél mooi mechanisch).
+
+Praktische lijn:
+1. **Ontwerp eromheen**: vermijd grote, prominente papegaaien/apen als blikvanger; zet ze
+   klein/op de achtergrond, of kies mechanisch-vriendelijke dieren (slang, krab, kever).
+2. Probeer 1 generatie + evt. 1 edit; lukt het dan niet, **accepteer of herontwerp** —
+   blijf er geen credits op stukslaan.
+3. Meld het eerlijk aan Bert; hij beslist per beeld of het acceptabel is.
 
 ## Thema-flavor
 
