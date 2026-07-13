@@ -30,7 +30,8 @@
     "selectLocation": "Klik op een locatie om te verkennen",
     "loadingTheme": "Thema laden...",
     "studioShort": "Studio",
-    "cityMapAlt": "Stadskaart"
+    "cityMapAlt": "Stadskaart",
+    "firstVisitHint": "Klik op een locatie om geluiden te verzamelen. Daarna maak je er muziek van in de studio."
   },
   "themeSelection": {
     "title": "Kies je wereld",
@@ -90,6 +91,8 @@
     "startGame": "Start Spel",
     "continueComposition": "Ga verder",
     "newComposition": "Nieuwe Compositie",
+    "introTitle": "Zo werkt SoundScout",
+    "introStart": "Aan de slag",
     "newCompositionConfirm": "Je hebt al een compositie waar je aan werkt. Als je een nieuwe start, gaan je verzamelde geluiden en je huidige compositie verloren en kunnen niet worden teruggehaald.",
     "newCompositionStart": "Opnieuw beginnen",
     "haveCode": "Ik heb een code",
@@ -188,6 +191,7 @@
     "emptyLibrary": "Ga eerst geluiden verzamelen!",
     "emptyLibraryHint": "Bezoek locaties op de kaart om geluiden te verzamelen.",
     "dragHint": "Sleep geluiden naar de tijdlijn",
+    "clipToolsHint": "Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen.",
     "addToTrack": "Voeg {{name}} toe aan tijdlijn",
     "dragToTimeline": "Sleep naar tijdlijn",
     "trim": "Inkorten",
@@ -278,7 +282,7 @@
     "videoExportSuccess": "Video is gedownload!",
     "praatplaatSubmitted": "Je compositie staat op de praatplaat!",
     "yourCodeTitle": "Jouw code:",
-    "yourCodeHint": "Bewaar deze code goed! Hiermee zie je later wat je juf of meester van je muziek vindt (Startscherm → \"Ik heb een code\").",
+    "yourCodeHint": "Bewaar deze code goed! Hiermee zie je later de feedback van je docent (Startscherm → \"Ik heb een code\").",
     "praatplaatSuccessTitle": "Gelukt!",
     "praatplaatSuccessMessage": "Je compositie is op de praatplaat geplaatst. De docent kan deze nu afspelen op het digibord!",
     "praatplaatContinue": "Ga verder met deze compositie",
@@ -761,11 +765,11 @@
     "resendConfirmationFailed": "Kon de bevestigingsmail niet versturen. Probeer het opnieuw."
   },
   "studentFeedback": {
-    "bannerTitle": "Je juf of meester zegt:",
+    "bannerTitle": "Feedback van je docent:",
     "noticeButton": "Je hebt een reactie op \"{{name}}\"!",
-    "modalTitle": "Reactie van je juf of meester",
-    "modalHint": "Wil je verder werken aan je muziek? Typ dan je code {{code}} bij \"Ik heb een code\".",
-    "modalClose": "Leuk!"
+    "modalTitle": "Feedback van je docent",
+    "modalHint": "Verder werken aan je compositie? Voer je code {{code}} in bij \"Ik heb een code\".",
+    "modalClose": "Oké"
   },
   "submissions": {
     "validateClassCodeError": "Kon klas niet controleren",

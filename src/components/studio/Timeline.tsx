@@ -1,7 +1,7 @@
 import { memo, useRef, useEffect, useCallback, useMemo, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles } from 'lucide-react';
+import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles, MousePointerClick, X } from 'lucide-react';
 import type { Track as TrackType, Sample, Clip, Section, ClipEffects } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
@@ -11,6 +11,7 @@ import { EffectsModal } from './EffectsModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration } from '../../utils/audio';
 import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from '../../constants/config';
+import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
@@ -85,6 +86,23 @@ export const Timeline = memo(function Timeline({
 
   // Clear timeline confirmation state
   const [showClearConfirm, setShowClearConfirm] = useState(false);
+
+  // Eenmalige hint (week 3): de clip-tools (knippen/effecten/volume) verschijnen
+  // pas ná selectie van een clip — dat is voor nieuwe gebruikers onvindbaar.
+  const [showClipToolsHint, setShowClipToolsHint] = useState(
+    () => !readOnly && !hasSeenFirstRun('clip-tools-hint')
+  );
+  useEffect(() => {
+    if (showClipToolsHint && clipEdit) {
+      // Er is een clip geselecteerd — de gebruiker heeft het ontdekt
+      markFirstRunSeen('clip-tools-hint');
+      setShowClipToolsHint(false);
+    }
+  }, [clipEdit, showClipToolsHint]);
+  const dismissClipToolsHint = useCallback(() => {
+    markFirstRunSeen('clip-tools-hint');
+    setShowClipToolsHint(false);
+  }, []);
 
   const handleClearClick = useCallback(() => {
     setShowClearConfirm(true);
@@ -532,6 +550,21 @@ export const Timeline = memo(function Timeline({
           )}
         </div>
       </div>
+
+      {/* Eenmalige tip: clip-tools zitten achter selectie (week 3, onboarding) */}
+      {showClipToolsHint && !hasNoClips && !clipEdit && (
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-accent-50 border-b border-accent-200 text-xs sm:text-sm text-accent-800">
+          <MousePointerClick size={14} className="shrink-0" />
+          <span className="flex-1">{t('studio.clipToolsHint')}</span>
+          <button
+            onClick={dismissClipToolsHint}
+            aria-label={t('common.close')}
+            className="p-0.5 rounded hover:bg-accent-100 text-accent-600 hover:text-accent-800 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Clip volume popover — portal to escape overflow */}
       {showClipVolumePopover && clipEdit?.onClipVolumeChange && clipEdit?.onClipMuteToggle && clipVolumeBtnRef.current && createPortal(

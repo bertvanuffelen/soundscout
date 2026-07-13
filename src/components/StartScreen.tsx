@@ -16,6 +16,8 @@ import { Button, Modal, LanguageSwitcher } from './ui';
 import { Star } from 'lucide-react';
 import type { ReceivedFeedback } from '../types';
 import { getStickerEmoji } from './teacher/FeedbackPanel';
+import { OnboardingAnimation } from './common/OnboardingAnimation';
+import { hasSeenFirstRun, markFirstRunSeen } from '../utils/firstRun';
 // Lazy: FeedbackModal sleept @emailjs/browser mee — pas laden bij openen.
 const FeedbackModal = lazy(() =>
   import('./feedback').then((m) => ({ default: m.FeedbackModal }))
@@ -105,19 +107,37 @@ export function StartScreen() {
     setFeedbackNotice(null);
   };
 
+  // First-run intro: bij de allereerste "Nieuwe compositie" eerst de
+  // "In 4 stappen"-animatie tonen (week 3, onboarding). Daarna nooit meer.
+  const [showFirstRunIntro, setShowFirstRunIntro] = useState(false);
+
+  const openWizard = () => {
+    if (!hasSeenFirstRun('onboarding-intro')) {
+      setShowFirstRunIntro(true);
+    } else {
+      setShowComposeWizard(true);
+    }
+  };
+
+  const handleIntroDone = () => {
+    markFirstRunSeen('onboarding-intro');
+    setShowFirstRunIntro(false);
+    setShowComposeWizard(true);
+  };
+
   const handleNewComposition = () => {
     if (hasClipsInProgress) {
       // Waarschuw dat de huidige compositie verloren gaat
       setShowNewConfirm(true);
     } else {
-      // Geen actieve compositie — open de wizard
-      setShowComposeWizard(true);
+      // Geen actieve compositie — open de wizard (met eenmalige intro)
+      openWizard();
     }
   };
 
   const handleConfirmNewComposition = () => {
     setShowNewConfirm(false);
-    setShowComposeWizard(true);
+    openWizard();
   };
 
   const handleSelectTheme = async (themeId: string) => {
@@ -419,6 +439,23 @@ export function StartScreen() {
         isOpen={showCodeModal}
         onClose={() => setShowCodeModal(false)}
       />
+
+      {/* First-run intro: eenmalige uitleg-animatie vóór de eerste compositie */}
+      <Modal
+        isOpen={showFirstRunIntro}
+        onClose={handleIntroDone}
+        title={t('start.introTitle')}
+        size="xl"
+      >
+        <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface mb-4">
+          <OnboardingAnimation />
+        </div>
+        <div className="flex justify-center">
+          <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
+            {t('start.introStart')}
+          </Button>
+        </div>
+      </Modal>
 
       {/* Docent-feedback modal (migratie 026) */}
       <Modal

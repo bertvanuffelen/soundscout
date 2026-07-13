@@ -30,7 +30,8 @@
     "selectLocation": "Click on a location to explore",
     "loadingTheme": "Loading theme...",
     "studioShort": "Studio",
-    "cityMapAlt": "City map"
+    "cityMapAlt": "City map",
+    "firstVisitHint": "Click a location to collect sounds. Then turn them into music in the studio."
   },
   "themeSelection": {
     "title": "Choose your world",
@@ -90,6 +91,8 @@
     "startGame": "Start Game",
     "continueComposition": "Continue",
     "newComposition": "New Composition",
+    "introTitle": "How SoundScout works",
+    "introStart": "Get started",
     "newCompositionConfirm": "You already have a composition in progress. Starting a new one will permanently discard your collected sounds and current composition.",
     "newCompositionStart": "Start over",
     "haveCode": "I have a code",
@@ -188,6 +191,7 @@
     "emptyLibrary": "Go collect some sounds first!",
     "emptyLibraryHint": "Visit locations on the map to collect sounds.",
     "dragHint": "Drag sounds to the timeline",
+    "clipToolsHint": "Tip: click a block on the timeline to trim it, add effects or adjust the volume.",
     "addToTrack": "Add {{name}} to timeline",
     "dragToTimeline": "Drag to timeline",
     "trim": "Trim",
@@ -278,7 +282,7 @@
     "videoExportSuccess": "Video downloaded!",
     "praatplaatSubmitted": "Your composition is on the sound map!",
     "yourCodeTitle": "Your code:",
-    "yourCodeHint": "Keep this code safe! Use it later to see what your teacher thinks of your music (Start screen → \"I have a code\").",
+    "yourCodeHint": "Keep this code safe! Use it later to see your teacher's feedback (Start screen → \"I have a code\").",
     "praatplaatSuccessTitle": "Success!",
     "praatplaatSuccessMessage": "Your composition has been placed on the sound map. The teacher can now play it on the smartboard!",
     "praatplaatContinue": "Continue with this composition",
@@ -761,11 +765,11 @@
     "resendConfirmationFailed": "Could not send the confirmation email. Please try again."
   },
   "studentFeedback": {
-    "bannerTitle": "Your teacher says:",
+    "bannerTitle": "Feedback from your teacher:",
     "noticeButton": "You have a reaction to \"{{name}}\"!",
-    "modalTitle": "A message from your teacher",
-    "modalHint": "Want to keep working on your music? Enter your code {{code}} at \"I have a code\".",
-    "modalClose": "Nice!"
+    "modalTitle": "Feedback from your teacher",
+    "modalHint": "Want to keep working on your composition? Enter your code {{code}} at \"I have a code\".",
+    "modalClose": "OK"
   },
   "submissions": {
     "validateClassCodeError": "Could not verify class",

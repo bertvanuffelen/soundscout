@@ -6,11 +6,12 @@
  * Video metadata is centralised so switching providers (YouTube → Vimeo) is trivial.
  */
 
-import { useState, useCallback, useRef, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Play } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { Button } from '../ui';
+import { OnboardingAnimation } from '../common/OnboardingAnimation';
 import { cn } from '../../utils/cn';
 
 // --- Video provider helpers (change these two functions to switch provider) ---
@@ -81,27 +82,6 @@ export default function TutorialScreen() {
 
   const steps = t('tutorial.steps', { returnObjects: true }) as string[];
 
-  // Onboarding-animatie (public/animaties/onboarding-4-stappen.html) — de iframe-hoogte
-  // groeit automatisch mee met de inhoud, zodat het op elke breedte netjes past.
-  const animRef = useRef<HTMLIFrameElement>(null);
-  useEffect(() => {
-    const iframe = animRef.current;
-    if (!iframe) return;
-    let ro: ResizeObserver | undefined;
-    const setup = () => {
-      const doc = iframe.contentWindow?.document;
-      if (!doc) return;
-      const apply = () => { iframe.style.height = doc.documentElement.scrollHeight + 'px'; };
-      apply();
-      ro?.disconnect();
-      ro = new ResizeObserver(apply);
-      ro.observe(doc.documentElement);
-    };
-    iframe.addEventListener('load', setup);
-    if (iframe.contentWindow?.document?.readyState === 'complete') setup();
-    return () => { iframe.removeEventListener('load', setup); ro?.disconnect(); };
-  }, []);
-
   return (
     <div className="min-h-screen bg-bg-app flex flex-col">
       {/* --- Header --- */}
@@ -156,14 +136,7 @@ export default function TutorialScreen() {
               </h2>
               {/* Gemaakte huisstijl-animatie van de 4 stappen (bron: public/animaties/) */}
               <div className="mb-5 rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface">
-                <iframe
-                  ref={animRef}
-                  src="/animaties/onboarding-4-stappen.html"
-                  title={t('tutorial.quickStart')}
-                  loading="lazy"
-                  className="w-full block"
-                  style={{ border: 0, height: 520 }}
-                />
+                <OnboardingAnimation />
               </div>
               <div className="flex flex-col gap-3">
                 {steps.map((step, i) => (

@@ -5,19 +5,28 @@
  * Users can select a location to visit and collect samples.
  */
 
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, ArrowLeft } from 'lucide-react';
+import { MapPin, ArrowLeft, X } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { Button } from '../ui';
 import { LocationMarker } from './LocationMarker';
+import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 
 export function MapView() {
   const { t } = useTranslation();
   const goToStart = useAppStore((s) => s.goToStart);
   const goToLocation = useAppStore((s) => s.goToLocation);
   const goToStudio = useAppStore((s) => s.goToStudio);
+
+  // Eenmalige hint (week 3): wat doe je op deze kaart?
+  const [showMapHint, setShowMapHint] = useState(() => !hasSeenFirstRun('map-hint'));
+  const dismissMapHint = () => {
+    markFirstRunSeen('map-hint');
+    setShowMapHint(false);
+  };
 
   const theme = useThemeStore((s) => s.theme);
   const mapConfig = useThemeStore((s) => s.getMapConfig());
@@ -39,6 +48,8 @@ export function MapView() {
   };
 
   const handleLocationClick = (locationId: string) => {
+    // Eerste locatiebezoek = doel van de kaart begrepen; hint vervalt
+    if (showMapHint) dismissMapHint();
     goToLocation(locationId);
   };
 
@@ -68,6 +79,21 @@ export function MapView() {
           <span className="sm:hidden">{t('map.studioShort')}</span>
         </Button>
       </div>
+
+      {/* Eenmalige tip: wat doe je op deze kaart? (week 3, onboarding) */}
+      {showMapHint && (
+        <div className="flex items-center gap-2 px-3 py-1.5 bg-accent-50 md:border-b md:border-accent-200 text-xs sm:text-sm text-accent-800 shrink-0">
+          <MapPin size={14} className="shrink-0" />
+          <span className="flex-1">{t('map.firstVisitHint')}</span>
+          <button
+            onClick={dismissMapHint}
+            aria-label={t('common.close')}
+            className="p-0.5 rounded hover:bg-accent-100 text-accent-600 hover:text-accent-800 transition-colors"
+          >
+            <X size={14} />
+          </button>
+        </div>
+      )}
 
       {/* Map Area - Desktop: white card with minimal padding, Mobile: full bleed */}
       <div className="flex-1 flex items-center justify-center p-[1%] md:p-[2%]">
