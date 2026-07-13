@@ -46,18 +46,28 @@ variëren in shot: straatscène / dwarsdoorsnede / overzicht — kies per plaat 
   positief af van de oude.)
 - Geen letterbox, randen of kaders — het beeld vult het volledige 16:9-vlak.
 
-## Praatplaat = verzameling mini-verhaaltjes (soundscape-vignetten)
+## Twee soorten "praatplaten" — belangrijk onderscheid
 
-De sterkste praatplaat is **niet één grote massa**, maar een set **duidelijk gescheiden
-mini-taferelen** — elk een klein verhaaltje waar een kind een héle *soundscape* bij kan
-bedenken (een reeks geluiden, niet één klank). Denk in **zones/compartimenten**: elk
-tafereel heeft z'n eigen plek, personages en gebeurtenis (bv. "de kombuis": pruttelende
-pot + hakkend mes + kat die een pan omstoot + kok die vloekt).
-- Kies bij voorkeur een setting die vanzelf **compartimenten** geeft (dwarsdoorsnede van
-  een schip/grot/gebouw met aparte ruimtes; of een landschap met duidelijk aparte plekken).
-- Streef naar **8-15 herkenbare mini-taferelen**, elk met eigen soundscape-potentie,
+- **Locatie-achtergrond** (`stijl-locatie.md`): de wemelscène áchter een locatie, met
+  6-8 sound-hotspots (= de samples) + achtergrond-gags. Prima als volle drukke plaat;
+  hoeft géén losse mini-verhaaltjes.
+- **Hoofd-praatplaat** (dit contract): de **losstaande** praatplaat (bv. een marktplein)
+  die een kind kiest en waar het bij componeert. **Hier** geldt de mini-verhaaltjes-eis
+  hieronder.
+
+## Hoofd-praatplaat = verzameling mini-verhaaltjes (soundscape-vignetten)
+
+De sterkste hoofd-praatplaat is **niet één grote massa**, maar een set **duidelijk
+gescheiden mini-taferelen** — elk een klein verhaaltje waar een kind een héle *soundscape*
+bij kan bedenken (een reeks geluiden, niet één klank). Elk tafereel heeft z'n eigen plek,
+personages en gebeurtenis (bv. "de kombuis": pruttelende pot + hakkend mes + kat die een
+pan omstoot + mopperende kok).
+- **Streef naar 20-30 herkenbare mini-taferelen**, elk met eigen soundscape-potentie,
   ruimtelijk gescheiden zodat een kind er eentje kan "aanwijzen".
-- Vul aan met losse klungel-gags voor de wemel-pret, maar de mini-verhaaltjes zijn de kern.
+- Dit kan in **elke setting** — een druk marktplein werkt prima; een dwarsdoorsnede
+  (schip/grot met aparte ruimtes) is een optie, geen must.
+- Formuleer elk tafereel in de prompt als een klein clustertje activiteit (2-4 dingen die
+  samen één verhaaltje vormen), niet als losse atomaire acties.
 
 ## SoundScout-eisen
 
