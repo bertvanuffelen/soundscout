@@ -1,5 +1,14 @@
 # Nieuwe Locatie of Thema Toevoegen
 
+> **⚡ Sinds week 4 van het masterplan is er een begeleide route:** open `/editor`
+> (dev-server) → tab **Thema-wizard**. Die leidt je van thema-idee → AI-prompts
+> (afbeeldingen + geluid-zoekpakketten) → kaartposities → validatie → complete
+> code-export met een kant-en-klare Claude Code-opdracht. Hotspots plaats je
+> daarna per locatie via de tab **Locatie-editor**. Thema's kunnen een
+> seizoensvenster krijgen (`activeFrom`/`activeUntil`, 'MM-DD') zodat er 3-4
+> thema's tegelijk actief staan die automatisch verschijnen/verdwijnen.
+> De checklist hieronder blijft gelden als naslag voor de handmatige route.
+
 ## Checklist: Nieuwe Locatie (binnen bestaand thema)
 
 ### Stap 1: Assets voorbereiden

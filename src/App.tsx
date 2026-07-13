@@ -14,10 +14,10 @@ import { StartScreen } from './components/StartScreen';
 import { MapView } from './components/map/MapView';
 import { LocationScene } from './components/location/LocationScene';
 
-// Dev-only authoring tool — lazy zodat de editor (en zijn componenten)
+// Dev-only authoring-tools (thema-wizard + locatie-editor) — lazy zodat ze
 // niet in de productie-main-bundle belanden.
-const LocationEditor = lazy(() =>
-  import('./pages/LocationEditor').then((m) => ({ default: m.LocationEditor }))
+const EditorHub = lazy(() =>
+  import('./pages/EditorHub').then((m) => ({ default: m.EditorHub }))
 );
 
 // Lazy-loaded screen components for code splitting
@@ -384,7 +384,7 @@ function App() {
     return (
       <ErrorBoundary>
         <Suspense fallback={null}>
-          <LocationEditor />
+          <EditorHub />
         </Suspense>
       </ErrorBoundary>
     );
