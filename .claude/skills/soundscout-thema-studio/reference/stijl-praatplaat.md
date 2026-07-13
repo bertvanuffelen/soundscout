@@ -29,7 +29,9 @@ variëren in shot: straatscène / dwarsdoorsnede / overzicht — kies per plaat 
    vallen"). De lijst wordt gegenereerd **uít de sample-lijst van het themaplan**:
    elke sample van de gekoppelde locaties komt minstens 1× terug als activiteit; geen
    activiteit die niet sonificeerbaar is.
-5. **Diversiteit**: personages in gevarieerde kleuren, geen kleur > ~20%.
+5. **Diversiteit**: neem het robot-standaardblok uit
+   [stijl-robots.md](stijl-robots.md) op — brede kleurmix (geen kleur > ~20%), variatie
+   in vorm (blik/android/chibi) en grootte.
 6. **Verborgen zoekdetails**: 3-5 kleine elementen om te vinden.
 7. **Stijl & mood**: cartoon line-art, clean bold outlines, heldere licht verweerde
    kleuren, dominante themakleur benoemen, kindvriendelijk, 4k detail.

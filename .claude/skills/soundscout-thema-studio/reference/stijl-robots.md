@@ -1,0 +1,55 @@
+# Stijlcontract: de robots (geldt voor ÁLLE beeldtypes)
+
+Kernregel: **alle personages en dieren zijn robots** — maar wél een herkenbare
+robotfamilie mét bewuste diversiteit. Bekijk als ijkbeelden met Read:
+`public/images/praatplaten/sportveld.jpg`, `public/images/themes/basis/klaslokaal.jpg`,
+`public/images/themes/basis/boerderij.jpg`.
+
+## De robotfamilie (herkenbare stijl)
+
+- **Cartoon line-art**: dikke, donkere, schone contouren; cel-shaded; warme belichting.
+- **Gezicht**: een donker scherm- of visorvlak met **gloeiende ogen** (cyaan, geel,
+  groen, ...) en een simpele, vriendelijke expressie. Ze emoten: lachjes, bezorgde blik,
+  zweetdruppels, open mond. Kindvriendelijk, nooit eng.
+- **Lijf**: metalen panelen met zichtbare naden, bouten/klinknagels, soms een borstpaneel,
+  metertjes of een gloeiend accent. Gesegmenteerde (jointed) armen en benen, articulerende
+  handen, vaak een antenne.
+- **Finish varieert**: van glad en glanzend tot retro-blik tot licht geroest/gelapt
+  (pleisters, lapjes, roestplekken) — dat mag, het geeft karakter.
+
+## Verplichte diversiteit (inclusiviteit — geen "te wit/zilver" leger)
+
+De robots vervangen mensen; behandel diversiteit net zo bewust als bij een diverse
+kindergroep:
+- **Kleur**: breed palet door elkaar — zilver/grijs, oranje, rood, blauw, teal, goud/geel,
+  groen, paars, roze, koper. **Geen enkele kleur > ~20%** van de robots. Vermijd een
+  meerderheid zilver/grijs.
+- **Vorm**: mix van drie archetypes in elke drukke scène —
+  (1) **blokkige retro-blikrobot** (rechthoekige kop, antenne, draaiknoppen),
+  (2) **gladde android** (ronde helm, donkere visor),
+  (3) **klein rond chibi-botje**.
+- **Grootte**: groot/log naast middelgroot-humanoïde naast kleuterformaat.
+- **Houding/rol**: gevarieerd — niet allemaal dezelfde pose of hetzelfde type.
+
+## In de prompt (standaardblok, altijd meesturen)
+
+> "All characters and animals are friendly cartoon ROBOTS in one consistent family:
+> bold dark outlines, cel-shaded, glowing screen/visor faces with simple happy
+> expressions, metallic paneled bodies with visible bolts and seams, jointed limbs.
+> Wide diversity of robot COLORS (silver, orange, red, blue, teal, gold, green, purple,
+> pink, copper) with no single color dominating (max ~20% per color); mix of body SHAPES
+> (boxy retro tin-robots, sleek visor androids, small round chibi bots) and SIZES
+> (large, medium, tiny). Animals are robot-animals (e.g. robot parrot, robot monkey)."
+
+## Thema-flavor
+
+De thema-sfeer zit in accessoires/decor óp de robots, niet in hun soort: piraten-robots
+met houten-been-bouten, ooglap-panelen, zeewier en roest; jungle-robots met mos. Ze
+blijven altijd robots uit dezelfde familie.
+
+## Afkeuren bij
+
+- Overwegend zilver/grijs (te uniform, "te wit").
+- Identieke/gekloonde robots, allemaal dezelfde vorm of pose.
+- Menselijke huid, haar of echte dierenvacht; fotorealisme.
+- Eén kleur die de scène domineert.

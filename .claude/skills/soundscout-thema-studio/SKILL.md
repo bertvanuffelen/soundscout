@@ -79,10 +79,13 @@ Eisen (details in [reference/datamodel-thema.md](reference/datamodel-thema.md)):
 
 ## Fase C — Beeldproductie
 
-Stijlcontracten: [stijl-praatplaat](reference/stijl-praatplaat.md) ·
+Stijlcontracten: **[stijl-robots](reference/stijl-robots.md) (de robotfamilie + verplichte
+kleur/vorm/grootte-diversiteit — geldt voor álle beelden)** ·
+[stijl-praatplaat](reference/stijl-praatplaat.md) ·
 [stijl-locatie](reference/stijl-locatie.md) · [stijl-storyboard](reference/stijl-storyboard.md) ·
 [stijl-plattegrond](reference/stijl-plattegrond.md). Checklist:
-[beoordeling-checklist.md](reference/beoordeling-checklist.md).
+[beoordeling-checklist.md](reference/beoordeling-checklist.md). Neem in élke beeldprompt
+het robot-standaardblok uit stijl-robots.md op.
 
 **Ankersysteem:**
 - Thema in de bestaande basis-stijl → gebruik de 3 bestaande praatplaten

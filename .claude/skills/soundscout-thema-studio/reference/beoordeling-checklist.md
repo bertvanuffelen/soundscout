@@ -16,6 +16,7 @@ met één regel toelichting; log in `manifest.json`. Eén ✗ = beeld gaat niet 
 | A5 | **Álles is een robot**: piraten/bewoners/dieren/monsters zijn robot-versies; géén mensen of echte dieren |
 | A6 | Kindvriendelijk (geen enge/gewelddadige elementen) |
 | A7 | Geen AI-artefacten: extra ledematen, half gerenderde objecten, onmogelijke aansluitingen, smeltende vormen |
+| A8 | **Robot-diversiteit** (zie stijl-robots.md): brede kleurmix, geen kleur > ~20%, niet overwegend zilver/grijs; variatie in vorm (blik/android/chibi) en grootte; herkenbare robotfamilie |
 
 ## Praatplaat (extra)
 
