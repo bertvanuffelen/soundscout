@@ -13,9 +13,13 @@ robotfamilie mét bewuste diversiteit. Bekijk als ijkbeelden met Read:
 ## De robotfamilie (herkenbare stijl)
 
 - **Cartoon line-art**: dikke, donkere, schone contouren; cel-shaded; warme belichting.
-- **Gezicht**: een donker scherm- of visorvlak met **gloeiende ogen** (cyaan, geel,
-  groen, ...) en een simpele, vriendelijke expressie. Ze emoten: lachjes, bezorgde blik,
-  zweetdruppels, open mond. Kindvriendelijk, nooit eng.
+- **Gezicht (consistent, hét familiekenmerk)**: élke robot heeft een donker scherm- of
+  visorvlak met **gloeiende ogen** (cyaan, geel, groen, ...) en een **simpel getekend
+  mondje** (een gloeiend lijntje of eenvoudige mondvorm op het scherm). Expressie mag
+  variëren (lachje, bezorgd, verrast) maar blijft simpel. **Nooit een menselijke mond met
+  tanden, lippen of een realistische mond** — dat maakt er een mens-in-een-pak van.
+  Kindvriendelijk, nooit eng. Uitzondering met mate: een robot-schedelgezicht mag als
+  piraten-gag, zolang het duidelijk metaal/robot is.
 - **Lijf**: metalen panelen met zichtbare naden, bouten/klinknagels, soms een borstpaneel,
   metertjes of een gloeiend accent. Gesegmenteerde (jointed) armen en benen, articulerende
   handen, vaak een antenne.
@@ -39,8 +43,9 @@ kindergroep:
 ## In de prompt (standaardblok, altijd meesturen)
 
 > "All characters and animals are friendly cartoon ROBOTS in one consistent family:
-> bold dark outlines, cel-shaded, glowing screen/visor faces with simple happy
-> expressions, metallic paneled bodies with visible bolts and seams, jointed limbs.
+> bold dark outlines, cel-shaded. Every robot has a dark SCREEN or VISOR face with glowing
+> eyes and a simple drawn mouth (a glowing line or shape) — never a human mouth, teeth or
+> lips. Metallic paneled bodies with visible bolts and seams, jointed limbs.
 > Wide diversity of robot COLORS (silver, orange, red, blue, teal, gold, green, purple,
 > pink, copper) with no single color dominating (max ~20% per color); mix of body SHAPES
 > (boxy retro tin-robots, sleek visor androids, small round chibi bots) and SIZES
@@ -56,5 +61,6 @@ blijven altijd robots uit dezelfde familie.
 
 - Overwegend zilver/grijs (te uniform, "te wit").
 - Identieke/gekloonde robots, allemaal dezelfde vorm of pose.
-- Menselijke huid, haar of echte dierenvacht; fotorealisme.
+- Menselijke huid, haar, echte dierenvacht of een **menselijke mond met tanden/lippen**;
+  fotorealisme. (Gezicht = altijd scherm/visor met gloeiende ogen + simpel mondje.)
 - Eén kleur die de scène domineert.
