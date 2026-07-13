@@ -131,6 +131,20 @@ zodra we ze zoeken/genereren.
 Activiteitenlijst (~26, met sample-mapping): zie [themaplan.md](themaplan.md) §3. Prompt +
 job-id volgen bij generatie.
 
+## Praatplaten
+
+### pp-piratenmarkt — hoofd-praatplaat
+- **Status**: ✅ GOEDGEKEURD (2026-07-13, v3). → `package/public/images/praatplaten/piratenmarkt.jpg`.
+- **Job-id(s)**: v1 `fcae0093` (goede markt, bewaard als backup) → v2 `45bbd60d`
+  (hergroepeerd tot ~25 mini-verhaaltjes) → v3-edit `636de33f-8ea0-4bdc-afaf-4fdd7755bb72`
+  (tekstbordjes → picture-bordjes; taal-neutraal, geen aparte EN nodig).
+- **Mini-wizard**: overzicht straatscène · 40+/extreem druk · avond-festival met lampionnen.
+- **Volledige prompt (v2)**: [prompts/pp-piratenmarkt-v2.txt](prompts/pp-piratenmarkt-v2.txt)
+  (v1: [pp-piratenmarkt-v1.txt](prompts/pp-piratenmarkt-v1.txt))
+- **Leerpunten (nu in skill)**: (1) hoofd-praatplaat = 20-30 mini-verhaaltjes/soundscape-
+  vignetten (≠ locatieplaat met 6-8 hotspots); (2) scène-namen NIET in caps in de prompt
+  (worden tekstbordjes); (3) picture-bordjes = taal-neutraal.
+
 ## Storyboards
 
 ### schattenjacht — nog te genereren

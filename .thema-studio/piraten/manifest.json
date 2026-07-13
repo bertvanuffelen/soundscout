@@ -57,8 +57,11 @@
     },
     "pp-piratenmarkt": {
       "type": "praatplaat",
-      "status": "todo",
-      "iteraties": 0
+      "status": "goedgekeurd",
+      "iteraties": 3,
+      "job_id": "fcae0093 (v1) -> 45bbd60d (v2 mini-verhaaltjes) -> 636de33f (v3 tekst weg)",
+      "eindpad": "package/public/images/praatplaten/piratenmarkt.jpg",
+      "opmerking": "taal-neutraal (picture-bordjes); markt-v1 bewaard als backup"
     },
     "sb-kaart": {
       "type": "storyboard",
@@ -218,6 +221,45 @@
       "edit": true,
       "image_references": [
         ".thema-studio/piraten/kandidaten/plattegrond-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:38:50",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "fcae0093-4a95-4dd5-b55e-076287054eba",
+      "out": ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/pp-piratenmarkt-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:52:58",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "45bbd60d-37bd-419b-9efe-2dd8fbcde971",
+      "out": ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/pp-piratenmarkt-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:55:31",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "636de33f-8ea0-4bdc-afaf-4fdd7755bb72",
+      "out": ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v3.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v2.png"
       ]
     }
   ]

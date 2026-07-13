@@ -1,0 +1,37 @@
+Wide horizontal illustration. High overview street-scene of a lively pirate town MARKET SQUARE during a festive evening PIRATE FESTIVAL. EXTREMELY CROWDED and busy, a huge detailed wimmelbild, lit by warm hanging lanterns and torches with strings of pirate-flag bunting, a joyful chaotic party atmosphere. Match the art style, line work and robot family of the attached style reference.
+
+Compose the square as ~25 DISTINCT LITTLE SCENES (separate vignettes), each spatially separated with its own spot, characters and small story (a cluster of 2-4 things happening together), so each reads as its own little tale you could give a soundscape:
+
+1. THE STAGE: a robot band playing accordion and tin whistle while a dancer trips over a cable
+2. THE GROG BAR: robots clinking mugs, one sloshing oil over another while the barman wipes up grumpily
+3. THE BARREL DRUMMERS: two robots drumming on barrels while a third tumbles into one
+4. THE FISH STALL: a fishmonger tossing fish as robot seagulls swoop and a robot cat snatches one
+5. THE COOKING POT: a cook stirring a pot that boils over while a helper sneezes into the soup
+6. THE GAMBLING CORNER: a robot rolling dice, losing, and flinging his hat down
+7. THE PRIZE WHEEL: a robot spinning a wheel that flies off and rolls through the crowd
+8. THE CONFETTI CANNON: a robot firing it while the robot beside him topples backwards in fright
+9. THE GREASED POLE: a robot climbing a greased pole and sliding back down onto a spectator
+10. THE BARREL RACE: robots rolling inside barrels, crashing, one tipping over
+11. THE BAGUETTE DUEL: two robots sword-fighting with baguettes, crumbs flying
+12. THE PIE CONTEST: chibi robots face-first in pies
+13. THE FIREWORKS CORNER: a robot lighting sparklers, one fizzing off into the sky
+14. THE SAUSAGE GRILL: a robot monkey stealing sausages while the grill-master chases it
+15. THE FORTUNE TELLER: a robot with a glowing crystal ball as a customer recoils in shock
+16. THE VOODOO STALL: a robot rattling bone charms next to tinkling wind chimes
+17. THE GONG: a robot banging a big gong while everyone looks up
+18. THE GROG FOUNTAIN: robots filling mugs, one slipping in the puddle
+19. THE MAP STALL: a robot studying a treasure map upside-down while another points and laughs
+20. THE SINGING CIRCLE: robots singing a sea shanty around a lantern
+21. THE WHEELBARROW SPILL: a robot losing a wheelbarrow of fruit, apples rolling everywhere
+22. THE GOLD WEIGHER: a robot spilling a sack of gold coins as everyone dives for them
+23. THE GIANT ROAST: two robots carrying an enormous roast, wobbling dangerously
+24. THE BUNTING HANGER: a robot hanging lantern strings, tangled and dangling from them
+25. THE DUNK TANK: a ball hitting the target and a robot plunging into the water
+
+All characters and animals are friendly cartoon ROBOTS in one consistent family: bold dark outlines, cel-shaded. Every robot has a dark SCREEN or VISOR face with glowing eyes and a simple drawn mouth (a glowing line or shape) — never a human mouth, teeth or lips. Metallic paneled bodies with visible bolts and seams, jointed limbs. MOST robots wear clear pirate gear: tricorn hats, head bandanas, eye-patch panels, riveted peg-legs, gold hoop earrings, striped sashes, occasional hook-hands. Wide diversity of robot COLORS (silver, orange, red, blue, teal, gold, green, purple, pink, copper) with no single color dominating (max ~20% per color); mix of body SHAPES (boxy retro tin-robots, sleek visor androids, small round chibi bots) and SIZES (large, medium, tiny). EVERY animal is a clearly MECHANICAL robot-animal built from metal panels with glowing eyes and visible joints and bolts — never an organic or real animal, no fur, no feathers, no real skin (metal robot monkey, robot cat, robot seagulls).
+
+Hidden search details: a robot mouse stealing cheese; a single gold coin on the cobbles; a message in a bottle at a stall; a tiny robot hiding in a grog barrel.
+
+Style and mood: cartoon line-art, clean bold outlines, bright but slightly worn colors, matching the attached style reference; warm lantern-lit evening with teal (#0E8C8C) and treasure-gold (#E8A02C) accents, festive joyful pirate-party mood, kid-friendly, 4k detail.
+
+Negative: no text, letters, numbers, words, speech bubbles, labels or captions on or near any element; no onomatopoeia or comic sound-effect words (no BOOM, POW, SPLASH, etc.); no logos or watermarks; no realistic humans or real animals — robots only; every animal is a mechanical robot-animal (no fur/feathers/skin); every face is a robot screen/visor with glowing eyes, never a human mouth or teeth; no modern steel machinery; no letterbox, frame or borders; fill the entire 16:9 frame.
