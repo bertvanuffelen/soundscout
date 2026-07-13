@@ -18,6 +18,11 @@ scène uit een kort verhaal.
   decor, zelfde belichting. Werkwijze: frame 1 eerst genereren en laten goedkeuren;
   frames 2-5 genereren mét frame 1 als referentiebeeld (character consistency) +
   het stijlanker.
+- **Varieer de houding/expressie van de held per frame** — nooit exact dezelfde pose in
+  elk frame (dat oogt als copy-paste). De referentie borgt het *ontwerp*; de prompt stuurt
+  *pose + expressie*. Een personage kan dus per frame anders staan en kijken — bv. eng/
+  dreigend in frame 1-3 en vriendelijk in frame 4 (plottwist) — en tóch duidelijk dezelfde
+  robot zijn. Beschrijf per frame expliciet een andere, dynamische houding.
 - Elk frame moet **in één oogopslag leesbaar** zijn wat er gebeurt (digibord-afstand).
 - Kies één frame als `coverImage` (het meest dynamische — cf. `verspringen` gebruikt
   frame 2).
