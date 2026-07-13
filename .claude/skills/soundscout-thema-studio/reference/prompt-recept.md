@@ -51,7 +51,8 @@ pas na zijn akkoord.** Zo ziet hij vooraf of het genoeg/klopt.
 
 ```
 Negative: no text, letters, numbers, words, speech bubbles, labels or captions on or near
-any element; no logos or watermarks; no realistic humans or real animals — robots only;
+any element; no onomatopoeia or comic sound-effect words (no BOOM, POW, SPLASH, etc.);
+no logos or watermarks; no realistic humans or real animals — robots only;
 no letterbox, frame or borders; fill the entire 16:9 frame.
 ```
 

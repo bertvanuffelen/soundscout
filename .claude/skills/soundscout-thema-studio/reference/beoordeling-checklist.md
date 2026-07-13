@@ -10,7 +10,7 @@ met één regel toelichting; log in `manifest.json`. Eén ✗ = beeld gaat niet 
 | # | Criterium |
 |---|---|
 | A1 | Volledig gevuld 16:9-vlak — geen letterbox, randen, kaders |
-| A2 | **Geen tekst**: geen letters, cijfers, tekstballonnen, logo's, watermerken (uitzondering: de expliciet opgegeven labels op de plattegrond — dan NL-spelling letter voor letter checken) |
+| A2 | **Geen tekst**: geen letters, cijfers, tekstballonnen, logo's, watermerken, én **geen geluidswoorden/onomatopee** (BOOM, POW, SPLASH) — die sluipt Nano Banana er graag in bij kanonnen/klappen (uitzondering: de expliciet opgegeven labels op de plattegrond — dan NL-spelling letter voor letter checken) |
 | A3 | Stijlmatch met het stijlanker: lijnvoering, detaildichtheid, kleurbehandeling |
 | A4 | Palet conform themaplan (dominante themakleur aanwezig, niet vals) |
 | A5 | **Álles is een robot**: piraten/bewoners/monsters zijn robot-versies; géén mensen. **Gezicht = scherm/visor met gloeiende ogen + simpel mondje; géén menselijke mond/tanden/lippen** |
