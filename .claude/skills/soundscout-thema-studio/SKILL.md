@@ -37,8 +37,14 @@ genereert de assets, bewaakt stijl en eisen, en assembleert het pakket.
   welke fase je zit. Zo nee: start fase A.
 - API-keys staan in `~/.config/soundscout-thema-studio/.env` (zie
   [reference/api-setup.md](reference/api-setup.md)). Scripts laden die zelf via `_env.py`.
-- `manifest.json` is jouw logboek: status per asset, elke API-call (script + doel +
-  iteratie), gekozen model, gebruikte stijlankers. Werk het na elke stap bij.
+- `manifest.json` is het **machine-logboek**: status per asset, elke API-call (script +
+  doel + iteratie), model, stijlankers. Werk het na elke stap bij.
+- `LOGBOEK.md` (uit [templates/LOGBOEK.md.template](templates/LOGBOEK.md.template)) is het
+  **mens-logboek** van het thema: elke plaat, elk geluid, elk element mét de **volledige
+  prompt en herkomst**. Maak het aan in fase B en werk het bij na élke generatie,
+  geluidskeuze en beslissing — zodat een plaat later aan te passen is zonder te zoeken. Het
+  reist bij integratie mee naar `src/data/themes/{themeId}/LOGBOEK.md` (durabel/versioned;
+  de tekst-records in `.thema-studio/` worden ook getrackt, alleen de zware beelden niet).
 
 ## Fase A — Brainstorm & intake
 
@@ -131,7 +137,7 @@ credits/beeld — geen key nodig; zie [reference/api-setup.md](reference/api-set
    aan Bert voor (opties: zijn aanwijzing, Higgsfield als tweede mening, prompt herzien
    in het themaplan).
 8. Goedgekeurd → verplaats naar het juiste `package/`-pad; overweeg promotie tot
-   stijlanker.
+   stijlanker; **noteer de volledige prompt + job-id + Bert-akkoord in `LOGBOEK.md`.**
 
 **Kostenbewaking**: begroot in fase B het aantal generaties (~2,5× het aantal finale
 beelden). Higgsfield rekent **2 credits per beeld** — check het saldo met

@@ -1,0 +1,26 @@
+{
+  "themeId": "piraten",
+  "fase": "B-gate (wacht op goedkeuring themaplan)",
+  "model": "nano_banana_pro",
+  "engine": "higgsfield-cli",
+  "credits_start": 150,
+  "begroting_credits": 56,
+  "stijlanker": null,
+  "beelden": {
+    "grogkroeg": {"type": "locatie", "rol": "anker", "status": "v1-wacht-op-bert", "iteraties": 1, "job_id": "cb50b6f9-57f1-4492-857e-7360e4b45244", "kandidaat": "kandidaten/grogkroeg-v1.jpg"},
+    "haven": {"type": "locatie", "status": "todo", "iteraties": 0},
+    "schip": {"type": "locatie", "status": "todo", "iteraties": 0},
+    "jungle": {"type": "locatie", "status": "todo", "iteraties": 0},
+    "voodoohut": {"type": "locatie", "status": "todo", "iteraties": 0},
+    "plattegrond": {"type": "plattegrond", "status": "todo", "iteraties": 0},
+    "pp-piratenmarkt": {"type": "praatplaat", "status": "todo", "iteraties": 0},
+    "sb-kaart": {"type": "storyboard", "status": "todo", "iteraties": 0},
+    "sb-jungle": {"type": "storyboard", "status": "todo", "iteraties": 0},
+    "sb-graven": {"type": "storyboard", "status": "todo", "iteraties": 0},
+    "sb-schat": {"type": "storyboard", "status": "todo", "iteraties": 0}
+  },
+  "samples_totaal": 36,
+  "loops": ["grogkroeg-accordeon", "haven-golven", "schip-zeemanslied", "jungle-waterval", "jungle-trommels", "voodoohut-ketel"],
+  "nieuwe_iconen": ["Beer", "DoorOpen", "Dice5", "Waves", "Bell", "Anchor", "Package", "Sailboat", "Wind", "Droplet", "Bug", "Skull"],
+  "api_calls": []
+}
