@@ -147,6 +147,14 @@ job-id volgen bij generatie.
 
 ## Storyboards
 
-### schattenjacht — nog te genereren
-Held-beschrijving + 4 frames: zie [themaplan.md](themaplan.md) §4. Per-frame prompt + job-id
-volgen bij generatie.
+### schattenjacht — ✅ COMPLEET (4 frames)
+- **Status**: goedgekeurd. → `package/public/images/storyboards/schattenjacht/schattenjacht-1..4.jpg`. Cover = frame 4.
+- **Held** (consistent via referentie frame 1): koperkleurige robot-piraat, metalen driekante
+  hoed, cyaan visor-gezicht, mechanisch robot-papegaaitje op de schouder, houten been.
+- **Frames**: 1 Kaart (kade/zonsondergang) · 2 Jungle (hakken door mist) · 3 Graven (X op
+  strand) · 4 Schat = **gouden badeendje** (anticlimax-gag; papegaai kijkt sceptisch).
+- **Jobs**: 1 `c587254d` · 2 `f6539cd0` · 3 `e1cb087b` · 4 `de96e4b6` (edit van oliekan-versie `093489f7`).
+- **Prompts**: prompts/sb-schattenjacht-{1,2,3,4-*}.txt
+- **Bonus bewaard**: frame 4 **oliekan**-variant (`kandidaten/sb-schattenjacht-4-oliekan-v1.jpg`).
+- **Leerpunt**: karakterconsistentie via referentiebeeld (frame 1) werkt uitstekend voor
+  storyboards; objecten verwisselen via edit (oliekan↔eendje) = zuivere A/B-varianten.

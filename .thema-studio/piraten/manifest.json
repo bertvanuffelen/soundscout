@@ -63,25 +63,19 @@
       "eindpad": "package/public/images/praatplaten/piratenmarkt.jpg",
       "opmerking": "taal-neutraal (picture-bordjes); markt-v1 bewaard als backup"
     },
-    "sb-kaart": {
+    "storyboard-schattenjacht": {
       "type": "storyboard",
-      "status": "todo",
-      "iteraties": 0
-    },
-    "sb-jungle": {
-      "type": "storyboard",
-      "status": "todo",
-      "iteraties": 0
-    },
-    "sb-graven": {
-      "type": "storyboard",
-      "status": "todo",
-      "iteraties": 0
-    },
-    "sb-schat": {
-      "type": "storyboard",
-      "status": "todo",
-      "iteraties": 0
+      "status": "goedgekeurd",
+      "frames": 4,
+      "jobs": {
+        "1-kaart": "c587254d",
+        "2-jungle": "f6539cd0",
+        "3-graven": "e1cb087b",
+        "4-schat-eendje": "de96e4b6 (edit van oliekan 093489f7)"
+      },
+      "cover": "frame 4",
+      "bonus": "frame 4 oliekan-variant bewaard",
+      "eindpad": "package/public/images/storyboards/schattenjacht/schattenjacht-1..4.jpg"
     }
   },
   "samples_totaal": 36,
@@ -260,6 +254,71 @@
       "edit": true,
       "image_references": [
         ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v2.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:03:41",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "c587254d-b44f-4d88-8e2a-2aa1dd9484da",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-1-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:05:42",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "f6539cd0-1105-4e0f-bb16-c42db1d69f4e",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-2-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-2-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:07:58",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "e1cb087b-7a6b-4fdf-aac3-3101e6ab0eba",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-3-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-3-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:09:54",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "093489f7-ea70-4800-b3b3-b17c7d3eb8fe",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-4-oliekan-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-4-oliekan-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:12:20",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "de96e4b6-cc78-49ff-bdee-abab7b43f8e7",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-4-eendje-v1.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-4-oliekan-v1.png"
       ]
     }
   ]
