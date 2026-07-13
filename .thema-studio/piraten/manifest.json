@@ -1,6 +1,6 @@
 {
   "themeId": "piraten",
-  "fase": "C — beeldproductie (grogkroeg+haven goedgekeurd)",
+  "fase": "C — locaties compleet (5/5); volgt plattegrond, praatplaat, storyboard",
   "model": "nano_banana_pro",
   "engine": "higgsfield-cli",
   "credits_start": 150,
@@ -40,8 +40,11 @@
     },
     "voodoohut": {
       "type": "locatie",
-      "status": "todo",
-      "iteraties": 0
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "20775612-aa02-43e7-abed-cb318d7d0c1c",
+      "edit_job": "74632a42-faea-4c00-b04a-7e6314b3fef9 (piraten-gear toegevoegd)",
+      "eindpad": "package/public/images/themes/piraten/voodoohut.jpg"
     },
     "plattegrond": {
       "type": "plattegrond",
@@ -161,6 +164,32 @@
       "edit": true,
       "image_references": [
         ".thema-studio/piraten/kandidaten/jungle-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:13:07",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "20775612-aa02-43e7-abed-cb318d7d0c1c",
+      "out": ".thema-studio/piraten/kandidaten/voodoohut-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/voodoohut-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:15:50",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "74632a42-faea-4c00-b04a-7e6314b3fef9",
+      "out": ".thema-studio/piraten/kandidaten/voodoohut-v2.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/voodoohut-v1.png"
       ]
     }
   ]

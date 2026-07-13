@@ -95,6 +95,16 @@ herkomst.** Bijwerken na élke generatie, geluidskeuze en beslissing. Het plan z
   organisch — óók na gerichte edit. Slang/krab/insect lukken wél. → ontwerp eromheen.
   Bert accepteerde de organische papegaaien/apen hier.
 
+### voodoohut — locatie
+- **Status**: ✅ GOEDGEKEURD (2026-07-13, v2). → `package/public/images/themes/piraten/voodoohut.jpg`.
+- **Job-id(s)**: v1 `20775612-…` · piraten-gear-edit v2 `74632a42-faea-4c00-b04a-7e6314b3fef9` (gekozen)
+- **Mini-wizard**: shot=totaalshot interieur · drukte=extreem druk · belichting=spookachtig groen
+- **Volledige prompt (v1)**: [prompts/voodoohut-v1.txt](prompts/voodoohut-v1.txt) + gear-edit
+- **Leerpunt (nu in skill)**: edit werkt wél goed voor het toevoegen van accessoires
+  (piraten-gear). Dieren omzetten niet. → piraten-gear voortaan standaard in de prompt.
+
+> **Mijlpaal: alle 5 locaties compleet** (grogkroeg·haven·schip·jungle·voodoohut). Credits over: 132.
+
 ## Geluiden
 
 Nog niet geproduceerd (fase D). Geplande samples + routes: zie [themaplan.md](themaplan.md) §2.
