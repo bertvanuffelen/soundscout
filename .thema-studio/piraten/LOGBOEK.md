@@ -25,7 +25,9 @@ herkomst.** Bijwerken na élke generatie, geluidskeuze en beslissing. Het plan z
 ## Beelden
 
 ### grogkroeg — locatie (ANKER)
-- **Status**: v1 gegenereerd, wacht op Bert-beslissing (edit vs. goedkeuren)
+- **Status**: ✅ GOEDGEKEURD door Bert als anker (2026-07-13, v1 ongewijzigd). Gekopieerd
+  naar `stijlanker/anker-01.jpg` + `package/public/images/themes/piraten/grogkroeg.jpg`.
+  Gezichtsregel (scherm/visor, geen mensenmond) geldt vanaf het vólgende beeld.
 - **Job-id**: `cb50b6f9-57f1-4492-857e-7360e4b45244` (Higgsfield `nano_banana_pro`, 2 credits)
 - **Iteraties**: 1 · **Kandidaat**: `kandidaten/grogkroeg-v1.jpg` (1920×1080)
 - **Mini-wizard**: shot=totaalshot interieur · drukte=vol (~25) · belichting=warme lantaarngloed
