@@ -18,6 +18,8 @@ met één regel toelichting; log in `manifest.json`. Eén ✗ = beeld gaat niet 
 | A6 | Kindvriendelijk (geen enge/gewelddadige elementen) |
 | A7 | Geen AI-artefacten: extra ledematen, half gerenderde objecten, onmogelijke aansluitingen, smeltende vormen |
 | A8 | **Robot-diversiteit** (zie stijl-robots.md): brede kleurmix, geen kleur > ~20%, niet overwegend zilver/grijs; variatie in vorm (blik/android/chibi) en grootte; herkenbare robotfamilie |
+| A9 | **Periode/wereld-echtheid**: props, bouwwerken en voertuigen passen bij de tijd/wereld van het thema (piraten = hout/touw/canvas, géén moderne stalen machines); alleen de robots zijn futuristisch |
+| A10 | **Drukte gehaald**: het aantal zichtbare acties matcht de afspraak (extreem druk ≥30 · vol ~25 · medium ~18) |
 
 ## Praatplaat (extra)
 

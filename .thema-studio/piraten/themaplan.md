@@ -18,6 +18,10 @@
   mapBackground `#F3E1BE` (vergeeld perkament)
 - **Belichting**: golden-hour tropen buiten; warme lantaarn-/fakkelgloed binnen
   (grogkroeg, voodoo-hut).
+- **Periode & props (age-of-sail)**: alle props/bouwwerken passen bij de piratentijd —
+  hout, touw, canvas, katrollen, **houten kraan/derrick**, vaten, kompas, lantaarns. **Géén
+  moderne stalen machines/kranen.** Alleen de robots zijn futuristisch. Dieren = mechanische
+  robot-dieren.
 
 ## 2. Locaties (5) — elk 6-8 sound-hotspots binnen een vólle wemelscène
 

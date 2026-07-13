@@ -8,7 +8,7 @@
   "stijlanker": "stijlanker/anker-01.jpg (grogkroeg-v1, goedgekeurd 2026-07-13)",
   "beelden": {
     "grogkroeg": {"type": "locatie", "rol": "anker", "status": "goedgekeurd", "iteraties": 1, "job_id": "cb50b6f9-57f1-4492-857e-7360e4b45244", "eindpad": "package/public/images/themes/piraten/grogkroeg.jpg"},
-    "haven": {"type": "locatie", "status": "todo", "iteraties": 0},
+    "haven": {"type": "locatie", "status": "v1-wacht-op-bert (dieren organisch)", "iteraties": 1, "job_id": "e8b33bf6-85fe-4141-952f-78b175aa1a59", "kandidaat": "kandidaten/haven-v1.jpg"},
     "schip": {"type": "locatie", "status": "todo", "iteraties": 0},
     "jungle": {"type": "locatie", "status": "todo", "iteraties": 0},
     "voodoohut": {"type": "locatie", "status": "todo", "iteraties": 0},

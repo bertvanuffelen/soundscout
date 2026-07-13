@@ -20,6 +20,19 @@ conversationeel — voorstel + vraag om bevestiging/bijstelling):
 Pas de prompt aan op de antwoorden. Bij een reeks van hetzelfde type (bv. 4
 storyboardframes) volstaat één keer bevragen + per frame bevestigen.
 
+### Elementenlijst-gate (verplicht vóór generatie)
+
+Na de mini-wizard stel je de **volledige actielijst** op en **toon je 'm aan Bert; genereer
+pas na zijn akkoord.** Zo ziet hij vooraf of het genoeg/klopt.
+- **Aantal past bij de drukte**: extreem druk = **≥30 acties** · vol = ~25 · medium = ~18.
+  Noem het aantal expliciet.
+- Markeer welke acties de **sound-hotspots** zijn (bij locaties 6-8).
+- **Periode/wereld-echtheid**: props, bouwwerken en voertuigen passen bij de tijd en wereld
+  van het thema (piraten = age-of-sail: hout, touw, canvas, katrollen, houten kraan/derrick,
+  vaten — **géén moderne stalen machines**). Alleen de robots zelf zijn futuristisch.
+- Bij "extreem druk": zet in de prompt ook expliciet "extremely crowded, packed edge to
+  edge, dozens of robots, fill every corner" zodat de generator de dichtheid echt haalt.
+
 ## 2. Vaste prompt-opbouw (gem-skelet, in het Engels naar Higgsfield)
 
 1. **"Wide horizontal illustration."** + het gekozen shot.

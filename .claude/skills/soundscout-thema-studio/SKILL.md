@@ -23,8 +23,10 @@ genereert de assets, bewaakt stijl en eisen, en assembleert het pakket.
    aan Bert voor; niets gaat naar `package/` zonder zijn akkoord.
 2. **Jij hoort geen audio.** Elke geluidskeuze loopt via Berts oren — geef kant-en-klare
    `afplay`-commando's zodat hij snel kan luisteren.
-3. **Altijd eerst de wizard.** Genereer nóóit een beeld zonder Bert eerst te bevragen
-   (drukte, shot, palet/belichting, bijzonderheden) — zie de mini-wizard in
+3. **Altijd eerst de wizard én de elementenlijst.** Genereer nóóit een beeld zonder
+   (a) Bert te bevragen (drukte, shot, palet/belichting, bijzonderheden) én (b) de
+   **volledige element-/actielijst met hem te delen en te laten goedkeuren** — pas ná zijn
+   akkoord gaat de prompt naar Higgsfield. Zie de mini-wizard in
    [reference/prompt-recept.md](reference/prompt-recept.md). En stuur bij élke prompt het
    **vaste negatief-blok** mee (idem).
 
@@ -119,10 +121,14 @@ het robot-standaardblok uit stijl-robots.md op.
 
 **Kwaliteitslus per beeld** (primaire engine = Higgsfield CLI, `nano_banana_pro`, 2
 credits/beeld — geen key nodig; zie [reference/api-setup.md](reference/api-setup.md)):
-0. **Mini-wizard**: bevraag Bert eerst (drukte, shot, palet/belichting, bijzonderheden) en
-   bouw de prompt via het gem-skelet + vaste negatief-blok uit
-   [reference/prompt-recept.md](reference/prompt-recept.md).
-1. Schrijf de prompt naar `prompts/{beeld-id}-v{n}.txt`.
+0. **Mini-wizard**: bevraag Bert eerst (drukte, shot, palet/belichting, bijzonderheden).
+0b. **Elementenlijst-gate**: stel de volledige actielijst op (aantal past bij de drukte:
+   extreem druk ≥30 · vol ~25 · medium ~18), met de sound-hotspots gemarkeerd, en **toon 'm
+   aan Bert. Genereer pas na zijn goedkeuring.** Props/omgeving passen bij de wereld/periode
+   van het thema (alleen de robots zijn futuristisch).
+1. Bouw de prompt via het gem-skelet + vaste negatief-blok uit
+   [reference/prompt-recept.md](reference/prompt-recept.md); schrijf 'm naar
+   `prompts/{beeld-id}-v{n}.txt`.
 2. `python3 scripts/genereer-afbeelding-higgsfield.py --prompt-file … --out …
    --image-reference stijlanker/anker-01.jpg --manifest .thema-studio/{id}/manifest.json`
    (Gemini-fallback: `scripts/genereer-afbeelding.py … --style-ref …`, alleen als de
