@@ -17,6 +17,7 @@ import type { Clip, Sample } from '../../types';
 import type { WaveformData } from '../../utils/waveform';
 import { MIN_TRIM_DURATION_SECONDS } from '../../constants/config';
 import { SampleIcon } from '../../utils/iconMap';
+import { useModalBehavior } from '../../hooks/useModalBehavior';
 
 interface TrimModalProps {
   clip: Clip;
@@ -208,6 +209,9 @@ export const TrimModal = memo(function TrimModal({
     onClose();
   }, [onClose, sample.id]);
 
+  // Gedeeld dialog-gedrag: Escape sluit (annuleert), focus trap, scroll-lock
+  const modalRef = useModalBehavior(handleClose, { isOpen });
+
   if (!isOpen) return null;
 
   const trimDuration = trimEnd - trimStart;
@@ -216,7 +220,12 @@ export const TrimModal = memo(function TrimModal({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-2xl w-full max-w-lg overflow-hidden"
+      >
         {/* Header */}
         <div className="flex items-center justify-between px-4 py-3 border-b border-neutral-200 bg-neutral-50">
           <div className="flex items-center gap-2">

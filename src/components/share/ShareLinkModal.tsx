@@ -16,6 +16,7 @@ import { shareComposition } from '../../lib/submissions';
 import { canShare, markShare, getShareCooldownRemaining } from '../../utils/rateLimit';
 import { copyToClipboard } from '../../utils/copyToClipboard';
 import type { CompositionData } from '../../types';
+import { useModalBehavior } from '../../hooks/useModalBehavior';
 
 interface ShareLinkModalProps {
   compositionName: string;
@@ -33,6 +34,7 @@ export function ShareLinkModal({
   onClose,
 }: ShareLinkModalProps) {
   const { t } = useTranslation();
+  const modalRef = useModalBehavior(onClose);
   const [state, setState] = useState<ModalState>('confirm');
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -93,7 +95,12 @@ export function ShareLinkModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md"
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-text-main flex items-center gap-2">

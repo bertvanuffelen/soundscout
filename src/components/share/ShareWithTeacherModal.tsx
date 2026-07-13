@@ -14,6 +14,7 @@ import { Button } from '../ui/Button';
 import { submitComposition, validateClassCode } from '../../lib/submissions';
 import { canSubmit, markSubmission, getSubmitCooldownRemaining } from '../../utils/rateLimit';
 import type { CompositionData } from '../../types';
+import { useModalBehavior } from '../../hooks/useModalBehavior';
 
 interface ShareWithTeacherModalProps {
   compositionName: string;
@@ -32,6 +33,8 @@ export function ShareWithTeacherModal({
 }: ShareWithTeacherModalProps) {
   const { t } = useTranslation();
   const [step, setStep] = useState<Step>('code');
+  // Tijdens versturen niet met Escape te sluiten (de sluitknop is dan ook verborgen)
+  const modalRef = useModalBehavior(onClose, { closeOnEscape: step !== 'sending' });
   const [classCode, setClassCode] = useState('');
   const [className, setClassName] = useState('');
   const [teacherName, setTeacherName] = useState('');
@@ -124,7 +127,12 @@ export function ShareWithTeacherModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md"
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-text-main">

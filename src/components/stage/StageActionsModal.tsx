@@ -17,6 +17,7 @@ import {
   Film,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
+import { useModalBehavior } from '../../hooks/useModalBehavior';
 
 interface StageActionsModalProps {
   compositionName: string;
@@ -60,13 +61,20 @@ export function StageActionsModal({
 }: StageActionsModalProps) {
   const { t } = useTranslation();
   const nameDisabled = !compositionName.trim();
+  const modalRef = useModalBehavior(onClose);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50">
-      <div className="bg-bg-surface rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="stage-actions-title"
+        className="bg-bg-surface rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-md max-h-[85vh] overflow-y-auto"
+      >
         {/* Header */}
         <div className="flex items-center justify-between p-4 pb-2 sticky top-0 bg-bg-surface rounded-t-2xl z-10">
-          <h2 className="text-lg font-extrabold tracking-tight text-text-main">
+          <h2 id="stage-actions-title" className="text-lg font-extrabold tracking-tight text-text-main">
             {t('stage.actionsTitle')}
           </h2>
           <button

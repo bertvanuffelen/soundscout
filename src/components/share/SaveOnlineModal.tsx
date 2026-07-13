@@ -15,6 +15,7 @@ import { Button } from '../ui/Button';
 import { saveCompositionOnline } from '../../lib/submissions';
 import { copyToClipboard } from '../../utils/copyToClipboard';
 import type { CompositionData } from '../../types';
+import { useModalBehavior } from '../../hooks/useModalBehavior';
 import QRCode from 'qrcode';
 
 interface SaveOnlineModalProps {
@@ -35,6 +36,7 @@ export function SaveOnlineModal({
   onSaved,
 }: SaveOnlineModalProps) {
   const { t } = useTranslation();
+  const modalRef = useModalBehavior(onClose);
   const [state, setState] = useState<ModalState>('form');
   const [name, setName] = useState(initialStudentName || '');
   const [email, setEmail] = useState('');
@@ -102,7 +104,12 @@ export function SaveOnlineModal({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-      <div className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md">
+      <div
+        ref={modalRef}
+        role="dialog"
+        aria-modal="true"
+        className="bg-white rounded-2xl shadow-xl p-6 w-full max-w-md"
+      >
         {/* Header */}
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-xl font-bold text-text-main flex items-center gap-2">
