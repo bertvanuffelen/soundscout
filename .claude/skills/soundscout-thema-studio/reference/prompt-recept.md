@@ -56,6 +56,11 @@ no logos or watermarks; no realistic humans or real animals — robots only;
 no letterbox, frame or borders; fill the entire 16:9 frame.
 ```
 
+**Let op — scène-namen worden anders tekstbordjes**: schrijf mini-tafereel-namen in de
+prompt NIET in hoofdletters of als label ("THE GROG BAR:") — Nano Banana rendert die dan
+als echte tekstbordjes in beeld. Beschrijf elk tafereel puur beschrijvend (bv. "at a grog
+bar with barrels, robots clink mugs…") zonder een label-achtige naam.
+
 **Enige uitzondering — plattegrond**: daar zijn de expliciet opgegeven banner-/bordlabels
 juist gewenst (met NL-spellingscheck). Alle overige tekst blijft verboden. Gebruik dan:
 ```
