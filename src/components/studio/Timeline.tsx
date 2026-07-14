@@ -605,17 +605,20 @@ export const Timeline = memo(function Timeline({
 
       <div
         ref={scrollContainerRef}
-        className="relative overflow-x-auto overflow-y-auto min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
+        className="relative overflow-x-auto overflow-y-auto overscroll-contain min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
         onClick={handleTimelineClick}
       >
-        {/* Scrollable content wrapper */}
+        {/* Scrollable content wrapper — min-h-full + flex-vulling zodat de
+            wrapper de container altijd vult (BUG-TIMELINE-GRIJS): de
+            gridlijnen (absolute bottom-0) rekken mee tot de onderrand, dus
+            geen kaal grijs vlak meer onder het laatste spoor. */}
         <div
-          className="relative"
+          className="relative min-h-full flex flex-col"
           style={{ width: `${widthMultiplier * 100}%`, minWidth: '100%' }}
         >
           {/* Section bar — shown when sections exist (dev flag or template) */}
           {sections.length > 0 && (
-            <div className="relative border-b border-border-subtle">
+            <div className="relative border-b border-border-subtle shrink-0">
               {/* Track label spacer */}
               <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-neutral-200/50 z-10" />
               <div className="ml-5 sm:ml-6">
@@ -633,7 +636,7 @@ export const Timeline = memo(function Timeline({
           )}
 
           {/* Ruler strip - 16px with measure lines */}
-          <div className="relative h-4 border-b border-border-subtle bg-neutral-100/80">
+          <div className="relative h-4 shrink-0 border-b border-border-subtle bg-neutral-100/80">
             {/* Track label spacer */}
             <div className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 bg-neutral-200/50" />
 
@@ -692,7 +695,7 @@ export const Timeline = memo(function Timeline({
           </div>
 
           {/* Tracks */}
-          <div className="relative z-10">
+          <div className="relative z-10 shrink-0">
             {tracks.map((track, i) => (
               <Track
                 key={track.id}
@@ -706,6 +709,10 @@ export const Timeline = memo(function Timeline({
               />
             ))}
           </div>
+
+          {/* Vulling onder het laatste spoor: rekt de wrapper tot de
+              containerbodem zodat de gridlijnen doorlopen (geen grijs gat) */}
+          <div className="flex-1" aria-hidden="true" />
 
           {/* Playhead line fallback for read-only mode without seek */}
           {readOnly && !onSeek && (
