@@ -59,3 +59,10 @@ muzikale loops **onderling mixbaar** zijn. Lock daarom voor het hele thema:
 
 Elke rij: bestand · bron (Freesound-URL / "ElevenLabs (gegenereerd)" / "Eigen opname") ·
 auteur · licentie. `check-pakket.py` weigert Freesound-audio zonder bronregel.
+
+**Licentie & zichtbare credits:** CC0 vraagt géén vermelding; **CC-BY wél** (maker +
+licentie + bronlink). `BRONNEN.md` is de dev-registratie, maar voor échte CC-BY-naleving
+moet de attributie óók voor gebruikers zichtbaar zijn. Voeg daarom bij integratie een
+**"Geluidsbronnen"/credits-plek in de app** toe (bv. in de docenten-handleiding of een
+info/colofon-scherm), gevoed vanuit BRONNEN.md. Alternatief: filter de finale keuzes op
+**CC0** (`--licentie cc0`) om de verplichting te vermijden — maar dat verkleint de keuze.
