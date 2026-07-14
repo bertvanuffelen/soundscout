@@ -33,6 +33,21 @@ scène uit een kort verhaal.
 - Elk frame suggereert geluid: de handeling moet hoorbaar voorstelbaar zijn met de
   samples van het thema.
 
+## Werkwijze — karakterreferentie & drift (belangrijk)
+
+- **Genereer eerst het frame waarin de held/het personage het duidelijkst en volledigst in
+  beeld is** (niet per se frame 1 — bij een monster dat pas laat verschijnt is dat bv.
+  frame 2). Keur dat goed en gebruik het als **canonieke referentie** voor álle andere
+  frames.
+- Verwijst een frame naar een deel-view (bv. frame 1 = alleen ogen boven water): geef dan
+  tóch de canonieke referentie mee én benoem expliciet welke kenmerken moeten matchen
+  (bv. "dezelfde ronde gloeiende ogen als de referentie, geen kattenogen").
+- **Drift?** Wijkt een frame af (andere personages, andere ogen/kleuren) → regenereer met
+  de canonieke referentie als `--image-reference` en noem de afwijking expliciet in de prompt.
+- **A/B-varianten**: een object in een frame verwisselen (bv. schat = oliekan ↔ badeendje)
+  doe je met een gerichte edit (`--edit-van <frame> --prompt "vervang X door Y, rest
+  identiek"`) — zo krijg je zuiver vergelijkbare varianten.
+
 ## Promptstructuur
 
 1. "Wide horizontal illustration" + scènebeschrijving (welk moment in de handeling).
