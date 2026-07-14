@@ -104,7 +104,8 @@
 | B3 | "+ spoor" tot 12 + solo in volume-popover; audio-buses grow-only (spoor 9+ was zonder mute-controle); solo = sessie-state, live gains; +3 tests | ✅ Af | `1c0753f` |
 | B4 | Sectie-loop via SectionPopover (hergebruik sectie-concept), loop-regio in store + engine (reschedule-proof); zoomknoppen op touch; +3 tests | ✅ Af | `a3e8b34` |
 | B5 | Testplan §7, CLAUDE.md-correcties (128 beats/dynamische buses), logboek + Notion | ✅ Af | zie docs-commit |
-| B6 | Feedbackronde Bert: échte oorzaak grijs vlak gevonden (playhead-lijn `h-[500px]` creëerde scrollruimte → lijn nu wrapper-niveau `bottom-0`, "spoor toevoegen" is de onderste rij); sticky pill vervangen door "+8"/"−8" in de werkbalk (16–64 maten, inkorten beschermt clips/secties); sectie-loop-voorwaarde gedocumenteerd in docentengids; +3 tests (263) | ✅ Af | deze commit |
+| B6 | Feedbackronde Bert: échte oorzaak grijs vlak gevonden (playhead-lijn `h-[500px]` creëerde scrollruimte → lijn nu wrapper-niveau `bottom-0`, "spoor toevoegen" is de onderste rij); sticky pill vervangen door "+8"/"−8" in de werkbalk (16–64 maten, inkorten beschermt clips/secties); sectie-loop-voorwaarde gedocumenteerd in docentengids; +3 tests (263) | ✅ Af | `4e315b7` |
+| B7 | Losse UX-fix (UX-LANDSCAPE): eenmalige "draai je apparaat"-banner (`LandscapeHint`) globaal in `App.tsx` — alleen touch + portret + brede compositie-schermen; orientatie via CSS `landscape:hidden`, dismissal via `firstRun`. Geen studio-bestanden geraakt. | ✅ Af | deze commit |
 
 **Eenvoud-eis Bert geborgd**: progressive disclosure — beide "+"-elementen zijn subtiel, verdwijnen op hun maximum en in read-only; solo zit ín de bestaande popover; sectie-loop hergebruikt het sectie-concept.
 

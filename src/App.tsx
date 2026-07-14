@@ -13,6 +13,7 @@ import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
 import { StartScreen } from './components/StartScreen';
 import { MapView } from './components/map/MapView';
 import { LocationScene } from './components/location/LocationScene';
+import LandscapeHint from './components/ui/LandscapeHint';
 
 // Dev-only authoring-tools (thema-wizard + locatie-editor) — lazy zodat ze
 // niet in de productie-main-bundle belanden.
@@ -407,6 +408,7 @@ function App() {
     <ErrorBoundary>
       <AuthProvider>
         <AppContent />
+        <LandscapeHint />
       </AuthProvider>
     </ErrorBoundary>
   );

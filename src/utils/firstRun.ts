@@ -9,7 +9,8 @@
 export type FirstRunFlag =
   | 'onboarding-intro'   // animatie bij de allereerste "Nieuwe compositie"
   | 'clip-tools-hint'    // "klik op een blokje" in de studio
-  | 'map-hint';          // "klik op een locatie" op de kaart
+  | 'map-hint'           // "klik op een locatie" op de kaart
+  | 'landscape-hint';    // "draai je apparaat" op tablet/telefoon in portret
 
 const PREFIX = 'soundscout:first-run:';
 

@@ -2,6 +2,9 @@
   "app": {
     "title": "SoundScout"
   },
+  "landscapeHint": {
+    "message": "Turn your tablet or phone sideways — landscape gives you a lot more room to work."
+  },
   "common": {
     "back": "Back",
     "close": "Close",

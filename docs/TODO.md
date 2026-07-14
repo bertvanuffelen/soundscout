@@ -26,7 +26,7 @@ Vereist hands-on device testen (iPad, Android, Chromebook). Issues hangen samen.
 | #16 | Touch gevoeligheid & autoplay (resterende items) | Laag — iPad OK ✅, Chromebook open |
 | #59-TEST | Template lock-opties hands-on testen | Laag — iPad test 12-18 open |
 | UX-LOOP | Loop resize handle te klein op touch | Klein-Medium |
-| UX-LANDSCAPE | Landscape-hint tonen op tablet/telefoon | Laag |
+| ~~UX-LANDSCAPE~~ | ~~Landscape-hint tonen op tablet/telefoon~~ ✅ | Laag |
 
 ### Bundel D — Code-kwaliteit quick wins (~5 uur)
 Kleine verbeteringen die in rustiger momenten opgepakt kunnen worden.
@@ -255,10 +255,12 @@ Grotere bouw dan de rest van het helpdesk-traject: vereist een overlay/spotlight
 
 ---
 
-#### UX-LANDSCAPE — Landscape-hint tonen op tablet/telefoon
-**Complexiteit:** Laag · **Bron:** iPad-test (2026-04-23) · **Status:** Open
+#### UX-LANDSCAPE — Landscape-hint tonen op tablet/telefoon ✅ GEBOUWD (2026-07-14)
+**Complexiteit:** Laag · **Bron:** iPad-test (2026-04-23) · **Status:** Opgelost
 
 Toon een subtiele eenmalige melding (toast of banner) wanneer de app in portrait wordt geopend op tablet/telefoon, met suggestie om naar landscape te draaien. Vooral relevant in de Studio. Tailwind heeft ingebouwde `landscape:` utility. Dismissal opslaan in localStorage.
+
+**Gebouwd**: `src/components/ui/LandscapeHint.tsx` — globaal gerenderd naast `<AppContent />` in `App.tsx`. Toont een dunne dismissbare banner (Lucide `RotateCw`, `accent-*`-tokens) wanneer: touch-apparaat (`navigator.maxTouchPoints > 0`) **en** portret (`landscape:hidden`, puur CSS — geen resize-listener) **en** een breed compositie-scherm (`studio`/`map`/`location`/`stage`). Dismissal via het bestaande `firstRun`-patroon (flag `landscape-hint`). i18n `landscapeHint.message` (NL+EN).
 
 ---
 
