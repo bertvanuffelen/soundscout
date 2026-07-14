@@ -156,9 +156,13 @@ Specificaties: [reference/audio-specificaties.md](reference/audio-specificaties.
 Per sample, volgens de route uit het themaplan:
 
 - **F (Freesound)**: `python3 scripts/zoek-geluid.py --query "…" --min-duur 2 --max-duur 8
-  --licentie cc0 --top 5 --download-map kandidaten/audio/{sampleId}/` → geef Bert per
-  kandidaat een `afplay`-regel → Bert kiest → `verwerk-geluid.py` (loops naar exact
-  8.0s) → licentie-JSON wordt automatisch meegeschreven voor BRONNEN.md.
+  --licentie cc0 --top 5 --download-map kandidaten/audio/{sampleId}/` (bij weinig treffers:
+  bredere zoekterm + `--licentie alles-behalve-nc` voor CC-BY). Zoek voor álle
+  Freesound-samples in één batch. Bouw daarna **één klikbare HTML-preview** en open die in
+  Safari: `python3 scripts/maak-audio-preview.py --map kandidaten/audio --titel "…" --open`
+  → Bert speelt af, kiest per sample de beste met een keuzerondje en klikt "Kopieer mijn
+  keuzes" → plakt de keuzes terug. (Terminal-`afplay` is fallback.) Daarna gekozen bestand →
+  `verwerk-geluid.py` (loops naar exact 8.0s); de licentie-JSON gaat automatisch naar BRONNEN.md.
 - **E (ElevenLabs)**: `python3 scripts/genereer-geluid.py --prompt "…" --duur …
   --out …` → Bert luistert → maximaal 2e poging, daarna route F of C.
 - **C (checklist)**: neem het geluid op in `zoektermen-checklist.md` in het pakket, met
