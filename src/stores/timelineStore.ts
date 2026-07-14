@@ -5,6 +5,7 @@ import {
   DEFAULT_BPM,
   DEFAULT_TOTAL_BEATS,
   MAX_TOTAL_BEATS,
+  MIN_TOTAL_BEATS,
   DEFAULT_TRACK_COUNT,
   MAX_TRACK_COUNT,
   VOLUME_MIN_DB,
@@ -110,8 +111,13 @@ interface TimelineStore {
   // Settings
   setLooping: (looping: boolean) => void;
 
-  /** Verleng de tijdlijn met N beats ("+ 8 maten"-tegel), tot MAX_TOTAL_BEATS */
-  extendTimeline: (byBeats: number) => void;
+  /**
+   * Verleng (positief) of verkort (negatief) de tijdlijn met N beats
+   * ("+8"/"−8"-knoppen), geklemd op [MIN_TOTAL_BEATS, MAX_TOTAL_BEATS].
+   * Bij inkorten geeft de aanroeper `contentEndBeat` mee (einde van de
+   * laatste clip/sectie) zodat inhoud nooit buiten de tijdlijn valt.
+   */
+  extendTimeline: (byBeats: number, contentEndBeat?: number) => void;
 
   /** Voeg een leeg spoor toe ("+ spoor"-regel), tot MAX_TRACK_COUNT */
   addTrack: () => void;
@@ -690,9 +696,13 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     set((prev) => ({ isLooping: looping, audioVersion: prev.audioVersion + 1 }));
   },
 
-  extendTimeline: (byBeats) => {
+  extendTimeline: (byBeats, contentEndBeat = 0) => {
     set((prev) => {
-      const next = Math.min(prev.totalBeats + byBeats, MAX_TOTAL_BEATS);
+      // Negatief = inkorten. Clips en secties voorbij het nieuwe einde
+      // worden nooit afgeknipt: de aanroeper geeft het einde van de inhoud
+      // mee als ondergrens (de UI schakelt "−8" daarop uit; dit is het vangnet).
+      const floor = Math.max(MIN_TOTAL_BEATS, contentEndBeat);
+      const next = Math.min(Math.max(prev.totalBeats + byBeats, floor), MAX_TOTAL_BEATS);
       if (next === prev.totalBeats) return prev;
       return { totalBeats: next, audioVersion: prev.audioVersion + 1 };
     });

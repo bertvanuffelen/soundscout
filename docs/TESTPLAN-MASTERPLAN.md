@@ -146,13 +146,15 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 ## 7. DAW-ronde (week 5¾) — studio-versterking
 
 ### 7a. Grijze vlak (BUG-TIMELINE-GRIJS)
-- [ ] Studio met een paar clips → sleep een sample en laat de auto-scroll je naar beneden duwen: **geen kaal grijs vlak** meer onder het laatste spoor — de gridlijnen lopen door tot de onderrand.
+- [ ] Studio: onder de sporen is **"spoor toevoegen" de onderste rij** — geen grijs vlak of doorlopende afspeellijn eronder (oorzaak was een playhead-lijn met vaste hoogte van 500px die scrollruimte onder de sporen creëerde).
+- [ ] Sleep een sample en laat de auto-scroll je naar beneden duwen: je kunt niet voorbij de "spoor toevoegen"-rij scrollen.
 - [ ] Scrollen in de tijdlijn "lekt" niet meer naar de pagina (overscroll-contain), ook op touch.
 
-### 7b. "+ 8 maten" (tijdlijnlengte)
-- [ ] In de studio rechtsboven in de tijdlijn: rustige pill **"+ 8 maten"** → klik: liniaal telt door (36, 40, …) en bestaande clips blijven exact staan.
-- [ ] Twee keer klikken → 48 maten; clip op maat 40 plaatsen → speelt af én zit in de MP3-export.
-- [ ] Bij 64 maten verdwijnt de pill (maximum); opslaan/heropenen behoudt de lengte; een óúde compositie opent nog gewoon op 32 maten.
+### 7b. "+8" / "−8" (tijdlijnlengte, 16–64 maten)
+- [ ] In de tijdlijn-werkbalk (naast de zoomknoppen): **"−8"** en **"+8"** → "+8": liniaal telt door (36, 40, …) en bestaande clips blijven exact staan.
+- [ ] "+8" vier keer → 64 maten → "+8" wordt inactief (maximum); "−8" terug tot 16 maten → "−8" wordt inactief (minimum).
+- [ ] **Inhoud-bescherming**: zet een clip op maat 20 → "−8" van 32 naar 24 kan nog, maar verder inkorten tot vóór de clip kan niet (knop inactief). Zelfde geldt voor secties.
+- [ ] Clip op maat 40 (na "+8") → speelt af én zit in de MP3-export; opslaan/heropenen behoudt de lengte; een óúde compositie opent nog gewoon op 32 maten.
 
 ### 7c. "+ spoor" + solo
 - [ ] Onder spoor 8: gestippelde regel **"spoor toevoegen"** → tot 12 sporen; regel verdwijnt op 12.
@@ -163,6 +165,7 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 ### 7d. Sectie-loop + mobiele zoom
 - [ ] Maak een sectie (vlag-knop) → tik op de sectie in de sectiebalk → popover heeft **"Loop deze sectie"** → aan: afspelen loopt exact dat stuk (spring je ervóór in, dan speelt hij door tot het einde van de sectie en loopt dan).
 - [ ] De transport-loopknop licht op zodra een sectie-loop actief is; loopknop **uit** zetten stopt óók de sectie-loop.
+- [ ] Docentengids → "Tips voor de klas": kopje **"Sectie-loop: eerst een sectie maken"** legt uit dat de sectie-loop pas werkt nadat er een sectie is gemaakt (vlag-knop), NL én EN.
 - [ ] Smal venster/iPad: **zoom-in/uit-knoppen zichtbaar** in de tijdlijn-werkbalk (fit alleen op desktop).
 - [ ] iPad: slepen van samples voelt directer (activatie 200→150 ms).
 

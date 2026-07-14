@@ -196,8 +196,8 @@
     "addTrackTitle": "Spoor toevoegen (nu {{count}} sporen, max 12)",
     "soloOn": "Alleen dit spoor horen (solo)",
     "soloOff": "Solo uitzetten",
-    "extendTimeline": "8 maten",
-    "extendTimelineTitle": "Tijdlijn verlengen met 8 maten (nu {{maten}} maten)",
+    "extendTimelineTitle": "Tijdlijn 8 maten langer maken (nu {{maten}} maten, max 64)",
+    "shrinkTimelineTitle": "Tijdlijn 8 maten korter maken (nu {{maten}} maten, min 16)",
     "clipToolsHint": "Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen.",
     "addToTrack": "Voeg {{name}} toe aan tijdlijn",
     "dragToTimeline": "Sleep naar tijdlijn",
@@ -986,6 +986,8 @@
             "Browsers blokkeren standaard audio totdat de gebruiker iets klikt. SoundScout vangt dit op bij de eerste klik of tap — leerlingen hoeven hier niets voor te doen, maar als geluid ontbreekt, laat ze dan even op het scherm tikken. Als een sample echt niet laadt, vernieuw dan de pagina — de compositie blijft lokaal bewaard.",
             { "type": "heading", "text": "Apparaten" },
             "SoundScout werkt op Chromebooks en iPads. iPad: gebruik het landschapsformaat voor meer werkruimte. Safari werkt het beste. Chromebook: zorg dat het apparaat niet in slaapstand gaat tijdens opnames — dat onderbreekt het web-audio-systeem.",
+            { "type": "heading", "text": "Sectie-loop: eerst een sectie maken" },
+            "In de studio kan een deel van de tijdlijn herhaald worden: tik op een sectie en zet 'Loop deze sectie' aan. Let op: dit werkt pas nadat er een sectie is gemaakt met de vlag-knop in de tijdlijnbalk (bij een storyboard staan de secties er automatisch). Zonder sectie-loop herhaalt de loop-knop de hele tijdlijn.",
             { "type": "heading", "text": "Tijdsplanning" },
             "Reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten."
           ]

@@ -9,8 +9,8 @@ import { SectionBar } from './SectionBar';
 import { VolumePopover } from './VolumePopover';
 import { EffectsModal } from './EffectsModal';
 import { SampleIcon } from '../../utils/iconMap';
-import { getClipDuration } from '../../utils/audio';
-import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, EXTEND_BEATS_STEP, MAX_TRACK_COUNT } from '../../constants/config';
+import { getClipDuration, getEffectiveClipDurationBeats } from '../../utils/audio';
+import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, MIN_TOTAL_BEATS, EXTEND_BEATS_STEP, MAX_TRACK_COUNT } from '../../constants/config';
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -267,6 +267,35 @@ export const Timeline = memo(function Timeline({
   const handleZoomOut = useCallback(() => applyZoom(zoomLevel - ZOOM_STEP), [zoomLevel, applyZoom]);
   const handleZoomFit = useCallback(() => applyZoom(1.0), [applyZoom]);
 
+  // --- Tijdlijnlengte: "+8"/"−8" maten (B2) ---
+  // Einde van de inhoud (laatste clip incl. loop, laatste sectie): de
+  // ondergrens voor "−8", zodat inkorten nooit clips of secties afsnijdt.
+  const contentEndBeat = useMemo(() => {
+    let end = 0;
+    for (const track of tracks) {
+      for (const clip of track.clips) {
+        const sample = samples?.find((s) => s.id === clip.sampleId);
+        if (!sample) continue;
+        end = Math.max(end, clip.startBeat + getEffectiveClipDurationBeats(clip, sample, bpm));
+      }
+    }
+    for (const section of sections) {
+      end = Math.max(end, section.endBeat);
+    }
+    return end;
+  }, [tracks, samples, sections, bpm]);
+
+  const canExtend = totalBeats < MAX_TOTAL_BEATS;
+  const canShrink = totalBeats - EXTEND_BEATS_STEP >= Math.max(MIN_TOTAL_BEATS, contentEndBeat);
+
+  const handleExtendTimeline = useCallback(() => {
+    extendTimeline(EXTEND_BEATS_STEP);
+  }, [extendTimeline]);
+
+  const handleShrinkTimeline = useCallback(() => {
+    extendTimeline(-EXTEND_BEATS_STEP, contentEndBeat);
+  }, [extendTimeline, contentEndBeat]);
+
   // Generate grid lines (one per beat) — memoized since totalBeats rarely changes
   const gridLines = useMemo(
     () => Array.from({ length: totalBeats + 1 }, (_, i) => i),
@@ -497,6 +526,30 @@ export const Timeline = memo(function Timeline({
               </button>
             )
           )}
+          {/* Tijdlijnlengte: "+8"/"−8" maten (min 16, max 64) — "−8" schakelt
+              uit zodra clips of secties voorbij het nieuwe einde zouden vallen */}
+          {!readOnly && (
+            <div className="flex items-center gap-0">
+              <button
+                onClick={handleShrinkTimeline}
+                disabled={!canShrink}
+                aria-label={t('studio.shrinkTimelineTitle', { maten: totalBeats / 4 })}
+                title={t('studio.shrinkTimelineTitle', { maten: totalBeats / 4 })}
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center text-[10px] sm:text-xs font-bold tabular-nums"
+              >
+                −8
+              </button>
+              <button
+                onClick={handleExtendTimeline}
+                disabled={!canExtend}
+                aria-label={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
+                title={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center text-[10px] sm:text-xs font-bold tabular-nums"
+              >
+                +8
+              </button>
+            </div>
+          )}
           {/* Zoom controls — nu ook op touch (B4: 128+ beats zonder zoom was
               onwerkbaar op iPad); alleen 'fit' blijft desktop-only */}
           <div className="flex items-center gap-0">
@@ -611,28 +664,12 @@ export const Timeline = memo(function Timeline({
         className="relative overflow-x-auto overflow-y-auto overscroll-contain min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
         onClick={handleTimelineClick}
       >
-        {/* "+ 8 maten"-tegel (B2): sticky rechtsboven in de scroller, neemt
-            geen layout-ruimte (h-0) — progressive disclosure, verdwijnt op
-            het maximum (64 maten) en in read-only */}
-        {!readOnly && totalBeats < MAX_TOTAL_BEATS && (
-          <div className="sticky top-1 left-0 z-30 h-0 flex justify-end pr-2 pointer-events-none">
-            <button
-              onClick={(e) => { e.stopPropagation(); extendTimeline(EXTEND_BEATS_STEP); }}
-              title={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
-              className="pointer-events-auto inline-flex items-center gap-1 rounded-full bg-white/90 border border-border-subtle px-2 py-1 text-[10px] sm:text-xs font-semibold text-text-muted hover:text-text-main hover:bg-white shadow-sm transition-colors"
-            >
-              <Plus size={12} aria-hidden="true" />
-              {t('studio.extendTimeline')}
-            </button>
-          </div>
-        )}
-
-        {/* Scrollable content wrapper — min-h-full + flex-vulling zodat de
-            wrapper de container altijd vult (BUG-TIMELINE-GRIJS): de
-            gridlijnen (absolute bottom-0) rekken mee tot de onderrand, dus
-            geen kaal grijs vlak meer onder het laatste spoor. */}
+        {/* Scrollable content wrapper — exact zo hoog als de inhoud, zodat
+            de "+ spoor"-rij de onderste rij is (BUG-TIMELINE-GRIJS: het
+            grijze vlak kwam van een playhead-lijn met vaste hoogte die
+            scrollruimte onder de sporen creëerde) */}
         <div
-          className="relative min-h-full flex flex-col"
+          className="relative"
           style={{ width: `${widthMultiplier * 100}%`, minWidth: '100%' }}
         >
           {/* Section bar — shown when sections exist (dev flag or template) */}
@@ -742,19 +779,15 @@ export const Timeline = memo(function Timeline({
             </button>
           )}
 
-          {/* Vulling onder het laatste spoor: rekt de wrapper tot de
-              containerbodem zodat de gridlijnen doorlopen (geen grijs gat) */}
-          <div className="flex-1" aria-hidden="true" />
-
-          {/* Playhead line fallback for read-only mode without seek */}
-          {readOnly && !onSeek && (
-            <div className="absolute top-4 inset-x-0 bottom-0 left-4 sm:left-6 pointer-events-none z-20">
-              <div
-                className="absolute top-0 bottom-0 w-0.5 bg-error-500 -translate-x-1/2"
-                style={{ left: `${playheadPercent}%` }}
-              />
-            </div>
-          )}
+          {/* Playhead-lijn door de sporen — op wrapper-niveau zodat hij met
+              bottom-0 exact tot de laatste rij loopt (het handvat zit in de
+              liniaal, zie Playhead.tsx) */}
+          <div className="absolute top-4 inset-x-0 bottom-0 left-4 sm:left-6 pointer-events-none z-20">
+            <div
+              className="absolute top-0 bottom-0 w-0.5 bg-error-500 -translate-x-1/2"
+              style={{ left: `${playheadPercent}%` }}
+            />
+          </div>
 
           {/* Empty state hint - only show in edit mode */}
           {!readOnly && hasNoClips && (

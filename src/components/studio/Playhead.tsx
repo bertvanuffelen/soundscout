@@ -174,12 +174,9 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
         />
       </div>
 
-      {/* Vertical line through tracks - non-interactive */}
-      {/* Using fixed height because parent container is only 16px, bottom-0 won't extend beyond */}
-      <div
-        className="absolute top-4 w-0.5 bg-error-500 pointer-events-none z-20 -translate-x-1/2 h-[500px]"
-        style={{ left: `${playheadPercent}%` }}
-      />
+      {/* De verticale lijn door de sporen wordt op wrapper-niveau gerenderd
+          in Timeline.tsx (bottom-0 = exact tot de laatste rij). Een vaste
+          hoogte hier creëerde scrollruimte onder de sporen (BUG-TIMELINE-GRIJS). */}
     </>
   );
 });

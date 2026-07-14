@@ -90,10 +90,12 @@ Resterende items (vereisen hands-on testen op iPad, Android tablet, Chromebook):
 
 ---
 
-#### BUG-TIMELINE-GRIJS — Grijs vlak onder spoor 8 in studio timeline ✅ OPGELOST (DAW-ronde 2026-07-14)
-**Complexiteit:** Laag-Medium · **Bron:** Hands-on test (2026-04-23) · **Status:** Opgelost — inhoud-wrapper vult nu de scroll-container (min-h-full); zie DAW-ronde in docs/KANSEN-BRAINSTORM.md
+#### BUG-TIMELINE-GRIJS — Grijs vlak onder spoor 8 in studio timeline ✅ DEFINITIEF OPGELOST (DAW-ronde 2026-07-14)
+**Complexiteit:** Laag-Medium · **Bron:** Hands-on test (2026-04-23) · **Status:** Opgelost — echte oorzaak gevonden en weggenomen
 
-De scroll-container van de timeline (`overflow-y-auto min-h-0`) is groter dan de 8 tracks, waardoor een grijs vlak (`bg-neutral-50/50`) zichtbaar is onder spoor 8. Eerste fix (`overflow-y-hidden`) blokkeerde alle verticale scroll. Tweede fix (`flex-1` verwijderd) lost het niet op omdat de container zijn hoogte van de parent flex-layout krijgt. Verdere analyse nodig van de interactie tussen `max-h-[50dvh]` op Timeline root en de flex-distributie in StudioView.
+**Echte oorzaak** (gemeten in de browser, niet de flex-layout): de playhead-lijn in `Playhead.tsx` had een **vaste hoogte `h-[500px]`** (workaround omdat de liniaal maar 16px hoog is). Die lijn stak ~150px voorbij de sporen en creëerde daarmee scrollruimte in de scroll-container — hét grijze vlak, mét doorlopende rode lijn. Eerdere fixes (overflow-y-hidden, flex-1 weg, min-h-full-wrapper) bestreden allemaal het verkeerde symptoom.
+
+**Fix**: de lijn wordt nu op wrapper-niveau gerenderd in `Timeline.tsx` (overlay `absolute top-4 bottom-0` → eindigt exact bij de laatste rij); de min-h-full/flex-vulling-hacks zijn verwijderd. De "spoor toevoegen"-rij is nu het onderste element van de tijdlijn.
 
 ---
 

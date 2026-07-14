@@ -58,7 +58,7 @@ describe('timelineStore', () => {
     });
   });
 
-  describe('extendTimeline (B2, "+ 8 maten")', () => {
+  describe('extendTimeline (B2, "+8"/"−8" maten)', () => {
     it('verlengt totalBeats en verhoogt audioVersion', () => {
       useTimelineStore.setState({ totalBeats: 128, audioVersion: 0 });
       useTimelineStore.getState().extendTimeline(32);
@@ -75,6 +75,35 @@ describe('timelineStore', () => {
       useTimelineStore.getState().extendTimeline(32);
       expect(useTimelineStore.getState().totalBeats).toBe(256);
       expect(useTimelineStore.getState().audioVersion).toBe(versionAtMax);
+    });
+
+    it('verkort totalBeats met een negatieve stap', () => {
+      useTimelineStore.setState({ totalBeats: 128, audioVersion: 0 });
+      useTimelineStore.getState().extendTimeline(-32);
+      expect(useTimelineStore.getState().totalBeats).toBe(96);
+      expect(useTimelineStore.getState().audioVersion).toBe(1);
+    });
+
+    it('klemt op MIN_TOTAL_BEATS (64 = 16 maten) en verhoogt dan audioVersion niet', () => {
+      useTimelineStore.setState({ totalBeats: 96, audioVersion: 0 });
+      useTimelineStore.getState().extendTimeline(-32);
+      expect(useTimelineStore.getState().totalBeats).toBe(64);
+      const versionAtMin = useTimelineStore.getState().audioVersion;
+      useTimelineStore.getState().extendTimeline(-32);
+      expect(useTimelineStore.getState().totalBeats).toBe(64);
+      expect(useTimelineStore.getState().audioVersion).toBe(versionAtMin);
+    });
+
+    it('verkort nooit tot onder het meegegeven inhoud-einde (contentEndBeat)', () => {
+      // Inhoud eindigt op beat 100 → inkorten vanaf 128 klemt op 100, niet 96
+      useTimelineStore.setState({ totalBeats: 128, audioVersion: 0 });
+      useTimelineStore.getState().extendTimeline(-32, 100);
+      expect(useTimelineStore.getState().totalBeats).toBe(100);
+      // Nogmaals inkorten met dezelfde inhoud: no-op
+      const version = useTimelineStore.getState().audioVersion;
+      useTimelineStore.getState().extendTimeline(-32, 100);
+      expect(useTimelineStore.getState().totalBeats).toBe(100);
+      expect(useTimelineStore.getState().audioVersion).toBe(version);
     });
   });
 

@@ -66,7 +66,7 @@ Seven independent stores in `src/stores/`:
 |---|---|
 | `appStore` | Current screen, active location ID, current composition ID, praatplaat context (#72) |
 | `audioStore` | Playback state (isPlaying, currentBeat) |
-| `timelineStore` | Tracks (8 default, uitbreidbaar tot 12 via `addTrack`), clips, BPM (120 fixed), 128 beats default (uitbreidbaar tot 256 via `extendTimeline` — liniaal telt in máten: 32→64), looping + sectie-loop (`loopRegion`, sessie-state), solo (`soloTrackIndex`, sessie-state), smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb). Clip actions (`addClip`, `moveClip`, `duplicateClip`) accept `samples: Sample[]` as parameter — no direct dependency on libraryStore |
+| `timelineStore` | Tracks (8 default, uitbreidbaar tot 12 via `addTrack`), clips, BPM (120 fixed), 128 beats default (16–64 maten via `extendTimeline(±32, contentEndBeat?)` — "+8"/"−8"-knoppen in de tijdlijn-werkbalk; inkorten klemt op het einde van de inhoud), looping + sectie-loop (`loopRegion`, sessie-state), solo (`soloTrackIndex`, sessie-state), smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb). Clip actions (`addClip`, `moveClip`, `duplicateClip`) accept `samples: Sample[]` as parameter — no direct dependency on libraryStore |
 | `libraryStore` | Recorder slots (max 6), collected samples, transfer to library |
 | `userStore` | User session, role (guest/student/teacher), class code |
 | `themeStore` | Active theme, locations, samples, map config (loaded from `?theme=` URL param) |

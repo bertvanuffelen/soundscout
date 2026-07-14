@@ -35,10 +35,13 @@ export const AMBIENT_AUDIO_FADE_SECONDS = 1.5;
 /** Default number of beats in the timeline */
 export const DEFAULT_TOTAL_BEATS = 128;
 
-/** Maximum number of beats (64 maten × 4) — grens van de "+ 8 maten"-tegel */
+/** Maximum number of beats (64 maten × 4) — grens van de "+8"-knop */
 export const MAX_TOTAL_BEATS = 256;
 
-/** Beats per "+ 8 maten"-uitbreiding (8 maten × 4) */
+/** Minimum number of beats (16 maten × 4) — grens van de "−8"-knop */
+export const MIN_TOTAL_BEATS = 64;
+
+/** Beats per "+8"/"−8"-stap (8 maten × 4) */
 export const EXTEND_BEATS_STEP = 32;
 
 /** Maximum aantal sporen ("+ spoor"-regel, B3); audio-buses groeien mee */

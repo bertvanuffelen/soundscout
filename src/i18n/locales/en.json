@@ -196,8 +196,8 @@
     "addTrackTitle": "Add a track (currently {{count}} tracks, max 12)",
     "soloOn": "Hear only this track (solo)",
     "soloOff": "Turn solo off",
-    "extendTimeline": "8 measures",
-    "extendTimelineTitle": "Extend the timeline by 8 measures (currently {{maten}} measures)",
+    "extendTimelineTitle": "Make the timeline 8 measures longer (currently {{maten}} measures, max 64)",
+    "shrinkTimelineTitle": "Make the timeline 8 measures shorter (currently {{maten}} measures, min 16)",
     "clipToolsHint": "Tip: click a block on the timeline to trim it, add effects or adjust the volume.",
     "addToTrack": "Add {{name}} to timeline",
     "dragToTimeline": "Drag to timeline",
@@ -986,6 +986,8 @@
             "Browsers block audio by default until the user clicks. SoundScout handles this on the first click or tap — students don't need to do anything, but if there's no sound, have them tap the screen. If a sample really won't load, refresh the page — the composition is saved locally.",
             { "type": "heading", "text": "Devices" },
             "SoundScout works on Chromebooks and iPads. iPad: use landscape orientation for more workspace. Safari works best. Chromebook: make sure the device doesn't go to sleep during recordings — it interrupts the web audio system.",
+            { "type": "heading", "text": "Section loop: create a section first" },
+            "In the studio, part of the timeline can be repeated: tap a section and turn on 'Loop this section'. Note: this only works after a section has been created with the flag button in the timeline bar (with a storyboard, sections are added automatically). Without a section loop, the loop button repeats the entire timeline.",
             { "type": "heading", "text": "Timing" },
             "Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block."
           ]
