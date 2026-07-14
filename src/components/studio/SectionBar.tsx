@@ -11,6 +11,8 @@ import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import type { Section } from '../../types';
 import { SectionPopover } from './SectionPopover';
+import { useTimelineStore } from '../../stores/timelineStore';
+import { audioService } from '../../services/AudioService';
 
 /** Minimum section width in beats — prevents invisible sections */
 const MIN_SECTION_BEATS = 2;
@@ -39,6 +41,8 @@ export const SectionBar = memo(function SectionBar({
   const [activePopover, setActivePopover] = useState<string | null>(null);
   const segmentRefs = useRef<Map<string, HTMLButtonElement>>(new Map());
   const barRef = useRef<HTMLDivElement>(null);
+  // Sectie-loop (B4): reactief zodat de popover-toggle direct bijwerkt
+  const loopRegion = useTimelineStore((s) => s.loopRegion);
 
   // --- Drag state ---
   const [draggingId, setDraggingId] = useState<string | null>(null);
@@ -198,8 +202,22 @@ export const SectionBar = memo(function SectionBar({
       {/* Popover via portal */}
       {activePopover && (() => {
         const ref = segmentRefs.current.get(activePopover);
-        const section = sections.find((s) => s.id === activePopover);
-        if (!ref || !section) return null;
+        const segment = segments.find((s) => s.section.id === activePopover);
+        if (!ref || !segment) return null;
+
+        // Sectie-loop (B4): regio van dit segment vergelijken met de actieve
+        // loop-regio; toggle zet store-state + past de transport-loop live toe
+        const isLoop = !!loopRegion
+          && loopRegion.startBeat === segment.startBeat
+          && loopRegion.endBeat === segment.endBeat;
+        const handleLoopToggle = (loop: boolean) => {
+          const region = loop ? { startBeat: segment.startBeat, endBeat: segment.endBeat } : null;
+          const store = useTimelineStore.getState();
+          store.setLoopRegion(region);
+          // Regio uit → terug naar hele-tijdlijn-loop als die aanstond
+          const looping = region ? true : store.isLooping;
+          audioService.setLoop(looping, store.totalBeats, region);
+        };
 
         const rect = ref.getBoundingClientRect();
         return createPortal(
@@ -212,10 +230,12 @@ export const SectionBar = memo(function SectionBar({
             }}
           >
             <SectionPopover
-              section={section}
+              section={segment.section}
               onUpdate={onUpdate}
               onDelete={onDelete}
               onClose={handleClosePopover}
+              isLoop={isLoop}
+              onLoopToggle={readOnly ? undefined : handleLoopToggle}
             />
           </div>,
           document.body,

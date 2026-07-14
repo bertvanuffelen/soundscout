@@ -22,6 +22,8 @@ export function useStudioPlayback() {
   const totalBeats = useTimelineStore((s) => s.totalBeats);
   const isLooping = useTimelineStore((s) => s.isLooping);
   const setLooping = useTimelineStore((s) => s.setLooping);
+  const loopRegion = useTimelineStore((s) => s.loopRegion);
+  const setLoopRegion = useTimelineStore((s) => s.setLoopRegion);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
 
   const librarySamples = useLibraryStore((s) => s.librarySamples);
@@ -68,7 +70,7 @@ export function useStudioPlayback() {
       scheduleTimeline(tracks, librarySamples);
       setScheduledVersion(currentVersion);
     }
-    setTransportLoop(isLooping, totalBeats);
+    setTransportLoop(isLooping, totalBeats, loopRegion);
     // Read currentBeat at call time to avoid recreating this callback ~20x/sec
     const currentBeat = useAudioStore.getState().currentBeat;
     playTimeline(currentBeat);
@@ -81,6 +83,7 @@ export function useStudioPlayback() {
     librarySamples,
     tracks,
     isLooping,
+    loopRegion,
     totalBeats,
   ]);
 
@@ -99,12 +102,14 @@ export function useStudioPlayback() {
     stopTimeline();
   }, [stopTimeline]);
 
-  // Toggle loop
+  // Toggle loop — uitzetten wist ook een actieve sectie-loop-regio (B4):
+  // één mentaal model, de loop-knop is de aan/uit-schakelaar voor loopen
   const handleToggleLoop = useCallback(() => {
     const newLooping = !isLooping;
     setLooping(newLooping);
-    setTransportLoop(newLooping, totalBeats);
-  }, [setLooping, isLooping, setTransportLoop, totalBeats]);
+    if (!newLooping && loopRegion) setLoopRegion(null);
+    setTransportLoop(newLooping, totalBeats, newLooping ? loopRegion : null);
+  }, [setLooping, isLooping, setTransportLoop, totalBeats, loopRegion, setLoopRegion]);
 
   // Preview a sample
   const handlePreview = useCallback(

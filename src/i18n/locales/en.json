@@ -248,6 +248,8 @@
       "markSection": "Mark section",
       "sectionLabel": "Section {{number}}",
       "editSection": "Edit section",
+      "loopOn": "Loop this section",
+      "loopOff": "Stop looping this section",
       "deleteSection": "Delete section",
       "lockedStoryboard": "Linked to storyboard",
       "colorLabel": "Color",

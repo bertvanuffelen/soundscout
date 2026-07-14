@@ -497,8 +497,9 @@ export const Timeline = memo(function Timeline({
               </button>
             )
           )}
-          {/* Zoom controls — hidden on mobile to save toolbar space */}
-          <div className="hidden sm:flex items-center gap-0">
+          {/* Zoom controls — nu ook op touch (B4: 128+ beats zonder zoom was
+              onwerkbaar op iPad); alleen 'fit' blijft desktop-only */}
+          <div className="flex items-center gap-0">
             <button
               onClick={handleZoomOut}
               disabled={zoomLevel <= ZOOM_MIN}
@@ -512,7 +513,7 @@ export const Timeline = memo(function Timeline({
               onClick={handleZoomFit}
               aria-label={t('studio.zoomFit')}
               title={t('studio.zoomFit')}
-              className={`p-1 rounded transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center ${
+              className={`p-1 rounded transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] hidden sm:flex items-center justify-center ${
                 zoomLevel === 1.0
                   ? 'text-accent-500'
                   : 'text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60'

@@ -121,6 +121,11 @@ interface TimelineStore {
   soloTrackIndex: number | null;
   setSoloTrack: (index: number | null) => void;
 
+  /** Loop-regio ("Loop deze sectie", B4) — sessie-state, niet opgeslagen.
+   *  null = hele tijdlijn loopen (huidig gedrag van de loop-knop). */
+  loopRegion: { startBeat: number; endBeat: number } | null;
+  setLoopRegion: (region: { startBeat: number; endBeat: number } | null) => void;
+
   // Load saved composition
   loadTimeline: (timeline: TimelineState) => void;
 
@@ -676,6 +681,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     set((prev) => ({
       tracks: createEmptyTracks(),
       soloTrackIndex: null,
+      loopRegion: null,
       audioVersion: prev.audioVersion + 1,
     }));
   },
@@ -709,6 +715,17 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     set({ soloTrackIndex: index });
   },
 
+  loopRegion: null,
+  setLoopRegion: (region) => {
+    // Live toegepast via de transport-loop (aanroeper synct engine);
+    // hier alleen UI-state. Regio aan = ook isLooping aan (één mentaal
+    // model: de loop-knop toont dat er geloopt wordt).
+    set((prev) => ({
+      loopRegion: region,
+      isLooping: region ? true : prev.isLooping,
+    }));
+  },
+
   loadTimeline: (timeline) => {
     set((prev) => ({
       tracks: timeline.tracks,
@@ -717,6 +734,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       isLooping: timeline.isLooping,
       sections: timeline.sections ?? [],
       soloTrackIndex: null,
+      loopRegion: null,
       audioVersion: prev.audioVersion + 1,
     }));
   },

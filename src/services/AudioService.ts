@@ -511,6 +511,10 @@ export class AudioService {
    *  wordt niet opgeslagen in composities. */
   private soloTrackIndex: number | null = null;
 
+  /** Actieve loop-regio ("Loop deze sectie", B4) — bewaard zodat een live
+   *  reschedule (#22) de regio behoudt. Sessie-state. */
+  private loopRegion: { startBeat: number; endBeat: number } | null = null;
+
   /**
    * Ensure at least `count` track buses exist. Lazy-initialized and
    * grow-only (B3: "+ spoor" tot 12 — vóór deze fix waren buses vast 8 en
@@ -1176,10 +1180,25 @@ export class AudioService {
     this.beatUpdateCallbacks.forEach((cb) => cb(0));
   }
 
-  setLoop(enabled: boolean, totalBeats: number): void {
+  /**
+   * Zet transport-loop. Zonder regio: hele tijdlijn (huidig gedrag).
+   * Met regio ("Loop deze sectie", B4): loopt exact dat stuk — afspelen
+   * vóór de regio speelt eerst tot loopEnd en springt dan naar loopStart
+   * (DAW-standaardgedrag van Tone.Transport).
+   */
+  setLoop(
+    enabled: boolean,
+    totalBeats: number,
+    region: { startBeat: number; endBeat: number } | null = null,
+  ): void {
+    // Onthouden zodat rescheduleWhilePlaying (#22) de regio kan behouden
+    this.loopRegion = enabled ? region : null;
     const transport = Tone.getTransport();
     transport.loop = enabled;
-    if (enabled) {
+    if (enabled && region) {
+      transport.loopStart = beatsToSeconds(region.startBeat, DEFAULT_BPM);
+      transport.loopEnd = beatsToSeconds(region.endBeat, DEFAULT_BPM);
+    } else if (enabled) {
       transport.loopStart = 0;
       transport.loopEnd = beatsToSeconds(totalBeats, DEFAULT_BPM);
     }
@@ -1209,7 +1228,7 @@ export class AudioService {
 
     // 2. Full reschedule (disposes old Part + active sources, builds new Part)
     this.scheduleTimeline(tracks, samples);
-    this.setLoop(looping, totalBeats);
+    this.setLoop(looping, totalBeats, this.loopRegion);
 
     // 3. Resume playback from the same position
     this.play(currentBeat);

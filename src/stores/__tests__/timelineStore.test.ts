@@ -121,6 +121,37 @@ describe('timelineStore', () => {
     });
   });
 
+  describe('loopRegion (B4, sectie-loop)', () => {
+    it('regio zetten schakelt ook isLooping in (één mentaal model)', () => {
+      useTimelineStore.setState({ isLooping: false, loopRegion: null });
+      useTimelineStore.getState().setLoopRegion({ startBeat: 16, endBeat: 48 });
+      expect(useTimelineStore.getState().loopRegion).toEqual({ startBeat: 16, endBeat: 48 });
+      expect(useTimelineStore.getState().isLooping).toBe(true);
+    });
+
+    it('regio wissen laat isLooping met rust (hele-tijdlijn-loop blijft)', () => {
+      useTimelineStore.setState({ isLooping: true, loopRegion: { startBeat: 0, endBeat: 32 } });
+      useTimelineStore.getState().setLoopRegion(null);
+      expect(useTimelineStore.getState().loopRegion).toBeNull();
+      expect(useTimelineStore.getState().isLooping).toBe(true);
+    });
+
+    it('is sessie-state: gewist door loadTimeline en clearAllTracks', () => {
+      useTimelineStore.getState().setLoopRegion({ startBeat: 0, endBeat: 16 });
+      useTimelineStore.getState().clearAllTracks();
+      expect(useTimelineStore.getState().loopRegion).toBeNull();
+
+      useTimelineStore.getState().setLoopRegion({ startBeat: 0, endBeat: 16 });
+      useTimelineStore.getState().loadTimeline({
+        tracks: [{ id: 'track-1', clips: [] }],
+        bpm: 120,
+        totalBeats: 128,
+        isLooping: false,
+      });
+      expect(useTimelineStore.getState().loopRegion).toBeNull();
+    });
+  });
+
   describe('addClip', () => {
     it('should add a clip to the specified track', () => {
       const store = useTimelineStore.getState();

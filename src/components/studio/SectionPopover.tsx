@@ -8,7 +8,7 @@
 
 import { memo, useRef, useEffect, useState, useCallback, useLayoutEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Trash2, Lock } from 'lucide-react';
+import { Trash2, Lock, Repeat } from 'lucide-react';
 import type { Section } from '../../types';
 import { SECTION_COLORS } from '../../types';
 import { SECTION_LABEL_MAX_LENGTH } from '../../constants/config';
@@ -18,6 +18,10 @@ interface SectionPopoverProps {
   onUpdate: (sectionId: string, updates: Partial<Pick<Section, 'color' | 'label'>>) => void;
   onDelete: (sectionId: string) => void;
   onClose: () => void;
+  /** Loopt deze sectie nu? (B4 — sectie-loop) */
+  isLoop?: boolean;
+  /** "Loop deze sectie"-toggle (B4); weggelaten = geen loop-optie tonen */
+  onLoopToggle?: (loop: boolean) => void;
 }
 
 export const SectionPopover = memo(function SectionPopover({
@@ -25,6 +29,8 @@ export const SectionPopover = memo(function SectionPopover({
   onUpdate,
   onDelete,
   onClose,
+  isLoop = false,
+  onLoopToggle,
 }: SectionPopoverProps) {
   const { t, i18n } = useTranslation();
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -151,6 +157,22 @@ export const SectionPopover = memo(function SectionPopover({
                      placeholder:text-neutral-400 ${section.fromStoryboard ? 'text-text-muted cursor-default' : ''}`}
         />
       </div>
+
+      {/* "Loop deze sectie" (B4) — hergebruikt het sectie-concept i.p.v.
+          een nieuw A/B-paradigma */}
+      {onLoopToggle && (
+        <button
+          onClick={() => onLoopToggle(!isLoop)}
+          aria-pressed={isLoop}
+          className={`flex items-center gap-1.5 text-xs rounded-lg px-2 py-1.5 transition-colors w-full cursor-pointer mb-1
+            ${isLoop
+              ? 'bg-accent-100 text-accent-800 font-semibold'
+              : 'text-text-muted hover:text-text-main hover:bg-neutral-100'}`}
+        >
+          <Repeat size={12} />
+          {isLoop ? t('studio.sections.loopOff') : t('studio.sections.loopOn')}
+        </button>
+      )}
 
       {/* Delete button (hidden for storyboard-linked sections) */}
       {section.fromStoryboard ? (

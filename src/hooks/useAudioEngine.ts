@@ -112,8 +112,12 @@ export function useAudioEngine() {
     setIsPlaying(false);
   }, [setIsPlaying]);
 
-  const setTransportLoop = useCallback((loop: boolean, totalBeats: number) => {
-    audioService.setLoop(loop, totalBeats);
+  const setTransportLoop = useCallback((
+    loop: boolean,
+    totalBeats: number,
+    region: { startBeat: number; endBeat: number } | null = null,
+  ) => {
+    audioService.setLoop(loop, totalBeats, region);
   }, []);
 
   const getCurrentBeat = useCallback((): number => {

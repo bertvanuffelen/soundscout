@@ -248,6 +248,8 @@
       "markSection": "Markeer deel",
       "sectionLabel": "Deel {{number}}",
       "editSection": "Deel bewerken",
+      "loopOn": "Loop deze sectie",
+      "loopOff": "Stop loop van deze sectie",
       "deleteSection": "Deel verwijderen",
       "lockedStoryboard": "Gekoppeld aan storyboard",
       "colorLabel": "Kleur",
