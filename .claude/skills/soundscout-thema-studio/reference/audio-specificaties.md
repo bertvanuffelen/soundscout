@@ -61,8 +61,12 @@ Elke rij: bestand · bron (Freesound-URL / "ElevenLabs (gegenereerd)" / "Eigen o
 auteur · licentie. `check-pakket.py` weigert Freesound-audio zonder bronregel.
 
 **Licentie & zichtbare credits:** CC0 vraagt géén vermelding; **CC-BY wél** (maker +
-licentie + bronlink). `BRONNEN.md` is de dev-registratie, maar voor échte CC-BY-naleving
-moet de attributie óók voor gebruikers zichtbaar zijn. Voeg daarom bij integratie een
-**"Geluidsbronnen"/credits-plek in de app** toe (bv. in de docenten-handleiding of een
-info/colofon-scherm), gevoed vanuit BRONNEN.md. Alternatief: filter de finale keuzes op
-**CC0** (`--licentie cc0`) om de verplichting te vermijden — maar dat verkleint de keuze.
+licentie + bronlink). Aanpak (bevestigd): **één centrale Colofon-/Credits-pagina voor de
+hele app**, vindbaar via een link op de landingspagina (footer). Niet per thema en niet
+tijdens het spelen — één vindbare pagina is voldoende voor CC-BY. Per geluid: naam · maker
+· bronlink (Freesound) · licentie (met link naar de licentietekst). De pagina groeit per
+thema aan en wordt **automatisch samengesteld uit alle `BRONNEN.md`-bestanden** (dev-
+registratie blijft `BRONNEN.md`; check-pakket weigert Freesound-audio zonder bronregel).
+CC0-geluiden en eigen/ElevenLabs-opnames hoeven niet vermeld. Alternatief om de
+verplichting te vermijden: finale keuzes op **CC0** filteren (`--licentie cc0`) — kleinere
+keuze.
