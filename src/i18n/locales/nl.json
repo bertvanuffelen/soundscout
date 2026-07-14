@@ -84,6 +84,60 @@
         "ijsarena-puck": "Puck",
         "ijsarena-wagen": "Wagen"
       }
+    },
+    "piraten": {
+      "name": "Piraten",
+      "description": "Grogkroeg, haven, schip, jungle en voodoo — vaar mee!",
+      "locations": {
+        "grogkroeg": "De Dorstige Papegaai",
+        "grogkroeg_desc": "Een gezellige piratenkroeg",
+        "haven": "De Kade",
+        "haven_desc": "Het haventje met steigers",
+        "schip": "Het Schip",
+        "schip_desc": "Het dek van het piratenschip",
+        "jungle": "Het Junglepad",
+        "jungle_desc": "Een weelderig junglepad",
+        "voodoohut": "De Voodoo-hut",
+        "voodoohut_desc": "Een geheimzinnige voodoo-hut"
+      },
+      "samples": {
+        "grogkroeg-accordeon": "Accordeon",
+        "grogkroeg-kroezen": "Proost",
+        "grogkroeg-papegaai": "Papegaai",
+        "grogkroeg-lach": "Lachbui",
+        "grogkroeg-deur": "Klapdeur",
+        "grogkroeg-dobbel": "Dobbelstenen",
+        "grogkroeg-vat": "Vattrommel",
+        "grogkroeg-fluit": "Tinfluit",
+        "haven-meeuwen": "Meeuwen",
+        "haven-golven": "Golven",
+        "haven-scheepsbel": "Scheepsbel",
+        "haven-katrol": "Katrol",
+        "haven-kraan": "Laadkraan",
+        "haven-kist": "Kisten",
+        "haven-boei": "Belboei",
+        "schip-zeilen": "Zeilen",
+        "schip-kanon": "Kanon",
+        "schip-anker": "Ankerketting",
+        "schip-zeemanslied": "Zeemanslied",
+        "schip-wind": "Wind",
+        "schip-stuurwiel": "Stuurwiel",
+        "schip-kraaiennest": "Kraaiennest",
+        "jungle-apen": "Robot-apen",
+        "jungle-vogels": "Junglevogels",
+        "jungle-waterval": "Waterval",
+        "jungle-trommels": "Trommels",
+        "jungle-krekels": "Krekels",
+        "jungle-kokosnoot": "Kokosnoot",
+        "jungle-slang": "Slang",
+        "voodoohut-ketel": "Toverketel",
+        "voodoohut-botten": "Botten",
+        "voodoohut-gong": "Gong",
+        "voodoohut-windgong": "Windgong",
+        "voodoohut-fluister": "Gefluister",
+        "voodoohut-druppel": "Druppel",
+        "voodoohut-raaf": "Raaf"
+      }
     }
   },
   "start": {
@@ -589,10 +643,22 @@
         "level": "Groep 6–7",
         "goal": "Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken.",
         "phases": [
-          { "name": "Oriënteren", "text": "klassikaal gesprek; tweetallen kiezen een plek." },
-          { "name": "Onderzoeken", "text": "geluiden verzamelen en in de studio componeren." },
-          { "name": "Uitvoeren", "text": "inleveren en klassikaal laten klinken." },
-          { "name": "Evalueren", "text": "samen nabespreken." }
+          {
+            "name": "Oriënteren",
+            "text": "klassikaal gesprek; tweetallen kiezen een plek."
+          },
+          {
+            "name": "Onderzoeken",
+            "text": "geluiden verzamelen en in de studio componeren."
+          },
+          {
+            "name": "Uitvoeren",
+            "text": "inleveren en klassikaal laten klinken."
+          },
+          {
+            "name": "Evalueren",
+            "text": "samen nabespreken."
+          }
         ]
       },
       "verspringen": {
@@ -790,9 +856,15 @@
           "title": "Aan de slag",
           "content": [
             "Welkom! SoundScout is een web-app waarmee leerlingen muziek leren componeren door geluiden te verzamelen op locaties en die op een timeline te plaatsen. Als docent heb je een eigen dashboard waar je klassen beheert, opdrachten klaarzet en inzendingen bekijkt.",
-            { "type": "heading", "text": "Account aanmaken" },
+            {
+              "type": "heading",
+              "text": "Account aanmaken"
+            },
             "Je hebt een docentenaccount nodig. Registreren gaat via de loginpagina — klik op 'Nog geen account?' en volg de stappen. Je ontvangt een bevestigingsmail; activeer je account via de link daarin.",
-            { "type": "heading", "text": "Eerste klas aanmaken" },
+            {
+              "type": "heading",
+              "text": "Eerste klas aanmaken"
+            },
             "Na het inloggen maak je je eerste klas aan via de knop 'Nieuwe klas'. Elke klas krijgt automatisch een 4-cijferige klascode. Die klascode deel je met je leerlingen — zij vullen die in op het startscherm om gekoppeld te worden aan jouw klas.",
             "Tip: schrijf de klascode op het digibord of print hem op een werkblad. Leerlingen kunnen ook via een link met ingebouwde klascode binnenkomen (handig als je met een Chromebook-trolley werkt)."
           ]
@@ -809,13 +881,22 @@
           "title": "Je dashboard in één oogopslag",
           "content": [
             "Na het inloggen kom je op je dashboard. Bovenaan staan drie tabbladen die je hele docent-werk verdelen.",
-            { "type": "heading", "text": "De drie tabbladen" },
+            {
+              "type": "heading",
+              "text": "De drie tabbladen"
+            },
             "Mijn klassen — al je klassen met hun klascodes. Klik op een klas om inzendingen te bekijken en een opdracht te activeren.",
             "Mijn opdrachten — je herbruikbare bouwstenen: opdrachtkaarten, praatplaten, storyboards en templates. Deze gebruik je over klassen heen.",
             "Leskaarten — kant-en-klare lespakketten (ingebouwd of zelfgemaakt) die je met één klik voor een klas activeert.",
-            { "type": "heading", "text": "Hulp en uitloggen" },
+            {
+              "type": "heading",
+              "text": "Hulp en uitloggen"
+            },
             "Rechtsboven vind je de knoppen 'Handleiding' (dit scherm) en 'Uitloggen'. Verspreid over het dashboard zie je kleine ?-knopjes; die brengen je meteen naar het juiste hoofdstuk van deze handleiding.",
-            { "type": "heading", "text": "Zo zet je een klas op" },
+            {
+              "type": "heading",
+              "text": "Zo zet je een klas op"
+            },
             "Onder de tabbladen staat een inklapbaar blok 'Zo zet je een klas op' met de drie basisstappen: maak een klas → kies een opdracht → leerlingen voeren de code in. Bij een nieuwe klas staat dit blok automatisch open."
           ]
         },
@@ -823,13 +904,25 @@
           "title": "De vier opdracht-types",
           "content": [
             "Je zet per klas één opdracht tegelijk klaar. Er zijn vier types; leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid. Je kiest en activeert het type in het klas-detailscherm via de vier type-kaarten.",
-            { "type": "heading", "text": "Vrij componeren" },
+            {
+              "type": "heading",
+              "text": "Vrij componeren"
+            },
             "De leerling componeert vrij binnen een thema dat jij kiest (bijvoorbeeld De Stad of Winterspelen). Geen afbeelding of verhaal — puur ontdekken en bouwen. Ideaal voor open, zelfstandige opdrachten.",
-            { "type": "heading", "text": "Bij een afbeelding (praatplaat)" },
+            {
+              "type": "heading",
+              "text": "Bij een afbeelding (praatplaat)"
+            },
             "De hele klas werkt op één gedeelde afbeelding: elke leerling plaatst zijn compositie op een plek, en jij presenteert het resultaat klassikaal op het digibord. Zie het hoofdstuk 'Praatplaat gebruiken'.",
-            { "type": "heading", "text": "Storyboard" },
+            {
+              "type": "heading",
+              "text": "Storyboard"
+            },
             "De leerling verklankt een verhaal van meerdere scènes; de tijdlijn wordt automatisch in secties verdeeld. Goed voor opbouw, contrast en vormschema.",
-            { "type": "heading", "text": "Template van docent" },
+            {
+              "type": "heading",
+              "text": "Template van docent"
+            },
             "De leerling bouwt verder op een compositie die jij hebt gemaakt, met optionele slotopties. Zie het hoofdstuk 'Templates maken'.",
             "Aan elke opdracht kun je een opdrachtkaart met instructies koppelen die de leerling vóór het starten ziet — zie 'Opdrachtkaarten maken'."
           ]
@@ -838,11 +931,20 @@
           "title": "Opdrachtkaarten maken",
           "content": [
             "Een opdrachtkaart is een korte instructiekaart — een titel en maximaal tien bullets — die de leerling ziet ná het invoeren van de klascode en vóór het starten. Zo weet de leerling meteen wat de bedoeling is.",
-            { "type": "heading", "text": "Vorm-onafhankelijk en herbruikbaar" },
+            {
+              "type": "heading",
+              "text": "Vorm-onafhankelijk en herbruikbaar"
+            },
             "Dezelfde opdrachtkaart werkt bij elk opdracht-type (vrij, praatplaat, storyboard of template) en je hergebruikt hem over klassen heen. De kaart hangt aan de opdracht, niet aan het type.",
-            { "type": "heading", "text": "Aanmaken en beheren" },
+            {
+              "type": "heading",
+              "text": "Aanmaken en beheren"
+            },
             "Ga naar het tabblad 'Mijn opdrachten' → sectie 'Opdrachtkaarten'. Klik op 'Nieuwe opdrachtkaart', geef een titel en voeg bullets toe (bijvoorbeeld 'Gebruik minstens drie verschillende geluiden'). Kaarten kun je later bewerken en verwijderen.",
-            { "type": "heading", "text": "Koppelen aan een opdracht" },
+            {
+              "type": "heading",
+              "text": "Koppelen aan een opdracht"
+            },
             "Bij het activeren van een opdracht kies je optioneel een opdrachtkaart. Kies je er geen, dan toont de app een standaard-uitleg die bij het opdracht-type past."
           ]
         },
@@ -850,13 +952,25 @@
           "title": "Leskaarten gebruiken",
           "content": [
             "Een leskaart is een kant-en-klaar lespakket: een opdracht-type + de gekozen bron (bijvoorbeeld een storyboard of praatplaat) + een opdrachtkaart + presentatie-info (titel, niveau, lesdoel, fasen). Met één klik activeer je zo'n compleet pakket voor een klas.",
-            { "type": "heading", "text": "Ingebouwde en eigen leskaarten" },
+            {
+              "type": "heading",
+              "text": "Ingebouwde en eigen leskaarten"
+            },
             "Er zijn ingebouwde leskaarten (bijvoorbeeld Robotfabriek, Verspringen, Vrij componeren en Drum beat) die voor elke docent klaarstaan. Daarnaast kun je zelf leskaarten samenstellen.",
-            { "type": "heading", "text": "Activeren" },
+            {
+              "type": "heading",
+              "text": "Activeren"
+            },
             "Ga naar het tabblad 'Leskaarten', kies een kaart in de lijst en bekijk rechts de details (lesdoel, fasen, eventueel een PDF). Klik op 'Activeer in klas' en kies een bestaande klas of maak er direct een aan. Je krijgt meteen de klascode.",
-            { "type": "heading", "text": "Zelf een leskaart maken" },
+            {
+              "type": "heading",
+              "text": "Zelf een leskaart maken"
+            },
             "Klik op 'Nieuwe leskaart'. Kies het type, de bron uit de catalogus, optioneel een opdrachtkaart, en vul titel, niveau, lesdoel en fasen in. Een cover-afbeelding wordt automatisch afgeleid uit de gekozen bron. Je eigen leskaarten kun je bewerken en verwijderen; de ingebouwde niet.",
-            { "type": "heading", "text": "PDF bij de les" },
+            {
+              "type": "heading",
+              "text": "PDF bij de les"
+            },
             "Hangt er een PDF aan de leskaart, dan open je die vanuit het detailpaneel — handig om te printen of te delen met collega's."
           ]
         },
@@ -864,13 +978,25 @@
           "title": "Compositiemodi",
           "content": [
             "Wanneer een leerling op 'Nieuwe compositie' klikt, kiest hij of zij eerst een modus. Elke modus past bij een ander leerdoel.",
-            { "type": "heading", "text": "Vrij componeren" },
+            {
+              "type": "heading",
+              "text": "Vrij componeren"
+            },
             "De leerling kiest een thema (bijv. De Stad of Winterspelen) en gaat zelf op ontdekkingstocht. Er zijn geen afbeeldingen of secties — de leerling bepaalt zelf de structuur. Dit past bij open opdrachten en zelfstandig verkennen.",
-            { "type": "heading", "text": "Bij een afbeelding" },
+            {
+              "type": "heading",
+              "text": "Bij een afbeelding"
+            },
             "De leerling kiest een afbeelding (bijv. Koningsdag, Sportveld) en componeert een klanklandschap dat bij dat beeld past. Het thema wordt automatisch bepaald door de afbeelding. Dit is geschikt voor luister- en verklankingsopdrachten: 'Welke geluiden hoor je op deze plek?'",
-            { "type": "heading", "text": "Bij een storyboard" },
+            {
+              "type": "heading",
+              "text": "Bij een storyboard"
+            },
             "De leerling kiest een verhaal van meerdere afbeeldingen (bijv. Start → Sprong → Landing). De tijdlijn wordt automatisch opgedeeld in secties die overeenkomen met de afbeeldingen, zodat de leerling oefent met muzikale opbouw en vormschema. Dit past bij opdrachten over spanning, contrast en structuur.",
-            { "type": "heading", "text": "Template + storyboard combineren" },
+            {
+              "type": "heading",
+              "text": "Template + storyboard combineren"
+            },
             "Als docent kun je ook een template koppelen aan een storyboard. De leerling krijgt dan een vaste compositie als startpunt, inclusief de secties en afbeeldingen van het storyboard. Zo combineer je een gerichte opdracht met visuele begeleiding."
           ]
         },
@@ -878,11 +1004,20 @@
           "title": "Templates maken",
           "content": [
             "Een template is een compositie die jij als startpunt voor leerlingen klaarzet. Bijvoorbeeld: een lege track-structuur, een vast ritme, of een halfafgemaakt lied dat leerlingen afmaken.",
-            { "type": "heading", "text": "Template aanmaken" },
+            {
+              "type": "heading",
+              "text": "Template aanmaken"
+            },
             "Bouw een compositie op in de studio en kies vervolgens 'Opslaan als template' (in het Stage-scherm, onder 'Delen & Exporteren'). Je kunt een naam en beschrijving geven, en slotopties kiezen: wil je dat leerlingen de bestaande clips kunnen aanpassen? Mogen ze tracks toevoegen? Wordt de sample-bibliotheek vastgezet?",
-            { "type": "heading", "text": "Template activeren" },
+            {
+              "type": "heading",
+              "text": "Template activeren"
+            },
             "Na opslaan verschijnt de template in je dashboard. Activeer hem voor een specifieke klas via het klas-detailscherm. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt.",
-            { "type": "heading", "text": "Slotopties" },
+            {
+              "type": "heading",
+              "text": "Slotopties"
+            },
             "Bij het opslaan bepaal je met vier slotopties hoeveel vrijheid de leerling krijgt:",
             "Clips vergrendelen — de leerling kan jouw bestaande clips niet verplaatsen, trimmen of verwijderen.",
             "Secties vergrendelen — de sectie-indeling (het vormschema) ligt vast.",
@@ -895,15 +1030,30 @@
           "title": "Praatplaat gebruiken",
           "content": [
             "Een praatplaat is een gezamenlijke klankkaart: elke leerling maakt een kleine compositie en plaatst die op een positie op een afbeelding (bijvoorbeeld een bos, een stad, een markt). Als docent kun je de praatplaat daarna klassikaal presenteren — je klikt op een spot en hoort wat die leerling heeft gemaakt.",
-            { "type": "heading", "text": "Praatplaat aanmaken" },
+            {
+              "type": "heading",
+              "text": "Praatplaat aanmaken"
+            },
             "Ga naar het klasdetailscherm en klik op 'Activeer een opdracht'. Kies 'Praatplaat', geef een naam op (bijvoorbeeld 'Geluiden op de markt — groep 5a') en kies een locatie-afbeelding uit het actieve thema. Per klas kan er maar één opdracht tegelijk actief zijn.",
-            { "type": "heading", "text": "Wat leerlingen zien" },
+            {
+              "type": "heading",
+              "text": "Wat leerlingen zien"
+            },
             "Leerlingen voeren de 4-cijferige klascode in op het startscherm. Ze zien dan een voorvertoning van de praatplaat. Na klikken op 'Starten' kiezen ze een plek op de afbeelding waar ze hun compositie willen plaatsen. Daarna maken ze hun compositie zoals gewoonlijk in de studio. Wanneer ze opslaan, wordt de compositie automatisch aan de gekozen plek gekoppeld. Via de knop 'Kies een nieuwe plek' kunnen ze daarna nog een compositie toevoegen op een andere plek.",
-            { "type": "heading", "text": "Presenteren op het digibord" },
+            {
+              "type": "heading",
+              "text": "Presenteren op het digibord"
+            },
             "Open de praatplaat via 'Open praatplaat' bij de actieve opdracht. Je ziet de afbeelding fullscreen met luidspreker-iconen op de plekken waar leerlingen composities hebben geplaatst. Klik op een icoon om de compositie af te spelen. Als meerdere leerlingen dicht bij elkaar staan, worden de spots automatisch geclusterd — je kiest dan uit een lijst. Klik op het vernieuw-icoon rechtsboven om nieuwe composities op te halen.",
-            { "type": "heading", "text": "Link delen met leerlingen" },
+            {
+              "type": "heading",
+              "text": "Link delen met leerlingen"
+            },
             "Klik op 'Deel link' bij de actieve praatplaat. Je krijgt een directe URL en een QR-code. Leerlingen die deze link openen of de QR-code scannen, komen direct in de praatplaat-flow zonder dat ze de klascode handmatig hoeven in te voeren. Ideaal om op het digibord te projecteren.",
-            { "type": "heading", "text": "Publieke luisterpagina" },
+            {
+              "type": "heading",
+              "text": "Publieke luisterpagina"
+            },
             "In het deelvenster vind je onderaan de optie 'Luisterpagina'. Klik op 'Maak luisterpagina aan' om een publieke link te genereren. Iedereen met deze link — ook ouders, collega's of gasten — kan de praatplaat bekijken en alle composities beluisteren, zonder login. De link is 30 dagen geldig en kan verlengd worden door opnieuw op de knop te klikken. Er is ook een QR-code beschikbaar om af te drukken of te delen."
           ]
         },
@@ -911,9 +1061,15 @@
           "title": "Inzendingen bekijken",
           "content": [
             "In het klas-detailscherm zie je alle composities die leerlingen hebben gedeeld met jouw klas. Elke inzending toont de naam van de leerling, de datum, en een afspeelknop.",
-            { "type": "heading", "text": "Tabbladen" },
+            {
+              "type": "heading",
+              "text": "Tabbladen"
+            },
             "'Ingeleverd' toont composities die leerlingen formeel hebben ingediend. 'In bewerking' toont composities die ze lokaal hebben opgeslagen maar nog niet hebben ingeleverd (herkenbaar aan een badge en 'Laatst bewerkt'-tijd).",
-            { "type": "heading", "text": "Wat kun je doen?" },
+            {
+              "type": "heading",
+              "text": "Wat kun je doen?"
+            },
             "Per inzending kun je de compositie beluisteren, bekijken in detail (timeline-weergave), en desgewenst exporteren naar MP3. Zo kun je werk van leerlingen beoordelen, feedback geven, of composities gebruiken in een klassenpresentatie."
           ]
         },
@@ -921,24 +1077,45 @@
           "title": "Bewaarcodes voor leerlingen",
           "content": [
             "Leerlingen werken vaak op gedeelde apparaten. Met bewaarcodes kunnen ze verder werken op een ander apparaat — bijvoorbeeld thuis afmaken wat ze op school begonnen zijn.",
-            { "type": "heading", "text": "Soorten codes" },
+            {
+              "type": "heading",
+              "text": "Soorten codes"
+            },
             "Drie soorten codes die leerlingen kunnen tegenkomen: een 4-cijferige klascode (om aan jouw klas te koppelen), een 6-tekens bewaarcode (om een eigen compositie op te slaan en later verder te werken), en een 8-tekens share- of template-code (om alleen te luisteren of een template te openen).",
-            { "type": "heading", "text": "Hoe werkt het?" },
+            {
+              "type": "heading",
+              "text": "Hoe werkt het?"
+            },
             "Een bewaarcode maakt een leerling in de studio of op het podium via 'Online opslaan'. De app toont een 6-tekens code en een QR-code; die schrijft de leerling op of scant hij op het andere apparaat. Op dat andere apparaat voert de leerling de code in op het startscherm om verder te werken.",
-            { "type": "heading", "text": "Verlopen" },
+            {
+              "type": "heading",
+              "text": "Verlopen"
+            },
             "Composities met een bewaarcode verlopen automatisch na 60 dagen inactiviteit. Als een leerling tussendoor verder werkt, wordt die teller gereset."
           ]
         },
         "classroom-tips": {
           "title": "Tips voor de klas",
           "content": [
-            { "type": "heading", "text": "Koptelefoons" },
+            {
+              "type": "heading",
+              "text": "Koptelefoons"
+            },
             "Koptelefoons zijn bijna onmisbaar. Zonder koptelefoon is het chaotisch in een klas met 25 leerlingen die tegelijk geluiden afspelen. Tip: zet klassikaal de volumes van de Chromebooks op maximaal 50% om gehoorschade te voorkomen.",
-            { "type": "heading", "text": "Geluid werkt niet?" },
+            {
+              "type": "heading",
+              "text": "Geluid werkt niet?"
+            },
             "Browsers blokkeren standaard audio totdat de gebruiker iets klikt. SoundScout vangt dit op bij de eerste klik of tap — leerlingen hoeven hier niets voor te doen, maar als geluid ontbreekt, laat ze dan even op het scherm tikken. Als een sample echt niet laadt, vernieuw dan de pagina — de compositie blijft lokaal bewaard.",
-            { "type": "heading", "text": "Apparaten" },
+            {
+              "type": "heading",
+              "text": "Apparaten"
+            },
             "SoundScout werkt op Chromebooks en iPads. iPad: gebruik het landschapsformaat voor meer werkruimte. Safari werkt het beste. Chromebook: zorg dat het apparaat niet in slaapstand gaat tijdens opnames — dat onderbreekt het web-audio-systeem.",
-            { "type": "heading", "text": "Tijdsplanning" },
+            {
+              "type": "heading",
+              "text": "Tijdsplanning"
+            },
             "Reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten."
           ]
         }
@@ -1020,21 +1197,21 @@
       "step2": "2. Deel de code met je leerlingen",
       "step3": "3. Leerlingen maken een compositie en voeren de code in bij \"Delen\"",
       "step4": "4. Bekijk alle composities hier in je dashboard",
-    "setup": {
-      "title": "Zo zet je een klas op",
-      "step1": {
-        "title": "Maak een klas",
-        "description": "Je krijgt meteen een klascode van vier cijfers."
-      },
-      "step2": {
-        "title": "Kies een opdracht",
-        "description": "Activeer een praatplaat, storyboard of template voor je klas."
-      },
-      "step3": {
-        "title": "Deel de klascode",
-        "description": "Leerlingen typen de code in en je ziet hun composities hier."
+      "setup": {
+        "title": "Zo zet je een klas op",
+        "step1": {
+          "title": "Maak een klas",
+          "description": "Je krijgt meteen een klascode van vier cijfers."
+        },
+        "step2": {
+          "title": "Kies een opdracht",
+          "description": "Activeer een praatplaat, storyboard of template voor je klas."
+        },
+        "step3": {
+          "title": "Deel de klascode",
+          "description": "Leerlingen typen de code in en je ziet hun composities hier."
+        }
       }
-    }
     },
     "classCodeMeaning": "Leerlingen typen deze code in om mee te doen.",
     "classDetail": {
@@ -1174,7 +1351,8 @@
   "praatplaatImages": {
     "koningsdag": "Koningsdag",
     "robotfabriek": "Robotfabriek",
-    "sportveld": "Sportveld"
+    "sportveld": "Sportveld",
+    "piratenmarkt": "Piratenmarkt"
   },
   "praatplaat": {
     "select": {
@@ -1252,6 +1430,22 @@
       "start": "Start",
       "sprong": "Sprong",
       "landing": "Landing"
+    },
+    "schattenjacht": {
+      "name": "De schattenjacht",
+      "description": "Een robot-piraat volgt de kaart naar de schat.",
+      "kaart": "Kaart",
+      "jungle": "Jungle",
+      "graven": "Graven",
+      "schat": "Schat"
+    },
+    "kraken": {
+      "name": "De Vriendelijke Kraken",
+      "description": "Een zeemonster dat alleen maar muziek wil maken.",
+      "schrik": "Schrik",
+      "vlucht": "Vlucht",
+      "cadeaus": "Cadeaus",
+      "feest": "Feest"
     }
   },
   "privacy": {

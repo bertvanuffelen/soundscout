@@ -84,6 +84,60 @@
         "ijsarena-puck": "Puck",
         "ijsarena-wagen": "Cart"
       }
+    },
+    "piraten": {
+      "name": "Pirates",
+      "description": "Tavern, harbour, ship, jungle and voodoo — set sail!",
+      "locations": {
+        "grogkroeg": "The Thirsty Parrot",
+        "grogkroeg_desc": "A cosy pirate tavern",
+        "haven": "The Harbor",
+        "haven_desc": "The harbour with docks",
+        "schip": "The Ship",
+        "schip_desc": "The pirate ship's deck",
+        "jungle": "The Jungle Trail",
+        "jungle_desc": "A lush jungle trail",
+        "voodoohut": "The Voodoo Hut",
+        "voodoohut_desc": "A mysterious voodoo hut"
+      },
+      "samples": {
+        "grogkroeg-accordeon": "Accordion",
+        "grogkroeg-kroezen": "Cheers",
+        "grogkroeg-papegaai": "Parrot",
+        "grogkroeg-lach": "Laughter",
+        "grogkroeg-deur": "Door",
+        "grogkroeg-dobbel": "Dice",
+        "grogkroeg-vat": "Barrel",
+        "grogkroeg-fluit": "Tin whistle",
+        "haven-meeuwen": "Seagulls",
+        "haven-golven": "Waves",
+        "haven-scheepsbel": "Ship's bell",
+        "haven-katrol": "Pulley",
+        "haven-kraan": "Crane",
+        "haven-kist": "Crates",
+        "haven-boei": "Buoy",
+        "schip-zeilen": "Sails",
+        "schip-kanon": "Cannon",
+        "schip-anker": "Anchor",
+        "schip-zeemanslied": "Sea shanty",
+        "schip-wind": "Wind",
+        "schip-stuurwiel": "Wheel",
+        "schip-kraaiennest": "Crow's nest",
+        "jungle-apen": "Robot monkeys",
+        "jungle-vogels": "Jungle birds",
+        "jungle-waterval": "Waterfall",
+        "jungle-trommels": "Drums",
+        "jungle-krekels": "Crickets",
+        "jungle-kokosnoot": "Coconut",
+        "jungle-slang": "Snake",
+        "voodoohut-ketel": "Cauldron",
+        "voodoohut-botten": "Bones",
+        "voodoohut-gong": "Gong",
+        "voodoohut-windgong": "Chimes",
+        "voodoohut-fluister": "Whisper",
+        "voodoohut-druppel": "Drip",
+        "voodoohut-raaf": "Raven"
+      }
     }
   },
   "start": {
@@ -589,10 +643,22 @@
         "level": "Grade 6–7",
         "goal": "Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere.",
         "phases": [
-          { "name": "Orient", "text": "class discussion; pairs choose a spot." },
-          { "name": "Explore", "text": "collect sounds and compose in the studio." },
-          { "name": "Perform", "text": "hand in and play for the class." },
-          { "name": "Evaluate", "text": "reflect together." }
+          {
+            "name": "Orient",
+            "text": "class discussion; pairs choose a spot."
+          },
+          {
+            "name": "Explore",
+            "text": "collect sounds and compose in the studio."
+          },
+          {
+            "name": "Perform",
+            "text": "hand in and play for the class."
+          },
+          {
+            "name": "Evaluate",
+            "text": "reflect together."
+          }
         ]
       },
       "verspringen": {
@@ -790,9 +856,15 @@
           "title": "Getting started",
           "content": [
             "Welcome! SoundScout is a web app where students learn to compose music by collecting sounds at locations and placing them on a timeline. As a teacher you have your own dashboard to manage classes, set up assignments, and review submissions.",
-            { "type": "heading", "text": "Creating an account" },
+            {
+              "type": "heading",
+              "text": "Creating an account"
+            },
             "You need a teacher account. Register via the login page — click 'No account yet?' and follow the steps. You'll receive a confirmation email; activate your account via the link.",
-            { "type": "heading", "text": "Creating your first class" },
+            {
+              "type": "heading",
+              "text": "Creating your first class"
+            },
             "After logging in, create your first class using the 'New class' button. Each class automatically gets a 4-digit class code. Share that code with your students — they enter it on the start screen to be linked to your class.",
             "Tip: write the class code on the whiteboard or print it on a worksheet. Students can also enter via a link with the class code embedded (handy when using a Chromebook cart)."
           ]
@@ -809,13 +881,22 @@
           "title": "Your dashboard at a glance",
           "content": [
             "After logging in you land on your dashboard. At the top are three tabs that divide all of your teacher work.",
-            { "type": "heading", "text": "The three tabs" },
+            {
+              "type": "heading",
+              "text": "The three tabs"
+            },
             "My classes — all your classes with their class codes. Click a class to view submissions and activate an assignment.",
             "My assignments — your reusable building blocks: assignment cards, sound maps, storyboards and templates. You use these across classes.",
             "Lesson cards — ready-made lesson packages (built-in or your own) that you activate for a class in one click.",
-            { "type": "heading", "text": "Help and logout" },
+            {
+              "type": "heading",
+              "text": "Help and logout"
+            },
             "Top right you'll find the 'Guide' (this screen) and 'Log out' buttons. Throughout the dashboard you'll see small ? buttons; they take you straight to the right chapter of this guide.",
-            { "type": "heading", "text": "How to set up a class" },
+            {
+              "type": "heading",
+              "text": "How to set up a class"
+            },
             "Below the tabs is a collapsible block 'How to set up a class' with the three basic steps: create a class → choose an assignment → students enter the code. For a new class this block opens automatically."
           ]
         },
@@ -823,13 +904,25 @@
           "title": "The four assignment types",
           "content": [
             "You prepare one active assignment per class at a time. There are four types; students entering the class code are automatically routed to the right flow. You choose and activate the type in the class detail screen via the four type cards.",
-            { "type": "heading", "text": "Free composition" },
+            {
+              "type": "heading",
+              "text": "Free composition"
+            },
             "The student composes freely within a theme you choose (for example The City or Winter Games). No image or story — just exploring and building. Ideal for open, independent assignments.",
-            { "type": "heading", "text": "With an image (sound map)" },
+            {
+              "type": "heading",
+              "text": "With an image (sound map)"
+            },
             "The whole class works on one shared image: each student places their composition on a spot, and you present the result to the class on the smartboard. See the 'Using a sound map' chapter.",
-            { "type": "heading", "text": "Storyboard" },
+            {
+              "type": "heading",
+              "text": "Storyboard"
+            },
             "The student sets a multi-scene story to sound; the timeline is automatically divided into sections. Good for structure, contrast and form.",
-            { "type": "heading", "text": "Teacher template" },
+            {
+              "type": "heading",
+              "text": "Teacher template"
+            },
             "The student builds on a composition you made, with optional lock options. See the 'Creating templates' chapter.",
             "You can attach an assignment card with instructions to any assignment, which the student sees before starting — see 'Creating assignment cards'."
           ]
@@ -838,11 +931,20 @@
           "title": "Creating assignment cards",
           "content": [
             "An assignment card is a short instruction card — a title and up to ten bullets — that the student sees after entering the class code and before starting. So the student knows right away what the task is.",
-            { "type": "heading", "text": "Form-independent and reusable" },
+            {
+              "type": "heading",
+              "text": "Form-independent and reusable"
+            },
             "The same assignment card works with any assignment type (free, sound map, storyboard or template) and you reuse it across classes. The card is attached to the assignment, not the type.",
-            { "type": "heading", "text": "Creating and managing" },
+            {
+              "type": "heading",
+              "text": "Creating and managing"
+            },
             "Go to the 'My assignments' tab → 'Assignment cards' section. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later.",
-            { "type": "heading", "text": "Linking to an assignment" },
+            {
+              "type": "heading",
+              "text": "Linking to an assignment"
+            },
             "When activating an assignment you optionally choose an assignment card. If you pick none, the app shows a default explanation matching the assignment type."
           ]
         },
@@ -850,13 +952,25 @@
           "title": "Using lesson cards",
           "content": [
             "A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). In one click you activate this complete package for a class.",
-            { "type": "heading", "text": "Built-in and your own lesson cards" },
+            {
+              "type": "heading",
+              "text": "Built-in and your own lesson cards"
+            },
             "There are built-in lesson cards (for example Robot Factory, Long Jump, Free composition and Drum beat) ready for every teacher. You can also compose your own lesson cards.",
-            { "type": "heading", "text": "Activating" },
+            {
+              "type": "heading",
+              "text": "Activating"
+            },
             "Go to the 'Lesson cards' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Activate in class' and choose an existing class or create one on the spot. You get the class code right away.",
-            { "type": "heading", "text": "Creating your own lesson card" },
+            {
+              "type": "heading",
+              "text": "Creating your own lesson card"
+            },
             "Click 'New lesson card'. Choose the type, the resource from the catalogue, optionally an assignment card, and fill in title, level, learning goal and phases. A cover image is derived automatically from the chosen resource. You can edit and delete your own lesson cards; built-in ones you cannot.",
-            { "type": "heading", "text": "PDF with the lesson" },
+            {
+              "type": "heading",
+              "text": "PDF with the lesson"
+            },
             "If a PDF is attached to the lesson card, you open it from the detail panel — handy to print or share with colleagues."
           ]
         },
@@ -864,13 +978,25 @@
           "title": "Composition modes",
           "content": [
             "When a student clicks 'New Composition', they first choose a mode. Each mode suits a different learning objective.",
-            { "type": "heading", "text": "Free composition" },
+            {
+              "type": "heading",
+              "text": "Free composition"
+            },
             "The student picks a theme (e.g. The City or Winter Games) and explores freely. There are no images or sections — the student decides the structure. This suits open-ended assignments and independent exploration.",
-            { "type": "heading", "text": "With an image" },
+            {
+              "type": "heading",
+              "text": "With an image"
+            },
             "The student picks an image (e.g. King's Day, Sports Field) and creates a soundscape to match that scene. The theme is automatically determined by the image. This suits listening and sound-illustration tasks: 'What sounds do you hear in this place?'",
-            { "type": "heading", "text": "With a storyboard" },
+            {
+              "type": "heading",
+              "text": "With a storyboard"
+            },
             "The student picks a story of multiple images (e.g. Start → Jump → Landing). The timeline is automatically divided into sections matching the images, so the student practises musical structure and form. This suits assignments about tension, contrast and structure.",
-            { "type": "heading", "text": "Template + storyboard combined" },
+            {
+              "type": "heading",
+              "text": "Template + storyboard combined"
+            },
             "As a teacher you can also link a template to a storyboard. The student then gets a fixed composition as starting point, including the storyboard's sections and images. This combines a guided assignment with visual support."
           ]
         },
@@ -878,11 +1004,20 @@
           "title": "Creating templates",
           "content": [
             "A template is a composition you prepare as a starting point for students. For example: an empty track structure, a fixed rhythm, or a half-finished song that students complete.",
-            { "type": "heading", "text": "Creating a template" },
+            {
+              "type": "heading",
+              "text": "Creating a template"
+            },
             "Build a composition in the studio, then choose 'Save as template' (in the Stage screen, under 'Share & Export'). You can give it a name and description, and choose lock options: can students modify existing clips? Can they add tracks? Is the sample library locked?",
-            { "type": "heading", "text": "Activating a template" },
+            {
+              "type": "heading",
+              "text": "Activating a template"
+            },
             "After saving, the template appears in your dashboard. Activate it for a specific class via the class detail screen. Note: a template is linked to a theme — students automatically get the same theme you used.",
-            { "type": "heading", "text": "Lock options" },
+            {
+              "type": "heading",
+              "text": "Lock options"
+            },
             "When saving you decide with four lock options how much freedom the student gets:",
             "Lock clips — the student cannot move, trim or delete your existing clips.",
             "Lock sections — the section layout (the form) is fixed.",
@@ -895,15 +1030,30 @@
           "title": "Using a praatplaat",
           "content": [
             "A praatplaat is a collaborative sound map: each student creates a small composition and places it on a position on an image (e.g. a forest, a city, a market). As teacher you can then present the praatplaat to the class — click a spot and hear what that student made.",
-            { "type": "heading", "text": "Creating a praatplaat" },
+            {
+              "type": "heading",
+              "text": "Creating a praatplaat"
+            },
             "Go to the class detail screen and click 'Activate an assignment'. Choose 'Praatplaat', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time.",
-            { "type": "heading", "text": "What students see" },
+            {
+              "type": "heading",
+              "text": "What students see"
+            },
             "Students enter the 4-digit class code on the start screen. They then see a preview of the praatplaat. After clicking 'Start' they choose a spot on the image where they want to place their composition. Then they build their composition as usual in the studio. When they save, the composition is automatically linked to the chosen spot. Using the 'Choose a new spot' button they can then add another composition at a different location.",
-            { "type": "heading", "text": "Presenting on the whiteboard" },
+            {
+              "type": "heading",
+              "text": "Presenting on the whiteboard"
+            },
             "Open the praatplaat via 'Open praatplaat' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
-            { "type": "heading", "text": "Sharing a link with students" },
+            {
+              "type": "heading",
+              "text": "Sharing a link with students"
+            },
             "Click 'Share link' next to the active praatplaat. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the praatplaat flow without needing to enter the class code manually. Ideal for projecting on the whiteboard.",
-            { "type": "heading", "text": "Public listening page" },
+            {
+              "type": "heading",
+              "text": "Public listening page"
+            },
             "At the bottom of the share dialog you'll find the 'Listening page' option. Click 'Create listening page' to generate a public link. Anyone with this link — including parents, colleagues or guests — can view the praatplaat and listen to all compositions, without logging in. The link is valid for 30 days and can be extended by clicking the button again. A QR code is also available for printing or sharing."
           ]
         },
@@ -911,9 +1061,15 @@
           "title": "Reviewing submissions",
           "content": [
             "The class detail screen shows all compositions students have shared with your class. Each submission shows the student's name, date, and a play button.",
-            { "type": "heading", "text": "Tabs" },
+            {
+              "type": "heading",
+              "text": "Tabs"
+            },
             "'Submitted' shows formally submitted compositions. 'In progress' shows compositions students have saved locally but not yet submitted (marked with a badge and 'Last edited' timestamp).",
-            { "type": "heading", "text": "What can you do?" },
+            {
+              "type": "heading",
+              "text": "What can you do?"
+            },
             "Per submission you can listen, view details (timeline view), and export to MP3. This way you can review student work, provide feedback, or use compositions in a class presentation."
           ]
         },
@@ -921,24 +1077,45 @@
           "title": "Save codes for students",
           "content": [
             "Students often work on shared devices. Save codes let them continue on another device — for example, finish at home what they started at school.",
-            { "type": "heading", "text": "Code types" },
+            {
+              "type": "heading",
+              "text": "Code types"
+            },
             "Three code types students may encounter: a 4-digit class code (to link to your class), a 6-character save code (to save their own composition and continue later), and an 8-character share or template code (for listen-only or opening a template).",
-            { "type": "heading", "text": "How does it work?" },
+            {
+              "type": "heading",
+              "text": "How does it work?"
+            },
             "A student creates a save code in the studio or stage screen via 'Save online'. The app shows a 6-character code and a QR code; the student writes it down or scans it on the other device. On that device they enter the code on the start screen to continue.",
-            { "type": "heading", "text": "Expiry" },
+            {
+              "type": "heading",
+              "text": "Expiry"
+            },
             "Compositions with a save code automatically expire after 60 days of inactivity. If a student continues working, the counter resets."
           ]
         },
         "classroom-tips": {
           "title": "Classroom tips",
           "content": [
-            { "type": "heading", "text": "Headphones" },
+            {
+              "type": "heading",
+              "text": "Headphones"
+            },
             "Headphones are almost essential. Without them it's chaotic in a class of 25 students playing sounds at once. Tip: set Chromebook volumes to max 50% class-wide to prevent hearing damage.",
-            { "type": "heading", "text": "Sound not working?" },
+            {
+              "type": "heading",
+              "text": "Sound not working?"
+            },
             "Browsers block audio by default until the user clicks. SoundScout handles this on the first click or tap — students don't need to do anything, but if there's no sound, have them tap the screen. If a sample really won't load, refresh the page — the composition is saved locally.",
-            { "type": "heading", "text": "Devices" },
+            {
+              "type": "heading",
+              "text": "Devices"
+            },
             "SoundScout works on Chromebooks and iPads. iPad: use landscape orientation for more workspace. Safari works best. Chromebook: make sure the device doesn't go to sleep during recordings — it interrupts the web audio system.",
-            { "type": "heading", "text": "Timing" },
+            {
+              "type": "heading",
+              "text": "Timing"
+            },
             "Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block."
           ]
         }
@@ -1020,21 +1197,21 @@
       "step2": "2. Share the code with your students",
       "step3": "3. Students create a composition and enter the code under \"Share\"",
       "step4": "4. View all compositions here in your dashboard",
-    "setup": {
-      "title": "How to set up a class",
-      "step1": {
-        "title": "Create a class",
-        "description": "You get a four-digit class code straight away."
-      },
-      "step2": {
-        "title": "Choose an assignment",
-        "description": "Activate a sound map, storyboard or template for your class."
-      },
-      "step3": {
-        "title": "Share the class code",
-        "description": "Students type in the code and you see their compositions here."
+      "setup": {
+        "title": "How to set up a class",
+        "step1": {
+          "title": "Create a class",
+          "description": "You get a four-digit class code straight away."
+        },
+        "step2": {
+          "title": "Choose an assignment",
+          "description": "Activate a sound map, storyboard or template for your class."
+        },
+        "step3": {
+          "title": "Share the class code",
+          "description": "Students type in the code and you see their compositions here."
+        }
       }
-    }
     },
     "classCodeMeaning": "Students type this code to join.",
     "classDetail": {
@@ -1174,7 +1351,8 @@
   "praatplaatImages": {
     "koningsdag": "King's Day",
     "robotfabriek": "Robot Factory",
-    "sportveld": "Sports Field"
+    "sportveld": "Sports Field",
+    "piratenmarkt": "Pirate market"
   },
   "praatplaat": {
     "select": {
@@ -1252,6 +1430,22 @@
       "start": "Start",
       "sprong": "Jump",
       "landing": "Landing"
+    },
+    "schattenjacht": {
+      "name": "The treasure hunt",
+      "description": "A robot pirate follows the map to the treasure.",
+      "kaart": "Map",
+      "jungle": "Jungle",
+      "graven": "Digging",
+      "schat": "Treasure"
+    },
+    "kraken": {
+      "name": "The Friendly Kraken",
+      "description": "A sea monster that just wants to make music.",
+      "schrik": "Fright",
+      "vlucht": "Flee",
+      "cadeaus": "Gifts",
+      "feest": "Party"
     }
   },
   "privacy": {

@@ -41,6 +41,32 @@ export const storyboards: Storyboard[] = [
       },
     ],
   },
+  {
+    id: 'schattenjacht',
+    themeId: 'piraten',
+    name: 'storyboards.schattenjacht.name',
+    description: 'storyboards.schattenjacht.description',
+    coverImage: '/images/storyboards/schattenjacht/schattenjacht-4.jpg',
+    images: [
+      { id: 'kaart', url: '/images/storyboards/schattenjacht/schattenjacht-1.jpg', label: 'storyboards.schattenjacht.kaart' },
+      { id: 'jungle', url: '/images/storyboards/schattenjacht/schattenjacht-2.jpg', label: 'storyboards.schattenjacht.jungle' },
+      { id: 'graven', url: '/images/storyboards/schattenjacht/schattenjacht-3.jpg', label: 'storyboards.schattenjacht.graven' },
+      { id: 'schat', url: '/images/storyboards/schattenjacht/schattenjacht-4.jpg', label: 'storyboards.schattenjacht.schat' },
+    ],
+  },
+  {
+    id: 'kraken',
+    themeId: 'piraten',
+    name: 'storyboards.kraken.name',
+    description: 'storyboards.kraken.description',
+    coverImage: '/images/storyboards/kraken/kraken-2.jpg',
+    images: [
+      { id: 'schrik', url: '/images/storyboards/kraken/kraken-1.jpg', label: 'storyboards.kraken.schrik' },
+      { id: 'vlucht', url: '/images/storyboards/kraken/kraken-2.jpg', label: 'storyboards.kraken.vlucht' },
+      { id: 'cadeaus', url: '/images/storyboards/kraken/kraken-3.jpg', label: 'storyboards.kraken.cadeaus' },
+      { id: 'feest', url: '/images/storyboards/kraken/kraken-4.jpg', label: 'storyboards.kraken.feest' },
+    ],
+  },
 ];
 
 /** Alle storyboards voor een bepaald thema. */
