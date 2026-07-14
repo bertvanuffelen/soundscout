@@ -6,6 +6,7 @@ import {
   DEFAULT_TOTAL_BEATS,
   MAX_TOTAL_BEATS,
   DEFAULT_TRACK_COUNT,
+  MAX_TRACK_COUNT,
   VOLUME_MIN_DB,
   VOLUME_MAX_DB,
   MAX_SECTIONS,
@@ -111,6 +112,14 @@ interface TimelineStore {
 
   /** Verleng de tijdlijn met N beats ("+ 8 maten"-tegel), tot MAX_TOTAL_BEATS */
   extendTimeline: (byBeats: number) => void;
+
+  /** Voeg een leeg spoor toe ("+ spoor"-regel), tot MAX_TRACK_COUNT */
+  addTrack: () => void;
+
+  /** Solo-spoor (monitoring, sessie-state — wordt niet opgeslagen).
+   *  null = geen solo; één spoor tegelijk. */
+  soloTrackIndex: number | null;
+  setSoloTrack: (index: number | null) => void;
 
   // Load saved composition
   loadTimeline: (timeline: TimelineState) => void;
@@ -666,6 +675,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   clearAllTracks: () => {
     set((prev) => ({
       tracks: createEmptyTracks(),
+      soloTrackIndex: null,
       audioVersion: prev.audioVersion + 1,
     }));
   },
@@ -682,6 +692,23 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     });
   },
 
+  addTrack: () => {
+    set((prev) => {
+      if (prev.tracks.length >= MAX_TRACK_COUNT) return prev;
+      return {
+        tracks: [...prev.tracks, { id: `track-${prev.tracks.length + 1}`, clips: [] }],
+        audioVersion: prev.audioVersion + 1,
+      };
+    });
+  },
+
+  soloTrackIndex: null,
+  setSoloTrack: (index) => {
+    // Live toegepast via AudioService.setSoloTrack (bus-gains, geen
+    // reschedule nodig) — de aanroeper synct beide; hier alleen UI-state.
+    set({ soloTrackIndex: index });
+  },
+
   loadTimeline: (timeline) => {
     set((prev) => ({
       tracks: timeline.tracks,
@@ -689,6 +716,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       totalBeats: timeline.totalBeats,
       isLooping: timeline.isLooping,
       sections: timeline.sections ?? [],
+      soloTrackIndex: null,
       audioVersion: prev.audioVersion + 1,
     }));
   },

@@ -32,6 +32,7 @@ import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { FeedbackBanner } from '../common/FeedbackBanner';
+import { audioService } from '../../services/AudioService';
 import { generateClipId } from '../../utils/uuid';
 
 /**
@@ -148,6 +149,10 @@ export function StudioView() {
 
   const handleGoToStage = useCallback(() => {
     handleStop();
+    // Solo is een studio-monitortool — op het podium klinkt altijd de
+    // volledige mix (B3)
+    useTimelineStore.getState().setSoloTrack(null);
+    audioService.setSoloTrack(null);
     goToStage();
   }, [handleStop, goToStage]);
 

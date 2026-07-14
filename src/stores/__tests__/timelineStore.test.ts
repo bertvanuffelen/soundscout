@@ -78,6 +78,49 @@ describe('timelineStore', () => {
     });
   });
 
+  describe('addTrack + solo (B3)', () => {
+    it('voegt sporen toe tot MAX_TRACK_COUNT (12) en verhoogt audioVersion', () => {
+      useTimelineStore.setState({
+        tracks: Array.from({ length: 8 }, (_, i) => ({ id: `track-${i + 1}`, clips: [] })),
+        audioVersion: 0,
+      });
+      useTimelineStore.getState().addTrack();
+      expect(useTimelineStore.getState().tracks).toHaveLength(9);
+      expect(useTimelineStore.getState().audioVersion).toBe(1);
+
+      // Tot het maximum vullen
+      for (let i = 0; i < 10; i++) useTimelineStore.getState().addTrack();
+      expect(useTimelineStore.getState().tracks).toHaveLength(12);
+      const versionAtMax = useTimelineStore.getState().audioVersion;
+      useTimelineStore.getState().addTrack();
+      expect(useTimelineStore.getState().tracks).toHaveLength(12);
+      expect(useTimelineStore.getState().audioVersion).toBe(versionAtMax);
+    });
+
+    it('solo is sessie-state: gezet via setSoloTrack, gewist door loadTimeline en clearAllTracks', () => {
+      useTimelineStore.getState().setSoloTrack(2);
+      expect(useTimelineStore.getState().soloTrackIndex).toBe(2);
+
+      useTimelineStore.getState().clearAllTracks();
+      expect(useTimelineStore.getState().soloTrackIndex).toBeNull();
+
+      useTimelineStore.getState().setSoloTrack(1);
+      useTimelineStore.getState().loadTimeline({
+        tracks: [{ id: 'track-1', clips: [] }],
+        bpm: 120,
+        totalBeats: 128,
+        isLooping: false,
+      });
+      expect(useTimelineStore.getState().soloTrackIndex).toBeNull();
+    });
+
+    it('solo staat niet in de opgeslagen TimelineState', () => {
+      useTimelineStore.getState().setSoloTrack(3);
+      const state = useTimelineStore.getState().getTimelineState();
+      expect('soloTrackIndex' in state).toBe(false);
+    });
+  });
+
   describe('addClip', () => {
     it('should add a clip to the specified track', () => {
       const store = useTimelineStore.getState();

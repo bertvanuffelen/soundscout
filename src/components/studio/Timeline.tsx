@@ -10,7 +10,7 @@ import { VolumePopover } from './VolumePopover';
 import { EffectsModal } from './EffectsModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration } from '../../utils/audio';
-import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, EXTEND_BEATS_STEP } from '../../constants/config';
+import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, EXTEND_BEATS_STEP, MAX_TRACK_COUNT } from '../../constants/config';
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -84,6 +84,7 @@ export const Timeline = memo(function Timeline({
   const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const extendTimeline = useTimelineStore((s) => s.extendTimeline);
+  const addTrack = useTimelineStore((s) => s.addTrack);
 
   // Clear timeline confirmation state
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -726,6 +727,19 @@ export const Timeline = memo(function Timeline({
               />
             ))}
           </div>
+
+          {/* "+ spoor"-regel (B3): rustige rij onder het laatste spoor,
+              verdwijnt op het maximum (12) en in read-only */}
+          {!readOnly && tracks.length < MAX_TRACK_COUNT && (
+            <button
+              onClick={(e) => { e.stopPropagation(); addTrack(); }}
+              className="relative z-10 shrink-0 w-full h-6 flex items-center justify-center gap-1 text-[10px] sm:text-xs font-semibold text-text-muted/70 hover:text-text-main hover:bg-neutral-100/60 border-b border-dashed border-neutral-200 transition-colors"
+              title={t('studio.addTrackTitle', { count: tracks.length })}
+            >
+              <Plus size={12} aria-hidden="true" />
+              {t('studio.addTrack')}
+            </button>
+          )}
 
           {/* Vulling onder het laatste spoor: rekt de wrapper tot de
               containerbodem zodat de gridlijnen doorlopen (geen grijs gat) */}

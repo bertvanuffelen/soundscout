@@ -11,6 +11,7 @@ import { useTimelineStore } from '../../stores/timelineStore';
 import { useAppStore } from '../../stores/appStore';
 import { Clip } from './Clip';
 import { VolumePopover } from './VolumePopover';
+import { audioService } from '../../services/AudioService';
 
 interface TrackProps {
   track: TrackType;
@@ -85,6 +86,18 @@ export const Track = memo(function Track({
     [trackIndex, setTrackMute],
   );
 
+  // Solo (B3): store voor UI-state + AudioService voor live bus-gains
+  const soloTrackIndex = useTimelineStore((s) => s.soloTrackIndex);
+  const setSoloTrack = useTimelineStore((s) => s.setSoloTrack);
+  const handleSoloToggle = useCallback(
+    (solo: boolean) => {
+      const next = solo ? trackIndex : null;
+      setSoloTrack(next);
+      audioService.setSoloTrack(next);
+    },
+    [trackIndex, setSoloTrack],
+  );
+
   const handleTrackColorChange = useCallback(
     (color: string | undefined) => updateTrackColor(trackIndex, color),
     [trackIndex, updateTrackColor],
@@ -113,6 +126,7 @@ export const Track = memo(function Track({
       className={`
         relative h-10 sm:h-12 border-b border-neutral-200 transition-colors duration-150 touch-none
         ${isOver && !readOnly ? 'bg-accent-100/60' : 'bg-white/40'}
+        ${soloTrackIndex !== null && soloTrackIndex !== trackIndex ? 'opacity-40' : ''}
       `}
       style={track.color ? { backgroundColor: `${track.color}12` } : undefined}
     >
@@ -164,6 +178,8 @@ export const Track = memo(function Track({
             trackColor={track.color}
             onTrackColorChange={handleTrackColorChange}
             colorPalette={TRACK_COLORS}
+            isSolo={soloTrackIndex === trackIndex}
+            onSoloToggle={handleSoloToggle}
           />
         </div>,
         document.body,

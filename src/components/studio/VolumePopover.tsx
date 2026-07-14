@@ -11,7 +11,7 @@
 
 import { memo, useRef, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Headphones } from 'lucide-react';
 import {
   VOLUME_MIN_DB,
   VOLUME_DEFAULT_DB,
@@ -55,6 +55,10 @@ interface VolumePopoverProps {
   onTrackColorChange?: (color: string | undefined) => void;
   /** Optional: color palette to choose from (#67) */
   colorPalette?: readonly string[];
+  /** Optional: is dit spoor solo? (B3) — toont een solo-knop naast mute */
+  isSolo?: boolean;
+  /** Optional: solo-toggle (B3, alleen voor spoor-popovers) */
+  onSoloToggle?: (solo: boolean) => void;
 }
 
 export const VolumePopover = memo(function VolumePopover({
@@ -67,6 +71,8 @@ export const VolumePopover = memo(function VolumePopover({
   trackColor,
   onTrackColorChange,
   colorPalette,
+  isSolo = false,
+  onSoloToggle,
 }: VolumePopoverProps) {
   const { t } = useTranslation();
   const popoverRef = useRef<HTMLDivElement>(null);
@@ -150,6 +156,26 @@ export const VolumePopover = memo(function VolumePopover({
         >
           {isMuted ? <VolumeX size={16} /> : <Volume2 size={16} />}
         </button>
+
+        {/* Solo (B3) — alleen bij spoor-popovers; 'laat alleen dit spoor horen' */}
+        {onSoloToggle && (
+          <button
+            onClick={() => onSoloToggle(!isSolo)}
+            aria-pressed={isSolo}
+            aria-label={isSolo ? t('studio.soloOff') : t('studio.soloOn')}
+            className={`
+              p-1.5 rounded-lg transition-colors shrink-0
+              min-w-[32px] min-h-[32px] flex items-center justify-center
+              ${isSolo
+                ? 'bg-accent-100 text-accent-700 hover:bg-accent-200 ring-1 ring-accent-400'
+                : 'bg-neutral-100 text-neutral-500 hover:bg-neutral-200'
+              }
+            `}
+            title={isSolo ? t('studio.soloOff') : t('studio.soloOn')}
+          >
+            <Headphones size={16} />
+          </button>
+        )}
 
         {/* Volume slider — operates in percentage space (0–200%) */}
         <input

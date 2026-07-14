@@ -504,41 +504,58 @@ export class AudioService {
 
   // --- Track bus infrastructure ---
 
-  /** Number of track buses (matches fixed track count in timelineStore) */
+  /** Basisaantal track-buses; groeit dynamisch mee met tracks.length (B3) */
   private static readonly TRACK_BUS_COUNT = 8;
 
-  /**
-   * Ensure track buses exist. Lazy-initialized on first use.
-   * Creates 8 Gain nodes → 1 master Volume → Destination.
-   * These persist across schedule/stop cycles for efficiency.
-   */
-  private ensureTrackBuses(): void {
-    if (this.trackBuses.length > 0) return;
+  /** Solo-spoor (monitoring): alle andere buses krijgen gain 0. Sessie-state,
+   *  wordt niet opgeslagen in composities. */
+  private soloTrackIndex: number | null = null;
 
-    this.masterBus = new Tone.Volume(0).toDestination();
-    for (let i = 0; i < AudioService.TRACK_BUS_COUNT; i++) {
-      const bus = new Tone.Gain(1).connect(this.masterBus);
-      this.trackBuses.push(bus);
+  /**
+   * Ensure at least `count` track buses exist. Lazy-initialized and
+   * grow-only (B3: "+ spoor" tot 12 — vóór deze fix waren buses vast 8 en
+   * zou spoor 9+ zonder mute-controle rechtstreeks naar Destination gaan).
+   * Buses persist across schedule/stop cycles for efficiency.
+   */
+  private ensureTrackBuses(count: number = AudioService.TRACK_BUS_COUNT): void {
+    if (!this.masterBus) {
+      this.masterBus = new Tone.Volume(0).toDestination();
     }
-    logger.audio('trackBuses initialized', { count: this.trackBuses.length });
+    while (this.trackBuses.length < count) {
+      this.trackBuses.push(new Tone.Gain(1).connect(this.masterBus));
+    }
   }
 
   /**
    * Update track bus states from track data.
    * Called at the start of scheduleTimeline() to sync bus gains.
    *
-   * Currently: bus handles mute only (gain = 0 or 1). Track volume is
-   * still baked into per-clip chains for backward compatibility.
-   * Future: move track volume to bus, clip volume stays in chain.
+   * Bus handles mute + solo (gain = 0 or 1). Track volume is still baked
+   * into per-clip chains for backward compatibility.
    */
   private updateTrackBuses(tracks: Track[]): void {
+    this.ensureTrackBuses(Math.max(AudioService.TRACK_BUS_COUNT, tracks.length));
     tracks.forEach((track, index) => {
       if (index >= this.trackBuses.length) return;
       const bus = this.trackBuses[index];
       const muted = track.mute ?? false;
-      // Bus handles mute; track volume still in per-clip chains
-      bus.gain.value = muted ? 0 : 1;
+      const soloedOut = this.soloTrackIndex !== null && this.soloTrackIndex !== index;
+      // Bus handles mute/solo; track volume still in per-clip chains
+      bus.gain.value = muted || soloedOut ? 0 : 1;
     });
+  }
+
+  /**
+   * Zet het solo-spoor (of null = geen solo). Past direct de bus-gains toe
+   * op de huidige schedule — geen reschedule nodig, werkt live tijdens
+   * afspelen (B3).
+   */
+  setSoloTrack(index: number | null): void {
+    this.soloTrackIndex = index;
+    if (this.trackBuses.length > 0 && this.scheduledTracks.length > 0) {
+      this.updateTrackBuses(this.scheduledTracks);
+    }
+    logger.audio('solo track', { index });
   }
 
   /**
@@ -689,8 +706,8 @@ export class AudioService {
     // Dispose any lingering on-demand sources from previous schedule
     this.disposeActiveSources();
 
-    // Ensure track buses exist (lazy init) and sync volume/mute
-    this.ensureTrackBuses();
+    // Ensure track buses exist (lazy init, groeit mee met tracks.length)
+    // and sync mute/solo
     this.updateTrackBuses(tracks);
 
     // Build lookup map for quick sample access

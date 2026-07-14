@@ -41,6 +41,9 @@ export const MAX_TOTAL_BEATS = 256;
 /** Beats per "+ 8 maten"-uitbreiding (8 maten × 4) */
 export const EXTEND_BEATS_STEP = 32;
 
+/** Maximum aantal sporen ("+ spoor"-regel, B3); audio-buses groeien mee */
+export const MAX_TRACK_COUNT = 12;
+
 /** Number of beats visible in viewport at default zoom (rest is scrollable) */
 export const VISIBLE_BEATS = 64;
 
