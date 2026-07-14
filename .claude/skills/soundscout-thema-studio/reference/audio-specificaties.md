@@ -20,6 +20,22 @@
   (muziekwinkel-patroon) is goud waard voor composities.
 - Sample-namen kort en concreet (i18n): "Touwtje springen", "Stoeltjeslift".
 
+## Mixbare muziek-stems (één "band" per thema)
+
+Om leerlingen muziek-loops uit verschillende locaties te laten combineren, moeten álle
+muzikale loops **onderling mixbaar** zijn. Lock daarom voor het hele thema:
+- **Tempo**: 120 BPM (app-vast), 4/4.
+- **Eén toonsoort + één akkoordenschema** voor alle muziek (bv. D mineur, `Dm–C–Bb–A`,
+  4 maten = 8,0 s = één loop).
+- **Elke locatie = één instrument-rol (stem)**: bv. accordeon (melodie) · viool/whistle
+  (lead) · bas+mandoline (fundament) · handtrommels (ritme, toon-neutraal) · marimba
+  (sfeer). Sparse/solo prompts mixen veel beter dan volle arrangementen.
+- Zo stapelt elke combinatie naadloos, en een **instrumentale praatplaat-mix** = gewoon
+  alle stems samen.
+- **Suno**: zet toonsoort + akkoorden + 120 BPM in elke prompt; Suno gehoorzaamt niet
+  altijd exact en levert geen echte losse stems → hou het sparse, controleer achteraf op
+  120 BPM (tempo/pitch corrigeren met ffmpeg indien nodig) en regenereer een botsende stem.
+
 ## Routes
 
 **F — Freesound** (`zoek-geluid.py`)
