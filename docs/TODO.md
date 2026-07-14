@@ -90,8 +90,8 @@ Resterende items (vereisen hands-on testen op iPad, Android tablet, Chromebook):
 
 ---
 
-#### BUG-TIMELINE-GRIJS — Grijs vlak onder spoor 8 in studio timeline 🔧 IN ONDERZOEK
-**Complexiteit:** Laag-Medium · **Bron:** Hands-on test (2026-04-23) · **Status:** Oorzaak geïdentificeerd, fix nog niet correct
+#### BUG-TIMELINE-GRIJS — Grijs vlak onder spoor 8 in studio timeline ✅ OPGELOST (DAW-ronde 2026-07-14)
+**Complexiteit:** Laag-Medium · **Bron:** Hands-on test (2026-04-23) · **Status:** Opgelost — inhoud-wrapper vult nu de scroll-container (min-h-full); zie DAW-ronde in docs/KANSEN-BRAINSTORM.md
 
 De scroll-container van de timeline (`overflow-y-auto min-h-0`) is groter dan de 8 tracks, waardoor een grijs vlak (`bg-neutral-50/50`) zichtbaar is onder spoor 8. Eerste fix (`overflow-y-hidden`) blokkeerde alle verticale scroll. Tweede fix (`flex-1` verwijderd) lost het niet op omdat de container zijn hoogte van de parent flex-layout krijgt. Verdere analyse nodig van de interactie tussen `max-h-[50dvh]` op Timeline root en de flex-distributie in StudioView.
 
@@ -260,8 +260,8 @@ Toon een subtiele eenmalige melding (toast of banner) wanneer de app in portrait
 
 ---
 
-#### UX-EXTRA-SPOREN — Optie voor extra sporen in studio
-**Complexiteit:** Medium · **Bron:** Eigen observatie (2026-04-23) · **Status:** Concept — beslissing nodig
+#### UX-EXTRA-SPOREN — Optie voor extra sporen in studio ✅ GEBOUWD (DAW-ronde 2026-07-14)
+**Complexiteit:** Medium · **Bron:** Eigen observatie (2026-04-23) · **Status:** Gebouwd — "+ spoor"-regel tot max 12, audio-buses dynamisch, solo-toggle in volume-popover
 
 De studio heeft 8 vaste sporen. Overweging: wil je leerlingen de mogelijkheid geven om extra sporen toe te voegen? Zo ja: hoe (knop onderaan tracks, automatisch bij vol)? Pedagogische overweging: meer sporen = meer complexiteit, maar ook meer muzikale mogelijkheden. Architectureel: `tracks` array in timelineStore is nu 8 fixed, zou dynamisch moeten worden.
 
