@@ -143,6 +143,32 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 ### 6f. Lucide-iconen
 - [ ] Steekproef: feedback-stickers (dashboard + banner + startscherm-melding), foutschermen, trim-schaartje in de studio, laad-spinner in knoppen, sleepgreep in de bibliotheek — overal strakke lijn-iconen, nergens meer emoji.
 
+## 7. DAW-ronde (week 5¾) — studio-versterking
+
+### 7a. Grijze vlak (BUG-TIMELINE-GRIJS)
+- [ ] Studio met een paar clips → sleep een sample en laat de auto-scroll je naar beneden duwen: **geen kaal grijs vlak** meer onder het laatste spoor — de gridlijnen lopen door tot de onderrand.
+- [ ] Scrollen in de tijdlijn "lekt" niet meer naar de pagina (overscroll-contain), ook op touch.
+
+### 7b. "+ 8 maten" (tijdlijnlengte)
+- [ ] In de studio rechtsboven in de tijdlijn: rustige pill **"+ 8 maten"** → klik: liniaal telt door (36, 40, …) en bestaande clips blijven exact staan.
+- [ ] Twee keer klikken → 48 maten; clip op maat 40 plaatsen → speelt af én zit in de MP3-export.
+- [ ] Bij 64 maten verdwijnt de pill (maximum); opslaan/heropenen behoudt de lengte; een óúde compositie opent nog gewoon op 32 maten.
+
+### 7c. "+ spoor" + solo
+- [ ] Onder spoor 8: gestippelde regel **"spoor toevoegen"** → tot 12 sporen; regel verdwijnt op 12.
+- [ ] **Cruciaal**: zet een clip op spoor 9 of hoger → **hoorbaar** bij afspelen (de audio-kanalen groeien mee).
+- [ ] Spoorkop → volume-icoon → popover: naast mute nu een **koptelefoon (solo)** → aan: alleen dát spoor klinkt, andere sporen dimmen visueel; werkt ook mídden in het afspelen (live).
+- [ ] Solo is tijdelijk: "Naar podium" → volledige mix klinkt; heropenen van een compositie → geen solo actief.
+
+### 7d. Sectie-loop + mobiele zoom
+- [ ] Maak een sectie (vlag-knop) → tik op de sectie in de sectiebalk → popover heeft **"Loop deze sectie"** → aan: afspelen loopt exact dat stuk (spring je ervóór in, dan speelt hij door tot het einde van de sectie en loopt dan).
+- [ ] De transport-loopknop licht op zodra een sectie-loop actief is; loopknop **uit** zetten stopt óók de sectie-loop.
+- [ ] Smal venster/iPad: **zoom-in/uit-knoppen zichtbaar** in de tijdlijn-werkbalk (fit alleen op desktop).
+- [ ] iPad: slepen van samples voelt directer (activatie 200→150 ms).
+
+### 7e. Export-tempo (latente bug gedicht)
+- [ ] MP3-export klinkt identiek aan vóór deze ronde (tempo 120 — de fix is onzichtbaar maar de export leest nu het compositie-tempo).
+
 ## Regressie-let-op (waar bugs zich kunnen verstoppen)
 - Klas-inzending zonder migratie 026 zou terugvallen op de oude RPC (geen bewaarcode) — nu migraties gedraaid zijn: **elke** inzending hoort een code te geven. Als een code ontbreekt: check of 026 echt geslaagd is.
 - "In bewerking" vs "Ingeleverd" splitst nu op `submitted_at` (niet meer op de aanwezigheid van een code). Controleer dat een echt ingeleverde compositie onder **Ingeleverd** staat en online-bewaarde-maar-niet-ingeleverde onder **In bewerking**.

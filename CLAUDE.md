@@ -66,7 +66,7 @@ Seven independent stores in `src/stores/`:
 |---|---|
 | `appStore` | Current screen, active location ID, current composition ID, praatplaat context (#72) |
 | `audioStore` | Playback state (isPlaying, currentBeat) |
-| `timelineStore` | Tracks (8 fixed), clips, BPM (120 fixed), 32 beats, looping, smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb). Clip actions (`addClip`, `moveClip`, `duplicateClip`) accept `samples: Sample[]` as parameter — no direct dependency on libraryStore |
+| `timelineStore` | Tracks (8 default, uitbreidbaar tot 12 via `addTrack`), clips, BPM (120 fixed), 128 beats default (uitbreidbaar tot 256 via `extendTimeline` — liniaal telt in máten: 32→64), looping + sectie-loop (`loopRegion`, sessie-state), solo (`soloTrackIndex`, sessie-state), smart snap, clip trim, volume/mute, sections, clearAllTracks, clip loop, clip effects (pitch/reverb). Clip actions (`addClip`, `moveClip`, `duplicateClip`) accept `samples: Sample[]` as parameter — no direct dependency on libraryStore |
 | `libraryStore` | Recorder slots (max 6), collected samples, transfer to library |
 | `userStore` | User session, role (guest/student/teacher), class code |
 | `themeStore` | Active theme, locations, samples, map config (loaded from `?theme=` URL param) |
@@ -89,7 +89,7 @@ Seven independent stores in `src/stores/`:
 AudioService (singleton)
 ├── buffers: Map<sampleId, ToneAudioBuffer>  — primary storage, zero graph footprint
 ├── players: Map<sampleId, Tone.Player>      — preview players only (from buffer)
-├── trackBuses: Tone.Gain[] (8)              — submix per track (mute control)
+├── trackBuses: Tone.Gain[] (dynamisch ≥8)   — submix per track (mute + solo)
 ├── masterBus: Tone.Volume                   — master output
 ├── activeSources: Set<{player, nodes}>      — lifecycle-tracked on-demand players
 ├── timelinePart: Tone.Part | null           — scheduled clip events
@@ -103,7 +103,7 @@ AudioService (singleton)
 
 **Playback flow**: `scheduleTimeline()` creates a `Tone.Part` with all clip events (each carrying `trackIndex` + `effects` config) → `play(fromBeat)` starts transport. Part callback calls `createOnDemandPlayer()` per event. For seek (fromBeat > 0), a **hybrid approach** is used: clips already active at the seek position are started directly via `startActiveClips()` (which also creates on-demand players), while future clips play via `Tone.Part`.
 
-**Track bus submix**: 8 `Tone.Gain` buses (one per track) + 1 `Tone.Volume` master → Destination. Buses handle mute only (gain 0 or 1). Track + clip volume is baked into per-clip on-demand players. Total permanent nodes: ~9 (vs 170+ before refactor).
+**Track bus submix**: `Tone.Gain` buses (grow-only, één per track — `ensureTrackBuses(count)` groeit mee met `tracks.length` tot max 12) + 1 `Tone.Volume` master → Destination. Buses handle mute + solo (gain 0 or 1; `setSoloTrack` past gains live toe zonder reschedule). Track + clip volume is baked into per-clip on-demand players. Total permanent nodes: ~9 (vs 170+ before refactor).
 
 **Clip Loop (#65)**: `clip.loop` + `clip.loopDurationBeats` on the Clip interface. Looping clips generate multiple `ClipEvent`s in `scheduleTimeline()` (one per loop iteration). Resize handle uses pure pointer events (not dnd-kit) with half-beat grid snapping. Loop-aware collision detection via `getEffectiveClipDurationBeats()`. Loop-aware seek uses modulo arithmetic (`elapsedSeconds % singleDuration`) to find position within loop iteration.
 

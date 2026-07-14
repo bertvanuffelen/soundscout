@@ -19,6 +19,7 @@
 | 4 | Thema-wizard (admin-editor) + content-pipeline | ✅ Af |
 | 5 | Content-sprint + peer-feedback + landingspagina | ✅ Peer-feedback + landing af; content-sprint = Bert |
 | 5½ | Feedback 2.0 (sterren/cap/timer), presentatiemodus, feedback-overzicht+top 3, sessie-herstel, Lucide-iconen | ✅ Af (migratie 028 + E2E bij Bert) |
+| 5¾ | DAW-ronde: grijze-vlak-fix, +8 maten, +sporen/solo, sectie-loop, mobiele zoom, technische hygiëne + kansen-brainstorm | ✅ Af |
 | 6 | Monetisatie-voorbereiding, internationaal, PWA, eind-QA | ⏳ Gepland |
 
 ## Week 1 — Fundament & fixes
@@ -91,6 +92,20 @@
 | G | docs/ANIMATIES-EN-PROMO.md (animatielijst + promo-script) + testplan §6 | ✅ Af | zie docs-commit |
 
 **Besluiten Bert (2026-07-13):** peer-feedback = sterren per criterium (geen losse chips meer) · vast maximum 3 · toggle + optionele timer · presentatie = nieuw universeel scherm met playlist, ook voor praatplaat.
+
+## Week 5¾ — DAW-ronde + kansen-brainstorm
+
+| # | Stap | Status | Commit |
+|---|---|---|---|
+| A | KANSEN-BRAINSTORM.md: site-besluit (app-first, geen blog; leskaart-pagina's als SEO-kans), microfoon geparkeerd (rationale Bert), storyboard-verdeling "Samen één verhaal" als concreet ontwerp, kansen-voorraad | ✅ Af | `1ad179a` |
+| B0 | Technische hygiëne: bpm-veld door het export-pad (latente bug), iPad-sleepvertraging 200→150ms, 3 studio-lint-fouten (EditToolbar/Clip/StorytellingDisplay) | ✅ Af | `bc65a19` |
+| B1 | BUG-TIMELINE-GRIJS opgelost: wrapper min-h-full + flex-vulling, gridlijnen lopen door; overscroll-contain | ✅ Af | `d75a167` |
+| B2 | "+ 8 maten"-tegel (sticky pill), extendTimeline tot 256 beats/64 maten, +2 tests | ✅ Af | `5dcbd94` |
+| B3 | "+ spoor" tot 12 + solo in volume-popover; audio-buses grow-only (spoor 9+ was zonder mute-controle); solo = sessie-state, live gains; +3 tests | ✅ Af | `1c0753f` |
+| B4 | Sectie-loop via SectionPopover (hergebruik sectie-concept), loop-regio in store + engine (reschedule-proof); zoomknoppen op touch; +3 tests | ✅ Af | `a3e8b34` |
+| B5 | Testplan §7, CLAUDE.md-correcties (128 beats/dynamische buses), logboek + Notion | ✅ Af | zie docs-commit |
+
+**Eenvoud-eis Bert geborgd**: progressive disclosure — beide "+"-elementen zijn subtiel, verdwijnen op hun maximum en in read-only; solo zit ín de bestaande popover; sectie-loop hergebruikt het sectie-concept.
 
 ## Besluitenlog
 
