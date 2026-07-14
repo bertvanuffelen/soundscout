@@ -37,7 +37,9 @@ export const EditToolbar = memo(function EditToolbar({
   locked = false,
 }: EditToolbarProps) {
   const { t } = useTranslation();
-  const [showVolumePopover, setShowVolumePopover] = useState(false);
+  // Popover-anker als state i.p.v. ref-lezen tijdens render (react-hooks/refs):
+  // positie wordt vastgelegd op het klikmoment
+  const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
   const volumeBtnRef = useRef<HTMLButtonElement>(null);
 
   // Calculate current clip duration (respects trim)
@@ -48,11 +50,15 @@ export const EditToolbar = memo(function EditToolbar({
   const clipMuted = clip.effects?.mute ?? false;
 
   const handleVolumeClick = useCallback(() => {
-    setShowVolumePopover((prev) => !prev);
+    setPopoverPos((prev) => {
+      if (prev) return null;
+      const rect = volumeBtnRef.current?.getBoundingClientRect();
+      return rect ? { left: rect.left, top: rect.top - 8 } : null;
+    });
   }, []);
 
   const handleClosePopover = useCallback(() => {
-    setShowVolumePopover(false);
+    setPopoverPos(null);
   }, []);
 
   return (
@@ -139,12 +145,12 @@ export const EditToolbar = memo(function EditToolbar({
       </div>
 
       {/* Volume popover for clip — portal to escape overflow clipping */}
-      {showVolumePopover && onClipVolumeChange && onClipMuteToggle && volumeBtnRef.current && createPortal(
+      {popoverPos && onClipVolumeChange && onClipMuteToggle && createPortal(
         <div
           style={{
             position: 'fixed',
-            left: volumeBtnRef.current.getBoundingClientRect().left,
-            top: volumeBtnRef.current.getBoundingClientRect().top - 8,
+            left: popoverPos.left,
+            top: popoverPos.top,
             transform: 'translateY(-100%)',
             zIndex: 9999,
           }}

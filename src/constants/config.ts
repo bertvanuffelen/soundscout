@@ -76,8 +76,10 @@ export const MAX_RECORDER_SLOTS = 6;
 /** Distance in pixels before pointer drag activates */
 export const POINTER_ACTIVATION_DISTANCE = 8;
 
-/** Delay in milliseconds before touch drag activates */
-export const TOUCH_ACTIVATION_DELAY_MS = 200;
+/** Delay in milliseconds before touch drag activates.
+ *  200ms voelde traag op iPad (TODO 2026-04); 150ms is de dnd-kit-aanbeveling
+ *  en onderscheidt nog steeds scrollen van slepen (i.c.m. tolerance). */
+export const TOUCH_ACTIVATION_DELAY_MS = 150;
 
 /** Tolerance in pixels for touch movement during activation delay (higher = more forgiving on tablets) */
 export const TOUCH_ACTIVATION_TOLERANCE = 10;

@@ -91,7 +91,9 @@ export const Clip = memo(function Clip({
   const [isResizing, setIsResizing] = useState(false);
   const resizeStartRef = useRef<{ startX: number; originalBeats: number } | null>(null);
 
-  const handleResizePointerDown = useCallback((e: React.PointerEvent) => {
+  // Geen handmatige useCallback: de React-compiler memoïseert dit zelf en
+  // kon de handmatige variant niet behouden (react-hooks v6)
+  const handleResizePointerDown = (e: React.PointerEvent) => {
     e.stopPropagation();
     e.preventDefault();
 
@@ -134,7 +136,7 @@ export const Clip = memo(function Clip({
 
     window.addEventListener('pointermove', onPointerMove);
     window.addEventListener('pointerup', onPointerUp);
-  }, [clip, singleDurationBeats, totalBeats, trackIndex, resizeClipLoop, setClipLoop]);
+  };
 
   // --- Loop repeat visualization (#65) ---
   const loopRepeats = clip.loop && clip.loopDurationBeats ? (() => {

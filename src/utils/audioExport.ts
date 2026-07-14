@@ -21,6 +21,10 @@ export interface ExportOptions {
   sampleRate?: number;
   /** Number of audio channels (default: 2 for stereo) */
   channels?: number;
+  /** Tempo van de compositie in BPM (default: DEFAULT_BPM). Zonder deze
+   *  parameter zou de export het vaste standaardtempo gebruiken en bij een
+   *  ooit-variabel tempo verkeerd renderen. */
+  bpm?: number;
 }
 
 export interface Mp3ExportOptions extends ExportOptions {
@@ -67,7 +71,8 @@ export async function preloadBuffers(
  */
 export function calculateTimelineDuration(
   tracks: Track[],
-  samples: Sample[]
+  samples: Sample[],
+  bpm: number = DEFAULT_BPM
 ): number {
   const sampleMap = new Map(samples.map((s) => [s.id, s]));
   let maxEndTime = 0;
@@ -77,10 +82,10 @@ export function calculateTimelineDuration(
       const sample = sampleMap.get(clip.sampleId);
       if (!sample) return;
 
-      const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
+      const startSeconds = beatsToSeconds(clip.startBeat, bpm);
       // Use loop duration if looping, otherwise trimmed sample duration
       const effectiveDuration = clip.loop && clip.loopDurationBeats
-        ? beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM)
+        ? beatsToSeconds(clip.loopDurationBeats, bpm)
         : getClipDuration(clip, sample);
       const endSeconds = startSeconds + effectiveDuration;
       maxEndTime = Math.max(maxEndTime, endSeconds);
@@ -167,7 +172,7 @@ export async function renderOffline(
   options: ExportOptions = {},
   onProgress?: ExportProgressCallback
 ): Promise<AudioBuffer> {
-  const { sampleRate = 44100, channels = 2 } = options;
+  const { sampleRate = 44100, channels = 2, bpm = DEFAULT_BPM } = options;
 
   logger.info('Starting offline render', { duration, sampleRate, channels });
 
@@ -177,7 +182,7 @@ export async function renderOffline(
   // Render offline using Tone.Offline
   const renderedToneBuffer = await Tone.Offline(
     ({ transport }) => {
-      transport.bpm.value = DEFAULT_BPM;
+      transport.bpm.value = bpm;
 
       // Schedule all clips (with loop + effects support)
       tracks.forEach((track) => {
@@ -242,7 +247,7 @@ export async function renderOffline(
           }
 
           const player = new Tone.Player(buffer).connect(targetNode);
-          const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
+          const startSeconds = beatsToSeconds(clip.startBeat, bpm);
           const trimStart = getClipTrimStart(clip);
           const singleDuration = getClipDuration(clip, sample);
 
@@ -252,7 +257,7 @@ export async function renderOffline(
 
           // Loop logic (#65): schedule multiple events for looping clips
           if (clip.loop && clip.loopDurationBeats) {
-            const totalSeconds = beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM);
+            const totalSeconds = beatsToSeconds(clip.loopDurationBeats, bpm);
             let offset = 0;
             let iterIndex = 0;
 
@@ -319,7 +324,7 @@ export async function exportToWav(
   onProgress?.(0);
 
   // Calculate duration
-  const duration = calculateTimelineDuration(tracks, samples);
+  const duration = calculateTimelineDuration(tracks, samples, options.bpm);
   if (duration <= 0.5) {
     throw new Error('No clips on timeline');
   }
@@ -362,7 +367,7 @@ export async function exportToMp3(
   onProgress?.(0);
 
   // Calculate duration
-  const duration = calculateTimelineDuration(tracks, samples);
+  const duration = calculateTimelineDuration(tracks, samples, options.bpm);
   if (duration <= 0.5) {
     throw new Error('No clips on timeline');
   }

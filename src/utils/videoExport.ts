@@ -35,6 +35,8 @@ export interface VideoExportOptions {
   fps?: number;
   /** Crossfade duur in seconden (default: 0.5) */
   crossfadeDuration?: number;
+  /** Tempo van de compositie in BPM (default: DEFAULT_BPM) — zie audioExport */
+  bpm?: number;
 }
 
 export interface VideoExportResult {
@@ -73,6 +75,7 @@ export async function exportToVideo(
     height = 1080,
     fps = 30,
     crossfadeDuration = 0.5,
+    bpm = DEFAULT_BPM,
   } = options;
 
   logger.info('[videoExport] Starting video export', {
@@ -97,8 +100,8 @@ export async function exportToVideo(
   // --- Fase 2: Audio renderen (2–25%) ---
   // Video-duur = maximum van audio-duur en volledige timeline-duur.
   // Zo wordt het storyboard volledig getoond, ook als de laatste secties stil zijn.
-  const audioDuration = calculateTimelineDuration(tracks, samples);
-  const timelineDuration = beatsToSeconds(totalBeats, DEFAULT_BPM) + 0.5;
+  const audioDuration = calculateTimelineDuration(tracks, samples, bpm);
+  const timelineDuration = beatsToSeconds(totalBeats, bpm) + 0.5;
   const duration = Math.max(audioDuration, timelineDuration);
 
   if (audioDuration <= 0.5 && storyboard.images.length === 0) {
@@ -115,7 +118,7 @@ export async function exportToVideo(
     samples,
     duration,
     bufferMap,
-    { sampleRate: 44100, channels: 2 },
+    { sampleRate: 44100, channels: 2, bpm },
     (p) => {
       // renderOffline progress: 0.3–0.7 → map naar 10–25%
       onProgress?.(10 + Math.round((p - 0.3) * 37.5));

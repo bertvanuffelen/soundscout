@@ -10,6 +10,7 @@ import { exportToVideo } from '../utils/videoExport';
 import { detectBestEngine } from '../utils/videoExportEngines';
 import type { EngineName } from '../utils/videoExportEngines';
 import { downloadBlob } from '../utils/audioExport';
+import { useTimelineStore } from '../stores/timelineStore';
 import type { Track, Sample, Section, Storyboard } from '../types';
 import { logger } from '../utils/logger';
 
@@ -96,7 +97,8 @@ export function useVideoExport(
           samples,
           totalBeats,
           sections,
-          {},
+          // Compositie-tempo meegeven (B0) — zie useAudioExport
+          { bpm: useTimelineStore.getState().bpm },
           (percent) => {
             setVideoProgress(percent);
           },

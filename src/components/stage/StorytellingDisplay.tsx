@@ -37,29 +37,34 @@ export function StorytellingDisplay() {
   const isStoryboard = composeMode === 'storyboard' && imageCount > 1;
 
   // Sync image index with playback using requestAnimationFrame
-  // Reads currentBeat imperatively to avoid re-render storms
+  // Reads currentBeat imperatively to avoid re-render storms.
+  // Inner hoisted `loop` i.p.v. zelf-referentie in de useCallback
+  // (react-hooks v6: variabele-voor-declaratie).
   const syncWithPlayback = useCallback(() => {
-    const { isPlaying } = useAudioStore.getState();
-    if (!isPlaying || !activeStoryboard) {
-      rafRef.current = null;
-      return;
-    }
-
-    const { currentBeat } = useAudioStore.getState();
-    const { totalBeats, sections } = useTimelineStore.getState();
-
-    const newIndex = getActiveImageIndex(currentBeat, totalBeats, activeStoryboard.images.length, sections);
-
-    setDisplayIndex((prev) => {
-      if (prev !== newIndex) {
-        // Also update the store so other components stay in sync
-        useAppStore.getState().setCurrentImageIndex(newIndex);
-        return newIndex;
+    function loop() {
+      const { isPlaying } = useAudioStore.getState();
+      if (!isPlaying || !activeStoryboard) {
+        rafRef.current = null;
+        return;
       }
-      return prev;
-    });
 
-    rafRef.current = requestAnimationFrame(syncWithPlayback);
+      const { currentBeat } = useAudioStore.getState();
+      const { totalBeats, sections } = useTimelineStore.getState();
+
+      const newIndex = getActiveImageIndex(currentBeat, totalBeats, activeStoryboard.images.length, sections);
+
+      setDisplayIndex((prev) => {
+        if (prev !== newIndex) {
+          // Also update the store so other components stay in sync
+          useAppStore.getState().setCurrentImageIndex(newIndex);
+          return newIndex;
+        }
+        return prev;
+      });
+
+      rafRef.current = requestAnimationFrame(loop);
+    }
+    loop();
   }, [activeStoryboard]);
 
   // Start/stop the sync loop when playback state changes

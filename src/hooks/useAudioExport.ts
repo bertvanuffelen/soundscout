@@ -6,6 +6,7 @@
 
 import { useState, useCallback } from 'react';
 import { exportToMp3, downloadBlob } from '../utils/audioExport';
+import { useTimelineStore } from '../stores/timelineStore';
 import type { Track, Sample } from '../types';
 import { logger } from '../utils/logger';
 
@@ -51,7 +52,10 @@ export function useAudioExport(
       try {
         logger.info('Starting MP3 export');
 
-        const blob = await exportToMp3(tracks, samples, { bitrate: 128 }, (p) => {
+        // Compositie-tempo meegeven (B0): zonder dit zou de export het vaste
+        // standaardtempo gebruiken zodra BPM ooit variabel wordt
+        const bpm = useTimelineStore.getState().bpm;
+        const blob = await exportToMp3(tracks, samples, { bitrate: 128, bpm }, (p) => {
           setProgress(Math.round(p * 100));
         });
 
