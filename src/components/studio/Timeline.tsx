@@ -10,7 +10,7 @@ import { VolumePopover } from './VolumePopover';
 import { EffectsModal } from './EffectsModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration } from '../../utils/audio';
-import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP } from '../../constants/config';
+import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, EXTEND_BEATS_STEP } from '../../constants/config';
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -83,6 +83,7 @@ export const Timeline = memo(function Timeline({
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
+  const extendTimeline = useTimelineStore((s) => s.extendTimeline);
 
   // Clear timeline confirmation state
   const [showClearConfirm, setShowClearConfirm] = useState(false);
@@ -608,6 +609,22 @@ export const Timeline = memo(function Timeline({
         className="relative overflow-x-auto overflow-y-auto overscroll-contain min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
         onClick={handleTimelineClick}
       >
+        {/* "+ 8 maten"-tegel (B2): sticky rechtsboven in de scroller, neemt
+            geen layout-ruimte (h-0) — progressive disclosure, verdwijnt op
+            het maximum (64 maten) en in read-only */}
+        {!readOnly && totalBeats < MAX_TOTAL_BEATS && (
+          <div className="sticky top-1 left-0 z-30 h-0 flex justify-end pr-2 pointer-events-none">
+            <button
+              onClick={(e) => { e.stopPropagation(); extendTimeline(EXTEND_BEATS_STEP); }}
+              title={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
+              className="pointer-events-auto inline-flex items-center gap-1 rounded-full bg-white/90 border border-border-subtle px-2 py-1 text-[10px] sm:text-xs font-semibold text-text-muted hover:text-text-main hover:bg-white shadow-sm transition-colors"
+            >
+              <Plus size={12} aria-hidden="true" />
+              {t('studio.extendTimeline')}
+            </button>
+          </div>
+        )}
+
         {/* Scrollable content wrapper — min-h-full + flex-vulling zodat de
             wrapper de container altijd vult (BUG-TIMELINE-GRIJS): de
             gridlijnen (absolute bottom-0) rekken mee tot de onderrand, dus

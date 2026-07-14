@@ -58,6 +58,26 @@ describe('timelineStore', () => {
     });
   });
 
+  describe('extendTimeline (B2, "+ 8 maten")', () => {
+    it('verlengt totalBeats en verhoogt audioVersion', () => {
+      useTimelineStore.setState({ totalBeats: 128, audioVersion: 0 });
+      useTimelineStore.getState().extendTimeline(32);
+      expect(useTimelineStore.getState().totalBeats).toBe(160);
+      expect(useTimelineStore.getState().audioVersion).toBe(1);
+    });
+
+    it('klemt op MAX_TOTAL_BEATS (256) en verhoogt dan audioVersion niet', () => {
+      useTimelineStore.setState({ totalBeats: 240, audioVersion: 0 });
+      useTimelineStore.getState().extendTimeline(32);
+      expect(useTimelineStore.getState().totalBeats).toBe(256);
+      // Op het maximum: nogmaals verlengen doet niets
+      const versionAtMax = useTimelineStore.getState().audioVersion;
+      useTimelineStore.getState().extendTimeline(32);
+      expect(useTimelineStore.getState().totalBeats).toBe(256);
+      expect(useTimelineStore.getState().audioVersion).toBe(versionAtMax);
+    });
+  });
+
   describe('addClip', () => {
     it('should add a clip to the specified track', () => {
       const store = useTimelineStore.getState();

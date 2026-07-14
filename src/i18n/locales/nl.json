@@ -192,6 +192,8 @@
     "emptyLibrary": "Ga eerst geluiden verzamelen!",
     "emptyLibraryHint": "Bezoek locaties op de kaart om geluiden te verzamelen.",
     "dragHint": "Sleep geluiden naar de tijdlijn",
+    "extendTimeline": "8 maten",
+    "extendTimelineTitle": "Tijdlijn verlengen met 8 maten (nu {{maten}} maten)",
     "clipToolsHint": "Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen.",
     "addToTrack": "Voeg {{name}} toe aan tijdlijn",
     "dragToTimeline": "Sleep naar tijdlijn",

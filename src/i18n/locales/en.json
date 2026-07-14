@@ -192,6 +192,8 @@
     "emptyLibrary": "Go collect some sounds first!",
     "emptyLibraryHint": "Visit locations on the map to collect sounds.",
     "dragHint": "Drag sounds to the timeline",
+    "extendTimeline": "8 measures",
+    "extendTimelineTitle": "Extend the timeline by 8 measures (currently {{maten}} measures)",
     "clipToolsHint": "Tip: click a block on the timeline to trim it, add effects or adjust the volume.",
     "addToTrack": "Add {{name}} to timeline",
     "dragToTimeline": "Drag to timeline",

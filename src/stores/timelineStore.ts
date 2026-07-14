@@ -4,6 +4,7 @@ import { SECTION_COLORS } from '../types';
 import {
   DEFAULT_BPM,
   DEFAULT_TOTAL_BEATS,
+  MAX_TOTAL_BEATS,
   DEFAULT_TRACK_COUNT,
   VOLUME_MIN_DB,
   VOLUME_MAX_DB,
@@ -107,6 +108,9 @@ interface TimelineStore {
 
   // Settings
   setLooping: (looping: boolean) => void;
+
+  /** Verleng de tijdlijn met N beats ("+ 8 maten"-tegel), tot MAX_TOTAL_BEATS */
+  extendTimeline: (byBeats: number) => void;
 
   // Load saved composition
   loadTimeline: (timeline: TimelineState) => void;
@@ -668,6 +672,14 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
 
   setLooping: (looping) => {
     set((prev) => ({ isLooping: looping, audioVersion: prev.audioVersion + 1 }));
+  },
+
+  extendTimeline: (byBeats) => {
+    set((prev) => {
+      const next = Math.min(prev.totalBeats + byBeats, MAX_TOTAL_BEATS);
+      if (next === prev.totalBeats) return prev;
+      return { totalBeats: next, audioVersion: prev.audioVersion + 1 };
+    });
   },
 
   loadTimeline: (timeline) => {
