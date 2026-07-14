@@ -11,7 +11,7 @@ export const piratenTheme: ThemeConfig = {
   id: 'piraten',
   name: 'themes.piraten.name',
   description: 'themes.piraten.description',
-  isPublic: false, // alleen via ?theme=piraten (nog niet zichtbaar voor gebruikers)
+  isPublic: true, // TODO: terug naar false vóór deploy — nu true zodat het thema lokaal testbaar is in de "Kies je wereld"-flow
 
   locations,
   samples,
