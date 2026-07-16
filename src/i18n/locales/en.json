@@ -39,7 +39,7 @@
     "selectLocation": "Click on a location to explore",
     "loadingTheme": "Loading theme...",
     "studioShort": "Studio",
-    "cityMapAlt": "City map",
+    "cityMapAlt": "Theme map",
     "firstVisitHint": "Click a location to collect sounds. Then turn them into music in the studio."
   },
   "themeSelection": {
@@ -252,7 +252,7 @@
     "library": "Library",
     "timeline": "Timeline",
     "playhead": "Playback position",
-    "backToLocation": "Back to City",
+    "backToLocation": "Back to map",
     "toStage": "To Stage",
     "emptyLibrary": "Go collect some sounds first!",
     "emptyLibraryHint": "Visit locations on the map to collect sounds.",

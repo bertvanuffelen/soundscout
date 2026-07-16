@@ -39,7 +39,7 @@
     "selectLocation": "Klik op een locatie om te verkennen",
     "loadingTheme": "Thema laden...",
     "studioShort": "Studio",
-    "cityMapAlt": "Stadskaart",
+    "cityMapAlt": "Plattegrond van het thema",
     "firstVisitHint": "Klik op een locatie om geluiden te verzamelen. Daarna maak je er muziek van in de studio."
   },
   "themeSelection": {
@@ -252,7 +252,7 @@
     "library": "Bibliotheek",
     "timeline": "Tijdlijn",
     "playhead": "Afspeelpositie",
-    "backToLocation": "Terug naar Stad",
+    "backToLocation": "Terug naar plattegrond",
     "toStage": "Naar Podium",
     "emptyLibrary": "Ga eerst geluiden verzamelen!",
     "emptyLibraryHint": "Bezoek locaties op de kaart om geluiden te verzamelen.",
