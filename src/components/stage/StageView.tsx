@@ -14,7 +14,6 @@ import {
   Save,
   Check,
   ArrowLeft,
-  Ellipsis,
   MapPin,
   Headphones,
 } from 'lucide-react';
@@ -281,13 +280,13 @@ export function StageView() {
               beoordelingen — rendert alleen als er echt iets te tonen is */}
           <FeedbackBanner />
 
-          {/* Action buttons — clean: save + options + new */}
+          {/* Action buttons — één ingang: "Opslaan & Delen" opent de
+              gecombineerde modal (testronde 3, ontwerp Bert) */}
           <div className="flex flex-col gap-3 w-full max-w-xs">
             <Button
               variant="primary"
               size="lg"
-              onClick={handleSaveClick}
-              disabled={saveSuccess}
+              onClick={() => setShowActionsModal(true)}
               className="w-full"
             >
               {saveSuccess ? (
@@ -298,19 +297,9 @@ export function StageView() {
               ) : (
                 <>
                   <Save size={20} className="mr-2" />
-                  {t('stage.save')}
+                  {t('stage.saveAndShare')}
                 </>
               )}
-            </Button>
-
-            <Button
-              variant="secondary"
-              size="lg"
-              onClick={() => setShowActionsModal(true)}
-              className="w-full"
-            >
-              <Ellipsis size={20} className="mr-2" />
-              {t('stage.actionsButton')}
             </Button>
 
             {/* Peer-review: luister naar klasgenoten (migratie 027) */}
@@ -513,17 +502,22 @@ export function StageView() {
         </div>
       </Modal>
 
-      {/* Stage actions modal (share, export, save online) */}
+      {/* Opslaan & Delen — gecombineerde modal (testronde 3) */}
       {showActionsModal && (
         <StageActionsModal
           compositionName={compositionName}
           hasStoryboard={!!activeStoryboard}
           isTeacher={isTeacher}
           hasClassSession={!!classSession}
+          className={classSession?.className ?? null}
+          classSaveCode={classSaveCode}
+          submissionSynced={submissionSynced}
+          saveSuccess={saveSuccess}
           exportState={exportState}
           exportProgress={progress}
           videoExportState={videoExportState}
           videoProgress={videoProgress}
+          onSave={handleSaveClick}
           onExportMp3={handleExport}
           onExportVideo={handleVideoExport}
           onSaveOnline={() => setShowSaveOnlineModal(true)}
