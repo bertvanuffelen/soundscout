@@ -370,6 +370,10 @@ export async function activatePendingAssignment(): Promise<void> {
 
   // Wis bewaarcode-context (exclusief met klascode-flow)
   storageService.clearSaveOnlineInfo();
+  // Wis ook de feedback-terugweg-code van een eerdere inzending: wie bewust
+  // een nieuwe klas-sessie start (gedeeld apparaat, volgende leerling) mag
+  // nooit de code of reactie-melding van de vorige leerling zien (bug 5b)
+  storageService.clearClassFeedbackCode();
 
   if (assignment.type === 'template' && assignment.template) {
     // Klascode-sessie vastleggen

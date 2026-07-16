@@ -374,6 +374,10 @@ class StorageServiceImpl {
     compositionName: string;
     /** feedback_at die de leerling al gezien heeft (dedup voor de melding) */
     lastSeenFeedbackAt?: string | null;
+    /** Inzending waar deze code bij hoort — zodat het podium de code alleen
+     *  toont voor de HUIDIGE compositie (testronde 2, bug 5b: gedeelde
+     *  apparaten toonden de code van een vorige leerling) */
+    submissionId?: string | null;
   }): void {
     this.set('soundscout:class-feedback-code', info);
   }
@@ -382,6 +386,7 @@ class StorageServiceImpl {
     saveCode: string;
     compositionName: string;
     lastSeenFeedbackAt: string | null;
+    submissionId: string | null;
   } | null {
     const raw = this.getRaw('soundscout:class-feedback-code');
     if (!raw || typeof raw !== 'object') return null;
@@ -391,6 +396,7 @@ class StorageServiceImpl {
       saveCode: info.saveCode,
       compositionName: (info.compositionName as string) || '',
       lastSeenFeedbackAt: (info.lastSeenFeedbackAt as string) || null,
+      submissionId: (info.submissionId as string) || null,
     };
   }
 

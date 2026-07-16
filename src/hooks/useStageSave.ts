@@ -35,9 +35,15 @@ export function useStageSave() {
   const [praatplaatSubmitted, setPraatplaatSubmitted] = useState(false);
   // Automatisch geminte bewaarcode van de klas-inzending (migratie 026) —
   // hiermee kan de leerling later de docent-feedback terugzien.
-  const [classSaveCode, setClassSaveCode] = useState<string | null>(
-    () => storageService.getClassFeedbackCode()?.saveCode ?? null
-  );
+  // Alleen uit localStorage herstellen als de opgeslagen code aantoonbaar
+  // bij de HUIDIGE inzending hoort (testronde 2, bug 5b: op gedeelde
+  // apparaten/incognito verscheen anders de code van een vorige leerling
+  // nog vóór de eerste keer opslaan).
+  const [classSaveCode, setClassSaveCode] = useState<string | null>(() => {
+    const info = storageService.getClassFeedbackCode();
+    const currentSubmissionId = useAppStore.getState().submissionId;
+    return info?.submissionId && info.submissionId === currentSubmissionId ? info.saveCode : null;
+  });
   const [dontShowWarningAgain, setDontShowWarningAgain] = useState(() => {
     return localStorage.getItem('soundscout:hideSaveWarning') === 'true';
   });
@@ -193,6 +199,7 @@ export function useStageSave() {
                 lastSeenFeedbackAt: existing?.saveCode === saveCode
                   ? existing.lastSeenFeedbackAt
                   : null,
+                submissionId: returnedId,
               });
             }
             // Mark praatplaat as submitted so StageView shows success modal (#72 bugfix)
