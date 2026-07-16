@@ -299,6 +299,35 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           </div>
         </div>
 
+        {/* Presenteren + Feedback-overzicht — essentiële klasacties, prominent
+            bovenaan (testronde 2, Notion-wens Bert). Uitgeschakeld zolang er
+            niets te presenteren/tonen is. */}
+        {!loading && (
+          <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <button
+              onClick={() => setPresentIds(submitted.map((s) => s.id))}
+              disabled={submitted.length === 0}
+              className="flex items-center justify-center gap-2.5 rounded-2xl px-4 py-4 sm:py-5 text-base sm:text-lg font-extrabold tracking-tight border-2 bg-brand-900 text-white border-brand-900 shadow-md hover:bg-brand-800 transition-all disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <MonitorPlay className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" aria-hidden="true" />
+              {t('teacher.presentation.openButton')}
+              {submitted.length > 0 && (
+                <span className="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
+                  {submitted.length}
+                </span>
+              )}
+            </button>
+            <button
+              onClick={() => setShowPeerOverview(true)}
+              disabled={submissions.length === 0}
+              className="flex items-center justify-center gap-2.5 rounded-2xl px-4 py-4 sm:py-5 text-base sm:text-lg font-extrabold tracking-tight border-2 bg-bg-surface text-text-main border-border-subtle hover:border-brand-300 hover:shadow-sm transition-all disabled:opacity-40 disabled:pointer-events-none"
+            >
+              <Star className="w-5 h-5 sm:w-6 sm:h-6 text-accent-500 shrink-0" aria-hidden="true" />
+              {t('teacher.peerOverview.openButton')}
+            </button>
+          </div>
+        )}
+
         {/* Error message */}
         {(error || actionError) && (
           <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
@@ -539,24 +568,6 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   <span className="w-2 h-2 rounded-full bg-accent-500 animate-pulse" aria-hidden="true" />
                   {t('teacher.classDetail.newCount', { count: newCount })}
                 </span>
-              )}
-              {submissions.length > 0 && (
-                <button
-                  onClick={() => setShowPeerOverview(true)}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full border border-border-subtle bg-bg-surface text-text-muted hover:text-text-main text-sm font-medium transition-colors"
-                >
-                  <Star className="w-3.5 h-3.5" aria-hidden="true" />
-                  {t('teacher.peerOverview.openButton')}
-                </button>
-              )}
-              {submitted.length > 0 && (
-                <button
-                  onClick={() => setPresentIds(submitted.map((s) => s.id))}
-                  className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-brand-900 text-text-inverse hover:bg-brand-800 text-sm font-medium transition-colors"
-                >
-                  <MonitorPlay className="w-3.5 h-3.5" aria-hidden="true" />
-                  {t('teacher.presentation.openButton')}
-                </button>
               )}
             </SectionTitle>
             <p className="text-sm text-text-muted ml-7">
