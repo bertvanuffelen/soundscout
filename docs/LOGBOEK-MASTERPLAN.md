@@ -109,6 +109,19 @@
 
 **Eenvoud-eis Bert geborgd**: progressive disclosure — beide "+"-elementen zijn subtiel, verdwijnen op hun maximum en in read-only; solo zit ín de bestaande popover; sectie-loop hergebruikt het sectie-concept.
 
+## Testronde 1 (16-7) — fixronde na Berts test t/m week 2
+
+| Fix | Oorzaak | Status |
+|---|---|---|
+| **Bewaarcode "niet gevonden"** (2c, kritiek) | Migratie 028: retourkolom `class_code TEXT` vs kolom `CHAR(4)` → élke load faalde met 42804; client maskeerde dat als "niet gevonden". Live gereproduceerd met code BBD6KD. | ✅ Migratie **029** klaar (Bert draait) + foutmaskering client-side opgeheven (`share.loadFailed`, `submissions.dataInvalid`, Zod-issues gelogd, feedback-load non-fataal) |
+| **'Beluisterd' ontbrak** (2b) | Status werd wél gezet; er bestond geen badge-tak voor `seen` in SubmissionCard | ✅ Grijze badge + koptelefoon-icoon, i18n NL/EN |
+| **EffectsModal Tab-lek** (1c) | Focus-trap telde disabled knoppen mee als laatste element (Toepassen start disabled) | ✅ `:not([disabled])` in FOCUSABLE_SELECTOR — geldt voor alle modals |
+| **Escape bij inzendingen** (2b) | SubmissionPlayer = handgerolde overlay zonder keydown | ✅ `useModalBehavior` (Escape + trap + scroll-lock) + role=dialog |
+| **Reset-link naar oude site** (1a) | Supabase Redirect URLs mist localhost → terugval op Site URL | 🔧 Bert-actie (zie "Voor Bert") — code was al correct |
+| Quick-wins | — | ✅ "Klasgenoten luisteren" → "Peer feedback"; privacytekst noemt bewaarcode (AVG-vraag); testplan geannoteerd; bundle-check 1d ✅ (main 151,8 kB) |
+
+**Nieuwe wensen uit Berts testnotities (→ redesign-ronde 2)**: herbruikbare Tip-modal (de kaart/studio-hints vallen nu niet op); samen een definitielijst/woordenlijst opstellen voor consistente taal; plus de Notion-punten (landingsscherm-herindeling, storyboard-pijltjes, platen passend in viewport, ClassDetail-herindeling met prominente Presenteren/Feedback-knoppen, "Jouw code"-blok prominenter). Later: custom SMTP-afzender voor Supabase-mails.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
@@ -119,6 +132,8 @@
 - **2026-07-13 (week 3)** — Migraties 025+026 kunnen samen in één keer gedraaid worden (beide additief/idempotent, geen invloed op bestaande docent-data; live oude frontend blijft werken).
 
 ## Voor Bert (acties buiten de code)
+
+- **Migratie 029 uitvoeren** (`supabase/migrations/029_fix_load_saved_composition_class_code.sql`) — fixt de testronde-1-bug "bewaarcode niet gevonden": migratie 028 had een typefout (`class_code TEXT` vs kolom `CHAR(4)`) waardoor élke bewaarcode-load faalde. Verifieer daarna met `SELECT * FROM load_saved_composition('BBD6KD');` of door de code in de app in te voeren.
 
 - **Migration 025 uitvoeren** in de Supabase SQL Editor (`supabase/migrations/025_anonymous_analytics.sql`) — daarna verschijnen de eerste tellingen in de tabel `usage_stats`.
 - **Migration 026 uitvoeren** (`supabase/migrations/026_submission_feedback.sql`, ná 025) en daarna het E2E-testscript in `docs/PLAN-FEEDBACK.md` doorlopen (leerling levert in → code-kaart → docent geeft feedback → leerling ziet banner + 💌-melding).

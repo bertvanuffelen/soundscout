@@ -3,7 +3,7 @@
 Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-weken` is gebouwd. Af te vinken vóór merge naar `main` + deploy.
 
 **Vooraf:**
-- Migraties **025 → 026 → 027 → 028** zijn in Supabase gedraaid ✅ (bevestigd door Bert).
+- Migraties **025 → 026 → 027 → 028** zijn in Supabase gedraaid ✅ (bevestigd door Bert). **Nieuw na testronde 1: draai ook `029_fix_load_saved_composition_class_code.sql`** (fixt de bewaarcode-bug uit 2c — zonder deze faalt élke bewaarcode).
 - Lokaal draaien: `cd .claude/worktrees/masterplan-6-weken && npm run dev` → open het getoonde adres.
 - Twee browserprofielen/apparaten handig voor de klas- en peer-flows (docent in de één, "leerling" incognito in de ander).
 - Automatische gate is al groen: `npx tsc -b --noEmit`, `npm run test:run` (263 tests), `npm run lint` (baseline 31, 0 nieuw).
@@ -60,7 +60,7 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ### 2c. Leerling ziet de feedback terug (zonder account)
 - [x] Andere browser: Start → "Ik heb een code" → voer de **6-cijferige bewaarcode** in. ==> MAAR OPENT NIET WANT CODE IS NIET GEVONDEN
-  - 🔍 **In onderzoek (testronde 1)**: de melding "code niet gevonden" bleek élke fout te maskeren (ook technische fouten) — die maskering is nu weg: je ziet voortaan de échte foutmelding en de console logt de oorzaak. De database-kant is geverifieerd correct. **Hertest dit punt opnieuw met dezelfde code** — de nieuwe melding vertelt ons wat er werkelijk misgaat.
+  - ✅ **Oorzaak gevonden en gefixt (testronde 1)**: live gereproduceerd met jouw code BBD6KD — de code bestaat gewoon! Migratie 028 introduceerde een typefout in de database-functie (`class_code TEXT` vs kolom `CHAR(4)`), waardoor **elke** bewaarcode-load faalde met een DB-fout die de app als "code niet gevonden" toonde (die maskering is ook opgeheven). **Bert-actie: draai migratie `029_fix_load_saved_composition_class_code.sql`** in de Supabase SQL Editor, hertest daarna dit punt met BBD6KD → hoort gewoon te laden.
 - [?] Compositie laadt in de studio + een **warme banner**: "Feedback van je docent: ⭐ … ⭐⭐ [tekst]".
 - [?] Zelfde apparaat als 2a: heropen de app → **"Je hebt een reactie!"**-melding op het startscherm → klik → modal toont de feedback.
 
