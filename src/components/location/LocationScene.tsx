@@ -163,11 +163,16 @@ export function LocationScene() {
   }
 
   return (
-    <div className="relative min-h-screen bg-brand-900 flex flex-col overflow-hidden">
-      {/* Main area: canvas + surrounding space */}
-      <div className="flex-1 flex items-start justify-center pt-1 sm:pt-2 px-2 sm:px-4 pb-0">
+    <div className="relative h-dvh bg-brand-900 flex flex-col overflow-hidden">
+      {/* Main area: de plaat past ALTIJD in de ruimte boven de recorder-balk
+          (testronde 1: platen waren groter dan het scherm en schoven achter
+          de balk). De balk staat nu in de flow (reserveert eigen ruimte) en
+          dit vlak is een size-container: de canvas kiest de kleinste van
+          "volle breedte" en "hoogte × 16/9" — altijd passend, altijd 16:9
+          (hotspot-percentages blijven kloppen). */}
+      <div className="flex-1 min-h-0 [container-type:size] flex items-center justify-center px-2 sm:px-4 py-1 sm:py-2">
         {/* 16:9 Canvas container */}
-        <div className="relative w-full max-w-[calc(100vh*16/9-120px)] sm:max-w-[calc(100vh*16/9-140px)] aspect-video rounded-2xl overflow-hidden shadow-2xl">
+        <div className="relative w-full max-w-[min(100cqw,calc(100cqh*16/9))] aspect-video rounded-2xl overflow-hidden shadow-2xl">
           {/* Background image */}
           <div className="absolute inset-0 bg-screen-location" />
           {!bgImageFailed && (
