@@ -1682,7 +1682,8 @@
       "eyebrow": "A composition tool for primary education",
       "title": "SoundScout",
       "subtitle": "A classroom environment where pupils collect sounds and compose together. Pick the form that fits each assignment: free experimenting, with a sound map, with a storyboard, or with an assignment you build yourself. You share a class code, they start right away.",
-      "ctaPrimary": "Create a free account",
+      "ctaDashboard": "Go to dashboard",
+      "ctaLogin": "Log in or create a free account",
       "ctaSecondary": "Watch the demo"
     },
     "compose": {

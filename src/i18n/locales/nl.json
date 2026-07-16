@@ -1682,7 +1682,8 @@
       "eyebrow": "Compositietool voor het basisonderwijs",
       "title": "SoundScout",
       "subtitle": "Een lesomgeving waarin leerlingen samen geluiden verzamelen en componeren. Kies per opdracht de vorm die past: vrij experimenteren, bij een praatplaat, bij een storyboard, of bij een opdracht die je zelf samenstelt. Jij deelt een klascode, zij beginnen meteen.",
-      "ctaPrimary": "Maak een gratis account",
+      "ctaDashboard": "Ga naar dashboard",
+      "ctaLogin": "Log in of maak een gratis account",
       "ctaSecondary": "Bekijk de demo"
     },
     "compose": {

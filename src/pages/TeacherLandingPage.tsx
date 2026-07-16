@@ -63,6 +63,25 @@ export default function TeacherLandingPage() {
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showContact, setShowContact] = useState(false);
 
+  // CTA kent de inlogstatus (testronde 2, wens Bert): ingelogde docent ziet
+  // "Ga naar dashboard", anders "Log in of maak een gratis account". Lichte
+  // sessie-check; falen = behandelen als uitgelogd.
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const { getSupabase } = await import('../lib/supabase');
+        const supabase = await getSupabase();
+        const { data } = await supabase.auth.getSession();
+        if (!cancelled) setIsLoggedIn(!!data.session);
+      } catch {
+        // stil — zonder sessie-info tonen we het uitgelogde label
+      }
+    })();
+    return () => { cancelled = true; };
+  }, []);
+
   const handleTabChange = (tab: LandingTab) => {
     setLandingTab(tab);
     // Houd de tab-balk in beeld bij het wisselen (anders sta je ineens
@@ -90,7 +109,7 @@ export default function TeacherLandingPage() {
         </button>
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col gap-16 sm:gap-24">
-        <HeroSection activeVariant={activeVariant} onShowDemo={handleShowDemo} />
+        <HeroSection activeVariant={activeVariant} onShowDemo={handleShowDemo} isLoggedIn={isLoggedIn} />
 
         <div ref={tabsRef} className="scroll-mt-6">
           <SegmentedTabs<LandingTab>
@@ -161,7 +180,7 @@ function LandingFooter({ onOpenPrivacy, onOpenContact }: { onOpenPrivacy: () => 
 }
 
 // --- Sectie 1: Hero ---
-function HeroSection({ activeVariant, onShowDemo }: { activeVariant: ComposeVariant; onShowDemo: () => void }) {
+function HeroSection({ activeVariant, onShowDemo, isLoggedIn }: { activeVariant: ComposeVariant; onShowDemo: () => void; isLoggedIn: boolean }) {
   const { t } = useTranslation();
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 items-center">
@@ -182,7 +201,7 @@ function HeroSection({ activeVariant, onShowDemo }: { activeVariant: ComposeVari
             className="rounded-full w-full sm:w-auto"
             onClick={() => navigateToTeacherApp()}
           >
-            {t('teacherLanding.hero.ctaPrimary')}
+            {isLoggedIn ? t('teacherLanding.hero.ctaDashboard') : t('teacherLanding.hero.ctaLogin')}
           </Button>
           <Button
             variant="secondary"
