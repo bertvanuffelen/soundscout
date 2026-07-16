@@ -19,6 +19,9 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // Zachte drempel (testronde 3, keuze Bert): expliciete docent-verklaring
+  // bij registratie — leerlingen horen geen docentenaccount aan te maken
+  const [isEducator, setIsEducator] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
@@ -42,6 +45,10 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
     }
     if (password !== confirmPassword) {
       setError(t('teacher.validation.passwordMismatch'));
+      return;
+    }
+    if (!isEducator) {
+      setError(t('teacher.validation.educatorRequired'));
       return;
     }
 
@@ -181,6 +188,20 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
               autoComplete="new-password"
             />
           </div>
+
+          {/* Docent-verklaring (zachte drempel tegen leerling-accounts) */}
+          <label className="flex items-start gap-2.5 cursor-pointer select-none">
+            <input
+              type="checkbox"
+              checked={isEducator}
+              onChange={(e) => setIsEducator(e.target.checked)}
+              disabled={loading}
+              className="mt-0.5 w-4 h-4 accent-accent-500 shrink-0"
+            />
+            <span className="text-sm text-text-main leading-snug">
+              {t('teacher.register.educatorDeclaration')}
+            </span>
+          </label>
 
           <Button
             type="submit"

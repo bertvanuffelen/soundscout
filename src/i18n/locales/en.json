@@ -1203,6 +1203,7 @@
       "passwordRequired": "Please enter your password",
       "nameRequired": "Please enter your name",
       "passwordMinLength": "Password must be at least 6 characters",
+      "educatorRequired": "Confirm that you are a teacher or education professional.",
       "passwordMismatch": "Passwords do not match",
       "genericError": "Something went wrong"
     },
@@ -1236,6 +1237,7 @@
       "requestNew": "Request new link"
     },
     "register": {
+      "educatorDeclaration": "I am a teacher or education professional and use SoundScout for my teaching.",
       "subtitle": "Create Teacher Account",
       "nameLabel": "Name",
       "namePlaceholder": "Ms. Smith",

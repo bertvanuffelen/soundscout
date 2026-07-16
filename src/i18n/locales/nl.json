@@ -1203,6 +1203,7 @@
       "passwordRequired": "Voer je wachtwoord in",
       "nameRequired": "Voer je naam in",
       "passwordMinLength": "Wachtwoord moet minimaal 6 tekens zijn",
+      "educatorRequired": "Bevestig dat je docent of onderwijsprofessional bent.",
       "passwordMismatch": "Wachtwoorden komen niet overeen",
       "genericError": "Er ging iets mis"
     },
@@ -1236,6 +1237,7 @@
       "requestNew": "Nieuwe link aanvragen"
     },
     "register": {
+      "educatorDeclaration": "Ik ben docent of onderwijsprofessional en gebruik SoundScout voor mijn onderwijs.",
       "subtitle": "Docent Account Aanmaken",
       "nameLabel": "Naam",
       "namePlaceholder": "Juf Marieke",

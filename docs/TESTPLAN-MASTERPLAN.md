@@ -12,6 +12,21 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ---
 
+## 🔁 HERTEST-LIJST TESTRONDE 3 (16-7, Notion-punten) — nieuwste eerst
+
+Gefixt/gebouwd n.a.v. je Notion-blok "Test-ronde 2":
+
+1. **Storyboard-verlies-bug**: storyboard-compositie → podium → terug → start → "Verder werken" → studio toont het storyboard nog gewoon (oorzaak: navigatie wiste alle context; geldt ook na "Hoe werkt het" of "Mijn composities").
+2. **"Opslaan & Delen"**: de primaire podium-knop opent nu de nieuwe gecombineerde modal (drie kolommen: Voor jezelf · Voor de klas · Delen met anderen; docent-rij onderaan). Opslaan zit ín de modal als eerste knop. De losse "Delen & Exporteren"-knop is vervallen.
+3. **Studio-terugknop**: heet nu "Terug naar plattegrond" (thema-onafhankelijk).
+4. **/teacher CTA**: uitgelogd "Log in of maak een gratis account"; **ingelogd "Ga naar dashboard"** (dat laatste kun jij testen).
+5. **/teacher leskaarten**: dashboard-stijl (thumbnails + type-badges); zichtbaarheid is nu gecureerd via een allowlist (nu alle vier).
+6. **Registratie**: nieuwe verplichte verklaring "Ik ben docent of onderwijsprofessional…" (zachte drempel tegen leerling-accounts).
+
+Geparkeerd op jouw verzoek: presentatiemodus-vormgeving (aparte sessie), praatplaten-beheer-ontwerp, feedback-/organisatie-tips-content, meer opdrachtkaart-templates — staan als taken in je To Do.
+
+---
+
 ## 🔁 HERTEST-LIJST TESTRONDE 2 (16-7) — begin hier
 
 Alles hieronder is gefixt/gebouwd n.a.v. jouw notities; de details staan als ✅-annotaties bij de betreffende punten. Volgorde is de handigste testvolgorde:
