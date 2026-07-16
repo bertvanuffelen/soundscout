@@ -108,13 +108,16 @@ LET OP:  Ik ben gestopt met testen omdat ik dit op een ander moment wel ga doen.
 
 ### 5c. Landingspagina `/teacher`
 - [-] Alle secties in volgorde: hero + **trust-strip**, **Waarom SoundScout** (4 kaarten), werkvormen, video's, **feedback-cirkel**, **actuele thema's** (De Stad + Winterspelen, met cover + "x locaties · y geluiden"), zo-zet-je-een-klas-op, leskaarten, **FAQ**, kerndoelen, **privacyband**, workshops, footer. ==> Ik wil eigenlijk twee tabbladen die de scherm veranderen met daarin deze volgorde: 1) Aan de slag met SoundScout: hero - werkvormen - video's - actuele thema's - zo-zet-je-een-klas-op, leskaarten - workshops - footer 2) Waarom SoundScout: hero - waarom soundscout - feedback-cirkel - privacy band (let op gebruik lichtere background kleur, nu nogal donker) - FAQ - kerndoelen - workshops - footer
+  - ✅ **Gebouwd (testronde 1)**: twee tabbladen precies in jouw volgorde ("Aan de slag met SoundScout" / "Waarom SoundScout", grote tab-kaarten onder de hero); privacyband is nu een **licht** afgerond paneel (accent-tint i.p.v. donker); de hero-knop "Bekijk de demo" wisselt automatisch naar het juiste tab. Hertest: beide tabs doorlopen.
 - [x] Hero-knop **"Bekijk de demo"** → pagina scrollt naar de videosectie.
 - [x] **FAQ**: elk item klapt open/dicht; de 4 clusters zijn aanwezig; "Wat kost SoundScout?" → "gratis" (géén prijzen/tiers).
 - [x] **Actuele thema's**: klik een themakaart → app opent met `?theme=<id>`. ==> de app opent met thema id, maar als ik dan bijv. op vrij componeren klik, dan kan ik alsnog ander thema kiezen
+  - ✅ **Verbeterd (testronde 1)**: het meegekomen thema staat nu **vooraan in de thema-kiezer met een "Gekozen thema"-badge** (accent-rand). Keuzevrijheid blijft — bewust: een leerling die via een deeplink binnenkomt mag nog wisselen. Wil je het thema liever hard vastzetten, zeg het dan.
 - [x] Privacyband-knop **"Lees hoe we met gegevens omgaan"** → PrivacyModal opent.
 - [x] Footer: **Privacy** (modal), **Voor docenten** (→ dashboard), **Contact** (→ feedbackformulier/FeedbackModal).
 - [x] Mobiel (smal venster/telefoon): secties stapelen netjes, geen horizontale scroll.
 - [?] Startscherm: **seizoenschip** verschijnt alleen als een publiek thema nú in zijn venster valt (met de huidige thema's zonder venster: chip is afwezig — dat is correct). Om te tésten kun je tijdelijk een venster op een thema zetten en herladen. ==> Ik weet niet wat ik moet doen!
+  - ✅ **Jij hoeft hier niets (testronde 1)**: de seizoenslogica is volledig gedekt door unit-tests (`season.test.ts` — binnen/buiten venster, jaargrens, halve vensters). Omdat de huidige thema's geen venster hebben, is "geen chip" nu het correcte gedrag. Zodra het eerste seizoensthema (bv. herfst) een venster krijgt, zie je de chip vanzelf verschijnen — afgevinkt.
 
 ### 5d. SEO na deploy
 - [ ] Google Rich Results Test op `/teacher`: **FAQPage** met 10 vragen wordt herkend, naast WebPage.

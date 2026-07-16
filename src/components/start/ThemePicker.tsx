@@ -17,14 +17,24 @@ interface ThemePickerProps {
 export function ThemePicker({ onSelectTheme, isLoading = false }: ThemePickerProps) {
   const themes = getPublicThemes();
 
+  // Deeplink (?theme=, bv. via een themakaart op /teacher): toon dat thema
+  // vooraan mét een "gekozen thema"-badge — de deeplink heeft zo zichtbaar
+  // effect, maar de leerling houdt keuzevrijheid (testronde 1, 5c).
+  const urlThemeId = new URLSearchParams(window.location.search).get('theme');
+  const preselectedId = themes.some((th) => th.id === urlThemeId) ? urlThemeId : null;
+  const sortedThemes = preselectedId
+    ? [...themes].sort((a, b) => (a.id === preselectedId ? -1 : b.id === preselectedId ? 1 : 0))
+    : themes;
+
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-      {themes.map((theme) => (
+      {sortedThemes.map((theme) => (
         <ThemeCard
           key={theme.id}
           theme={theme}
           onSelect={() => onSelectTheme(theme.id)}
           isLoading={isLoading}
+          preselected={theme.id === preselectedId}
         />
       ))}
     </div>
@@ -35,17 +45,25 @@ interface ThemeCardProps {
   theme: ThemeConfig;
   onSelect: () => void;
   isLoading: boolean;
+  preselected?: boolean;
 }
 
-function ThemeCard({ theme, onSelect, isLoading }: ThemeCardProps) {
+function ThemeCard({ theme, onSelect, isLoading, preselected = false }: ThemeCardProps) {
   const { t } = useTranslation();
 
   return (
     <button
       onClick={onSelect}
       disabled={isLoading}
-      className="group relative bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-left"
+      className={`group relative bg-white rounded-xl overflow-hidden shadow-md hover:shadow-xl transition-all duration-200 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed text-left ${
+        preselected ? 'ring-2 ring-accent-500' : ''
+      }`}
     >
+      {preselected && (
+        <span className="absolute top-2 right-2 z-10 bg-accent-500 text-white text-xs font-bold px-2.5 py-1 rounded-full shadow-sm">
+          {t('themeSelection.preselected')}
+        </span>
+      )}
       {/* Map preview image */}
       <div className="aspect-video w-full overflow-hidden bg-neutral-100">
         <img

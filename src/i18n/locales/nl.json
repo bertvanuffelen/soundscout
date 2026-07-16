@@ -39,7 +39,8 @@
   "themeSelection": {
     "title": "Kies je wereld",
     "subtitle": "In welke wereld wil je geluiden ontdekken?",
-    "select": "Kiezen"
+    "select": "Kiezen",
+    "preselected": "Gekozen thema"
   },
   "themes": {
     "basis": {
@@ -1461,6 +1462,10 @@
     "emptyDescription": "Er zijn nog geen composities op deze praatplaat geplaatst."
   },
   "teacherLanding": {
+    "tabs": {
+      "getStarted": "Aan de slag met SoundScout",
+      "why": "Waarom SoundScout"
+    },
     "hero": {
       "eyebrow": "Compositietool voor het basisonderwijs",
       "title": "SoundScout",

@@ -13,14 +13,15 @@
  * 1) via lokale React-state.
  */
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft,
   Lock, GraduationCap, BadgeCheck, MonitorPlay, MessagesSquare, ClipboardList,
-  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, type LucideIcon,
+  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, Rocket, type LucideIcon,
 } from 'lucide-react';
 import { Button, Card } from '../components/ui';
+import { SegmentedTabs } from '../components/teacher/common/SegmentedTabs';
 import { cn } from '../utils/cn';
 import { ComposePreview } from '../components/compose/ComposePreview';
 import { LandingVideo } from '../components/teacher-landing/LandingVideo';
@@ -47,12 +48,34 @@ function navigateToTeacherApp(params?: { lesson?: string; tab?: string }) {
   window.location.href = url.toString();
 }
 
+/** Twee tabbladen (testronde 1, wens Bert): "Aan de slag" = praktisch
+ *  (werkvormen, video's, thema's, klas opzetten, leskaarten); "Waarom
+ *  SoundScout" = overtuigend (usp's, feedback-cirkel, privacy, FAQ,
+ *  kerndoelen). Hero, workshops-band en footer zijn gedeeld. */
+type LandingTab = 'get-started' | 'why';
+
 export default function TeacherLandingPage() {
   const { t } = useTranslation();
   const [activeVariant, setActiveVariant] = useState<ComposeVariant>('praatplaat');
+  const [landingTab, setLandingTab] = useState<LandingTab>('get-started');
+  const tabsRef = useRef<HTMLDivElement>(null);
   // Privacy + contact (hergebruik bestaande modals — geen dubbele content)
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [showContact, setShowContact] = useState(false);
+
+  const handleTabChange = (tab: LandingTab) => {
+    setLandingTab(tab);
+    // Houd de tab-balk in beeld bij het wisselen (anders sta je ineens
+    // halverwege een andere pagina-inhoud)
+    requestAnimationFrame(() => tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
+  };
+
+  // Hero-knop "Bekijk de demo": de video's staan op het "Aan de slag"-tab —
+  // eerst (zo nodig) wisselen, daarna naar de sectie scrollen.
+  const handleShowDemo = () => {
+    setLandingTab('get-started');
+    requestAnimationFrame(() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' }));
+  };
 
   return (
     <div className="min-h-screen bg-bg-app text-text-main">
@@ -67,18 +90,38 @@ export default function TeacherLandingPage() {
         </button>
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col gap-16 sm:gap-24">
-        <HeroSection activeVariant={activeVariant} />
-        <UspSection />
-        <ComposeSection activeVariant={activeVariant} onSelect={setActiveVariant} />
-        <VideosSection />
-        <FeedbackCycleSection />
-        <ThemesSection />
-        <StepsSection />
-        <LessonsSection />
-        <FaqSection />
-        <CurriculumSection />
+        <HeroSection activeVariant={activeVariant} onShowDemo={handleShowDemo} />
+
+        <div ref={tabsRef} className="scroll-mt-6">
+          <SegmentedTabs<LandingTab>
+            variant="large"
+            value={landingTab}
+            onChange={handleTabChange}
+            tabs={[
+              { id: 'get-started', label: t('teacherLanding.tabs.getStarted'), icon: Rocket },
+              { id: 'why', label: t('teacherLanding.tabs.why'), icon: Sparkles },
+            ]}
+          />
+        </div>
+
+        {landingTab === 'get-started' ? (
+          <>
+            <ComposeSection activeVariant={activeVariant} onSelect={setActiveVariant} />
+            <VideosSection />
+            <ThemesSection />
+            <StepsSection />
+            <LessonsSection />
+          </>
+        ) : (
+          <>
+            <UspSection />
+            <FeedbackCycleSection />
+            <PrivacyBand onOpenPrivacy={() => setShowPrivacy(true)} />
+            <FaqSection />
+            <CurriculumSection />
+          </>
+        )}
       </div>
-      <PrivacyBand onOpenPrivacy={() => setShowPrivacy(true)} />
       <WorkshopsBand />
       <LandingFooter onOpenPrivacy={() => setShowPrivacy(true)} onOpenContact={() => setShowContact(true)} />
 
@@ -118,7 +161,7 @@ function LandingFooter({ onOpenPrivacy, onOpenContact }: { onOpenPrivacy: () => 
 }
 
 // --- Sectie 1: Hero ---
-function HeroSection({ activeVariant }: { activeVariant: ComposeVariant }) {
+function HeroSection({ activeVariant, onShowDemo }: { activeVariant: ComposeVariant; onShowDemo: () => void }) {
   const { t } = useTranslation();
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 items-center">
@@ -145,7 +188,7 @@ function HeroSection({ activeVariant }: { activeVariant: ComposeVariant }) {
             variant="secondary"
             size="lg"
             className="rounded-full w-full sm:w-auto"
-            onClick={() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' })}
+            onClick={onShowDemo}
           >
             <Play className="w-4 h-4 mr-2" />
             {t('teacherLanding.hero.ctaSecondary')}
@@ -354,28 +397,31 @@ function FaqSection() {
   );
 }
 
-// --- Band: Privacy als uitgangspunt (opent bestaande PrivacyModal) ---
+// --- Paneel: Privacy als uitgangspunt (opent bestaande PrivacyModal) ---
+// Licht paneel binnen de content-flow (testronde 1: de donkere band viel
+// te zwaar); staat op het "Waarom SoundScout"-tab tussen feedback-cirkel
+// en FAQ.
 function PrivacyBand({ onOpenPrivacy }: { onOpenPrivacy: () => void }) {
   const { t } = useTranslation();
   const points = ['point1', 'point2', 'point3'] as const;
   return (
-    <section className="bg-brand-900 text-text-inverse mt-16 sm:mt-24">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-12 sm:py-14 flex flex-col items-center text-center gap-5">
-        <h2 className="inline-flex items-center gap-2 text-xl sm:text-2xl font-extrabold tracking-tight">
-          <ShieldCheck className="w-6 h-6 text-accent-400" />
+    <section className="bg-accent-50 border border-accent-100 rounded-3xl">
+      <div className="px-4 sm:px-6 py-10 sm:py-12 flex flex-col items-center text-center gap-5">
+        <h2 className="inline-flex items-center gap-2 text-xl sm:text-2xl font-extrabold tracking-tight text-text-main">
+          <ShieldCheck className="w-6 h-6 text-accent-600" />
           {t('teacherLanding.privacyBand.title')}
         </h2>
         <div className="flex flex-wrap justify-center gap-x-6 gap-y-2">
           {points.map((point) => (
-            <span key={point} className="inline-flex items-center gap-1.5 text-sm sm:text-base text-brand-100">
-              <BadgeCheck className="w-4 h-4 text-accent-400 shrink-0" />
+            <span key={point} className="inline-flex items-center gap-1.5 text-sm sm:text-base text-text-muted">
+              <BadgeCheck className="w-4 h-4 text-accent-600 shrink-0" />
               {t(`teacherLanding.privacyBand.${point}`)}
             </span>
           ))}
         </div>
         <button
           onClick={onOpenPrivacy}
-          className="text-sm text-brand-200 hover:text-white underline underline-offset-2 transition-colors"
+          className="text-sm text-text-muted hover:text-text-main underline underline-offset-2 transition-colors"
         >
           {t('teacherLanding.privacyBand.link')}
         </button>

@@ -39,7 +39,8 @@
   "themeSelection": {
     "title": "Choose your world",
     "subtitle": "Which world do you want to explore?",
-    "select": "Select"
+    "select": "Select",
+    "preselected": "Chosen theme"
   },
   "themes": {
     "basis": {
@@ -1461,6 +1462,10 @@
     "emptyDescription": "No compositions have been placed on this sound map yet."
   },
   "teacherLanding": {
+    "tabs": {
+      "getStarted": "Get started with SoundScout",
+      "why": "Why SoundScout"
+    },
     "hero": {
       "eyebrow": "A composition tool for primary education",
       "title": "SoundScout",
