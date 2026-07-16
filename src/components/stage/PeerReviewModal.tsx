@@ -8,10 +8,10 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play, Square, Loader2, Music, PartyPopper, Send, Star } from 'lucide-react';
+import { Play, Square, Loader2, Music, PartyPopper, Send, Star, DoorClosed } from 'lucide-react';
 import { Modal, Button } from '../ui';
 import { audioService } from '../../services/AudioService';
-import { getPeerReviewBatch, submitPeerFeedback, type PeerReviewItem } from '../../lib/peerFeedback';
+import { getPeerReviewBatch, submitPeerFeedback, PeerFeedbackError, type PeerReviewItem } from '../../lib/peerFeedback';
 import { logger } from '../../utils/logger';
 import { cn } from '../../utils/cn';
 
@@ -23,7 +23,7 @@ interface PeerReviewModalProps {
   chips: string[];
 }
 
-type Phase = 'loading' | 'empty' | 'reviewing' | 'done' | 'error';
+type Phase = 'loading' | 'empty' | 'reviewing' | 'done' | 'error' | 'blocked';
 type AudioPhase = 'loading' | 'ready' | 'playing';
 
 export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, chips }: PeerReviewModalProps) {
@@ -35,6 +35,11 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
   const [ratings, setRatings] = useState<Record<string, number>>({});
   const [audioPhase, setAudioPhase] = useState<AudioPhase>('loading');
   const [isSending, setIsSending] = useState(false);
+  // Eerlijke foutafhandeling (testronde 2): tijdelijke fout → inline melding
+  // met retry; definitieve weigering (ronde gesloten / max bereikt) → eigen
+  // 'blocked'-scherm. Nooit meer nep-succes met confetti.
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const [blockedMessage, setBlockedMessage] = useState<string | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const current: PeerReviewItem | undefined = items[index];
@@ -125,12 +130,23 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
   const handleSendAndNext = useCallback(async () => {
     if (!current || ratedCount === 0) return;
     setIsSending(true);
+    setSubmitError(null);
     audioService.stop();
     try {
       await submitPeerFeedback(ownSubmissionId, current.submissionId, ratings);
     } catch (err) {
-      // Niet blokkeren: beoordeling is nice-to-have; door naar de volgende
       logger.warn('Peer-beoordeling versturen mislukt', err);
+      setIsSending(false);
+      // Definitieve serverweigering: verder proberen is zinloos — toon een
+      // eerlijk "geblokkeerd"-scherm i.p.v. nep-succes (testronde 2, bug 6d)
+      if (err instanceof PeerFeedbackError && (err.reason === 'windowClosed' || err.reason === 'capReached')) {
+        setBlockedMessage(err.message);
+        setPhase('blocked');
+        return;
+      }
+      // Tijdelijke fout: sterren blijven staan, leerling kan het opnieuw proberen
+      setSubmitError(err instanceof Error && err.message ? err.message : t('peerReview.submitError'));
+      return;
     }
     setIsSending(false);
     setRatings({});
@@ -139,7 +155,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
     } else {
       setPhase('done');
     }
-  }, [current, ratings, ratedCount, ownSubmissionId, index, items.length]);
+  }, [current, ratings, ratedCount, ownSubmissionId, index, items.length, t]);
 
   const handleClose = useCallback(() => {
     audioService.stop();
@@ -242,6 +258,12 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
             })}
           </div>
 
+          {submitError && (
+            <p role="alert" className="text-error-600 text-sm text-center mb-3">
+              {submitError}
+            </p>
+          )}
+
           <Button
             variant="primary"
             onClick={handleSendAndNext}
@@ -250,8 +272,19 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
             className="w-full"
           >
             <Send size={16} className="mr-2" />
-            {index + 1 < items.length ? t('peerReview.sendAndNext') : t('peerReview.sendAndFinish')}
+            {submitError
+              ? t('peerReview.retry')
+              : index + 1 < items.length ? t('peerReview.sendAndNext') : t('peerReview.sendAndFinish')}
           </Button>
+        </div>
+      )}
+
+      {phase === 'blocked' && (
+        <div className="py-8 text-center">
+          <DoorClosed className="w-12 h-12 text-warning-500 mx-auto mb-3" />
+          <p className="text-text-main font-semibold mb-1">{t('peerReview.blockedTitle')}</p>
+          <p className="text-text-muted text-sm mb-5">{blockedMessage}</p>
+          <Button variant="secondary" onClick={handleClose}>{t('common.close')}</Button>
         </div>
       )}
 

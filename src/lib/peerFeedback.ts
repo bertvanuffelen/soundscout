@@ -24,6 +24,25 @@ export interface PeerReviewItem {
 }
 
 /**
+ * Getypeerde fout bij het versturen van peer-feedback, zodat de UI kan
+ * onderscheiden tussen "ronde gesloten"/"maximum bereikt" (definitief,
+ * geen retry) en tijdelijke fouten (retry zinvol). Testronde 2: deze
+ * fouten werden voorheen stilzwijgend geslikt — de leerling zag altijd
+ * het "klaar"-scherm, ook als er niets was opgeslagen.
+ */
+export type PeerFeedbackErrorReason = 'rateLimit' | 'capReached' | 'windowClosed' | 'generic';
+
+export class PeerFeedbackError extends Error {
+  readonly reason: PeerFeedbackErrorReason;
+
+  constructor(message: string, reason: PeerFeedbackErrorReason) {
+    super(message);
+    this.name = 'PeerFeedbackError';
+    this.reason = reason;
+  }
+}
+
+/**
  * Haal 3 willekeurige, nog niet beoordeelde, anonieme klasgenoot-inzendingen op.
  * De eigen submission-UUID geldt als inleverbewijs (consistent met het code-model).
  */
@@ -101,20 +120,20 @@ export async function submitPeerFeedback(
       );
       if (!v1Error) return;
       logger.error('submit_peer_feedback error:', sanitizeError(v1Error));
-      throw new Error(i18n.t('peerReview.submitError'));
+      throw new PeerFeedbackError(i18n.t('peerReview.submitError'), 'generic');
     }
 
     logger.error('submit_peer_feedback_v2 error:', sanitizeError(error));
     if (matchesError(error, ERR_RATE_LIMIT)) {
-      throw new Error(i18n.t('submissions.rateLimitError'));
+      throw new PeerFeedbackError(i18n.t('submissions.rateLimitError'), 'rateLimit');
     }
     if (/Maximum van 3/.test(error.message ?? '')) {
-      throw new Error(i18n.t('peerReview.capReached'));
+      throw new PeerFeedbackError(i18n.t('peerReview.capReached'), 'capReached');
     }
     if (/gesloten/.test(error.message ?? '')) {
-      throw new Error(i18n.t('peerReview.windowClosed'));
+      throw new PeerFeedbackError(i18n.t('peerReview.windowClosed'), 'windowClosed');
     }
-    throw new Error(i18n.t('peerReview.submitError'));
+    throw new PeerFeedbackError(i18n.t('peerReview.submitError'), 'generic');
   }
 }
 

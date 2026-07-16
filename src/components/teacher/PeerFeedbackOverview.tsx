@@ -54,6 +54,11 @@ export function PeerFeedbackOverview({ isOpen, onClose, submissions, onPresentTo
   const { t } = useTranslation();
   const [rows, setRows] = useState<PeerFeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
+  // Fout en "echt leeg" gescheiden houden (testronde 2, bug 6d): een
+  // mislukte read werd voorheen als lege staat getoond — de docent kon
+  // niet zien dat er iets mis was.
+  const [loadError, setLoadError] = useState(false);
+  const [reloadKey, setReloadKey] = useState(0);
   const [tab, setTab] = useState<'received' | 'given'>('received');
   const [expandedId, setExpandedId] = useState<string | null>(null);
 
@@ -63,6 +68,7 @@ export function PeerFeedbackOverview({ isOpen, onClose, submissions, onPresentTo
     let cancelled = false;
     (async () => {
       setLoading(true);
+      setLoadError(false);
       try {
         const ids = submissions.map((s) => s.id);
         if (ids.length === 0) {
@@ -78,18 +84,22 @@ export function PeerFeedbackOverview({ isOpen, onClose, submissions, onPresentTo
         if (error) {
           logger.warn('PeerFeedbackOverview: laden mislukt', error);
           setRows([]);
+          setLoadError(true);
           return;
         }
         setRows((data ?? []) as PeerFeedbackRow[]);
       } catch (err) {
         logger.warn('PeerFeedbackOverview: laden mislukt', err);
-        if (!cancelled) setRows([]);
+        if (!cancelled) {
+          setRows([]);
+          setLoadError(true);
+        }
       } finally {
         if (!cancelled) setLoading(false);
       }
     })();
     return () => { cancelled = true; };
-  }, [isOpen, submissions]);
+  }, [isOpen, submissions, reloadKey]);
 
   const nameById = useMemo(() => {
     const map = new Map<string, { student: string; composition: string }>();
@@ -162,6 +172,13 @@ export function PeerFeedbackOverview({ isOpen, onClose, submissions, onPresentTo
       {loading ? (
         <div className="py-10 text-center">
           <Loader2 className="w-8 h-8 text-accent-500 mx-auto animate-spin" />
+        </div>
+      ) : loadError ? (
+        <div className="py-8 text-center">
+          <p className="text-error-600 font-medium mb-4">{t('teacher.peerOverview.loadError')}</p>
+          <Button variant="secondary" onClick={() => setReloadKey((k) => k + 1)}>
+            {t('common.retry')}
+          </Button>
         </div>
       ) : rows.length === 0 ? (
         <div className="py-8 text-center">

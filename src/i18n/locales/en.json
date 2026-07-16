@@ -852,6 +852,8 @@
     "emptyHint": "Maybe no one else has submitted yet, you already reviewed 3 classmates, or the feedback round has closed.",
     "loadError": "Could not load compositions. Please try again later.",
     "submitError": "Could not send your compliment.",
+    "retry": "Try again",
+    "blockedTitle": "Your review was not saved",
     "progress": "Composition {{current}} of {{total}}",
     "anonymous": "A classmate's composition",
     "anonymousHint": "You don't know whose this is — listen carefully and choose what you think of it.",
@@ -1326,7 +1328,8 @@
     "peerOverview": {
       "title": "Feedback overview",
       "openButton": "Feedback overview",
-      "empty": "No peer reviews yet. Enable \"Classmates listen\" on the active assignment.",
+      "empty": "No peer reviews yet. Enable \"Peer feedback\" on the active assignment.",
+      "loadError": "Could not load peer feedback. Check your connection and try again.",
       "top3Title": "Top 3 — chosen by the class",
       "presentTop3": "Present top 3",
       "starsTotal": "{{stars}} stars · {{raters}} reviewers",
@@ -1767,7 +1770,7 @@
         "feedback": "Feedback",
         "improve": "Improve"
       },
-      "description": "Students submit with the class code and automatically receive a personal save code. You give feedback from your dashboard; with \"classmates listen\" students hear each other's work anonymously and give compliments using the chips you configure."
+      "description": "Students submit with the class code and automatically receive a personal save code. You give feedback from your dashboard; with \"Peer feedback\" students hear each other's work anonymously and give compliments using the chips you configure."
     },
     "themes": {
       "title": "Current themes",

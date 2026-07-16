@@ -852,6 +852,8 @@
     "emptyHint": "Misschien heeft nog niemand anders ingeleverd, heb je al 3 klasgenoten beoordeeld, of is de feedbackronde gesloten.",
     "loadError": "Kon geen composities ophalen. Probeer het later opnieuw.",
     "submitError": "Kon je compliment niet versturen.",
+    "retry": "Opnieuw proberen",
+    "blockedTitle": "Je beoordeling is niet opgeslagen",
     "progress": "Compositie {{current}} van {{total}}",
     "anonymous": "Compositie van een klasgenoot",
     "anonymousHint": "Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt.",
@@ -1326,7 +1328,8 @@
     "peerOverview": {
       "title": "Feedback-overzicht",
       "openButton": "Feedback-overzicht",
-      "empty": "Nog geen beoordelingen van klasgenoten. Zet \"Klasgenoten luisteren\" aan bij de actieve opdracht.",
+      "empty": "Nog geen beoordelingen van klasgenoten. Zet \"Peer feedback\" aan bij de actieve opdracht.",
+      "loadError": "Kon de peer-feedback niet laden. Controleer je verbinding en probeer het opnieuw.",
       "top3Title": "Top 3 — door de klas gekozen",
       "presentTop3": "Presenteer top 3",
       "starsTotal": "{{stars}} sterren · {{raters}} beoordelaars",
@@ -1767,7 +1770,7 @@
         "feedback": "Feedback",
         "improve": "Verbeteren"
       },
-      "description": "Leerlingen leveren in met de klascode en krijgen automatisch een persoonlijke bewaarcode. Jij geeft feedback vanuit je dashboard; met \"klasgenoten luisteren\" beluisteren leerlingen elkaars werk anoniem en geven ze complimenten met de chips die jij instelt."
+      "description": "Leerlingen leveren in met de klascode en krijgen automatisch een persoonlijke bewaarcode. Jij geeft feedback vanuit je dashboard; met \"Peer feedback\" beluisteren leerlingen elkaars werk anoniem en geven ze complimenten met de chips die jij instelt."
     },
     "themes": {
       "title": "Actuele thema's",
