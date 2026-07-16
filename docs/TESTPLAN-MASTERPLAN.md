@@ -3,10 +3,12 @@
 Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-weken` is gebouwd. Af te vinken vóór merge naar `main` + deploy.
 
 **Vooraf:**
-- Migraties **025 → 026 → 027** zijn in Supabase gedraaid ✅ (bevestigd door Bert).
+- Migraties **025 → 026 → 027 → 028** zijn in Supabase gedraaid ✅ (bevestigd door Bert).
 - Lokaal draaien: `cd .claude/worktrees/masterplan-6-weken && npm run dev` → open het getoonde adres.
 - Twee browserprofielen/apparaten handig voor de klas- en peer-flows (docent in de één, "leerling" incognito in de ander).
-- Automatische gate is al groen: `npx tsc -b --noEmit`, `npm run test:run` (252 tests), `npm run lint`.
+- Automatische gate is al groen: `npx tsc -b --noEmit`, `npm run test:run` (263 tests), `npm run lint` (baseline 31, 0 nieuw).
+
+**Resultaten noteren:** vink af met `- [x]`. Werkt iets niet? Zet er een regel onder met `⚠️` + wat je zag — dan pak ik die daarna gericht op.
 
 ---
 
@@ -171,6 +173,14 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ### 7e. Export-tempo (latente bug gedicht)
 - [ ] MP3-export klinkt identiek aan vóór deze ronde (tempo 120 — de fix is onzichtbaar maar de export leest nu het compositie-tempo).
+
+### 7f. Landscape-hint (UX-LANDSCAPE) — **alleen op iPad/telefoon**
+> Op desktop verschijnt deze banner bewust nooit (geen touch) — niet testbaar in een smal browservenster.
+- [ ] iPad/telefoon **in portret** → ga naar de studio: dunne banner bovenaan met draai-icoon: "Draai je tablet of telefoon een kwartslag…".
+- [ ] Draai naar **liggend** → banner verdwijnt; terug naar portret → banner is er weer.
+- [ ] Klik het **kruisje** → banner weg; app herladen in portret → blijft weg (eenmalig).
+- [ ] Banner verschijnt **niet** op het startscherm en niet in het docent-dashboard (alleen studio/kaart/locatie/podium).
+- [ ] Taal: in EN toont de banner de Engelse tekst.
 
 ## Regressie-let-op (waar bugs zich kunnen verstoppen)
 - Klas-inzending zonder migratie 026 zou terugvallen op de oude RPC (geen bewaarcode) — nu migraties gedraaid zijn: **elke** inzending hoort een code te geven. Als een code ontbreekt: check of 026 echt geslaagd is.
