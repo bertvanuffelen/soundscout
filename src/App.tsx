@@ -208,7 +208,11 @@ function AppContent() {
     if (params.get('screen') === 'reset-password') {
       const url = new URL(window.location.href);
       url.searchParams.delete('screen');
-      window.history.replaceState({}, '', url.pathname + url.search);
+      // LET OP: de #hash MOET blijven staan — daar zit het Supabase
+      // recovery-token in, en de (lazy) client leest dat pas ná dit effect.
+      // Zonder hash → geen sessie → altijd "Link verlopen" (testronde 1).
+      // Supabase schoont de hash zelf op na het verwerken.
+      window.history.replaceState({}, '', url.pathname + url.search + url.hash);
     }
   }, [goToTeacher]);
 

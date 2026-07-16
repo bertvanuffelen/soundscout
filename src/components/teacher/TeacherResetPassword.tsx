@@ -23,7 +23,7 @@ interface TeacherResetPasswordProps {
 
 export function TeacherResetPassword({ onDone, onRequestNew }: TeacherResetPasswordProps) {
   const { t } = useTranslation();
-  const { user } = useAuth();
+  const { user, loading: authLoading } = useAuth();
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [loading, setLoading] = useState(false);
@@ -54,6 +54,16 @@ export function TeacherResetPassword({ onDone, onRequestNew }: TeacherResetPassw
       setLoading(false);
     }
   };
+
+  // Auth initialiseert nog (lazy Supabase-client verwerkt het recovery-token
+  // uit de URL) — toon een neutrale laadstatus, geen voorbarig "verlopen"
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
+        <div className="text-text-muted text-lg font-medium">{t('common.loading')}</div>
+      </div>
+    );
+  }
 
   // Geen recovery-sessie: link is verlopen of ongeldig
   if (!user) {

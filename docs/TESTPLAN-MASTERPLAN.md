@@ -21,7 +21,8 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 ### 1a. Wachtwoord-reset (was kapot)
 - [x] `/teacher` → dashboard-CTA → login → "Wachtwoord vergeten" → e-mail invullen → mail ontvangen.
 - [-] Klik de reset-link → je landt op het **reset-wachtwoord-scherm** (niet op een dood scherm). ==> Kon ik niet testen omdat hij naar https://soundscout.techindeles.nl/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb= ging 
-  - 🔧 **Antwoord (testronde 1)**: de app-code is goed (stuurt `redirectTo` = het adres waar je op dat moment draait), maar **localhost staat niet in de Supabase-allowlist** → Supabase valt terug op de Site URL = de oude live-site, die het reset-scherm nog niet heeft. **Bert-actie**: Supabase dashboard → Authentication → URL Configuration → voeg toe aan *Redirect URLs*: `http://localhost:5199/*` en `http://localhost:5173/*` (en bij deploy: `https://soundscout.nl/*`). Daarna een VERSE reset-mail aanvragen (oude links zijn verbruikt/verlopen) en direct klikken.
+  - 🔧 **Antwoord (testronde 1)**: de app-code is goed (stuurt `redirectTo` = het adres waar je op dat moment draait), maar **localhost staat niet in de Supabase-allowlist** → Supabase valt terug op de Site URL = de oude live-site, die het reset-scherm nog niet heeft. **Bert-actie**: Supabase dashboard → Authentication → URL Configuration → voeg toe aan *Redirect URLs*: `http://localhost:5199/*` en `http://localhost:5173/*` (en bij deploy: `https://soundscout.nl/*`). Daarna een VERSE reset-mail aanvragen (oude links zijn verbruikt/verlopen) en direct klikken. ✅ Gedaan door Bert (16-7).
+  - ✅ **Tweede oorzaak gevonden en verholpen (16-7, na "telkens Link verlopen")**: de app veegde bij het opschonen van de URL óók de `#hash` weg — en dáár zit het Supabase-recovery-token in. Omdat de Supabase-client lazy laadt, was het token al weg vóór het verwerkt werd → altijd "Link verlopen". Fix: hash blijft staan bij de URL-opschoning + het scherm wacht nu op de auth-init. **Hertest: vraag een vérse reset-mail aan** (elke eerder geklikte link is verbruikt) en klik direct → je hoort nu het nieuwe-wachtwoord-formulier te zien.
 - [?] Nieuw wachtwoord zetten → melding van succes → inloggen met het nieuwe wachtwoord lukt.
 - [?] Directe check op de UI-staten zonder mail: open `?screen=reset-password` → toont "Link verlopen" → knop "Nieuwe link aanvragen" opent het vergeten-formulier.
 - [?] Login: "verificatiemail opnieuw sturen" verschijnt bij een niet-bevestigd account.
@@ -88,13 +89,14 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 - [?] Concept blijft bewaard na paginaherlaad (localStorage); "Nieuw concept" wist het.
 - [?] Tab **Locatie-editor** werkt nog als vanouds (hotspots plaatsen).
 - [?] Seizoensrooster: check dat een thema met een venster buiten dat venster **niet** in de thema-kiezer staat, maar via `?theme=<id>` wél laadt.
+LET OP:  Ik ben gestopt met testen omdat ik dit op een ander moment wel ga doen. Ik heb niet de juiste materialen hiervoor, waardoor dit wat lastig te testen is. Dus deze parkeer ik even. 
 
 ## 5. Week 5 — Peer-feedback + landingspagina
 
 ### 5a. Peer-feedback — docent
-- [ ] Klas → actieve opdracht → blok **"Peer feedback"** (heette t/m testronde 1 "Klasgenoten luisteren") → toggle **aan**.
-- [ ] Kies een **ingebouwde feedbackkaart** (bv. "Ritme & puls"); de chips verschijnen als preview.
-- [ ] Maak een **eigen kaart**: titel + 2–8 complimenten (één per regel) → opslaan → wordt automatisch geselecteerd.
+- [x] Klas → actieve opdracht → blok **"Peer feedback"** (heette t/m testronde 1 "Klasgenoten luisteren") → toggle **aan**.
+- [x] Kies een **ingebouwde feedbackkaart** (bv. "Ritme & puls"); de chips verschijnen als preview.
+- [x] Maak een **eigen kaart**: titel + 2–8 complimenten (één per regel) → opslaan → wordt automatisch geselecteerd.
 
 ### 5b. Peer-feedback — leerling(en)
 - [ ] Zorg dat **≥2 leerlingen** (twee profielen) hebben ingeleverd in dezelfde klas/opdracht.
@@ -105,14 +107,14 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 - [ ] Uit-zetten: docent zet de toggle uit → nieuwe leerling ziet de knop niet meer.
 
 ### 5c. Landingspagina `/teacher`
-- [ ] Alle secties in volgorde: hero + **trust-strip**, **Waarom SoundScout** (4 kaarten), werkvormen, video's, **feedback-cirkel**, **actuele thema's** (De Stad + Winterspelen, met cover + "x locaties · y geluiden"), zo-zet-je-een-klas-op, leskaarten, **FAQ**, kerndoelen, **privacyband**, workshops, footer.
-- [ ] Hero-knop **"Bekijk de demo"** → pagina scrollt naar de videosectie.
-- [ ] **FAQ**: elk item klapt open/dicht; de 4 clusters zijn aanwezig; "Wat kost SoundScout?" → "gratis" (géén prijzen/tiers).
-- [ ] **Actuele thema's**: klik een themakaart → app opent met `?theme=<id>`.
-- [ ] Privacyband-knop **"Lees hoe we met gegevens omgaan"** → PrivacyModal opent.
-- [ ] Footer: **Privacy** (modal), **Voor docenten** (→ dashboard), **Contact** (→ feedbackformulier/FeedbackModal).
-- [ ] Mobiel (smal venster/telefoon): secties stapelen netjes, geen horizontale scroll.
-- [ ] Startscherm: **seizoenschip** verschijnt alleen als een publiek thema nú in zijn venster valt (met de huidige thema's zonder venster: chip is afwezig — dat is correct). Om te tésten kun je tijdelijk een venster op een thema zetten en herladen.
+- [-] Alle secties in volgorde: hero + **trust-strip**, **Waarom SoundScout** (4 kaarten), werkvormen, video's, **feedback-cirkel**, **actuele thema's** (De Stad + Winterspelen, met cover + "x locaties · y geluiden"), zo-zet-je-een-klas-op, leskaarten, **FAQ**, kerndoelen, **privacyband**, workshops, footer. ==> Ik wil eigenlijk twee tabbladen die de scherm veranderen met daarin deze volgorde: 1) Aan de slag met SoundScout: hero - werkvormen - video's - actuele thema's - zo-zet-je-een-klas-op, leskaarten - workshops - footer 2) Waarom SoundScout: hero - waarom soundscout - feedback-cirkel - privacy band (let op gebruik lichtere background kleur, nu nogal donker) - FAQ - kerndoelen - workshops - footer
+- [x] Hero-knop **"Bekijk de demo"** → pagina scrollt naar de videosectie.
+- [x] **FAQ**: elk item klapt open/dicht; de 4 clusters zijn aanwezig; "Wat kost SoundScout?" → "gratis" (géén prijzen/tiers).
+- [x] **Actuele thema's**: klik een themakaart → app opent met `?theme=<id>`. ==> de app opent met thema id, maar als ik dan bijv. op vrij componeren klik, dan kan ik alsnog ander thema kiezen
+- [x] Privacyband-knop **"Lees hoe we met gegevens omgaan"** → PrivacyModal opent.
+- [x] Footer: **Privacy** (modal), **Voor docenten** (→ dashboard), **Contact** (→ feedbackformulier/FeedbackModal).
+- [x] Mobiel (smal venster/telefoon): secties stapelen netjes, geen horizontale scroll.
+- [?] Startscherm: **seizoenschip** verschijnt alleen als een publiek thema nú in zijn venster valt (met de huidige thema's zonder venster: chip is afwezig — dat is correct). Om te tésten kun je tijdelijk een venster op een thema zetten en herladen. ==> Ik weet niet wat ik moet doen!
 
 ### 5d. SEO na deploy
 - [ ] Google Rich Results Test op `/teacher`: **FAQPage** met 10 vragen wordt herkend, naast WebPage.
