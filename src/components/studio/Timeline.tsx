@@ -1,13 +1,14 @@
 import { memo, useRef, useEffect, useCallback, useMemo, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles, MousePointerClick, X } from 'lucide-react';
+import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles } from 'lucide-react';
 import type { Track as TrackType, Sample, Clip, Section, ClipEffects } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
 import { SectionBar } from './SectionBar';
 import { VolumePopover } from './VolumePopover';
 import { EffectsModal } from './EffectsModal';
+import TipModal from '../ui/TipModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { getClipDuration, getEffectiveClipDurationBeats } from '../../utils/audio';
 import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, MIN_TOTAL_BEATS, EXTEND_BEATS_STEP, MAX_TRACK_COUNT } from '../../constants/config';
@@ -607,20 +608,13 @@ export const Timeline = memo(function Timeline({
         </div>
       </div>
 
-      {/* Eenmalige tip: clip-tools zitten achter selectie (week 3, onboarding) */}
-      {showClipToolsHint && !hasNoClips && !clipEdit && (
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-accent-50 border-b border-accent-200 text-xs sm:text-sm text-accent-800">
-          <MousePointerClick size={14} className="shrink-0" />
-          <span className="flex-1">{t('studio.clipToolsHint')}</span>
-          <button
-            onClick={dismissClipToolsHint}
-            aria-label={t('common.close')}
-            className="p-0.5 rounded hover:bg-accent-100 text-accent-600 hover:text-accent-800 transition-colors"
-          >
-            <X size={14} />
-          </button>
-        </div>
-      )}
+      {/* Eenmalige tip: clip-tools zitten achter selectie (week 3). Als
+          opvallende TipModal (testronde 2 — de oude balk viel niet op) */}
+      <TipModal
+        isOpen={showClipToolsHint && !hasNoClips && !clipEdit}
+        onDismiss={dismissClipToolsHint}
+        text={t('studio.clipToolsHint')}
+      />
 
       {/* Clip volume popover — portal to escape overflow */}
       {showClipVolumePopover && clipEdit?.onClipVolumeChange && clipEdit?.onClipMuteToggle && clipVolumeBtnRef.current && createPortal(

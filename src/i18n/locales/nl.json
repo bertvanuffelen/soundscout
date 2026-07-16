@@ -2,6 +2,10 @@
   "app": {
     "title": "SoundScout"
   },
+  "tips": {
+    "title": "Tip!",
+    "gotIt": "Aan de slag!"
+  },
   "landscapeHint": {
     "message": "Draai je tablet of telefoon een kwartslag — in liggende stand heb je veel meer werkruimte."
   },

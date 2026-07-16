@@ -2,6 +2,10 @@
   "app": {
     "title": "SoundScout"
   },
+  "tips": {
+    "title": "Tip!",
+    "gotIt": "Got it!"
+  },
   "landscapeHint": {
     "message": "Turn your tablet or phone sideways — landscape gives you a lot more room to work."
   },

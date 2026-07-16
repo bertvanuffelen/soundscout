@@ -7,12 +7,13 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { MapPin, ArrowLeft, X } from 'lucide-react';
+import { MapPin, ArrowLeft } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { Button } from '../ui';
 import { LocationMarker } from './LocationMarker';
+import TipModal from '../ui/TipModal';
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 
 export function MapView() {
@@ -80,20 +81,9 @@ export function MapView() {
         </Button>
       </div>
 
-      {/* Eenmalige tip: wat doe je op deze kaart? (week 3, onboarding) */}
-      {showMapHint && (
-        <div className="flex items-center gap-2 px-3 py-1.5 bg-accent-50 md:border-b md:border-accent-200 text-xs sm:text-sm text-accent-800 shrink-0">
-          <MapPin size={14} className="shrink-0" />
-          <span className="flex-1">{t('map.firstVisitHint')}</span>
-          <button
-            onClick={dismissMapHint}
-            aria-label={t('common.close')}
-            className="p-0.5 rounded hover:bg-accent-100 text-accent-600 hover:text-accent-800 transition-colors"
-          >
-            <X size={14} />
-          </button>
-        </div>
-      )}
+      {/* Eenmalige tip: wat doe je op deze kaart? Als opvallende TipModal
+          (testronde 2 — de oude inline balk viel niet op) */}
+      <TipModal isOpen={showMapHint} onDismiss={dismissMapHint} text={t('map.firstVisitHint')} />
 
       {/* Map Area - Desktop: white card with minimal padding, Mobile: full bleed */}
       <div className="flex-1 flex items-center justify-center p-[1%] md:p-[2%]">
