@@ -606,6 +606,14 @@ const LESSON_TYPE_TAG: Record<AssignmentType, { labelKey: string; classes: strin
   template: { labelKey: 'templates.typeTemplate', classes: 'bg-accent-50 text-accent-700' },
 };
 
+/**
+ * Curatie (testronde 2, wens Bert): alleen deze ingebouwde leskaarten zijn
+ * zichtbaar op de publieke landingspagina — er komen meer leskaarten dan er
+ * hier hoeven te staan. Het dashboard toont altijd alles. Volgorde hier =
+ * volgorde op de pagina.
+ */
+const LANDING_LESSON_KEYS = ['robotfabriek', 'verspringen', 'vrij-basis', 'drumbeat'];
+
 function LessonsSection() {
   const { t } = useTranslation();
   const [lessons, setLessons] = useState<PublicLessonCard[]>([]);
@@ -615,7 +623,14 @@ function LessonsSection() {
   useEffect(() => {
     let cancelled = false;
     fetchBuiltinLessonCards()
-      .then((data) => { if (!cancelled) { setLessons(data); setLoading(false); } })
+      .then((data) => {
+        if (cancelled) return;
+        const curated = LANDING_LESSON_KEYS
+          .map((key) => data.find((l) => l.builtinKey === key))
+          .filter((l): l is PublicLessonCard => !!l);
+        setLessons(curated);
+        setLoading(false);
+      })
       .catch(() => { if (!cancelled) setLoading(false); });
     return () => { cancelled = true; };
   }, []);
@@ -641,6 +656,7 @@ function LessonsSection() {
             {lessons.map((lesson) => {
               const isActive = selected?.id === lesson.id;
               const Icon = LESSON_TYPE_ICON[lesson.assignmentType];
+              const tag = LESSON_TYPE_TAG[lesson.assignmentType];
               const loc = localizeLessonCard(t, lesson);
               return (
                 <button
@@ -649,21 +665,30 @@ function LessonsSection() {
                   aria-pressed={isActive}
                   onClick={() => setSelectedId(lesson.id)}
                   className={cn(
-                    'flex items-center gap-3 text-left p-4 rounded-2xl border-2 bg-bg-surface',
+                    'w-full flex items-center gap-3 text-left p-3 rounded-2xl border-2 bg-bg-surface',
                     'transition-all duration-200 min-h-[44px] cursor-pointer',
-                    isActive ? 'border-brand-300 shadow-md' : 'border-border-subtle hover:shadow-sm'
+                    isActive ? 'border-accent-400 bg-accent-50 shadow-sm' : 'border-border-subtle hover:border-accent-300'
                   )}
                 >
-                  <span className="text-text-muted flex-shrink-0">
-                    <Icon size={22} />
+                  <span className="w-12 h-12 rounded-xl overflow-hidden bg-neutral-100 shrink-0 flex items-center justify-center">
+                    {lesson.coverImage ? (
+                      <img src={lesson.coverImage} alt="" className="w-full h-full object-cover" />
+                    ) : (
+                      <Icon size={20} className="text-text-muted" />
+                    )}
                   </span>
-                  <span className="flex flex-col min-w-0">
-                    <span className="font-bold text-text-main leading-tight truncate">
+                  <span className="flex flex-col min-w-0 flex-1">
+                    <span className="font-semibold text-text-main text-sm leading-tight truncate">
                       {loc.title}
                     </span>
-                    {loc.level && (
-                      <span className="text-xs text-text-muted truncate">{loc.level}</span>
-                    )}
+                    <span className="flex items-center gap-1.5 mt-0.5">
+                      <span className={cn('inline-flex items-center rounded-full text-[10px] font-bold px-2 py-0.5', tag.classes)}>
+                        {t(tag.labelKey)}
+                      </span>
+                      {loc.level && (
+                        <span className="text-xs text-text-muted truncate">{loc.level}</span>
+                      )}
+                    </span>
                   </span>
                 </button>
               );
