@@ -9,9 +9,13 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Play, Square, Loader2, Music, PartyPopper, Send, Star, DoorClosed } from 'lucide-react';
+import * as Tone from 'tone';
 import { Modal, Button } from '../ui';
+import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { audioService } from '../../services/AudioService';
 import { getPeerReviewBatch, submitPeerFeedback, PeerFeedbackError, type PeerReviewItem } from '../../lib/peerFeedback';
+import { findStoryboardById } from '../../data/themes';
+import { DEFAULT_BPM } from '../../constants/config';
 import { logger } from '../../utils/logger';
 import { cn } from '../../utils/cn';
 
@@ -44,6 +48,36 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
 
   const current: PeerReviewItem | undefined = items[index];
 
+  // Beeld bij het geluid (testronde 2, 5b): een storyboard-compositie toont
+  // de meebewegende beelden, een praatplaat-compositie de plaat met de
+  // gekozen plek — zoals de presentatiemodus dat ook doet.
+  const currentData = current?.compositionData;
+  const storyboard = currentData?.storyboardId
+    ? findStoryboardById(currentData.storyboardId)?.storyboard ?? null
+    : null;
+  const praatplaatImage = currentData?.praatplaat?.imageUrl ?? null;
+  const praatplaatPosition = currentData?.praatplaatPosition ?? null;
+  const totalBeats = currentData?.totalBeats ?? 32;
+  const bpm = currentData?.bpm ?? DEFAULT_BPM;
+
+  // Beat-tracking voor de storyboard-sync (patroon SubmissionPlayer, ~30fps)
+  const [currentBeat, setCurrentBeat] = useState(0);
+  const beatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  useEffect(() => {
+    if (audioPhase === 'playing') {
+      beatIntervalRef.current = setInterval(() => {
+        const seconds = Tone.Transport.seconds;
+        setCurrentBeat(Math.min((seconds / 60) * bpm, totalBeats));
+      }, 33);
+    } else if (beatIntervalRef.current) {
+      clearInterval(beatIntervalRef.current);
+      beatIntervalRef.current = null;
+    }
+    return () => {
+      if (beatIntervalRef.current) clearInterval(beatIntervalRef.current);
+    };
+  }, [audioPhase, bpm, totalBeats]);
+
   // Batch laden bij openen
   useEffect(() => {
     if (!isOpen) return;
@@ -53,6 +87,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
       setPhase('loading');
       setIndex(0);
       setRatings({});
+      setCurrentBeat(0);
       try {
         const batch = await getPeerReviewBatch(classCode, ownSubmissionId);
         if (cancelled) return;
@@ -96,7 +131,10 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
 
   // Einde-afspelen terug naar 'ready'
   useEffect(() => {
-    const unsubscribe = audioService.onPlaybackEnd(() => setAudioPhase((p) => (p === 'playing' ? 'ready' : p)));
+    const unsubscribe = audioService.onPlaybackEnd(() => {
+      setAudioPhase((p) => (p === 'playing' ? 'ready' : p));
+      setCurrentBeat(0);
+    });
     return unsubscribe;
   }, []);
 
@@ -150,6 +188,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
     }
     setIsSending(false);
     setRatings({});
+    setCurrentBeat(0);
     if (index + 1 < items.length) {
       setIndex(index + 1);
     } else {
@@ -192,6 +231,39 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
           <p className="text-text-muted text-sm mb-4">
             {t('peerReview.progress', { current: index + 1, total: items.length })}
           </p>
+
+          {/* Beeld bij de opdrachtvorm: storyboard beweegt mee met de muziek,
+              praatplaat toont de plaat + gekozen plek (testronde 2, 5b) */}
+          {storyboard && (
+            <div className="rounded-2xl border border-border-subtle bg-neutral-50 mb-4 overflow-hidden">
+              <StoryboardViewer
+                storyboard={storyboard}
+                currentBeat={currentBeat}
+                totalBeats={totalBeats}
+                sections={currentData?.sections ?? []}
+                compact
+              />
+            </div>
+          )}
+          {!storyboard && praatplaatImage && (
+            <div className="relative rounded-2xl border border-border-subtle bg-neutral-50 mb-4 overflow-hidden">
+              <img
+                src={praatplaatImage}
+                alt={t('peerReview.anonymous')}
+                className="w-full aspect-video object-contain bg-black/5"
+              />
+              {praatplaatPosition && (
+                <span
+                  className={cn(
+                    'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow w-6 h-6 bg-accent-400',
+                    audioPhase === 'playing' && 'animate-pulse scale-110'
+                  )}
+                  style={{ left: `${praatplaatPosition.x * 100}%`, top: `${praatplaatPosition.y * 100}%` }}
+                  aria-hidden="true"
+                />
+              )}
+            </div>
+          )}
 
           {/* Anonieme compositie + afspelen */}
           <div className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-neutral-50 p-4 mb-5">
