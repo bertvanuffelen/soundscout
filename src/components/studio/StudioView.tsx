@@ -31,7 +31,6 @@ import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
 import { Button } from '../ui';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
-import { FeedbackBanner } from '../common/FeedbackBanner';
 import { audioService } from '../../services/AudioService';
 import { generateClipId } from '../../utils/uuid';
 
@@ -363,8 +362,8 @@ export function StudioView() {
         </div>
       )}
 
-      {/* Docent-feedback banner (geladen via bewaarcode, migratie 026) */}
-      <FeedbackBanner />
+      {/* Feedback woont op het podium (testronde 2): de FeedbackBanner is
+          daarheen verhuisd — de studio blijft de rustige werkplek */}
 
       {/* Template info banner */}
       {activeTemplate && (

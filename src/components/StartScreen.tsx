@@ -13,7 +13,9 @@ import {
   initializeCompositionFromStoryboard,
 } from '../utils/compositionInit';
 import { Button, Modal, LanguageSwitcher } from './ui';
-import { Star, Mail } from 'lucide-react';
+import { Star, Mail, Loader2, Theater } from 'lucide-react';
+import { logger } from '../utils/logger';
+import type { SavedOnlineComposition } from '../lib/submissions';
 import type { ReceivedFeedback } from '../types';
 import { StickerIcon } from '../utils/stickerMap';
 import { OnboardingAnimation } from './common/OnboardingAnimation';
@@ -34,7 +36,9 @@ export function StartScreen() {
   const { t } = useTranslation();
   const goToCompositions = useAppStore((s) => s.goToCompositions);
   const goToStudio = useAppStore((s) => s.goToStudio);
+  const goToStage = useAppStore((s) => s.goToStage);
   const goToTutorial = useAppStore((s) => s.goToTutorial);
+  const classSession = useAppStore((s) => s.classSession);
   const hasClipsInProgress = useTimelineStore((s) => s.selectHasClips());
   const [isLoading, setIsLoading] = useState(false);
   const [showAbout, setShowAbout] = useState(false);
@@ -55,15 +59,17 @@ export function StartScreen() {
   }, []);
 
   // Stille check op nieuwe docent-feedback (migratie 026): als dit apparaat
-  // een klas-inzending met bewaarcode heeft, kijk of de juf/meester heeft
+  // een klas-inzending met bewaarcode heeft, kijk of de docent heeft
   // gereageerd sinds de vorige keer. Faalt geruisloos (offline, migratie
   // nog niet gedraaid, code verlopen).
   const [feedbackNotice, setFeedbackNotice] = useState<{
     compositionName: string;
     saveCode: string;
     feedback: ReceivedFeedback;
+    saved: SavedOnlineComposition;
   } | null>(null);
   const [showFeedbackNotice, setShowFeedbackNotice] = useState(false);
+  const [noticeLoading, setNoticeLoading] = useState(false);
 
   useEffect(() => {
     const info = storageService.getClassFeedbackCode();
@@ -85,6 +91,7 @@ export function StartScreen() {
             text: saved.feedback_text ?? null,
             at: saved.feedback_at,
           },
+          saved,
         });
       } catch {
         // stil — melding is nice-to-have, nooit blokkerend
@@ -93,6 +100,24 @@ export function StartScreen() {
 
     return () => { cancelled = true; };
   }, []);
+
+  // Klik op de reactie-melding → direct naar het podium mét de compositie en
+  // het feedbackblok (testronde 2: feedback woont op het podium). Faalt het
+  // laden, dan valt de melding terug op de oude feedback-modal.
+  const handleOpenFeedbackNotice = async () => {
+    if (!feedbackNotice || noticeLoading) return;
+    setNoticeLoading(true);
+    try {
+      const { openSavedComposition } = await import('../utils/compositionInit');
+      await openSavedComposition(feedbackNotice.saved, feedbackNotice.saveCode, 'stage');
+      setFeedbackNotice(null);
+    } catch (err) {
+      logger.warn('Reactie-melding: compositie openen mislukt — toon modal', err);
+      setShowFeedbackNotice(true);
+    } finally {
+      setNoticeLoading(false);
+    }
+  };
 
   const handleDismissFeedbackNotice = () => {
     if (feedbackNotice) {
@@ -212,14 +237,18 @@ export function StartScreen() {
           </p>
         </div>
 
-        {/* "Je hebt een reactie!"-melding (docent-feedback, migratie 026) */}
+        {/* "Je hebt een reactie!"-melding (docent-feedback, migratie 026) —
+            klik opent de compositie direct op het podium met het feedbackblok */}
         {feedbackNotice && (
           <button
             type="button"
-            onClick={() => setShowFeedbackNotice(true)}
-            className="mb-4 w-full max-w-[280px] sm:max-w-xs flex items-center gap-2.5 rounded-2xl border-2 border-accent-300 bg-accent-50 px-4 py-3 text-left shadow-md hover:bg-accent-100 transition-colors animate-pulse hover:animate-none"
+            onClick={handleOpenFeedbackNotice}
+            disabled={noticeLoading}
+            className="mb-4 w-full max-w-[280px] sm:max-w-xs flex items-center gap-2.5 rounded-2xl border-2 border-accent-300 bg-accent-50 px-4 py-3 text-left shadow-md hover:bg-accent-100 transition-colors animate-pulse hover:animate-none disabled:opacity-70 disabled:animate-none"
           >
-            <Mail className="w-6 h-6 text-accent-600 shrink-0" aria-hidden="true" />
+            {noticeLoading
+              ? <Loader2 className="w-6 h-6 text-accent-600 shrink-0 animate-spin" aria-hidden="true" />
+              : <Mail className="w-6 h-6 text-accent-600 shrink-0" aria-hidden="true" />}
             <span className="text-sm font-bold text-text-main">
               {t('studentFeedback.noticeButton', { name: feedbackNotice.compositionName })}
             </span>
@@ -252,6 +281,20 @@ export function StartScreen() {
             >
               <Play className="w-5 h-5 mr-1.5 sm:mr-2" />
               {t('start.continueComposition')}
+            </Button>
+          )}
+
+          {/* Podium-shortcut (testronde 2): in een klas-sessie is het podium
+              de feedback-plek — leerlingen hoeven niet via de studio terug */}
+          {hasClipsInProgress && classSession && (
+            <Button
+              onClick={goToStage}
+              variant="secondary"
+              size="lg"
+              className="w-full"
+            >
+              <Theater className="w-5 h-5 mr-1.5 sm:mr-2" />
+              {t('start.toStage')}
             </Button>
           )}
 

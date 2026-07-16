@@ -8,7 +8,7 @@
  * - useAudioCleanup — audio cleanup on unmount
  */
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Save,
@@ -37,6 +37,8 @@ import { PeerReviewModal } from './PeerReviewModal';
 import { StagePlayback, StageAudience } from './StagePlayback';
 import { StorytellingDisplay } from './StorytellingDisplay';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
+import { FeedbackBanner } from '../common/FeedbackBanner';
+import { logger } from '../../utils/logger';
 
 export function StageView() {
   const { t } = useTranslation();
@@ -95,6 +97,40 @@ export function StageView() {
     syncFeedback,
     classSaveCode,
   } = useStageSave();
+
+  // Podium = feedback-thuis (testronde 2): bij het openen stil de laatste
+  // docent-feedback + klasgenoot-beoordelingen ophalen zodra we een eigen
+  // bewaarcode kennen. Faalt geruisloos (nice-to-have); het feedbackblok
+  // verschijnt alleen als er echt iets te tonen is.
+  useEffect(() => {
+    if (!classSession || !classSaveCode) return;
+    let cancelled = false;
+    (async () => {
+      try {
+        const [{ loadSavedComposition }, { getPeerCompliments }] = await Promise.all([
+          import('../../lib/submissions'),
+          import('../../lib/peerFeedback'),
+        ]);
+        const [saved, compliments] = await Promise.all([
+          loadSavedComposition(classSaveCode),
+          getPeerCompliments(classSaveCode),
+        ]);
+        if (cancelled || !saved) return;
+        if (saved.feedback_at || compliments.length > 0) {
+          useAppStore.getState().setReceivedFeedback({
+            sticker: saved.feedback_sticker ?? null,
+            level: saved.feedback_level ?? null,
+            text: saved.feedback_text ?? null,
+            at: saved.feedback_at ?? null,
+            compliments,
+          });
+        }
+      } catch (err) {
+        logger.warn('Feedback verversen op het podium mislukt', err);
+      }
+    })();
+    return () => { cancelled = true; };
+  }, [classSession, classSaveCode]);
 
   // Modal state (extracted hook)
   const {
@@ -240,6 +276,10 @@ export function StageView() {
 
           {/* Playback controls (extracted component) */}
           <StagePlayback />
+
+          {/* Feedbackblok (testronde 2): docent-feedback + klasgenoot-
+              beoordelingen — rendert alleen als er echt iets te tonen is */}
+          <FeedbackBanner />
 
           {/* Action buttons — clean: save + options + new */}
           <div className="flex flex-col gap-3 w-full max-w-xs">

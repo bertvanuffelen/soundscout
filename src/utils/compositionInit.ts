@@ -19,6 +19,7 @@ import { MAX_SECTIONS } from '../constants/config';
 import { logger } from './logger';
 import { praatplaatToStoryboard } from './praatplaatStoryboard';
 import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, Storyboard, ComposeMode, ClassSession } from '../types';
+import type { SavedOnlineComposition } from '../lib/submissions';
 import { storageService } from '../services/StorageService';
 import i18n from '../i18n';
 
@@ -486,6 +487,8 @@ export async function initializeFromSavedComposition(
   compositionName: string,
   saveCode: string,
   saveSecret: string,
+  /** Bestemming na het laden — 'stage' voor "presentatie en feedback" (testronde 2) */
+  destination: 'studio' | 'stage' = 'studio',
 ): Promise<void> {
   // Stap 1: Laad timeline
   useTimelineStore.getState().loadTimeline({
@@ -516,6 +519,90 @@ export async function initializeFromSavedComposition(
     logger.warn('Audio initialization failed during saved composition init:', error);
   }
 
-  // Stap 5: Navigeer naar studio
-  useAppStore.getState().goToStudio();
+  // Stap 5: Navigeer naar de gekozen bestemming
+  if (destination === 'stage') {
+    useAppStore.getState().goToStage();
+  } else {
+    useAppStore.getState().goToStudio();
+  }
+}
+
+/**
+ * Open een al-geladen bewaarde compositie volledig (testronde 2): claim,
+ * initialiseer, herstel de klas-sessie en zet ontvangen feedback klaar.
+ * Gedeeld door het keuzescherm (ShareCodeInput) en de "Je hebt een
+ * reactie!"-melding op het startscherm. Gooit bij claim/init-fouten;
+ * sessie-herstel en feedback zijn nice-to-have en falen stil.
+ */
+export async function openSavedComposition(
+  saved: SavedOnlineComposition,
+  saveCode: string,
+  destination: 'studio' | 'stage',
+): Promise<void> {
+  const { claimSavedComposition } = await import('../lib/submissions');
+
+  // Claim eerst (genereert nieuwe secret voor dit apparaat)
+  const newSecret = await claimSavedComposition(saveCode, saved.student_name);
+
+  // Klas-sessie herstellen (migratie 028) — VÓÓR de navigatie, zodat het
+  // podium bij mount meteen de sessie, code-badge en feedback kan tonen.
+  if (saved.class_code) {
+    try {
+      const assignment = await getActiveAssignment(saved.class_code);
+      const session = assignment ? classSessionFromAssignment(saved.class_code, assignment) : null;
+      if (session) {
+        // Volgorde: setClassSession reset submissionId/synced, dus die erná.
+        useAppStore.getState().setClassSession(session);
+        useAppStore.getState().setSubmissionId(saved.id);
+        useAppStore.getState().setSubmissionSynced(true);
+      }
+      // Bind de bewaarcode aan deze inzending: zo toont het podium de
+      // code-badge (useStageSave matcht op submissionId) en blijft de
+      // "je hebt een reactie"-check op dit apparaat werken.
+      const existing = storageService.getClassFeedbackCode();
+      storageService.setClassFeedbackCode({
+        saveCode,
+        compositionName: saved.composition_name,
+        lastSeenFeedbackAt: existing?.saveCode === saveCode ? existing.lastSeenFeedbackAt : null,
+        submissionId: saved.id,
+      });
+    } catch (err) {
+      logger.warn('Klas-sessie herstellen via bewaarcode mislukt', err);
+    }
+  }
+
+  // Docent-feedback + klasgenoot-beoordelingen klaarzetten voor het
+  // feedbackblok op het podium — ook vóór de navigatie.
+  try {
+    const { getPeerCompliments } = await import('../lib/peerFeedback');
+    const compliments = await getPeerCompliments(saveCode);
+    if (saved.feedback_at || compliments.length > 0) {
+      useAppStore.getState().setReceivedFeedback({
+        sticker: saved.feedback_sticker ?? null,
+        level: saved.feedback_level ?? null,
+        text: saved.feedback_text ?? null,
+        at: saved.feedback_at ?? null,
+        compliments,
+      });
+      // Dedup voor de "je hebt een reactie"-melding op het startscherm
+      const info = storageService.getClassFeedbackCode();
+      if (info?.saveCode === saveCode && saved.feedback_at) {
+        storageService.setClassFeedbackCode({
+          ...info,
+          lastSeenFeedbackAt: saved.feedback_at,
+        });
+      }
+    }
+  } catch (err) {
+    logger.warn('Feedback/complimenten laden via bewaarcode mislukt', err);
+  }
+
+  // Laden + navigeren als laatste stap
+  await initializeFromSavedComposition(
+    saved.composition_data,
+    saved.composition_name,
+    saveCode,
+    newSecret,
+    destination,
+  );
 }

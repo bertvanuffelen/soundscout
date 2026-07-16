@@ -11,16 +11,19 @@
 
 import { useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Headphones, Loader2, X } from 'lucide-react';
+import { Headphones, Loader2, X, SlidersHorizontal, Theater } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
-import { getSharedComposition, loadSavedComposition, claimSavedComposition } from '../../lib/submissions';
+import { getSharedComposition, loadSavedComposition } from '../../lib/submissions';
 import { getSharedPraatplaat } from '../../lib/praatplaat';
 import { useAppStore } from '../../stores/appStore';
-import { initializeFromTemplate, initializeFromSavedComposition, lookupAndRouteAssignment, classSessionFromAssignment } from '../../utils/compositionInit';
-import { getActiveAssignment } from '../../lib/assignments';
-import { storageService } from '../../services/StorageService';
+import { initializeFromTemplate, openSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
+
+type PendingSaved = {
+  saved: NonNullable<Awaited<ReturnType<typeof loadSavedComposition>>>;
+  code: string;
+};
 
 export function ShareCodeInput() {
   const { t } = useTranslation();
@@ -30,6 +33,9 @@ export function ShareCodeInput() {
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  // Keuzescherm na een gevonden bewaarcode (testronde 2): Studio of Podium
+  const [pendingSaved, setPendingSaved] = useState<PendingSaved | null>(null);
+  const [destLoading, setDestLoading] = useState<'studio' | 'stage' | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   // Only allow alphanumeric characters, convert to uppercase
@@ -72,10 +78,9 @@ export function ShareCodeInput() {
 
         // 1. Als 6 karakters → probeer als bewaarcode (#52)
         if (code.length === 6) {
-          // Laden en claimen hebben elk hun eigen foutafhandeling: alleen een
-          // écht lege lookup is "code niet gevonden". Elke andere fout (parse,
-          // rate limit, netwerk) toont zijn eigen — al vertaalde — melding,
-          // zodat de gebruiker niet misleid wordt (testronde-1 bug 2c).
+          // Laden heeft eigen foutafhandeling: alleen een écht lege lookup is
+          // "code niet gevonden". Elke andere fout (parse, rate limit, netwerk)
+          // toont zijn eigen — al vertaalde — melding (testronde-1 bug 2c).
           let saved: Awaited<ReturnType<typeof loadSavedComposition>>;
           try {
             saved = await loadSavedComposition(code);
@@ -91,70 +96,9 @@ export function ShareCodeInput() {
             return;
           }
 
-          try {
-            // Claim de compositie (genereert nieuwe secret voor dit apparaat)
-            const newSecret = await claimSavedComposition(code, saved.student_name);
-            if (signal.aborted) return;
-            await initializeFromSavedComposition(
-              saved.composition_data,
-              saved.composition_name,
-              code,
-              newSecret,
-            );
-          } catch (err) {
-            if (signal.aborted) return;
-            logger.error('Bewaarde compositie claimen/openen mislukt:', err);
-            setError(err instanceof Error && err.message ? err.message : t('share.loadFailed'));
-            return;
-          }
-
-          // Klas-sessie herstellen (migratie 028): de bewaarcode is de
-          // universele terugkeerroute — ook peer-feedback werkt dan weer
-          // op elk apparaat. Faalt geruisloos (sessie is nice-to-have).
-          if (saved.class_code) {
-            try {
-              const assignment = await getActiveAssignment(saved.class_code);
-              const session = assignment ? classSessionFromAssignment(saved.class_code, assignment) : null;
-              if (session) {
-                // Volgorde: setClassSession reset submissionId/synced,
-                // dus die twee erná zetten.
-                useAppStore.getState().setClassSession(session);
-                useAppStore.getState().setSubmissionId(saved.id);
-                useAppStore.getState().setSubmissionSynced(true);
-              }
-            } catch (err) {
-              logger.warn('Klas-sessie herstellen via bewaarcode mislukt', err);
-            }
-          }
-
-          // Docent-feedback (migratie 026) + klasgenoot-complimenten
-          // (migratie 027) meenemen naar de studio: banner met de reactie.
-          // Eigen try: we zijn hier al genavigeerd — een fout in dit
-          // nice-to-have mag nooit een foutmelding op het startscherm zetten.
-          try {
-            const { getPeerCompliments } = await import('../../lib/peerFeedback');
-            const compliments = await getPeerCompliments(code);
-            if (saved.feedback_at || compliments.length > 0) {
-              useAppStore.getState().setReceivedFeedback({
-                sticker: saved.feedback_sticker ?? null,
-                level: saved.feedback_level ?? null,
-                text: saved.feedback_text ?? null,
-                at: saved.feedback_at ?? null,
-                compliments,
-              });
-              // Dedup voor de "je hebt een reactie"-melding op het startscherm
-              const info = storageService.getClassFeedbackCode();
-              if (info?.saveCode === code && saved.feedback_at) {
-                storageService.setClassFeedbackCode({
-                  ...info,
-                  lastSeenFeedbackAt: saved.feedback_at,
-                });
-              }
-            }
-          } catch (err) {
-            logger.warn('Feedback/complimenten laden via bewaarcode mislukt', err);
-          }
-          setCode('');
+          // Gevonden → keuzescherm "Studio of Podium" (testronde 2): claimen
+          // en navigeren gebeurt pas ná de keuze, in handleDestination.
+          setPendingSaved({ saved, code });
           return;
         }
 
@@ -205,6 +149,78 @@ export function ShareCodeInput() {
     },
     [code, t, goToShared, goToSharedPraatplaat]
   );
+
+  // Keuze gemaakt (Studio of Podium): claim, laad en navigeer via de
+  // gedeelde helper (ook gebruikt door de reactie-melding op start).
+  const handleDestination = useCallback(async (destination: 'studio' | 'stage') => {
+    if (!pendingSaved || destLoading) return;
+    const { saved, code: savedCode } = pendingSaved;
+    setDestLoading(destination);
+    setError(null);
+
+    try {
+      await openSavedComposition(saved, savedCode, destination);
+    } catch (err) {
+      logger.error('Bewaarde compositie claimen/openen mislukt:', err);
+      setError(err instanceof Error && err.message ? err.message : t('share.loadFailed'));
+      setDestLoading(null);
+      return;
+    }
+
+    setDestLoading(null);
+    setPendingSaved(null);
+    setCode('');
+  }, [pendingSaved, destLoading, t]);
+
+  // --- Keuzescherm: Studio of Podium (testronde 2, wens Bert) ---
+  if (pendingSaved) {
+    return (
+      <div className="w-full max-w-sm mx-auto">
+        <p className="text-sm font-semibold text-text-main text-center mb-1">
+          {t('share.destinationTitle')}
+        </p>
+        <p className="text-xs text-text-muted text-center mb-3 truncate">
+          {pendingSaved.saved.composition_name}
+        </p>
+        <div className="grid grid-cols-2 gap-3">
+          <button
+            onClick={() => handleDestination('studio')}
+            disabled={destLoading !== null}
+            className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-border-subtle bg-bg-surface hover:border-accent-400 hover:shadow-md active:scale-[0.98] transition-all p-4 disabled:opacity-60"
+          >
+            {destLoading === 'studio'
+              ? <Loader2 className="w-7 h-7 text-accent-500 animate-spin" />
+              : <SlidersHorizontal className="w-7 h-7 text-accent-600" />}
+            <span className="font-bold text-text-main">{t('share.destStudio')}</span>
+            <span className="text-xs text-text-muted text-center leading-snug">{t('share.destStudioHint')}</span>
+          </button>
+          <button
+            onClick={() => handleDestination('stage')}
+            disabled={destLoading !== null}
+            className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-border-subtle bg-bg-surface hover:border-accent-400 hover:shadow-md active:scale-[0.98] transition-all p-4 disabled:opacity-60"
+          >
+            {destLoading === 'stage'
+              ? <Loader2 className="w-7 h-7 text-accent-500 animate-spin" />
+              : <Theater className="w-7 h-7 text-accent-600" />}
+            <span className="font-bold text-text-main">{t('share.destStage')}</span>
+            <span className="text-xs text-text-muted text-center leading-snug">{t('share.destStageHint')}</span>
+          </button>
+        </div>
+        <button
+          onClick={() => { setPendingSaved(null); setError(null); }}
+          disabled={destLoading !== null}
+          className="block mx-auto mt-3 text-xs text-text-muted hover:text-text-main underline underline-offset-2 transition-colors"
+        >
+          {t('common.back')}
+        </button>
+        {error && (
+          <p role="alert" aria-live="polite" className="text-error-400 text-xs text-center mt-2">
+            {error}
+          </p>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div className="w-full max-w-sm mx-auto">
