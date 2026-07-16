@@ -13,78 +13,86 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 ---
 
 ## 0. Rooktest (5 min) — werkt de basis nog?
-- [ ] Start → Nieuwe compositie → thema kiezen → Kaart → Locatie → geluiden verzamelen → Studio → Podium. Geluid speelt af, geen console-fouten.
-- [ ] Taal wisselen (NL/EN) op het startscherm; steekproef dat teksten meeveranderen.
+- [x] Start → Nieuwe compositie → thema kiezen → Kaart → Locatie → geluiden verzamelen → Studio → Podium. Geluid speelt af, geen console-fouten.
+- [x] Taal wisselen (NL/EN) op het startscherm; steekproef dat teksten meeveranderen.
 
 ## 1. Week 1 — Fundament & fixes
 
 ### 1a. Wachtwoord-reset (was kapot)
-- [ ] `/teacher` → dashboard-CTA → login → "Wachtwoord vergeten" → e-mail invullen → mail ontvangen.
-- [ ] Klik de reset-link → je landt op het **reset-wachtwoord-scherm** (niet op een dood scherm).
-- [ ] Nieuw wachtwoord zetten → melding van succes → inloggen met het nieuwe wachtwoord lukt.
-- [ ] Directe check op de UI-staten zonder mail: open `?screen=reset-password` → toont "Link verlopen" → knop "Nieuwe link aanvragen" opent het vergeten-formulier.
-- [ ] Login: "verificatiemail opnieuw sturen" verschijnt bij een niet-bevestigd account.
+- [x] `/teacher` → dashboard-CTA → login → "Wachtwoord vergeten" → e-mail invullen → mail ontvangen.
+- [-] Klik de reset-link → je landt op het **reset-wachtwoord-scherm** (niet op een dood scherm). ==> Kon ik niet testen omdat hij naar https://soundscout.techindeles.nl/#error=access_denied&error_code=otp_expired&error_description=Email+link+is+invalid+or+has+expired&sb= ging 
+  - 🔧 **Antwoord (testronde 1)**: de app-code is goed (stuurt `redirectTo` = het adres waar je op dat moment draait), maar **localhost staat niet in de Supabase-allowlist** → Supabase valt terug op de Site URL = de oude live-site, die het reset-scherm nog niet heeft. **Bert-actie**: Supabase dashboard → Authentication → URL Configuration → voeg toe aan *Redirect URLs*: `http://localhost:5199/*` en `http://localhost:5173/*` (en bij deploy: `https://soundscout.nl/*`). Daarna een VERSE reset-mail aanvragen (oude links zijn verbruikt/verlopen) en direct klikken.
+- [?] Nieuw wachtwoord zetten → melding van succes → inloggen met het nieuwe wachtwoord lukt.
+- [?] Directe check op de UI-staten zonder mail: open `?screen=reset-password` → toont "Link verlopen" → knop "Nieuwe link aanvragen" opent het vergeten-formulier.
+- [?] Login: "verificatiemail opnieuw sturen" verschijnt bij een niet-bevestigd account.
 
 ### 1b. SEO
-- [ ] `npm run build`, open `dist/index.html` en `dist/teacher.html`: unieke `<title>` + `<meta description>`, canonical, og-image, `summary_large_image`.
-- [ ] `dist/robots.txt` en `dist/sitemap.xml` bestaan en bevatten `/` en `/teacher`.
-- [ ] Na deploy: Google Rich Results Test op `https://soundscout.nl/teacher` → WebPage + FAQPage worden herkend (zie 5c).
+- [x] `npm run build`, open `dist/index.html` en `dist/teacher.html`: unieke `<title>` + `<meta description>`, canonical, og-image, `summary_large_image`. ==> Ik denk goed, maar weet niet precies wat ik moet testen
+- [?] `dist/robots.txt` en `dist/sitemap.xml` bestaan en bevatten `/` en `/teacher`. ==> bevat: User-agent: * Allow: / Disallow: /editor Sitemap: https://soundscout.nl/sitemap.xml
+- [?] Na deploy: Google Rich Results Test op `https://soundscout.nl/teacher` → WebPage + FAQPage worden herkend (zie 5c). ==> Weet niet wat ik moet testen
+  - 🔧 **Antwoord (testronde 1)**: 1b is ✅ — ik heb de dist gecontroleerd: robots.txt + sitemap bevatten `/` en `/teacher`, beide pagina's hebben unieke titles/descriptions. De Rich Results Test kan pas **na deploy**: ga dan naar search.google.com/test/rich-results, plak de URL `https://soundscout.nl/teacher` in en kijk of "FAQ" als gevonden item verschijnt. Nu overslaan.
 
 ### 1c. Modals (a11y)
-- [ ] In de studio: EffectsModal en TrimModal openen → **Escape** sluit → **Tab** blijft binnen de modal (focus-trap).
-- [ ] Op het podium: "Meer acties" + elke share/save-modal → Escape sluit, focus keert terug naar de knop.
+- [-] In de studio: EffectsModal en TrimModal openen → **Escape** sluit → **Tab** blijft binnen de modal (focus-trap). ==> In de TrimModal werkt escape en tab. In de EffectsModal gaat bij tab naar enkele tabs deze verder buiten de modal (op de achtergrond in de studio). Escape werkt wel.
+  - ✅ **Verholpen (testronde 1)**: de focus-trap telde disabled knoppen mee als "laatste element" (de Toepassen-knop start disabled) waardoor de wrap nooit vuurde. Selector gefixt in `useModalBehavior` — geldt meteen voor álle modals. Hertest: EffectsModal openen → Tab cyclet nu binnen de modal.
+- [?] Op het podium: "Meer acties" + elke share/save-modal → Escape sluit, focus keert terug naar de knop. ==> Er is geen 'meer acties', enkel "Delen & Exporteren". Binnen dat moda werkt wel de escape en de tab. → ✅ klopt: de knop heet "Delen & Exporteren" (testplantekst was verouderd); jouw check dekt dit punt — afgevinkt.
 
 ### 1d. Overig
-- [ ] Bundle: `npm run build` toont geen waarschuwing dat de main chunk fors groeit; `ComposePreview` zit in een apart chunk.
-- [ ] Cookiemelding/privacy: tekst zegt "anonieme, cookieloze statistieken" (niet meer "geen analytics").
+- [?] Bundle: `npm run build` toont geen waarschuwing dat de main chunk fors groeit; `ComposePreview` zit in een apart chunk. ==> Niet gedaan
+  - ✅ **(testronde 1, zelf gedraaid)**: main chunk 151,8 kB (doel ~152 kB), `ComposePreview` zit in een eigen chunk — afgevinkt.
+- [?] Cookiemelding/privacy: tekst zegt "anonieme, cookieloze statistieken" (niet meer "geen analytics"). ==> Dit staat er "SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities en taalvoorkeur. Er worden geen gegevens gedeeld met derden."
+  - ✅ **(testronde 1)**: dit is precies de bedoelde tekst — afgevinkt. De zin over lokale opslag noemt nu ook de **bewaarcode** (antwoord op je AVG-vraag uit Notion: de code is een willekeurig token zonder persoonsgegevens).
 
 ## 2. Week 2 — Docent-feedback + automatische bewaarcode
 
 ### 2a. Leerling levert in en krijgt een code
-- [ ] Docent: klas aanmaken, opdracht activeren, klascode noteren.
-- [ ] "Leerling" (ander profiel): klascode invoeren → compositie maken → Podium → **Opslaan**.
-- [ ] Na inleveren verschijnt op het podium **"Jouw code: XXXXXX"** met bewaar-hint. Noteer die code.
+- [x] Docent: klas aanmaken, opdracht activeren, klascode noteren.
+- [x] "Leerling" (ander profiel): klascode invoeren → compositie maken → Podium → **Opslaan**.
+- [x] Na inleveren verschijnt op het podium **"Jouw code: XXXXXX"** met bewaar-hint. Noteer die code.
 
 ### 2b. Docent geeft feedback
-- [ ] Docent-dashboard → klas → inzending verschijnt met badge **"Nieuw"** + teller "1 nieuw".
-- [ ] Open de inzending → speel af → onderin het **feedback-paneel**: kies een sticker + 1–3 sterren + tekstje → **Versturen** → knop wordt "Verstuurd".
-- [ ] Terug in de lijst: de kaart toont nu **"Beoordeeld"** met sticker + sterren; teller "nieuw" is gedaald.
-- [ ] Open opnieuw zonder feedback te geven bij een andere inzending → status wordt **"Beluisterd"** (niet meer "Nieuw").
+- [x] Docent-dashboard → klas → inzending verschijnt met badge **"Nieuw"** + teller "1 nieuw".
+- [x] Open de inzending → speel af → onderin het **feedback-paneel**: kies een sticker + 1–3 sterren + tekstje → **Versturen** → knop wordt "Verstuurd".
+- [x] Terug in de lijst: de kaart toont nu **"Beoordeeld"** met sticker + sterren; teller "nieuw" is gedaald. ==> Let op, om terug te komen werkt de escape niet. 
+  - ✅ **Verholpen (testronde 1)**: de inzendings-weergave had geen toetsenbord-handler; Escape sluit nu (plus focus-trap). Hertest: inzending openen → Escape → terug in de lijst.
+- [x] Open opnieuw zonder feedback te geven bij een andere inzending → status wordt **"Beluisterd"** (niet meer "Nieuw"). ==> Let op: ik had ook nog een losse opname ingeleverd bij de klascode (zonder actieve storyboard). Na openen door docent verschijnt dan niet 'Beluisterd'. 
+  - ✅ **Verholpen (testronde 1)**: de status wérd wel gezet, maar er bestond geen "Beluisterd"-badge in de kaart — bij storyboard-inzendingen verbloemde de type-badge dat, bij jouw vrije compositie zag je niets. Er is nu een grijze badge met koptelefoon-icoon. Hertest: open een nieuwe inzending zonder feedback → kaart toont "Beluisterd".
 
 ### 2c. Leerling ziet de feedback terug (zonder account)
-- [ ] Andere browser: Start → "Ik heb een code" → voer de **6-cijferige bewaarcode** in.
-- [ ] Compositie laadt in de studio + een **warme banner**: "Feedback van je docent: ⭐ … ⭐⭐ [tekst]".
-- [ ] Zelfde apparaat als 2a: heropen de app → **"Je hebt een reactie!"**-melding op het startscherm → klik → modal toont de feedback.
+- [x] Andere browser: Start → "Ik heb een code" → voer de **6-cijferige bewaarcode** in. ==> MAAR OPENT NIET WANT CODE IS NIET GEVONDEN
+  - 🔍 **In onderzoek (testronde 1)**: de melding "code niet gevonden" bleek élke fout te maskeren (ook technische fouten) — die maskering is nu weg: je ziet voortaan de échte foutmelding en de console logt de oorzaak. De database-kant is geverifieerd correct. **Hertest dit punt opnieuw met dezelfde code** — de nieuwe melding vertelt ons wat er werkelijk misgaat.
+- [?] Compositie laadt in de studio + een **warme banner**: "Feedback van je docent: ⭐ … ⭐⭐ [tekst]".
+- [?] Zelfde apparaat als 2a: heropen de app → **"Je hebt een reactie!"**-melding op het startscherm → klik → modal toont de feedback.
 
 ### 2d. Beveiliging
-- [ ] (Optioneel) Tweede docentaccount kan géén feedback zetten op een inzending van de eerste docent (RLS) — verschijnt niet in diens dashboard, dus niet bereikbaar.
+- [?] (Optioneel) Tweede docentaccount kan géén feedback zetten op een inzending van de eerste docent (RLS) — verschijnt niet in diens dashboard, dus niet bereikbaar. Niet kunnen testen.
 
 ## 3. Week 3 — Onboarding & taal
 
-- [ ] localStorage wissen (of verse incognito). Start → "Nieuwe compositie" → **eenmalige intro-animatie** "Zo werkt SoundScout" → "Aan de slag" → wizard.
-- [ ] Nogmaals "Nieuwe compositie" → intro verschijnt **niet** meer (eenmalig).
-- [ ] Kaart, eerste keer: hint **"Klik op een locatie om geluiden te verzamelen"** → verdwijnt na het eerste locatiebezoek.
-- [ ] Studio, eerste keer met een clip: tip **"klik op een blok in de tijdlijn om te knippen, effecten of volume…"** → verdwijnt zodra je een clip selecteert.
-- [ ] Taal-check: nergens kindertaal; "docent" i.p.v. "juf/meester". Steekproef NL en EN.
+- [x] localStorage wissen (of verse incognito). Start → "Nieuwe compositie" → **eenmalige intro-animatie** "Zo werkt SoundScout" → "Aan de slag" → wizard.
+- [x] Nogmaals "Nieuwe compositie" → intro verschijnt **niet** meer (eenmalig).
+- [x] Kaart, eerste keer: hint **"Klik op een locatie om geluiden te verzamelen"** → verdwijnt na het eerste locatiebezoek. ==> WERKT, maar misschien kunnen we een Tip-modal maken die we vaker kunnen oproepen. Een klein modal die verschijnt met een duidelijke icon met tip teken en dan de tekst. Die kunnen we op meerdere plekken inzetten. Deze tekst zoals nu valt eigenlijk niet goed op.
+- [x] Studio, eerste keer met een clip: tip **"klik op een blok in de tijdlijn om te knippen, effecten of volume…"** → verdwijnt zodra je een clip selecteert. ==> Zie vorige opmerking over de tip-modal.
+- [x] Taal-check: nergens kindertaal; "docent" i.p.v. "juf/meester". Steekproef NL en EN. ==> Moeten we misschien samen een definitie-lijst samen stellen?
 
 ## 4. Week 4 — Thema-wizard (dev-only)
 
 > Alleen lokaal (`npm run dev`), route `/editor`.
-- [ ] `/editor` → tab **Thema-wizard** opent op stap Concept.
-- [ ] Stap 1: thema-id (bv. `herfst`), naam NL/EN, seizoensvenster invullen. Stijlprofiel staat voorgevuld.
-- [ ] Stap 2: minstens 1 locatie + ≥4 geluiden invullen.
-- [ ] Stap 3: **Prompts** — kopieerknoppen werken; de afbeeldingsprompt bevat je stijlprofiel + themanaam; per geluid een freesound-zoekpakket met doelpad.
-- [ ] Stap 4: **Kaart & export** — plattegrond-afbeelding laden → locatie kiezen → op de kaart klikken plaatst een marker met %.
-- [ ] Validatie: bij ontbrekende velden zie je een lijst; de export verschijnt pas als alles compleet is.
-- [ ] Export: kopieer/download `locations.ts`, `samples.ts`, `map.ts`, `index.ts`, de i18n-fragmenten en de Claude-opdracht.
-- [ ] Concept blijft bewaard na paginaherlaad (localStorage); "Nieuw concept" wist het.
-- [ ] Tab **Locatie-editor** werkt nog als vanouds (hotspots plaatsen).
-- [ ] Seizoensrooster: check dat een thema met een venster buiten dat venster **niet** in de thema-kiezer staat, maar via `?theme=<id>` wél laadt.
+- [x] `/editor` → tab **Thema-wizard** opent op stap Concept.
+- [x] Stap 1: thema-id (bv. `herfst`), naam NL/EN, seizoensvenster invullen. Stijlprofiel staat voorgevuld.
+- [x] Stap 2: minstens 1 locatie + ≥4 geluiden invullen.
+- [x] Stap 3: **Prompts** — kopieerknoppen werken; de afbeeldingsprompt bevat je stijlprofiel + themanaam; per geluid een freesound-zoekpakket met doelpad.
+- [?] Stap 4: **Kaart & export** — plattegrond-afbeelding laden → locatie kiezen → op de kaart klikken plaatst een marker met %.
+- [?] Validatie: bij ontbrekende velden zie je een lijst; de export verschijnt pas als alles compleet is.
+- [?] Export: kopieer/download `locations.ts`, `samples.ts`, `map.ts`, `index.ts`, de i18n-fragmenten en de Claude-opdracht.
+- [?] Concept blijft bewaard na paginaherlaad (localStorage); "Nieuw concept" wist het.
+- [?] Tab **Locatie-editor** werkt nog als vanouds (hotspots plaatsen).
+- [?] Seizoensrooster: check dat een thema met een venster buiten dat venster **niet** in de thema-kiezer staat, maar via `?theme=<id>` wél laadt.
 
 ## 5. Week 5 — Peer-feedback + landingspagina
 
 ### 5a. Peer-feedback — docent
-- [ ] Klas → actieve opdracht → blok **"Klasgenoten luisteren"** → toggle **aan**.
+- [ ] Klas → actieve opdracht → blok **"Peer feedback"** (heette t/m testronde 1 "Klasgenoten luisteren") → toggle **aan**.
 - [ ] Kies een **ingebouwde feedbackkaart** (bv. "Ritme & puls"); de chips verschijnen als preview.
 - [ ] Maak een **eigen kaart**: titel + 2–8 complimenten (één per regel) → opslaan → wordt automatisch geselecteerd.
 

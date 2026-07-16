@@ -19,6 +19,7 @@ import { findStoryboardById } from '../../data/themes';
 import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { FeedbackPanel } from './FeedbackPanel';
+import { useModalBehavior } from '../../hooks/useModalBehavior';
 import { DEFAULT_BPM } from '../../constants/config';
 
 interface SubmissionPlayerProps {
@@ -222,13 +223,24 @@ export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSee
     onClose();
   }, [onClose]);
 
+  // Dialog-gedrag (bug 2b: Escape sloot deze overlay niet): Escape,
+  // focus-trap en scroll-lock via de gedeelde hook. autoFocus uit zodat de
+  // focus niet ongevraagd naar de sluitknop springt bij het openen.
+  const dialogRef = useModalBehavior(handleClose, { autoFocus: false });
+
   // Determine if we should show the timeline (not during loading/error)
   const showTimeline = playerState !== 'loading' && playerState !== 'error';
   const isPlaying = playerState === 'playing';
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-3 sm:p-4 md:p-6 z-50">
-      <div className="bg-bg-surface rounded-2xl shadow-2xl w-full h-full max-w-7xl max-h-[90vh] flex flex-col overflow-hidden">
+      <div
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={composition_name}
+        className="bg-bg-surface rounded-2xl shadow-2xl w-full h-full max-w-7xl max-h-[90vh] flex flex-col overflow-hidden"
+      >
         {/* Header */}
         <div className="relative px-4 sm:px-6 py-4 border-b border-border-subtle shrink-0">
           {/* Close button */}

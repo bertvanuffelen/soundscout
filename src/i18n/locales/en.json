@@ -473,6 +473,7 @@
     "noPraatplaat": "No active sound map for this class code. Ask your teacher.",
     "noActiveAssignment": "No active assignment for this class code. Ask your teacher.",
     "lookupError": "Something went wrong. Please try again.",
+    "loadFailed": "Loading failed. Please try again.",
     "backToStart": "Back to SoundScout",
     "viewCount": "Listened {{count}} times",
     "by": "By",
@@ -813,6 +814,7 @@
     "submitError": "Could not submit composition. Please try again.",
     "shareLinkError": "Could not create link. Please try again.",
     "loadError": "Could not load composition.",
+    "dataInvalid": "This composition could not be loaded: the saved data is invalid. Please report this via the feedback form.",
     "cooldown": "Please wait! {{seconds}} seconds before you can submit again.",
     "rateLimitError": "Too many requests. Please wait and try again.",
     "autoSubmitSuccess": "Submitted to {{className}}",
@@ -1153,7 +1155,7 @@
       "unknownGiver": "Unknown"
     },
     "peerReview": {
-      "title": "Classmates listen",
+      "title": "Peer feedback",
       "hint": "Students who submitted listen to 3 anonymous classmates' compositions and give compliments.",
       "cardLabel": "Feedback card",
       "ownCard": "own card",
@@ -1232,6 +1234,7 @@
       "fromTemplate": "Assignment",
       "fromPraatplaat": "Sound map",
       "new": "New",
+      "seen": "Listened",
       "reviewed": "Reviewed"
     },
     "praatplaat": {
@@ -1398,7 +1401,7 @@
     "classCodeTitle": "Class code & teacher",
     "classCodeText": "When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself.",
     "cookiesTitle": "Cookies & tracking",
-    "cookiesText": "SoundScout does not use tracking cookies or advertisements. We only count anonymously how often the app is used (daily totals, without personal data, without cookies and without third parties); your browser's 'Do Not Track' setting is respected. The only local storage is for your compositions and language preference. No data is shared with third parties.",
+    "cookiesText": "SoundScout does not use tracking cookies or advertisements. We only count anonymously how often the app is used (daily totals, without personal data, without cookies and without third parties); your browser's 'Do Not Track' setting is respected. The only local storage is for your compositions, your language preference and — if you save or submit a composition online — your save code, so you can find your work again. No data is shared with third parties.",
     "contact": "Questions about privacy? Contact us at <mail>bvanuffelen@gmail.com</mail>."
   },
   "shareCodeModal": {

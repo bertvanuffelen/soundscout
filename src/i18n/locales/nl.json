@@ -473,6 +473,7 @@
     "noPraatplaat": "Er is geen actieve praatplaat voor deze klascode. Vraag je docent.",
     "noActiveAssignment": "Er is geen actieve opdracht voor deze klascode. Vraag je docent.",
     "lookupError": "Er ging iets mis bij het opzoeken. Probeer opnieuw.",
+    "loadFailed": "Laden is niet gelukt. Probeer het opnieuw.",
     "backToStart": "Terug naar SoundScout",
     "viewCount": "{{count}}x beluisterd",
     "by": "Door",
@@ -813,6 +814,7 @@
     "submitError": "Kon compositie niet versturen. Probeer opnieuw.",
     "shareLinkError": "Kon link niet aanmaken. Probeer opnieuw.",
     "loadError": "Kon compositie niet laden.",
+    "dataInvalid": "Deze compositie kon niet worden geladen: de opgeslagen gegevens zijn ongeldig. Meld dit via het feedbackformulier.",
     "cooldown": "Even geduld! Wacht {{seconds}} seconden voordat je opnieuw kunt versturen.",
     "rateLimitError": "Te veel verzoeken. Wacht even en probeer opnieuw.",
     "autoSubmitSuccess": "Ingeleverd bij {{className}}",
@@ -1153,7 +1155,7 @@
       "unknownGiver": "Onbekend"
     },
     "peerReview": {
-      "title": "Klasgenoten luisteren",
+      "title": "Peer feedback",
       "hint": "Leerlingen die ingeleverd hebben, beluisteren 3 anonieme klasgenoot-composities en geven complimenten.",
       "cardLabel": "Feedbackkaart",
       "ownCard": "eigen kaart",
@@ -1232,6 +1234,7 @@
       "fromTemplate": "Opdracht",
       "fromPraatplaat": "Praatplaat",
       "new": "Nieuw",
+      "seen": "Beluisterd",
       "reviewed": "Beoordeeld"
     },
     "praatplaat": {
@@ -1398,7 +1401,7 @@
     "classCodeTitle": "Klascode & docent",
     "classCodeText": "Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld.",
     "cookiesTitle": "Cookies & tracking",
-    "cookiesText": "SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities en taalvoorkeur. Er worden geen gegevens gedeeld met derden.",
+    "cookiesText": "SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities, je taalvoorkeur en — als je een compositie online bewaart of inlevert — je bewaarcode, zodat je je werk kunt terugvinden. Er worden geen gegevens gedeeld met derden.",
     "contact": "Vragen over privacy? Neem contact op via <mail>bvanuffelen@gmail.com</mail>."
   },
   "shareCodeModal": {

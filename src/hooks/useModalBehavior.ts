@@ -14,8 +14,12 @@
 
 import { useEffect, useRef } from 'react';
 
+// Let op: disabled elementen uitsluiten — een disabled knop kan geen focus
+// krijgen, maar telde wél mee als "laatste element" waardoor de Tab-wrap
+// nooit vuurde en de focus uit de modal ontsnapte (bug 1c: EffectsModal,
+// waar de Toepassen-knop disabled start).
 const FOCUSABLE_SELECTOR =
-  'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])';
+  'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 interface UseModalBehaviorOptions {
   /** Sluit bij Escape (default true) */

@@ -3,7 +3,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
-import { Play, Trash2, Image, PenLine, FileText, MapPin, Star } from 'lucide-react';
+import { Play, Trash2, Image, PenLine, FileText, MapPin, Star, Headphones } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 import { getReviewStatus } from '../../hooks/useSubmissions';
 import { StickerIcon } from '../../utils/stickerMap';
@@ -58,6 +58,12 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-100 text-accent-700 text-xs font-bold shrink-0">
               <span className="w-1.5 h-1.5 rounded-full bg-accent-500 animate-pulse" aria-hidden="true" />
               {t('teacher.submissionCard.new')}
+            </span>
+          )}
+          {!isWip && reviewStatus === 'seen' && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600 text-xs font-medium shrink-0">
+              <Headphones className="w-3 h-3" />
+              {t('teacher.submissionCard.seen')}
             </span>
           )}
           {reviewStatus === 'reviewed' && (

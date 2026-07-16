@@ -72,66 +72,89 @@ export function ShareCodeInput() {
 
         // 1. Als 6 karakters → probeer als bewaarcode (#52)
         if (code.length === 6) {
+          // Laden en claimen hebben elk hun eigen foutafhandeling: alleen een
+          // écht lege lookup is "code niet gevonden". Elke andere fout (parse,
+          // rate limit, netwerk) toont zijn eigen — al vertaalde — melding,
+          // zodat de gebruiker niet misleid wordt (testronde-1 bug 2c).
+          let saved: Awaited<ReturnType<typeof loadSavedComposition>>;
           try {
-            const saved = await loadSavedComposition(code);
+            saved = await loadSavedComposition(code);
+          } catch (err) {
             if (signal.aborted) return;
-            if (saved) {
-              // Claim de compositie (genereert nieuwe secret voor dit apparaat)
-              const newSecret = await claimSavedComposition(code, saved.student_name);
-              if (signal.aborted) return;
-              await initializeFromSavedComposition(
-                saved.composition_data,
-                saved.composition_name,
-                code,
-                newSecret,
-              );
-              // Klas-sessie herstellen (migratie 028): de bewaarcode is de
-              // universele terugkeerroute — ook peer-feedback werkt dan weer
-              // op elk apparaat. Faalt geruisloos (sessie is nice-to-have).
-              if (saved.class_code) {
-                try {
-                  const assignment = await getActiveAssignment(saved.class_code);
-                  const session = assignment ? classSessionFromAssignment(saved.class_code, assignment) : null;
-                  if (session) {
-                    // Volgorde: setClassSession reset submissionId/synced,
-                    // dus die twee erná zetten.
-                    useAppStore.getState().setClassSession(session);
-                    useAppStore.getState().setSubmissionId(saved.id);
-                    useAppStore.getState().setSubmissionSynced(true);
-                  }
-                } catch (err) {
-                  logger.warn('Klas-sessie herstellen via bewaarcode mislukt', err);
-                }
-              }
-
-              // Docent-feedback (migratie 026) + klasgenoot-complimenten
-              // (migratie 027) meenemen naar de studio: banner met de reactie.
-              const { getPeerCompliments } = await import('../../lib/peerFeedback');
-              const compliments = await getPeerCompliments(code);
-              if (saved.feedback_at || compliments.length > 0) {
-                useAppStore.getState().setReceivedFeedback({
-                  sticker: saved.feedback_sticker ?? null,
-                  level: saved.feedback_level ?? null,
-                  text: saved.feedback_text ?? null,
-                  at: saved.feedback_at ?? null,
-                  compliments,
-                });
-                // Dedup voor de "je hebt een reactie"-melding op het startscherm
-                const info = storageService.getClassFeedbackCode();
-                if (info?.saveCode === code && saved.feedback_at) {
-                  storageService.setClassFeedbackCode({
-                    ...info,
-                    lastSeenFeedbackAt: saved.feedback_at,
-                  });
-                }
-              }
-              setCode('');
-              return;
-            }
-          } catch {
-            if (signal.aborted) return;
+            logger.error('Bewaarcode laden mislukt:', err);
+            setError(err instanceof Error && err.message ? err.message : t('share.loadFailed'));
+            return;
           }
-          setError(t('share.codeNotFound'));
+          if (signal.aborted) return;
+          if (!saved) {
+            setError(t('share.codeNotFound'));
+            return;
+          }
+
+          try {
+            // Claim de compositie (genereert nieuwe secret voor dit apparaat)
+            const newSecret = await claimSavedComposition(code, saved.student_name);
+            if (signal.aborted) return;
+            await initializeFromSavedComposition(
+              saved.composition_data,
+              saved.composition_name,
+              code,
+              newSecret,
+            );
+          } catch (err) {
+            if (signal.aborted) return;
+            logger.error('Bewaarde compositie claimen/openen mislukt:', err);
+            setError(err instanceof Error && err.message ? err.message : t('share.loadFailed'));
+            return;
+          }
+
+          // Klas-sessie herstellen (migratie 028): de bewaarcode is de
+          // universele terugkeerroute — ook peer-feedback werkt dan weer
+          // op elk apparaat. Faalt geruisloos (sessie is nice-to-have).
+          if (saved.class_code) {
+            try {
+              const assignment = await getActiveAssignment(saved.class_code);
+              const session = assignment ? classSessionFromAssignment(saved.class_code, assignment) : null;
+              if (session) {
+                // Volgorde: setClassSession reset submissionId/synced,
+                // dus die twee erná zetten.
+                useAppStore.getState().setClassSession(session);
+                useAppStore.getState().setSubmissionId(saved.id);
+                useAppStore.getState().setSubmissionSynced(true);
+              }
+            } catch (err) {
+              logger.warn('Klas-sessie herstellen via bewaarcode mislukt', err);
+            }
+          }
+
+          // Docent-feedback (migratie 026) + klasgenoot-complimenten
+          // (migratie 027) meenemen naar de studio: banner met de reactie.
+          // Eigen try: we zijn hier al genavigeerd — een fout in dit
+          // nice-to-have mag nooit een foutmelding op het startscherm zetten.
+          try {
+            const { getPeerCompliments } = await import('../../lib/peerFeedback');
+            const compliments = await getPeerCompliments(code);
+            if (saved.feedback_at || compliments.length > 0) {
+              useAppStore.getState().setReceivedFeedback({
+                sticker: saved.feedback_sticker ?? null,
+                level: saved.feedback_level ?? null,
+                text: saved.feedback_text ?? null,
+                at: saved.feedback_at ?? null,
+                compliments,
+              });
+              // Dedup voor de "je hebt een reactie"-melding op het startscherm
+              const info = storageService.getClassFeedbackCode();
+              if (info?.saveCode === code && saved.feedback_at) {
+                storageService.setClassFeedbackCode({
+                  ...info,
+                  lastSeenFeedbackAt: saved.feedback_at,
+                });
+              }
+            }
+          } catch (err) {
+            logger.warn('Feedback/complimenten laden via bewaarcode mislukt', err);
+          }
+          setCode('');
           return;
         }
 

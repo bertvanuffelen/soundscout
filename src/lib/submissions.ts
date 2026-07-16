@@ -12,7 +12,7 @@ import { ERR_RATE_LIMIT, ERR_CLASS_NOT_FOUND, ERR_NOT_ACTIVE, ERR_INVALID_SAVE_C
 import { withTimeout } from '../utils/withTimeout';
 import { generateRandomDutchName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
-import { parseCompositionData } from '../utils/schemas';
+import { parseCompositionData, CompositionDataSchema } from '../utils/schemas';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
@@ -513,14 +513,19 @@ export async function loadSavedComposition(
 
   const row = data[0];
 
-  // Validate composition_data via Zod (TP5-5)
-  const compositionData = parseCompositionData(row.composition_data);
-  if (!compositionData) {
-    logger.warn('Saved composition data validation failed', { saveCode });
-    return null;
+  // Validate composition_data via Zod (TP5-5). Een parse-fout is GEEN
+  // "code niet gevonden" (de rij bestaat!) — gooi een eigen, eerlijke fout
+  // en log de eerste Zod-issues zodat de oorzaak diagnosticeerbaar is.
+  const parsed = CompositionDataSchema.safeParse(row.composition_data);
+  if (!parsed.success) {
+    logger.warn('Saved composition data validation failed', {
+      saveCode,
+      issues: parsed.error.issues.slice(0, 5),
+    });
+    throw new Error(i18n.t('submissions.dataInvalid'));
   }
 
-  return { ...row, composition_data: compositionData } as SavedOnlineComposition;
+  return { ...row, composition_data: parsed.data } as SavedOnlineComposition;
 }
 
 /**
