@@ -27,6 +27,19 @@ import {
   Guitar,
   Music,
   Piano,
+  // Piraten samples
+  Beer,
+  DoorOpen,
+  Dice5,
+  Waves,
+  Bell,
+  Anchor,
+  Package,
+  Sailboat,
+  Wind,
+  Droplet,
+  Bug,
+  Skull,
 } from 'lucide-react';
 
 const sampleIconMap: Record<string, LucideIcon> = {
@@ -57,6 +70,19 @@ const sampleIconMap: Record<string, LucideIcon> = {
   Guitar,
   Music,
   Piano,
+  // Piraten samples
+  Beer,
+  DoorOpen,
+  Dice5,
+  Waves,
+  Bell,
+  Anchor,
+  Package,
+  Sailboat,
+  Wind,
+  Droplet,
+  Bug,
+  Skull,
 };
 
 interface SampleIconProps {

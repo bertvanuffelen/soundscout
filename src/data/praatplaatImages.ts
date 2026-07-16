@@ -66,6 +66,14 @@ export const praatplaatImages: PraatplaatImage[] = [
     availableFor: 'both',
     themeId: 'basis',
   },
+  {
+    id: 'pp-piratenmarkt',
+    nameKey: 'praatplaatImages.piratenmarkt',
+    imageUrl: '/images/praatplaten/piratenmarkt.jpg',
+    category: 'fictie',
+    availableFor: 'both',
+    themeId: 'piraten',
+  },
 ];
 
 /**
