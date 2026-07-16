@@ -375,6 +375,9 @@ export async function activatePendingAssignment(): Promise<void> {
   // een nieuwe klas-sessie start (gedeeld apparaat, volgende leerling) mag
   // nooit de code of reactie-melding van de vorige leerling zien (bug 5b)
   storageService.clearClassFeedbackCode();
+  // Schone lei vóór het zetten van de nieuwe klas-sessie (testronde 3):
+  // oude storyboard/praatplaat/template/feedback-context weg
+  useAppStore.getState().resetCompositionContext();
 
   if (assignment.type === 'template' && assignment.template) {
     // Klascode-sessie vastleggen

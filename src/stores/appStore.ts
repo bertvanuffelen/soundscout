@@ -55,6 +55,14 @@ interface AppStore {
   setScreen: (screen: GameScreen) => void;
   setLocation: (locationId: string | null) => void;
   setCurrentCompositionId: (id: string | null) => void;
+  /**
+   * Wis alle context die bij de lopende compositie hoort (storyboard,
+   * praatplaat, template, klas-sessie, feedback). Aanroepen bij het BEWUST
+   * starten van iets nieuws — navigatie (goToStart) reset dit sinds
+   * testronde 3 níet meer (bug: storyboard verdween bij terug-naar-start).
+   * composeMode blijft staan: die wordt door de wizard/flow expliciet gezet.
+   */
+  resetCompositionContext: () => void;
   goToStart: () => void;
   goToMap: () => void;
   goToLocation: (locationId: string) => void;
@@ -152,7 +160,25 @@ export const useAppStore = create<AppStore>()((set) => ({
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
 
-  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, currentCompositionId: null, shareCode: null, sharedPraatplaatCode: null, activeTemplate: null, templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true }, composeMode: 'free', activeStoryboard: null, currentImageIndex: 0, activePraatplaat: null, praatplaatPosition: null, classSession: null, submissionId: null, submissionSynced: false, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null, pendingTeacherTab: null, pendingGuideSection: null, receivedFeedback: null }),
+  resetCompositionContext: () => set({
+    currentCompositionId: null,
+    activeTemplate: null,
+    templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true },
+    activeStoryboard: null,
+    currentImageIndex: 0,
+    activePraatplaat: null,
+    praatplaatPosition: null,
+    classSession: null,
+    submissionId: null,
+    submissionSynced: false,
+    receivedFeedback: null,
+  }),
+
+  // Puur navigatie + scherm-transients (testronde 3): de compositie-context
+  // (storyboard/praatplaat/template/klas-sessie) blijft staan zodat "Verder
+  // werken" na een uitstapje naar start echt vérder werkt. Bewuste resets
+  // lopen via resetCompositionContext().
+  goToStart: () => set({ currentScreen: 'start', currentLocationId: null, shareCode: null, sharedPraatplaatCode: null, isSubmitting: false, pendingAssignment: null, pendingLessonCardKey: null, pendingTeacherTab: null, pendingGuideSection: null }),
 
   goToMap: () => set({ currentScreen: 'map', currentLocationId: null }),
 

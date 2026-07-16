@@ -194,6 +194,8 @@ export function StartScreen() {
   const handleSelectTheme = async (themeId: string) => {
     setIsLoading(true);
     try {
+      // Bewuste nieuwe compositie: oude storyboard/praatplaat/klas-context weg
+      useAppStore.getState().resetCompositionContext();
       await initializeNewComposition({ themeId });
       setShowComposeWizard(false);
     } finally {
@@ -204,6 +206,8 @@ export function StartScreen() {
   const handleSelectStoryboard = async (storyboard: Storyboard) => {
     setIsLoading(true);
     try {
+      // Bewuste nieuwe compositie: oude context weg vóór de storyboard-init
+      useAppStore.getState().resetCompositionContext();
       await initializeCompositionFromStoryboard(storyboard);
       setShowComposeWizard(false);
     } finally {

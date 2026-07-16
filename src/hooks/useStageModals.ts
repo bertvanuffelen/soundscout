@@ -15,6 +15,7 @@ import { useAudioEngine } from './useAudioEngine';
 
 export function useStageModals() {
   const goToStart = useAppStore((s) => s.goToStart);
+  const resetCompositionContext = useAppStore((s) => s.resetCompositionContext);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const { stopAll } = useAudioEngine();
@@ -28,10 +29,13 @@ export function useStageModals() {
     stopAll();
     clearAllTracks();
     clearLibrary();
+    // Bewuste nieuwe start: wis ook storyboard/praatplaat/template/klas-
+    // sessie (goToStart doet dat sinds testronde 3 niet meer)
+    resetCompositionContext();
     setShowNewModal(false);
     // Always go to start screen so the user can choose a theme
     goToStart();
-  }, [stopAll, clearAllTracks, clearLibrary, goToStart]);
+  }, [stopAll, clearAllTracks, clearLibrary, resetCompositionContext, goToStart]);
 
   return {
     showNewModal,
