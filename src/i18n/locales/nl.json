@@ -7,6 +7,8 @@
   },
   "common": {
     "back": "Terug",
+    "previous": "Vorige",
+    "next": "Volgende",
     "close": "Sluiten",
     "loading": "Laden...",
     "retry": "Opnieuw proberen",

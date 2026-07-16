@@ -7,6 +7,8 @@
   },
   "common": {
     "back": "Back",
+    "previous": "Previous",
+    "next": "Next",
     "close": "Close",
     "loading": "Loading...",
     "retry": "Try again",

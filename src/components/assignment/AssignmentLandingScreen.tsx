@@ -19,7 +19,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2 } from 'lucide-react';
+import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment } from '../../utils/compositionInit';
 import { findStoryboardById, getTheme } from '../../data/themes';
@@ -64,6 +64,9 @@ export default function AssignmentLandingScreen() {
   }
 
   const { classCode, assignment } = pending;
+  // "Zin onder de afbeelding" (type-uitleg) alleen tonen als er GEEN
+  // docent-opdrachtkaart is — anders vertelt de kaart het verhaal (Notion).
+  const hasTeacherCard = !!(assignment?.card && (assignment.card.title || assignment.card.bullets.length > 0));
 
   return (
     <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
@@ -77,35 +80,45 @@ export default function AssignmentLandingScreen() {
           <span className="text-sm font-medium">{t('assignmentLanding.back')}</span>
         </button>
 
-        {/* Header: klascode-context */}
-        <div className="mb-6">
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-400/20 text-accent-300 md:bg-accent-100 md:text-accent-700 text-xs font-mono tracking-wider mb-3">
-            {t('assignmentLanding.classCodeLabel')} {classCode}
-          </div>
-          {assignment && (
-            <p className="text-brand-300 md:text-text-muted text-sm">
-              {t('assignmentLanding.classLabel')} <span className="text-white md:text-text-main font-medium">{assignment.className}</span>
-            </p>
-          )}
-        </div>
+        {/* Indeling (testronde 2, wens Bert): 1) header met titel/type-icoon
+            2) grote afbeelding 3) labels klascode + klas 4) opdrachtkaart */}
 
-        {/* Opdrachtkaart (docent-kaart of per-type default) — vorm-onafhankelijk */}
-        {assignment && <OpdrachtkaartCard card={resolveCard(t, assignment)} />}
-
-        {/* Body per assignment-type */}
+        {/* 1+2: Body per assignment-type (header + afbeelding + evt. uitleg) */}
         {assignment?.type === 'template' && assignment.template && (
           <TemplateBody template={assignment.template} />
         )}
         {assignment?.type === 'praatplaat' && assignment.praatplaat && (
-          <PraatplaatBody praatplaat={assignment.praatplaat} />
+          <PraatplaatBody praatplaat={assignment.praatplaat} showDescription={!hasTeacherCard} />
         )}
         {assignment?.type === 'storyboard' && assignment.storyboard && (
-          <StoryboardBody storyboard={assignment.storyboard} />
+          <StoryboardBody storyboard={assignment.storyboard} showDescription={!hasTeacherCard} />
         )}
         {assignment?.type === 'free' && assignment.free && (
-          <FreeBody free={assignment.free} />
+          <FreeBody free={assignment.free} showDescription={!hasTeacherCard} />
         )}
         {!assignment && <RouteCBody />}
+
+        {/* 3: Labels klascode + klas */}
+        {assignment && (
+          <div className="mt-5 mb-5 flex flex-wrap items-center gap-x-3 gap-y-2">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-400/20 text-accent-300 md:bg-accent-100 md:text-accent-700 text-xs font-mono tracking-wider">
+              {t('assignmentLanding.classCodeLabel')} {classCode}
+            </span>
+            <span className="text-brand-300 md:text-text-muted text-sm">
+              {t('assignmentLanding.classLabel')} <span className="text-white md:text-text-main font-medium">{assignment.className}</span>
+            </span>
+          </div>
+        )}
+        {!assignment && (
+          <div className="mt-5 mb-5">
+            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-accent-400/20 text-accent-300 md:bg-accent-100 md:text-accent-700 text-xs font-mono tracking-wider">
+              {t('assignmentLanding.classCodeLabel')} {classCode}
+            </span>
+          </div>
+        )}
+
+        {/* 4: Opdrachtkaart (docent-kaart of per-type default) */}
+        {assignment && <OpdrachtkaartCard card={resolveCard(t, assignment)} />}
 
         {error && (
           <p role="alert" className="text-error-400 text-sm mt-4">
@@ -248,7 +261,7 @@ function TemplateBody({ template }: { template: Template }) {
   );
 }
 
-function PraatplaatBody({ praatplaat }: { praatplaat: { name: string; imageUrl: string } }) {
+function PraatplaatBody({ praatplaat, showDescription }: { praatplaat: { name: string; imageUrl: string }; showDescription: boolean }) {
   const { t } = useTranslation();
   return (
     <div>
@@ -265,22 +278,31 @@ function PraatplaatBody({ praatplaat }: { praatplaat: { name: string; imageUrl: 
           </h1>
         </div>
       </div>
-      <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video mb-4">
+      <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video">
         <img
           src={praatplaat.imageUrl}
           alt={praatplaat.name}
           className="w-full h-full object-cover"
         />
       </div>
-      <p className="text-sm text-brand-300 md:text-text-muted">
-        {t('assignmentLanding.praatplaat.description')}
-      </p>
+      {showDescription && (
+        <p className="text-sm text-brand-300 md:text-text-muted mt-4">
+          {t('assignmentLanding.praatplaat.description')}
+        </p>
+      )}
     </div>
   );
 }
 
-function StoryboardBody({ storyboard }: { storyboard: AssignmentStoryboard }) {
+function StoryboardBody({ storyboard, showDescription }: { storyboard: AssignmentStoryboard; showDescription: boolean }) {
   const { t } = useTranslation();
+  // Alle frames tonen met bladerpijltjes (testronde 2, Notion-wens): het
+  // registry-storyboard is via de ref op te lossen; valt terug op de cover.
+  const frames = findStoryboardById(storyboard.ref)?.storyboard.images ?? null;
+  const [frameIndex, setFrameIndex] = useState(0);
+  const frameCount = frames?.length ?? 1;
+  const currentFrame = frames?.[frameIndex] ?? null;
+
   return (
     <div>
       <div className="flex items-start gap-3 mb-4">
@@ -296,26 +318,51 @@ function StoryboardBody({ storyboard }: { storyboard: AssignmentStoryboard }) {
           </h1>
         </div>
       </div>
-      <div className="relative rounded-xl overflow-hidden bg-neutral-100 aspect-video mb-4">
+      <div className="relative rounded-xl overflow-hidden bg-neutral-100 aspect-video">
         <img
-          src={storyboard.coverImage}
-          alt={t(storyboard.nameKey)}
+          src={currentFrame?.url ?? storyboard.coverImage}
+          alt={currentFrame ? t(currentFrame.label) : t(storyboard.nameKey)}
           className="w-full h-full object-cover"
         />
-        {storyboard.imageCount > 1 && (
+        {frames && frameCount > 1 && (
+          <>
+            <button
+              type="button"
+              onClick={() => setFrameIndex((i) => (i - 1 + frameCount) % frameCount)}
+              aria-label={t('common.previous')}
+              className="absolute left-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-black/45 text-white hover:bg-black/65 backdrop-blur-sm transition-colors"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              type="button"
+              onClick={() => setFrameIndex((i) => (i + 1) % frameCount)}
+              aria-label={t('common.next')}
+              className="absolute right-2 top-1/2 -translate-y-1/2 w-9 h-9 flex items-center justify-center rounded-full bg-black/45 text-white hover:bg-black/65 backdrop-blur-sm transition-colors"
+            >
+              <ChevronRight size={20} />
+            </button>
+            <span className="absolute bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full bg-black/60 text-white text-xs font-medium">
+              {frameIndex + 1} / {frameCount}
+            </span>
+          </>
+        )}
+        {!frames && storyboard.imageCount > 1 && (
           <span className="absolute top-2 right-2 px-2 py-1 rounded-full bg-black/60 text-white text-xs font-medium">
             {t('assignmentLanding.template.storyboardCount', { count: storyboard.imageCount })}
           </span>
         )}
       </div>
-      <p className="text-sm text-brand-300 md:text-text-muted">
-        {t('assignmentLanding.storyboard.description')}
-      </p>
+      {showDescription && (
+        <p className="text-sm text-brand-300 md:text-text-muted mt-4">
+          {t('assignmentLanding.storyboard.description')}
+        </p>
+      )}
     </div>
   );
 }
 
-function FreeBody({ free }: { free: { themeId: string; themeName: string } }) {
+function FreeBody({ free, showDescription }: { free: { themeId: string; themeName: string }; showDescription: boolean }) {
   const { t } = useTranslation();
   const theme = getTheme(free.themeId);
   const preview = theme?.map.backgroundImage ?? null;
@@ -335,13 +382,15 @@ function FreeBody({ free }: { free: { themeId: string; themeName: string } }) {
         </div>
       </div>
       {preview && (
-        <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video mb-4">
+        <div className="rounded-xl overflow-hidden bg-neutral-100 aspect-video">
           <img src={preview} alt={free.themeName} className="w-full h-full object-cover" />
         </div>
       )}
-      <p className="text-sm text-brand-300 md:text-text-muted">
-        {t('assignmentLanding.free.description')}
-      </p>
+      {showDescription && (
+        <p className="text-sm text-brand-300 md:text-text-muted mt-4">
+          {t('assignmentLanding.free.description')}
+        </p>
+      )}
     </div>
   );
 }
