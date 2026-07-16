@@ -12,6 +12,23 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ---
 
+## 🔁 HERTEST-LIJST TESTRONDE 2 (16-7) — begin hier
+
+Alles hieronder is gefixt/gebouwd n.a.v. jouw notities; de details staan als ✅-annotaties bij de betreffende punten. Volgorde is de handigste testvolgorde:
+
+1. **1a Reset-mail**: vraag een VERSE reset-mail aan → klik direct → nieuwe-wachtwoord-formulier (twee bugs gefixt: Supabase-config was al gedaan; de app veegde daarnaast het token uit de URL).
+2. **2c Bewaarcode**: voer BBD6KD (of een nieuwe code) in → **nieuw keuzescherm "Studio / Podium"** → kies Podium → compositie + feedbackblok + code-badge op het podium. *(Door mij al end-to-end geverifieerd met BBD6KD — zien werken is genoeg.)*
+3. **2b Beluisterd/Escape**: inzending openen zonder feedback → badge "Beluisterd"; Escape sluit de weergave.
+4. **5b opnieuw (leerling-flow)**: verse incognito → klascode → **nieuw landingsscherm** (titel → grote afbeelding mét storyboard-pijltjes → klascode/klas-labels → opdrachtkaart) → componeren → opslaan → GEEN oude "Jouw code" vooraf, wél je eigen code na inleveren.
+5. **5b "Luister naar klasgenoten"**: toont nu het storyboard (meebewegend) of de praatplaat-plek bij het geluid; als versturen door de server geweigerd wordt zie je nu een éérlijke melding (ronde gesloten / max bereikt) i.p.v. nep-confetti.
+6. **6d Feedback-overzicht**: eerst checken dat **Peer feedback aan staat** (en de timer niet verlopen is!) vóórdat leerlingen beoordelen — dat was vermoedelijk de oorzaak van jouw lege overzicht (de fout was onzichtbaar; nu niet meer). Daarna: overzicht toont sterren, of een eerlijke foutmelding met retry.
+7. **Klasscherm**: "Presenteren" + "Feedback-overzicht" staan nu als grote knoppen bovenaan.
+8. **Tips**: verse incognito → kaart en studio tonen de nieuwe Tip-modal (lamp-icoon) i.p.v. het onopvallende balkje.
+9. **Nog niet eerder getest**: 6b (tijdslot), 6c (sessie-herstel — werkt nu via het keuzescherm), 6e (presentatiemodus), 6f (iconen), 7 (DAW-ronde) — gewoon volgens de secties hieronder.
+10. **docs/WOORDENLIJST.md**: aanzet definitielijst — vul aan/schrap (jouw week-3-wens).
+
+---
+
 ## 0. Rooktest (5 min) — werkt de basis nog?
 - [x] Start → Nieuwe compositie → thema kiezen → Kaart → Locatie → geluiden verzamelen → Studio → Podium. Geluid speelt af, geen console-fouten.
 - [x] Taal wisselen (NL/EN) op het startscherm; steekproef dat teksten meeveranderen.
@@ -73,8 +90,11 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 - [x] localStorage wissen (of verse incognito). Start → "Nieuwe compositie" → **eenmalige intro-animatie** "Zo werkt SoundScout" → "Aan de slag" → wizard.
 - [x] Nogmaals "Nieuwe compositie" → intro verschijnt **niet** meer (eenmalig).
 - [x] Kaart, eerste keer: hint **"Klik op een locatie om geluiden te verzamelen"** → verdwijnt na het eerste locatiebezoek. ==> WERKT, maar misschien kunnen we een Tip-modal maken die we vaker kunnen oproepen. Een klein modal die verschijnt met een duidelijke icon met tip teken en dan de tekst. Die kunnen we op meerdere plekken inzetten. Deze tekst zoals nu valt eigenlijk niet goed op.
+  - ✅ **Gebouwd (testronde 2)**: herbruikbare TipModal (lamp-icoon + tekst + "Aan de slag!") — nu ingezet op de kaart én in de studio, zelfde eenmaligheid. Hertest in verse incognito.
 - [x] Studio, eerste keer met een clip: tip **"klik op een blok in de tijdlijn om te knippen, effecten of volume…"** → verdwijnt zodra je een clip selecteert. ==> Zie vorige opmerking over de tip-modal.
+  - ✅ **Gebouwd (testronde 2)**: zie hierboven — de studio-tip verschijnt nu als TipModal zodra het eerste blokje op de tijdlijn ligt.
 - [x] Taal-check: nergens kindertaal; "docent" i.p.v. "juf/meester". Steekproef NL en EN. ==> Moeten we misschien samen een definitie-lijst samen stellen?
+  - ✅ **Aanzet klaar (testronde 2)**: `docs/WOORDENLIJST.md` — rollen, codes, opdrachten, studio- en feedbacktermen, plus een lijstje twijfelgevallen voor jou. Vul aan/schrap, dan maken we hem definitief.
 
 ## 4. Week 4 — Thema-wizard (dev-only)
 
@@ -104,10 +124,14 @@ Dus het leek wel alsof, van het andere incognito venster, de leerlingcode, die z
 Nou ja, het bijzondere was dus dat ik in twee keer een incognito venster zat en ik dus nog de oude code zag. 
 Ik ga het nog een keer testen.   ja, en ook bij een derde leerling weer in een incognito venster zie ik, nog voordat ik mijn sound compositie opsla, al een jouw code staan met 6 letters. Als ik dan op opslaan klik, dan krijg ik pas de nieuwe code in beeld.
 Dus op een bepaalde manier onthoudt hij van een eerdere leerling de code totdat de nieuwe leerling het opslaat. 
+  - ✅ **Verholpen (testronde 2)**: het codeblok las bij het openen de code van de vórige inzending uit localStorage (incognito-vensters delen die, net als gedeelde Chromebooks). De code is nu gekoppeld aan de inzending zelf en een nieuwe klas-start begint schoon. Hertest: verse leerling ziet pas een code ná het eigen opslaan.
 - [-] Als leerling na inleveren: knop **"Luister naar klasgenoten"** op het podium. ==> Als ik luister naar klasgenoten, dan kan ik alleen maar de audio luisteren. De opdracht was juist, bijvoorbeeld, de activiteit was een storyboard. Het zou dus eigenlijk een presentatie moeten zijn van een storyboard met de geluiden erbij. Dus, bij "Luister naar klasgenoten" moeten we de presentatieversie hebben, zodat je het storyboard groot ziet, met of het praatplaatstukje, het gekozen stukje uit de praatplaat, of na welke opdracht dan ook, beeld en geluid. We moeten even goed onderzoeken of we dit niet ergens ook hebben geïmplementeerd, zodat we dit eventueel hier kunnen herbruiken. Het gaat dus echt om het presenteren en niet om de feedbackknoppen, want dat werkt wel. 
+  - ✅ **Gebouwd (testronde 2)**: de modal toont nu het storyboard gróót en meebewegend met de muziek (zelfde weergave als de presentatiemodus), en bij een praatplaat de plaat met de gekozen plek als pulserende marker. Vrije composities blijven audio-only. Hertest met een storyboard-opdracht.
 - [x] Modal laadt tot 3 **anonieme** composities → speel elk af → kies 1–3 chips → "Versturen en volgende" → afsluitend "klaar"-scherm.
 - [?] Eigen werk komt **nooit** in de batch voorbij. ==> Niet opgemerkt, maar niet 100 procent zeker.
+  - ✅ **Code-geverifieerd (testronde 2)**: de batch-functie sluit de eigen inzending server-side uit (`get_peer_review_batch` filtert op de eigen submission-id) — afgevinkt.
 - [-] Ontvanger: laad die inzending via de **bewaarcode** → banner toont **"Complimenten van klasgenoten: … ×N"** (anoniem geaggregeerd). ==> Deze flow voelt dus niet goed, want je verwacht eigenlijk in het podium de feedback te krijgen en de complimenten. Nu ga je dus eigenlijk weer terug naar je hoofdscherm om daar een code in te voeren. Als je die code invoert, kom je eigenlijk gewoon in jouw eigen compositie weer, zo lijkt het. Dus we moeten deze flow echt even opnieuw uitdenken en goed brainstormen. Ik denk dat we moeten nadenken dat alles met betrekking tot feedback gewoon in het podium blijft.Wanneer een leerling toch uit het podium klikt, moeten we misschien op onze hoofdpagina de button laten verschijnen, mits er al iets is ingedacht, om naar het podium te gaan. Zo hoeft een leerling niet elke keer weer helemaal door de andere opties te navigeren. Het podium is altijd voor de feedback. Daar staat ook altijd iets vermeld. Misschien kunnen we ook, als een leerling op een gegeven moment een bewaarcode heeft, die als een kleine button of markering tonen. Zo ziet een leerling altijd wat zijn code is. We moeten dit echt nog even goed uitdenken. 
+  - ✅ **Gebouwd volgens jouw ontwerp (testronde 2)**: het podium is nu de feedback-plek. Bewaarcode invoeren → **keuzescherm "Studio / Podium"**; het podium toont een vast feedbackblok (docent-feedback + klasgenoot-sterren, alleen zichtbaar als er iets is) + de code-badge; de "Je hebt een reactie!"-melding op start opent direct het podium; en bij een actieve klas-sessie staat er een "Naar het podium"-knop op start. End-to-end geverifieerd met BBD6KD.
 - [x] Uit-zetten: docent zet de toggle uit → nieuwe leerling ziet de knop niet meer.
 
 ### 5c. Landingspagina `/teacher`
@@ -136,6 +160,7 @@ Dus op een bepaalde manier onthoudt hij van een eerdere leerling de code totdat 
 - [x] Leerling: "Luister naar klasgenoten" → per criterium van de feedbackkaart een rij met **3 sterren**; zelfde ster nogmaals klikken wist het criterium; versturen kan pas met ≥1 beoordeeld criterium.
 - [x] **Maximum 3**: beoordeel 3 klasgenoten (evt. in meerdere sessies) → daarna toont de modal de lege-melding; de server weigert een 4e ("maximum bereikt").
 - [?] Ontvanger (via bewaarcode): banner toont per criterium **gemiddelde sterren + aantal** ("Ritme ★★★ (3)").
+  - 🔧 **Flow gewijzigd (testronde 2)**: dit zie je nu op het **podium** — bewaarcode invoeren → keuzescherm → Podium → feedbackblok toont docent-feedback én de klasgenoot-sterren per criterium.
 
 ### 6b. Toggle + tijdslot (server-side!)
 - [ ] Docent: tijdslot instellen (10 min) → aftelling "sluit over X min" zichtbaar; na afloop "Ronde gesloten" + "Opnieuw openen".
@@ -148,6 +173,7 @@ Dus op een bepaalde manier onthoudt hij van een eerdere leerling de code totdat 
 
 ### 6d. Docent: feedback-overzicht + top 3
 - [-] Klasscherm → "Feedback-overzicht": **top 3 podium** (Trophy/Medal/Award) klopt met de gegeven sterren. ==> Ondanks dat er feedback is gegeven, is het niet zichtbaar in het feedbackoverzicht van de docent wat de leerlingen aan feedback hebben gegeven. De feedback knop staat aan. Kleine aanpassing trouwens bij feedback overzicht, er staat "Zet "Klasgenoten luisteren" aan bij de actieve opdracht.", dat moet natuurlijk zijn " Zet Peer feedback aan".
+  - ✅ **Oorzaak gevonden en verholpen (testronde 2)**: er zat een dubbele foutmaskering — als de server een leerling-beoordeling weigerde (bv. omdat de ronde gesloten/verlopen was), zag de leerling tóch het "klaar"-scherm met confetti, en het docent-overzicht toonde bij een leesfout gewoon "leeg". Er werd dus waarschijnlijk nooit iets opgeslagen zonder dat iemand het merkte. Nu: eerlijke meldingen aan beide kanten (leerling ziet "ronde gesloten"/"max bereikt"; docent ziet een foutmelding met retry). Tekstje is ook aangepast ("Zet Peer feedback aan"). **Hertest: zet Peer feedback aan (zonder verlopen timer), laat 2 leerlingen sterren geven en open dan het overzicht.**
 - [ ] Tab Ontvangen: uitklappen toont per-criterium gemiddelden + wie-gaf-wat (namen alleen hier).
 - [ ] Tab Gegeven: leerlingen met 0 gegeven staan bovenaan.
 

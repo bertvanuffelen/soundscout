@@ -122,6 +122,22 @@
 
 **Nieuwe wensen uit Berts testnotities (→ redesign-ronde 2)**: herbruikbare Tip-modal (de kaart/studio-hints vallen nu niet op); samen een definitielijst/woordenlijst opstellen voor consistente taal; plus de Notion-punten (landingsscherm-herindeling, storyboard-pijltjes, platen passend in viewport, ClassDetail-herindeling met prominente Presenteren/Feedback-knoppen, "Jouw code"-blok prominenter). Later: custom SMTP-afzender voor Supabase-mails.
 
+## Testronde 2 (16-7) — grote fixronde na Berts test t/m week 6
+
+Bert stopte met testen ("ik val in dezelfde fouten"); alles uit testplan + Notion in één ronde. Rode draad: **foutmaskering structureel opgeruimd** — fouten werden geslikt en als leeg/succes getoond.
+
+| Stap | Wat | Commit |
+|---|---|---|
+| 1+3 | **Peer-feedback dubbel gemaskeerd (6d)**: leerling zag altijd confetti, ook bij serverweigering (ronde gesloten/max); docent-overzicht toonde fout als "leeg". Nu getypeerde fouten (PeerFeedbackError), eerlijk 'blocked'-scherm, retry in overzicht; live-probe bevestigt dat submit_v2 in de DB staat. + resterende "Klasgenoten luisteren"-teksten → "Peer feedback" | `bd4d3cd` |
+| 2 | **Oude "Jouw code" (5b)**: codeblok las localStorage van de vórige leerling; nu gebonden aan submissionId + schoon bij nieuwe klas-start (gedeelde Chromebooks!) | `4c8fe0f` |
+| 4 | **Beeld in "Luister naar klasgenoten" (5b)**: storyboard meebewegend / praatplaat-plek in de peer-modal (hergebruik StoryboardViewer/presentatie-patroon; batch had de data al) | `a06a6c4` |
+| 5 | **Podium = feedback-thuis (ontwerp Bert)**: keuzescherm Studio/Podium na bewaarcode; vast feedbackblok + code-badge op het podium (alleen mét inhoud); reactie-melding → podium; "Naar het podium"-knop op start. End-to-end geverifieerd met echte code BBD6KD (bewijst ook migratie 029) | `7fcb8de` |
+| 6 | **Leerling-landingsscherm**: header → grote afbeelding (storyboard-pijltjes + teller) → klascode/klas-labels → opdrachtkaart; uitlegzin alleen zonder docent-kaart | `38c1800` |
+| 7 | **ClassDetail**: Presenteren (+teller) en Feedback-overzicht als grote knoppen bovenaan; pill-knoppen weg (PeerReviewSettings klapte al uit — "is nu al", aldus Bert) | `74ee9c3` |
+| 8+9 | **TipModal** (kaart + studio, zelfde firstRun-flags) + `docs/WOORDENLIJST.md`-aanzet | `a244c29` |
+
+**Hertest-lijst** staat bovenaan `docs/TESTPLAN-MASTERPLAN.md`. Geparkeerd: "docent bepaalt tijdsduur"-vermelding (vergt migratie + activatie-UI).
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
