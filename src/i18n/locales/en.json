@@ -149,7 +149,9 @@
         "voodoohut-druppel": "Drip",
         "voodoohut-raaf": "Raven"
       }
-    }
+    },
+    "seasonBadge": "available again in {{month}}",
+    "seasonSuffix": "(out of season)"
   },
   "start": {
     "startGame": "Start Game",
@@ -782,7 +784,13 @@
       "phaseNamePlaceholder": "Name",
       "phaseTextPlaceholder": "Description",
       "saveError": "Could not save the lesson card."
-    }
+    },
+    "filterAll": "All",
+    "filterGeneral": "General",
+    "filterEmpty": "No lesson cards match this filter.",
+    "seasonConfirmTitle": "Theme out of season",
+    "seasonConfirmBody": "The theme of this lesson card is currently out of season and hidden from student pickers. You can still activate it: students with the class code can use it fully.",
+    "seasonConfirmButton": "Activate anyway"
   },
   "templates": {
     "activeBanner": "Assignment:",

@@ -149,7 +149,9 @@
         "voodoohut-druppel": "Druppel",
         "voodoohut-raaf": "Raaf"
       }
-    }
+    },
+    "seasonBadge": "weer beschikbaar in {{month}}",
+    "seasonSuffix": "(buiten seizoen)"
   },
   "start": {
     "startGame": "Start Spel",
@@ -782,7 +784,13 @@
       "phaseNamePlaceholder": "Naam",
       "phaseTextPlaceholder": "Omschrijving",
       "saveError": "Kon de leskaart niet opslaan."
-    }
+    },
+    "filterAll": "Alle",
+    "filterGeneral": "Algemeen",
+    "filterEmpty": "Geen leskaarten binnen dit filter.",
+    "seasonConfirmTitle": "Thema buiten seizoen",
+    "seasonConfirmBody": "Het thema van deze leskaart is nu buiten seizoen en staat niet in de leerling-kiezers. Activeren kan gewoon: leerlingen met de klascode kunnen er volledig mee werken.",
+    "seasonConfirmButton": "Toch activeren"
   },
   "templates": {
     "activeBanner": "Opdracht:",

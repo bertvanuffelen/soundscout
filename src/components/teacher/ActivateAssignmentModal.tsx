@@ -10,13 +10,14 @@ import { useTranslation } from 'react-i18next';
 import { FileText, MapPin, Clapperboard, Music, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
-import { getAllMultiImageStoryboards, getAssignableThemes, type StoryboardWithTheme } from '../../data/themes';
+import { getAllMultiImageStoryboards, getTeacherThemes, type StoryboardWithTheme } from '../../data/themes';
 import type { ThemeConfig } from '../../data/themes';
 import { getPraatplaatCatalog, type PraatplaatCatalogEntry } from '../../data/praatplaatCatalog';
 import type { AssignmentType } from '../../lib/assignments';
 import type { TeacherTemplate } from '../../lib/templates';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
+import { ThemeSeasonBadge } from './ThemeSeasonBadge';
 
 interface ActivateAssignmentModalProps {
   isOpen: boolean;
@@ -43,7 +44,8 @@ type Selection =
 // App-content (registry/catalogus) — voor elke docent hetzelfde, geen hook nodig.
 const storyboards: StoryboardWithTheme[] = getAllMultiImageStoryboards();
 const praatplaatCatalog: PraatplaatCatalogEntry[] = getPraatplaatCatalog();
-const assignableThemes: ThemeConfig[] = getAssignableThemes();
+// Docent-kiezer: óók buiten-seizoen thema's tonen, mét badge (seizoensregel 17-7)
+const assignableThemes: ThemeConfig[] = getTeacherThemes();
 
 export function ActivateAssignmentModal({
   isOpen,
@@ -479,7 +481,10 @@ function FreeThemeOption({
           <img src={theme.map.backgroundImage} alt={t(theme.name)} className="w-full h-full object-cover" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="font-medium text-text-main text-sm truncate">{t(theme.name)}</p>
+          <p className="font-medium text-text-main text-sm truncate flex items-center gap-1.5">
+            {t(theme.name)}
+            <ThemeSeasonBadge themeId={theme.id} />
+          </p>
           <p className="text-text-muted text-xs flex items-center gap-1">
             <Music className="w-3 h-3" />
             {t('templates.typeFree')}

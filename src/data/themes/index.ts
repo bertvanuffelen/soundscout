@@ -70,6 +70,30 @@ export function getAssignableThemes(): ThemeConfig[] {
 }
 
 /**
+ * Docent-kiezers: álle publieke thema's, óók buiten seizoen (seizoensregel
+ * 17-7: docenten zien buiten-seizoen materiaal mét badge en beslissen zelf;
+ * leerling-kiezers blijven het seizoensfilter volgen via getPublicThemes).
+ */
+export function getTeacherThemes(): ThemeConfig[] {
+  return Object.values(themes).filter((theme) => theme.isPublic);
+}
+
+export interface ThemeSeasonInfo {
+  inSeason: boolean;
+  /** Maand (1-12) waarin het thema weer opent; null als in seizoen of zonder venster */
+  returnsInMonth: number | null;
+}
+
+/** Seizoenstatus van een thema, voor badges op docent-materiaal. */
+export function getThemeSeasonInfo(themeId: string | null | undefined, date: Date = new Date()): ThemeSeasonInfo {
+  const theme = themeId ? themes[themeId] : undefined;
+  if (!theme || isThemeInSeason(theme, date)) {
+    return { inSeason: true, returnsInMonth: null };
+  }
+  return { inSeason: false, returnsInMonth: Number(theme.activeFrom!.slice(0, 2)) };
+}
+
+/**
  * Get theme ID from URL parameter.
  * Falls back to default if param missing or invalid.
  *

@@ -13,7 +13,7 @@ import { Plus, Trash2, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { getPraatplaatCatalog } from '../../data/praatplaatCatalog';
-import { getAllMultiImageStoryboards, getAssignableThemes } from '../../data/themes';
+import { getAllMultiImageStoryboards, getTeacherThemes, getThemeSeasonInfo } from '../../data/themes';
 import { MAX_CARD_BULLETS } from '../../lib/assignmentCards';
 import type { AssignmentType } from '../../lib/assignments';
 import type { LessonCard, LessonCardInput, LessonPhase } from '../../lib/lessonCards';
@@ -33,7 +33,8 @@ const TYPES: AssignmentType[] = ['praatplaat', 'storyboard', 'free', 'template']
 
 const praatplaatCatalog = getPraatplaatCatalog();
 const storyboards = getAllMultiImageStoryboards();
-const assignableThemes = getAssignableThemes();
+// Docent-kiezer: óók buiten-seizoen thema's, met tekst-suffix (seizoensregel 17-7)
+const assignableThemes = getTeacherThemes();
 
 export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonCardEditorModalProps) {
   const { t } = useTranslation();
@@ -320,7 +321,9 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
             >
               <option value="">{t('lessonCards.editor.resourcePlaceholder')}</option>
               {assignableThemes.map((theme) => (
-                <option key={theme.id} value={theme.id}>{t(theme.name)}</option>
+                <option key={theme.id} value={theme.id}>
+                  {t(theme.name)}{!getThemeSeasonInfo(theme.id).inSeason ? ` ${t('themes.seasonSuffix')}` : ''}
+                </option>
               ))}
             </select>
           )}

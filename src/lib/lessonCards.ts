@@ -17,6 +17,7 @@ import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import type { AssignmentType } from './assignments';
 import type { OpdrachtkaartContent } from '../types';
+import { findStoryboardById } from '../data/themes';
 
 /** Eén fase van het creatief proces op een leskaart. */
 export interface LessonPhase {
@@ -58,6 +59,19 @@ export interface LocalizedLessonFields {
   level: string | null;
   lessonGoal: string | null;
   phases: LessonPhase[];
+}
+
+/**
+ * Thema-herkomst van een leskaart, afgeleid uit de inhoud waarnaar hij
+ * verwijst (opdrachten-model 17-7: thema is een kenmerk, geen opgeslagen
+ * veld — geen migratie nodig). null = niet thema-gebonden ("algemeen",
+ * bv. een template-leskaart).
+ */
+export function getLessonCardThemeId(card: LessonCard): string | null {
+  if (card.ppThemeId) return card.ppThemeId;
+  if (card.freeThemeId) return card.freeThemeId;
+  if (card.storyboardRef) return findStoryboardById(card.storyboardRef)?.themeId ?? null;
+  return null;
 }
 
 /**
