@@ -150,6 +150,22 @@ Ontwerp: één presentatiescherm voor digibord-presentatie, docent-review, publi
 
 **Fase 2 (wacht op Berts mockup):** `PresentationSurface`-UI met feature-props; wrappers; Presenteren-knop op het podium; later PraatplaatViewer-samenvoeging.
 
+## Universeel presentatiescherm — fase 2 (17-7, na mockup-akkoord Bert)
+
+Mockup goedgekeurd + drie aanvullende eisen van Bert: zijpaneel volledig in/uit schuifbaar (randknop met positie-badge) · fullscreen-knop altijd aanwezig (browser-Fullscreen API) · montagelijn-toggle (alleen bij beeld-vormen; uitklappen maakt het beeld lager). Vier vervolgkeuzes: toggle alleen bij beeld-vormen · defaults presentatie/publiek/peer ingeklapt + docent-review uitgeklapt · ingeklapt zijpaneel = volledig weg + randknop · echte browser-fullscreen.
+
+**Fase 2 gebouwd (8 commits `dc32be6`…`5e9e0f3`):**
+- `useFullscreen`-hook (nieuw; incl. webkit-varianten iPad, Escape-guard via `isDocumentFullscreen()`).
+- Migratie **030** `get_peer_stars_for_class` (batch peer-sterren per klas, alleen eigenaar-docent) + client `getPeerStarsForClass()` — fire-and-forget, zonder 030 blijven sterren gewoon weg.
+- `PresentationSurface` (`src/components/presentation/`): één scherm voor vier modi (teacher-present / teacher-review / public / peer) in mockup-stijl — lichte kaart op brand-900, "Nu te horen"-pill, montagelijn-toggle, schuifbaar zijpaneel met vorm-icoon + peer-sterren + feedback-status-toggle (stip: nieuw/gezien/beoordeeld), fullscreen (knop + F-toets), toetsenbord/announce/doorspelen uit fase 1 behouden.
+- Vier thin wrappers: ClassPresentationView (haalt peer-sterren, geeft classId door vanuit ClassDetail) · SubmissionPlayer (review, montagelijn default uitgeklapt, gezien-stempel intact) · SharedPlayer (data-schil + gesture-gate blijft; audio-fase = surface) · PeerReviewModal (luisterstap = surface met sterren-rij als ratingSlot; stappenflow + eerlijke foutafhandeling blijven).
+- **Presenteren-knop op het podium** (Opslaan & Delen → kolom "Voor de klas"): snapshot van de live compositie in de surface, geen opslag.
+- Browser-geverifieerd: luisterlink (gesture → surface → afspelen → beeldsync → montagelijn-toggle) en podium → Presenteren → sluiten. Gates: tsc OK · 266 tests · lint 27 (-1 t.o.v. baseline) · i18n-pariteit · productie-build OK.
+
+**Hertest Bert (fase 2):** docent-presentatie met ≥2 inzendingen (zijpaneel schuiven, randknop-badge, feedback-status-toggle, peer-sterren ná migratie 030) · docent-review-inzending (montagelijn default uitgeklapt, feedbackpaneel, gezien-stempel) · peer-flow op leerling-device · fullscreen op het digibord (knop, F, Escape verlaat éérst fullscreen).
+
+**Later (apart):** PraatplaatViewer + SharedPraatplaatViewer samenvoegen tot één surface-variant.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
@@ -161,6 +177,7 @@ Ontwerp: één presentatiescherm voor digibord-presentatie, docent-review, publi
 
 ## Voor Bert (acties buiten de code)
 
+- **Migratie 030 uitvoeren** (`supabase/migrations/030_peer_stars_batch.sql`) — batch peer-sterren voor het zijpaneel van het presentatiescherm. Zonder deze migratie werkt de presentatie gewoon, alleen zonder sterren per inzending.
 - **Migratie 029 uitvoeren** (`supabase/migrations/029_fix_load_saved_composition_class_code.sql`) — fixt de testronde-1-bug "bewaarcode niet gevonden": migratie 028 had een typefout (`class_code TEXT` vs kolom `CHAR(4)`) waardoor élke bewaarcode-load faalde. Verifieer daarna met `SELECT * FROM load_saved_composition('BBD6KD');` of door de code in de app in te voeren.
 
 - **Migration 025 uitvoeren** in de Supabase SQL Editor (`supabase/migrations/025_anonymous_analytics.sql`) — daarna verschijnen de eerste tellingen in de tabel `usage_stats`.
