@@ -24,6 +24,7 @@ import {
   GraduationCap,
   Globe,
   Lock,
+  MonitorPlay,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
@@ -52,6 +53,7 @@ interface StageActionsModalProps {
 
   // Handlers
   onSave: () => void;
+  onPresent: () => void;
   onExportMp3: () => void;
   onExportVideo: () => void;
   onSaveOnline: () => void;
@@ -116,6 +118,7 @@ export function StageActionsModal({
   videoExportState,
   videoProgress,
   onSave,
+  onPresent,
   onExportMp3,
   onExportVideo,
   onSaveOnline,
@@ -212,6 +215,13 @@ export function StageActionsModal({
                 colorClasses="bg-brand-100 text-brand-800"
               />
               <div className="flex flex-col gap-2">
+                {/* Presenteren: compositie fullscreen op het digibord (fase 2) */}
+                <ActionButton
+                  icon={<MonitorPlay size={18} className="text-brand-700" />}
+                  label={t('stage.presentButton')}
+                  hint={t('stage.actionsPresentHint')}
+                  onClick={() => { onPresent(); onClose(); }}
+                />
                 {hasClassSession ? (
                   <div className="rounded-xl bg-brand-100/60 border border-brand-100 px-3 py-2.5">
                     {submissionSynced ? (

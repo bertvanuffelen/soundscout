@@ -385,7 +385,9 @@
     "saveQuotaError": "Storage full — delete an old composition to free up space.",
     "saveGenericError": "Save failed. Please try again.",
     "syncSuccess": "Online copy updated",
-    "syncFailed": "Online copy not updated — check your internet connection"
+    "syncFailed": "Online copy not updated — check your internet connection",
+    "presentButton": "Present on the whiteboard",
+    "actionsPresentHint": "Show and play your composition full screen"
   },
   "editor": {
     "copyFailed": "Copy failed. Use the download button."

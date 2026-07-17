@@ -385,7 +385,9 @@
     "saveQuotaError": "Opslagruimte vol — verwijder een oude compositie om ruimte te maken.",
     "saveGenericError": "Opslaan mislukt. Probeer het opnieuw.",
     "syncSuccess": "Online kopie bijgewerkt",
-    "syncFailed": "Online kopie niet bijgewerkt — controleer je internetverbinding"
+    "syncFailed": "Online kopie niet bijgewerkt — controleer je internetverbinding",
+    "presentButton": "Presenteren op het digibord",
+    "actionsPresentHint": "Laat je compositie groot zien en horen"
   },
   "editor": {
     "copyFailed": "Kopiëren mislukt. Gebruik de download knop."

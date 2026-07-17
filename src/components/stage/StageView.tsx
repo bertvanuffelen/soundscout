@@ -32,6 +32,7 @@ import { ShareWithTeacherModal, ShareLinkModal, SaveOnlineModal } from '../share
 import { storageService } from '../../services/StorageService';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { StageActionsModal } from './StageActionsModal';
+import { PresentationSurface } from '../presentation/PresentationSurface';
 import { PeerReviewModal } from './PeerReviewModal';
 import { StagePlayback, StageAudience } from './StagePlayback';
 import { StorytellingDisplay } from './StorytellingDisplay';
@@ -56,6 +57,12 @@ export function StageView() {
   const { isTeacher } = useAuth();
   const [showTemplateModal, setShowTemplateModal] = useState(false);
   const [showActionsModal, setShowActionsModal] = useState(false);
+
+  // Presenteren op het digibord (fase 2): snapshot van de live compositie
+  // in het universele presentatiescherm — puur weergave, geen opslag
+  // (activePraatplaat wordt verderop al gelezen voor de succes-modal)
+  const praatplaatPosition = useAppStore((s) => s.praatplaatPosition);
+  const [showPresentation, setShowPresentation] = useState(false);
 
   // Peer-review "Luister naar klasgenoten" (migratie 027): beschikbaar zodra
   // de eigen inzending gesynchroniseerd is en de docent het aan heeft staan
@@ -518,6 +525,7 @@ export function StageView() {
           videoExportState={videoExportState}
           videoProgress={videoProgress}
           onSave={handleSaveClick}
+          onPresent={() => { stopAll(); setShowPresentation(true); }}
           onExportMp3={handleExport}
           onExportVideo={handleVideoExport}
           onSaveOnline={() => setShowSaveOnlineModal(true)}
@@ -525,6 +533,32 @@ export function StageView() {
           onShareTeacher={() => setShowShareModal(true)}
           onSaveTemplate={() => setShowTemplateModal(true)}
           onClose={() => setShowActionsModal(false)}
+        />
+      )}
+
+      {/* Presenteren op het digibord — snapshot van de live compositie */}
+      {showPresentation && (
+        <PresentationSurface
+          playlist={[{
+            id: 'stage-live',
+            student_name: '',
+            composition_name: compositionName.trim() || t('stage.defaultName'),
+            composition_data: {
+              tracks,
+              bpm,
+              totalBeats,
+              isLooping,
+              samples: librarySamples,
+              sections: sections.length > 0 ? sections : undefined,
+              storyboardId: activeStoryboard?.id,
+              praatplaat: activePraatplaat ?? undefined,
+              praatplaatPosition: praatplaatPosition ?? undefined,
+            },
+            created_at: new Date().toISOString(),
+          }]}
+          mode="public"
+          onClose={() => setShowPresentation(false)}
+          respectLoop
         />
       )}
 
