@@ -12,6 +12,20 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ---
 
+## 🔁 HERTEST-LIJST OPDRACHTEN-MODEL (17-7, tweede blok) — nieuwste eerst
+
+Herontwerp na de usecases-brainstorm (indeling B + thema-filter, seizoensregel, klas-historie). Alles docent-login:
+
+- [ ] **1. "Mijn materiaal"** (voorheen Mijn opdrachten): alleen opdrachtkaarten + templates; badge telt klopt; geen praatplaten- of storyboards-secties meer.
+- [ ] **2. Leskaarten-tab = kiesplek**: thema-filterchips (alleen thema's mét kaarten, + "Algemeen") en niveau-chips; buiten-seizoen leskaart toont ⏱-badge "weer beschikbaar in …"; activeren daarvan vraagt één zachte bevestiging (nooit blokkeren).
+- [ ] **3. Klaslokaal startkeuze**: bij "Kies/Wijzig opdracht" eerst twee kaarten — "Gebruik een leskaart" (picker: klas staat vast, één klik activeren, klascode groot in beeld, vervang-waarschuwing bij actieve opdracht) / "Stel zelf samen" (klapt de vertrouwde type-kaarten uit).
+- [ ] **4. Klas-historie verrijkt**: bij eerdere praatplaat-opdrachten oog/deel/prullenbak-iconen — Bekijken opent het bord mét inzendingen, Delen toont de deelcode, Verwijderen waarschuwt dat inzendingen meegaan en ververst de lijst; "Activeer" werkt nog.
+- [ ] **5. "Bewaar als leskaart"**: vanaf een template-kaart in Mijn materiaal én vanuit het succes-scherm van "Opslaan als opdracht" (podium) — editor opent voorgevuld; na opslaan verschijnt de kaart in Leskaarten.
+- [ ] **6. Praatplaat-bord nieuw**: docent-viewer én publieke deelviewer (`?pp-share=CODE`) zijn nu het presentatiescherm — plaat groot, klikbare spots (klik = afspelen, nogmaals = pauze, cluster = keuzemenu), zijpaneel met inzendingen (docent), montagelijn-toggle, fullscreen; publieke gesture-gate blijft.
+- [ ] **7. Vrije-thema-kiezers docent**: buiten-seizoen thema's zichtbaar mét badge (voorheen verborgen); leerling-kiezers verbergen ze nog steeds.
+
+---
+
 ## 🔁 HERTEST-LIJST PRESENTATIESCHERM FASE 2 (17-7) — begin hier
 
 Eén universeel presentatiescherm (mockup-stijl: lichte kaart op donker podium) achter vier ingangen. Overal geldt: fullscreen-knop rechtsboven (of `F`; Escape verlaat éérst fullscreen, sluit pas daarna), en bij beeld-vormen een montagelijn-toggle (tijdlijn uit-/inklappen — beeld wordt lager bij uitklappen).

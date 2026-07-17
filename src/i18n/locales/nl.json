@@ -1510,8 +1510,6 @@
       "generateShareLink": "Maak luisterpagina aan",
       "shareListenExpiry": "De link is 30 dagen geldig. Bij opnieuw aanmaken wordt de link verlengd.",
       "viewer": {
-        "stop": "Stop",
-        "showTimeline": "Bekijk timeline",
         "emptyTitle": "Nog geen composities",
         "emptyDescription": "Zodra leerlingen hun compositie opslaan, verschijnen ze hier op de praatplaat."
       }

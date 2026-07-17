@@ -1510,8 +1510,6 @@
       "generateShareLink": "Create listening page",
       "shareListenExpiry": "The link is valid for 30 days. Recreating extends the expiry.",
       "viewer": {
-        "stop": "Stop",
-        "showTimeline": "View timeline",
         "emptyTitle": "No compositions yet",
         "emptyDescription": "Once students save their composition, they will appear here on the sound map."
       }

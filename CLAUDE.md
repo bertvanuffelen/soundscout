@@ -158,7 +158,7 @@ The Stage screen (`StageView.tsx`) is the performance screen where students list
 - **Fullscreen** — always-present button (+ `F` key) via `src/hooks/useFullscreen.ts` (webkit variants for iPad). Escape-guard: Escape exits fullscreen first (browser) and must NOT also close the surface — handled via `isDocumentFullscreen()` check in the `useModalBehavior` onClose.
 - **Audio** — `src/hooks/useCompositionPlayback.ts` (shared engine: AbortController load with progress, schedule/play/pause/resume via existing Part, ~30fps beat tracking with loop-modulo, `onEnded` for auto-advance, `respectLoop`/`autoLoad` options). NOT used by StageView itself (that stays on useAudioEngine/audioStore).
 
-Thin wrappers: `ClassPresentationView` (teacher-present + fetches peer stars), `SubmissionPlayer` (teacher-review + gezien-stempel), `SharedPlayer` (data fetch + gesture-gate, then public mode), `PeerReviewModal` (stappenflow + surface for the listen/rate step). `PraatplaatViewer`/`SharedPraatplaatViewer` are NOT yet unified (separate interaction model).
+Thin wrappers: `ClassPresentationView` (teacher-present + fetches peer stars), `SubmissionPlayer` (teacher-review + gezien-stempel), `SharedPlayer` (data fetch + gesture-gate, then public mode), `PeerReviewModal` (stappenflow + surface for the listen/rate step), and since M5 also `PraatplaatViewer` (teacher-present + `interactiveBoard`) and `SharedPraatplaatViewer` (statemachine + gesture-gate, then public + `interactiveBoard`). The **`interactiveBoard` prop** renders one fixed board image with clustered clickable spots (`praatplaatClustering` + `PraatplaatSpot`) for the whole playlist — click plays that submission, multi-spot clusters open a picker.
 
 ### Theme System
 
@@ -189,7 +189,13 @@ Themes in `src/data/themes/{themeId}/` — each has `locations.ts`, `samples.ts`
 
 ### Teacher Dashboard
 
-Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disables DnD and hides edit controls. Max 8 classes per teacher (free tier). The dashboard has three large tabs (`SegmentedTabs`): **Mijn klassen**, **Mijn opdrachten** (opdrachtkaarten + praatplaten + storyboards + templates), **Leskaarten**.
+Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disables DnD and hides edit controls. Max 8 classes per teacher (free tier). The dashboard has three large tabs (`SegmentedTabs`), following the **opdrachten-model 17-7** (Mijn klassen = doe-wereld · Leskaarten = didactische kiesplek · Mijn materiaal = eigen grondstoffen):
+
+- **Mijn klassen** — per-klas doe-wereld: `ClassDetail` with active assignment, a **startkeuze** ("Gebruik een leskaart" → `LessonCardPickerModal` (class fixed, one-click activate via `activate_lesson_card`) / "Stel zelf samen" → `AssignmentTypeCards`), submissions, and an "Eerdere opdrachten" history block (via `fetchPastAssignments`) where praatplaat rows also offer **Bekijken/Delen/Verwijderen** (viewer, share code, `deletePraatplaat` with submissions warning) next to reactivate.
+- **Leskaarten** — dé kiesplek (`LessonCardsTab`, master-detail): built-in + own cards with **thema- and niveau-filterchips** (`getLessonCardThemeId` derives the theme from the card's content — no stored field) and **season badges**.
+- **Mijn materiaal** — only own building blocks: opdrachtkaarten + templates. Template cards have "Maak er een leskaart van" → `LessonCardEditorModal` with `prefill` (also offered in `SaveAsTemplateModal`'s success state on the stage). Praatplaat instances are class data and do NOT appear here; app content (storyboards/catalog) lives only in the activation pickers.
+
+**Seizoensregel (17-7)**: teacher-facing pickers show out-of-season themes with a `ThemeSeasonBadge` ("weer beschikbaar in {maand}", via `getTeacherThemes`/`getThemeSeasonInfo` in `src/data/themes/index.ts`); activating an out-of-season lesson card asks one soft confirmation — never block or hide. Student pickers keep the season filter (`getPublicThemes`); running assignments never break (`?theme=` stays functional).
 
 ### Assignments & Leskaarten (opdrachten-architectuur)
 

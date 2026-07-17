@@ -164,7 +164,19 @@ Mockup goedgekeurd + drie aanvullende eisen van Bert: zijpaneel volledig in/uit 
 
 **Hertest Bert (fase 2):** docent-presentatie met ≥2 inzendingen (zijpaneel schuiven, randknop-badge, feedback-status-toggle, peer-sterren ná migratie 030) · docent-review-inzending (montagelijn default uitgeklapt, feedbackpaneel, gezien-stempel) · peer-flow op leerling-device · fullscreen op het digibord (knop, F, Escape verlaat éérst fullscreen).
 
-**Later (apart):** PraatplaatViewer + SharedPraatplaatViewer samenvoegen tot één surface-variant.
+**Later (apart):** PraatplaatViewer + SharedPraatplaatViewer samenvoegen tot één surface-variant. *(→ gedaan in het opdrachten-model hieronder, M5.)*
+
+## Opdrachten-model herontwerp (17-7, usecases-brainstorm Bert)
+
+Aanleiding: Berts vraag "waarom staan praatplaten in Mijn opdrachten?" → brainstorm met flowchart, 10 usecases en 3 dashboard-indelingen (in chat). Besluiten: **indeling B + thema-filter** (Mijn klassen = doe-wereld · Leskaarten = dé kiesplek mét thema/niveau-filter · Mijn materiaal = alleen eigen bouwstenen) · **seizoensregel** (badge + zachte bevestiging, nooit blokkeren/verbergen aan docent-kant; leerling-kiezers blijven filteren; lopende opdrachten breken nooit) · thema wordt **afgeleid** uit de inhoud (geen migratie) · "Bewaar als leskaart" meteen mee · praatplaat-presentatie op de surface · uploads buiten beschouwing.
+
+**Gebouwd (6 commits `efd294a`…`e458f61` + afronding):**
+- M1 "Mijn materiaal": praatplaten-sectie (klas-data!) en storyboards-bladerlijst weg; PraatplaatCard/CreatePraatplaatModal/teacher-StoryboardCard verwijderd.
+- M2 Leskaarten-kiesplek: `getLessonCardThemeId` (afgeleid thema), filterchips, `ThemeSeasonBadge`, zachte seizoensbevestiging; docent-kiezers tonen buiten-seizoen thema's (`getTeacherThemes`).
+- M3 Klaslokaal: startkeuze (leskaart-picker `LessonCardPickerModal` met klascode-succes / zelf samenstellen) + historie-rijen praatplaat met Bekijken/Delen/Verwijderen.
+- M4 "Bewaar als leskaart": editor-prefill vanaf template-kaart én podium-succes.
+- M5 Praatplaat-bord: `interactiveBoard`-stand op PresentationSurface (geclusterde klikbare spots, keuzemenu); beide praatplaat-viewers zijn dunne schillen.
+- Gates overal groen (tsc · 266 tests · lint 27 · i18n-pariteit · build). Hertest-lijst "Opdrachten-model" bovenaan het testplan (alles docent-login).
 
 ## Besluitenlog
 
