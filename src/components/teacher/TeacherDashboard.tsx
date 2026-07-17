@@ -1,24 +1,23 @@
 /**
  * TeacherDashboard - Hoofdscherm voor docenten
  *
- * Toont:
- * - Overzicht van alle klassen
- * - Knop om nieuwe klas aan te maken
- * - Unified "Mijn opdrachten" sectie (templates + praatplaten)
- * - Mogelijkheid om klas te openen voor details
+ * Drie tabs (opdrachten-model 17-7):
+ * - Mijn klassen — de doe-wereld (klas-gebonden)
+ * - Leskaarten — dé kiesplek (kant-en-klare pakketten)
+ * - Mijn materiaal — alleen eigen bouwstenen (opdrachtkaarten + templates);
+ *   praatplaat-instanties zijn klas-data en leven in het klaslokaal,
+ *   app-inhoud (storyboards/catalogus) zie je in de activeer-kiezers
  */
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Plus, LogOut, FileText, MapPin, ClipboardList, Clapperboard, GraduationCap, HelpCircle } from 'lucide-react';
+import { Loader2, BookOpen, Plus, LogOut, FileText, ClipboardList, GraduationCap, HelpCircle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useAuth } from '../../contexts/useAuth';
 import { useClasses } from '../../hooks/useClasses';
 import { useTemplates } from '../../hooks/useTemplates';
-import { usePraatplaten } from '../../hooks/usePraatplaten';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import type { TeacherClass } from '../../hooks/useClasses';
-import type { PraatplaatRow } from '../../lib/praatplaat';
 import type { CreateCardParams } from '../../lib/assignmentCards';
 import type { Opdrachtkaart } from '../../types';
 import { signOut } from '../../lib/auth';
@@ -27,15 +26,9 @@ import { Modal } from '../ui/Modal';
 import { CreateClassModal } from './CreateClassModal';
 import { ClassCard } from './ClassCard';
 import { TemplateCard } from './TemplateCard';
-import { PraatplaatCard } from './PraatplaatCard';
-import { CreatePraatplaatModal } from './CreatePraatplaatModal';
 import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
-import { StoryboardCard } from './StoryboardCard';
 import { LessonCardsTab } from './LessonCardsTab';
 import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs, GuideLink } from './common';
-import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
-import { getAllMultiImageStoryboards } from '../../data/themes';
-import { logger } from '../../utils/logger';
 
 interface TeacherDashboardProps {
   onSelectClass: (classData: TeacherClass) => void;
@@ -53,21 +46,14 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     remove: removeTemplate, refetch: refetchTemplates,
   } = useTemplates();
   const {
-    praatplaten, loading: praatplatenLoading, error: praatplatenError,
-    create: createPraatplaatHook, remove: removePraatplaat, refetch: refetchPraatplaten,
-  } = usePraatplaten(); // Alle docent-praatplaten (geen classId)
-  const {
     cards, loading: cardsLoading, error: cardsError,
     create: createCard, update: updateCard, remove: removeCard, refetch: refetchCards,
   } = useAssignmentCards();
   const [showCreateModal, setShowCreateModal] = useState(false);
-  const [showCreatePraatplaat, setShowCreatePraatplaat] = useState(false);
   const [showTemplateInfo, setShowTemplateInfo] = useState(false);
-  const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
   const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
-  const [deletePraatplaatId, setDeletePraatplaatId] = useState<string | null>(null);
   // Opdrachtkaart-editor: showCardEditor stuurt de modal; editCard = te bewerken kaart (null = nieuw)
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editCard, setEditCard] = useState<Opdrachtkaart | null>(null);
@@ -82,13 +68,10 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     if (initialTeacherTab) useAppStore.getState().setPendingTeacherTab(null);
   }, [initialLessonKey, initialTeacherTab]);
 
-  // Tabs: Mijn klassen / Mijn opdrachten / Leskaarten. Deeplink → leskaarten.
+  // Tabs: Mijn klassen / Leskaarten / Mijn materiaal. Deeplink → leskaarten.
   const [activeTab, setActiveTab] = useState<'classes' | 'assignments' | 'lessons'>(
     initialLessonKey || initialTeacherTab === 'lessons' ? 'lessons' : 'classes',
   );
-
-  // Storyboards zijn vaste app-content (geen hook/CRUD) — alleen-lezen lijst.
-  const storyboards = getAllMultiImageStoryboards();
 
   // Haal display name op uit user metadata
   const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Docent';
@@ -153,33 +136,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     setDeleteCardId(null);
   };
 
-  const handleCreatePraatplaat = useCallback(async (params: {
-    name: string;
-    themeId: string;
-    locationId: string;
-    imageUrl: string;
-  }) => {
-    try {
-      setActionError(null);
-      await createPraatplaatHook(params);
-      setShowCreatePraatplaat(false);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.createError'));
-      logger.error('createPraatplaat failed:', err);
-    }
-  }, [createPraatplaatHook, t]);
-
-  const handleDeletePraatplaatConfirm = async () => {
-    if (!deletePraatplaatId) return;
-    try {
-      setActionError(null);
-      await removePraatplaat(deletePraatplaatId);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t('teacher.praatplaat.deleteError'));
-    }
-    setDeletePraatplaatId(null);
-  };
-
   return (
     <div className="min-h-screen bg-bg-app">
       {/* Header - gedeelde brand-900 shell */}
@@ -226,7 +182,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
             {
               id: 'assignments',
               label: t('teacher.dashboard.tabAssignments'),
-              count: praatplaten.length + templates.length + cards.length,
+              count: templates.length + cards.length,
               icon: ClipboardList,
             },
             {
@@ -338,25 +294,25 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           </>
         )}
 
-        {/* ===== Tab: Mijn opdrachten ===== */}
+        {/* ===== Tab: Mijn materiaal (eigen bouwstenen) ===== */}
         {activeTab === 'assignments' && (
           <>
-            {(templatesError || praatplatenError || cardsError) && (
+            {(templatesError || cardsError) && (
               <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
-                {templatesError || praatplatenError || cardsError}
-                <button onClick={() => { refetchTemplates(); refetchPraatplaten(); refetchCards(); }} className="ml-2 underline">
+                {templatesError || cardsError}
+                <button onClick={() => { refetchTemplates(); refetchCards(); }} className="ml-2 underline">
                   {t('common.retry')}
                 </button>
               </div>
             )}
 
-            {(templatesLoading || praatplatenLoading || cardsLoading) && (
+            {(templatesLoading || cardsLoading) && (
               <div className="text-center py-8">
                 <Loader2 className="w-8 h-8 text-accent-500 animate-spin mx-auto mb-2" />
               </div>
             )}
 
-            {!templatesLoading && !praatplatenLoading && !cardsLoading && (
+            {!templatesLoading && !cardsLoading && (
               <>
                 {/* 1. Opdrachtkaarten */}
                 <div className="mb-8">
@@ -436,81 +392,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                   )}
                 </div>
 
-                {/* 2. Praatplaten */}
-                <div className="mb-8">
-                  <div className="flex items-center justify-between gap-3 mb-2">
-                    <div className="flex items-center gap-1 min-w-0">
-                      <SectionTitle as="h3" size="md" className="flex items-center gap-2">
-                        <MapPin className="w-5 h-5 text-teal-500" />
-                        {t('templates.praatplatenTitle')}
-                      </SectionTitle>
-                      <GuideLink sectionId="praatplaat" />
-                    </div>
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setShowCreatePraatplaat(true)}
-                      className="inline-flex items-center gap-1 rounded-full flex-shrink-0"
-                    >
-                      <Plus className="w-4 h-4" />
-                      {t('templates.newPraatplaat')}
-                    </Button>
-                  </div>
-                  <p className="text-text-muted text-sm mb-4">
-                    {t('templates.praatplatenDescription')}
-                  </p>
-
-                  {praatplaten.length === 0 && (
-                    <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
-                      <MapPin className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
-                      <p className="text-text-muted text-sm">
-                        {t('templates.praatplatenEmpty')}
-                      </p>
-                    </div>
-                  )}
-
-                  {praatplaten.length > 0 && (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {praatplaten.map((pp) => (
-                        <PraatplaatCard
-                          key={pp.id}
-                          praatplaat={pp}
-                          classCode={classes.find((c) => c.id === pp.class_id)?.code}
-                          onDelete={() => setDeletePraatplaatId(pp.id)}
-                          onView={() => setViewingPraatplaat(pp)}
-                        />
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* 3. Storyboards (vaste app-content, alleen-lezen) */}
-                <div className="mb-8">
-                  <SectionTitle as="h3" size="md" className="flex items-center gap-2 mb-2">
-                    <Clapperboard className="w-5 h-5 text-purple-500" />
-                    {t('templates.storyboardsTitle')}
-                  </SectionTitle>
-                  <p className="text-text-muted text-sm mb-4">
-                    {t('templates.storyboardsDescription')}
-                  </p>
-
-                  {storyboards.length === 0 ? (
-                    <div className="bg-bg-surface rounded-2xl p-6 text-center border border-border-subtle">
-                      <Clapperboard className="w-10 h-10 text-neutral-300 mx-auto mb-2" />
-                      <p className="text-text-muted text-sm">
-                        {t('templates.storyboardsEmpty')}
-                      </p>
-                    </div>
-                  ) : (
-                    <div className="grid gap-4 sm:grid-cols-2">
-                      {storyboards.map((entry) => (
-                        <StoryboardCard key={`${entry.themeId}-${entry.storyboard.id}`} entry={entry} />
-                      ))}
-                    </div>
-                  )}
-                </div>
-
-                {/* 4. Templates */}
+                {/* 2. Templates */}
                 <div>
                   <div className="flex items-center justify-between gap-3 mb-2">
                     <div className="flex items-center gap-1 min-w-0">
@@ -575,21 +457,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         <CreateClassModal
           onClose={() => setShowCreateModal(false)}
           onCreate={handleCreateClass}
-        />
-      )}
-
-      {/* Create praatplaat modal */}
-      <CreatePraatplaatModal
-        isOpen={showCreatePraatplaat}
-        onClose={() => setShowCreatePraatplaat(false)}
-        onCreate={handleCreatePraatplaat}
-      />
-
-      {/* Praatplaat viewer */}
-      {viewingPraatplaat && (
-        <PraatplaatViewer
-          praatplaat={viewingPraatplaat}
-          onClose={() => setViewingPraatplaat(null)}
         />
       )}
 
@@ -677,34 +544,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           <Button
             variant="primary"
             onClick={handleDeleteTemplateConfirm}
-            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
-          >
-            {t('common.delete')}
-          </Button>
-        </div>
-      </Modal>
-
-      {/* Verwijder praatplaat bevestiging (UX-DEST-2) */}
-      <Modal
-        isOpen={!!deletePraatplaatId}
-        onClose={() => setDeletePraatplaatId(null)}
-        title={t('teacher.praatplaat.deleteTitle')}
-        size="sm"
-      >
-        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line">
-          {t('teacher.praatplaat.deleteConfirm')}
-        </p>
-        <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setDeletePraatplaatId(null)}
-            className="flex-1"
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleDeletePraatplaatConfirm}
             className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
           >
             {t('common.delete')}
