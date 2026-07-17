@@ -349,13 +349,13 @@ export function PresentationSurface({
               <>
                 {/* Visual per opdrachtvorm */}
                 {storyboard && (
-                  <div className={cn('min-h-0 flex items-center justify-center bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
+                  <div className={cn('min-h-0 bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
                     <StoryboardViewer
                       storyboard={storyboard}
                       currentBeat={currentBeat}
                       totalBeats={totalBeats}
                       sections={data?.sections ?? []}
-                      compact
+                      fill
                       isPlaying={isPlaying}
                       onPlayPause={handlePlayPause}
                       onStop={stopComposition}
@@ -364,8 +364,14 @@ export function PresentationSurface({
                 )}
                 {!storyboard && praatplaatImage && (
                   <div className={cn('min-h-0 relative flex items-center justify-center p-3 bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
-                    <div className="relative max-h-full aspect-video">
-                      <img src={praatplaatImage} alt={current.composition_name} className="max-h-full max-w-full rounded-xl object-contain" />
+                    {/* h-full op de img: schaalt óók op (digibord); de wrapper
+                        krimpt om het beeld heen zodat de markers blijven kloppen */}
+                    <div className="relative h-full">
+                      <img
+                        src={praatplaatImage}
+                        alt={current.composition_name}
+                        className="h-full w-auto max-w-full rounded-xl object-contain"
+                      />
                       {praatplaatSpots.map(({ i, pos, id }) => (
                         <PraatplaatMarker key={id} position={pos} active={i === index} />
                       ))}

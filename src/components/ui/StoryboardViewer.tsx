@@ -23,6 +23,11 @@ interface StoryboardViewerProps {
   sections: Section[];
   /** Optional: compact layout for side-by-side with timeline */
   compact?: boolean;
+  /**
+   * Vul de volledige beschikbare hoogte (presentatiescherm/digibord) —
+   * het beeld schaalt mee met de container i.p.v. de max-w-sm/lg-cap.
+   */
+  fill?: boolean;
   /** Optional transport controls for lightbox */
   isPlaying?: boolean;
   onPlayPause?: () => void;
@@ -35,6 +40,7 @@ export function StoryboardViewer({
   totalBeats,
   sections,
   compact = false,
+  fill = false,
   isPlaying,
   onPlayPause,
   onStop,
@@ -52,13 +58,24 @@ export function StoryboardViewer({
   if (!currentImage) return null;
 
   return (
-    <div className={`flex flex-col items-center ${compact ? 'p-2' : 'p-3 sm:p-4'}`}>
-      {/* Image */}
-      <div className={`relative rounded-xl overflow-hidden bg-black/10 shadow-md w-full ${compact ? 'max-w-sm' : 'max-w-lg'}`}>
+    <div
+      className={
+        fill
+          ? 'h-full w-full min-h-0 flex flex-col items-center justify-center p-2'
+          : `flex flex-col items-center ${compact ? 'p-2' : 'p-3 sm:p-4'}`
+      }
+    >
+      {/* Image — fill: schaal mee met de beschikbare hoogte (digibord) */}
+      <div
+        className={`relative rounded-xl overflow-hidden bg-black/10 shadow-md ${
+          fill ? 'h-full aspect-video max-w-full' : `w-full ${compact ? 'max-w-sm' : 'max-w-lg'}`
+        }`}
+      >
         <CrossfadeImage
           src={currentImage.url}
           alt={t(currentImage.label)}
-          className="w-full aspect-video object-cover"
+          containerClassName={fill ? 'w-full h-full' : undefined}
+          className={fill ? 'w-full h-full object-cover' : 'w-full aspect-video object-cover'}
         />
 
         {/* Zoom button overlay */}
