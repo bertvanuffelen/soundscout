@@ -1,5 +1,15 @@
 # Audit: MP3- en video-export (17-7-2026)
 
+> **Status na fixronde (zelfde dag, commit `377fcad`):** de belangrijkste bevindingen zijn gefixt en beide exports zijn end-to-end in de browser geverifieerd (MP3 → "MP3 gedownload!", video → 17,7 MB MP4 via WebCodecs/hardware-H.264).
+> - ✅ #1 ontbrekende samples → waarschuwing in de modal (MP3 én video)
+> - ✅ #2 ontbrekende afbeeldingen → waarschuwing in de modal
+> - ✅ #3 fout/succes/waarschuwing zichtbaar ín de Opslaan & Delen-modal
+> - ✅ #5 reverb-staart telt mee in de exportduur · ✅ #6 `reverb.ready` afgewacht
+> - ✅ #8 "houd dit tabblad zichtbaar"-hint tijdens exporteren
+> - ✅ #13 (deels) video-beeldwissels volgen nu de compositie-bpm · ✅ #14 vroege lamejs-import · ✅ #16 (deels) foutstrings via i18n
+> - ➖ #4 **gecorrigeerd**: `compositionInit` herstelt de praatplaat-context wél als er een snapshot is; alleen oude composities zónder snapshot missen de video-knop — daarvoor bestaat de afbeelding simpelweg niet meer aan de clientkant (geen fix mogelijk, wordt gelogd).
+> - ⏳ Open (bewust): #7 solo-besluit · #9 render-progress · #10/#11 MediaRecorder-fallback-robustheid · #12 encode naar Worker · #15 preload-scope · 'unsupported'-uitleg.
+
 Read-only doorlichting van de volledige exportketen, op verzoek van Bert (taak "Alle exports nalopen", P2). Twee code-audits (audio- en videoketen, alle vier de vormen: vrij / template / storyboard / praatplaat) + live browser-verificatie. **Er is in deze ronde niets aan de code veranderd** — fixes volgen na Berts hertest van het presentatiescherm, zodat zijn testsessie niet herlaadt.
 
 **Kernbeeld**: de exportketen is architectonisch gezond — video en MP3 delen dezelfde offline audio-render, en die render loopt netjes in de pas met live playback (clip-loops, effects, fades, mute, volumes, 12 sporen, 64 maten). De bevindingen zitten vooral in randgevallen en foutmaskering: stilletjes weggelaten geluiden/beelden, een afgekapte galmstaart en onzichtbare foutstaten.
