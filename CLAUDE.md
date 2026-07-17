@@ -145,9 +145,20 @@ The Timeline has `max-h-[50dvh]` to guarantee the sample library gets enough spa
 
 ### Stage / Podium Screen
 
-The Stage screen (`StageView.tsx`) is the performance screen where students listen to their composition. Clean layout with only 3 buttons visible: **Save** (primary), **Share & Export** (secondary, opens `StageActionsModal`), and **New Composition** (ghost).
+The Stage screen (`StageView.tsx`) is the performance screen where students listen to their composition — and their "feedback-thuis": when a class session + own bewaarcode exist, the latest docent-feedback and peer-sterren are fetched silently and shown in a feedback block with a code badge. Primary actions: **Opslaan & Delen** (opens `StageActionsModal`), **Luister naar klasgenoten** (peer review, only when the teacher enabled it and the own submission is synced), and **Nieuwe compositie** (with confirm when clips exist).
 
-`StageActionsModal` groups all secondary actions with section headers and hint text per button: Save & Share (save online, share link, share with teacher), Export (MP3, video), and Teacher (save as template, teacher-only). The modal slides up from the bottom on mobile (`items-end`, `rounded-t-2xl`) and centers on desktop.
+`StageActionsModal` (testronde 3-redesign, approved mockup Bert) is a three-column modal, organised by "voor wie": **Voor jezelf** (save local, save online with bewaarcode — hidden in class-code flow, MP3 export, video export when a storyboard is active), **Voor de klas** (Presenteren op het digibord → `PresentationSurface` snapshot, submit-to-teacher or class submission status + code), **Delen met anderen** (share link). A teacher-only row at the bottom holds "Opslaan als opdracht" (template). The modal slides up from the bottom on mobile and centers on desktop.
+
+### Presentation Surface (universeel presentatiescherm)
+
+`src/components/presentation/PresentationSurface.tsx` is THE single presentation screen (mockup style: light content card on `brand-900` backdrop, "Nu te horen" pill). Four `mode`s drive feature flags: `teacher-present` (playlist sidebar bij n>1, doorspelen/auto-advance, aankondigingsoverlay, feedbackrij), `teacher-review` (single submission, metadata line, montagelijn default open), `public` (bare: no sidebar/feedback), `peer` (anonymous, `ratingSlot` ReactNode under the card). Key elements:
+
+- **Montagelijn-toggle** — only for beeld-vormen (storyboard/praatplaat/afbeelding); expanding shrinks the visual (flex 2:1) and shows the read-only Timeline below. Vrij/template: the timeline IS the visual (always shown, no toggle). Visuals scale to fill the card (`StoryboardViewer` `fill` prop; praatplaat image `h-full` with shrink-wrapped wrapper so `PraatplaatMarker` positions stay correct).
+- **Zijpaneel** — slides fully away; a right-edge handle with position badge ("3/8") reopens it. Rows: shape icon (Film/Image/Music) + composition + student + peer-sterren total (`peerStars` Map from `get_peer_stars_for_class`, migration 030) + optional docent-feedback status dot behind a toggle (`getReviewStatus`: new/seen/reviewed).
+- **Fullscreen** — always-present button (+ `F` key) via `src/hooks/useFullscreen.ts` (webkit variants for iPad). Escape-guard: Escape exits fullscreen first (browser) and must NOT also close the surface — handled via `isDocumentFullscreen()` check in the `useModalBehavior` onClose.
+- **Audio** — `src/hooks/useCompositionPlayback.ts` (shared engine: AbortController load with progress, schedule/play/pause/resume via existing Part, ~30fps beat tracking with loop-modulo, `onEnded` for auto-advance, `respectLoop`/`autoLoad` options). NOT used by StageView itself (that stays on useAudioEngine/audioStore).
+
+Thin wrappers: `ClassPresentationView` (teacher-present + fetches peer stars), `SubmissionPlayer` (teacher-review + gezien-stempel), `SharedPlayer` (data fetch + gesture-gate, then public mode), `PeerReviewModal` (stappenflow + surface for the listen/rate step). `PraatplaatViewer`/`SharedPraatplaatViewer` are NOT yet unified (separate interaction model).
 
 ### Theme System
 
@@ -194,7 +205,15 @@ A teacher activates **one active assignment per class**; students enter the 4-di
 
 **System templates** (migration 022): a `template` can be ownerless (`teacher_id NULL` + `builtin_key`) so a built-in lesson card can offer a ready-made composition to *all* teachers. `activate_assignment` accepts a system template (`teacher_id IS NULL`) alongside the teacher's own; RLS lets any teacher read system templates. Content is seeded by copying a teacher-built template (migration 023 copies "Drum beat" → system template + built-in `template` lesson card, generating a fresh `code`). No client change — system templates are reachable only via built-in lesson cards; `useTemplates` stays own-only.
 
-Migrations for this subsystem: `006` class_assignments · `015` storyboard type · `016` opdrachtkaarten · `017` resume-model + praatplaat catalog · `018` `free` type · `019` lesson_cards + `activate_lesson_card` · `020` seed built-ins · `021` public `get_builtin_lesson_cards` · `022` system templates · `023` seed "Drum beat" system template.
+Migrations for this subsystem: `006` class_assignments · `015` storyboard type · `016` opdrachtkaarten · `017` resume-model + praatplaat catalog · `018` `free` type · `019` lesson_cards + `activate_lesson_card` · `020` seed built-ins · `021` public `get_builtin_lesson_cards` · `022` system templates · `023` seed "Drum beat" system template · `024` derived assignment cards.
+
+### Feedback (docent + peer)
+
+**Docent-feedback** (migration 026): columns on `submissions` — `feedback_sticker` (Lucide icon key), `feedback_level` (1-3), `feedback_text`, `feedback_at`, `teacher_seen_at` + `submitted_at` (formeel ingeleverd; every v2 class submission has a save_code, so WIP-splitsing runs on `submitted_at`). `getReviewStatus()` derives new/seen/reviewed. UI: `FeedbackPanel` (in PresentationSurface teacher modes), "Beluisterd" badge on `SubmissionCard`. The student sees feedback on the Podium (feedback block + "Je hebt een reactie!" banner via bewaarcode lookup).
+
+**Peer-feedback 2.0** (migrations 027 + 028): after submitting, a student reviews ≤3 random anonymous classmate compositions with **1-3 sterren per criterium** of the teacher's feedbackkaart (`feedback_cards`, docent-instelbaar; built-ins + own). Table `peer_feedback` (unique per pair, no self-review, `ratings` JSONB; pre-028 rows are chips-only). Server enforces: cap 3, review-venster/timer (`peer_review_is_open`), rate limits. RPCs: `get_peer_review_batch`, `submit_peer_feedback` (v2), `get_peer_compliments` (per bewaarcode, avg per criterium), `get_peer_stars_for_class` (migration 030, batch totals for the presentation sidebar, owner-teacher only). Client `src/lib/peerFeedback.ts` uses typed `PeerFeedbackError` (rateLimit/capReached/windowClosed/generic) — server rejections show honest messages, never fake success. Teacher: `PeerFeedbackOverview` (+ top 3 podium) in ClassDetail; activation via uitklapbare peer-instellingen.
+
+Other migrations: `025` anonymous analytics (`usage_stats`) · `029` fix `load_saved_composition` class_code cast (bewaarcode bug) · `030` peer stars batch.
 
 ### Supabase Security
 
@@ -361,4 +380,8 @@ VITE_SUPABASE_ANON_KEY=xxx
 | `docs/PLAN-AUDIO-REFACTOR.md` | Audio engine refactor: on-demand fire-and-forget players (PERF-1) |
 | `docs/PLAN-72-PRAATPLAAT.md` | Praatplaat collaborative sound map design (#72) |
 | `docs/HANDLEIDING-BEHEER.md` | Technical admin guide (deployment, Supabase, maintenance) |
+| `docs/LOGBOEK-MASTERPLAN.md` | 6-weken masterplan logbook (besluiten, sessies, acties voor Bert) |
+| `docs/TESTPLAN-MASTERPLAN.md` | Manual test plan + hertest-lijsten per testronde |
+| `docs/AUDIT-EXPORTS.md` | Exports audit (MP3 + video): 16 findings + prioritized fix plan |
+| `docs/WOORDENLIJST.md` | Terminology glossary (rollen, codes, termen) — draft |
 | `soundscout-prd.md` | Product requirements document |
