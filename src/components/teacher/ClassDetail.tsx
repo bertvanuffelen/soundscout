@@ -686,6 +686,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             .filter((s): s is Submission => !!s)}
           onClose={() => setPresentIds(null)}
           onSetFeedback={(id, feedback) => setFeedback(id, feedback)}
+          classId={classData.id}
         />
       )}
 
