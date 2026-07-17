@@ -621,7 +621,11 @@
         "description": "Students compose freely within a theme — focused purely on the sounds.",
         "pickTitle": "Choose a theme"
       }
-    }
+    },
+    "startChoiceLesson": "Use a lesson card",
+    "startChoiceLessonDesc": "Ready-made package with lesson goal and phases",
+    "startChoiceCustom": "Build your own",
+    "startChoiceCustomDesc": "Pick the form, content and assignment card yourself"
   },
   "assignmentCards": {
     "sectionTitle": "Assignment cards",
@@ -790,7 +794,11 @@
     "filterEmpty": "No lesson cards match this filter.",
     "seasonConfirmTitle": "Theme out of season",
     "seasonConfirmBody": "The theme of this lesson card is currently out of season and hidden from student pickers. You can still activate it: students with the class code can use it fully.",
-    "seasonConfirmButton": "Activate anyway"
+    "seasonConfirmButton": "Activate anyway",
+    "pickerTitle": "Choose a lesson card",
+    "pickerActivated": "\"{{title}}\" is ready for your class",
+    "pickerCodeHint": "Students start with this class code:",
+    "pickerReplaceWarning": "There is already an active assignment — activating a lesson card replaces it (submissions are kept)."
   },
   "templates": {
     "activeBanner": "Assignment:",

@@ -9,15 +9,15 @@
 
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Plus, Download, Play, FileText, MapPin, Clapperboard, Music, Pencil, Trash2, Clock, type LucideIcon } from 'lucide-react';
+import { Loader2, Plus, Download, Play, FileText, Pencil, Trash2, Clock } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useLessonCards } from '../../hooks/useLessonCards';
 import { localizeLessonCard, getLessonCardThemeId, type LessonCard, type LessonCardInput } from '../../lib/lessonCards';
-import type { AssignmentType } from '../../lib/assignments';
 import { getTeacherThemes, getThemeSeasonInfo } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { SectionTitle, GuideLink } from './common';
+import { TYPE_META } from './assignmentTypeMeta';
 import { ThemeSeasonBadge } from './ThemeSeasonBadge';
 import { ActivateLessonCardModal } from './ActivateLessonCardModal';
 import { LessonCardEditorModal } from './LessonCardEditorModal';
@@ -30,12 +30,6 @@ interface LessonCardsTabProps {
   initialSelectKey?: string | null;
 }
 
-const TYPE_META: Record<AssignmentType, { Icon: LucideIcon; badge: string; labelKey: string }> = {
-  template: { Icon: FileText, badge: 'bg-accent-100 text-accent-800', labelKey: 'templates.typeTemplate' },
-  praatplaat: { Icon: MapPin, badge: 'bg-teal-100 text-teal-700', labelKey: 'templates.typePraatplaat' },
-  storyboard: { Icon: Clapperboard, badge: 'bg-purple-100 text-purple-700', labelKey: 'templates.typeStoryboard' },
-  free: { Icon: Music, badge: 'bg-rose-100 text-rose-700', labelKey: 'templates.typeFree' },
-};
 
 export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: LessonCardsTabProps) {
   const { t } = useTranslation();

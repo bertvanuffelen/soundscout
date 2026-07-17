@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, SlidersHorizontal } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -21,6 +21,7 @@ import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { AssignmentTypeCards } from './AssignmentTypeCards';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { SharePraatplaatModal } from './SharePraatplaatModal';
+import { LessonCardPickerModal } from './LessonCardPickerModal';
 import { type PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -99,6 +100,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     activateStoryboard: activateStoryboardAssignment,
     activateFree: activateFreeAssignment,
     deactivate: deactivateAssignment,
+    refetch: refetchAssignment,
   } = useClassAssignment(classData.id);
 
   const [showActivateModal, setShowActivateModal] = useState(false);
@@ -110,7 +112,26 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   >(null);
   const [viewingPraatplaat, setViewingPraatplaat] = useState<PraatplaatRow | null>(null);
   const [showActivatedCode, setShowActivatedCode] = useState(false);
-  const [showSharePraatplaatModal, setShowSharePraatplaatModal] = useState(false);
+  // Delen: één target voor zowel de actieve opdracht als historie-rijen (M3)
+  const [shareTarget, setShareTarget] = useState<{ praatplaatId: string; name: string } | null>(null);
+  // Startkeuze (opdrachten-model 17-7): leskaart-picker of zelf samenstellen
+  const [showLessonPicker, setShowLessonPicker] = useState(false);
+  const [showSelfCompose, setShowSelfCompose] = useState(false);
+  // Historie: praatplaat verwijderen (incl. inzendingen) met bevestiging
+  const [deletePastRow, setDeletePastRow] = useState<ClassAssignmentRow | null>(null);
+  const [deletingPast, setDeletingPast] = useState(false);
+
+  // Praatplaat-viewer openen vanuit actieve opdracht óf historie
+  const openPraatplaatById = useCallback(async (praatplaatId: string) => {
+    try {
+      const { fetchPraatplaten } = await import('../../lib/praatplaat');
+      const all = await fetchPraatplaten();
+      const pp = all.find((p) => p.id === praatplaatId);
+      if (pp) setViewingPraatplaat(pp);
+    } catch (err) {
+      logger.error('Fetch praatplaat for viewer failed:', err);
+    }
+  }, []);
 
   const handleActivateTemplate = useCallback(async (templateId: string, cardId?: string | null) => {
     await activateTemplate(templateId, cardId);
@@ -397,7 +418,23 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     </p>
                   </div>
                 </div>
-                <AssignmentTypeCards onSelect={handlePickType} />
+                {/* Startkeuze (17-7): leskaart of zelf samenstellen */}
+                <div className="grid gap-3 sm:grid-cols-2 mb-3">
+                  <StartChoiceCard
+                    Icon={GraduationCap}
+                    title={t('assignments.startChoiceLesson')}
+                    description={t('assignments.startChoiceLessonDesc')}
+                    onClick={() => setShowLessonPicker(true)}
+                  />
+                  <StartChoiceCard
+                    Icon={SlidersHorizontal}
+                    title={t('assignments.startChoiceCustom')}
+                    description={t('assignments.startChoiceCustomDesc')}
+                    active={showSelfCompose}
+                    onClick={() => setShowSelfCompose((v) => !v)}
+                  />
+                </div>
+                {showSelfCompose && <AssignmentTypeCards onSelect={handlePickType} />}
               </div>
             )}
 
@@ -452,17 +489,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     <Button
                       variant="primary"
                       size="sm"
-                      onClick={async () => {
-                        // Haal praatplaat-data op voor de viewer
-                        try {
-                          const { fetchPraatplaten } = await import('../../lib/praatplaat');
-                          const all = await fetchPraatplaten();
-                          const pp = all.find((p) => p.id === activeAssignment.praatplaatId);
-                          if (pp) setViewingPraatplaat(pp);
-                        } catch (err) {
-                          logger.error('Fetch praatplaat for viewer failed:', err);
-                        }
-                      }}
+                      onClick={() => void openPraatplaatById(activeAssignment.praatplaatId!)}
                       className="inline-flex items-center gap-1"
                     >
                       <MapPin className="w-4 h-4" />
@@ -474,7 +501,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     <Button
                       variant="secondary"
                       size="sm"
-                      onClick={() => setShowSharePraatplaatModal(true)}
+                      onClick={() => setShareTarget({ praatplaatId: activeAssignment.praatplaatId!, name: activeAssignment.assignmentName })}
                       className="inline-flex items-center gap-1"
                     >
                       <Share2 className="w-4 h-4" />
@@ -497,13 +524,28 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               </div>
             )}
 
-            {/* Wijzig opdracht → dezelfde type-kaarten, altijd zichtbaar */}
+            {/* Wijzig opdracht → startkeuze (17-7): leskaart of zelf samenstellen */}
             {!assignmentLoading && activeAssignment && (
               <div className="mt-6">
                 <p className="text-sm font-semibold text-text-main mb-3">
                   {t('assignments.changeAssignment')}
                 </p>
-                <AssignmentTypeCards onSelect={handlePickType} />
+                <div className="grid gap-3 sm:grid-cols-2 mb-3">
+                  <StartChoiceCard
+                    Icon={GraduationCap}
+                    title={t('assignments.startChoiceLesson')}
+                    description={t('assignments.startChoiceLessonDesc')}
+                    onClick={() => setShowLessonPicker(true)}
+                  />
+                  <StartChoiceCard
+                    Icon={SlidersHorizontal}
+                    title={t('assignments.startChoiceCustom')}
+                    description={t('assignments.startChoiceCustomDesc')}
+                    active={showSelfCompose}
+                    onClick={() => setShowSelfCompose((v) => !v)}
+                  />
+                </div>
+                {showSelfCompose && <AssignmentTypeCards onSelect={handlePickType} />}
               </div>
             )}
           </div>
@@ -543,6 +585,32 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       {new Date(pa.activatedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
+                  {/* Praatplaat-historie: bekijken/delen/verwijderen zonder heractiveren (M3) */}
+                  {pa.type === 'praatplaat' && pa.praatplaatId && (
+                    <div className="flex items-center gap-0.5 shrink-0">
+                      <button
+                        onClick={() => void openPraatplaatById(pa.praatplaatId!)}
+                        className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors"
+                        title={t('teacher.praatplaat.openPraatplaat')}
+                      >
+                        <Eye className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                      <button
+                        onClick={() => setShareTarget({ praatplaatId: pa.praatplaatId!, name: pa.assignmentName })}
+                        className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors"
+                        title={t('teacher.praatplaat.share')}
+                      >
+                        <Share2 className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                      <button
+                        onClick={() => setDeletePastRow(pa)}
+                        className="p-2 text-text-muted hover:text-error-500 rounded-lg hover:bg-neutral-100 transition-colors"
+                        title={t('common.delete')}
+                      >
+                        <Trash2 className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    </div>
+                  )}
                   <Button
                     variant="secondary"
                     size="sm"
@@ -740,16 +808,63 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         />
       )}
 
-      {/* Share praatplaat modal (#73) */}
-      {activeAssignment?.type === 'praatplaat' && activeAssignment.praatplaatId && (
+      {/* Share praatplaat modal (#73) — actieve opdracht én historie (M3) */}
+      {shareTarget && (
         <SharePraatplaatModal
-          isOpen={showSharePraatplaatModal}
-          onClose={() => setShowSharePraatplaatModal(false)}
+          isOpen={!!shareTarget}
+          onClose={() => setShareTarget(null)}
           classCode={classData.code}
-          praatplaatName={activeAssignment.assignmentName}
-          praatplaatId={activeAssignment.praatplaatId}
+          praatplaatName={shareTarget.name}
+          praatplaatId={shareTarget.praatplaatId}
         />
       )}
+
+      {/* Leskaart-picker (startkeuze 17-7) */}
+      <LessonCardPickerModal
+        isOpen={showLessonPicker}
+        onClose={() => { setShowLessonPicker(false); void refetchAssignment(); }}
+        classId={classData.id}
+        classCode={classData.code}
+        hasActiveAssignment={!!activeAssignment}
+        onActivated={() => { void refetchAssignment(); }}
+      />
+
+      {/* Praatplaat uit historie verwijderen (incl. inzendingen) */}
+      <Modal
+        isOpen={!!deletePastRow}
+        onClose={() => setDeletePastRow(null)}
+        title={t('teacher.praatplaat.deleteTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line text-center">
+          {t('teacher.praatplaat.deleteConfirm')}
+        </p>
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => setDeletePastRow(null)} className="flex-1" disabled={deletingPast}>
+            {t('common.cancel')}
+          </Button>
+          <Button
+            variant="primary"
+            isLoading={deletingPast}
+            onClick={async () => {
+              if (!deletePastRow?.praatplaatId) return;
+              setDeletingPast(true);
+              try {
+                const { deletePraatplaat } = await import('../../lib/praatplaat');
+                await deletePraatplaat(deletePastRow.praatplaatId);
+                await refetchAssignment();
+                setDeletePastRow(null);
+              } catch (err) {
+                logger.error('Praatplaat verwijderen mislukt:', err);
+              }
+              setDeletingPast(false);
+            }}
+            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
+          >
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
 
       {/* Deactiveer opdracht bevestiging (UX-DEST-1) */}
       <Modal
@@ -807,6 +922,43 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         </div>
       </Modal>
     </div>
+  );
+}
+
+// --- Startkeuze-kaart (leskaart / zelf samenstellen) ---
+
+function StartChoiceCard({
+  Icon,
+  title,
+  description,
+  onClick,
+  active = false,
+}: {
+  Icon: typeof GraduationCap;
+  title: string;
+  description: string;
+  onClick: () => void;
+  active?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`text-left p-4 rounded-2xl border-2 transition-all flex items-start gap-3 ${
+        active
+          ? 'border-accent-400 bg-accent-50'
+          : 'border-border-subtle bg-bg-surface hover:border-accent-300'
+      }`}
+    >
+      <div className="w-10 h-10 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center shrink-0">
+        <Icon className="w-5 h-5" aria-hidden="true" />
+      </div>
+      <div className="min-w-0">
+        <p className="font-semibold text-text-main text-sm">{title}</p>
+        <p className="text-text-muted text-xs mt-0.5">{description}</p>
+      </div>
+    </button>
   );
 }
 

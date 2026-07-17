@@ -621,7 +621,11 @@
         "description": "Leerlingen componeren vrij binnen een thema — enkel gericht op de geluiden.",
         "pickTitle": "Kies een thema"
       }
-    }
+    },
+    "startChoiceLesson": "Gebruik een leskaart",
+    "startChoiceLessonDesc": "Kant-en-klaar pakket met lesdoel en fases",
+    "startChoiceCustom": "Stel zelf samen",
+    "startChoiceCustomDesc": "Kies zelf de vorm, inhoud en opdrachtkaart"
   },
   "assignmentCards": {
     "sectionTitle": "Opdrachtkaarten",
@@ -790,7 +794,11 @@
     "filterEmpty": "Geen leskaarten binnen dit filter.",
     "seasonConfirmTitle": "Thema buiten seizoen",
     "seasonConfirmBody": "Het thema van deze leskaart is nu buiten seizoen en staat niet in de leerling-kiezers. Activeren kan gewoon: leerlingen met de klascode kunnen er volledig mee werken.",
-    "seasonConfirmButton": "Toch activeren"
+    "seasonConfirmButton": "Toch activeren",
+    "pickerTitle": "Kies een leskaart",
+    "pickerActivated": "\"{{title}}\" staat klaar voor je klas",
+    "pickerCodeHint": "Leerlingen starten met deze klascode:",
+    "pickerReplaceWarning": "Er is al een actieve opdracht — een leskaart activeren vervangt die (inzendingen blijven bewaard)."
   },
   "templates": {
     "activeBanner": "Opdracht:",
