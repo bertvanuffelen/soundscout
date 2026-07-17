@@ -50,6 +50,12 @@ interface StageActionsModalProps {
   exportProgress: number;
   videoExportState: 'idle' | 'exporting' | 'success' | 'unsupported' | 'error';
   videoProgress: number;
+  /** Export-fouten en -waarschuwingen — hier tonen, want de modal blijft
+   *  open tijdens het exporteren (exports-audit #3) */
+  exportError?: string | null;
+  videoError?: string | null;
+  exportWarning?: string | null;
+  videoWarning?: string | null;
 
   // Handlers
   onSave: () => void;
@@ -117,6 +123,10 @@ export function StageActionsModal({
   exportProgress,
   videoExportState,
   videoProgress,
+  exportError = null,
+  videoError = null,
+  exportWarning = null,
+  videoWarning = null,
   onSave,
   onPresent,
   onExportMp3,
@@ -277,6 +287,41 @@ export function StageActionsModal({
           {nameDisabled && (
             <p className="text-xs text-warning-500 text-center mt-3">
               {t('stage.actionsNameRequired')}
+            </p>
+          )}
+
+          {/* Export-status: de modal blijft open tijdens exporteren, dus
+              fouten/succes/waarschuwingen moeten hiér zichtbaar zijn (audit #3) */}
+          {(exportState === 'exporting' || videoExportState === 'exporting') && (
+            <p className="text-xs text-text-muted text-center mt-3">
+              {t('stage.exportKeepTabOpen')}
+            </p>
+          )}
+          {exportState === 'success' && (
+            <p className="text-sm text-success-600 font-medium text-center mt-3 flex items-center justify-center gap-1.5">
+              <Check size={15} aria-hidden="true" />
+              {t('stage.exportReadyMp3')}
+            </p>
+          )}
+          {videoExportState === 'success' && (
+            <p className="text-sm text-success-600 font-medium text-center mt-3 flex items-center justify-center gap-1.5">
+              <Check size={15} aria-hidden="true" />
+              {t('stage.exportReadyVideo')}
+            </p>
+          )}
+          {(exportWarning || videoWarning) && (
+            <p role="alert" className="text-xs text-warning-500 text-center mt-2">
+              {[exportWarning, videoWarning].filter(Boolean).join(' ')}
+            </p>
+          )}
+          {(exportState === 'error' && exportError) && (
+            <p role="alert" className="text-sm text-error-600 text-center mt-3">
+              {exportError}
+            </p>
+          )}
+          {(videoExportState === 'error' && videoError) && (
+            <p role="alert" className="text-sm text-error-600 text-center mt-3">
+              {videoError}
             </p>
           )}
 

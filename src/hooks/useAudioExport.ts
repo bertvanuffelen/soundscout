@@ -9,6 +9,7 @@ import { exportToMp3, downloadBlob } from '../utils/audioExport';
 import { useTimelineStore } from '../stores/timelineStore';
 import type { Track, Sample } from '../types';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 export type ExportState = 'idle' | 'exporting' | 'success' | 'error';
 
@@ -24,6 +25,8 @@ interface UseAudioExportReturn {
   progress: number;
   /** Error message if export failed */
   error: string | null;
+  /** Waarschuwing bij een geslaagde export met ontbrekende geluiden (audit #1) */
+  warning: string | null;
   /** Start exporting to MP3 */
   exportMp3: (tracks: Track[], samples: Sample[], filename?: string) => Promise<void>;
   /** Reset state after export */
@@ -38,6 +41,7 @@ export function useAudioExport(
   const [exportState, setExportState] = useState<ExportState>('idle');
   const [progress, setProgress] = useState(0);
   const [error, setError] = useState<string | null>(null);
+  const [warning, setWarning] = useState<string | null>(null);
 
   const exportMp3 = useCallback(
     async (
@@ -48,6 +52,7 @@ export function useAudioExport(
       setExportState('exporting');
       setProgress(0);
       setError(null);
+      setWarning(null);
 
       try {
         logger.info('Starting MP3 export');
@@ -55,9 +60,15 @@ export function useAudioExport(
         // Compositie-tempo meegeven (B0): zonder dit zou de export het vaste
         // standaardtempo gebruiken zodra BPM ooit variabel wordt
         const bpm = useTimelineStore.getState().bpm;
-        const blob = await exportToMp3(tracks, samples, { bitrate: 128, bpm }, (p) => {
+        const { blob, missingSampleIds } = await exportToMp3(tracks, samples, { bitrate: 128, bpm }, (p) => {
           setProgress(Math.round(p * 100));
         });
+
+        // Eerlijkheid boven stilte (audit #1): geslaagd mét ontbrekende
+        // geluiden is een waarschuwing waard, geen stilzwijgen
+        if (missingSampleIds.length > 0) {
+          setWarning(i18n.t('stage.exportMissingSamples', { count: missingSampleIds.length }));
+        }
 
         // Trigger download
         const finalFilename = `${filename || defaultFilename}.mp3`;
@@ -86,12 +97,14 @@ export function useAudioExport(
     setExportState('idle');
     setProgress(0);
     setError(null);
+    setWarning(null);
   }, []);
 
   return {
     exportState,
     progress,
     error,
+    warning,
     exportMp3,
     reset,
   };

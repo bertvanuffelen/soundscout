@@ -15,7 +15,7 @@
 import type { Track, Sample, Section, Storyboard } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
 import { beatsToSeconds } from './audio';
-import { preloadBuffers, renderOffline, calculateTimelineDuration } from './audioExport';
+import { preloadBuffers, renderOffline, calculateTimelineDuration, findMissingSampleIds } from './audioExport';
 import { preloadImages, computeImageTimeline } from './canvasFrameRenderer';
 import { detectBestEngine } from './videoExportEngines';
 import type { EngineName } from './videoExportEngines';
@@ -48,6 +48,10 @@ export interface VideoExportResult {
   mimeType: string;
   /** Welke engine is gebruikt */
   engineName: EngineName;
+  /** Tijdlijn-samples die niet geladen konden worden (ontbreken in de video) */
+  missingSampleIds: string[];
+  /** Aantal storyboard-afbeeldingen dat niet geladen kon worden (zwart segment) */
+  missingImages: number;
 }
 
 export type VideoProgressCallback = (percent: number) => void;
@@ -105,13 +109,15 @@ export async function exportToVideo(
   const duration = Math.max(audioDuration, timelineDuration);
 
   if (audioDuration <= 0.5 && storyboard.images.length === 0) {
-    throw new Error('Geen clips op de timeline en geen afbeeldingen');
+    throw new Error(i18n.t('stage.videoNoContent'));
   }
 
-  const bufferMap = await preloadBuffers(samples, (p) => {
+  const { bufferMap } = await preloadBuffers(samples, (p) => {
     // preloadBuffers progress: 0–0.3 → map naar 2–10%
     onProgress?.(2 + Math.round(p * 27));
   });
+  // Ontbrekende geluiden zichtbaar maken i.p.v. stil weglaten (exports-audit #1)
+  const missingSampleIds = findMissingSampleIds(tracks, bufferMap);
 
   const audioBuffer = await renderOffline(
     tracks,
@@ -132,17 +138,21 @@ export async function exportToVideo(
   const imageCache = await preloadImages(imageUrls);
 
   if (imageCache.size === 0) {
-    throw new Error('Geen afbeeldingen konden worden geladen');
+    throw new Error(i18n.t('stage.videoNoImages'));
   }
+  // Deels mislukte beelden → zwart segment; meld het aantal (exports-audit #2)
+  const missingImages = imageUrls.length - imageCache.size;
 
   onProgress?.(35);
 
   // --- Fase 4: Image timeline berekenen (35%) ---
+  // Compositie-bpm gebruiken (exports-audit #13): beeldwissels moeten
+  // hetzelfde tempo volgen als de audio-render hierboven
   const imageTimeline = computeImageTimeline(
     imageUrls,
     totalBeats,
     sections,
-    DEFAULT_BPM,
+    bpm,
   );
 
   logger.info('[videoExport] Image timeline computed', {
@@ -178,5 +188,7 @@ export async function exportToVideo(
     extension: engine.fileExtension,
     mimeType: engine.mimeType,
     engineName: engine.name,
+    missingSampleIds,
+    missingImages,
   };
 }

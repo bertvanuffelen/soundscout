@@ -38,15 +38,24 @@ export type ExportProgressCallback = (progress: number) => void;
 // Helper Functions
 // =============================================================================
 
+export interface PreloadResult {
+  bufferMap: Map<string, Tone.ToneAudioBuffer>;
+  /** Sample-ids die niet geladen konden worden (404/netwerk) */
+  failedIds: string[];
+}
+
 /**
  * Preload all sample buffers for offline rendering.
  * Buffers must be loaded BEFORE calling Tone.Offline.
+ * Laadfouten worden verzameld i.p.v. stil geslikt (exports-audit #1):
+ * de aanroeper beslist of dat een waarschuwing aan de gebruiker wordt.
  */
 export async function preloadBuffers(
   samples: Sample[],
   onProgress?: ExportProgressCallback
-): Promise<Map<string, Tone.ToneAudioBuffer>> {
+): Promise<PreloadResult> {
   const bufferMap = new Map<string, Tone.ToneAudioBuffer>();
+  const failedIds: string[] = [];
   let loaded = 0;
 
   await Promise.all(
@@ -57,13 +66,26 @@ export async function preloadBuffers(
         bufferMap.set(sample.id, buffer);
       } catch (err) {
         logger.warn(`Failed to preload buffer for "${sample.id}"`, err);
+        failedIds.push(sample.id);
       }
       loaded++;
       onProgress?.(loaded / samples.length * 0.3); // 0-30% for loading
     })
   );
 
-  return bufferMap;
+  return { bufferMap, failedIds };
+}
+
+/**
+ * Sample-ids die op de tijdlijn gebruikt worden maar geen buffer hebben —
+ * die geluiden ontbreken in de export en verdienen een gebruikersmelding.
+ */
+export function findMissingSampleIds(
+  tracks: Track[],
+  bufferMap: Map<string, Tone.ToneAudioBuffer>
+): string[] {
+  const used = new Set(tracks.flatMap((t) => t.clips.map((c) => c.sampleId)));
+  return [...used].filter((id) => !bufferMap.has(id));
 }
 
 /**
@@ -87,7 +109,12 @@ export function calculateTimelineDuration(
       const effectiveDuration = clip.loop && clip.loopDurationBeats
         ? beatsToSeconds(clip.loopDurationBeats, bpm)
         : getClipDuration(clip, sample);
-      const endSeconds = startSeconds + effectiveDuration;
+      // Reverb-staart meenemen (exports-audit #5): de galm loopt door ná het
+      // clip-einde (decay = 1.5 + reverb/100*3, zie renderOffline) — zonder
+      // deze marge wordt een galm-clip aan het eind hoorbaar afgekapt
+      const reverbAmount = clip.effects?.reverb ?? 0;
+      const reverbTail = reverbAmount > 0 ? 1.5 + (reverbAmount / 100) * 3 : 0;
+      const endSeconds = startSeconds + effectiveDuration + reverbTail;
       maxEndTime = Math.max(maxEndTime, endSeconds);
     });
   });
@@ -181,8 +208,13 @@ export async function renderOffline(
 
   // Render offline using Tone.Offline
   const renderedToneBuffer = await Tone.Offline(
-    ({ transport }) => {
+    async ({ transport }) => {
       transport.bpm.value = bpm;
+
+      // Reverbs genereren hun impulse-response asynchroon; verzamel ze zodat
+      // we vóór het renderen op `ready` kunnen wachten (exports-audit #6) —
+      // anders kan de galm droog of stil renderen
+      const reverbs: Tone.Reverb[] = [];
 
       // Schedule all clips (with loop + effects support)
       tracks.forEach((track) => {
@@ -223,6 +255,7 @@ export async function renderOffline(
               });
               reverb.wet.value = clip.effects!.reverb / 100;
               chainNodes.push(reverb);
+              reverbs.push(reverb);
             }
 
             // FadeGain node (#79) — separate from volume for independent control
@@ -291,6 +324,12 @@ export async function renderOffline(
         });
       });
 
+      // Wacht tot alle reverb-impulse-responses gegenereerd zijn — Tone.Offline
+      // wacht op de callback-promise vóór het daadwerkelijke renderen
+      if (reverbs.length > 0) {
+        await Promise.all(reverbs.map((r) => r.ready));
+      }
+
       // Start transport immediately in offline context
       transport.start(0);
     },
@@ -330,7 +369,7 @@ export async function exportToWav(
   }
 
   // Preload all buffers
-  const bufferMap = await preloadBuffers(samples, onProgress);
+  const { bufferMap } = await preloadBuffers(samples, onProgress);
 
   // Render offline
   const audioBuffer = await renderOffline(
@@ -353,6 +392,12 @@ export async function exportToWav(
   return blob;
 }
 
+export interface Mp3ExportResult {
+  blob: Blob;
+  /** Tijdlijn-samples die niet geladen konden worden en dus in de MP3 ontbreken */
+  missingSampleIds: string[];
+}
+
 /**
  * Export timeline as MP3 file.
  * Uses lamejs for in-browser MP3 encoding.
@@ -362,9 +407,14 @@ export async function exportToMp3(
   samples: Sample[],
   options: Mp3ExportOptions = {},
   onProgress?: ExportProgressCallback
-): Promise<Blob> {
+): Promise<Mp3ExportResult> {
   const { bitrate = 128 } = options;
   onProgress?.(0);
+
+  // lamejs vroeg laden (exports-audit #14): een chunk-load-fout valt dan
+  // vóór de dure render, niet erna
+  const lamejsPromise = import('@breezystack/lamejs');
+  lamejsPromise.catch(() => { /* fout komt terug bij de await in encodeToMp3 */ });
 
   // Calculate duration
   const duration = calculateTimelineDuration(tracks, samples, options.bpm);
@@ -373,7 +423,8 @@ export async function exportToMp3(
   }
 
   // Preload all buffers
-  const bufferMap = await preloadBuffers(samples, onProgress);
+  const { bufferMap } = await preloadBuffers(samples, onProgress);
+  const missingSampleIds = findMissingSampleIds(tracks, bufferMap);
 
   // Render offline
   const audioBuffer = await renderOffline(
@@ -386,10 +437,10 @@ export async function exportToMp3(
   );
 
   // Encode to MP3
-  const mp3Blob = await encodeToMp3(audioBuffer, bitrate, onProgress);
+  const mp3Blob = await encodeToMp3(audioBuffer, bitrate, onProgress, lamejsPromise);
 
-  logger.info('MP3 export complete', { size: mp3Blob.size, bitrate });
-  return mp3Blob;
+  logger.info('MP3 export complete', { size: mp3Blob.size, bitrate, missingSampleIds });
+  return { blob: mp3Blob, missingSampleIds };
 }
 
 /**
@@ -398,14 +449,15 @@ export async function exportToMp3(
 async function encodeToMp3(
   audioBuffer: AudioBuffer,
   kbps: number,
-  onProgress?: ExportProgressCallback
+  onProgress?: ExportProgressCallback,
+  lamejsPromise?: Promise<typeof import('@breezystack/lamejs')>
 ): Promise<Blob> {
   const channels = audioBuffer.numberOfChannels;
   const sampleRate = audioBuffer.sampleRate;
   const totalSamples = audioBuffer.length;
 
   // Dynamically load lamejs (TP5-3: -169KB from initial bundle)
-  const { Mp3Encoder } = await import('@breezystack/lamejs');
+  const { Mp3Encoder } = await (lamejsPromise ?? import('@breezystack/lamejs'));
   const encoder = new Mp3Encoder(channels, sampleRate, kbps);
   const mp3Chunks: ArrayBuffer[] = [];
 

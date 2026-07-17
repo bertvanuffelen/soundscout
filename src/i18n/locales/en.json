@@ -387,7 +387,14 @@
     "syncSuccess": "Online copy updated",
     "syncFailed": "Online copy not updated — check your internet connection",
     "presentButton": "Present on the whiteboard",
-    "actionsPresentHint": "Show and play your composition full screen"
+    "actionsPresentHint": "Show and play your composition full screen",
+    "exportKeepTabOpen": "Exporting — keep this tab visible, otherwise the browser pauses the export.",
+    "exportReadyMp3": "MP3 downloaded!",
+    "exportReadyVideo": "Video downloaded!",
+    "exportMissingSamples": "Note: {{count}} sound(s) could not be loaded and are missing from the export.",
+    "videoMissingImages": "Note: {{count}} image(s) could not be loaded (black frame in the video).",
+    "videoNoContent": "No clips on the timeline and no images",
+    "videoNoImages": "No images could be loaded"
   },
   "editor": {
     "copyFailed": "Copy failed. Use the download button."

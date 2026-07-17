@@ -13,6 +13,7 @@ import { downloadBlob } from '../utils/audioExport';
 import { useTimelineStore } from '../stores/timelineStore';
 import type { Track, Sample, Section, Storyboard } from '../types';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 export type VideoExportState = 'idle' | 'exporting' | 'success' | 'error' | 'unsupported';
 
@@ -28,6 +29,8 @@ interface UseVideoExportReturn {
   videoProgress: number;
   /** Error message if export failed */
   videoError: string | null;
+  /** Waarschuwing bij geslaagde export met ontbrekende geluiden/beelden (audit #1/#2) */
+  videoWarning: string | null;
   /** Which engine is available ('webcodecs' | 'mediarecorder' | null) */
   engineName: EngineName | null;
   /** File extension that will be produced ('mp4' or 'webm') */
@@ -53,6 +56,7 @@ export function useVideoExport(
   const [videoExportState, setVideoExportState] = useState<VideoExportState>('idle');
   const [videoProgress, setVideoProgress] = useState(0);
   const [videoError, setVideoError] = useState<string | null>(null);
+  const [videoWarning, setVideoWarning] = useState<string | null>(null);
   const [engineName, setEngineName] = useState<EngineName | null>(null);
   const [fileExtension, setFileExtension] = useState<string | null>(null);
 
@@ -87,6 +91,7 @@ export function useVideoExport(
       setVideoExportState('exporting');
       setVideoProgress(0);
       setVideoError(null);
+      setVideoWarning(null);
 
       try {
         logger.info('[useVideoExport] Starting video export');
@@ -103,6 +108,17 @@ export function useVideoExport(
             setVideoProgress(percent);
           },
         );
+
+        // Eerlijkheid boven stilte (audit #1/#2): geslaagd mét ontbrekende
+        // onderdelen is een waarschuwing waard
+        const warnings: string[] = [];
+        if (result.missingSampleIds.length > 0) {
+          warnings.push(i18n.t('stage.exportMissingSamples', { count: result.missingSampleIds.length }));
+        }
+        if (result.missingImages > 0) {
+          warnings.push(i18n.t('stage.videoMissingImages', { count: result.missingImages }));
+        }
+        if (warnings.length > 0) setVideoWarning(warnings.join(' '));
 
         // Trigger download
         const finalFilename = `${filename || defaultFilename}.${result.extension}`;
@@ -135,12 +151,14 @@ export function useVideoExport(
     setVideoExportState(engineName ? 'idle' : 'unsupported');
     setVideoProgress(0);
     setVideoError(null);
+    setVideoWarning(null);
   }, [engineName]);
 
   return {
     videoExportState,
     videoProgress,
     videoError,
+    videoWarning,
     engineName,
     fileExtension,
     exportVideo,

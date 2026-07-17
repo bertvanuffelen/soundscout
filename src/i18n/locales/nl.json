@@ -387,7 +387,14 @@
     "syncSuccess": "Online kopie bijgewerkt",
     "syncFailed": "Online kopie niet bijgewerkt — controleer je internetverbinding",
     "presentButton": "Presenteren op het digibord",
-    "actionsPresentHint": "Laat je compositie groot zien en horen"
+    "actionsPresentHint": "Laat je compositie groot zien en horen",
+    "exportKeepTabOpen": "Bezig met exporteren — houd dit tabblad zichtbaar, anders pauzeert de browser de export.",
+    "exportReadyMp3": "MP3 gedownload!",
+    "exportReadyVideo": "Video gedownload!",
+    "exportMissingSamples": "Let op: {{count}} geluid(en) konden niet worden geladen en ontbreken in de export.",
+    "videoMissingImages": "Let op: {{count}} afbeelding(en) konden niet worden geladen (zwart beeld in de video).",
+    "videoNoContent": "Geen clips op de tijdlijn en geen afbeeldingen",
+    "videoNoImages": "Geen afbeeldingen konden worden geladen"
   },
   "editor": {
     "copyFailed": "Kopiëren mislukt. Gebruik de download knop."

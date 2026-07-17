@@ -72,13 +72,14 @@ export function StageView() {
   const peerReviewAvailable = !!classSession?.peerReview?.chips?.length && !!submissionId && submissionSynced;
 
   // Audio export hook
-  const { exportState, progress, error, exportMp3 } = useAudioExport();
+  const { exportState, progress, error, warning: exportWarning, exportMp3 } = useAudioExport();
 
   // Video export hook (storyboard/image mode only)
   const {
     videoExportState,
     videoProgress,
     videoError,
+    videoWarning,
     exportVideo,
   } = useVideoExport();
 
@@ -524,6 +525,10 @@ export function StageView() {
           exportProgress={progress}
           videoExportState={videoExportState}
           videoProgress={videoProgress}
+          exportError={error}
+          videoError={videoError}
+          exportWarning={exportWarning}
+          videoWarning={videoWarning}
           onSave={handleSaveClick}
           onPresent={() => { stopAll(); setShowPresentation(true); }}
           onExportMp3={handleExport}
