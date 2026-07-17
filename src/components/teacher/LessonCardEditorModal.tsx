@@ -27,6 +27,11 @@ interface LessonCardEditorModalProps {
   /** Bestaande leskaart om te bewerken, of null voor een nieuwe. */
   card: LessonCard | null;
   onSave: (input: LessonCardInput) => Promise<void>;
+  /**
+   * Voorinvulling voor een níeuwe leskaart ("Bewaar als leskaart", M4):
+   * bv. type template + template-id + titelsuggestie. Genegeerd bij bewerken.
+   */
+  prefill?: { assignmentType: AssignmentType; templateId?: string; title?: string } | null;
 }
 
 const TYPES: AssignmentType[] = ['praatplaat', 'storyboard', 'free', 'template'];
@@ -36,7 +41,7 @@ const storyboards = getAllMultiImageStoryboards();
 // Docent-kiezer: óók buiten-seizoen thema's, met tekst-suffix (seizoensregel 17-7)
 const assignableThemes = getTeacherThemes();
 
-export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonCardEditorModalProps) {
+export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill = null }: LessonCardEditorModalProps) {
   const { t } = useTranslation();
   const { templates } = useTemplates();
   const { cards: assignmentCards, create: createOpdrachtkaart } = useAssignmentCards();
@@ -95,8 +100,9 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
       setPhases(card.phases.length > 0 ? card.phases : []);
       setPdfUrl(card.pdfUrl ?? '');
     } else {
-      setAssignmentType('praatplaat');
-      setTemplateId('');
+      // Nieuwe kaart — met optionele voorinvulling ("Bewaar als leskaart", M4)
+      setAssignmentType(prefill?.assignmentType ?? 'praatplaat');
+      setTemplateId(prefill?.templateId ?? '');
       setPraatplaatRef('');
       setStoryboardRef('');
       setFreeThemeId('');
@@ -105,13 +111,13 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave }: LessonC
       setInlineCardTitle('');
       setInlineBullets(['']);
       setSaveToLibrary(false);
-      setTitle('');
+      setTitle(prefill?.title ?? '');
       setLevel('');
       setLessonGoal('');
       setPhases([]);
       setPdfUrl('');
     }
-  }, [isOpen, card]);
+  }, [isOpen, card, prefill]);
 
   // Titel voorvullen op basis van de gekozen resource (alleen als leeg)
   const prefillTitle = (name: string) => {

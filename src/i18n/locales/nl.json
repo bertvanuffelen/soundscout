@@ -855,7 +855,9 @@
     "allowNewClipsDescription": "Leerlingen mogen eigen clips toevoegen aan de tijdlijn",
     "libraryLockedBanner": "Geluiden verzamelen is vergrendeld voor deze opdracht",
     "storyboardIncluded": "Storyboard wordt meegenomen",
-    "storyboardIncludedDescription": "Leerlingen krijgen het actieve storyboard met afbeeldingen bij deze opdracht"
+    "storyboardIncludedDescription": "Leerlingen krijgen het actieve storyboard met afbeeldingen bij deze opdracht",
+    "makeLessonCard": "Maak er een leskaart van",
+    "lessonCardSaved": "Leskaart opgeslagen — je vindt hem in je dashboard bij Leskaarten."
   },
   "error": {
     "title": "Oeps! Er ging iets mis",

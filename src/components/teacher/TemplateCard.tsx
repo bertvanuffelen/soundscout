@@ -7,7 +7,7 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Check, Trash2, Lock, Unlock } from 'lucide-react';
+import { Copy, Check, Trash2, Lock, Unlock, GraduationCap } from 'lucide-react';
 import type { TeacherTemplate } from '../../lib/templates';
 import { Button } from '../ui/Button';
 import { copyToClipboard } from '../../utils/copyToClipboard';
@@ -15,9 +15,11 @@ import { copyToClipboard } from '../../utils/copyToClipboard';
 interface TemplateCardProps {
   template: TeacherTemplate;
   onDelete: () => void;
+  /** "Bewaar als leskaart" (M4): opent de leskaart-editor voorgevuld met dit template */
+  onMakeLessonCard?: () => void;
 }
 
-export function TemplateCard({ template, onDelete }: TemplateCardProps) {
+export function TemplateCard({ template, onDelete, onMakeLessonCard }: TemplateCardProps) {
   const { t } = useTranslation();
   const { name, code, description, lockOptions, createdAt } = template;
   const [copied, setCopied] = useState(false);
@@ -86,8 +88,19 @@ export function TemplateCard({ template, onDelete }: TemplateCardProps) {
         )}
       </div>
 
-      {/* Delete action */}
-      <div className="flex justify-end">
+      {/* Actions */}
+      <div className="flex justify-between items-center gap-2">
+        {onMakeLessonCard ? (
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={onMakeLessonCard}
+            className="inline-flex items-center gap-1.5"
+          >
+            <GraduationCap className="w-4 h-4" />
+            {t('templates.makeLessonCard')}
+          </Button>
+        ) : <span />}
         <Button
           variant="ghost"
           size="sm"

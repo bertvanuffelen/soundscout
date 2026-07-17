@@ -6,9 +6,11 @@
 
 import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, Copy, Check, ImageIcon } from 'lucide-react';
+import { Loader2, Copy, Check, ImageIcon, GraduationCap } from 'lucide-react';
 import { Button, Modal } from '../ui';
-import { createTemplate } from '../../lib/templates';
+import { createTemplate, type TeacherTemplate } from '../../lib/templates';
+import { createLessonCard } from '../../lib/lessonCards';
+import { LessonCardEditorModal } from '../teacher/LessonCardEditorModal';
 import { useAppStore } from '../../stores/appStore';
 import type { CompositionData, TemplateLockOptions } from '../../types';
 import { DEFAULT_LOCK_OPTIONS } from '../../types';
@@ -34,8 +36,12 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
   const [error, setError] = useState<string | null>(null);
 
   // Success state
-  const [createdCode, setCreatedCode] = useState<string | null>(null);
+  const [createdTemplate, setCreatedTemplate] = useState<TeacherTemplate | null>(null);
   const [copied, setCopied] = useState(false);
+  // "Bewaar als leskaart" (M4): editor voorgevuld met het zojuist bewaarde template
+  const [showLessonEditor, setShowLessonEditor] = useState(false);
+  const [lessonSaved, setLessonSaved] = useState(false);
+  const createdCode = createdTemplate?.code ?? null;
 
   const handleSave = useCallback(async () => {
     if (!name.trim()) return;
@@ -52,7 +58,7 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
         lockOptions,
       });
 
-      setCreatedCode(result.code);
+      setCreatedTemplate(result);
     } catch (err) {
       logger.error('Template opslaan mislukt:', err);
       setError(err instanceof Error ? err.message : t('templates.saveError'));
@@ -70,31 +76,62 @@ export function SaveAsTemplateModal({ compositionData, defaultName, onClose }: S
   }, [createdCode]);
 
   // --- Success view ---
-  if (createdCode) {
+  if (createdCode && createdTemplate) {
     return (
-      <Modal isOpen onClose={onClose} title={t('templates.savedTitle')} size="sm">
-        <div className="text-center">
-          <p className="text-text-muted text-sm mb-4">
-            {t('templates.savedDescription')}
-          </p>
+      <>
+        <Modal isOpen onClose={onClose} title={t('templates.savedTitle')} size="sm">
+          <div className="text-center">
+            <p className="text-text-muted text-sm mb-4">
+              {t('templates.savedDescription')}
+            </p>
 
-          <button
-            onClick={handleCopyCode}
-            className="inline-flex items-center gap-2 bg-accent-100 text-accent-800 px-6 py-3 rounded-xl font-mono font-bold text-2xl hover:bg-accent-200 transition-colors mx-auto mb-4"
-          >
-            {createdCode}
-            {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
-          </button>
+            <button
+              onClick={handleCopyCode}
+              className="inline-flex items-center gap-2 bg-accent-100 text-accent-800 px-6 py-3 rounded-xl font-mono font-bold text-2xl hover:bg-accent-200 transition-colors mx-auto mb-4"
+            >
+              {createdCode}
+              {copied ? <Check className="w-5 h-5" /> : <Copy className="w-5 h-5" />}
+            </button>
 
-          {copied && (
-            <p className="text-success-600 text-sm mb-4">{t('share.copied')}</p>
-          )}
+            {copied && (
+              <p className="text-success-600 text-sm mb-4">{t('share.copied')}</p>
+            )}
 
-          <Button variant="primary" onClick={onClose} className="w-full mt-2">
-            {t('common.close')}
-          </Button>
-        </div>
-      </Modal>
+            {/* Knutselroute rond (M4): template + opdrachtkaart bundelen */}
+            {lessonSaved ? (
+              <p className="text-success-600 text-sm mb-2 flex items-center justify-center gap-1.5">
+                <Check className="w-4 h-4" aria-hidden="true" />
+                {t('templates.lessonCardSaved')}
+              </p>
+            ) : (
+              <Button
+                variant="secondary"
+                onClick={() => setShowLessonEditor(true)}
+                className="w-full inline-flex items-center justify-center gap-1.5"
+              >
+                <GraduationCap className="w-4 h-4" />
+                {t('templates.makeLessonCard')}
+              </Button>
+            )}
+
+            <Button variant="primary" onClick={onClose} className="w-full mt-2">
+              {t('common.close')}
+            </Button>
+          </div>
+        </Modal>
+
+        <LessonCardEditorModal
+          isOpen={showLessonEditor}
+          onClose={() => setShowLessonEditor(false)}
+          card={null}
+          prefill={{ assignmentType: 'template', templateId: createdTemplate.id, title: createdTemplate.name }}
+          onSave={async (input) => {
+            await createLessonCard(input);
+            setShowLessonEditor(false);
+            setLessonSaved(true);
+          }}
+        />
+      </>
     );
   }
 

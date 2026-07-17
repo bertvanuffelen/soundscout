@@ -855,7 +855,9 @@
     "allowNewClipsDescription": "Students can add their own clips to the timeline",
     "libraryLockedBanner": "Collecting sounds is locked for this assignment",
     "storyboardIncluded": "Storyboard included",
-    "storyboardIncludedDescription": "Students will receive the active storyboard with images for this assignment"
+    "storyboardIncludedDescription": "Students will receive the active storyboard with images for this assignment",
+    "makeLessonCard": "Turn into a lesson card",
+    "lessonCardSaved": "Lesson card saved — find it in your dashboard under Lesson cards."
   },
   "error": {
     "title": "Oops! Something went wrong",

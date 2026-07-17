@@ -27,7 +27,10 @@ import { CreateClassModal } from './CreateClassModal';
 import { ClassCard } from './ClassCard';
 import { TemplateCard } from './TemplateCard';
 import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
+import { LessonCardEditorModal } from './LessonCardEditorModal';
 import { LessonCardsTab } from './LessonCardsTab';
+import { createLessonCard, type LessonCardInput } from '../../lib/lessonCards';
+import type { TeacherTemplate } from '../../lib/templates';
 import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs, GuideLink } from './common';
 
 interface TeacherDashboardProps {
@@ -58,6 +61,8 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const [showCardEditor, setShowCardEditor] = useState(false);
   const [editCard, setEditCard] = useState<Opdrachtkaart | null>(null);
   const [deleteCardId, setDeleteCardId] = useState<string | null>(null);
+  // "Bewaar als leskaart" (M4): leskaart-editor voorgevuld met een template
+  const [lessonFromTemplate, setLessonFromTemplate] = useState<TeacherTemplate | null>(null);
   // Deeplinks vanaf de landingspagina (na de login-hop): ?lesson=<builtin_key>
   // opent de Leskaarten-tab op die kaart; ?tab=lessons opent alleen de tab.
   // Eenmalig lezen bij mount, daarna wissen.
@@ -432,6 +437,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
                           key={tmpl.id}
                           template={tmpl}
                           onDelete={() => setDeleteTemplateId(tmpl.id)}
+                          onMakeLessonCard={() => setLessonFromTemplate(tmpl)}
                         />
                       ))}
                     </div>
@@ -550,6 +556,23 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           </Button>
         </div>
       </Modal>
+
+      {/* "Bewaar als leskaart" (M4): editor voorgevuld met het template */}
+      <LessonCardEditorModal
+        isOpen={!!lessonFromTemplate}
+        onClose={() => setLessonFromTemplate(null)}
+        card={null}
+        prefill={lessonFromTemplate ? {
+          assignmentType: 'template',
+          templateId: lessonFromTemplate.id,
+          title: lessonFromTemplate.name,
+        } : null}
+        onSave={async (input: LessonCardInput) => {
+          await createLessonCard(input);
+          setLessonFromTemplate(null);
+          setActiveTab('lessons');
+        }}
+      />
 
       {/* Opdrachtkaart editor */}
       <AssignmentCardEditorModal
