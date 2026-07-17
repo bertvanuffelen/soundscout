@@ -7,19 +7,17 @@
  * - Play/Pause en Stop controls
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useEffect, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Music, AlertCircle, Play, Pause, SkipBack, ImageIcon } from 'lucide-react';
-import * as Tone from 'tone';
 import type { Submission } from '../../hooks/useSubmissions';
 import type { FeedbackSticker } from '../../lib/submissions';
-import { audioService } from '../../services/AudioService';
-import { audioDiag } from '../../utils/audioDiagnostics';
-import { findStoryboardById } from '../../data/themes';
 import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { FeedbackPanel } from './FeedbackPanel';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
+import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
+import { resolveStoryboard } from '../../utils/resolveStoryboard';
 import { DEFAULT_BPM } from '../../constants/config';
 
 interface SubmissionPlayerProps {
@@ -35,8 +33,6 @@ interface SubmissionPlayerProps {
   onMarkSeen?: () => void;
 }
 
-type PlayerState = 'loading' | 'ready' | 'playing' | 'paused' | 'error';
-
 export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSeen }: SubmissionPlayerProps) {
   const { t } = useTranslation();
 
@@ -48,11 +44,6 @@ export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSee
     markSeenRef.current?.();
   }, []);
   const { student_name, composition_name, composition_data, created_at } = submission;
-  const [playerState, setPlayerState] = useState<PlayerState>('loading');
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [currentBeat, setCurrentBeat] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
   // Format datum
   const formattedDate = new Date(created_at).toLocaleDateString('nl-NL', {
@@ -68,13 +59,23 @@ export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSee
   const samples = composition_data?.samples || [];
   const totalBeats = composition_data?.totalBeats || 16;
   const bpm = composition_data?.bpm || DEFAULT_BPM;
-  const isLooping = composition_data?.isLooping || false;
 
-  // Resolve storyboard from composition data (if present)
-  const storyboard = composition_data?.storyboardId
-    ? findStoryboardById(composition_data.storyboardId)?.storyboard ?? null
-    : null;
+  const storyboard = resolveStoryboard(composition_data);
   const sections = composition_data?.sections ?? [];
+
+  // Gedeeld afspeel-fundament (presentatiescherm fase 1): laden (met
+  // progress), transport met pause/resume, beat-tracking en einde-afspelen.
+  // respectLoop default aan: een loopende compositie loopt hier ook echt.
+  const {
+    state: playbackState,
+    currentBeat,
+    loadingProgress,
+    errorMessage,
+    play: playComposition,
+    pause: pauseComposition,
+    stop: stopComposition,
+    seek: seekComposition,
+  } = useCompositionPlayback(composition_data ?? null);
 
   const trackCount = tracks.filter((t) => t.clips?.length > 0).length;
   const clipCount = tracks.reduce(
@@ -82,146 +83,29 @@ export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSee
     0
   );
 
-  // Store values in refs to avoid recreating the update function
-  const bpmRef = useRef(bpm);
-  const totalBeatsRef = useRef(totalBeats);
-  const isLoopingRef = useRef(isLooping);
-
-  // Keep refs in sync
-  useEffect(() => {
-    bpmRef.current = bpm;
-    totalBeatsRef.current = totalBeats;
-    isLoopingRef.current = isLooping;
-  }, [bpm, totalBeats, isLooping]);
-
-  // Beat tracking via setInterval (more stable than RAF for this use case)
-  useEffect(() => {
-    if (playerState === 'playing') {
-      // Update at ~30fps for smooth but stable playhead movement
-      intervalRef.current = setInterval(() => {
-        const seconds = Tone.Transport.seconds;
-        const beat = (seconds / 60) * bpmRef.current;
-
-        // Handle looping: wrap beat position
-        if (isLoopingRef.current && totalBeatsRef.current > 0) {
-          setCurrentBeat(beat % totalBeatsRef.current);
-        } else {
-          setCurrentBeat(Math.min(beat, totalBeatsRef.current));
-        }
-      }, 33); // ~30fps
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [playerState]);
-
-  // Auto-stop: listen for playback end from AudioService
-  useEffect(() => {
-    const unsubscribe = audioService.onPlaybackEnd(() => {
-      setCurrentBeat(0);
-      setPlayerState('ready');
-    });
-    return unsubscribe;
-  }, []);
-
-  // Initialize audio en laad samples
-  useEffect(() => {
-    let isMounted = true;
-
-    const initAudio = async () => {
-      try {
-        // Initialize audio context
-        await audioService.initialize();
-
-        if (!isMounted) return;
-
-        if (samples.length === 0) {
-          setErrorMessage(t('teacher.submissionPlayer.noSamplesError'));
-          setPlayerState('error');
-          return;
-        }
-
-        // Load samples
-        const results = await audioService.loadSamples(samples, (loaded, total) => {
-          if (isMounted) {
-            setLoadingProgress(Math.round((loaded / total) * 100));
-          }
-        });
-
-        if (!isMounted) return;
-
-        // Check for errors
-        const failedSamples = results.filter(r => !r.success);
-        if (failedSamples.length > 0) {
-          console.warn(t('teacher.submissionPlayer.loadWarning'), failedSamples);
-        }
-
-        setPlayerState('ready');
-      } catch (err) {
-        if (isMounted) {
-          setErrorMessage(err instanceof Error ? err.message : t('teacher.submissionPlayer.audioLoadError'));
-          setPlayerState('error');
-        }
-      }
-    };
-
-    initAudio();
-
-    return () => {
-      isMounted = false;
-      audioService.stop();
-    };
-  }, [samples]);
-
-  // Play/Pause toggle handler
+  // Play/Pause toggle handler (pause/resume + schedule zit in de hook)
   const handlePlayPause = useCallback(() => {
-    if (playerState === 'playing') {
-      // Pause
-      audioService.pause();
-      setPlayerState('paused');
-    } else if (audioService.hasActiveSchedule()) {
-      // Resume — reuse existing Part (no reschedule needed).
-      // The Part survives pause() and its callback creates fresh on-demand
-      // players when the Transport resumes from the paused position.
-      audioDiag.resumeWithExistingSchedule(currentBeat);
-      audioService.play(currentBeat);
-      setPlayerState('playing');
+    if (playbackState === 'playing') {
+      pauseComposition();
     } else {
-      // First play or after stop — full schedule needed
-      audioService.scheduleTimeline(tracks, samples);
-      audioService.setLoop(isLooping, totalBeats);
-      audioService.play(currentBeat);
-      setPlayerState('playing');
+      playComposition();
     }
-  }, [playerState, tracks, samples, isLooping, totalBeats, currentBeat]);
+  }, [playbackState, playComposition, pauseComposition]);
 
-  // Stop handler
   const handleStop = useCallback(() => {
-    audioService.stop();
-    setCurrentBeat(0);
-    setPlayerState('ready');
-  }, []);
+    stopComposition();
+  }, [stopComposition]);
 
   // Seek handler - for playhead scrubbing
   const handleSeek = useCallback((beat: number) => {
-    setCurrentBeat(beat);
-    // Use audioService.seek() to update transport + notify listeners
-    audioService.seek(beat);
-  }, []);
+    seekComposition(beat);
+  }, [seekComposition]);
 
   // Close handler - stop audio first
   const handleClose = useCallback(() => {
-    audioService.stop();
+    stopComposition();
     onClose();
-  }, [onClose]);
+  }, [stopComposition, onClose]);
 
   // Dialog-gedrag (bug 2b: Escape sloot deze overlay niet): Escape,
   // focus-trap en scroll-lock via de gedeelde hook. autoFocus uit zodat de
@@ -229,8 +113,11 @@ export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSee
   const dialogRef = useModalBehavior(handleClose, { autoFocus: false });
 
   // Determine if we should show the timeline (not during loading/error)
-  const showTimeline = playerState !== 'loading' && playerState !== 'error';
-  const isPlaying = playerState === 'playing';
+  // Geen samples = niets af te spelen: toon de bestaande foutstaat
+  const noSamples = samples.length === 0;
+  const effectiveState = noSamples ? 'error' : playbackState;
+  const showTimeline = effectiveState !== 'loading' && effectiveState !== 'idle' && effectiveState !== 'error';
+  const isPlaying = effectiveState === 'playing';
 
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center p-3 sm:p-4 md:p-6 z-50">
@@ -287,7 +174,7 @@ export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSee
         {/* Main content area */}
         <div className="flex-1 flex flex-col min-h-0 overflow-hidden">
           {/* Loading state */}
-          {playerState === 'loading' && (
+          {(effectiveState === 'loading' || effectiveState === 'idle') && (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center max-w-xs">
                 <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" />
@@ -304,11 +191,11 @@ export function SubmissionPlayer({ submission, onClose, onSetFeedback, onMarkSee
           )}
 
           {/* Error state */}
-          {playerState === 'error' && (
+          {effectiveState === 'error' && (
             <div className="flex-1 flex items-center justify-center p-6">
               <div className="text-center max-w-xs">
                 <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" />
-                <p className="text-error-600 font-medium mb-2">{errorMessage}</p>
+                <p className="text-error-600 font-medium mb-2">{noSamples ? t('teacher.submissionPlayer.noSamplesError') : errorMessage ?? t('teacher.submissionPlayer.audioLoadError')}</p>
                 <p className="text-text-muted text-sm">
                   {t('teacher.submissionPlayer.errorHint')}
                 </p>
