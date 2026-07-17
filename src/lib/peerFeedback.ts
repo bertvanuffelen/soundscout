@@ -172,6 +172,33 @@ export async function getPeerCompliments(saveCode: string): Promise<PeerComplime
   }
 }
 
+/**
+ * Docent: totaal ontvangen peer-sterren per inzending van een klas, in één
+ * round-trip (migratie 030). Voor het zijpaneel van het presentatiescherm.
+ * Fire-and-forget-vriendelijk: geeft een lege Map terug bij elke fout —
+ * de presentatie werkt dan gewoon zonder sterren.
+ */
+export async function getPeerStarsForClass(classId: string): Promise<Map<string, number>> {
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.rpc('get_peer_stars_for_class', {
+      p_class_id: classId,
+    });
+    if (error) {
+      logger.warn('get_peer_stars_for_class mislukt:', sanitizeError(error));
+      return new Map();
+    }
+    const map = new Map<string, number>();
+    for (const row of (data ?? []) as { submission_id: string; total_stars: number }[]) {
+      map.set(row.submission_id, Number(row.total_stars ?? 0));
+    }
+    return map;
+  } catch (err) {
+    logger.warn('get_peer_stars_for_class mislukt:', sanitizeError(err));
+    return new Map();
+  }
+}
+
 // --- Docent: feedbackkaarten + peer-review-instelling ---
 
 export interface FeedbackCard {
