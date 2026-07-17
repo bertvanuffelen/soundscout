@@ -20,16 +20,14 @@ import {
   X, Play, Pause, SkipBack, SkipForward, ListMusic, Loader2,
   Repeat, Star, PanelRightClose, PanelRightOpen, Music,
 } from 'lucide-react';
-import * as Tone from 'tone';
 import type { Submission } from '../../hooks/useSubmissions';
 import type { FeedbackSticker } from '../../lib/submissions';
-import { audioService } from '../../services/AudioService';
-import { findStoryboardById } from '../../data/themes';
 import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { FeedbackPanel } from './FeedbackPanel';
+import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
 import { DEFAULT_BPM } from '../../constants/config';
-import { logger } from '../../utils/logger';
+import { resolveStoryboard } from '../../utils/resolveStoryboard';
 import { cn } from '../../utils/cn';
 
 interface ClassPresentationViewProps {
@@ -43,139 +41,95 @@ interface ClassPresentationViewProps {
   ) => Promise<void>;
 }
 
-type PlayerState = 'loading' | 'ready' | 'playing';
-
 const ANNOUNCE_MS = 2500;
 
 export function ClassPresentationView({ playlist, onClose, onSetFeedback }: ClassPresentationViewProps) {
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
-  const [playerState, setPlayerState] = useState<PlayerState>('loading');
   const [autoAdvance, setAutoAdvance] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showFeedbackRow, setShowFeedbackRow] = useState(false);
   const [announcing, setAnnouncing] = useState(true);
-  const [currentBeat, setCurrentBeat] = useState(0);
-  const beatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
   const announceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Auto-play na een (auto-)wissel zodra de samples geladen zijn
   const pendingAutoPlayRef = useRef(false);
-  const loadAbortRef = useRef<AbortController | null>(null);
 
   const current = playlist[index];
   const data = current?.composition_data;
   const totalBeats = data?.totalBeats ?? 32;
   const bpm = data?.bpm ?? DEFAULT_BPM;
-  const storyboard = data?.storyboardId
-    ? findStoryboardById(data.storyboardId)?.storyboard ?? null
-    : null;
+  const storyboard = resolveStoryboard(data);
   const praatplaatImage = data?.praatplaat?.imageUrl ?? null;
 
-  // --- Audio: samples per item laden ---
-  useEffect(() => {
-    if (!current) return;
-    const controller = new AbortController();
-    loadAbortRef.current?.abort();
-    loadAbortRef.current = controller;
-
-    (async () => {
-      setPlayerState('loading');
-      audioService.stop();
-      setCurrentBeat(0);
-      try {
-        await audioService.initialize();
-        await audioService.loadSamples(data?.samples ?? []);
-        if (controller.signal.aborted) return;
-        setPlayerState('ready');
-        if (pendingAutoPlayRef.current) {
-          pendingAutoPlayRef.current = false;
-          startPlayback();
-        }
-      } catch (err) {
-        logger.warn('Presentatie: samples laden mislukt', err);
-        if (!controller.signal.aborted) setPlayerState('ready');
-      }
-    })();
-
-    return () => controller.abort();
-    // startPlayback is stabiel genoeg (leest alles via refs/huidige closure bij aanroep)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [current?.id]);
-
-  // --- Aankondigingsoverlay per wissel ---
-  useEffect(() => {
-    setAnnouncing(true);
-    if (announceTimerRef.current) clearTimeout(announceTimerRef.current);
-    announceTimerRef.current = setTimeout(() => setAnnouncing(false), ANNOUNCE_MS);
-    return () => { if (announceTimerRef.current) clearTimeout(announceTimerRef.current); };
-  }, [index]);
-
-  // --- Beat-tracking (30fps, patroon SubmissionPlayer) ---
-  useEffect(() => {
-    if (playerState === 'playing') {
-      beatIntervalRef.current = setInterval(() => {
-        const seconds = Tone.Transport.seconds;
-        setCurrentBeat(Math.min((seconds / 60) * bpm, totalBeats));
-      }, 33);
-    } else if (beatIntervalRef.current) {
-      clearInterval(beatIntervalRef.current);
-      beatIntervalRef.current = null;
-    }
-    return () => { if (beatIntervalRef.current) clearInterval(beatIntervalRef.current); };
-  }, [playerState, bpm, totalBeats]);
-
-  // index in een ref voor callbacks (voorkomt stale closures bij auto-advance)
+  // index/autoAdvance in refs voor callbacks (voorkomt stale closures);
+  // gesynct in een effect (refs niet beschrijven tijdens render)
   const indexRef = useRef(index);
-  indexRef.current = index;
-
-  const startPlayback = useCallback(() => {
-    const item = playlist[indexRef.current];
-    if (!item) return;
-    audioService.scheduleTimeline(item.composition_data.tracks ?? [], item.composition_data.samples ?? []);
-    audioService.setLoop(false, item.composition_data.totalBeats ?? 32);
-    audioService.play(0);
-    setPlayerState('playing');
-  }, [playlist]);
+  const autoAdvanceRef = useRef(autoAdvance);
+  const playlistLengthRef = useRef(playlist.length);
+  useEffect(() => {
+    indexRef.current = index;
+    autoAdvanceRef.current = autoAdvance;
+    playlistLengthRef.current = playlist.length;
+  }, [index, autoAdvance, playlist.length]);
 
   const goTo = useCallback((nextIndex: number, autoPlay: boolean) => {
-    if (nextIndex < 0 || nextIndex >= playlist.length) return;
-    audioService.stop();
+    if (nextIndex < 0 || nextIndex >= playlistLengthRef.current) return;
     pendingAutoPlayRef.current = autoPlay;
     setIndex(nextIndex);
-    setPlayerState('loading');
-  }, [playlist.length]);
+  }, []);
 
-  // --- Auto-advance: einde van een compositie → volgende ---
+  // Gedeeld afspeel-fundament (presentatiescherm fase 1): laden per item,
+  // transport, beat-tracking en einde-afspelen. respectLoop=false — bij
+  // doorspelen moet elke compositie één keer klinken. onEnded drijft de
+  // auto-advance.
+  const handleEnded = useCallback(() => {
+    if (autoAdvanceRef.current && indexRef.current + 1 < playlistLengthRef.current) {
+      goTo(indexRef.current + 1, true);
+    }
+  }, [goTo]);
+
+  const {
+    state: playbackState,
+    currentBeat,
+    play: playComposition,
+    pause: pauseComposition,
+    stop: stopComposition,
+    seek: seekComposition,
+  } = useCompositionPlayback(data ?? null, { respectLoop: false, onEnded: handleEnded });
+
+  // --- Auto-play na wissel: zodra het nieuwe item geladen is ---
   useEffect(() => {
-    const unsubscribe = audioService.onPlaybackEnd(() => {
-      setPlayerState((prev) => (prev === 'playing' ? 'ready' : prev));
-      setCurrentBeat(0);
-      if (autoAdvance && indexRef.current + 1 < playlist.length) {
-        goTo(indexRef.current + 1, true);
-      }
-    });
-    return unsubscribe;
-  }, [autoAdvance, playlist.length, goTo]);
+    if (playbackState !== 'ready' || !pendingAutoPlayRef.current) return;
+    pendingAutoPlayRef.current = false;
+    // Eén tick uitstellen (set-state-in-effect) — hoorbaar identiek
+    const timer = setTimeout(() => playComposition(0), 0);
+    return () => clearTimeout(timer);
+  }, [playbackState, playComposition]);
+
+  // --- Aankondigingsoverlay per wissel (state-updates via timers, buiten
+  // het synchrone effect-frame) ---
+  useEffect(() => {
+    const showTimer = setTimeout(() => setAnnouncing(true), 0);
+    if (announceTimerRef.current) clearTimeout(announceTimerRef.current);
+    announceTimerRef.current = setTimeout(() => setAnnouncing(false), ANNOUNCE_MS);
+    return () => {
+      clearTimeout(showTimer);
+      if (announceTimerRef.current) clearTimeout(announceTimerRef.current);
+    };
+  }, [index]);
 
   const handlePlayPause = useCallback(() => {
-    if (playerState === 'playing') {
-      audioService.pause();
-      setPlayerState('ready');
-    } else if (playerState === 'ready') {
-      if (audioService.hasActiveSchedule()) {
-        audioService.play(currentBeat);
-      } else {
-        startPlayback();
-        return;
-      }
-      setPlayerState('playing');
+    if (playbackState === 'playing') {
+      pauseComposition();
+    } else if (playbackState === 'ready' || playbackState === 'paused') {
+      playComposition();
     }
-  }, [playerState, currentBeat, startPlayback]);
+  }, [playbackState, playComposition, pauseComposition]);
 
   const handleClose = useCallback(() => {
-    audioService.stop();
+    stopComposition();
     onClose();
-  }, [onClose]);
+  }, [stopComposition, onClose]);
 
   // --- Toetsenbord: spatie = play/pauze, pijlen = wisselen, Esc = sluiten ---
   useEffect(() => {
@@ -183,18 +137,15 @@ export function ClassPresentationView({ playlist, onClose, onSetFeedback }: Clas
       const target = e.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') return;
       if (e.key === ' ') { e.preventDefault(); handlePlayPause(); }
-      if (e.key === 'ArrowRight') goTo(indexRef.current + 1, playerState === 'playing');
-      if (e.key === 'ArrowLeft') goTo(indexRef.current - 1, playerState === 'playing');
+      if (e.key === 'ArrowRight') goTo(indexRef.current + 1, playbackState === 'playing');
+      if (e.key === 'ArrowLeft') goTo(indexRef.current - 1, playbackState === 'playing');
       if (e.key === 'Escape') handleClose();
     };
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [handlePlayPause, goTo, handleClose, playerState]);
+  }, [handlePlayPause, goTo, handleClose, playbackState]);
 
-  // Cleanup bij sluiten
-  useEffect(() => () => { audioService.stop(); }, []);
-
-  const isPlaying = playerState === 'playing';
+  const isPlaying = playbackState === 'playing';
 
   // Alle praatplaat-posities (snapshots) voor de kaart-visual
   const praatplaatSpots = useMemo(() =>
@@ -258,7 +209,7 @@ export function ClassPresentationView({ playlist, onClose, onSetFeedback }: Clas
                   compact
                   isPlaying={isPlaying}
                   onPlayPause={handlePlayPause}
-                  onStop={() => { audioService.stop(); setPlayerState('ready'); setCurrentBeat(0); }}
+                  onStop={stopComposition}
                 />
               </div>
             ) : praatplaatImage ? (
@@ -293,7 +244,7 @@ export function ClassPresentationView({ playlist, onClose, onSetFeedback }: Clas
                     totalBeats={totalBeats}
                     currentBeat={currentBeat}
                     isPlaying={isPlaying}
-                    onSeek={(beat) => { setCurrentBeat(beat); audioService.seek(beat); }}
+                    onSeek={seekComposition}
                     snapPreview={null}
                     readOnly
                     samples={data?.samples ?? []}
@@ -327,11 +278,11 @@ export function ClassPresentationView({ playlist, onClose, onSetFeedback }: Clas
             </button>
             <button
               onClick={handlePlayPause}
-              disabled={playerState === 'loading'}
+              disabled={playbackState === 'loading' || playbackState === 'idle'}
               className="w-14 h-14 rounded-full bg-accent-400 hover:bg-accent-500 disabled:opacity-60 text-white flex items-center justify-center shadow-lg shadow-accent-400/30 transition-all active:scale-95"
               aria-label={isPlaying ? t('common.pause') : t('common.play')}
             >
-              {playerState === 'loading' ? (
+              {playbackState === 'loading' || playbackState === 'idle' ? (
                 <Loader2 className="w-6 h-6 animate-spin" aria-hidden="true" />
               ) : isPlaying ? (
                 <Pause className="w-6 h-6" aria-hidden="true" />
