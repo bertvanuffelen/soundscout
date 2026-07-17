@@ -5,27 +5,21 @@
  * 1. URL met ?share=CODE query parameter
  * 2. Code invoer op het startscherm
  *
- * Hergebruikt Timeline component in read-only modus.
+ * Sinds fase 2 een data-schil om het universele PresentationSurface
+ * (mode 'public'): deze component haalt de compositie op en bewaakt de
+ * gesture-gate (Chrome blokkeert AudioContext zonder gebaar); zodra de
+ * bezoeker op "Luister" klikt neemt de surface het over (fullscreen-knop,
+ * montagelijn-toggle, transport, laad/foutstaten).
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Music,
-  AlertCircle,
-  Play,
-  Pause,
-  SkipBack,
-  ArrowLeft,
-} from 'lucide-react';
+import { Music, AlertCircle, Play, ArrowLeft } from 'lucide-react';
 import { getSharedComposition } from '../../lib/submissions';
 import { isValidCompositionData } from '../../utils/compositionData';
-import { resolveStoryboard } from '../../utils/resolveStoryboard';
-import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
-import { Timeline } from '../studio/Timeline';
-import { StoryboardViewer } from '../ui/StoryboardViewer';
+import { PresentationSurface } from '../presentation/PresentationSurface';
 import { Button } from '../ui';
-import { DEFAULT_BPM } from '../../constants/config';
+import type { Submission } from '../../hooks/useSubmissions';
 import type { CompositionData } from '../../types';
 
 interface SharedPlayerProps {
@@ -33,7 +27,7 @@ interface SharedPlayerProps {
   onBack: () => void;
 }
 
-/** Data-fase (vóór audio); zodra audio start neemt de playback-hook het over */
+/** Data-fase (vóór audio); in de audio-fase neemt PresentationSurface het over */
 type DataPhase = 'loading-data' | 'waiting-gesture' | 'audio' | 'not-found' | 'error';
 
 export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
@@ -43,28 +37,6 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   const [compositionName, setCompositionName] = useState('');
   const [studentName, setStudentName] = useState('');
   const [data, setData] = useState<CompositionData | null>(null);
-
-  const tracks = data?.tracks ?? [];
-  const samples = data?.samples ?? [];
-  const totalBeats = data?.totalBeats ?? 16;
-  const bpm = data?.bpm ?? DEFAULT_BPM;
-  const sections = data?.sections ?? [];
-  const storyboard = resolveStoryboard(data);
-
-  // Gedeeld afspeel-fundament (presentatiescherm fase 1). autoLoad=false:
-  // de browser blokkeert AudioContext zonder gebaar, dus load() start pas
-  // via de "Klik om te luisteren"-knop (gesture-gate).
-  const {
-    state: playbackState,
-    currentBeat,
-    loadingProgress,
-    errorMessage: playbackError,
-    load: loadComposition,
-    play: playComposition,
-    pause: pauseComposition,
-    stop: stopComposition,
-    seek: seekComposition,
-  } = useCompositionPlayback(data, { autoLoad: false });
 
   // --- Fetch composition data ---
   useEffect(() => {
@@ -109,66 +81,51 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
     return () => { isMounted = false; };
   }, [code, t]);
 
-  // --- Audio initialiseren na user gesture ---
+  // --- Audio starten na user gesture (sticky activation → surface mag laden) ---
   const handleStartAudio = useCallback(() => {
-    if (samples.length === 0) {
+    if ((data?.samples?.length ?? 0) === 0) {
       setDataError(t('share.notFound'));
       setDataPhase('error');
       return;
     }
     setDataPhase('audio');
-    void loadComposition();
-  }, [samples.length, loadComposition, t]);
+  }, [data, t]);
 
-  // --- Playback controls (transport zit in de hook) ---
-  const handlePlayPause = useCallback(() => {
-    if (playbackState === 'playing') {
-      pauseComposition();
-    } else {
-      playComposition();
-    }
-  }, [playbackState, playComposition, pauseComposition]);
+  // Pseudo-inzending voor de surface (publiek: geen id/feedback nodig)
+  const playlist = useMemo<Submission[]>(() => {
+    if (!data) return [];
+    return [{
+      id: `share-${code}`,
+      student_name: studentName,
+      composition_name: compositionName,
+      composition_data: data,
+      created_at: new Date().toISOString(),
+    }];
+  }, [data, code, studentName, compositionName]);
 
-  const handleStop = useCallback(() => {
-    stopComposition();
-  }, [stopComposition]);
-
-  const handleSeek = useCallback((beat: number) => {
-    seekComposition(beat);
-  }, [seekComposition]);
-
-  const handleBack = useCallback(() => {
-    stopComposition();
-    onBack();
-  }, [stopComposition, onBack]);
-
-  // Derived state: gecombineerde weergave-staat van data-fase + audio-fase
-  const errorMessage = dataError ?? playbackError;
-  const isError = dataPhase === 'error' || (dataPhase === 'audio' && playbackState === 'error');
-  const isLoadingAudio = dataPhase === 'audio' && (playbackState === 'loading' || playbackState === 'idle');
-  const showTimeline = dataPhase === 'audio' && !isError && !isLoadingAudio;
-  const isPlaying = playbackState === 'playing';
+  // --- Audio-fase: het universele presentatiescherm neemt over ---
+  if (dataPhase === 'audio' && playlist.length > 0) {
+    return (
+      <PresentationSurface
+        playlist={playlist}
+        mode="public"
+        onClose={onBack}
+        respectLoop
+      />
+    );
+  }
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-900">
-      {/* Header — compact: back + title + author on one line */}
+      {/* Header — compact: back + title on one line */}
       <div className="bg-bg-surface border-b border-border-subtle px-3 sm:px-6 py-2 sm:py-3 flex items-center gap-3 shrink-0">
-        <Button variant="secondary" size="sm" onClick={handleBack}>
+        <Button variant="secondary" size="sm" onClick={onBack}>
           <ArrowLeft className="w-4 h-4 mr-1.5" />
           <span className="hidden sm:inline">{t('share.backToStart')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
         <div className="flex-1 min-w-0 text-center">
-          {showTimeline ? (
-            <div className="truncate">
-              <span className="font-bold text-text-main text-sm sm:text-base">{compositionName}</span>
-              <span className="text-text-muted text-xs sm:text-sm ml-2">
-                {t('share.by')} {studentName}
-              </span>
-            </div>
-          ) : (
-            <span className="text-sm sm:text-base font-bold text-text-main">SoundScout</span>
-          )}
+          <span className="text-sm sm:text-base font-bold text-text-main">SoundScout</span>
         </div>
         <div className="w-16 sm:w-20 shrink-0" />
       </div>
@@ -204,23 +161,6 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
           </div>
         )}
 
-        {/* Loading audio */}
-        {isLoadingAudio && (
-          <div className="flex-1 flex items-center justify-center p-6">
-            <div className="text-center max-w-xs">
-              <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" />
-              <p className="text-white font-medium mb-3">{t('share.loadingSamples')}</p>
-              <div className="w-full bg-neutral-700 rounded-full h-2">
-                <div
-                  className="bg-accent-500 h-2 rounded-full transition-all duration-300"
-                  style={{ width: `${loadingProgress}%` }}
-                />
-              </div>
-              <p className="text-neutral-400 text-sm mt-2">{loadingProgress}%</p>
-            </div>
-          </div>
-        )}
-
         {/* Not found */}
         {dataPhase === 'not-found' && (
           <div className="flex-1 flex items-center justify-center p-6">
@@ -228,7 +168,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
               <AlertCircle className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
               <p className="text-white font-medium mb-2">{t('share.notFound')}</p>
               <p className="text-neutral-400 text-sm mb-6">{t('share.expired')}</p>
-              <Button variant="primary" onClick={handleBack}>
+              <Button variant="primary" onClick={onBack}>
                 {t('share.backToStart')}
               </Button>
             </div>
@@ -236,75 +176,16 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         )}
 
         {/* Error */}
-        {isError && (
+        {dataPhase === 'error' && (
           <div className="flex-1 flex items-center justify-center p-6">
             <div className="text-center max-w-xs">
               <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" />
-              <p className="text-error-400 font-medium mb-4">{errorMessage}</p>
-              <Button variant="primary" onClick={handleBack}>
+              <p className="text-error-400 font-medium mb-4">{dataError}</p>
+              <Button variant="primary" onClick={onBack}>
                 {t('share.backToStart')}
               </Button>
             </div>
           </div>
-        )}
-
-        {/* Composition info + timeline */}
-        {showTimeline && (
-          <>
-            {/* Storyboard viewer */}
-            {storyboard && (
-              <div className="shrink-0 border-b border-border-subtle bg-neutral-50">
-                <StoryboardViewer
-                  storyboard={storyboard}
-                  currentBeat={currentBeat}
-                  totalBeats={totalBeats}
-                  sections={sections}
-                  compact
-                  isPlaying={isPlaying}
-                  onPlayPause={handlePlayPause}
-                  onStop={handleStop}
-                />
-              </div>
-            )}
-
-            {/* Timeline */}
-            <div className="flex-1 overflow-hidden bg-bg-surface">
-              <Timeline
-                tracks={tracks}
-                bpm={bpm}
-                totalBeats={totalBeats}
-                currentBeat={currentBeat}
-                isPlaying={isPlaying}
-                onSeek={handleSeek}
-                snapPreview={null}
-                readOnly={true}
-                samples={samples}
-                sections={sections}
-              />
-            </div>
-
-            {/* Transport controls — matches studio TransportControls sizing */}
-            <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 border-t border-border-subtle shrink-0">
-              <button
-                onClick={handlePlayPause}
-                className="w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer bg-accent-500 hover:bg-accent-600 active:bg-accent-700 active:scale-95 text-white"
-                title={isPlaying ? t('common.pause') : t('common.play')}
-              >
-                {isPlaying ? (
-                  <Pause className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
-                ) : (
-                  <Play className="w-5 h-5 sm:w-[22px] sm:h-[22px]" />
-                )}
-              </button>
-              <button
-                onClick={handleStop}
-                className="w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 active:scale-95 text-neutral-600"
-                title={t('transport.rewind')}
-              >
-                <SkipBack className="w-4 h-4 sm:w-[18px] sm:h-[18px]" />
-              </button>
-            </div>
-          </>
         )}
       </div>
     </div>
