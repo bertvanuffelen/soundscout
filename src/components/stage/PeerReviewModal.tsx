@@ -6,16 +6,15 @@
  * feedbackkaart die de docent instelde. Geen vrije tekst (moderatie).
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Play, Square, Loader2, Music, PartyPopper, Send, Star, DoorClosed } from 'lucide-react';
-import * as Tone from 'tone';
 import { Modal, Button } from '../ui';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
-import { audioService } from '../../services/AudioService';
+import { PraatplaatMarker } from '../ui/PraatplaatMarker';
+import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
 import { getPeerReviewBatch, submitPeerFeedback, PeerFeedbackError, type PeerReviewItem } from '../../lib/peerFeedback';
-import { findStoryboardById } from '../../data/themes';
-import { DEFAULT_BPM } from '../../constants/config';
+import { resolveStoryboard } from '../../utils/resolveStoryboard';
 import { logger } from '../../utils/logger';
 import { cn } from '../../utils/cn';
 
@@ -28,7 +27,6 @@ interface PeerReviewModalProps {
 }
 
 type Phase = 'loading' | 'empty' | 'reviewing' | 'done' | 'error' | 'blocked';
-type AudioPhase = 'loading' | 'ready' | 'playing';
 
 export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, chips }: PeerReviewModalProps) {
   const { t } = useTranslation();
@@ -37,14 +35,12 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
   const [index, setIndex] = useState(0);
   // Peer-feedback 2.0: 1-3 sterren per criterium van de feedbackkaart
   const [ratings, setRatings] = useState<Record<string, number>>({});
-  const [audioPhase, setAudioPhase] = useState<AudioPhase>('loading');
   const [isSending, setIsSending] = useState(false);
   // Eerlijke foutafhandeling (testronde 2): tijdelijke fout → inline melding
   // met retry; definitieve weigering (ronde gesloten / max bereikt) → eigen
   // 'blocked'-scherm. Nooit meer nep-succes met confetti.
   const [submitError, setSubmitError] = useState<string | null>(null);
   const [blockedMessage, setBlockedMessage] = useState<string | null>(null);
-  const abortRef = useRef<AbortController | null>(null);
 
   const current: PeerReviewItem | undefined = items[index];
 
@@ -52,31 +48,21 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
   // de meebewegende beelden, een praatplaat-compositie de plaat met de
   // gekozen plek — zoals de presentatiemodus dat ook doet.
   const currentData = current?.compositionData;
-  const storyboard = currentData?.storyboardId
-    ? findStoryboardById(currentData.storyboardId)?.storyboard ?? null
-    : null;
+  const storyboard = resolveStoryboard(currentData);
   const praatplaatImage = currentData?.praatplaat?.imageUrl ?? null;
   const praatplaatPosition = currentData?.praatplaatPosition ?? null;
   const totalBeats = currentData?.totalBeats ?? 32;
-  const bpm = currentData?.bpm ?? DEFAULT_BPM;
 
-  // Beat-tracking voor de storyboard-sync (patroon SubmissionPlayer, ~30fps)
-  const [currentBeat, setCurrentBeat] = useState(0);
-  const beatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  useEffect(() => {
-    if (audioPhase === 'playing') {
-      beatIntervalRef.current = setInterval(() => {
-        const seconds = Tone.Transport.seconds;
-        setCurrentBeat(Math.min((seconds / 60) * bpm, totalBeats));
-      }, 33);
-    } else if (beatIntervalRef.current) {
-      clearInterval(beatIntervalRef.current);
-      beatIntervalRef.current = null;
-    }
-    return () => {
-      if (beatIntervalRef.current) clearInterval(beatIntervalRef.current);
-    };
-  }, [audioPhase, bpm, totalBeats]);
+  // Gedeeld afspeel-fundament (presentatiescherm fase 1): laden, transport,
+  // beat-tracking en einde-afspelen in één hook. respectLoop=false — een
+  // klasgenoot-compositie speelt één keer, niet in een loop.
+  // Gedestructureerd: play/stop zijn stabiele callbacks (fijne deps).
+  const {
+    state: playbackState,
+    currentBeat,
+    play: playComposition,
+    stop: stopComposition,
+  } = useCompositionPlayback(isOpen ? currentData ?? null : null, { respectLoop: false });
 
   // Batch laden bij openen
   useEffect(() => {
@@ -87,7 +73,6 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
       setPhase('loading');
       setIndex(0);
       setRatings({});
-      setCurrentBeat(0);
       try {
         const batch = await getPeerReviewBatch(classCode, ownSubmissionId);
         if (cancelled) return;
@@ -99,57 +84,17 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
       }
     })();
 
-    return () => {
-      cancelled = true;
-      audioService.stop();
-    };
+    return () => { cancelled = true; };
   }, [isOpen, classCode, ownSubmissionId]);
-
-  // Samples van het huidige item laden
-  useEffect(() => {
-    if (!isOpen || !current) return;
-    const controller = new AbortController();
-    abortRef.current?.abort();
-    abortRef.current = controller;
-
-    (async () => {
-      setAudioPhase('loading');
-      audioService.stop();
-      try {
-        await audioService.initialize();
-        await audioService.loadSamples(current.compositionData.samples ?? []);
-        if (controller.signal.aborted) return;
-        setAudioPhase('ready');
-      } catch (err) {
-        logger.warn('Peer-review samples laden mislukt', err);
-        if (!controller.signal.aborted) setAudioPhase('ready'); // afspelen probeert alsnog
-      }
-    })();
-
-    return () => controller.abort();
-  }, [isOpen, current]);
-
-  // Einde-afspelen terug naar 'ready'
-  useEffect(() => {
-    const unsubscribe = audioService.onPlaybackEnd(() => {
-      setAudioPhase((p) => (p === 'playing' ? 'ready' : p));
-      setCurrentBeat(0);
-    });
-    return unsubscribe;
-  }, []);
 
   const handlePlayStop = useCallback(() => {
     if (!current) return;
-    if (audioPhase === 'playing') {
-      audioService.stop();
-      setAudioPhase('ready');
+    if (playbackState === 'playing') {
+      stopComposition();
     } else {
-      audioService.scheduleTimeline(current.compositionData.tracks ?? [], current.compositionData.samples ?? []);
-      audioService.setLoop(false, current.compositionData.totalBeats ?? 32);
-      audioService.play(0);
-      setAudioPhase('playing');
+      playComposition(0);
     }
-  }, [current, audioPhase]);
+  }, [current, playbackState, playComposition, stopComposition]);
 
   // Sterren zetten: nogmaals dezelfde ster klikken = criterium wissen
   const setStars = (chip: string, stars: number) => {
@@ -169,7 +114,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
     if (!current || ratedCount === 0) return;
     setIsSending(true);
     setSubmitError(null);
-    audioService.stop();
+    stopComposition();
     try {
       await submitPeerFeedback(ownSubmissionId, current.submissionId, ratings);
     } catch (err) {
@@ -188,18 +133,17 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
     }
     setIsSending(false);
     setRatings({});
-    setCurrentBeat(0);
     if (index + 1 < items.length) {
       setIndex(index + 1);
     } else {
       setPhase('done');
     }
-  }, [current, ratings, ratedCount, ownSubmissionId, index, items.length, t]);
+  }, [current, ratings, ratedCount, ownSubmissionId, index, items.length, stopComposition, t]);
 
   const handleClose = useCallback(() => {
-    audioService.stop();
+    stopComposition();
     onClose();
-  }, [onClose]);
+  }, [stopComposition, onClose]);
 
   return (
     <Modal isOpen={isOpen} onClose={handleClose} title={t('peerReview.title')} size="md">
@@ -253,14 +197,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
                 className="w-full aspect-video object-contain bg-black/5"
               />
               {praatplaatPosition && (
-                <span
-                  className={cn(
-                    'absolute -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-white shadow w-6 h-6 bg-accent-400',
-                    audioPhase === 'playing' && 'animate-pulse scale-110'
-                  )}
-                  style={{ left: `${praatplaatPosition.x * 100}%`, top: `${praatplaatPosition.y * 100}%` }}
-                  aria-hidden="true"
-                />
+                <PraatplaatMarker position={praatplaatPosition} active={playbackState === 'playing'} />
               )}
             </div>
           )}
@@ -269,13 +206,13 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
           <div className="flex items-center gap-4 rounded-2xl border border-border-subtle bg-neutral-50 p-4 mb-5">
             <button
               onClick={handlePlayStop}
-              disabled={audioPhase === 'loading'}
+              disabled={playbackState === 'loading'}
               className="w-14 h-14 bg-accent-400 hover:bg-accent-500 active:bg-accent-600 disabled:opacity-50 rounded-full flex items-center justify-center text-white shadow-lg shadow-accent-400/30 transition-all active:scale-95 shrink-0"
-              aria-label={audioPhase === 'playing' ? t('common.pause') : t('common.play')}
+              aria-label={playbackState === 'playing' ? t('common.pause') : t('common.play')}
             >
-              {audioPhase === 'loading' ? (
+              {playbackState === 'loading' ? (
                 <Loader2 className="w-6 h-6 animate-spin" />
-              ) : audioPhase === 'playing' ? (
+              ) : playbackState === 'playing' ? (
                 <Square className="w-6 h-6" />
               ) : (
                 <Play className="w-6 h-6 ml-0.5" />
