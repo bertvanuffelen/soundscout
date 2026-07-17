@@ -138,6 +138,18 @@ Bert stopte met testen ("ik val in dezelfde fouten"); alles uit testplan + Notio
 
 **Hertest-lijst** staat bovenaan `docs/TESTPLAN-MASTERPLAN.md`. Geparkeerd: "docent bepaalt tijdsduur"-vermelding (vergt migratie + activatie-UI).
 
+## Universeel presentatiescherm — fase 1 (16-7, ontwerpsessie Bert)
+
+Ontwerp: één presentatiescherm voor digibord-presentatie, docent-review, publieke luisterlink en peer-luisteren, met schakelbare elementen (zijpaneel met naam/vorm-icoon/peer-sterren + docent-feedback-status-toggle, feedback-invoer, naam-overlay, doorspelen). Podium blijft eigen scherm + krijgt later een "Presenteren"-knop. Stijlvoorstel: donkere podium-achtergrond met lichte inhoudskaart (Bert beslist op zijn mockup-afbeelding; prompt-spec geleverd). Vrij/template-visual: meebewegende tijdlijn.
+
+**Fase 1 gebouwd (onzichtbaar fundament, 6 commits `861dd9d`…`b6fcb9b`):**
+- `useCompositionPlayback`-hook: laden (AbortController + progress) → schedule → play, pause/resume via bestaande Part, beat-tracking ~30fps met loop-modulo, onEnded (auto-advance), opties respectLoop/autoLoad (gesture-gate).
+- `resolveStoryboard`-util + `PraatplaatMarker`-component.
+- Alle vier de oppervlakken overgezet (PeerReviewModal, SubmissionPlayer, SharedPlayer, ClassPresentationView) — gedrag identiek, end-to-end geverifieerd via verse luisterlink 9XRC6C6M (gesture → laden → afspelen → pauze → hervatten).
+- Lint verbeterde van 31 naar 28 (dode code + twee sluimerende hook-issues opgeruimd).
+
+**Fase 2 (wacht op Berts mockup):** `PresentationSurface`-UI met feature-props; wrappers; Presenteren-knop op het podium; later PraatplaatViewer-samenvoeging.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
