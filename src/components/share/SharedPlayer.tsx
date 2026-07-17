@@ -8,7 +8,7 @@
  * Hergebruikt Timeline component in read-only modus.
  */
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
   Music,
@@ -18,53 +18,53 @@ import {
   SkipBack,
   ArrowLeft,
 } from 'lucide-react';
-import * as Tone from 'tone';
-import { audioService } from '../../services/AudioService';
 import { getSharedComposition } from '../../lib/submissions';
 import { isValidCompositionData } from '../../utils/compositionData';
-import { findStoryboardById } from '../../data/themes';
+import { resolveStoryboard } from '../../utils/resolveStoryboard';
+import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
 import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { Button } from '../ui';
 import { DEFAULT_BPM } from '../../constants/config';
-import type { Track, Sample, Section, Storyboard } from '../../types';
+import type { CompositionData } from '../../types';
 
 interface SharedPlayerProps {
   code: string;
   onBack: () => void;
 }
 
-type PlayerState = 'loading-data' | 'waiting-gesture' | 'loading-audio' | 'ready' | 'playing' | 'paused' | 'error' | 'not-found' | 'expired';
+/** Data-fase (vóór audio); zodra audio start neemt de playback-hook het over */
+type DataPhase = 'loading-data' | 'waiting-gesture' | 'audio' | 'not-found' | 'error';
 
 export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   const { t } = useTranslation();
-  const [playerState, setPlayerState] = useState<PlayerState>('loading-data');
-  const [loadingProgress, setLoadingProgress] = useState(0);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [currentBeat, setCurrentBeat] = useState(0);
-  const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  // Composition data from Supabase
+  const [dataPhase, setDataPhase] = useState<DataPhase>('loading-data');
+  const [dataError, setDataError] = useState<string | null>(null);
   const [compositionName, setCompositionName] = useState('');
   const [studentName, setStudentName] = useState('');
-  const [tracks, setTracks] = useState<Track[]>([]);
-  const [samples, setSamples] = useState<Sample[]>([]);
-  const [totalBeats, setTotalBeats] = useState(16);
-  const [bpm, setBpm] = useState(DEFAULT_BPM);
-  const [isLooping, setIsLooping] = useState(false);
-  const [sections, setSections] = useState<Section[]>([]);
-  const [storyboard, setStoryboard] = useState<Storyboard | null>(null);
+  const [data, setData] = useState<CompositionData | null>(null);
 
-  // Refs for beat tracking
-  const bpmRef = useRef(bpm);
-  const totalBeatsRef = useRef(totalBeats);
-  const isLoopingRef = useRef(isLooping);
+  const tracks = data?.tracks ?? [];
+  const samples = data?.samples ?? [];
+  const totalBeats = data?.totalBeats ?? 16;
+  const bpm = data?.bpm ?? DEFAULT_BPM;
+  const sections = data?.sections ?? [];
+  const storyboard = resolveStoryboard(data);
 
-  useEffect(() => {
-    bpmRef.current = bpm;
-    totalBeatsRef.current = totalBeats;
-    isLoopingRef.current = isLooping;
-  }, [bpm, totalBeats, isLooping]);
+  // Gedeeld afspeel-fundament (presentatiescherm fase 1). autoLoad=false:
+  // de browser blokkeert AudioContext zonder gebaar, dus load() start pas
+  // via de "Klik om te luisteren"-knop (gesture-gate).
+  const {
+    state: playbackState,
+    currentBeat,
+    loadingProgress,
+    errorMessage: playbackError,
+    load: loadComposition,
+    play: playComposition,
+    pause: pauseComposition,
+    stop: stopComposition,
+    seek: seekComposition,
+  } = useCompositionPlayback(data, { autoLoad: false });
 
   // --- Fetch composition data ---
   useEffect(() => {
@@ -77,144 +77,77 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         if (!isMounted) return;
 
         if (!result) {
-          setPlayerState('not-found');
+          setDataPhase('not-found');
           return;
         }
 
-        // Store composition data
         setCompositionName(result.composition_name);
         setStudentName(result.student_name);
 
-
-        const data = result.composition_data;
-
         // Runtime validatie van compositie data uit Supabase
-        if (!isValidCompositionData(data)) {
-          setErrorMessage(t('share.notFound'));
-          setPlayerState('error');
+        const composition = result.composition_data;
+        if (!isValidCompositionData(composition)) {
+          setDataError(t('share.notFound'));
+          setDataPhase('error');
           return;
         }
 
-        setTracks(data.tracks);
-        setSamples(data.samples);
-        setTotalBeats(data.totalBeats);
-        setBpm(data.bpm);
-        setIsLooping(data.isLooping);
-        setSections(data.sections ?? []);
-
-        // Resolve storyboard if composition was made with one
-        if (data.storyboardId) {
-          const found = findStoryboardById(data.storyboardId);
-          if (found) {
-            setStoryboard(found.storyboard);
-          }
-        }
-
+        setData(composition);
         // Wacht op user gesture voordat we audio initialiseren
         // (Chrome blokkeert AudioContext zonder user interaction)
-        setPlayerState('waiting-gesture');
+        setDataPhase('waiting-gesture');
       } catch (err) {
         if (isMounted) {
-          setErrorMessage(err instanceof Error ? err.message : t('share.errorGeneric'));
-          setPlayerState('error');
+          setDataError(err instanceof Error ? err.message : t('share.errorGeneric'));
+          setDataPhase('error');
         }
       }
     };
 
     fetchData();
 
-    return () => {
-      isMounted = false;
-      audioService.stop();
-    };
+    return () => { isMounted = false; };
   }, [code, t]);
 
-  // --- Beat tracking ---
-  useEffect(() => {
-    if (playerState === 'playing') {
-      intervalRef.current = setInterval(() => {
-        const seconds = Tone.Transport.seconds;
-        const beat = (seconds / 60) * bpmRef.current;
-
-        if (isLoopingRef.current && totalBeatsRef.current > 0) {
-          setCurrentBeat(beat % totalBeatsRef.current);
-        } else {
-          setCurrentBeat(Math.min(beat, totalBeatsRef.current));
-        }
-      }, 33);
-    } else {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-        intervalRef.current = null;
-      }
-    }
-
-    return () => {
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current);
-      }
-    };
-  }, [playerState]);
-
   // --- Audio initialiseren na user gesture ---
-  const handleStartAudio = useCallback(async () => {
-    setPlayerState('loading-audio');
-    try {
-      await audioService.initialize();
-
-      if (samples.length === 0) {
-        setErrorMessage(t('share.notFound'));
-        setPlayerState('error');
-        return;
-      }
-
-      await audioService.loadSamples(samples, (loaded, total) => {
-        setLoadingProgress(Math.round((loaded / total) * 100));
-      });
-
-      setPlayerState('ready');
-    } catch (err) {
-      setErrorMessage(err instanceof Error ? err.message : t('share.errorGeneric'));
-      setPlayerState('error');
+  const handleStartAudio = useCallback(() => {
+    if (samples.length === 0) {
+      setDataError(t('share.notFound'));
+      setDataPhase('error');
+      return;
     }
-  }, [samples, t]);
+    setDataPhase('audio');
+    void loadComposition();
+  }, [samples.length, loadComposition, t]);
 
-  // --- Playback controls ---
-  // Mirror the regular player pattern: always reschedule + play from currentBeat.
-  // This ensures the hybrid seek approach (startActiveClips) works correctly.
+  // --- Playback controls (transport zit in de hook) ---
   const handlePlayPause = useCallback(() => {
-    if (playerState === 'playing') {
-      audioService.pause();
-      setPlayerState('paused');
+    if (playbackState === 'playing') {
+      pauseComposition();
     } else {
-      audioService.scheduleTimeline(tracks, samples);
-      audioService.setLoop(isLooping, totalBeats);
-      audioService.play(currentBeat);
-      setPlayerState('playing');
+      playComposition();
     }
-  }, [playerState, tracks, samples, isLooping, totalBeats, currentBeat]);
+  }, [playbackState, playComposition, pauseComposition]);
 
   const handleStop = useCallback(() => {
-    audioService.stop();
-    setCurrentBeat(0);
-    setPlayerState('ready');
-  }, []);
+    stopComposition();
+  }, [stopComposition]);
 
-  // Seek handler — for playhead scrubbing
   const handleSeek = useCallback((beat: number) => {
-    setCurrentBeat(beat);
-    // Use audioService.seek() to update transport + notify listeners
-    audioService.seek(beat);
-  }, []);
+    seekComposition(beat);
+  }, [seekComposition]);
 
   const handleBack = useCallback(() => {
-    audioService.stop();
+    stopComposition();
     onBack();
-  }, [onBack]);
+  }, [stopComposition, onBack]);
 
-  // Derived state
-  const showTimeline = playerState === 'ready' || playerState === 'playing' || playerState === 'paused';
-  const isPlaying = playerState === 'playing';
+  // Derived state: gecombineerde weergave-staat van data-fase + audio-fase
+  const errorMessage = dataError ?? playbackError;
+  const isError = dataPhase === 'error' || (dataPhase === 'audio' && playbackState === 'error');
+  const isLoadingAudio = dataPhase === 'audio' && (playbackState === 'loading' || playbackState === 'idle');
+  const showTimeline = dataPhase === 'audio' && !isError && !isLoadingAudio;
+  const isPlaying = playbackState === 'playing';
 
   return (
     <div className="min-h-screen flex flex-col bg-brand-900">
@@ -243,7 +176,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
       {/* Main content */}
       <div className="flex-1 flex flex-col">
         {/* Loading data */}
-        {playerState === 'loading-data' && (
+        {dataPhase === 'loading-data' && (
           <div className="flex-1 flex items-center justify-center p-6">
             <div className="text-center">
               <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" />
@@ -253,7 +186,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         )}
 
         {/* Waiting for user gesture to unlock audio */}
-        {playerState === 'waiting-gesture' && (
+        {dataPhase === 'waiting-gesture' && (
           <div className="flex-1 flex items-center justify-center p-6">
             <div className="text-center max-w-sm">
               <Music className="w-16 h-16 text-accent-500 mx-auto mb-4" />
@@ -272,7 +205,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         )}
 
         {/* Loading audio */}
-        {playerState === 'loading-audio' && (
+        {isLoadingAudio && (
           <div className="flex-1 flex items-center justify-center p-6">
             <div className="text-center max-w-xs">
               <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" />
@@ -289,7 +222,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         )}
 
         {/* Not found */}
-        {playerState === 'not-found' && (
+        {dataPhase === 'not-found' && (
           <div className="flex-1 flex items-center justify-center p-6">
             <div className="text-center max-w-xs">
               <AlertCircle className="w-16 h-16 text-neutral-400 mx-auto mb-4" />
@@ -303,7 +236,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
         )}
 
         {/* Error */}
-        {playerState === 'error' && (
+        {isError && (
           <div className="flex-1 flex items-center justify-center p-6">
             <div className="text-center max-w-xs">
               <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" />
