@@ -121,6 +121,14 @@ export function useCompositionPlayback(
   const load = useCallback(async () => {
     const current = dataRef.current;
     abortRef.current?.abort();
+
+    if (!current) {
+      audioService.stop();
+      setState('idle');
+      setCurrentBeat(0);
+      return;
+    }
+
     const controller = new AbortController();
     abortRef.current = controller;
 
@@ -166,13 +174,12 @@ export function useCompositionPlayback(
   const dataKey = data === null ? null : `${data.samples?.length ?? 0}:${data.totalBeats}:${data.tracks?.length ?? 0}`;
   useEffect(() => {
     if (!autoLoad) return;
-    if (dataRef.current === null) {
-      setState('idle');
-      return;
-    }
-    void load();
+    // Eén tick uitstellen: houdt alle setState-updates uit het synchrone
+    // effect-frame (react-hooks/set-state-in-effect) zonder gedragsverschil.
     // dataKey vat de identiteit van de compositie samen zonder object-
-    // referentie-churn (zelfde patroon als elders: ID-based comparison)
+    // referentie-churn (zelfde patroon als elders: ID-based comparison).
+    const timer = setTimeout(() => { void load(); }, 0);
+    return () => clearTimeout(timer);
   }, [autoLoad, dataKey, load]);
 
   // --- Opruimen bij unmount ---
