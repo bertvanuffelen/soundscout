@@ -3,12 +3,30 @@
 Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-weken` is gebouwd. Af te vinken vóór merge naar `main` + deploy.
 
 **Vooraf:**
-- Migraties **025 → 026 → 027 → 028** zijn in Supabase gedraaid ✅ (bevestigd door Bert). **Nieuw na testronde 1: draai ook `029_fix_load_saved_composition_class_code.sql`** (fixt de bewaarcode-bug uit 2c — zonder deze faalt élke bewaarcode).
+- Migraties **025 → 026 → 027 → 028 → 029 → 030** zijn in Supabase gedraaid ✅ (bevestigd door Bert, 17-7).
 - Lokaal draaien: `cd .claude/worktrees/masterplan-6-weken && npm run dev` → open het getoonde adres.
 - Twee browserprofielen/apparaten handig voor de klas- en peer-flows (docent in de één, "leerling" incognito in de ander).
 - Automatische gate is al groen: `npx tsc -b --noEmit`, `npm run test:run` (263 tests), `npm run lint` (baseline 31, 0 nieuw).
 
 **Resultaten noteren:** vink af met `- [x]`. Werkt iets niet? Zet er een regel onder met `⚠️` + wat je zag — dan pak ik die daarna gericht op.
+
+---
+
+## 🔁 HERTEST-LIJST PRESENTATIESCHERM FASE 2 (17-7) — begin hier
+
+Eén universeel presentatiescherm (mockup-stijl: lichte kaart op donker podium) achter vier ingangen. Overal geldt: fullscreen-knop rechtsboven (of `F`; Escape verlaat éérst fullscreen, sluit pas daarna), en bij beeld-vormen een montagelijn-toggle (tijdlijn uit-/inklappen — beeld wordt lager bij uitklappen).
+
+- [ ] **1. Docent-presentatie (digibord)** — klas met ≥2 inzendingen → "Presenteren":
+    - [ ] Zijpaneel: lichte rijen met vorm-icoontje + compositienaam + leerlingnaam; klik = spring naar die inzending.
+    - [ ] Zijpaneel in-/uitschuiven: dicht = volledig weg + randknop rechtsmidden met badge "2/8"; randknop opent weer.
+    - [ ] **Peer-sterren** per rij (★-totaal; alleen bij inzendingen die peer-feedback ontvingen — migratie 030).
+    - [ ] "Feedback-status"-toggle bovenin het paneel: stip per rij (grijs=nieuw · oranje=gezien · groen=beoordeeld), default uit.
+    - [ ] Doorspelen, pijltjestoetsen, aankondigingsoverlay en "Feedback geven"-rij werken zoals eerder.
+- [ ] **2. Docent-review (inzending openen)** — montagelijn start **uitgeklapt**; metadataregel (datum · tracks · clips · samples) in de kaart; feedbackpaneel via "Feedback geven"; "Beluisterd"-stempel blijft werken.
+- [ ] **3. Publieke luisterlink** (bijv. `9XRC6C6M`) — gesture-knop → presentatiescherm; géén zijpaneel/feedback; montagelijn-toggle bij storyboard. *(door Claude al end-to-end geverifieerd)*
+- [ ] **4. Peer-luisteren (leerling)** — "Luister naar klasgenoten": nu fullscreen presentatiescherm, anoniem, sterren-rij + versturen-knop onder de kaart; stappenflow (1/3 → klaar) en eerlijke foutmeldingen ongewijzigd.
+- [ ] **5. Podium → "Presenteren op het digibord"** — nieuwe knop in Opslaan & Delen (kolom "Voor de klas"): huidige compositie fullscreen, zonder opslaan; sluiten = terug op het podium. *(door Claude al geverifieerd)*
+- [ ] **6. Fullscreen op het échte digibord** — knop + `F` + Escape-gedrag; check ook op iPad (Safari) als die er is.
 
 ---
 
