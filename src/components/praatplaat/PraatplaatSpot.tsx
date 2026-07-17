@@ -12,7 +12,9 @@ import { useTranslation } from 'react-i18next';
 import type { PraatplaatSubmission } from '../../lib/praatplaat';
 
 interface PraatplaatSpotProps {
-  submissions: PraatplaatSubmission[];
+  /** Alleen student_name wordt gebruikt (label + tooltip) — zo kan ook het
+   *  presentatiescherm (M5) met eigen playlist-items spots renderen. */
+  submissions: Array<Pick<PraatplaatSubmission, 'student_name'>>;
   x: number; // 0-1 genormaliseerd
   y: number; // 0-1 genormaliseerd
   isPlaying: boolean;

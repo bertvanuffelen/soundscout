@@ -30,6 +30,8 @@ import type { FeedbackSticker } from '../../lib/submissions';
 import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { PraatplaatMarker } from '../ui/PraatplaatMarker';
+import { PraatplaatSpot } from '../praatplaat/PraatplaatSpot';
+import { clusterSubmissions, type SpotCluster } from '../../utils/praatplaatClustering';
 import { FeedbackPanel } from '../teacher/FeedbackPanel';
 import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
 import { useFullscreen, isDocumentFullscreen } from '../../hooks/useFullscreen';
@@ -56,9 +58,24 @@ interface PresentationSurfaceProps {
   ratingSlot?: ReactNode;
   /** true = loop-instelling van de compositie respecteren (review/public) */
   respectLoop?: boolean;
+  /**
+   * Praatplaat-bord (M5): één vaste plaat als visual met klikbare, geclusterde
+   * spots voor álle playlist-items (klik = die inzending afspelen). Posities
+   * komen uit composition_data.praatplaatPosition van elk item.
+   */
+  interactiveBoard?: { imageUrl: string; name: string } | null;
 }
 
 const ANNOUNCE_MS = 2500;
+
+/** Spot-item op het praatplaat-bord: playlist-index + positie (M5) */
+interface BoardSpotItem {
+  index: number;
+  id: string;
+  student_name: string;
+  position_x: number;
+  position_y: number;
+}
 
 /** Vorm-icoontje voor een zijpaneel-rij: storyboard / afbeelding / alleen geluid */
 function shapeIconFor(submission: Submission) {
@@ -76,6 +93,7 @@ export function PresentationSurface({
   peerStars,
   ratingSlot,
   respectLoop = false,
+  interactiveBoard = null,
 }: PresentationSurfaceProps) {
   const { t } = useTranslation();
 
@@ -100,9 +118,10 @@ export function PresentationSurface({
   const data = current?.composition_data;
   const totalBeats = data?.totalBeats ?? 32;
   const bpm = data?.bpm ?? DEFAULT_BPM;
-  const storyboard = resolveStoryboard(data);
-  const praatplaatImage = data?.praatplaat?.imageUrl ?? null;
-  const hasVisual = Boolean(storyboard || praatplaatImage);
+  // Bord-stand overrulet de per-item visual (de plaat is voor alle items gelijk)
+  const storyboard = interactiveBoard ? null : resolveStoryboard(data);
+  const praatplaatImage = interactiveBoard ? null : (data?.praatplaat?.imageUrl ?? null);
+  const hasVisual = Boolean(interactiveBoard || storyboard || praatplaatImage);
   // Bij vrij/template ís de tijdlijn de visual: altijd tonen, geen toggle
   const showTimeline = !hasVisual || montageOpen;
 
@@ -215,6 +234,38 @@ export function PresentationSurface({
       .map((s, i) => ({ i, pos: s.composition_data?.praatplaatPosition, id: s.id }))
       .filter((x): x is { i: number; pos: { x: number; y: number }; id: string } => !!x.pos),
   [playlist]);
+
+  // --- Bord-stand (M5): geclusterde klikbare spots over de hele playlist ---
+  const [dropdownCluster, setDropdownCluster] = useState<SpotCluster<BoardSpotItem> | null>(null);
+  const boardClusters = useMemo(() => {
+    if (!interactiveBoard) return [];
+    const positioned: BoardSpotItem[] = playlist
+      .map((s, i) => {
+        const pos = s.composition_data?.praatplaatPosition;
+        return pos
+          ? { index: i, id: s.id, student_name: s.student_name, position_x: pos.x, position_y: pos.y }
+          : null;
+      })
+      .filter((p): p is BoardSpotItem => p !== null);
+    return clusterSubmissions(positioned);
+  }, [interactiveBoard, playlist]);
+
+  const handleBoardItem = useCallback((item: BoardSpotItem) => {
+    setDropdownCluster(null);
+    if (item.index === indexRef.current) {
+      handlePlayPause();
+    } else {
+      goTo(item.index, true);
+    }
+  }, [handlePlayPause, goTo]);
+
+  const handleBoardSpot = useCallback((cluster: SpotCluster<BoardSpotItem>) => {
+    if (cluster.submissions.length === 1) {
+      handleBoardItem(cluster.submissions[0]);
+    } else {
+      setDropdownCluster(cluster);
+    }
+  }, [handleBoardItem]);
 
   // Metadata-regel (docent-review): datum + tracks/clips/samples
   const reviewMeta = useMemo(() => {
@@ -347,6 +398,54 @@ export function PresentationSurface({
 
             {!isLoading && effectiveState !== 'error' && (
               <>
+                {/* Praatplaat-bord (M5): vaste plaat + klikbare spots */}
+                {interactiveBoard && (
+                  <div className={cn('min-h-0 relative flex items-center justify-center p-3 bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
+                    <div className="relative h-full">
+                      <img
+                        src={interactiveBoard.imageUrl}
+                        alt={interactiveBoard.name}
+                        className="h-full w-auto max-w-full rounded-xl object-contain"
+                        draggable={false}
+                      />
+                      {boardClusters.map((cluster, i) => (
+                        <PraatplaatSpot
+                          key={i}
+                          submissions={cluster.submissions}
+                          x={cluster.x}
+                          y={cluster.y}
+                          isPlaying={isPlaying && cluster.submissions.some((s) => s.index === index)}
+                          onClick={() => handleBoardSpot(cluster)}
+                        />
+                      ))}
+                      {/* Keuzemenu bij meerdere inzendingen op één plek */}
+                      {dropdownCluster && (
+                        <>
+                          <div className="absolute inset-0 z-30" onClick={() => setDropdownCluster(null)} />
+                          <div
+                            className="absolute z-40 bg-bg-surface rounded-xl shadow-2xl py-1 min-w-[160px] max-h-[200px] overflow-y-auto -translate-x-1/2"
+                            style={{
+                              left: `${dropdownCluster.x * 100}%`,
+                              top: `${Math.min(dropdownCluster.y * 100 + 5, 80)}%`,
+                            }}
+                          >
+                            {dropdownCluster.submissions.map((item) => (
+                              <button
+                                key={item.id}
+                                type="button"
+                                onClick={() => handleBoardItem(item)}
+                                className="w-full text-left px-4 py-2 text-sm text-text-main hover:bg-accent-50 transition-colors truncate"
+                              >
+                                {item.student_name}
+                              </button>
+                            ))}
+                          </div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+
                 {/* Visual per opdrachtvorm */}
                 {storyboard && (
                   <div className={cn('min-h-0 bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>

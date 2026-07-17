@@ -5,26 +5,23 @@
  * 1. URL met ?pp-share=CODE query parameter
  * 2. 8-karakter code invoer op het startscherm
  *
- * Toont de praatplaat-afbeelding met leerlingcomposities als klikbare spots.
- * Geen login vereist. Audio init vereist user gesture (browser policy).
+ * Sinds M5 een dunne schil om het universele PresentationSurface
+ * (mode 'public' + interactiveBoard). De statemachine ervóór blijft:
+ * loading → waiting-gesture (Tone.start vereist een gebaar) → ready,
+ * plus not-found / expired / error. Geen login vereist.
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Loader2, Square, Volume2, ListMusic } from 'lucide-react';
+import { ArrowLeft, Loader2, Volume2 } from 'lucide-react';
 import * as Tone from 'tone';
 import { getSharedPraatplaat } from '../../lib/praatplaat';
 import type { SharedPraatplaatData } from '../../lib/praatplaat';
-import { clusterSubmissions, type SpotCluster } from '../../utils/praatplaatClustering';
-import { PraatplaatSpot } from './PraatplaatSpot';
-import { SubmissionPlayer } from '../teacher/SubmissionPlayer';
+import type { Submission } from '../../hooks/useSubmissions';
+import { PresentationSurface } from '../presentation/PresentationSurface';
 import { Button } from '../ui/Button';
 import { audioService } from '../../services/AudioService';
 import { logger } from '../../utils/logger';
-
-// --- Types ---
-
-type SharedSubmission = SharedPraatplaatData['submissions'][number];
 
 type ViewerState = 'loading' | 'waiting-gesture' | 'ready' | 'error' | 'not-found' | 'expired';
 
@@ -33,24 +30,12 @@ interface SharedPraatplaatViewerProps {
   onBack: () => void;
 }
 
-// --- Component ---
-
 export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerProps) {
   const { t } = useTranslation();
 
   const [viewerState, setViewerState] = useState<ViewerState>('loading');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [data, setData] = useState<SharedPraatplaatData | null>(null);
-  const [clusters, setClusters] = useState<SpotCluster<SharedSubmission>[]>([]);
-
-  // Playback state
-  const [playingSubmissionId, setPlayingSubmissionId] = useState<string | null>(null);
-  const [audioLoading, setAudioLoading] = useState(false);
-  const [showTimeline, setShowTimeline] = useState(false);
-  const [errorSubmissionId, setErrorSubmissionId] = useState<string | null>(null);
-
-  // Dropdown state voor multi-submission spots
-  const [dropdownCluster, setDropdownCluster] = useState<SpotCluster<SharedSubmission> | null>(null);
 
   // --- Data laden ---
   useEffect(() => {
@@ -69,7 +54,6 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
         }
 
         setData(result);
-        setClusters(clusterSubmissions(result.submissions));
         setViewerState('waiting-gesture');
       } catch (err) {
         if (cancelled) return;
@@ -100,81 +84,18 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
     }
   }, [t]);
 
-  // Auto-stop listener
-  useEffect(() => {
-    const unsubscribe = audioService.onPlaybackEnd(() => {
-      setPlayingSubmissionId(null);
-    });
-    return unsubscribe;
-  }, []);
-
-  // Cleanup on unmount
-  useEffect(() => {
-    return () => {
-      audioService.stop();
-    };
-  }, []);
-
-  // --- Afspelen ---
-  const playSubmission = useCallback(async (sub: SharedSubmission) => {
-    audioService.stop();
-
-    if (playingSubmissionId === sub.id) {
-      setPlayingSubmissionId(null);
-      return;
-    }
-
-    setPlayingSubmissionId(sub.id);
-    setAudioLoading(true);
-
-    try {
-      const samples = sub.composition_data?.samples || [];
-      const tracks = sub.composition_data?.tracks || [];
-      const totalBeats = sub.composition_data?.totalBeats || 16;
-      const isLooping = sub.composition_data?.isLooping || false;
-
-      if (samples.length > 0) {
-        await audioService.loadSamples(samples);
-      }
-
-      audioService.scheduleTimeline(tracks, samples);
-      audioService.setLoop(isLooping, totalBeats);
-      audioService.play(0);
-      setAudioLoading(false);
-    } catch (err) {
-      logger.error('SharedPraatplaatViewer playback failed:', err);
-      setErrorSubmissionId(sub.id);
-      setPlayingSubmissionId(null);
-      setAudioLoading(false);
-      setTimeout(() => setErrorSubmissionId(null), 3000);
-    }
-  }, [playingSubmissionId]);
-
-  const handleSpotClick = useCallback((cluster: SpotCluster<SharedSubmission>) => {
-    if (cluster.submissions.length === 1) {
-      playSubmission(cluster.submissions[0]);
-    } else {
-      setDropdownCluster(cluster);
-    }
-  }, [playSubmission]);
-
-  const handleSubmissionSelect = useCallback((sub: SharedSubmission) => {
-    setDropdownCluster(null);
-    playSubmission(sub);
-  }, [playSubmission]);
-
-  const handleStop = useCallback(() => {
-    audioService.stop();
-    setPlayingSubmissionId(null);
-    setShowTimeline(false);
-  }, []);
-
-  const handleShowTimeline = useCallback(() => {
-    audioService.stop();
-    setShowTimeline(true);
-  }, []);
-
-  const playingSubmission = data?.submissions.find((s) => s.id === playingSubmissionId);
+  // Playlist voor de surface: positie uit de kolommen injecteren
+  const playlist: Submission[] = (data?.submissions ?? []).map((sub) => ({
+    id: sub.id,
+    student_name: sub.student_name,
+    composition_name: sub.composition_name,
+    composition_data: {
+      ...sub.composition_data,
+      praatplaatPosition: sub.composition_data?.praatplaatPosition
+        ?? { x: sub.position_x, y: sub.position_y },
+    },
+    created_at: sub.created_at,
+  }));
 
   // --- Pre-ready states ---
 
@@ -285,146 +206,54 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
     );
   }
 
-  // --- Ready state: praatplaat met spots ---
+  // --- Ready: het universele presentatiescherm neemt over ---
 
   if (!data) return null;
 
-  return (
-    <div className="fixed inset-0 z-50 bg-black flex flex-col">
-      {/* Header */}
-      <header className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 py-3 bg-gradient-to-b from-black/60 to-transparent">
-        <h1 className="text-white font-semibold text-lg truncate mr-4">
-          {data.praatplaat.name}
-        </h1>
-        <button
-          onClick={onBack}
-          className="text-white/70 hover:text-white p-2 flex items-center gap-1 text-sm"
-        >
-          <ArrowLeft className="w-4 h-4" />
-          {t('sharedPraatplaat.backToStart')}
-        </button>
-      </header>
-
-      {/* Praatplaat afbeelding + spots */}
-      <div className="flex-1 flex items-center justify-center min-h-0 p-2 pt-14">
-        <div className="relative w-full max-w-7xl aspect-video rounded-xl overflow-hidden shadow-2xl">
+  // Zonder inzendingen: alleen de plaat + eerlijke lege-staat
+  if (playlist.length === 0) {
+    return (
+      <div className="fixed inset-0 z-50 bg-brand-900 flex flex-col">
+        <div className="flex items-center justify-between px-4 py-2.5 shrink-0">
+          <span className="text-brand-200 text-sm font-semibold truncate">{data.praatplaat.name}</span>
+          <button
+            onClick={onBack}
+            className="p-2 text-brand-300 hover:text-white rounded-lg hover:bg-brand-800 transition-colors flex items-center gap-1 text-sm"
+          >
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" />
+            {t('sharedPraatplaat.backToStart')}
+          </button>
+        </div>
+        <div className="flex-1 min-h-0 relative flex items-center justify-center p-3">
           <img
             src={data.praatplaat.image_url}
             alt={data.praatplaat.name}
-            className="w-full h-full object-cover"
+            className="h-full w-auto max-w-full rounded-xl object-contain"
             draggable={false}
           />
-
-          {/* Spots */}
-          {clusters.map((cluster, i) => (
-            <PraatplaatSpot
-              key={i}
-              submissions={cluster.submissions}
-              x={cluster.x}
-              y={cluster.y}
-              isPlaying={cluster.submissions.some((s) => s.id === playingSubmissionId)}
-              hasError={cluster.submissions.some((s) => s.id === errorSubmissionId)}
-              onClick={() => handleSpotClick(cluster)}
-            />
-          ))}
-
-          {/* Dropdown voor multi-submission spot */}
-          {dropdownCluster && (
-            <>
-              <div
-                className="absolute inset-0 z-30"
-                onClick={() => setDropdownCluster(null)}
-              />
-              <div
-                className="absolute z-40 bg-white rounded-xl shadow-2xl py-1 min-w-[160px] max-h-[200px] overflow-y-auto -translate-x-1/2"
-                style={{
-                  left: `${dropdownCluster.x * 100}%`,
-                  top: `${Math.min(dropdownCluster.y * 100 + 5, 80)}%`,
-                }}
-              >
-                {dropdownCluster.submissions.map((sub) => (
-                  <button
-                    key={sub.id}
-                    type="button"
-                    onClick={() => handleSubmissionSelect(sub)}
-                    className="w-full text-left px-4 py-2 text-sm hover:bg-accent-50 transition-colors truncate"
-                  >
-                    {sub.student_name}
-                  </button>
-                ))}
-              </div>
-            </>
-          )}
-
-          {/* Empty state */}
-          {data.submissions.length === 0 && (
-            <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
-              <div className="bg-white/90 rounded-2xl px-8 py-6 text-center max-w-sm">
-                <p className="text-text-main font-medium mb-1">
-                  {t('sharedPraatplaat.emptyTitle')}
-                </p>
-                <p className="text-text-muted text-sm">
-                  {t('sharedPraatplaat.emptyDescription')}
-                </p>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Afspeel-balk onderin */}
-      {playingSubmission && (
-        <div className="absolute bottom-0 inset-x-0 z-20 bg-gradient-to-t from-black/80 to-transparent px-4 py-4">
-          <div className="max-w-7xl mx-auto flex items-center justify-between">
-            <span className="text-white font-medium text-sm truncate mr-4">
-              {audioLoading ? (
-                <span className="flex items-center gap-2">
-                  <Loader2 className="w-4 h-4 animate-spin" />
-                  {t('teacher.submissionPlayer.loading')}
-                </span>
-              ) : (
-                <>{playingSubmission.student_name} — {playingSubmission.composition_name}</>
-              )}
-            </span>
-            <div className="flex items-center gap-2">
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleShowTimeline}
-              >
-                <ListMusic className="w-4 h-4 mr-1" />
-                {t('teacher.praatplaat.viewer.showTimeline')}
-              </Button>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleStop}
-              >
-                <Square className="w-4 h-4 mr-1" />
-                {t('teacher.praatplaat.viewer.stop')}
-              </Button>
+          <div className="absolute inset-0 flex items-center justify-center pointer-events-none">
+            <div className="bg-bg-surface/90 rounded-2xl px-8 py-6 text-center max-w-sm">
+              <p className="text-text-main font-medium mb-1">
+                {t('sharedPraatplaat.emptyTitle')}
+              </p>
+              <p className="text-text-muted text-sm">
+                {t('sharedPraatplaat.emptyDescription')}
+              </p>
             </div>
           </div>
         </div>
-      )}
+      </div>
+    );
+  }
 
-      {/* SubmissionPlayer overlay */}
-      {showTimeline && playingSubmission && (
-        <SubmissionPlayer
-          submission={{
-            id: playingSubmission.id,
-            student_name: playingSubmission.student_name,
-            composition_name: playingSubmission.composition_name,
-            composition_data: playingSubmission.composition_data,
-            created_at: playingSubmission.created_at,
-          }}
-          onClose={() => {
-            setShowTimeline(false);
-            setPlayingSubmissionId(null);
-          }}
-        />
-      )}
-    </div>
+  return (
+    <PresentationSurface
+      playlist={playlist}
+      mode="public"
+      onClose={onBack}
+      interactiveBoard={{ imageUrl: data.praatplaat.image_url, name: data.praatplaat.name }}
+      respectLoop
+    />
   );
 }
 
