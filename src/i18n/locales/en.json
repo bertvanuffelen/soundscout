@@ -1341,7 +1341,20 @@
       "autoAdvance": "Play through",
       "autoAdvanceHint": "Automatically play the next composition when one ends",
       "feedbackRow": "Give feedback",
-      "togglePlaylist": "Show/hide playlist"
+      "togglePlaylist": "Show/hide playlist",
+      "montageLine": "Show/hide timeline strip",
+      "fullscreen": "Full screen",
+      "exitFullscreen": "Exit full screen",
+      "feedbackStatus": "Feedback status",
+      "feedbackStatusHint": "Show per submission whether you have given feedback",
+      "openPlaylist": "Open playlist",
+      "submissions": "Submissions ({{count}})",
+      "starsHint": "{{count}} stars from classmates",
+      "status": {
+        "new": "New",
+        "seen": "Seen",
+        "reviewed": "Reviewed"
+      }
     },
     "peerOverview": {
       "title": "Feedback overview",

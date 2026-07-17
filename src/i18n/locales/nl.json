@@ -1341,7 +1341,20 @@
       "autoAdvance": "Doorspelen",
       "autoAdvanceHint": "Speel na afloop automatisch de volgende compositie",
       "feedbackRow": "Feedback geven",
-      "togglePlaylist": "Afspeellijst tonen/verbergen"
+      "togglePlaylist": "Afspeellijst tonen/verbergen",
+      "montageLine": "Montagelijn tonen/verbergen",
+      "fullscreen": "Volledig scherm",
+      "exitFullscreen": "Volledig scherm sluiten",
+      "feedbackStatus": "Feedback-status",
+      "feedbackStatusHint": "Toon per inzending of je al feedback hebt gegeven",
+      "openPlaylist": "Afspeellijst openen",
+      "submissions": "Inzendingen ({{count}})",
+      "starsHint": "{{count}} sterren van klasgenoten",
+      "status": {
+        "new": "Nieuw",
+        "seen": "Gezien",
+        "reviewed": "Beoordeeld"
+      }
     },
     "peerOverview": {
       "title": "Feedback-overzicht",
