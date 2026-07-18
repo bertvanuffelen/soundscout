@@ -232,8 +232,9 @@ export const Clip = memo(function Clip({
       {isSelected && !readOnly && !locked && (
         <div
           onPointerDown={handleResizePointerDown}
-          className="absolute right-0 top-0 bottom-0 w-2 cursor-ew-resize z-30
-                     hover:bg-white/30 active:bg-white/50 transition-colors"
+          className="absolute right-0 top-0 bottom-0 w-4 sm:w-2 cursor-ew-resize z-30
+                     hover:bg-white/30 active:bg-white/50 transition-colors
+                     after:absolute after:content-[''] after:-inset-x-2 after:inset-y-0"
           style={{ touchAction: 'none' }}
         />
       )}

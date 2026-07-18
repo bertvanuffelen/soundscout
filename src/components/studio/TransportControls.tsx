@@ -32,7 +32,7 @@ export const TransportControls = memo(function TransportControls({
         disabled={!hasClips}
         aria-label={isPlaying ? t('transport.pause') : t('transport.play')}
         className={cn(
-          'w-10 h-10 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer',
+          'w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer',
           'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 active:scale-95 text-white',
           'disabled:bg-neutral-300 disabled:cursor-not-allowed disabled:active:scale-100'
         )}
@@ -47,7 +47,7 @@ export const TransportControls = memo(function TransportControls({
         disabled={!hasClips}
         aria-label={t('transport.rewind')}
         className={cn(
-          'w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer',
+          'w-11 h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer',
           'bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 active:scale-95 text-neutral-600',
           'disabled:bg-neutral-100 disabled:text-neutral-400 disabled:cursor-not-allowed disabled:active:scale-100'
         )}
@@ -61,7 +61,7 @@ export const TransportControls = memo(function TransportControls({
         onClick={onToggleLoop}
         aria-label={t('transport.loop')}
         className={cn(
-          'w-9 h-9 sm:w-11 sm:h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer active:scale-95',
+          'w-11 h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer active:scale-95',
           isLooping
             ? 'bg-accent-400 hover:bg-accent-500 active:bg-accent-600 text-accent-900'
             : 'bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 text-neutral-600'

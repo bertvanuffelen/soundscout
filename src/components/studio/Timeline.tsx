@@ -375,7 +375,7 @@ export const Timeline = memo(function Timeline({
                     aria-label={t('studio.clipLabel')}
                     title={clipEdit.clip.label ? `${t('studio.clipLabel')}: ${clipEdit.clip.label}` : t('studio.clipLabel')}
                     className={`
-                      p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded-lg transition-colors
+                      p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center rounded-lg transition-colors
                       ${clipEdit.clip.label
                         ? 'bg-accent-50 text-accent-600 hover:bg-accent-100'
                         : 'hover:bg-neutral-100 active:bg-neutral-200 text-neutral-600'
@@ -393,7 +393,7 @@ export const Timeline = memo(function Timeline({
                   onClick={clipEdit.onTrim}
                   aria-label={t('studio.trim')}
                   title={t('studio.trim')}
-                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
                 >
                   <Scissors size={14} className="text-neutral-600" />
                 </button>
@@ -405,7 +405,7 @@ export const Timeline = memo(function Timeline({
                   onClick={clipEdit.onDuplicate}
                   aria-label={t('studio.duplicate')}
                   title={t('studio.duplicate')}
-                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center hover:bg-neutral-100 active:bg-neutral-200 rounded-lg transition-colors"
                 >
                   <Copy size={14} className="text-neutral-600" />
                 </button>
@@ -419,7 +419,7 @@ export const Timeline = memo(function Timeline({
                   aria-label={t('studio.clipVolume')}
                   title={(clipEdit.clip.effects?.mute ?? false) ? t('studio.muted') : t('studio.clipVolume')}
                   className={`
-                    p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded-lg transition-colors
+                    p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center rounded-lg transition-colors
                     ${(clipEdit.clip.effects?.mute ?? false)
                       ? 'bg-error-50 hover:bg-error-100'
                       : 'hover:bg-neutral-100 active:bg-neutral-200'
@@ -440,7 +440,7 @@ export const Timeline = memo(function Timeline({
                   aria-label={t('studio.effects')}
                   title={t('studio.effects')}
                   className={`
-                    p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center rounded-lg transition-colors
+                    p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center rounded-lg transition-colors
                     ${((clipEdit.clip.effects?.pitch ?? 0) !== 0 || (clipEdit.clip.effects?.reverb ?? 0) > 0 || (clipEdit.clip.effects?.fadeIn ?? 0) > 0 || (clipEdit.clip.effects?.fadeOut ?? 0) > 0)
                       ? 'bg-accent-50 text-accent-600 hover:bg-accent-100'
                       : 'hover:bg-neutral-100 active:bg-neutral-200 text-neutral-600'
@@ -457,7 +457,7 @@ export const Timeline = memo(function Timeline({
                   onClick={clipEdit.onDelete}
                   aria-label={t('studio.delete')}
                   title={t('studio.delete')}
-                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors"
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center hover:bg-error-50 active:bg-error-100 rounded-lg transition-colors"
                 >
                   <Trash2 size={14} className="text-error-500" />
                 </button>
@@ -473,7 +473,7 @@ export const Timeline = memo(function Timeline({
             <button
               onClick={onAddToTrack}
               aria-label={t('studio.addToTrack', { name: selectedLibrarySampleName })}
-              className="p-1 rounded text-accent-600 hover:text-accent-700 hover:bg-accent-100/60 transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              className="p-1 rounded text-accent-600 hover:text-accent-700 hover:bg-accent-100/60 transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
             >
               <Plus size={16} />
             </button>
@@ -488,7 +488,7 @@ export const Timeline = memo(function Timeline({
                 ? t('studio.sections.maxReached')
                 : t('studio.sections.markSection')
               }
-              className="p-1 rounded text-neutral-400 hover:text-accent-600 hover:bg-accent-100/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              className="p-1 rounded text-neutral-400 hover:text-accent-600 hover:bg-accent-100/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
             >
               <Flag size={14} />
             </button>
@@ -521,7 +521,7 @@ export const Timeline = memo(function Timeline({
                 disabled={hasNoClips}
                 aria-label={t('studio.clearTimeline')}
                 title={t('studio.clearTimeline')}
-                className="p-1 rounded text-neutral-400 hover:text-error-500 hover:bg-error-50 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+                className="p-1 rounded text-neutral-400 hover:text-error-500 hover:bg-error-50 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
               >
                 <Eraser size={14} />
               </button>
@@ -536,7 +536,7 @@ export const Timeline = memo(function Timeline({
                 disabled={!canShrink}
                 aria-label={t('studio.shrinkTimelineTitle', { maten: totalBeats / 4 })}
                 title={t('studio.shrinkTimelineTitle', { maten: totalBeats / 4 })}
-                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center text-[10px] sm:text-xs font-bold tabular-nums"
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center text-[10px] sm:text-xs font-bold tabular-nums"
               >
                 −8
               </button>
@@ -545,7 +545,7 @@ export const Timeline = memo(function Timeline({
                 disabled={!canExtend}
                 aria-label={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
                 title={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
-                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center text-[10px] sm:text-xs font-bold tabular-nums"
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center text-[10px] sm:text-xs font-bold tabular-nums"
               >
                 +8
               </button>
@@ -559,7 +559,7 @@ export const Timeline = memo(function Timeline({
               disabled={zoomLevel <= ZOOM_MIN}
               aria-label={t('studio.zoomOut')}
               title={t('studio.zoomOut')}
-              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
             >
               <ZoomOut size={14} />
             </button>
@@ -567,7 +567,7 @@ export const Timeline = memo(function Timeline({
               onClick={handleZoomFit}
               aria-label={t('studio.zoomFit')}
               title={t('studio.zoomFit')}
-              className={`p-1 rounded transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] hidden sm:flex items-center justify-center ${
+              className={`p-1 rounded transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 hidden sm:flex items-center justify-center ${
                 zoomLevel === 1.0
                   ? 'text-accent-500'
                   : 'text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60'
@@ -580,7 +580,7 @@ export const Timeline = memo(function Timeline({
               disabled={zoomLevel >= ZOOM_MAX}
               aria-label={t('studio.zoomIn')}
               title={t('studio.zoomIn')}
-              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+              className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
             >
               <ZoomIn size={14} />
             </button>
@@ -591,7 +591,7 @@ export const Timeline = memo(function Timeline({
                 onClick={onUndo}
                 disabled={!canUndo}
                 aria-label={t('studio.undo')}
-                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
               >
                 <Undo2 size={14} />
               </button>
@@ -599,7 +599,7 @@ export const Timeline = memo(function Timeline({
                 onClick={onRedo}
                 disabled={!canRedo}
                 aria-label={t('studio.redo')}
-                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] flex items-center justify-center"
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
               >
                 <Redo2 size={14} />
               </button>

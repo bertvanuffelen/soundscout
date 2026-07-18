@@ -145,7 +145,8 @@ export const Track = memo(function Track({
             onClick={handleVolumeIconClick}
             aria-label={t('studio.trackVolume', { track: trackIndex + 1 })}
             className={`
-              w-4 h-4 flex items-center justify-center rounded transition-colors cursor-pointer
+              w-full h-4 flex items-center justify-center rounded transition-colors cursor-pointer
+              relative after:absolute after:content-[''] after:inset-x-0 after:-inset-y-2
               ${trackMuted
                 ? 'text-error-500 hover:text-error-600'
                 : 'text-neutral-400 hover:text-neutral-600'
