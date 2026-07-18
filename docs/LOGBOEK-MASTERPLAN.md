@@ -200,6 +200,12 @@ Drie punten uit de R1-deploylijst naar voren gehaald (commits `0925ceb` · `d206
 - **V3 Statistieken-dashboardje**: `UsageStatsPanel` (grafiekje sessies/dag + tabel vandaag/7/30 dagen) op `usage_stats` (migratie 025, RLS authenticated). Knop in de dashboard-header alleen voor accounts in `VITE_ADMIN_EMAILS` (aan `.env.local` toegevoegd met Berts adres). Geen migratie nodig.
 - Gates groen (tsc · 266 tests · lint 27 · i18n-pariteit). Hertest-blok "Deploy-voorbereidingen" bovenaan het testplan.
 
+## EN compleet + volledige QA-doorloop (18-7)
+
+**EN-vertaling af** (commits `ee0c2ac` + `2cb1ce2`): en.json bleek al volledig; het echte gat waren ~39 hardcoded NL-foutmeldingen in src/lib + src/hooks → nieuwe `errors.*`-sectie (NL+EN) via `i18n.t()` (werkt ook buiten React). Plus `LanguageSwitcher` op /teacher-landing en in de dashboard-header (wie via SEO binnenkwam kon nooit wisselen).
+
+**QA-doorloop** ([USECASES-QA.md](TESTPLAN-MASTERPLAN.md) → USECASES-QA.md): 30 leerling- + 26 docent-usecases; 37 volledig groen in de browser doorlopen (leerling: alle vormen, studio-gereedschap, bewaarcode+QR, MP3, deellink, EN; docent in Berts sessie: klas 7107 → leskaart-activatie → leerling-inzending → feedback-lus → presentatie → praatplaat-catalogus → album-deelcode V56MS34H publiek afgespeeld → statistieken → opruimen). Bevindingen QA-1 t/m QA-9: **2 direct gefixt** (loop-resize-botsing `02d3cd8`, album-gate-tekst `d18722c`), 5 open met voorstel (sectie-knop stille no-op, lege podium-naam na bewaarcode, max-8-klassenlimiet niet gehandhaafd, template-opdracht toont praatplaat-defaultkaart, praatplaat-viewer lege staat klein beeld) en 2 content-keuzes voor Bert (Winterspelen zonder seizoensvenster, Piraten nog isPublic).
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).

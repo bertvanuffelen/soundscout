@@ -12,6 +12,8 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ---
 
+> **Volledige rol-doorloop (18-7):** zie [USECASES-QA.md](USECASES-QA.md) — 30 leerling- + 26 docent-usecases, door Claude uitgevoerd in de browser (37 groen), met bevindingenoverzicht QA-1 t/m QA-9 (2 direct gefixt).
+
 ## 🔁 HERTEST-LIJST DEPLOY-VOORBEREIDINGEN (18-7, vierde blok) — nieuwste eerst
 
 - [ ] **1. YouTube op iPad** (BUG-YOUTUBE): open op een échte iPad de tutorial ("Hoe werkt het?") en de docentengids, start een video — geen zwart vlak meer; je ziet de poster met play-knop of de video start direct. Fix: `playsinline=1` op alle embeds.
