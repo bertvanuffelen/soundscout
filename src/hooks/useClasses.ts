@@ -8,6 +8,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { getSupabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 // Types
 export interface TeacherClass {
@@ -108,7 +109,7 @@ export function useClasses(): UseClassesReturn {
       setClasses(classesWithCount);
     } catch (err) {
       logger.error('Fout bij ophalen klassen:', err);
-      setError(err instanceof Error ? err.message : 'Kon klassen niet laden');
+      setError(err instanceof Error ? err.message : i18n.t('errors.classes.load'));
     } finally {
       setLoading(false);
     }
@@ -132,11 +133,11 @@ export function useClasses(): UseClassesReturn {
       const { data: codeData, error: codeError } = await supabase.rpc('generate_class_code');
 
       if (codeError) {
-        throw new Error('Kon klas-code niet genereren');
+        throw new Error(i18n.t('errors.classes.code'));
       }
 
       if (typeof codeData !== 'string' || !codeData) {
-        throw new Error('Ongeldige klas-code ontvangen van server');
+        throw new Error(i18n.t('errors.classes.codeInvalid'));
       }
 
       const code = codeData;
@@ -145,7 +146,7 @@ export function useClasses(): UseClassesReturn {
       const { data: { user } } = await supabase.auth.getUser();
 
       if (!user) {
-        throw new Error('Je moet ingelogd zijn om een klas aan te maken');
+        throw new Error(i18n.t('errors.classes.notLoggedIn'));
       }
 
       // Maak klas aan
@@ -160,7 +161,7 @@ export function useClasses(): UseClassesReturn {
         .single();
 
       if (insertError) {
-        throw new Error('Kon klas niet aanmaken: ' + insertError.message);
+        throw new Error(i18n.t('errors.classes.create') + ': ' + insertError.message);
       }
 
       // Voeg toe aan lokale state
@@ -191,7 +192,7 @@ export function useClasses(): UseClassesReturn {
       const supabase = await getSupabase();
 
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Niet ingelogd');
+      if (!user) throw new Error(i18n.t('errors.notLoggedIn'));
 
       const { error: deleteErr } = await supabase
         .from('classes')
@@ -200,7 +201,7 @@ export function useClasses(): UseClassesReturn {
         .eq('teacher_id', user.id);
 
       if (deleteErr) {
-        throw new Error('Kon klas niet verwijderen: ' + deleteErr.message);
+        throw new Error(i18n.t('errors.classes.delete') + ': ' + deleteErr.message);
       }
 
       // Verwijder uit lokale state

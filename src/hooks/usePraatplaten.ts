@@ -15,6 +15,7 @@ import {
 } from '../lib/praatplaat';
 import type { PraatplaatRow } from '../lib/praatplaat';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 interface UsePraatplatenReturn {
   praatplaten: PraatplaatRow[];
@@ -48,7 +49,7 @@ export function usePraatplaten(classId?: string): UsePraatplatenReturn {
       setPraatplaten(data);
     } catch (err) {
       logger.error('Fout bij ophalen praatplaten:', err);
-      setError(err instanceof Error ? err.message : 'Kon praatplaten niet laden');
+      setError(err instanceof Error ? err.message : i18n.t('errors.praatplaten.load'));
     } finally {
       setLoading(false);
     }
@@ -78,7 +79,7 @@ export function usePraatplaten(classId?: string): UsePraatplatenReturn {
       };
       setPraatplaten((prev) => [newRow, ...prev]);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon praatplaat niet aanmaken';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.create');
       setOperationError(msg);
       logger.error('createPraatplaat failed:', err);
       throw err;
@@ -94,7 +95,7 @@ export function usePraatplaten(classId?: string): UsePraatplatenReturn {
         prev.map((p) => ({ ...p, is_active: p.id === id }))
       );
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon praatplaat niet activeren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.activate');
       setOperationError(msg);
       logger.error('activatePraatplaat failed:', err);
       throw err;
@@ -109,7 +110,7 @@ export function usePraatplaten(classId?: string): UsePraatplatenReturn {
         prev.map((p) => (p.id === id ? { ...p, is_active: false } : p))
       );
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon praatplaat niet deactiveren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.deactivate');
       setOperationError(msg);
       logger.error('deactivatePraatplaat failed:', err);
       throw err;
@@ -122,7 +123,7 @@ export function usePraatplaten(classId?: string): UsePraatplatenReturn {
       await deletePraatplaat(id);
       setPraatplaten((prev) => prev.filter((p) => p.id !== id));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon praatplaat niet verwijderen';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.delete');
       setOperationError(msg);
       logger.error('deletePraatplaat failed:', err);
       throw err;

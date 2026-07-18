@@ -84,7 +84,7 @@ export function useAudioExport(
         }, 3000);
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : 'Export mislukt';
+          err instanceof Error ? err.message : i18n.t('errors.export.mp3');
         logger.error('MP3 export failed', err);
         setError(errorMessage);
         setExportState('error');

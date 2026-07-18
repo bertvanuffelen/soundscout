@@ -13,6 +13,7 @@ import { withTimeout } from '../utils/withTimeout';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import type { Opdrachtkaart } from '../types';
+import i18n from '../i18n';
 
 /** Max aantal bullets per kaart (spiegelt de DB-CHECK in migratie 016). */
 export const MAX_CARD_BULLETS = 10;
@@ -75,7 +76,7 @@ export async function fetchTeacherCards(): Promise<Opdrachtkaart[]> {
 
   if (error) {
     logger.error('Fout bij ophalen opdrachtkaarten:', sanitizeError(error));
-    throw new Error('Kon opdrachtkaarten niet laden');
+    throw new Error(i18n.t('errors.assignmentCards.load'));
   }
 
   return (data || []).map(mapRow);
@@ -89,7 +90,7 @@ export async function createCard(params: CreateCardParams): Promise<Opdrachtkaar
     15_000,
     'errors.networkTimeout'
   );
-  if (!user) throw new Error('Je moet ingelogd zijn');
+  if (!user) throw new Error(i18n.t('errors.notLoggedIn'));
 
   const { data, error } = await withTimeout(
     supabase
@@ -107,7 +108,7 @@ export async function createCard(params: CreateCardParams): Promise<Opdrachtkaar
 
   if (error) {
     logger.error('Opdrachtkaart aanmaken mislukt:', sanitizeError(error));
-    throw new Error('Kon opdrachtkaart niet aanmaken');
+    throw new Error(i18n.t('errors.assignmentCards.create'));
   }
 
   return mapRow(data);
@@ -133,7 +134,7 @@ export async function updateCard(id: string, params: CreateCardParams): Promise<
 
   if (error) {
     logger.error('Opdrachtkaart bijwerken mislukt:', sanitizeError(error));
-    throw new Error('Kon opdrachtkaart niet bijwerken');
+    throw new Error(i18n.t('errors.assignmentCards.update'));
   }
 
   return mapRow(data);
@@ -150,6 +151,6 @@ export async function deleteCard(id: string): Promise<void> {
 
   if (error) {
     logger.error('Opdrachtkaart verwijderen mislukt:', sanitizeError(error));
-    throw new Error('Kon opdrachtkaart niet verwijderen');
+    throw new Error(i18n.t('errors.assignmentCards.delete'));
   }
 }

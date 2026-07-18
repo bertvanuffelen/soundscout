@@ -138,7 +138,7 @@ export function useVideoExport(
         }, 3000);
       } catch (err) {
         const errorMessage =
-          err instanceof Error ? err.message : 'Video export mislukt';
+          err instanceof Error ? err.message : i18n.t('errors.export.video');
         logger.error('[useVideoExport] Video export failed', err);
         setVideoError(errorMessage);
         setVideoExportState('error');

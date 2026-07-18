@@ -15,6 +15,7 @@ import {
 } from '../lib/lessonCards';
 import type { LessonCard, LessonCardInput } from '../lib/lessonCards';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 interface UseLessonCardsReturn {
   cards: LessonCard[];
@@ -41,7 +42,7 @@ export function useLessonCards(): UseLessonCardsReturn {
       setCards(data);
     } catch (err) {
       logger.error('Fout bij ophalen leskaarten:', err);
-      setError(err instanceof Error ? err.message : 'Kon leskaarten niet laden');
+      setError(err instanceof Error ? err.message : i18n.t('errors.lessonCards.load'));
     } finally {
       setLoading(false);
     }
@@ -59,7 +60,7 @@ export function useLessonCards(): UseLessonCardsReturn {
       });
       return created;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon leskaart niet aanmaken';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.lessonCards.create');
       setOperationError(msg);
       logger.error('createLessonCard failed:', err);
       throw err;
@@ -73,7 +74,7 @@ export function useLessonCards(): UseLessonCardsReturn {
       setCards((prev) => prev.map((c) => (c.id === id ? updated : c)));
       return updated;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon leskaart niet bijwerken';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.lessonCards.update');
       setOperationError(msg);
       logger.error('updateLessonCard failed:', err);
       throw err;
@@ -86,7 +87,7 @@ export function useLessonCards(): UseLessonCardsReturn {
       await deleteLessonCard(id);
       setCards((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon leskaart niet verwijderen';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.lessonCards.delete');
       setOperationError(msg);
       logger.error('deleteLessonCard failed:', err);
       throw err;

@@ -324,7 +324,7 @@ export async function activateAssignment(
 
   if (error) {
     logger.error('activate_assignment error:', sanitizeError(error));
-    throw new Error('Kon opdracht niet activeren');
+    throw new Error(i18n.t('errors.assignments.activate'));
   }
 
   return data as string;
@@ -345,7 +345,7 @@ export async function deactivateAssignment(classId: string): Promise<void> {
 
   if (error) {
     logger.error('deactivate_class_assignment error:', sanitizeError(error));
-    throw new Error('Kon opdracht niet deactiveren');
+    throw new Error(i18n.t('errors.assignments.deactivate'));
   }
 }
 

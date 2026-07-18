@@ -982,7 +982,58 @@
     "praatplaatNoPosition": "Kies eerst een plek op de praatplaat voordat je inlevert."
   },
   "errors": {
-    "networkTimeout": "De verbinding is te traag. Probeer opnieuw."
+    "notLoggedIn": "Je moet ingelogd zijn",
+    "templates": {
+      "load": "Kon templates niet laden",
+      "code": "Kon template-code niet genereren",
+      "create": "Kon template niet aanmaken",
+      "delete": "Kon template niet verwijderen",
+      "status": "Kon template-status niet wijzigen"
+    },
+    "lessonCards": {
+      "load": "Kon leskaarten niet laden",
+      "create": "Kon leskaart niet aanmaken",
+      "update": "Kon leskaart niet bijwerken",
+      "delete": "Kon leskaart niet verwijderen",
+      "activate": "Kon leskaart niet activeren"
+    },
+    "assignmentCards": {
+      "load": "Kon opdrachtkaarten niet laden",
+      "create": "Kon opdrachtkaart niet aanmaken",
+      "update": "Kon opdrachtkaart niet bijwerken",
+      "delete": "Kon opdrachtkaart niet verwijderen"
+    },
+    "assignments": {
+      "load": "Kon actieve opdracht niet laden",
+      "activate": "Kon opdracht niet activeren",
+      "deactivate": "Kon opdracht niet deactiveren",
+      "activateTemplate": "Kon template niet activeren",
+      "activateStoryboard": "Kon storyboard niet activeren",
+      "activateFree": "Kon vrije opdracht niet activeren"
+    },
+    "classes": {
+      "load": "Kon klassen niet laden",
+      "code": "Kon klas-code niet genereren",
+      "codeInvalid": "Ongeldige klas-code ontvangen van de server",
+      "notLoggedIn": "Je moet ingelogd zijn om een klas aan te maken",
+      "create": "Kon klas niet aanmaken",
+      "delete": "Kon klas niet verwijderen"
+    },
+    "praatplaten": {
+      "load": "Kon praatplaten niet laden",
+      "create": "Kon praatplaat niet aanmaken",
+      "activate": "Kon praatplaat niet activeren",
+      "deactivate": "Kon praatplaat niet deactiveren",
+      "delete": "Kon praatplaat niet verwijderen"
+    },
+    "submissions": {
+      "load": "Kon composities niet laden",
+      "delete": "Kon compositie niet verwijderen"
+    },
+    "export": {
+      "mp3": "Export mislukt",
+      "video": "Video-export mislukt"
+    }
   },
   "teacher": {
     "common": {

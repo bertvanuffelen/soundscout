@@ -18,6 +18,7 @@ import { logger } from '../utils/logger';
 import type { AssignmentType } from './assignments';
 import type { OpdrachtkaartContent } from '../types';
 import { findStoryboardById } from '../data/themes';
+import i18n from '../i18n';
 
 /** Eén fase van het creatief proces op een leskaart. */
 export interface LessonPhase {
@@ -255,7 +256,7 @@ export async function fetchLessonCards(): Promise<LessonCard[]> {
 
   if (error) {
     logger.error('Fout bij ophalen leskaarten:', sanitizeError(error));
-    throw new Error('Kon leskaarten niet laden');
+    throw new Error(i18n.t('errors.lessonCards.load'));
   }
 
   const cards = (data as RawLessonCard[] | null ?? []).map(mapRow);
@@ -271,7 +272,7 @@ export async function createLessonCard(input: LessonCardInput): Promise<LessonCa
     15_000,
     'errors.networkTimeout',
   );
-  if (!user) throw new Error('Je moet ingelogd zijn');
+  if (!user) throw new Error(i18n.t('errors.notLoggedIn'));
 
   const { data, error } = await withTimeout(
     supabase
@@ -285,7 +286,7 @@ export async function createLessonCard(input: LessonCardInput): Promise<LessonCa
 
   if (error) {
     logger.error('Leskaart aanmaken mislukt:', sanitizeError(error));
-    throw new Error('Kon leskaart niet aanmaken');
+    throw new Error(i18n.t('errors.lessonCards.create'));
   }
 
   return mapRow(data as RawLessonCard);
@@ -307,7 +308,7 @@ export async function updateLessonCard(id: string, input: LessonCardInput): Prom
 
   if (error) {
     logger.error('Leskaart bijwerken mislukt:', sanitizeError(error));
-    throw new Error('Kon leskaart niet bijwerken');
+    throw new Error(i18n.t('errors.lessonCards.update'));
   }
 
   return mapRow(data as RawLessonCard);
@@ -324,7 +325,7 @@ export async function deleteLessonCard(id: string): Promise<void> {
 
   if (error) {
     logger.error('Leskaart verwijderen mislukt:', sanitizeError(error));
-    throw new Error('Kon leskaart niet verwijderen');
+    throw new Error(i18n.t('errors.lessonCards.delete'));
   }
 }
 
@@ -386,7 +387,7 @@ export async function activateLessonCard(lessonCardId: string, classId: string):
 
   if (error) {
     logger.error('activate_lesson_card error:', sanitizeError(error));
-    throw new Error('Kon leskaart niet activeren');
+    throw new Error(i18n.t('errors.lessonCards.activate'));
   }
 
   return data as string;

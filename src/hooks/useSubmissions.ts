@@ -13,6 +13,7 @@ import {
 import type { FeedbackSticker } from '../lib/submissions';
 import { logger } from '../utils/logger';
 import type { CompositionData } from '../types';
+import i18n from '../i18n';
 
 // Types
 export interface Submission {
@@ -93,7 +94,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
       setSubmissions(data || []);
     } catch (err) {
       logger.error('Fout bij ophalen composities:', err);
-      setError(err instanceof Error ? err.message : 'Kon composities niet laden');
+      setError(err instanceof Error ? err.message : i18n.t('errors.submissions.load'));
     } finally {
       setLoading(false);
     }
@@ -111,7 +112,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
         .eq('id', id);
 
       if (deleteErr) {
-        throw new Error('Kon compositie niet verwijderen: ' + deleteErr.message);
+        throw new Error(i18n.t('errors.submissions.delete') + ': ' + deleteErr.message);
       }
 
       // Verwijder uit lokale state

@@ -13,6 +13,7 @@ import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
 import type { Template, CompositionData, TemplateLockOptions } from '../types';
 import { DEFAULT_LOCK_OPTIONS } from '../types';
+import i18n from '../i18n';
 
 // --- Types voor dashboard ---
 
@@ -133,7 +134,7 @@ export async function fetchTeacherTemplates(): Promise<TeacherTemplate[]> {
 
   if (error) {
     logger.error('Fout bij ophalen templates:', sanitizeError(error));
-    throw new Error('Kon templates niet laden');
+    throw new Error(i18n.t('errors.templates.load'));
   }
 
   return (data || []).map((row) => ({
@@ -158,7 +159,7 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Teac
     15_000,
     'errors.networkTimeout'
   );
-  if (!user) throw new Error('Je moet ingelogd zijn');
+  if (!user) throw new Error(i18n.t('errors.notLoggedIn'));
 
   // Genereer unieke code
   const { data: codeData, error: codeError } = await withTimeout(
@@ -168,7 +169,7 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Teac
   );
   if (codeError || typeof codeData !== 'string' || !codeData) {
     logger.error('Code generatie mislukt:', sanitizeError(codeError));
-    throw new Error('Kon template-code niet genereren');
+    throw new Error(i18n.t('errors.templates.code'));
   }
 
   const { data, error } = await withTimeout(
@@ -192,7 +193,7 @@ export async function createTemplate(params: CreateTemplateParams): Promise<Teac
 
   if (error) {
     logger.error('Template aanmaken mislukt:', sanitizeError(error));
-    throw new Error('Kon template niet aanmaken');
+    throw new Error(i18n.t('errors.templates.create'));
   }
 
   return {
@@ -223,7 +224,7 @@ export async function deleteTemplate(id: string): Promise<void> {
 
   if (error) {
     logger.error('Template verwijderen mislukt:', sanitizeError(error));
-    throw new Error('Kon template niet verwijderen');
+    throw new Error(i18n.t('errors.templates.delete'));
   }
 }
 
@@ -243,6 +244,6 @@ export async function toggleTemplate(id: string, isActive: boolean): Promise<voi
 
   if (error) {
     logger.error('Template toggle mislukt:', sanitizeError(error));
-    throw new Error('Kon template status niet wijzigen');
+    throw new Error(i18n.t('errors.templates.status'));
   }
 }

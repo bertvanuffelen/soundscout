@@ -15,6 +15,7 @@ import {
 import type { ClassAssignmentRow } from '../lib/assignments';
 import { activatePraatplaatFromCatalog } from '../lib/praatplaat';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 interface UseClassAssignmentReturn {
   /** Huidige actieve opdracht (null = geen actieve opdracht) */
@@ -62,7 +63,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
       setPastAssignments(past);
     } catch (err) {
       logger.error('useClassAssignment fetch error:', err);
-      setError('Kon actieve opdracht niet laden');
+      setError(i18n.t('errors.assignments.load'));
     } finally {
       setLoading(false);
     }
@@ -79,7 +80,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
       // Refetch to get the full assignment with joined name
       await fetch();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon template niet activeren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.activateTemplate');
       setOperationError(msg);
       throw err;
     }
@@ -91,7 +92,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
       await activateAssignment(classId, { praatplaatId, cardId });
       await fetch();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon praatplaat niet activeren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.activate');
       setOperationError(msg);
       throw err;
     }
@@ -106,7 +107,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
       await activatePraatplaatFromCatalog(classId, entry, cardId);
       await fetch();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon praatplaat niet activeren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.activate');
       setOperationError(msg);
       throw err;
     }
@@ -118,7 +119,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
       await activateAssignment(classId, { storyboardRef, cardId });
       await fetch();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon storyboard niet activeren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.activateStoryboard');
       setOperationError(msg);
       throw err;
     }
@@ -130,7 +131,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
       await activateAssignment(classId, { freeThemeId: themeId, cardId });
       await fetch();
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon vrije opdracht niet activeren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.activateFree');
       setOperationError(msg);
       throw err;
     }
@@ -142,7 +143,7 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
       await deactivateAssignment(classId);
       setActiveAssignment(null);
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon opdracht niet deactiveren';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.deactivate');
       setOperationError(msg);
       throw err;
     }

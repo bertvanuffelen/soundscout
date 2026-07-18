@@ -982,7 +982,58 @@
     "praatplaatNoPosition": "Choose a spot on the sound map before you submit."
   },
   "errors": {
-    "networkTimeout": "The connection is too slow. Please try again."
+    "notLoggedIn": "You need to be signed in",
+    "templates": {
+      "load": "Could not load templates",
+      "code": "Could not generate a template code",
+      "create": "Could not create the template",
+      "delete": "Could not delete the template",
+      "status": "Could not change the template status"
+    },
+    "lessonCards": {
+      "load": "Could not load lesson cards",
+      "create": "Could not create the lesson card",
+      "update": "Could not update the lesson card",
+      "delete": "Could not delete the lesson card",
+      "activate": "Could not activate the lesson card"
+    },
+    "assignmentCards": {
+      "load": "Could not load assignment cards",
+      "create": "Could not create the assignment card",
+      "update": "Could not update the assignment card",
+      "delete": "Could not delete the assignment card"
+    },
+    "assignments": {
+      "load": "Could not load the active assignment",
+      "activate": "Could not activate the assignment",
+      "deactivate": "Could not deactivate the assignment",
+      "activateTemplate": "Could not activate the template",
+      "activateStoryboard": "Could not activate the storyboard",
+      "activateFree": "Could not activate the free assignment"
+    },
+    "classes": {
+      "load": "Could not load your classes",
+      "code": "Could not generate a class code",
+      "codeInvalid": "Received an invalid class code from the server",
+      "notLoggedIn": "You need to be signed in to create a class",
+      "create": "Could not create the class",
+      "delete": "Could not delete the class"
+    },
+    "praatplaten": {
+      "load": "Could not load praatplaten",
+      "create": "Could not create the praatplaat",
+      "activate": "Could not activate the praatplaat",
+      "deactivate": "Could not deactivate the praatplaat",
+      "delete": "Could not delete the praatplaat"
+    },
+    "submissions": {
+      "load": "Could not load compositions",
+      "delete": "Could not delete the composition"
+    },
+    "export": {
+      "mp3": "Export failed",
+      "video": "Video export failed"
+    }
   },
   "teacher": {
     "common": {

@@ -15,6 +15,7 @@ import {
 import type { CreateCardParams } from '../lib/assignmentCards';
 import type { Opdrachtkaart } from '../types';
 import { logger } from '../utils/logger';
+import i18n from '../i18n';
 
 interface UseAssignmentCardsReturn {
   cards: Opdrachtkaart[];
@@ -41,7 +42,7 @@ export function useAssignmentCards(): UseAssignmentCardsReturn {
       setCards(data);
     } catch (err) {
       logger.error('Fout bij ophalen opdrachtkaarten:', err);
-      setError(err instanceof Error ? err.message : 'Kon opdrachtkaarten niet laden');
+      setError(err instanceof Error ? err.message : i18n.t('errors.assignmentCards.load'));
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,7 @@ export function useAssignmentCards(): UseAssignmentCardsReturn {
       setCards((prev) => [newCard, ...prev]);
       return newCard;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon opdrachtkaart niet aanmaken';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignmentCards.create');
       setOperationError(msg);
       logger.error('createCard failed:', err);
       throw err;
@@ -68,7 +69,7 @@ export function useAssignmentCards(): UseAssignmentCardsReturn {
       setCards((prev) => prev.map((c) => (c.id === id ? updated : c)));
       return updated;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon opdrachtkaart niet bijwerken';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignmentCards.update');
       setOperationError(msg);
       logger.error('updateCard failed:', err);
       throw err;
@@ -81,7 +82,7 @@ export function useAssignmentCards(): UseAssignmentCardsReturn {
       await deleteCard(id);
       setCards((prev) => prev.filter((c) => c.id !== id));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Kon opdrachtkaart niet verwijderen';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignmentCards.delete');
       setOperationError(msg);
       logger.error('deleteCard failed:', err);
       throw err;
