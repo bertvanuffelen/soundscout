@@ -321,7 +321,8 @@
       "lockedStoryboard": "Linked to storyboard",
       "colorLabel": "Color",
       "labelPlaceholder": "Label (e.g. Intro, A, B)",
-      "maxReached": "Maximum number of sections reached"
+      "maxReached": "Maximum number of sections reached",
+      "needsPlayhead": "First move the playhead to where the section should end (play or click the timeline)"
     }
   },
   "transport": {

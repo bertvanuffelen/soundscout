@@ -482,11 +482,13 @@ export const Timeline = memo(function Timeline({
           {!readOnly && !sectionsLocked && (
             <button
               onClick={handleMarkSection}
-              disabled={sections.length >= MAX_SECTIONS}
+              disabled={sections.length >= MAX_SECTIONS || Math.round(storeCurrentBeat) < 1}
               aria-label={t('studio.sections.markSection')}
               title={sections.length >= MAX_SECTIONS
                 ? t('studio.sections.maxReached')
-                : t('studio.sections.markSection')
+                : Math.round(storeCurrentBeat) < 1
+                  ? t('studio.sections.needsPlayhead')
+                  : t('studio.sections.markSection')
               }
               className="p-1 rounded text-neutral-400 hover:text-accent-600 hover:bg-accent-100/60 disabled:opacity-25 disabled:pointer-events-none transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
             >

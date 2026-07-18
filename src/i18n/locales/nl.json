@@ -321,7 +321,8 @@
       "lockedStoryboard": "Gekoppeld aan storyboard",
       "colorLabel": "Kleur",
       "labelPlaceholder": "Label (bijv. Intro, A, B)",
-      "maxReached": "Maximum aantal delen bereikt"
+      "maxReached": "Maximum aantal delen bereikt",
+      "needsPlayhead": "Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn)"
     }
   },
   "transport": {
