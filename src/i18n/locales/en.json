@@ -1333,7 +1333,53 @@
               "type": "heading",
               "text": "Timing"
             },
-            "Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block."
+            "Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block.",
+            {
+              "type": "heading",
+              "text": "Set up before the lesson"
+            },
+            "Activate the assignment in advance and write the class code large on the board (or show it via the digiboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen.",
+            {
+              "type": "heading",
+              "text": "Ways of working"
+            },
+            "SoundScout works best in pairs: one operates, one listens along and advises — swap halfway. Starting together with the praatplaat on the digiboard creates focus: explore the image as a class and divide the spots before everyone starts.",
+            {
+              "type": "heading",
+              "text": "Wrapping up and presenting"
+            },
+            "Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects."
+          ]
+        },
+        "feedback-tips": {
+          "title": "Tips for giving feedback",
+          "content": [
+            "Giving feedback on music feels harder than on a text or project for many teachers — there is no right or wrong. This approach makes it concrete, even without a musical background.",
+            {
+              "type": "heading",
+              "text": "Describe what you hear"
+            },
+            "The strongest feedback starts with listening and naming, not judging. \"I hear it starts calm and gets busier\" is worth more to a pupil than \"well done\". Describing shows that you listened — and teaches pupils words for music.",
+            {
+              "type": "heading",
+              "text": "Connect it to a choice the pupil made"
+            },
+            "Ask about intent: \"Why did you pick this sound here?\" or name a choice: \"You made the birds quieter than the footsteps — it feels like walking through the park.\" Feedback becomes a conversation about composing choices instead of a grade.",
+            {
+              "type": "heading",
+              "text": "Use sticker, stars and text together"
+            },
+            "The sticker and stars are quick encouragement (they save the moment you click); the text field is for one concrete observation or question. One good sentence is enough — pupils read it back on their own stage.",
+            {
+              "type": "heading",
+              "text": "Example sentences"
+            },
+            "\"Strong opening — the first sound sets the mood right away.\" · \"I hear a clear repetition, that makes it real music.\" · \"What would happen if you left a silence here?\" · \"Your ending is abrupt — on purpose, or would a fade-out help?\" · \"The two layers fit nicely; would you dare to add a third?\"",
+            {
+              "type": "heading",
+              "text": "Peer feedback as a warm-up"
+            },
+            "Turn on Peer feedback so pupils review each other's work on the criteria of your feedback card first. It trains their listening vocabulary — and your feedback lands better once the class is in \"listening mode\"."
           ]
         }
       }

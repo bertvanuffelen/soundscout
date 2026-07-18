@@ -1333,7 +1333,53 @@
               "type": "heading",
               "text": "Tijdsplanning"
             },
-            "Reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten."
+            "Reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten.",
+            {
+              "type": "heading",
+              "text": "Klaarzetten vóór de les"
+            },
+            "Activeer de opdracht alvast en schrijf de klascode groot op het bord (of laat hem via het digibord zien). Test één apparaat vooraf: code invoeren, geluid aan, koptelefoon erin. Wil je een tijdsduur meegeven? Vul die in bij de actieve opdracht — leerlingen zien hem op hun startscherm.",
+            {
+              "type": "heading",
+              "text": "Werkvormen"
+            },
+            "In tweetallen werkt SoundScout het prettigst: één bedient, één luistert mee en adviseert — halverwege wisselen. Klassikaal starten met de praatplaat op het digibord geeft focus: verken samen het beeld en verdeel de plekken voordat iedereen zelf begint.",
+            {
+              "type": "heading",
+              "text": "Afronden en presenteren"
+            },
+            "Reserveer de laatste tien minuten voor het presenteren: open het presentatiescherm vanuit het klaslokaal en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen Peer feedback geven of hun compositie verfijnen met effecten."
+          ]
+        },
+        "feedback-tips": {
+          "title": "Tips voor feedback geven",
+          "content": [
+            "Feedback geven op muziek voelt voor veel docenten lastiger dan op een tekst of werkstuk — er is geen goed of fout. Deze aanpak maakt het concreet, ook zonder muzikale achtergrond.",
+            {
+              "type": "heading",
+              "text": "Beschrijf wat je hoort"
+            },
+            "De sterkste feedback begint met luisteren en benoemen, niet met beoordelen. \"Ik hoor dat het rustig begint en dan steeds drukker wordt\" is voor een leerling waardevoller dan \"goed gedaan\". Wat je beschrijft laat zien dát je geluisterd hebt — en leert leerlingen woorden geven aan muziek.",
+            {
+              "type": "heading",
+              "text": "Koppel aan een keuze van de leerling"
+            },
+            "Vraag naar de bedoeling: \"Waarom heb je hier dit geluid gekozen?\" of benoem een keuze: \"Je hebt de vogels zachter gezet dan de voetstappen — daardoor lijkt het alsof je door het park loopt.\" Zo wordt feedback een gesprek over compositiekeuzes in plaats van een cijfer.",
+            {
+              "type": "heading",
+              "text": "Gebruik sticker, sterren en tekst samen"
+            },
+            "De sticker en sterren zijn snelle aanmoediging (ze slaan direct op zodra je klikt); het tekstvak is de plek voor één concrete observatie of vraag. Eén goede zin is genoeg — leerlingen lezen hem op hun eigen podium terug.",
+            {
+              "type": "heading",
+              "text": "Voorbeeldzinnen"
+            },
+            "\"Sterk begin — het eerste geluid zet meteen de sfeer.\" · \"Ik hoor een duidelijke herhaling, dat maakt het echt muziek.\" · \"Wat zou er gebeuren als je hier een stilte laat vallen?\" · \"Jouw einde is abrupt — expres, of wil je het laten uitdoven met een fade?\" · \"De twee lagen passen mooi bij elkaar; durf je er een derde bij te zoeken?\"",
+            {
+              "type": "heading",
+              "text": "Peer feedback als opwarmer"
+            },
+            "Zet Peer feedback aan zodat leerlingen elkaars werk eerst beoordelen op de criteria van jouw feedbackkaart. Dat traint hun luistertaal — en jouw feedback landt daarna beter, omdat de klas al in \"luistermodus\" staat."
           ]
         }
       }

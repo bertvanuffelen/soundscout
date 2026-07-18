@@ -116,6 +116,11 @@ const SECTIONS: GuideSection[] = [
     titleKey: 'teacher.guide.sections.classroom-tips.title',
     contentKey: 'teacher.guide.sections.classroom-tips.content',
   },
+  {
+    id: 'feedback-tips',
+    titleKey: 'teacher.guide.sections.feedback-tips.title',
+    contentKey: 'teacher.guide.sections.feedback-tips.content',
+  },
 ];
 
 // --- Component ---

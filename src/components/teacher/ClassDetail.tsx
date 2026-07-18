@@ -711,6 +711,12 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             </SectionTitle>
             <p className="text-sm text-text-muted ml-7">
               {t('teacher.classDetail.submissionsDescription')}
+              {' '}
+              <GuideLink
+                sectionId="feedback-tips"
+                variant="inline"
+                label={t('teacher.guide.sections.feedback-tips.title')}
+              />
             </p>
           </div>
         )}
