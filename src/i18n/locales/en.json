@@ -1895,6 +1895,25 @@
     }
   },
   "album": {
-    "shareError": "Sharing the album failed. Please try again."
+    "shareError": "Sharing the album failed. Please try again.",
+    "shareTitle": "Share class album",
+    "shareButton": "Share album",
+    "shareDescription": "Share all submitted compositions of \"{{name}}\" with one listening link — for parent evenings, newsletters or the whiteboard.",
+    "copyLink": "Copy link",
+    "codeHint": "Code: {{code}}",
+    "validity": "Valid for 30 days (sharing again extends it)",
+    "showQr": "Show QR code",
+    "hideQr": "Hide QR code",
+    "qrAlt": "QR code of the album link",
+    "fetchError": "Loading the album failed.",
+    "fallbackTitle": "Class album",
+    "byClass": "Album of {{className}}",
+    "submissionCount": "{{count}} compositions to listen to",
+    "noSubmissions": "No submitted compositions yet.",
+    "startListening": "Open the album",
+    "notFoundTitle": "Album not found",
+    "notFoundDescription": "Check the code or ask the teacher for a new link.",
+    "expiredTitle": "Link expired",
+    "expiredDescription": "This album link has expired. The teacher can create a new one."
   }
 }

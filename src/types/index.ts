@@ -22,7 +22,8 @@ export type GameScreen =
   | 'teacher-guide'
   | 'praatplaat-select'
   | 'assignment-landing'
-  | 'shared-praatplaat';
+  | 'shared-praatplaat'
+  | 'shared-album';
 
 // --- Praatplaat (#72) ---
 

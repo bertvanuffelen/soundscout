@@ -1895,6 +1895,25 @@
     }
   },
   "album": {
-    "shareError": "Album delen is niet gelukt. Probeer het opnieuw."
+    "shareError": "Album delen is niet gelukt. Probeer het opnieuw.",
+    "shareTitle": "Klas-album delen",
+    "shareButton": "Deel album",
+    "shareDescription": "Deel alle ingeleverde composities van \"{{name}}\" met één luisterlink — voor de ouderavond, nieuwsbrief of het digibord.",
+    "copyLink": "Link kopiëren",
+    "codeHint": "Code: {{code}}",
+    "validity": "30 dagen geldig (opnieuw delen verlengt)",
+    "showQr": "Toon QR-code",
+    "hideQr": "Verberg QR-code",
+    "qrAlt": "QR-code van de albumlink",
+    "fetchError": "Album laden is niet gelukt.",
+    "fallbackTitle": "Klas-album",
+    "byClass": "Album van {{className}}",
+    "submissionCount": "{{count}} composities om te beluisteren",
+    "noSubmissions": "Er zijn nog geen ingeleverde composities.",
+    "startListening": "Open het album",
+    "notFoundTitle": "Album niet gevonden",
+    "notFoundDescription": "Controleer de code of vraag een nieuwe link aan de docent.",
+    "expiredTitle": "Link verlopen",
+    "expiredDescription": "Deze albumlink is verlopen. De docent kan een nieuwe maken."
   }
 }

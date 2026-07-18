@@ -16,6 +16,7 @@ import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition } from '../../lib/submissions';
 import { getSharedPraatplaat } from '../../lib/praatplaat';
+import { getSharedClassAlbum } from '../../lib/albums';
 import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, openSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
@@ -29,6 +30,7 @@ export function ShareCodeInput() {
   const { t } = useTranslation();
   const goToShared = useAppStore((s) => s.goToShared);
   const goToSharedPraatplaat = useAppStore((s) => s.goToSharedPraatplaat);
+  const goToSharedAlbum = useAppStore((s) => s.goToSharedAlbum);
 
   const [code, setCode] = useState('');
   const [error, setError] = useState<string | null>(null);
@@ -137,7 +139,20 @@ export function ShareCodeInput() {
           if (signal.aborted) return;
         }
 
-        // 5. Geen match gevonden
+        // 5. Niet gevonden als praatplaat → probeer als klas-album-code (R4)
+        try {
+          const sharedAlbum = await getSharedClassAlbum(code);
+          if (signal.aborted) return;
+          if (sharedAlbum) {
+            goToSharedAlbum(code);
+            setCode('');
+            return;
+          }
+        } catch {
+          if (signal.aborted) return;
+        }
+
+        // 6. Geen match gevonden
         setError(t('share.codeNotFound'));
       } catch (err) {
         if (signal.aborted) return;

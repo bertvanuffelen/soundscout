@@ -21,6 +21,7 @@ import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { AssignmentTypeCards } from './AssignmentTypeCards';
 import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { SharePraatplaatModal } from './SharePraatplaatModal';
+import { ShareAlbumModal } from './ShareAlbumModal';
 import { LessonCardPickerModal } from './LessonCardPickerModal';
 import { type PraatplaatRow } from '../../lib/praatplaat';
 import { Button } from '../ui/Button';
@@ -114,6 +115,8 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [showActivatedCode, setShowActivatedCode] = useState(false);
   // Delen: één target voor zowel de actieve opdracht als historie-rijen (M3)
   const [shareTarget, setShareTarget] = useState<{ praatplaatId: string; name: string } | null>(null);
+  // Klas-album delen (R4): per opdracht, elk type
+  const [albumTarget, setAlbumTarget] = useState<{ assignmentId: string; name: string } | null>(null);
   // Startkeuze (opdrachten-model 17-7): leskaart-picker of zelf samenstellen
   const [showLessonPicker, setShowLessonPicker] = useState(false);
   const [showSelfCompose, setShowSelfCompose] = useState(false);
@@ -508,6 +511,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       {t('teacher.praatplaat.share')}
                     </Button>
                   )}
+                  {/* Klas-album delen (R4) — elk opdrachttype */}
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setAlbumTarget({ assignmentId: activeAssignment.id, name: activeAssignment.assignmentName })}
+                    className="inline-flex items-center gap-1"
+                  >
+                    <MonitorPlay className="w-4 h-4" />
+                    {t('album.shareButton')}
+                  </Button>
                   <Button
                     variant="ghost"
                     size="sm"
@@ -585,6 +598,14 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       {new Date(pa.activatedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
+                  {/* Album delen kan bij élk type uit de historie (R4) */}
+                  <button
+                    onClick={() => setAlbumTarget({ assignmentId: pa.id, name: pa.assignmentName })}
+                    className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors shrink-0"
+                    title={t('album.shareButton')}
+                  >
+                    <MonitorPlay className="w-4 h-4" aria-hidden="true" />
+                  </button>
                   {/* Praatplaat-historie: bekijken/delen/verwijderen zonder heractiveren (M3) */}
                   {pa.type === 'praatplaat' && pa.praatplaatId && (
                     <div className="flex items-center gap-0.5 shrink-0">
@@ -816,6 +837,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           classCode={classData.code}
           praatplaatName={shareTarget.name}
           praatplaatId={shareTarget.praatplaatId}
+        />
+      )}
+
+      {/* Klas-album delen (R4) */}
+      {albumTarget && (
+        <ShareAlbumModal
+          isOpen={!!albumTarget}
+          onClose={() => setAlbumTarget(null)}
+          assignmentId={albumTarget.assignmentId}
+          assignmentName={albumTarget.name}
         />
       )}
 

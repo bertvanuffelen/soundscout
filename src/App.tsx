@@ -33,6 +33,7 @@ const TeacherGuideScreen = lazy(() => import('./components/teacher/TeacherGuideS
 const PraatplaatSelectScreen = lazy(() => import('./components/praatplaat/PraatplaatSelectScreen'));
 const AssignmentLandingScreen = lazy(() => import('./components/assignment/AssignmentLandingScreen'));
 const SharedPraatplaatViewer = lazy(() => import('./components/praatplaat/SharedPraatplaatViewer'));
+const SharedAlbumViewer = lazy(() => import('./components/share/SharedAlbumViewer'));
 const TeacherLandingPage = lazy(() => import('./pages/TeacherLandingPage'));
 
 // Check if we're on the editor route
@@ -66,6 +67,8 @@ function AppContent() {
   const currentScreen = useAppStore((s) => s.currentScreen);
   const shareCode = useAppStore((s) => s.shareCode);
   const sharedPraatplaatCode = useAppStore((s) => s.sharedPraatplaatCode);
+  const sharedAlbumCode = useAppStore((s) => s.sharedAlbumCode);
+  const goToSharedAlbum = useAppStore((s) => s.goToSharedAlbum);
   const goToShared = useAppStore((s) => s.goToShared);
   const goToSharedPraatplaat = useAppStore((s) => s.goToSharedPraatplaat);
   const goToStart = useAppStore((s) => s.goToStart);
@@ -229,6 +232,18 @@ function AppContent() {
     }
   }, [goToSharedPraatplaat]);
 
+  // Check for ?album= query parameter on mount (R4 — publiek klas-album)
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const albumCode = params.get('album');
+    if (albumCode) {
+      goToSharedAlbum(albumCode);
+      const url = new URL(window.location.href);
+      url.searchParams.delete('album');
+      window.history.replaceState({}, '', url.pathname + url.search);
+    }
+  }, [goToSharedAlbum]);
+
   // Wait for theme to load
   if (!isThemeInitialized) {
     return (
@@ -353,6 +368,17 @@ function AppContent() {
         <FeatureErrorBoundary featureName="SharedPraatplaat">
           <Suspense fallback={<LoadingFallback />}>
             <SharedPraatplaatViewer code={sharedPraatplaatCode} onBack={goToStart} />
+          </Suspense>
+        </FeatureErrorBoundary>
+      ) : (
+        <StartScreen />
+      );
+
+    case 'shared-album':
+      return sharedAlbumCode ? (
+        <FeatureErrorBoundary featureName="SharedAlbum">
+          <Suspense fallback={<LoadingFallback />}>
+            <SharedAlbumViewer code={sharedAlbumCode} onBack={goToStart} />
           </Suspense>
         </FeatureErrorBoundary>
       ) : (

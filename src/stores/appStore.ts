@@ -37,6 +37,7 @@ interface AppStore {
   shareCode: string | null;
   // Share code for viewing shared praatplaat (#73)
   sharedPraatplaatCode: string | null;
+  sharedAlbumCode: string | null;
   // Active template (null = no template loaded)
   activeTemplate: Template | null;
   // Granular lock options for active template (#59)
@@ -72,6 +73,7 @@ interface AppStore {
   goToTeacher: () => void;
   goToShared: (code: string) => void;
   goToSharedPraatplaat: (code: string) => void;
+  goToSharedAlbum: (code: string) => void;
   goToTutorial: () => void;
   goToTeacherGuide: (sectionId?: string) => void;
   // Template actions
@@ -137,6 +139,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   currentCompositionId: null,
   shareCode: null,
   sharedPraatplaatCode: null,
+  sharedAlbumCode: null,
   activeTemplate: null,
   templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true },
   composeMode: 'free',
@@ -196,6 +199,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToShared: (code) => set({ currentScreen: 'shared', shareCode: code }),
 
   goToSharedPraatplaat: (code) => set({ currentScreen: 'shared-praatplaat', sharedPraatplaatCode: code }),
+
+  goToSharedAlbum: (code) => set({ currentScreen: 'shared-album', sharedAlbumCode: code }),
 
   goToTutorial: () => set({ currentScreen: 'tutorial' }),
 
