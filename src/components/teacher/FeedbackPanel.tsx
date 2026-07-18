@@ -48,6 +48,19 @@ export function FeedbackPanel({ submission, onSave }: FeedbackPanelProps) {
     }
   };
 
+  // Sticker en sterren slaan direct op (G8, wens Bert 18-7) — de
+  // versturen-knop blijft voor het tekstje. Waarden expliciet meegeven:
+  // setState is async, dus `sticker`/`level` zijn hier nog de oude.
+  const autoSave = async (next: { sticker: FeedbackSticker | null; level: number | null }) => {
+    try {
+      setState('saving');
+      await onSave({ ...next, text: text.trim() || null });
+      setState('saved');
+    } catch {
+      setState('error');
+    }
+  };
+
   const hasContent = !!sticker || !!level || !!text.trim();
 
   return (
@@ -63,7 +76,11 @@ export function FeedbackPanel({ submission, onSave }: FeedbackPanelProps) {
                 type="button"
                 role="radio"
                 aria-checked={sticker === key}
-                onClick={() => { setSticker(sticker === key ? null : key); markDirty(); }}
+                onClick={() => {
+                  const next = sticker === key ? null : key;
+                  setSticker(next);
+                  autoSave({ sticker: next, level });
+                }}
                 title={t(`teacher.feedback.stickers.${key}`)}
                 className={cn(
                   'w-10 h-10 sm:w-11 sm:h-11 rounded-xl flex items-center justify-center transition-all',
@@ -86,7 +103,11 @@ export function FeedbackPanel({ submission, onSave }: FeedbackPanelProps) {
               type="button"
               role="radio"
               aria-checked={level === n}
-              onClick={() => { setLevel(level === n ? null : n); markDirty(); }}
+              onClick={() => {
+                const next = level === n ? null : n;
+                setLevel(next);
+                autoSave({ sticker, level: next });
+              }}
               title={t('teacher.feedback.levelTitle', { level: n })}
               className="p-1 transition-transform hover:scale-110"
             >
