@@ -629,7 +629,7 @@
     "startChoiceCustomDesc": "Kies zelf de vorm, inhoud en opdrachtkaart"
   },
   "assignmentCards": {
-    "sectionTitle": "Opdrachtkaarten",
+    "sectionTitle": "Mijn opdrachtkaarten",
     "sectionDescription": "Korte uitlegkaarten (titel + punten) die leerlingen zien vóór ze beginnen. Maak er een en hergebruik hem bij elke opdracht.",
     "newButton": "Nieuwe kaart",
     "empty": "Nog geen opdrachtkaarten. Maak er een om leerlingen op weg te helpen.",
@@ -861,7 +861,7 @@
     "dashboardTitle": "Mijn opdrachten",
     "storyboardFrames_one": "{{count}} beeld",
     "storyboardFrames_other": "{{count}} beelden",
-    "templatesTitle": "Templates",
+    "templatesTitle": "Mijn templates",
     "templatesDescription": "Een voorgebouwde compositie waar leerlingen mee aan de slag gaan.",
     "templatesEmpty": "Nog geen templates. Maak een compositie in SoundScout en sla deze op als opdracht via het podium.",
     "newTemplate": "Nieuwe template",

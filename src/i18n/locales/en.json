@@ -629,7 +629,7 @@
     "startChoiceCustomDesc": "Pick the form, content and assignment card yourself"
   },
   "assignmentCards": {
-    "sectionTitle": "Assignment cards",
+    "sectionTitle": "My assignment cards",
     "sectionDescription": "Short explanation cards (title + points) students see before they start. Make one and reuse it across assignments.",
     "newButton": "New card",
     "empty": "No assignment cards yet. Create one to help students get started.",
@@ -861,7 +861,7 @@
     "dashboardTitle": "My assignments",
     "storyboardFrames_one": "{{count}} image",
     "storyboardFrames_other": "{{count}} images",
-    "templatesTitle": "Templates",
+    "templatesTitle": "My templates",
     "templatesDescription": "A pre-built composition that students work with.",
     "templatesEmpty": "No templates yet. Create a composition in SoundScout and save it as an assignment from the stage.",
     "newTemplate": "New template",
