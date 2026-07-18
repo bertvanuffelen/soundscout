@@ -132,6 +132,10 @@ export async function initializeNewComposition(
   // Stap 2: Reset state (sync, kan niet falen)
   useTimelineStore.getState().clearAllTracks();
   useLibraryStore.getState().clearLibrary();
+  // Bewaarcode-context hoort bij de VORIGE compositie — zonder wissen zou
+  // de auto-sync (#52-FASE2) de oude online compositie overschrijven met
+  // de nieuwe, en zou het podium de oude naam voorvullen (QA-3)
+  storageService.clearSaveOnlineInfo();
 
   // Stap 2b: Schoon ongebruikte audio players op (voorkom memory leak bij theme-wissel)
   const activeSamples = useThemeStore.getState().getSamples();

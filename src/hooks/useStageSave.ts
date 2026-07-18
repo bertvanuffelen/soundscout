@@ -29,7 +29,12 @@ export function useStageSave() {
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const getTimelineState = useTimelineStore((s) => s.getTimelineState);
 
-  const [compositionName, setCompositionName] = useState('');
+  // Naam voorvullen wanneer deze compositie via een bewaarcode is geladen
+  // (QA-3): initializeFromSavedComposition zet de naam in saveOnlineInfo,
+  // en initializeNewComposition/activatePendingAssignment wissen die weer.
+  const [compositionName, setCompositionName] = useState(
+    () => storageService.getSaveOnlineInfo()?.compositionName ?? '',
+  );
   const [showSaveWarning, setShowSaveWarning] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [praatplaatSubmitted, setPraatplaatSubmitted] = useState(false);
