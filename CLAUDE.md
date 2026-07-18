@@ -378,6 +378,7 @@ VITE_EMAILJS_TEMPLATE_ID=template_xxx
 VITE_EMAILJS_PUBLIC_KEY=xxx
 VITE_SUPABASE_URL=xxx                  # Teacher dashboard
 VITE_SUPABASE_ANON_KEY=xxx
+VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts see the "Statistieken" button (UsageStatsPanel on usage_stats, migration 025) in the dashboard header
 ```
 
 ## Documentation

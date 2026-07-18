@@ -192,6 +192,14 @@ Prioriteiten Bert: **R1 deploy-ronde** → **R2 freemium/betaalflow** (volledige
 - D4 **Statische leskaart-pagina's** `/les/<key>`: generator `scripts/generate-les-pages.mjs` (prebuild-hook) → pure-HTML SEO-pagina's (JSON-LD LearningResource, CTA-deeplink naar het dashboard), sitemap-verversing, "Bekijk de leskaart"-links op de landing; lesfases voor verspringen/vrij-basis/drumbeat aangevuld in nl+en.
 - Browser-geverifieerd: `/les/robotfabriek` + `/les/drumbeat` renderen volledig; `?album=FAKECODE` toont nette not-found-staat. Happy path album vergt Berts login + migratie 031 → hertest-lijst "R4" bovenaan het testplan. Gates groen (tsc · 266 tests · lint terug op baseline 27 · i18n-pariteit).
 
+## Deploy-voorbereidingen V1-V3 (18-7)
+
+Drie punten uit de R1-deploylijst naar voren gehaald (commits `0925ceb` · `d206f7a` · `1dd9a2f` + lint-fix):
+- **V1 BUG-YOUTUBE**: `playsinline=1` op alle drie de YouTube-embeds (tutorial, docentengids, landing-video's). iOS blokkeert autoplay-met-geluid en rendert de geblokkeerde embed zonder playsinline zwart. Hertest op échte iPad nodig.
+- **V2 Touch-targets 44px**: de 16 tijdlijn-werkbalkknoppen krijgen een 44px-raakvlak via een `::after`-hit-area (visueel 28/32px — de dichte werkbalk blijft passen); transport mobiel naar 44×44; spoor-volumeknop vult de rail; clip-resize-handle 2× zo breed op touch. Browser-geverifieerd op 375px.
+- **V3 Statistieken-dashboardje**: `UsageStatsPanel` (grafiekje sessies/dag + tabel vandaag/7/30 dagen) op `usage_stats` (migratie 025, RLS authenticated). Knop in de dashboard-header alleen voor accounts in `VITE_ADMIN_EMAILS` (aan `.env.local` toegevoegd met Berts adres). Geen migratie nodig.
+- Gates groen (tsc · 266 tests · lint 27 · i18n-pariteit). Hertest-blok "Deploy-voorbereidingen" bovenaan het testplan.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).

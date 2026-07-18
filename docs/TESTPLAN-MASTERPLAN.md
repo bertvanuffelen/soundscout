@@ -12,6 +12,14 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ---
 
+## 🔁 HERTEST-LIJST DEPLOY-VOORBEREIDINGEN (18-7, vierde blok) — nieuwste eerst
+
+- [ ] **1. YouTube op iPad** (BUG-YOUTUBE): open op een échte iPad de tutorial ("Hoe werkt het?") en de docentengids, start een video — geen zwart vlak meer; je ziet de poster met play-knop of de video start direct. Fix: `playsinline=1` op alle embeds.
+- [ ] **2. Touch-targets studio** (op iPad/telefoon): de werkbalkknoppen boven de tijdlijn (label/knip/dupliceer/volume/effecten/verwijder, vlag, gum, ±8, zoom) zijn nu veel makkelijker raakbaar (44px-raakvlak; visueel gelijk). Transportknoppen zijn iets groter. Ook: spoor-volumeknopje en de resize-handle van een geselecteerde clip reageren ruimer.
+- [ ] **3. Statistieken-dashboardje**: log in als docent → in de dashboard-header staat (alleen voor jou) een "Statistieken"-knop → grafiekje sessies per dag + tabel per gebeurtenis (vandaag / 7 / 30 dagen). Werkt zodra migratie 025 gedraaid is (al gedaan) en er tellingen zijn. De knop is gekoppeld aan `VITE_ADMIN_EMAILS` in `.env.local` (al ingevuld met jouw adres — bij een productie-build dus ook aanwezig).
+
+---
+
 ## 🔁 HERTEST-LIJST R4: KLAS-ALBUM + LESKAART-PAGINA'S (17-7, derde blok) — nieuwste eerst
 
 **Vooraf: migratie 031 draaien** (`supabase/migrations/031_class_album_share.sql`) — zonder geeft de album-deelknop een nette fout, de rest werkt.
