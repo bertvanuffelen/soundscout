@@ -1893,5 +1893,8 @@
         "description": "Klassen, opdrachten en inzendingen in het dashboard."
       }
     }
+  },
+  "album": {
+    "shareError": "Album delen is niet gelukt. Probeer het opnieuw."
   }
 }

@@ -1893,5 +1893,8 @@
         "description": "Classes, assignments and submissions in the dashboard."
       }
     }
+  },
+  "album": {
+    "shareError": "Sharing the album failed. Please try again."
   }
 }
