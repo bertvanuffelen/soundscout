@@ -6,7 +6,14 @@
 
 ## Bevindingenoverzicht
 
-*(wordt gevuld tijdens de doorloop — gefixt / open met voorstel)*
+**Gefixt tijdens de doorloop (18-7):**
+- **QA-1 (L10, gefixt `02d3cd8`)**: clip-loop-resize kon over de volgende clip op hetzelfde spoor heen groeien (beide klonken tegelijk) — `resizeClipLoop` kent geen botsingen. De resize-handler klemt nu op de start van de eerstvolgende clip; browser-geverifieerd (loop stopt pixel-exact op de volgende clip).
+
+**Open — klein, met voorstel:**
+- **QA-2 (L13)**: "Markeer deel" is een stille no-op als de afspeellijn op 0 staat (`handleMarkSection` eist beat > 0). Een kind dat vóór het afspelen klikt krijgt géén feedback. Voorstel: knop disabled + title-hint wanneer `currentBeat === 0` (goedkoop te abonneren via boolean-selector `s.currentBeat > 0`).
+- **QA-3 (L18)**: na laden via bewaarcode → keuze "Podium" is de compositienaam-input op het podium leeg, terwijl de compositie wél een naam heeft (deellink toont hem correct). Voorstel: naam voorvullen in `openSavedComposition`/stage-init.
+- **QA-4 (L5, content-config)**: **Winterspelen** heeft geen seizoensvenster (`activeFrom/activeUntil` ontbreken) en staat dus ook in juli in de leerling-kiezer. Bewust? Zo niet: venster instellen (bijv. 12-01 t/m 03-15). **Piraten** staat nog op `isPublic: true` (bekende TODO uit de piraten-sessie: terugzetten vóór deploy).
+- **QA-5 (observatie)**: HMR-editing terwijl de studio openstaat kan clip-selectie stil breken (volle reload lost op) — geen productie-issue, wel goed om te weten bij live testen tijdens bouwsessies.
 
 ---
 
@@ -14,36 +21,36 @@
 
 | ID | Usecase | Stappen | Verwacht | Status | Bevinding |
 |---|---|---|---|---|---|
-| L1 | Eerste bezoek + onboarding | App openen met lege localStorage → "Nieuwe Compositie" | First-run intro (OnboardingAnimation) verschijnt éénmalig, daarna de wizard | ⏳ | |
-| L2 | Vrij componeren starten | Nieuwe compositie → Vrij componeren → Volgende → thema kiezen | Kies-je-wereld toont publieke thema's; na keuze land je op de kaart | ⏳ | |
-| L3 | Bij een afbeelding | Nieuwe compositie → Bij een afbeelding → afbeelding kiezen | Afbeeldingkiezer toont beelden; na keuze kaart + storytelling-paneel met het beeld | ⏳ | |
-| L4 | Bij een storyboard | Nieuwe compositie → Bij een storyboard → storyboard kiezen | Storyboardkiezer; na keuze kaart; studio toont filmstrip + secties (gelockt) | ⏳ | |
-| L5 | Seizoensthema-chip | Startscherm bekijken | Chip alleen zichtbaar als een publiek thema seizoensgebonden actief is; klik → wizard met dat thema | ⏳ | |
-| L6 | Geluiden verzamelen (hotspots) | Kaart → locatie → hotspots aanklikken | Geluid speelt, sample komt in recorder-slot (max 6); teller op de kaart loopt mee | ⏳ | |
-| L7 | Recorder → studio | 6 slots vullen → naar studio | Samples staan in de bibliotheek, gegroepeerd; slots geleegd | ⏳ | |
-| L8 | Clips slepen + smart snap | Sample naar spoor slepen; tweede clip er overheen slepen | Snap-preview (gestippeld); botsende clip schuift naar vrije plek of spoor eronder | ⏳ | |
-| L9 | Clip bewerken — alle 6 acties | Clip selecteren → label, trim, dupliceer, volume, effecten, verwijder | Elke actie werkt vanuit de werkbalk; effecten-modal met fade-handles + preview | ⏳ | |
-| L10 | Clip-loop | Clip selecteren → resize-handle naar rechts slepen | Loopt in halve-maat-stappen; herhaalt bij afspelen; botsingsdetectie loop-bewust | ⏳ | |
-| L11 | Afspelen, pauze, seek, loop | Play → pauze → playhead verplaatsen → loop aan | Audio klopt met tijdlijn; hervatten op juiste positie; loop springt terug | ⏳ | |
-| L12 | Tijdlijn-gereedschap | +8/−8 maten, + spoor (max 12), solo, zoom in/uit/fit | Alles reageert; −8 klemt op inhoud; solo dimt andere sporen hoorbaar | ⏳ | |
-| L13 | Secties + sectie-loop | Vlag-knop → sectie markeren → sectie-loop aanzetten | Sectie in de balk; loop speelt alleen dat deel | ⏳ | |
-| L14 | Undo/redo + tijdlijn wissen | Wijzigingen → undo/redo; gum → inline bevestiging | Historie klopt; wissen vraagt bevestiging en leegt alle sporen | ⏳ | |
-| L15 | Praatplaat-zoom in studio | (Via klascode-praatplaat) studio openen | Beeld 2,5× ingezoomd op gekozen plek; toggle naar volledig beeld werkt | ⏳ | |
-| L16 | Podium + lokaal opslaan | Naar podium → Opslaan & Delen → lokaal opslaan | Compositie in "Mijn composities" (max 10); succes-feedback | ⏳ | |
-| L17 | Online bewaarcode + QR | Opslaan & Delen → online bewaren | 6-cijferige code + QR-toggle; auto-sync-toast bij latere saves | ⏳ | |
-| L18 | Bewaarcode op "ander apparaat" | Startscherm → Ik heb een code → 6-char code | Keuzescherm Studio/Podium; compositie laadt volledig | ⏳ | |
-| L19 | MP3- en video-export | Opslaan & Delen → MP3; bij storyboard ook video | Voortgang zichtbaar, download start; fouten netjes gemeld | ⏳ | |
-| L20 | Deel-link (8-char) | Opslaan & Delen → deel-link maken → link openen | SharedPlayer met gesture-gate; compositie speelt af | ⏳ | |
-| L21 | Klascode → 4 opdrachttypen | 4-cijferige code invoeren (template/praatplaat/storyboard/vrij) | AssignmentLanding toont opdrachtkaart; "Starten" routeert per type correct | ⏳ | |
-| L22 | Klascode zonder actieve opdracht (Route C) | Code van klas zonder opdracht | Nette landing met "Vrij componeren" / "Andere code" | ⏳ | |
-| L23 | Praatplaat: plek kiezen + inleveren + nieuwe plek | Praatplaat-flow → plek → componeren → inleveren | Positie bewaard; succes-modal; "Kies een nieuwe plek"-knop verschijnt | ⏳ | |
-| L24 | Peer review | Na inleveren → "Luister naar klasgenoten" | ≤3 anonieme composities, sterren per criterium; venster/cap eerlijk gemeld | ⏳ | |
-| L25 | Feedback-thuis | Met bewaarcode van beoordeelde compositie terugkomen | "Je hebt een reactie!"-melding op start; feedbackblok op podium | ⏳ | |
-| L26 | Composities hervatten | Mijn composities → kaart openen | Compositie laadt in studio; verwijderen met bevestiging | ⏳ | |
-| L27 | Tutorial + video's | Hoe werkt het? → video starten | Animatie + stappen; YouTube-embed speelt (playsinline) | ⏳ | |
-| L28 | 8-char-keten overige codes | Template-code, pp-share-code, album-code invoeren | Elke soort routeert naar de juiste viewer; onbekende code → "niet gevonden" | ⏳ | |
-| L29 | Mobiel (375px) kernflow | L2+L6+L8+L16 op mobiel formaat | Alles bedienbaar; touch-targets ruim; geen horizontale scroll | ⏳ | |
-| L30 | EN-doorloop leerling | Taal → EN → L2/L6/L16 kort herhalen | Alle teksten Engels, geen NL-restjes of lege keys | ⏳ | |
+| L1 | Eerste bezoek + onboarding | App openen met lege localStorage → "Nieuwe Compositie" | First-run intro (OnboardingAnimation) verschijnt éénmalig, daarna de wizard | ✅ | First-run intro verschijnt eenmalig op schone staat; daarna direct de wizard |
+| L2 | Vrij componeren starten | Nieuwe compositie → Vrij componeren → Volgende → thema kiezen | Kies-je-wereld toont publieke thema's; na keuze land je op de kaart | ✅ | Wizard → thema-kiezer (De Stad/Winterspelen/Piraten) → kaart |
+| L3 | Bij een afbeelding | Nieuwe compositie → Bij een afbeelding → afbeelding kiezen | Afbeeldingkiezer toont beelden; na keuze kaart + storytelling-paneel met het beeld | ✅ | Afbeeldingkiezer (4 beelden) → studio met beeld + Geluiden/Beeld-toggle |
+| L4 | Bij een storyboard | Nieuwe compositie → Bij een storyboard → storyboard kiezen | Storyboardkiezer; na keuze kaart; studio toont filmstrip + secties (gelockt) | ✅ | Verspringen → studio met filmstrip "1/3" en gelockte secties Start/Sprong/Landing |
+| L5 | Seizoensthema-chip | Startscherm bekijken | Chip alleen zichtbaar als een publiek thema seizoensgebonden actief is; klik → wizard met dat thema | ⚠️ | Geen chip zichtbaar — geen enkel publiek thema heeft een seizoensvenster; zie QA-4 |
+| L6 | Geluiden verzamelen (hotspots) | Kaart → locatie → hotspots aanklikken | Geluid speelt, sample komt in recorder-slot (max 6); teller op de kaart loopt mee | ✅ | 6 hotspots Speeltuin → recorder 6/6, geluid speelt, vol-prompt verschijnt |
+| L7 | Recorder → studio | 6 slots vullen → naar studio | Samples staan in de bibliotheek, gegroepeerd; slots geleegd | ✅ | Alle 6 samples in de bibliotheek na "Naar Studio" |
+| L8 | Clips slepen + smart snap | Sample naar spoor slepen; tweede clip er overheen slepen | Snap-preview (gestippeld); botsende clip schuift naar vrije plek of spoor eronder | ✅ | Drag werkt; overlappende drop schuift automatisch achter de blokkerende clip |
+| L9 | Clip bewerken — alle 6 acties | Clip selecteren → label, trim, dupliceer, volume, effecten, verwijder | Elke actie werkt vanuit de werkbalk; effecten-modal met fade-handles + preview | ✅ | Label (QA-zoem), trim-modal, dupliceren, volume-popover, effecten (pitch +4 toegepast), verwijderen — allemaal in orde |
+| L10 | Clip-loop | Clip selecteren → resize-handle naar rechts slepen | Loopt in halve-maat-stappen; herhaalt bij afspelen; botsingsdetectie loop-bewust | ✅ | Bug gevonden en gefixt: loop groeide over de volgende clip heen (QA-1, commit 02d3cd8); clamp nu browser-geverifieerd |
+| L11 | Afspelen, pauze, seek, loop | Play → pauze → playhead verplaatsen → loop aan | Audio klopt met tijdlijn; hervatten op juiste positie; loop springt terug | ✅ | Play/pauze/rewind/loop-toggle reageren; geen console-errors tijdens playback |
+| L12 | Tijdlijn-gereedschap | +8/−8 maten, + spoor (max 12), solo, zoom in/uit/fit | Alles reageert; −8 klemt op inhoud; solo dimt andere sporen hoorbaar | ✅ | +8 (32→40 maten), + spoor (8→9), solo dimt de andere sporen, zoom in/uit |
+| L13 | Secties + sectie-loop | Vlag-knop → sectie markeren → sectie-loop aanzetten | Sectie in de balk; loop speelt alleen dat deel | ✅ | Secties verschijnen als gekleurde balken; wel stille no-op op beat 0 (QA-2) |
+| L14 | Undo/redo + tijdlijn wissen | Wijzigingen → undo/redo; gum → inline bevestiging | Historie klopt; wissen vraagt bevestiging en leegt alle sporen | ✅ | Wis-tijdlijn met inline "Alles wissen?"-bevestiging; undo/redo-knoppen aanwezig (niet diepgaand doorlopen) |
+| L15 | Praatplaat-zoom in studio | (Via klascode-praatplaat) studio openen | Beeld 2,5× ingezoomd op gekozen plek; toggle naar volledig beeld werkt | ⏳ | Vergt klascode-praatplaat → Q3 (docent-sessie) |
+| L16 | Podium + lokaal opslaan | Naar podium → Opslaan & Delen → lokaal opslaan | Compositie in "Mijn composities" (max 10); succes-feedback | ✅ | "Opgeslagen!"-feedback; compositie in Mijn Composities |
+| L17 | Online bewaarcode + QR | Opslaan & Delen → online bewaren | 6-cijferige code + QR-toggle; auto-sync-toast bij latere saves | ✅ | Bewaarcode QDHEXK aangemaakt (Supabase), QR-toggle toont scanbare code |
+| L18 | Bewaarcode op "ander apparaat" | Startscherm → Ik heb een code → 6-char code | Keuzescherm Studio/Podium; compositie laadt volledig | ⚠️ | Code gevonden → keuzescherm Studio/Podium werkt; maar naam-input op podium blijft leeg (QA-3) |
+| L19 | MP3- en video-export | Opslaan & Delen → MP3; bij storyboard ook video | Voortgang zichtbaar, download start; fouten netjes gemeld | ⚠️ | MP3: voortgang 30% → afgerond, download getriggerd ✅; video-export vergt storyboard-compositie → Q3/hertest |
+| L20 | Deel-link (8-char) | Opslaan & Delen → deel-link maken → link openen | SharedPlayer met gesture-gate; compositie speelt af | ✅ | Code QA669DP4; publieke player met gesture-gate, pseudoniem "Dansende Bel", read-only tijdlijn speelt |
+| L21 | Klascode → 4 opdrachttypen | 4-cijferige code invoeren (template/praatplaat/storyboard/vrij) | AssignmentLanding toont opdrachtkaart; "Starten" routeert per type correct | ⏳ | Vergt actieve klas-opdracht → Q3 |
+| L22 | Klascode zonder actieve opdracht (Route C) | Code van klas zonder opdracht | Nette landing met "Vrij componeren" / "Andere code" | ⏳ | Vergt klas zonder opdracht → Q3 |
+| L23 | Praatplaat: plek kiezen + inleveren + nieuwe plek | Praatplaat-flow → plek → componeren → inleveren | Positie bewaard; succes-modal; "Kies een nieuwe plek"-knop verschijnt | ⏳ | Vergt praatplaat-opdracht → Q3 |
+| L24 | Peer review | Na inleveren → "Luister naar klasgenoten" | ≤3 anonieme composities, sterren per criterium; venster/cap eerlijk gemeld | ⏳ | Vergt klas + peer-instellingen → Q3 |
+| L25 | Feedback-thuis | Met bewaarcode van beoordeelde compositie terugkomen | "Je hebt een reactie!"-melding op start; feedbackblok op podium | ⏳ | Vergt docent-feedback op inzending → Q3 |
+| L26 | Composities hervatten | Mijn composities → kaart openen | Compositie laadt in studio; verwijderen met bevestiging | ✅ | Kaart in Mijn Composities → laadt terug in studio incl. bibliotheek |
+| L27 | Tutorial + video's | Hoe werkt het? → video starten | Animatie + stappen; YouTube-embed speelt (playsinline) | ✅ | Tutorial + video geverifieerd (iframe met playsinline, zie ook V1) |
+| L28 | 8-char-keten overige codes | Template-code, pp-share-code, album-code invoeren | Elke soort routeert naar de juiste viewer; onbekende code → "niet gevonden" | ⚠️ | Onbekende 8-char → nette "Code niet gevonden" ✅; echte template/pp-share/album-codes → Q3 |
+| L29 | Mobiel (375px) kernflow | L2+L6+L8+L16 op mobiel formaat | Alles bedienbaar; touch-targets ruim; geen horizontale scroll | ✅ | 375px: start, wizard, studio bedienbaar; transport 44×44, werkbalk 44px effectief (V2-metingen) |
+| L30 | EN-doorloop leerling | Taal → EN → L2/L6/L16 kort herhalen | Alle teksten Engels, geen NL-restjes of lege keys | ✅ | EN: start, wizard, kiezers volledig Engels; geen NL-restjes gezien |
 
 ## Perspectief DOCENT
 
