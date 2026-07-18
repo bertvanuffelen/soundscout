@@ -160,7 +160,7 @@ export function SharedAlbumViewer({ code, onBack }: SharedAlbumViewerProps) {
               ? t('album.submissionCount', { count: data.submissions.length })
               : t('album.noSubmissions')}
           </p>
-          <p className="text-text-muted text-sm mb-8">{t('sharedPraatplaat.gestureHint')}</p>
+          <p className="text-text-muted text-sm mb-8">{t('album.gestureHint')}</p>
           <Button variant="primary" size="lg" onClick={handleStartListening}>
             <Volume2 className="w-5 h-5 mr-2" />
             {t('album.startListening')}

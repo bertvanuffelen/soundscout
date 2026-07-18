@@ -2046,6 +2046,7 @@
     "notFoundTitle": "Album niet gevonden",
     "notFoundDescription": "Controleer de code of vraag een nieuwe link aan de docent.",
     "expiredTitle": "Link verlopen",
-    "expiredDescription": "Deze albumlink is verlopen. De docent kan een nieuwe maken."
+    "expiredDescription": "Deze albumlink is verlopen. De docent kan een nieuwe maken.",
+    "gestureHint": "Klik op de knop hieronder om het album te openen en composities te beluisteren."
   }
 }

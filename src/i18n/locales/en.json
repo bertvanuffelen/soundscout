@@ -2046,6 +2046,7 @@
     "notFoundTitle": "Album not found",
     "notFoundDescription": "Check the code or ask the teacher for a new link.",
     "expiredTitle": "Link expired",
-    "expiredDescription": "This album link has expired. The teacher can create a new one."
+    "expiredDescription": "This album link has expired. The teacher can create a new one.",
+    "gestureHint": "Click the button below to open the album and listen to the compositions."
   }
 }
