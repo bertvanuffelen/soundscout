@@ -162,7 +162,7 @@ export function ShareCodeInput() {
         if (!signal.aborted) setIsLoading(false);
       }
     },
-    [code, t, goToShared, goToSharedPraatplaat]
+    [code, t, goToShared, goToSharedPraatplaat, goToSharedAlbum]
   );
 
   // Keuze gemaakt (Studio of Podium): claim, laad en navigeer via de
