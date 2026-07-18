@@ -1444,6 +1444,36 @@
           "title": "Deel de klascode",
           "description": "Leerlingen typen de code in en je ziet hun composities hier."
         }
+      },
+      "setupMaterials": {
+        "title": "Zo bouw je eigen materiaal",
+        "step1": {
+          "title": "Maak een opdrachtkaart",
+          "description": "Een korte uitlegkaart (titel + punten) die leerlingen zien vóór ze beginnen — herbruikbaar bij elke opdracht."
+        },
+        "step2": {
+          "title": "Bouw een template",
+          "description": "Componeer zelf in de studio en kies op het podium \"Opslaan als opdracht\" — leerlingen bouwen erop voort."
+        },
+        "step3": {
+          "title": "Maak er een leskaart van",
+          "description": "Bundel je materiaal met een lesdoel en fases tot een leskaart die je in één klik activeert."
+        }
+      },
+      "setupLessons": {
+        "title": "Zo werk je met leskaarten",
+        "step1": {
+          "title": "Kies een leskaart",
+          "description": "Standaard of zelfgemaakt — filter op thema en groep om snel de juiste les te vinden."
+        },
+        "step2": {
+          "title": "Activeer voor een klas",
+          "description": "Eén klik en de opdracht staat klaar; je ziet meteen de klascode voor op het bord."
+        },
+        "step3": {
+          "title": "Presenteer en geef feedback",
+          "description": "Volg de inzendingen in het klaslokaal, presenteer op het digibord en geef feedback."
+        }
       }
     },
     "classCodeMeaning": "Leerlingen typen deze code in om mee te doen.",

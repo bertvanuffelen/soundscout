@@ -213,34 +213,36 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           ]}
         />
 
-        {/* "Zo zet je een klas op" — inklapbaar, onder de tabs. */}
-        <HowItWorksSteps
-          className="mb-8"
-          title={t('teacher.dashboard.setup.title')}
-          storageKey="ss-teacher-dashboard-setup"
-          defaultOpen={classes.length === 0}
-          steps={[
-            {
-              title: t('teacher.dashboard.setup.step1.title'),
-              description: t('teacher.dashboard.setup.step1.description'),
-            },
-            {
-              title: t('teacher.dashboard.setup.step2.title'),
-              description: t('teacher.dashboard.setup.step2.description'),
-            },
-            {
-              title: t('teacher.dashboard.setup.step3.title'),
-              description: t('teacher.dashboard.setup.step3.description'),
-            },
-          ]}
-          action={
-            <GuideLink
-              sectionId="getting-started"
-              variant="inline"
-              label={t('teacher.guide.openFullGuide')}
+        {/* "Zo werkt het" — inklapbaar, per tab een eigen uitleg
+            (testronde 3-wens: materiaal en leskaarten kregen eerst de
+            klas-uitleg te zien) */}
+        {(() => {
+          const setupKey = activeTab === 'assignments'
+            ? 'setupMaterials'
+            : activeTab === 'lessons'
+              ? 'setupLessons'
+              : 'setup';
+          return (
+            <HowItWorksSteps
+              key={setupKey}
+              className="mb-8"
+              title={t(`teacher.dashboard.${setupKey}.title`)}
+              storageKey={`ss-teacher-dashboard-${setupKey}`}
+              defaultOpen={setupKey === 'setup' && classes.length === 0}
+              steps={[1, 2, 3].map((n) => ({
+                title: t(`teacher.dashboard.${setupKey}.step${n}.title`),
+                description: t(`teacher.dashboard.${setupKey}.step${n}.description`),
+              }))}
+              action={
+                <GuideLink
+                  sectionId="getting-started"
+                  variant="inline"
+                  label={t('teacher.guide.openFullGuide')}
+                />
+              }
             />
-          }
-        />
+          );
+        })()}
 
         {/* ===== Tab: Mijn klassen ===== */}
         {activeTab === 'classes' && (

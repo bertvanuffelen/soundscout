@@ -1444,6 +1444,36 @@
           "title": "Share the class code",
           "description": "Students type in the code and you see their compositions here."
         }
+      },
+      "setupMaterials": {
+        "title": "How to build your own materials",
+        "step1": {
+          "title": "Create an assignment card",
+          "description": "A short instruction card (title + bullet points) pupils see before they start — reusable for any assignment."
+        },
+        "step2": {
+          "title": "Build a template",
+          "description": "Compose in the studio yourself and choose \"Save as assignment\" on the stage — pupils build on it."
+        },
+        "step3": {
+          "title": "Turn it into a lesson card",
+          "description": "Bundle your materials with a lesson goal and phases into a lesson card you can activate in one click."
+        }
+      },
+      "setupLessons": {
+        "title": "How lesson cards work",
+        "step1": {
+          "title": "Pick a lesson card",
+          "description": "Built-in or your own — filter by theme and age group to find the right lesson quickly."
+        },
+        "step2": {
+          "title": "Activate it for a class",
+          "description": "One click and the assignment is ready; you immediately get the class code for the board."
+        },
+        "step3": {
+          "title": "Present and give feedback",
+          "description": "Follow submissions in the classroom, present on the digiboard and give feedback."
+        }
       }
     },
     "classCodeMeaning": "Students type this code to join.",
