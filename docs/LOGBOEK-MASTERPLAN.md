@@ -216,6 +216,10 @@ Antwoord op Berts controlevraag "hebben we alles geïmplementeerd?": volledige s
 
 Gates overal groen; hertest-blok "Restpunten + dashboard/landing" bovenaan het testplan. **Voor Bert: migratie 032 draaien.**
 
+## Notion-testpagina-controle (18-7 laat): laatste open wensen gebouwd (H-ronde)
+
+Bert vroeg de hele Notion-testpagina "Test sessie 16-7" na te lopen. Alles wat nog open en bouwbaar was is gebouwd: **per-tab dashboard-uitleg** ("Zo bouw je eigen materiaal" / "Zo werk je met leskaarten" — testronde 3-punt) · **tijdsduur-vermelding** (migratie 033: `duration_label`, instel-veld op de actieve kaart, klok-weergave op de leerling-landing — testronde 1-wens) · **gids-content**: nieuwe sectie "Tips voor feedback geven" (met voorbeeldzinnen + GuideLink vanuit het inzendingenblok) en organisatie-tips in "Tips voor de klas" (NL+EN — testronde 2-wensen). De Notion-pagina zelf is bijgewerkt met een ✅-blok per wens; blijft bij Bert: exports-controle per vorm, content-sessie extra opdrachtkaarten, woordenlijst-aanvullingen, migraties 032+033.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
@@ -227,6 +231,7 @@ Gates overal groen; hertest-blok "Restpunten + dashboard/landing" bovenaan het t
 
 ## Voor Bert (acties buiten de code)
 
+- **Migraties 032 + 033 uitvoeren** (`032_fix_lesson_card_inline_match.sql` — juiste uitlegkaart bij template-leskaarten · `033_assignment_duration_label.sql` — tijdsduur-veld). Zonder 033 geeft het tijdsduur-veld een nette foutmelding bij opslaan.
 - **Migratie 031 uitvoeren** (`supabase/migrations/031_class_album_share.sql`) — klas-album delen (R4). Zonder deze migratie geeft "Deel album" een nette foutmelding; al het andere werkt.
 - **Deploy-notitie (R4)**: bij de eerstvolgende deploy ook **`dist/les/`** mee-uploaden (statische leskaart-pagina's; worden automatisch gegenereerd bij `npm run build` via de prebuild-hook). Apache serveert `/les/robotfabriek` dan via DirectoryIndex.
 - **Migratie 030 uitvoeren** (`supabase/migrations/030_peer_stars_batch.sql`) — batch peer-sterren voor het zijpaneel van het presentatiescherm. Zonder deze migratie werkt de presentatie gewoon, alleen zonder sterren per inzending.

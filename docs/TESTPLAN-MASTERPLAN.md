@@ -16,7 +16,7 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ## 🔁 HERTEST-LIJST RESTPUNTEN + DASHBOARD/LANDING-WENSEN (18-7 avond, vijfde blok) — nieuwste eerst
 
-**Vooraf: migratie 032 draaien** (`supabase/migrations/032_fix_lesson_card_inline_match.sql`) — fixt de verkeerde uitlegkaart bij template-leskaarten.
+**Vooraf: migraties 032 én 033 draaien** (`032_fix_lesson_card_inline_match.sql` — fixt de verkeerde uitlegkaart bij template-leskaarten · `033_assignment_duration_label.sql` — tijdsduur-veld).
 
 - [ ] **1. Uitlegkaart per opdrachttype**: activeer de Drum beat-leskaart opnieuw → de leerling-landing (klascode) toont nu "Je docent heeft alvast een ritme klaargezet…" i.p.v. de praatplaat-uitleg.
 - [ ] **2. Markeer deel**: in de studio is de vlag-knop grijs (met uitleg-tooltip) zolang de afspeellijn op 0 staat; na afspelen/klikken actief.
@@ -26,6 +26,9 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 - [ ] **6. /teacher**: hero toont de 4-stappen-animatie; "Drie manieren" heeft de knoppen links in een kolom met rechts de meebewegende preview.
 - [ ] **7. Presentatiescherm**: aankondiging duurt nu ~1,2s (het "grijze montagelijn-laden" was deze overlay); in de controls-rij staat een "Open montage"-knop (bij beeld-vormen); sticker/sterren-feedback slaat direct op ("Opgeslagen"-status), versturen-knop voor het tekstje.
 - [ ] **8. Album-gate**: tekst zegt nu "…om het album te openen" (was: praatplaat).
+- [ ] **9. Tijdsduur-vermelding** (na migratie 033): vul op de actieve opdracht "bijv. 2 lessen" in (Enter = opslaan, groene "Opgeslagen") → de leerling-landing toont "Tijdsduur: 2 lessen" met klok-icoon onder de opdrachtkaart.
+- [ ] **10. Dashboard-uitleg per tab**: Mijn materiaal toont "Zo bouw je eigen materiaal", Leskaarten toont "Zo werk je met leskaarten" (elk met 3 eigen stappen).
+- [ ] **11. Gids-content**: nieuwe sectie "Tips voor feedback geven" (met voorbeeldzinnen) + uitgebreide "Tips voor de klas" (klaarzetten/werkvormen/afronden); het inzendingenblok in het klaslokaal linkt naar de feedback-tips.
 
 ---
 

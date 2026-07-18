@@ -211,7 +211,11 @@ A teacher activates **one active assignment per class**; students enter the 4-di
 
 **System templates** (migration 022): a `template` can be ownerless (`teacher_id NULL` + `builtin_key`) so a built-in lesson card can offer a ready-made composition to *all* teachers. `activate_assignment` accepts a system template (`teacher_id IS NULL`) alongside the teacher's own; RLS lets any teacher read system templates. Content is seeded by copying a teacher-built template (migration 023 copies "Drum beat" → system template + built-in `template` lesson card, generating a fresh `code`). No client change — system templates are reachable only via built-in lesson cards; `useTemplates` stays own-only.
 
-Migrations for this subsystem: `006` class_assignments · `015` storyboard type · `016` opdrachtkaarten · `017` resume-model + praatplaat catalog · `018` `free` type · `019` lesson_cards + `activate_lesson_card` · `020` seed built-ins · `021` public `get_builtin_lesson_cards` · `022` system templates · `023` seed "Drum beat" system template · `024` derived assignment cards.
+**Duration label** (migration 033): optional `class_assignments.duration_label` ("2 lessen") — teacher sets it inline on the active-assignment card in `ClassDetail` (`updateAssignmentDuration`, RLS update-policy from 006); `get_active_assignment` returns it in the payload JSONB and `AssignmentLandingScreen` shows it under the opdrachtkaart with a Clock icon.
+
+**Level buckets** (G3, 18-7): lesson-card levels are canonical buckets `g12/g34/g56/g78/all` (`normalizeLevelToBuckets`/`formatLevel`/`LEVEL_BUCKETS` in `src/lib/lessonCards.ts`); NL shows groepen, EN shows ages via `lessonCards.levels.*` — legacy free-text levels are normalized client-side. The editor uses a select; the LessonCardsTab list is grouped into built-in vs own cards.
+
+Migrations for this subsystem: `006` class_assignments · `015` storyboard type · `016` opdrachtkaarten · `017` resume-model + praatplaat catalog · `018` `free` type · `019` lesson_cards + `activate_lesson_card` · `020` seed built-ins · `021` public `get_builtin_lesson_cards` · `022` system templates · `023` seed "Drum beat" system template · `024` derived assignment cards · `032` inline-card match on title+bullets (QA-7) · `033` duration_label.
 
 ### Feedback (docent + peer)
 
