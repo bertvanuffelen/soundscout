@@ -11,7 +11,7 @@ export const piratenTheme: ThemeConfig = {
   id: 'piraten',
   name: 'themes.piraten.name',
   description: 'themes.piraten.description',
-  isPublic: true, // TODO: terug naar false vóór deploy — nu true zodat het thema lokaal testbaar is in de "Kies je wereld"-flow
+  isPublic: true, // besluit 18-7: thema is compleet (22 echte geluiden) en gaat publiek mee
 
   locations,
   samples,

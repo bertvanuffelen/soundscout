@@ -1,7 +1,5 @@
 /**
  * Locations for the 'winterspelen' theme.
- *
- * TODO: Configureer hotspots via de Locatie Editor (/editor)
  */
 
 import type { Location } from '../../../types';

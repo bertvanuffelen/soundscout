@@ -189,7 +189,7 @@ Themes in `src/data/themes/{themeId}/` — each has `locations.ts`, `samples.ts`
 
 ### Teacher Dashboard
 
-Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disables DnD and hides edit controls. Max 8 classes per teacher (free tier). The dashboard has three large tabs (`SegmentedTabs`), following the **opdrachten-model 17-7** (Mijn klassen = doe-wereld · Leskaarten = didactische kiesplek · Mijn materiaal = eigen grondstoffen):
+Teachers log in via Supabase auth. `readOnly` prop on Timeline/Track/Clip disables DnD and hides edit controls. Class limit per teacher comes from `teachers.max_classes` in the DB (default 8, `NULL` = unlimited — enforced client-side in `useClasses.createClass`). The dashboard has three large tabs (`SegmentedTabs`), following the **opdrachten-model 17-7** (Mijn klassen = doe-wereld · Leskaarten = didactische kiesplek · Mijn materiaal = eigen grondstoffen):
 
 - **Mijn klassen** — per-klas doe-wereld: `ClassDetail` with active assignment, a **startkeuze** ("Gebruik een leskaart" → `LessonCardPickerModal` (class fixed, one-click activate via `activate_lesson_card`) / "Stel zelf samen" → `AssignmentTypeCards`), submissions, and an "Eerdere opdrachten" history block (via `fetchPastAssignments`) where praatplaat rows also offer **Bekijken/Delen/Verwijderen** (viewer, share code, `deletePraatplaat` with submissions warning) next to reactivate.
 - **Leskaarten** — dé kiesplek (`LessonCardsTab`, master-detail): built-in + own cards with **thema- and niveau-filterchips** (`getLessonCardThemeId` derives the theme from the card's content — no stored field) and **season badges**.
@@ -385,7 +385,8 @@ VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts
 
 | File | Purpose |
 |---|---|
-| `docs/TODO-IMPLEMENTATIE.md` | Fase 4-5 prioritized feature list |
+| `docs/TODO.md` | Backlog (bundels, mobile-audit, device-tests) |
+| `docs/USECASES-QA.md` | Rol-doorloop leerling+docent (56 usecases) + QA-bevindingen |
 | `docs/TONEJS-KENNISBANK.md` | Tone.js knowledge base & critical limitations |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Guide for adding locations and themes |
 | `docs/PLAN-KLASCODE-SYSTEEM.md` | Supabase integration plan |

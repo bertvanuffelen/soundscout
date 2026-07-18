@@ -1,7 +1,5 @@
 /**
  * Samples for the 'winterspelen' theme.
- *
- * TODO: Voeg echte audio files toe in /public/audio/themes/winterspelen/{locationId}/
  */
 
 import type { Sample } from '../../../types';
