@@ -28,7 +28,8 @@
     "stop": "Stoppen",
     "by": "Door",
     "location": "Locatie",
-    "zoom": "Vergroten"
+    "zoom": "Vergroten",
+    "saved": "Opgeslagen"
   },
   "language": {
     "nl": "Nederlands",
@@ -626,7 +627,9 @@
     "startChoiceLesson": "Gebruik een leskaart",
     "startChoiceLessonDesc": "Kant-en-klaar pakket met lesdoel en fases",
     "startChoiceCustom": "Stel zelf samen",
-    "startChoiceCustomDesc": "Kies zelf de vorm, inhoud en opdrachtkaart"
+    "startChoiceCustomDesc": "Kies zelf de vorm, inhoud en opdrachtkaart",
+    "durationLabel": "Tijdsduur (optioneel, zichtbaar voor leerlingen)",
+    "durationPlaceholder": "bijv. 2 lessen"
   },
   "assignmentCards": {
     "sectionTitle": "Mijn opdrachtkaarten",
@@ -1020,7 +1023,8 @@
       "deactivate": "Kon opdracht niet deactiveren",
       "activateTemplate": "Kon template niet activeren",
       "activateStoryboard": "Kon storyboard niet activeren",
-      "activateFree": "Kon vrije opdracht niet activeren"
+      "activateFree": "Kon vrije opdracht niet activeren",
+      "duration": "Kon tijdsduur niet opslaan"
     },
     "classes": {
       "load": "Kon klassen niet laden",
@@ -1858,7 +1862,8 @@
       "message": "Deze klas heeft nog geen opdracht actief. Wacht even of vraag je docent. Je kunt ook vrij gaan componeren.",
       "composeFree": "Vrij componeren",
       "otherCode": "Andere code proberen"
-    }
+    },
+    "duration": "Tijdsduur: {{duration}}"
   },
   "sharedPraatplaat": {
     "fetchError": "Kon de praatplaat niet laden",

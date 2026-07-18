@@ -4,13 +4,14 @@
  * Toont alle composities van leerlingen in deze klas
  */
 
-import { useState, useMemo, useCallback } from 'react';
+import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, SlidersHorizontal } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, SlidersHorizontal, Clock, Check } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
+import { updateAssignmentDuration } from '../../lib/assignments';
 import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
@@ -103,6 +104,30 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     deactivate: deactivateAssignment,
     refetch: refetchAssignment,
   } = useClassAssignment(classData.id);
+
+  // Tijdsduur-vermelding (migratie 033): draft volgt de actieve opdracht;
+  // opslaan op blur/Enter. setTimeout-tick wegens de set-state-in-effect-regel.
+  const [durationDraft, setDurationDraft] = useState('');
+  const [durationSaved, setDurationSaved] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDurationDraft(activeAssignment?.durationLabel ?? '');
+      setDurationSaved(false);
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [activeAssignment?.id, activeAssignment?.durationLabel]);
+  const saveDuration = useCallback(async () => {
+    if (!activeAssignment) return;
+    const val = durationDraft.trim();
+    if ((activeAssignment.durationLabel ?? '') === val) return;
+    try {
+      await updateAssignmentDuration(activeAssignment.id, val || null);
+      setDurationSaved(true);
+      void refetchAssignment();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : String(err));
+    }
+  }, [activeAssignment, durationDraft, refetchAssignment]);
 
   const [showActivateModal, setShowActivateModal] = useState(false);
   // Type-eerste flow: welk type toont de scoped modal + welk type wacht op vervang-bevestiging.
@@ -484,6 +509,31 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     />
                   </div>
                 )}
+
+                {/* Tijdsduur-vermelding (migratie 033, wens testronde 1):
+                    optioneel, alleen als vermelding voor leerlingen op de landing */}
+                <div className="mt-4 flex flex-wrap items-center gap-2">
+                  <label htmlFor="assignment-duration" className="text-sm text-text-muted inline-flex items-center gap-1.5">
+                    <Clock className="w-4 h-4 text-accent-500" aria-hidden="true" />
+                    {t('assignments.durationLabel')}
+                  </label>
+                  <input
+                    id="assignment-duration"
+                    type="text"
+                    maxLength={60}
+                    value={durationDraft}
+                    onChange={(e) => setDurationDraft(e.target.value)}
+                    onBlur={() => void saveDuration()}
+                    onKeyDown={(e) => { if (e.key === 'Enter') (e.target as HTMLInputElement).blur(); }}
+                    placeholder={t('assignments.durationPlaceholder')}
+                    className="w-44 px-3 py-1.5 text-sm border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none bg-neutral-50 text-text-main placeholder:text-text-muted/50"
+                  />
+                  {durationSaved && (
+                    <span className="text-xs text-success-600 inline-flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" /> {t('common.saved')}
+                    </span>
+                  )}
+                </div>
 
                 {/* Actions */}
                 <div className="flex gap-2 mt-4">

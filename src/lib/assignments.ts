@@ -57,6 +57,8 @@ export interface ActiveAssignment {
   card: OpdrachtkaartContent | null;
   /** Peer-review ("klasgenoten luisteren") — null als uitgeschakeld */
   peerReview: PeerReviewConfig | null;
+  /** Optionele tijdsduur-vermelding van de docent (migratie 033), bijv. "2 lessen" */
+  durationLabel: string | null;
   // Template fields (present when type = 'template')
   template?: Template;
   // Praatplaat fields (present when type = 'praatplaat')
@@ -97,6 +99,8 @@ export interface ClassAssignmentRow {
   freeThemeId: string | null;
   isActive: boolean;
   activatedAt: string;
+  /** Optionele tijdsduur-vermelding voor leerlingen (migratie 033) */
+  durationLabel: string | null;
   // Joined / resolved names
   assignmentName: string;
   /** Preview-afbeelding: praatplaat-image (join), storyboard-cover of thema-map (registry); null bij template. */
@@ -211,6 +215,10 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
     };
     const payload = row.payload ?? {};
     const card = parseCard(row.card);
+    // Tijdsduur-vermelding (migratie 033) — ontbreekt op oudere databases
+    const durationLabel = typeof payload.duration_label === 'string' && payload.duration_label.trim()
+      ? payload.duration_label
+      : null;
     // Peer-review (migratie 027/028) — kolom ontbreekt op oudere databases
     const peerReview: PeerReviewConfig | null =
       row.peer_review?.enabled && Array.isArray(row.peer_review.chips)
@@ -235,6 +243,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         className: row.class_name,
         card,
         peerReview,
+        durationLabel,
         template: {
           id: String(payload.template_id ?? ''),
           name: (payload.name as string) || '',
@@ -255,6 +264,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         className: row.class_name,
         card,
         peerReview,
+        durationLabel,
         praatplaat: {
           id: String(payload.praatplaat_id ?? ''),
           name: (payload.name as string) || '',
@@ -274,6 +284,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         className: row.class_name,
         card,
         peerReview,
+        durationLabel,
         storyboard,
       };
     }
@@ -287,6 +298,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         className: row.class_name,
         card,
         peerReview,
+        durationLabel,
         free: { themeId, themeName: themeDisplayName(themeId) },
       };
     }
@@ -369,6 +381,7 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
         free_theme_id,
         is_active,
         activated_at,
+        duration_label,
         templates:template_id ( name ),
         praatplaten:praatplaat_id ( name, image_url )
       `)
@@ -401,6 +414,7 @@ interface RawAssignmentRow {
   free_theme_id: string | null;
   is_active: boolean;
   activated_at: string;
+  duration_label?: string | null;
   templates: JoinedName | JoinedName[] | null;
   praatplaten: JoinedName | JoinedName[] | null;
 }
@@ -436,9 +450,29 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
     freeThemeId: row.free_theme_id,
     isActive: row.is_active,
     activatedAt: row.activated_at,
+    durationLabel: row.duration_label ?? null,
     assignmentName,
     imageUrl,
   };
+}
+
+/**
+ * Zet of wis de tijdsduur-vermelding op een opdracht (migratie 033).
+ * Docent-eigendom wordt afgedwongen door de UPDATE-RLS-policy (006).
+ */
+export async function updateAssignmentDuration(
+  assignmentId: string,
+  durationLabel: string | null,
+): Promise<void> {
+  const supabase = await getSupabase();
+  const { error } = await supabase
+    .from('class_assignments')
+    .update({ duration_label: durationLabel?.trim() || null })
+    .eq('id', assignmentId);
+  if (error) {
+    logger.error('updateAssignmentDuration error:', sanitizeError(error));
+    throw new Error(i18n.t('errors.assignments.duration'));
+  }
 }
 
 /**

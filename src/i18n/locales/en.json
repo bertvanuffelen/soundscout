@@ -28,7 +28,8 @@
     "stop": "Stop",
     "by": "By",
     "location": "Location",
-    "zoom": "Zoom in"
+    "zoom": "Zoom in",
+    "saved": "Saved"
   },
   "language": {
     "nl": "Nederlands",
@@ -626,7 +627,9 @@
     "startChoiceLesson": "Use a lesson card",
     "startChoiceLessonDesc": "Ready-made package with lesson goal and phases",
     "startChoiceCustom": "Build your own",
-    "startChoiceCustomDesc": "Pick the form, content and assignment card yourself"
+    "startChoiceCustomDesc": "Pick the form, content and assignment card yourself",
+    "durationLabel": "Duration (optional, shown to pupils)",
+    "durationPlaceholder": "e.g. 2 lessons"
   },
   "assignmentCards": {
     "sectionTitle": "My assignment cards",
@@ -1020,7 +1023,8 @@
       "deactivate": "Could not deactivate the assignment",
       "activateTemplate": "Could not activate the template",
       "activateStoryboard": "Could not activate the storyboard",
-      "activateFree": "Could not activate the free assignment"
+      "activateFree": "Could not activate the free assignment",
+      "duration": "Could not save the duration"
     },
     "classes": {
       "load": "Could not load your classes",
@@ -1858,7 +1862,8 @@
       "message": "This class doesn't have an active assignment yet. Wait a moment or ask your teacher. You can also compose freely.",
       "composeFree": "Compose freely",
       "otherCode": "Try another code"
-    }
+    },
+    "duration": "Duration: {{duration}}"
   },
   "sharedPraatplaat": {
     "fetchError": "Could not load the sound map",

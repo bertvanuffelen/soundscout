@@ -19,7 +19,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment } from '../../utils/compositionInit';
 import { findStoryboardById, getTheme } from '../../data/themes';
@@ -119,6 +119,14 @@ export default function AssignmentLandingScreen() {
 
         {/* 4: Opdrachtkaart (docent-kaart of per-type default) */}
         {assignment && <OpdrachtkaartCard card={resolveCard(t, assignment)} />}
+
+        {/* Optionele tijdsduur-vermelding van de docent (migratie 033) */}
+        {assignment?.durationLabel && (
+          <p className="flex items-center justify-center gap-1.5 text-sm text-text-muted mt-3">
+            <Clock className="w-4 h-4 text-accent-500" aria-hidden="true" />
+            {t('assignmentLanding.duration', { duration: assignment.durationLabel })}
+          </p>
+        )}
 
         {error && (
           <p role="alert" className="text-error-400 text-sm mt-4">
