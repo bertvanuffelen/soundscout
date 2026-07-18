@@ -178,6 +178,10 @@ Aanleiding: Berts vraag "waarom staan praatplaten in Mijn opdrachten?" → brain
 - M5 Praatplaat-bord: `interactiveBoard`-stand op PresentationSurface (geclusterde klikbare spots, keuzemenu); beide praatplaat-viewers zijn dunne schillen.
 - Gates overal groen (tsc · 266 tests · lint 27 · i18n-pariteit · build). Hertest-lijst "Opdrachten-model" bovenaan het testplan (alles docent-login).
 
+## Routekaart ná het masterplan (17-7, backlog-brainstorm Bert)
+
+Prioriteiten Bert: **R1 deploy-ronde** → **R2 freemium/betaalflow** (volledige betaalflow gewenst; provider-onderzoek doet Bert extern met geleverde prompt; grenzen beslist hij via `docs/FREEMIUM-OPTIES.md`) → **R3 leerling-codes + groepjes** (nieuw fundament, ontwerp in `docs/ONTWERP-LEERLING-CODES.md`; daarna "Samen één verhaal") → **R4 klas-album + publieke leskaart-pagina's** → **R5 luister-en-plaats** (klassikaal eerst, ontwerp in `docs/ONTWERP-LUISTER-EN-PLAATS.md`). Microfoon-lijn geparkeerd tot na deploy; analytics = eigen usage_stats uitbouwen. R0 (drie ontwerpdocumenten) geleverd in commit `0b86605`.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
