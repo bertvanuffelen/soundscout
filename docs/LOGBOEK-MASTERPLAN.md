@@ -182,6 +182,16 @@ Aanleiding: Berts vraag "waarom staan praatplaten in Mijn opdrachten?" → brain
 
 Prioriteiten Bert: **R1 deploy-ronde** → **R2 freemium/betaalflow** (volledige betaalflow gewenst; provider-onderzoek doet Bert extern met geleverde prompt; grenzen beslist hij via `docs/FREEMIUM-OPTIES.md`) → **R3 leerling-codes + groepjes** (nieuw fundament, ontwerp in `docs/ONTWERP-LEERLING-CODES.md`; daarna "Samen één verhaal") → **R4 klas-album + publieke leskaart-pagina's** → **R5 luister-en-plaats** (klassikaal eerst, ontwerp in `docs/ONTWERP-LUISTER-EN-PLAATS.md`). Microfoon-lijn geparkeerd tot na deploy; analytics = eigen usage_stats uitbouwen. R0 (drie ontwerpdocumenten) geleverd in commit `0b86605`.
 
+## R0b + R4 — Ontwerpbesluiten leerling-codes · klas-album · leskaart-pagina's (17-7)
+
+**R0b — leerling-codes besloten** (Berts inline feedback verwerkt, `docs/ONTWERP-LEERLING-CODES.md` → v2): codeformaat **2 letters + 4 cijfers** (~5,8M combinaties met veilig alfabet) · leerlingen voeren nooit een eigen naam in (pseudoniem-systeem blijft; de code maakt het pseudoniem persistent per kind) · labels niet hernoembaar · verloop 31 juli + toggle "Bewaar deze klas voor volgend jaar" · verlopen-melding "Jouw code is niet meer actief" · klascode-flow blijft parallel. Scope-knip: **v1 = individueel (bouw R3)**; groepjes/samenwerken en "Samen één verhaal" volledig uitgedacht als toekomst-docs: `docs/ONTWERP-GROEPJES-SAMENWERKEN.md` (F1/F2/F3) en `docs/ONTWERP-SAMEN-EEN-VERHAAL.md`.
+
+**R4 gebouwd (4 commits `a6ed057` · `0a48c59` · `807e1ba` · `1b5e295` + lint-fix):**
+- D2 **Klas-album**: migratie **031** (album-deelcode op `class_assignments`, centrale `generate_share_code_v2()` die alle drie de 8-char-codespaces checkt, RPC's `share_class_album`/`get_shared_class_album` met rate-limits en per-type submissions-resolutie, alleen formeel ingeleverd) + `src/lib/albums.ts`.
+- D3 **Album-viewer + deelknop**: `SharedAlbumViewer` (statemachine + gesture-gate → PresentationSurface public, klikbaar bord bij praatplaat-albums), `?album=CODE`-route, stap 5 in de ShareCodeInput-keten, "Deel album"-knop op de actieve opdracht én elke historie-rij (`ShareAlbumModal` met link/QR/30 dagen).
+- D4 **Statische leskaart-pagina's** `/les/<key>`: generator `scripts/generate-les-pages.mjs` (prebuild-hook) → pure-HTML SEO-pagina's (JSON-LD LearningResource, CTA-deeplink naar het dashboard), sitemap-verversing, "Bekijk de leskaart"-links op de landing; lesfases voor verspringen/vrij-basis/drumbeat aangevuld in nl+en.
+- Browser-geverifieerd: `/les/robotfabriek` + `/les/drumbeat` renderen volledig; `?album=FAKECODE` toont nette not-found-staat. Happy path album vergt Berts login + migratie 031 → hertest-lijst "R4" bovenaan het testplan. Gates groen (tsc · 266 tests · lint terug op baseline 27 · i18n-pariteit).
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
@@ -193,6 +203,8 @@ Prioriteiten Bert: **R1 deploy-ronde** → **R2 freemium/betaalflow** (volledige
 
 ## Voor Bert (acties buiten de code)
 
+- **Migratie 031 uitvoeren** (`supabase/migrations/031_class_album_share.sql`) — klas-album delen (R4). Zonder deze migratie geeft "Deel album" een nette foutmelding; al het andere werkt.
+- **Deploy-notitie (R4)**: bij de eerstvolgende deploy ook **`dist/les/`** mee-uploaden (statische leskaart-pagina's; worden automatisch gegenereerd bij `npm run build` via de prebuild-hook). Apache serveert `/les/robotfabriek` dan via DirectoryIndex.
 - **Migratie 030 uitvoeren** (`supabase/migrations/030_peer_stars_batch.sql`) — batch peer-sterren voor het zijpaneel van het presentatiescherm. Zonder deze migratie werkt de presentatie gewoon, alleen zonder sterren per inzending.
 - **Migratie 029 uitvoeren** (`supabase/migrations/029_fix_load_saved_composition_class_code.sql`) — fixt de testronde-1-bug "bewaarcode niet gevonden": migratie 028 had een typefout (`class_code TEXT` vs kolom `CHAR(4)`) waardoor élke bewaarcode-load faalde. Verifieer daarna met `SELECT * FROM load_saved_composition('BBD6KD');` of door de code in de app in te voeren.
 

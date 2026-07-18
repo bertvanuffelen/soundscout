@@ -12,6 +12,19 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 ---
 
+## 🔁 HERTEST-LIJST R4: KLAS-ALBUM + LESKAART-PAGINA'S (17-7, derde blok) — nieuwste eerst
+
+**Vooraf: migratie 031 draaien** (`supabase/migrations/031_class_album_share.sql`) — zonder geeft de album-deelknop een nette fout, de rest werkt.
+
+- [ ] **1. Album delen (docent)**: klaslokaal → op de actieve opdracht (en op elke historie-rij) staat "Deel album" → modal toont link (`?album=CODE`), kopieerknop en QR; 30 dagen geldig, opnieuw delen verlengt.
+- [ ] **2. Album openen (publiek)**: de link in een incognito-venster → klasnaam + opdrachtnaam + composities-teller → "Open het album" (audio-gebaar) → presentatiescherm met alle **ingeleverde** composities als afspeellijst; bij een praatplaat-opdracht het klikbare bord. *(Not-found/verlopen-staten door Claude al geverifieerd.)*
+- [ ] **3. Album-code op het startscherm**: de 8-letterige code typen bij "Ik heb een code" → zelfde albumweergave.
+- [ ] **4. Leskaart-pagina's**: `localhost:5199/les/robotfabriek/index.html` (en drumbeat/verspringen/vrij-basis) — cover, lesdoel, 4 lesfases, "Open voor je klas" → login/dashboard op de juiste leskaart. *(Door Claude al inhoudelijk geverifieerd; na deploy werkt ook het korte pad `/les/robotfabriek`.)*
+- [ ] **5. Landing**: op `/teacher` heeft elke leskaart nu een "Bekijk de leskaart"-link naar zijn eigen pagina.
+- [ ] **6. Nieuwe lesfases in de app**: de leskaarten Verspringen / Vrij componeren / Drum beat tonen nu ook lesfases in het dashboard — lees ze even na (door mij geschreven in jouw stijl; pas gerust aan).
+
+---
+
 ## 🔁 HERTEST-LIJST OPDRACHTEN-MODEL (17-7, tweede blok) — nieuwste eerst
 
 Herontwerp na de usecases-brainstorm (indeling B + thema-filter, seizoensregel, klas-historie). Alles docent-login:

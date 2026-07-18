@@ -44,7 +44,7 @@ Tests use jsdom environment with jest-style globals (`describe`, `it`, `expect`)
 No router — `App.tsx` switches on `appStore.currentScreen`:
 `'start'` → `'map'` → `'location'` → `'studio'` → `'stage'`
 
-Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player), `'shared-praatplaat'` (public praatplaat viewer #73), `'praatplaat-select'` (student position picker for praatplaat #72), `'assignment-landing'` (class code assignment preview before starting)
+Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player), `'shared-praatplaat'` (public praatplaat viewer #73), `'shared-album'` (public class album viewer, R4), `'praatplaat-select'` (student position picker for praatplaat #72), `'assignment-landing'` (class code assignment preview before starting)
 
 Teacher screens: `'teacher-login'` → `'teacher-dashboard'` → `'compositions'`
 
@@ -219,7 +219,15 @@ Migrations for this subsystem: `006` class_assignments · `015` storyboard type 
 
 **Peer-feedback 2.0** (migrations 027 + 028): after submitting, a student reviews ≤3 random anonymous classmate compositions with **1-3 sterren per criterium** of the teacher's feedbackkaart (`feedback_cards`, docent-instelbaar; built-ins + own). Table `peer_feedback` (unique per pair, no self-review, `ratings` JSONB; pre-028 rows are chips-only). Server enforces: cap 3, review-venster/timer (`peer_review_is_open`), rate limits. RPCs: `get_peer_review_batch`, `submit_peer_feedback` (v2), `get_peer_compliments` (per bewaarcode, avg per criterium), `get_peer_stars_for_class` (migration 030, batch totals for the presentation sidebar, owner-teacher only). Client `src/lib/peerFeedback.ts` uses typed `PeerFeedbackError` (rateLimit/capReached/windowClosed/generic) — server rejections show honest messages, never fake success. Teacher: `PeerFeedbackOverview` (+ top 3 podium) in ClassDetail; activation via uitklapbare peer-instellingen.
 
-Other migrations: `025` anonymous analytics (`usage_stats`) · `029` fix `load_saved_composition` class_code cast (bewaarcode bug) · `030` peer stars batch.
+Other migrations: `025` anonymous analytics (`usage_stats`) · `029` fix `load_saved_composition` class_code cast (bewaarcode bug) · `030` peer stars batch · `031` class album share (R4).
+
+### Klas-album (R4)
+
+A teacher shares all formally submitted compositions of an assignment as one public "album" via an 8-char code (30 days, extendable). Migration 031 adds `share_code`/`share_expires_at`/`share_view_count` to `class_assignments`, a central `generate_share_code_v2()` (collision-checks submissions + praatplaten + class_assignments; `generate_praatplaat_share_code` delegates to it), and RPCs `share_class_album` (authenticated, ownership, 10/min) / `get_shared_class_album` (anon, 30/min, resolves submissions per assignment type, `submitted_at IS NOT NULL` only). Client: `src/lib/albums.ts` · `ShareAlbumModal` ("Deel album" on the active assignment card + every history row in `ClassDetail`) · `SharedAlbumViewer` (lazy; SharedPraatplaatViewer-statemachine → `PresentationSurface` mode `public`, `interactiveBoard` for praatplaat albums). Entry: `?album=CODE` in `App.tsx` and step 5 in the `ShareCodeInput` 8-char chain.
+
+### Statische leskaart-pagina's (/les/<key>, R4)
+
+`scripts/generate-les-pages.mjs` (runs via `prebuild`) writes pure-HTML SEO pages to `public/les/<key>/index.html` + shared `public/les/les.css` and refreshes the `/les/` entries in `public/sitemap.xml` (idempotent). Content: i18n `lessonCards.builtin.<key>` (title/level/goal/phases) + non-i18n fields from `scripts/les-pages-data.json` (cover/typeLabel/pdf — keep in sync with `LANDING_LESSON_KEYS` and seed migrations 020/023). No JavaScript (CSP `script-src 'self'`-proof); CTA deeplinks to `/?screen=teacher&lesson=<key>`. `TeacherLandingPage` links each card to its page. Deploy: upload `dist/les/` along with the build.
 
 ### Supabase Security
 
