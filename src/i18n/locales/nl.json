@@ -1490,7 +1490,9 @@
         "new": "Nieuw",
         "seen": "Gezien",
         "reviewed": "Beoordeeld"
-      }
+      },
+      "openMontage": "Open montage",
+      "closeMontage": "Sluit montage"
     },
     "peerOverview": {
       "title": "Feedback-overzicht",

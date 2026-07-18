@@ -66,7 +66,9 @@ interface PresentationSurfaceProps {
   interactiveBoard?: { imageUrl: string; name: string } | null;
 }
 
-const ANNOUNCE_MS = 2500;
+// Kort genoeg om niet te storen (de donkere overlay dimt ook de montagelijn —
+// dat oogde als "grijs laden", wens Bert 18-7), lang genoeg voor concert-gevoel
+const ANNOUNCE_MS = 1200;
 
 /** Spot-item op het praatplaat-bord: playlist-index + positie (M5) */
 interface BoardSpotItem {
@@ -602,6 +604,22 @@ export function PresentationSurface({
               >
                 <Star className="w-4 h-4" aria-hidden="true" />
                 {t('teacher.presentation.feedbackRow')}
+              </button>
+            )}
+            {/* Open montage — zelfde toggle als bovenin, maar in de controls-rij
+                waar de docent tóch al kijkt (G9, wens Bert 18-7). Alleen bij
+                beeld-vormen: zonder beeld staat de montagelijn altijd open. */}
+            {isTeacherMode && hasVisual && (
+              <button
+                onClick={() => setMontageOpen((v) => !v)}
+                aria-pressed={montageOpen}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-3 py-2 rounded-full text-xs font-bold transition-colors',
+                  montageOpen ? 'bg-accent-400 text-accent-900' : 'bg-brand-800 text-brand-300 hover:text-white'
+                )}
+              >
+                <ListMusic className="w-4 h-4" aria-hidden="true" />
+                {t(montageOpen ? 'teacher.presentation.closeMontage' : 'teacher.presentation.openMontage')}
               </button>
             )}
           </div>

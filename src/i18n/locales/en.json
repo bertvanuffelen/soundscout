@@ -1490,7 +1490,9 @@
         "new": "New",
         "seen": "Seen",
         "reviewed": "Reviewed"
-      }
+      },
+      "openMontage": "Open timeline",
+      "closeMontage": "Close timeline"
     },
     "peerOverview": {
       "title": "Feedback overview",
