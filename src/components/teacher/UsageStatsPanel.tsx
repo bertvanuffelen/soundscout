@@ -51,11 +51,16 @@ export function UsageStatsPanel({ isOpen, onClose }: UsageStatsPanelProps) {
   useEffect(() => {
     if (!isOpen) return;
     let cancelled = false;
-    setError(null);
-    fetchUsageStats(90)
-      .then((data) => { if (!cancelled) setRows(data); })
-      .catch(() => { if (!cancelled) setError(t('teacher.stats.loadError')); });
-    return () => { cancelled = true; };
+    // setState niet synchroon in het effect (lint-regel set-state-in-effect):
+    // reset + fetch in een microtask-vrije tick, met cancelled-guard.
+    const timer = setTimeout(() => {
+      if (cancelled) return;
+      setError(null);
+      fetchUsageStats(90)
+        .then((data) => { if (!cancelled) setRows(data); })
+        .catch(() => { if (!cancelled) setError(t('teacher.stats.loadError')); });
+    }, 0);
+    return () => { cancelled = true; clearTimeout(timer); };
   }, [isOpen, t]);
 
   const today = isoDaysAgo(0);
