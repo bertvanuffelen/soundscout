@@ -9,7 +9,16 @@
 **Gefixt tijdens de doorloop (18-7):**
 - **QA-1 (L10, gefixt `02d3cd8`)**: clip-loop-resize kon over de volgende clip op hetzelfde spoor heen groeien (beide klonken tegelijk) — `resizeClipLoop` kent geen botsingen. De resize-handler klemt nu op de start van de eerstvolgende clip; browser-geverifieerd (loop stopt pixel-exact op de volgende clip).
 
-**Open — klein, met voorstel:**
+**Restpuntenronde 18-7 (avond): alle onderstaande punten zijn afgehandeld.**
+- QA-2 → **gefixt**: "Markeer deel" is disabled met hint zolang de afspeellijn op 0 staat.
+- QA-3 → **gefixt**: naam voorgevuld na bewaarcode-load; `saveOnlineInfo` wordt bovendien gewist bij een nieuwe compositie (dichtte ook een latente auto-sync-bug).
+- QA-4 → **besloten (Bert)**: Piraten blijft publiek (thema is af); Winterspelen blijft het hele jaar beschikbaar (geen seizoensvenster).
+- QA-6 → **gecorrigeerd**: de limiet bestaat wél (`teachers.max_classes`, default 8, afgedwongen in `useClasses.createClass`); Berts account staat op onbeperkt — geen bug.
+- QA-7 → **gefixt (migratie 032)**: het find-or-create van inline-opdrachtkaarten matchte alleen op titel; alle built-ins delen "Zo werkt deze opdracht", waardoor de praatplaat-kaart aan de template-opdracht hing. Match nu op titel én bullets. **Bert draait 032.**
+- QA-9 → **vervallen**: meetartefact — ik mat de kaart-thumbnail (318×178); het echte viewer-beeld is 1146×640 in 1280×720, dus maximaal.
+- **Album-vraag Bert (18-7)**: "Deel album" nam 1 van 6 composities mee — klopt en blijft zo (besluit: album is per ópdracht; de andere 5 horen bij andere opdrachten en hebben elk hun eigen "Deel album" op de historie-rij).
+
+*Oorspronkelijke bevindingen (historie):*
 - **QA-2 (L13)**: "Markeer deel" is een stille no-op als de afspeellijn op 0 staat (`handleMarkSection` eist beat > 0). Een kind dat vóór het afspelen klikt krijgt géén feedback. Voorstel: knop disabled + title-hint wanneer `currentBeat === 0` (goedkoop te abonneren via boolean-selector `s.currentBeat > 0`).
 - **QA-3 (L18)**: na laden via bewaarcode → keuze "Podium" is de compositienaam-input op het podium leeg, terwijl de compositie wél een naam heeft (deellink toont hem correct). Voorstel: naam voorvullen in `openSavedComposition`/stage-init.
 - **QA-4 (L5, content-config)**: **Winterspelen** heeft geen seizoensvenster (`activeFrom/activeUntil` ontbreken) en staat dus ook in juli in de leerling-kiezer. Bewust? Zo niet: venster instellen (bijv. 12-01 t/m 03-15). **Piraten** staat nog op `isPublic: true` (bekende TODO uit de piraten-sessie: terugzetten vóór deploy).

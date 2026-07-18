@@ -206,6 +206,16 @@ Drie punten uit de R1-deploylijst naar voren gehaald (commits `0925ceb` · `d206
 
 **QA-doorloop** ([USECASES-QA.md](TESTPLAN-MASTERPLAN.md) → USECASES-QA.md): 30 leerling- + 26 docent-usecases; 37 volledig groen in de browser doorlopen (leerling: alle vormen, studio-gereedschap, bewaarcode+QR, MP3, deellink, EN; docent in Berts sessie: klas 7107 → leskaart-activatie → leerling-inzending → feedback-lus → presentatie → praatplaat-catalogus → album-deelcode V56MS34H publiek afgespeeld → statistieken → opruimen). Bevindingen QA-1 t/m QA-9: **2 direct gefixt** (loop-resize-botsing `02d3cd8`, album-gate-tekst `d18722c`), 5 open met voorstel (sectie-knop stille no-op, lege podium-naam na bewaarcode, max-8-klassenlimiet niet gehandhaafd, template-opdracht toont praatplaat-defaultkaart, praatplaat-viewer lege staat klein beeld) en 2 content-keuzes voor Bert (Winterspelen zonder seizoensvenster, Piraten nog isPublic).
 
+## Restpuntenronde + dashboard/landing-wensen (18-7 avond)
+
+Antwoord op Berts controlevraag "hebben we alles geïmplementeerd?": volledige sweep gedaan (docs, code-TODO's, audits, lint, Notion) — daarna twee rondes:
+
+**Restpunten (F)**: piraten blijft publiek (besluit) · "Markeer deel" disabled+hint op beat 0 (QA-2) · naam voorgevuld na bewaarcode + saveOnlineInfo-wis bij nieuwe compositie (QA-3, dichtte latente auto-sync-bug) · **migratie 032**: inline-opdrachtkaart matcht op titel én bullets (QA-7 — alle built-ins heten "Zo werkt deze opdracht", waardoor de praatplaat-kaart aan Drum beat hing) · QA-9 bleek meetartefact (viewer-beeld is wél maximaal) · AUDIT #7 bleek al gedekt (solo gaat uit bij Naar Podium, B3) · klassenlimiet bestaat wél (`max_classes`, Berts account onbeperkt).
+
+**Dashboard/landing-wensen (G, Berts lijst 18-7)**: "Mijn opdrachtkaarten"/"Mijn templates"-titels · leskaartenlijst gegroepeerd (standaard/eigen) · **niveau-buckets** groep 1-2/3-4/5-6/7-8, EN toont leeftijden (besluit Bert; editor = select, legacy-teksten genormaliseerd) · /teacher-hero toont de 4-stappen-animatie en "Drie manieren" is kolom+live-preview · presentatiescherm: aankondiging 2,5s→1,2s (de "grijze montagelijn" wás die overlay — geen laadtijd), "Open montage"-knop in de controls-rij, sticker/sterren-feedback slaat direct op · album blijft per opdracht (besluit; Berts 1-van-6 klopte dus) · album-gate-tekst gefixt.
+
+Gates overal groen; hertest-blok "Restpunten + dashboard/landing" bovenaan het testplan. **Voor Bert: migratie 032 draaien.**
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).

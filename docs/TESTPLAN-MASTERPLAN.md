@@ -14,6 +14,21 @@ Volledig handmatig teststappenplan voor alles wat in de worktree `masterplan-6-w
 
 > **Volledige rol-doorloop (18-7):** zie [USECASES-QA.md](USECASES-QA.md) — 30 leerling- + 26 docent-usecases, door Claude uitgevoerd in de browser (37 groen), met bevindingenoverzicht QA-1 t/m QA-9 (2 direct gefixt).
 
+## 🔁 HERTEST-LIJST RESTPUNTEN + DASHBOARD/LANDING-WENSEN (18-7 avond, vijfde blok) — nieuwste eerst
+
+**Vooraf: migratie 032 draaien** (`supabase/migrations/032_fix_lesson_card_inline_match.sql`) — fixt de verkeerde uitlegkaart bij template-leskaarten.
+
+- [ ] **1. Uitlegkaart per opdrachttype**: activeer de Drum beat-leskaart opnieuw → de leerling-landing (klascode) toont nu "Je docent heeft alvast een ritme klaargezet…" i.p.v. de praatplaat-uitleg.
+- [ ] **2. Markeer deel**: in de studio is de vlag-knop grijs (met uitleg-tooltip) zolang de afspeellijn op 0 staat; na afspelen/klikken actief.
+- [ ] **3. Bewaarcode → Podium**: compositienaam staat voorgevuld; en na "Nieuwe compositie" is de oude naam/bewaarcontext echt weg.
+- [ ] **4. Leskaarten-tab**: lijst gegroepeerd in "Standaard leskaarten" / "Mijn leskaarten"; niveau-chips zijn nu Groep 1-2/3-4/5-6/7-8 (EN: Ages); de editor heeft een niveau-select.
+- [ ] **5. Mijn materiaal**: koppen heten "Mijn opdrachtkaarten" en "Mijn templates".
+- [ ] **6. /teacher**: hero toont de 4-stappen-animatie; "Drie manieren" heeft de knoppen links in een kolom met rechts de meebewegende preview.
+- [ ] **7. Presentatiescherm**: aankondiging duurt nu ~1,2s (het "grijze montagelijn-laden" was deze overlay); in de controls-rij staat een "Open montage"-knop (bij beeld-vormen); sticker/sterren-feedback slaat direct op ("Opgeslagen"-status), versturen-knop voor het tekstje.
+- [ ] **8. Album-gate**: tekst zegt nu "…om het album te openen" (was: praatplaat).
+
+---
+
 ## 🔁 HERTEST-LIJST DEPLOY-VOORBEREIDINGEN (18-7, vierde blok) — nieuwste eerst
 
 - [ ] **1. YouTube op iPad** (BUG-YOUTUBE): open op een échte iPad de tutorial ("Hoe werkt het?") en de docentengids, start een video — geen zwart vlak meer; je ziet de poster met play-knop of de video start direct. Fix: `playsinline=1` op alle embeds.
