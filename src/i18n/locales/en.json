@@ -1856,7 +1856,8 @@
       "subtitle": "A classroom environment where pupils collect sounds and compose together. Pick the form that fits each assignment: free experimenting, with a sound map, with a storyboard, or with an assignment you build yourself. You share a class code, they start right away.",
       "ctaDashboard": "Go to dashboard",
       "ctaLogin": "Log in or create a free account",
-      "ctaSecondary": "Watch the demo"
+      "ctaSecondary": "Watch the demo",
+      "animationCaption": "How SoundScout works: collect sounds, compose in the studio, present on stage."
     },
     "compose": {
       "title": "Three ways to compose",

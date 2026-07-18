@@ -24,6 +24,7 @@ import { Button, Card, LanguageSwitcher } from '../components/ui';
 import { SegmentedTabs } from '../components/teacher/common/SegmentedTabs';
 import { cn } from '../utils/cn';
 import { ComposePreview } from '../components/compose/ComposePreview';
+import { OnboardingAnimation } from '../components/common/OnboardingAnimation';
 import { LandingVideo } from '../components/teacher-landing/LandingVideo';
 import {
   COMPOSE_VARIANTS,
@@ -110,7 +111,7 @@ export default function TeacherLandingPage() {
         <LanguageSwitcher variant="light" />
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col gap-16 sm:gap-24">
-        <HeroSection activeVariant={activeVariant} onShowDemo={handleShowDemo} isLoggedIn={isLoggedIn} />
+        <HeroSection onShowDemo={handleShowDemo} isLoggedIn={isLoggedIn} />
 
         <div ref={tabsRef} className="scroll-mt-6">
           <SegmentedTabs<LandingTab>
@@ -181,7 +182,7 @@ function LandingFooter({ onOpenPrivacy, onOpenContact }: { onOpenPrivacy: () => 
 }
 
 // --- Sectie 1: Hero ---
-function HeroSection({ activeVariant, onShowDemo, isLoggedIn }: { activeVariant: ComposeVariant; onShowDemo: () => void; isLoggedIn: boolean }) {
+function HeroSection({ onShowDemo, isLoggedIn }: { onShowDemo: () => void; isLoggedIn: boolean }) {
   const { t } = useTranslation();
   return (
     <section className="grid grid-cols-1 md:grid-cols-2 gap-8 sm:gap-10 items-center">
@@ -230,10 +231,14 @@ function HeroSection({ activeVariant, onShowDemo, isLoggedIn }: { activeVariant:
         </div>
       </div>
 
+      {/* Hero-beeld: de algemene 4-stappen-animatie (G4, wens Bert 18-7) —
+          de vorm-specifieke preview leeft nu bij "Drie manieren" (G5) */}
       <div className="order-1 md:order-2 flex flex-col gap-3">
-        <ComposePreview variant={activeVariant} />
+        <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface shadow-lg">
+          <OnboardingAnimation />
+        </div>
         <p className="text-sm sm:text-base text-text-muted text-center leading-relaxed px-2">
-          {t(`teacherLanding.compose.captions.${activeVariant}`)}
+          {t('teacherLanding.hero.animationCaption')}
         </p>
       </div>
     </section>
@@ -470,46 +475,57 @@ function ComposeSection({
         </p>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {COMPOSE_VARIANTS.map(({ id, key, Icon, colors }) => {
-          const isActive = id === activeVariant;
-          return (
-            <button
-              key={id}
-              type="button"
-              aria-pressed={isActive}
-              onClick={() => onSelect(id)}
-              className={cn(
-                'group flex flex-col items-start text-left p-5 rounded-2xl border-2 bg-bg-surface',
-                'transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]',
-                'min-h-[44px] cursor-pointer',
-                // Kleur-fix: neutrale kaart; alléén de actieve kaart krijgt de
-                // variant-rand → nooit drie kleurranden naast elkaar.
-                isActive ? cn(colors.active, 'shadow-md') : 'border-border-subtle hover:shadow-sm'
-              )}
-            >
-              <div className="flex items-center gap-3 mb-3">
-                <span className={colors.icon}>
-                  <Icon size={26} />
-                </span>
-                <span
-                  className={cn(
-                    'inline-flex items-center rounded-full text-[11px] font-bold px-2.5 py-0.5',
-                    colors.tag
-                  )}
-                >
-                  {t(`teacherLanding.compose.variants.${key}.tag`)}
-                </span>
-              </div>
-              <h3 className="text-lg font-bold text-text-main mb-1">
-                {t(`teacherLanding.compose.variants.${key}.title`)}
-              </h3>
-              <p className="text-sm text-text-muted leading-relaxed">
-                {t(`teacherLanding.compose.variants.${key}.description`)}
-              </p>
-            </button>
-          );
-        })}
+      {/* G5 (wens Bert 18-7): knoppen links in een kolom, rechts de preview
+          die live meewisselt met de gekozen vorm */}
+      <div className="grid grid-cols-1 md:grid-cols-[minmax(0,22rem)_1fr] gap-6 items-start">
+        <div className="flex flex-col gap-3">
+          {COMPOSE_VARIANTS.map(({ id, key, Icon, colors }) => {
+            const isActive = id === activeVariant;
+            return (
+              <button
+                key={id}
+                type="button"
+                aria-pressed={isActive}
+                onClick={() => onSelect(id)}
+                className={cn(
+                  'group flex flex-col items-start text-left p-5 rounded-2xl border-2 bg-bg-surface',
+                  'transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]',
+                  'min-h-[44px] cursor-pointer',
+                  // Kleur-fix: neutrale kaart; alléén de actieve kaart krijgt de
+                  // variant-rand → nooit drie kleurranden naast elkaar.
+                  isActive ? cn(colors.active, 'shadow-md') : 'border-border-subtle hover:shadow-sm'
+                )}
+              >
+                <div className="flex items-center gap-3 mb-3">
+                  <span className={colors.icon}>
+                    <Icon size={26} />
+                  </span>
+                  <span
+                    className={cn(
+                      'inline-flex items-center rounded-full text-[11px] font-bold px-2.5 py-0.5',
+                      colors.tag
+                    )}
+                  >
+                    {t(`teacherLanding.compose.variants.${key}.tag`)}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-text-main mb-1">
+                  {t(`teacherLanding.compose.variants.${key}.title`)}
+                </h3>
+                <p className="text-sm text-text-muted leading-relaxed">
+                  {t(`teacherLanding.compose.variants.${key}.description`)}
+                </p>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex flex-col gap-3 md:sticky md:top-6">
+          <ComposePreview variant={activeVariant} />
+          <p className="text-sm sm:text-base text-text-muted text-center leading-relaxed px-2">
+            {t(`teacherLanding.compose.captions.${activeVariant}`)}
+          </p>
+        </div>
       </div>
     </section>
   );
