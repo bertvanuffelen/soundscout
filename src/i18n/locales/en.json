@@ -855,7 +855,15 @@
     "pickerCodeHint": "Students start with this class code:",
     "pickerReplaceWarning": "There is already an active assignment — activating a lesson card replaces it (submissions are kept).",
     "groupBuiltin": "Built-in lesson cards",
-    "groupOwn": "My lesson cards"
+    "groupOwn": "My lesson cards",
+    "levels": {
+      "all": "All ages",
+      "g12": "Ages 4-6",
+      "g34": "Ages 6-8",
+      "g56": "Ages 8-10",
+      "g78": "Ages 10-12",
+      "range": "Ages {{fromAge}}-{{toAge}}"
+    }
   },
   "templates": {
     "activeBanner": "Assignment:",

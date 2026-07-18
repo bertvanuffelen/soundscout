@@ -16,7 +16,7 @@ import { getPraatplaatCatalog } from '../../data/praatplaatCatalog';
 import { getAllMultiImageStoryboards, getTeacherThemes, getThemeSeasonInfo } from '../../data/themes';
 import { MAX_CARD_BULLETS } from '../../lib/assignmentCards';
 import type { AssignmentType } from '../../lib/assignments';
-import type { LessonCard, LessonCardInput, LessonPhase } from '../../lib/lessonCards';
+import { normalizeLevelToBuckets, LEVEL_BUCKETS, type LessonCard, type LessonCardInput, type LessonPhase } from '../../lib/lessonCards';
 import type { OpdrachtkaartContent } from '../../types';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -459,13 +459,16 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill =
           <div className="grid sm:grid-cols-2 gap-4">
             <div>
               <label className={labelCls}>{t('lessonCards.editor.levelLabel')}</label>
-              <input
-                type="text"
-                value={level}
+              {/* Vaste niveau-buckets (G3): NL groepen, EN leeftijden — één datamodel */}
+              <select
+                value={normalizeLevelToBuckets(level)[0] ?? 'all'}
                 onChange={(e) => setLevel(e.target.value)}
-                placeholder={t('lessonCards.editor.levelPlaceholder')}
                 className={inputCls}
-              />
+              >
+                {LEVEL_BUCKETS.map((b) => (
+                  <option key={b} value={b}>{t(`lessonCards.levels.${b}`)}</option>
+                ))}
+              </select>
             </div>
             <div>
               <label className={labelCls}>{t('lessonCards.editor.pdfLabel')}</label>

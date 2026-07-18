@@ -392,3 +392,58 @@ export async function activateLessonCard(lessonCardId: string, classId: string):
 
   return data as string;
 }
+
+// --- Niveau-buckets (G3, besluit Bert 18-7) -------------------------------
+// Vier vaste bouwen + "alle groepen". Eén datamodel; per taal het juiste
+// label (NL: groepen, EN: leeftijden) via lessonCards.levels.{bucket}.
+// `level` in de database blijft TEXT: nieuwe/bewerkte kaarten slaan de
+// bucket-sleutel op ('g12'…'all'); bestaande vrije teksten ("Groep 6–7")
+// worden hier genormaliseerd zodat filters en labels blijven werken.
+
+export const LEVEL_BUCKETS = ['all', 'g12', 'g34', 'g56', 'g78'] as const;
+export type LevelBucket = (typeof LEVEL_BUCKETS)[number];
+
+const BUCKET_RANGES: Record<Exclude<LevelBucket, 'all'>, [number, number]> = {
+  g12: [1, 2],
+  g34: [3, 4],
+  g56: [5, 6],
+  g78: [7, 8],
+};
+
+/** Normaliseert een level-waarde (bucket-key óf vrije tekst) naar buckets. */
+export function normalizeLevelToBuckets(level: string | null | undefined): LevelBucket[] {
+  if (!level) return ['all'];
+  const trimmed = level.trim().toLowerCase();
+  if ((LEVEL_BUCKETS as readonly string[]).includes(trimmed)) return [trimmed as LevelBucket];
+  if (/alle groepen|all groups|all ages/.test(trimmed)) return ['all'];
+
+  // Vrije tekst: haal groepsnummers eruit ("Groep 6–7" → 6..7) en map op
+  // alle bouwen die de range raakt
+  const nums = (trimmed.match(/\d+/g) ?? []).map(Number).filter((n) => n >= 1 && n <= 8);
+  if (nums.length === 0) return ['all'];
+  const min = Math.min(...nums);
+  const max = Math.max(...nums);
+  const buckets = (Object.keys(BUCKET_RANGES) as Array<Exclude<LevelBucket, 'all'>>)
+    .filter((b) => BUCKET_RANGES[b][1] >= min && BUCKET_RANGES[b][0] <= max);
+  return buckets.length > 0 ? buckets : ['all'];
+}
+
+/**
+ * Gelokaliseerd label voor een level-waarde. Eén template dekt alles:
+ * NL "Groep {{from}}-{{to}}" (groepen), EN "Ages {{from}}-{{to}}"
+ * (leeftijden: groep g ~ leeftijd g+3 t/m g+4).
+ */
+export function formatLevel(
+  t: (key: string, opts?: Record<string, unknown>) => string,
+  level: string | null | undefined,
+): string {
+  const buckets = normalizeLevelToBuckets(level);
+  if (buckets.includes('all')) return t('lessonCards.levels.all');
+  const groups = buckets.flatMap((b) => (b === 'all' ? [] : BUCKET_RANGES[b]));
+  const minG = Math.min(...groups);
+  const maxG = Math.max(...groups);
+  return t('lessonCards.levels.range', {
+    from: minG, to: maxG,
+    fromAge: minG + 3, toAge: maxG + 4,
+  });
+}

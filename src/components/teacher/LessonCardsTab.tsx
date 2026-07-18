@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { Loader2, Plus, Download, Play, FileText, Pencil, Trash2, Clock } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useLessonCards } from '../../hooks/useLessonCards';
-import { localizeLessonCard, getLessonCardThemeId, type LessonCard, type LessonCardInput } from '../../lib/lessonCards';
+import { localizeLessonCard, getLessonCardThemeId, normalizeLevelToBuckets, formatLevel, LEVEL_BUCKETS, type LevelBucket, type LessonCard, type LessonCardInput } from '../../lib/lessonCards';
 import { getTeacherThemes, getThemeSeasonInfo } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -63,23 +63,24 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
     return { chips, hasGeneral: present.has(null) };
   }, [cardTheme]);
 
+  // Vaste niveau-buckets (G3): alleen bouwen tonen waar ook kaarten voor zijn
   const levels = useMemo(() => {
-    const set = new Set<string>();
-    for (const c of cards) {
-      const lvl = localizeLessonCard(t, c).level;
-      if (lvl) set.add(lvl);
-    }
-    return [...set].sort();
-  }, [cards, t]);
+    const present = new Set(cards.flatMap((c) => normalizeLevelToBuckets(c.level)));
+    return LEVEL_BUCKETS.filter((b) => b !== 'all' && present.has(b));
+  }, [cards]);
 
   const filteredCards = useMemo(() => cards.filter((c) => {
     if (themeFilter !== 'all') {
       const th = cardTheme.get(c.id) ?? null;
       if (themeFilter === 'general' ? th !== null : th !== themeFilter) return false;
     }
-    if (levelFilter !== 'all' && localizeLessonCard(t, c).level !== levelFilter) return false;
+    if (levelFilter !== 'all') {
+      // Kaarten voor "alle groepen" passen bij elk bouw-filter
+      const buckets = normalizeLevelToBuckets(c.level);
+      if (!buckets.includes('all') && !buckets.includes(levelFilter as LevelBucket)) return false;
+    }
     return true;
-  }), [cards, themeFilter, levelFilter, cardTheme, t]);
+  }), [cards, themeFilter, levelFilter, cardTheme]);
 
   // Geen effect nodig: `selected` valt terug op de deeplink-kaart (indien nog
   // niets expliciet gekozen), anders op de eerste zichtbare kaart.
@@ -175,7 +176,7 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
               {levels.map((lvl) => (
                 <FilterChip
                   key={lvl}
-                  label={lvl}
+                  label={t(`lessonCards.levels.${lvl}`)}
                   active={levelFilter === lvl}
                   onClick={() => setLevelFilter(levelFilter === lvl ? 'all' : lvl)}
                 />
@@ -228,7 +229,7 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
                           <span className={`inline-flex items-center rounded-full text-[10px] font-bold px-2 py-0.5 ${meta.badge}`}>
                             {t(meta.labelKey)}
                           </span>
-                          {loc.level && <span className="text-xs text-text-muted truncate">{loc.level}</span>}
+                          {c.level && <span className="text-xs text-text-muted truncate">{formatLevel(t, c.level)}</span>}
                           <ThemeSeasonBadge themeId={cardTheme.get(c.id)} />
                         </div>
                       </div>
@@ -390,7 +391,7 @@ function LessonDetail({
           <meta.Icon className="w-3.5 h-3.5" />
           {t(meta.labelKey)}
         </span>
-        {loc.level && <span className="text-sm text-text-muted">{loc.level}</span>}
+        {card.level && <span className="text-sm text-text-muted">{formatLevel(t, card.level)}</span>}
         <ThemeSeasonBadge themeId={themeId} />
         {card.isBuiltin && (
           <span className="inline-flex items-center rounded-full text-[10px] font-bold px-2 py-0.5 bg-neutral-100 text-text-muted uppercase tracking-wide">

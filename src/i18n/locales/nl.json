@@ -855,7 +855,15 @@
     "pickerCodeHint": "Leerlingen starten met deze klascode:",
     "pickerReplaceWarning": "Er is al een actieve opdracht — een leskaart activeren vervangt die (inzendingen blijven bewaard).",
     "groupBuiltin": "Standaard leskaarten",
-    "groupOwn": "Mijn leskaarten"
+    "groupOwn": "Mijn leskaarten",
+    "levels": {
+      "all": "Alle groepen",
+      "g12": "Groep 1-2",
+      "g34": "Groep 3-4",
+      "g56": "Groep 5-6",
+      "g78": "Groep 7-8",
+      "range": "Groep {{from}}-{{to}}"
+    }
   },
   "templates": {
     "activeBanner": "Opdracht:",
