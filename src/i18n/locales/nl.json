@@ -1588,6 +1588,32 @@
       "classNotFound": "Klas niet gevonden. Controleer de code.",
       "checkingCode": "Code controleren...",
       "sendError": "Versturen mislukt. Probeer opnieuw."
+    },
+    "stats": {
+      "title": "Statistieken",
+      "subtitle": "Anoniem gebruik van SoundScout — alleen tellingen per dag, zonder persoonsgegevens.",
+      "chartTitle": "Sessies per dag (laatste 30 dagen)",
+      "today": "vandaag",
+      "colEvent": "Gebeurtenis",
+      "colToday": "Vandaag",
+      "col7": "7 dagen",
+      "col30": "30 dagen",
+      "empty": "Nog geen tellingen. Zodra de app gebruikt wordt, verschijnen ze hier.",
+      "loadError": "Statistieken laden mislukt. Probeer het later opnieuw.",
+      "privacyNote": "Er wordt niets over gebruikers opgeslagen: geen id’s, geen IP-adressen, geen cookies. Alleen een teller per gebeurtenis per dag.",
+      "events": {
+        "app_start": "Sessies (app gestart)",
+        "composition_started": "Composities gestart",
+        "stage_reached": "Podium bereikt",
+        "composition_saved": "Composities opgeslagen",
+        "composition_submitted": "Ingeleverd bij docent",
+        "save_code_created": "Bewaarcodes gemaakt",
+        "class_code_entered": "Klascodes ingevoerd",
+        "share_link_created": "Deellinks gemaakt",
+        "mp3_export": "MP3-exports",
+        "video_export": "Video-exports",
+        "teacher_dashboard_opened": "Docentendashboard geopend"
+      }
     }
   },
   "praatplaatImages": {

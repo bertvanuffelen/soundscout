@@ -11,7 +11,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Plus, LogOut, FileText, ClipboardList, GraduationCap, HelpCircle } from 'lucide-react';
+import { Loader2, BookOpen, Plus, LogOut, FileText, ClipboardList, GraduationCap, HelpCircle, BarChart3 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useAuth } from '../../contexts/useAuth';
 import { useClasses } from '../../hooks/useClasses';
@@ -30,6 +30,8 @@ import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
 import { LessonCardEditorModal } from './LessonCardEditorModal';
 import { LessonCardsTab } from './LessonCardsTab';
 import { createLessonCard, type LessonCardInput } from '../../lib/lessonCards';
+import { isAdminEmail } from '../../lib/usageStatsAdmin';
+import { UsageStatsPanel } from './UsageStatsPanel';
 import type { TeacherTemplate } from '../../lib/templates';
 import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs, GuideLink } from './common';
 
@@ -54,6 +56,8 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   } = useAssignmentCards();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showTemplateInfo, setShowTemplateInfo] = useState(false);
+  // Statistieken-dashboardje — alleen voor beheerders (VITE_ADMIN_EMAILS)
+  const [showStats, setShowStats] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
   const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
@@ -151,6 +155,15 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         backLabel={t('teacher.common.backToSoundScout')}
         actions={
           <>
+            {isAdminEmail(user?.email) && (
+              <button
+                onClick={() => setShowStats(true)}
+                className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
+              >
+                <BarChart3 className="w-4 h-4" />
+                {t('teacher.stats.title')}
+              </button>
+            )}
             <button
               onClick={() => goToTeacherGuide()}
               className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
@@ -609,6 +622,9 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
           </Button>
         </div>
       </Modal>
+
+      {/* Statistieken-dashboardje (beheerder) */}
+      <UsageStatsPanel isOpen={showStats} onClose={() => setShowStats(false)} />
     </div>
   );
 }

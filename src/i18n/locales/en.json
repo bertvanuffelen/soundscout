@@ -1588,6 +1588,32 @@
       "classNotFound": "Class not found. Check the code.",
       "checkingCode": "Checking code...",
       "sendError": "Failed to send. Please try again."
+    },
+    "stats": {
+      "title": "Statistics",
+      "subtitle": "Anonymous SoundScout usage — daily counts only, no personal data.",
+      "chartTitle": "Sessions per day (last 30 days)",
+      "today": "today",
+      "colEvent": "Event",
+      "colToday": "Today",
+      "col7": "7 days",
+      "col30": "30 days",
+      "empty": "No counts yet. They will appear here once the app is used.",
+      "loadError": "Failed to load statistics. Please try again later.",
+      "privacyNote": "Nothing about users is stored: no IDs, no IP addresses, no cookies. Just one counter per event per day.",
+      "events": {
+        "app_start": "Sessions (app started)",
+        "composition_started": "Compositions started",
+        "stage_reached": "Stage reached",
+        "composition_saved": "Compositions saved",
+        "composition_submitted": "Submitted to teacher",
+        "save_code_created": "Save codes created",
+        "class_code_entered": "Class codes entered",
+        "share_link_created": "Share links created",
+        "mp3_export": "MP3 exports",
+        "video_export": "Video exports",
+        "teacher_dashboard_opened": "Teacher dashboard opened"
+      }
     }
   },
   "praatplaatImages": {
