@@ -20,7 +20,7 @@ import {
   Lock, GraduationCap, BadgeCheck, MonitorPlay, MessagesSquare, ClipboardList,
   Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, Rocket, type LucideIcon,
 } from 'lucide-react';
-import { Button, Card } from '../components/ui';
+import { Button, Card, LanguageSwitcher } from '../components/ui';
 import { SegmentedTabs } from '../components/teacher/common/SegmentedTabs';
 import { cn } from '../utils/cn';
 import { ComposePreview } from '../components/compose/ComposePreview';
@@ -98,8 +98,8 @@ export default function TeacherLandingPage() {
 
   return (
     <div className="min-h-screen bg-bg-app text-text-main">
-      {/* Terug naar de SoundScout-app (losse route → volledige navigatie) */}
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6">
+      {/* Terug naar de SoundScout-app (losse route → volledige navigatie) + taalwissel */}
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 flex items-center justify-between">
         <button
           onClick={() => { window.location.href = '/'; }}
           className="inline-flex items-center gap-1.5 text-sm text-text-muted hover:text-text-main transition-colors"
@@ -107,6 +107,7 @@ export default function TeacherLandingPage() {
           <ArrowLeft className="w-4 h-4" />
           {t('teacher.common.backToSoundScout')}
         </button>
+        <LanguageSwitcher variant="light" />
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col gap-16 sm:gap-24">
         <HeroSection activeVariant={activeVariant} onShowDemo={handleShowDemo} isLoggedIn={isLoggedIn} />
