@@ -1,7 +1,7 @@
-# Ontwerp: leerling-codes & groepjes (17-7-2026)
+# Ontwerp: leerling-codes (v2 — besloten 17-7-2026)
 
-> **Aanleiding (Bert)**: een docent wil vooraf inlogcodes klaarzetten voor zijn klas — anoniem, printbaar, een schooljaar geldig — zodat een kind dat vandaag werkt volgende week met dezelfde code verder kan, automatisch aan de juiste klas gekoppeld. Daarbovenop wil de docent soms groepjes klaarzetten. Dit fundament maakt ook "Samen één verhaal" (automatische scène-verdeling) mogelijk.
-> **Status**: ontwerp ter bespreking — nog niet bouwen. Open vragen onderaan.
+> **Status: besloten — bouwfase R3 (na de deploy-ronde).** Dit is v2, met Berts feedback verwerkt. De grotere vervolgen staan in eigen documenten: [ONTWERP-GROEPJES-SAMENWERKEN.md](ONTWERP-GROEPJES-SAMENWERKEN.md) en [ONTWERP-SAMEN-EEN-VERHAAL.md](ONTWERP-SAMEN-EEN-VERHAAL.md).
+> **Aanleiding (Bert)**: een docent wil vooraf inlogcodes klaarzetten voor zijn klas — anoniem, printbaar, een schooljaar geldig — zodat een kind dat vandaag werkt volgende week met dezelfde code verder kan, automatisch aan de juiste klas gekoppeld.
 
 ---
 
@@ -9,75 +9,65 @@
 
 | Nu | Probleem |
 |---|---|
-| Leerling typt **klascode (4 cijfers)** en daarna een **vrije naam** bij het inleveren. | De naam is een vrij tekstveld dat in de database belandt — kinderen typen echte voor- en achternamen. Dat is nu ons zwakste AVG-punt. |
-| Elke inzending mint een **bewaarcode (6 tekens)** waarmee je op elk apparaat verder kunt. | De code hoort bij één *compositie*, niet bij een *kind*. Nieuwe les = nieuwe code; code kwijt (briefje weg, andere Chromebook) = werk onvindbaar. Continuïteit over lessen heen bestaat feitelijk niet. |
-| Geen identiteit betekent: geen historie per kind, geen verdeling, geen groepjes, geen "wie heeft nog niet ingeleverd". | Alles wat de docent over tijd wil volgen, strandt hier. |
+| Leerling komt binnen met de **klascode (4 cijfers)**; de app genereert een **pseudoniem** als afzender ("Fladderende Pinguïn") — kinderen voeren nooit een eigen naam in. | Het pseudoniem is per sessie/inzending: volgende week is het kind "iemand anders". Er is geen doorlopende identiteit. |
+| Elke inzending mint een **bewaarcode (6 tekens)** waarmee je op elk apparaat verder kunt. | De code hoort bij één *compositie*, niet bij een *kind*. Nieuwe les = nieuwe code; briefje kwijt = werk onvindbaar. |
+| Geen identiteit betekent: geen historie per kind, geen "wie heeft nog niet ingeleverd", geen basis voor verdeling of groepjes. | Alles wat de docent over tijd wil volgen, strandt hier. |
 
-**Kerninzicht**: de bewaarcode lost *werk bewaren* op; Berts leerling-code lost *iemand zijn* op. Dat tweede is het fundament waar steeds meer features om vragen.
+**Kerninzicht**: de bewaarcode lost *werk bewaren* op; de leerling-code lost *iemand zijn* op. De privacy is al goed geregeld (pseudoniemen, geen namen) — de code voegt daar *continuïteit* aan toe.
 
-## 2. Voorgesteld model
+## 2. Besloten model
 
-### 2.1 De leerling-code
-- Docent kiest per klas: "maak N leerling-codes" (bv. 25). Elke code krijgt automatisch een **anoniem, kindvriendelijk label**: dier + nummer — `VOS-07`, `UIL-12`, `BEER-03`.
-- **De code ís het label**: het kind typt `VOS07` in het bestaande code-invoerveld. Herkenning: patroon 3-4 letters + 2 cijfers botst niet met de bestaande codetypes (4 cijfers = klascode, 6 alfanumeriek = bewaarcode, 8 = deelcodes) én is voorleesbaar/onthoudbaar voor een 7-jarige — geen los wachtwoord.
-- Uniciteit is **binnen de app globaal** (dier×nummer×random-check bij generatie), zodat de leerling géén klascode meer hoeft: `VOS07` impliceert de klas.
-- **Geldigheid: één schooljaar** (vervaldatum 31 juli, instelbaar). Daarna deactiveert de code; het werk blijft voor de docent zichtbaar tot die de klas opruimt.
-- **Namen bestaan alleen op papier**: de docent print een lijst/kaartjes (code + schrijflijn) en schrijft dáár de echte namen bij. In de database staat nooit een naam. De bestaande vrije-naam-invoer bij inleveren vervalt voor klas-leerlingen (het label wordt de afzender); zonder leerling-code (gast-flow) blijft de huidige weg bestaan, met een hint om geen echte achternaam te gebruiken.
+### 2.1 De code — formaat `XX-0000`
+- **2 letters + 4 cijfers** (bv. `LK-4827`), uit het bestaande veilige deelcode-alfabet (zonder 0/O/1/I): **~5,8 miljoen unieke codes** — ruim genoeg voor honderden scholen, jarenlang. (Besluit Bert: neutraal en schaalbaar; geen dierennamen — die zijn te beperkt bij groei en onnodig voor oudere leerlingen.)
+- Docent kiest per klas "maak N leerling-codes"; bijmaken kan altijd. De code is globaal uniek en **impliceert de klas**: geen klascode meer nodig.
+- **Pseudoniem wordt persistent**: elke code krijgt éénmalig een gegenereerd pseudoniem ("Fladderende Pinguïn") dat het hele jaar de afzender is van alles wat dit kind maakt. Het kind herkent zichzelf, de docent ziet continuïteit, en er staat nog steeds geen naam in de database. De **compositienaam blijft door het kind zelf gekozen** (zoals nu).
+- **Labels zijn niet hernoembaar** (besluit Bert) — geen namen via de achterdeur.
 
-### 2.2 Datamodel (schets)
+### 2.2 Geldigheid — schooljaar
+- Codes verlopen standaard op **31 juli**. In het klaslokaal staat een toggle **"Bewaar deze klas voor volgend jaar"** die alle codes één jaar verlengt.
+- Een kind met een verlopen code ziet een vriendelijke melding: **"Jouw code is niet meer actief. Vraag je docent om een nieuwe."** Het werk blijft voor de docent zichtbaar tot die de klas opruimt.
+
+### 2.3 De leerling-flow
+1. Kind typt `LK4827` op het startscherm (zelfde codeveld als alles; patroon 2 letters + 4 cijfers botst niet met klascode/bewaarcode/deelcodes).
+2. App logt in → sessie krijgt klas, pseudoniem en de actieve opdracht (zelfde landing als de klascode-flow).
+3. Alles hangt aan het kind: **verder werken** = zelfde code, welk apparaat of welke week dan ook → laatste werk opent, historie beschikbaar. Bij opslaan/inleveren is **nooit meer een klascode nodig**.
+4. **De klascode-flow blijft parallel bestaan** (besluit Bert): een kind zonder code (invaller-les, kaartje kwijt, proefles) kan altijd via de 4-cijferige klascode werken zoals nu — bewaarcodes blijven daar de zichtbare route.
+
+### 2.4 Datamodel (schets)
 ```
 class_members
   id UUID PK
   class_id UUID → classes (CASCADE)
-  member_code TEXT UNIQUE        -- 'VOS07'
-  label TEXT                     -- 'Vos-07' (weergave)
-  group_id UUID NULL → class_groups
-  expires_at DATE                -- einde schooljaar
+  member_code TEXT UNIQUE        -- 'LK4827'
+  pseudonym TEXT                 -- 'Fladderende Pinguïn' (eenmalig gegenereerd)
+  expires_at DATE                -- 31 juli, verlengbaar per klas
   created_at
-
-class_groups
-  id UUID PK
-  class_id UUID → classes (CASCADE)
-  name TEXT                      -- 'Groepje 1' of docent-naam ('De Trommels')
 
 submissions
   + member_id UUID NULL → class_members   -- nieuwe koppeling (bestaande kolommen blijven)
 ```
-RPC's (SECURITY DEFINER, rate-limited zoals alle publieke functies): `generate_class_members(class_id, count)` · `login_with_member_code(code)` → klas + label + actieve opdracht · `get_class_members(class_id)` (docent). RLS: docent ziet alleen eigen klassen; leerling-route alleen via de RPC.
+RPC's (SECURITY DEFINER, rate-limited): `generate_class_members(class_id, count)` · `extend_class_members(class_id)` ("bewaar voor volgend jaar") · `login_with_member_code(code)` → klas + pseudoniem + actieve opdracht · `get_class_members(class_id)` (docent). RLS: docent alleen eigen klassen; leerling-route alleen via RPC. *(Groepjes zitten bewust níet in v1 — zie het groepjes-document.)*
 
-### 2.3 De leerling-flow
-1. Kind typt `VOS07` op het startscherm (zelfde veld als alle codes).
-2. App herkent het patroon → `login_with_member_code` → sessie krijgt klas + label + de actieve opdracht (zelfde landingsflow als de klascode nu).
-3. Alles wat het kind maakt hangt aan `member_id`. **Verder werken** = dezelfde code, welk apparaat en welke week dan ook → laatste werk opent, historie beschikbaar.
-4. De bewaarcode blijft onder water bestaan (het opslagmechanisme verandert niet) maar het kind hoeft hem nooit meer te zien; voor gasten zonder klas blijft de bewaarcode de zichtbare route.
-
-### 2.4 Docent-kant
-- In het klaslokaal een blok **"Leerlingen"**: codes genereren (aantal kiezen, bijmaken kan later), lijst met label + laatste activiteit + inzendingen-teller, code deactiveren/vervangen (kwijt/misbruik), en **Print** (A4: kaartjes met code groot + schrijflijn voor de naam; en een lijstversie).
-- **Groepjes**: docent maakt groepjes (naam + leden slepen/aanvinken). Een groepje is een *koppeling tussen members* — elk kind houdt zijn eigen code (belangrijk: werk blijft individueel herleidbaar; een "groepscode" die iedereen deelt maakt inzendingen stuurloos). Bij een groepsopdracht telt een inzending van één lid voor het groepje.
-- "Wie heeft nog niet…"-overzichtjes worden hiermee gratis mogelijk (inzending per member zichtbaar).
-
-### 2.5 "Samen één verhaal" (de eerste grote afnemer)
-- Docent activeert een storyboard-opdracht met **verdeling aan**: de app verdeelt members (of groepjes, als die bestaan) gelijkmatig over de M scènes — 25 kinderen over 5 scènes = automatisch 5 groepjes van 5, tenzij de docent al groepjes had (dan die gebruiken).
-- Leerling logt in met code → ziet "Jouw scène: 3 — De sprong" → componeert alleen die scène (studio kadert op het scène-deel van de tijdlijn).
-- Presentatie: het presentatiescherm speelt de scènes aaneen — per scène de inzending(en) van dat groepje. Het bestaande PresentationSurface + sectie-model dragen dit al grotendeels.
+### 2.5 Docent-kant
+- Klaslokaal-blok **"Leerlingen"**: codes genereren, lijst met pseudoniem + laatste activiteit + inzendingen-teller, code deactiveren/vervangen (kwijt/misbruik), verleng-toggle, en **Print** (A4-kaartjes: code groot + pseudoniem + schrijflijn waar de docent op papier de echte naam bijzet; plus een lijstversie).
+- "Wie heeft nog niet…"-overzicht wordt hiermee mogelijk (inzending per member).
 
 ## 3. AVG-paragraaf
-- Geen namen, e-mails of andere persoonsgegevens van kinderen in de database — alleen dierlabels. De koppeling label↔kind bestaat uitsluitend op papier bij de docent (verwerkingsverantwoordelijkheid blijft bij school, wij verwerken niets herleidbaars).
-- Dit ontwerp *verbetert* de huidige situatie (vrije-naam-veld) aantoonbaar — sterk verhaal richting scholen/privacy-coördinatoren.
-- Vervaldatum + cascade-delete bij klasverwijdering = ingebouwde bewaartermijn. Vermelden in de privacyverklaring.
+- Er stonden al geen namen in de database (pseudoniem-systeem); dit ontwerp houdt dat zo en maakt het verhaal completer: identiteit = code + pseudoniem, de koppeling naar het echte kind bestaat alleen op papier bij de docent.
+- Vervaldatum (31 juli) + cascade-delete bij klasverwijdering = ingebouwde bewaartermijn. Vermelden in de privacyverklaring.
 
 ## 4. Relatie met bestaande systemen
-- **Klascode (4 cijfers) blijft bestaan** voor de lichte flow (invaller, eerste les, geen voorbereiding). Leerling-codes zijn de "ingerichte klas"-modus — docent kiest per klas of hij ze gebruikt.
-- **Bewaarcodes** blijven het opslag-/deelmechanisme; leerling-codes worden er de eigenaar van. Geen migratie van oude data nodig (member_id is nullable).
-- **Peer-feedback** kan later op members draaien (wie beoordeelde wie) i.p.v. op inzendings-paren — niet in v1.
-- **Freemium**: leerling-codes/groepjes zijn een natuurlijke Plus-feature (zie FREEMIUM-OPTIES voorstel 1).
+- **Klascode blijft** de lichte flow; leerling-codes zijn de "ingerichte klas"-modus, opt-in per klas.
+- **Bewaarcodes** blijven het opslagmechanisme; met een leerling-code hoeft het kind ze nooit meer te zien (member = eigenaar). Geen datamigratie nodig (member_id nullable).
+- **Freemium**: leerling-codes zijn een natuurlijke Plus-feature (FREEMIUM-OPTIES, voorstel 1).
+- **Toekomst-afnemers**: groepjes/samenwerken (eigen masterplan) en "Samen één verhaal" (eigen document) bouwen hierop voort.
 
 ## 5. Bouwomvang (indicatie)
-Migratie (2 tabellen + kolom + 3 RPC's) · code-detectie + landingsflow · klaslokaal-blok met print · groepjes-UI · sessie/store-werk. Schatting: vergelijkbaar met de praatplaat-bouw (#72) — een volwaardige ronde van meerdere dagen, geen tussendoortje. "Samen één verhaal" daarbovenop is een tweede ronde.
+Migratie (1 tabel + kolom + 4 RPC's) · code-detectie + landingsflow · sessie/store-werk · klaslokaal-blok met print. Zonder groepjes: **kleiner dan de eerdere schatting** — vergelijkbaar met een stevige testronde-fixronde, niet met de volledige praatplaat-bouw.
 
-## 6. Open vragen voor Bert
-1. **Codeformaat akkoord?** Dier+nummer (`VOS07`) — of liever iets anders (kleuren, neutrale letters)? Dieren zijn onthoudbaar maar kunnen "status" krijgen in de klas ("ik wil de vos zijn").
-2. **Mag de docent labels hernoemen?** (bv. naar voornamen). Mijn advies: **nee**, hooguit een eigen pseudoniem — anders staan er via de achterdeur alsnog namen in de DB en is het AVG-verhaal weg.
-3. **Einde schooljaar**: codes automatisch laten verlopen op een vaste datum (31 juli), of docent kiest per klas? En wat ziet een kind dat een verlopen code intypt?
-4. **Groepsopdracht-gedrag**: levert bij een groepsopdracht élk lid in (meerdere versies per groepje) of één inzending per groepje (eerste/beste)? 
-5. **Volgorde**: dit fundament vóór of ná de klas-album/leskaart-pagina's (R4)? Het is groter maar ontgrendelt meer.
+## 6. Besluitenlog (was: open vragen)
+1. Codeformaat: **2 letters + 4 cijfers**, veilig alfabet. ✔
+2. Labels hernoemen: **nee**. ✔
+3. Verloop: **standaard 31 juli** + "Bewaar deze klas voor volgend jaar"-toggle; verlopen-melding "Jouw code is niet meer actief". ✔
+4. Groepsopdrachten: **buiten v1** — model (één officiële inzending per groepje, elk lid kan eraan werken/inleveren) staat uitgewerkt in ONTWERP-GROEPJES-SAMENWERKEN.md. ✔
+5. Volgorde: **R3, na de deploy-ronde**; R4 (klas-album + leskaart-pagina's) is naar voren gehaald. ✔
