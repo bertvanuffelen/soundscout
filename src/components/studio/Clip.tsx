@@ -110,14 +110,29 @@ export const Clip = memo(function Clip({
     const trackWidth = trackElement?.clientWidth ?? 1;
     const beatsPerPixel = totalBeats / trackWidth;
 
+    // De loop mag niet over de volgende clip op dit spoor (of het einde van
+    // de tijdlijn) heen groeien — resizeClipLoop zelf kent geen botsingen
+    const { tracks } = useTimelineStore.getState();
+    const nextStart = Math.min(
+      totalBeats,
+      ...(tracks[trackIndex]?.clips ?? [])
+        .filter((c) => c.id !== clip.id && c.startBeat > clip.startBeat)
+        .map((c) => c.startBeat),
+    );
+    const maxLoopBeats = Math.max(singleDurationBeats, nextStart - clip.startBeat);
+
     const onPointerMove = (moveEvent: PointerEvent) => {
       if (!resizeStartRef.current) return;
       const deltaX = moveEvent.clientX - resizeStartRef.current.startX;
       const deltaBeats = deltaX * beatsPerPixel;
-      const newBeats = Math.max(singleDurationBeats, resizeStartRef.current.originalBeats + deltaBeats);
+      const newBeats = Math.min(
+        maxLoopBeats,
+        Math.max(singleDurationBeats, resizeStartRef.current.originalBeats + deltaBeats),
+      );
 
-      // Snap to half-beat grid
-      const snapped = Math.round(newBeats * 2) / 2;
+      // Snap to half-beat grid (blijft binnen de clamp: naar beneden afronden
+      // zou onder singleDuration kunnen komen, dus opnieuw klemmen)
+      const snapped = Math.min(maxLoopBeats, Math.round(newBeats * 2) / 2);
 
       if (snapped > singleDurationBeats) {
         resizeClipLoop(trackIndex, clip.id, snapped);
