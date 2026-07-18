@@ -187,46 +187,56 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
 
       {!loading && !error && (
         <div className="grid gap-6 md:grid-cols-[minmax(0,20rem)_1fr]">
-          {/* Master: lijst (gefilterd) */}
+          {/* Master: lijst (gefilterd), gegroepeerd in standaard vs. eigen (G2) */}
           <div className="space-y-2">
             {filteredCards.length === 0 && (
               <p className="text-text-muted text-sm p-3">{t('lessonCards.filterEmpty')}</p>
             )}
-            {filteredCards.map((c) => {
-              const meta = TYPE_META[c.assignmentType];
-              const active = selected?.id === c.id;
-              const loc = localizeLessonCard(t, c);
-              return (
-                <button
-                  key={c.id}
-                  type="button"
-                  onClick={() => setSelectedId(c.id)}
-                  className={`w-full text-left p-3 rounded-2xl border-2 transition-all flex items-center gap-3 ${
-                    active
-                      ? 'border-accent-400 bg-accent-50 shadow-sm'
-                      : 'border-border-subtle bg-bg-surface hover:border-accent-300'
-                  }`}
-                >
-                  <div className="w-12 h-12 rounded-xl overflow-hidden bg-neutral-100 shrink-0 flex items-center justify-center">
-                    {c.coverImage ? (
-                      <img src={c.coverImage} alt="" className="w-full h-full object-cover" />
-                    ) : (
-                      <meta.Icon className="w-5 h-5 text-text-muted" />
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <p className="font-semibold text-text-main text-sm truncate">{loc.title}</p>
-                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
-                      <span className={`inline-flex items-center rounded-full text-[10px] font-bold px-2 py-0.5 ${meta.badge}`}>
-                        {t(meta.labelKey)}
-                      </span>
-                      {loc.level && <span className="text-xs text-text-muted truncate">{loc.level}</span>}
-                      <ThemeSeasonBadge themeId={cardTheme.get(c.id)} />
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
+            {([
+              { key: 'builtin', titleKey: 'lessonCards.groupBuiltin', items: filteredCards.filter((c) => c.isBuiltin) },
+              { key: 'own', titleKey: 'lessonCards.groupOwn', items: filteredCards.filter((c) => !c.isBuiltin) },
+            ] as const).map((group) => group.items.length === 0 ? null : (
+              <div key={group.key} className="space-y-2">
+                <p className="text-xs font-bold uppercase tracking-wide text-text-muted px-1 pt-2 first:pt-0">
+                  {t(group.titleKey)}
+                </p>
+                {group.items.map((c) => {
+                  const meta = TYPE_META[c.assignmentType];
+                  const active = selected?.id === c.id;
+                  const loc = localizeLessonCard(t, c);
+                  return (
+                    <button
+                      key={c.id}
+                      type="button"
+                      onClick={() => setSelectedId(c.id)}
+                      className={`w-full text-left p-3 rounded-2xl border-2 transition-all flex items-center gap-3 ${
+                        active
+                          ? 'border-accent-400 bg-accent-50 shadow-sm'
+                          : 'border-border-subtle bg-bg-surface hover:border-accent-300'
+                      }`}
+                    >
+                      <div className="w-12 h-12 rounded-xl overflow-hidden bg-neutral-100 shrink-0 flex items-center justify-center">
+                        {c.coverImage ? (
+                          <img src={c.coverImage} alt="" className="w-full h-full object-cover" />
+                        ) : (
+                          <meta.Icon className="w-5 h-5 text-text-muted" />
+                        )}
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <p className="font-semibold text-text-main text-sm truncate">{loc.title}</p>
+                        <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                          <span className={`inline-flex items-center rounded-full text-[10px] font-bold px-2 py-0.5 ${meta.badge}`}>
+                            {t(meta.labelKey)}
+                          </span>
+                          {loc.level && <span className="text-xs text-text-muted truncate">{loc.level}</span>}
+                          <ThemeSeasonBadge themeId={cardTheme.get(c.id)} />
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            ))}
           </div>
 
           {/* Detail */}

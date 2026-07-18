@@ -853,7 +853,9 @@
     "pickerTitle": "Kies een leskaart",
     "pickerActivated": "\"{{title}}\" staat klaar voor je klas",
     "pickerCodeHint": "Leerlingen starten met deze klascode:",
-    "pickerReplaceWarning": "Er is al een actieve opdracht — een leskaart activeren vervangt die (inzendingen blijven bewaard)."
+    "pickerReplaceWarning": "Er is al een actieve opdracht — een leskaart activeren vervangt die (inzendingen blijven bewaard).",
+    "groupBuiltin": "Standaard leskaarten",
+    "groupOwn": "Mijn leskaarten"
   },
   "templates": {
     "activeBanner": "Opdracht:",

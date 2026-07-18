@@ -853,7 +853,9 @@
     "pickerTitle": "Choose a lesson card",
     "pickerActivated": "\"{{title}}\" is ready for your class",
     "pickerCodeHint": "Students start with this class code:",
-    "pickerReplaceWarning": "There is already an active assignment — activating a lesson card replaces it (submissions are kept)."
+    "pickerReplaceWarning": "There is already an active assignment — activating a lesson card replaces it (submissions are kept).",
+    "groupBuiltin": "Built-in lesson cards",
+    "groupOwn": "My lesson cards"
   },
   "templates": {
     "activeBanner": "Assignment:",
