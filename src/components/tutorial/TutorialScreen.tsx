@@ -24,7 +24,9 @@ function thumbnailUrl(id: string): string {
 
 /** Embeddable player URL for a given video id */
 function embedUrl(id: string): string {
-  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0`;
+  // playsinline=1 is essentieel voor iOS/iPadOS: zonder rendert de embed
+  // zwart wanneer Safari autoplay-met-geluid blokkeert (BUG-YOUTUBE).
+  return `https://www.youtube-nocookie.com/embed/${id}?autoplay=1&rel=0&playsinline=1`;
 }
 
 // --- Video data ---
