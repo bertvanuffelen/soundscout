@@ -715,17 +715,71 @@
       "verspringen": {
         "title": "Verspringen",
         "level": "Groep 5–8",
-        "goal": "Leerlingen maken een soundtrack per scène en ervaren hoe muziek een verhaal in beeld ondersteunt."
+        "goal": "Leerlingen maken een soundtrack per scène en ervaren hoe muziek een verhaal in beeld ondersteunt.",
+        "phases": [
+          {
+            "name": "Oriënteren",
+            "text": "bekijk samen de scènes van het verhaal; welk geluid hoort bij welke sprong?"
+          },
+          {
+            "name": "Onderzoeken",
+            "text": "geluiden verzamelen en per scène muziek maken in de studio."
+          },
+          {
+            "name": "Uitvoeren",
+            "text": "inleveren en het verhaal klassikaal aaneen laten klinken."
+          },
+          {
+            "name": "Evalueren",
+            "text": "nabespreken: ondersteunt de muziek elke scène?"
+          }
+        ]
       },
       "vrij-basis": {
         "title": "Vrij componeren",
         "level": "Alle groepen",
-        "goal": "Leerlingen verkennen vrij de geluiden van een thema en maken hun eigen compositie — puur gericht op klank."
+        "goal": "Leerlingen verkennen vrij de geluiden van een thema en maken hun eigen compositie — puur gericht op klank.",
+        "phases": [
+          {
+            "name": "Oriënteren",
+            "text": "verken samen de plattegrond; welke plekken klinken interessant?"
+          },
+          {
+            "name": "Onderzoeken",
+            "text": "geluiden verzamelen en vrij experimenteren in de studio."
+          },
+          {
+            "name": "Uitvoeren",
+            "text": "composities inleveren en aan elkaar laten horen."
+          },
+          {
+            "name": "Evalueren",
+            "text": "samen bespreken welke muzikale keuzes je hoort."
+          }
+        ]
       },
       "drumbeat": {
         "title": "Drum beat",
         "level": "Alle groepen",
-        "goal": "Leerlingen bouwen voort op een kant-en-klaar ritme en ontdekken hoe lagen en herhaling samen een beat maken."
+        "goal": "Leerlingen bouwen voort op een kant-en-klaar ritme en ontdekken hoe lagen en herhaling samen een beat maken.",
+        "phases": [
+          {
+            "name": "Oriënteren",
+            "text": "luister samen naar het basisritme; wat herken je?"
+          },
+          {
+            "name": "Onderzoeken",
+            "text": "bouw voort op het ritme met eigen lagen en klanken."
+          },
+          {
+            "name": "Uitvoeren",
+            "text": "inleveren en de variaties klassikaal vergelijken."
+          },
+          {
+            "name": "Evalueren",
+            "text": "bespreek hoe elke variatie het ritme verandert."
+          }
+        ]
       }
     },
     "sectionSubtitle": "Kant-en-klare pakketten: kies er een en zet 'm in één klik klaar voor een klas. Maak ook je eigen leskaarten.",
@@ -1765,7 +1819,8 @@
       "viewAll": "Bekijk alle leskaarten",
       "goalLabel": "Lesdoel.",
       "phasesTitle": "Fasen",
-      "empty": "Leskaarten worden binnenkort geladen."
+      "empty": "Leskaarten worden binnenkort geladen.",
+      "viewLessonPage": "Bekijk de leskaart"
     },
     "curriculum": {
       "title": "Sluit aan op de leerlijn muziek",

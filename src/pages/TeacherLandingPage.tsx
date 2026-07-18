@@ -778,6 +778,15 @@ function LessonDetail({ lesson }: { lesson: PublicLessonCard }) {
             {t('teacherLanding.lessons.download')}
           </a>
         )}
+        {/* Statische leskaart-pagina (R4): interne SEO-link */}
+        {lesson.builtinKey && (
+          <a
+            href={`/les/${lesson.builtinKey}`}
+            className="inline-flex items-center rounded-full px-5 py-2.5 text-sm font-semibold border border-border-subtle text-text-main hover:bg-neutral-50 transition-colors"
+          >
+            {t('teacherLanding.lessons.viewLessonPage')}
+          </a>
+        )}
       </div>
     </div>
   );

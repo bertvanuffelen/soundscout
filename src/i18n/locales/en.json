@@ -715,17 +715,71 @@
       "verspringen": {
         "title": "Long jump",
         "level": "Grade 5–8",
-        "goal": "Students create a soundtrack for each scene and experience how music supports a visual story."
+        "goal": "Students create a soundtrack for each scene and experience how music supports a visual story.",
+        "phases": [
+          {
+            "name": "Orient",
+            "text": "look at the story scenes together; which sound fits which jump?"
+          },
+          {
+            "name": "Explore",
+            "text": "collect sounds and compose music per scene in the studio."
+          },
+          {
+            "name": "Perform",
+            "text": "submit and play the whole story together in class."
+          },
+          {
+            "name": "Evaluate",
+            "text": "discuss: does the music support each scene?"
+          }
+        ]
       },
       "vrij-basis": {
         "title": "Free composing",
         "level": "All grades",
-        "goal": "Students freely explore the sounds of a theme and create their own composition — focused purely on sound."
+        "goal": "Students freely explore the sounds of a theme and create their own composition — focused purely on sound.",
+        "phases": [
+          {
+            "name": "Orient",
+            "text": "explore the map together; which places sound interesting?"
+          },
+          {
+            "name": "Explore",
+            "text": "collect sounds and experiment freely in the studio."
+          },
+          {
+            "name": "Perform",
+            "text": "submit compositions and listen to each other."
+          },
+          {
+            "name": "Evaluate",
+            "text": "discuss the musical choices you hear."
+          }
+        ]
       },
       "drumbeat": {
         "title": "Drum beat",
         "level": "All grades",
-        "goal": "Students build on a ready-made rhythm and discover how layers and repetition combine into a beat."
+        "goal": "Students build on a ready-made rhythm and discover how layers and repetition combine into a beat.",
+        "phases": [
+          {
+            "name": "Orient",
+            "text": "listen to the base rhythm together; what do you recognise?"
+          },
+          {
+            "name": "Explore",
+            "text": "build on the rhythm with your own layers and sounds."
+          },
+          {
+            "name": "Perform",
+            "text": "submit and compare the variations in class."
+          },
+          {
+            "name": "Evaluate",
+            "text": "discuss how each variation changes the rhythm."
+          }
+        ]
       }
     },
     "sectionSubtitle": "Ready-made packages: pick one and set it up for a class in a single click. Or create your own.",
@@ -1765,7 +1819,8 @@
       "viewAll": "View all lesson cards",
       "goalLabel": "Goal.",
       "phasesTitle": "Phases",
-      "empty": "Lesson cards are loading soon."
+      "empty": "Lesson cards are loading soon.",
+      "viewLessonPage": "View the lesson page"
     },
     "curriculum": {
       "title": "Connects to the music curriculum",

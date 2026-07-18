@@ -1,0 +1,30 @@
+{
+  "comment": "Niet-i18n-velden per ingebouwde leskaart voor de statische /les/<key>-pagina's. Houd dit in sync met de seed-migraties (020/023) en LANDING_LESSON_KEYS in TeacherLandingPage.tsx. Teksten (title/level/goal/phases) komen uit src/i18n/locales/nl.json → lessonCards.builtin.<key>.",
+  "baseUrl": "https://soundscout.nl",
+  "keys": [
+    {
+      "key": "robotfabriek",
+      "cover": "/images/praatplaten/robotfabriek.jpg",
+      "typeLabel": "Praatplaat",
+      "pdf": null
+    },
+    {
+      "key": "verspringen",
+      "cover": "/images/storyboards/verspringen/verspringen-2.jpg",
+      "typeLabel": "Storyboard",
+      "pdf": null
+    },
+    {
+      "key": "vrij-basis",
+      "cover": "/images/themes/basis/plattegrond.jpg",
+      "typeLabel": "Vrij componeren",
+      "pdf": null
+    },
+    {
+      "key": "drumbeat",
+      "cover": null,
+      "typeLabel": "Template",
+      "pdf": null
+    }
+  ]
+}
