@@ -514,3 +514,32 @@ export async function fetchPastAssignments(classId: string): Promise<ClassAssign
 
   return (data as RawAssignmentRow[]).map(mapAssignmentRow);
 }
+
+/**
+ * Hoort een inzending bij deze opdracht(-rij)? (I5/I8, testronde 4)
+ *
+ * Match per type op de bijbehorende koppeling die submit_composition wegschrijft:
+ * template/praatplaat via UUID (assignment_id; praatplaat legacy ook praatplaat_id),
+ * storyboard/free via tekst-ref (assignment_ref, migratie 015/018).
+ */
+export function submissionMatchesAssignment(
+  submission: {
+    assignment_id?: string | null;
+    assignment_ref?: string | null;
+    praatplaat_id?: string | null;
+  },
+  assignment: Pick<ClassAssignmentRow, 'type' | 'templateId' | 'praatplaatId' | 'storyboardRef' | 'freeThemeId'>
+): boolean {
+  switch (assignment.type) {
+    case 'template':
+      return !!assignment.templateId && submission.assignment_id === assignment.templateId;
+    case 'praatplaat':
+      return !!assignment.praatplaatId
+        && (submission.praatplaat_id === assignment.praatplaatId
+          || submission.assignment_id === assignment.praatplaatId);
+    case 'storyboard':
+      return !!assignment.storyboardRef && submission.assignment_ref === assignment.storyboardRef;
+    case 'free':
+      return !!assignment.freeThemeId && submission.assignment_ref === assignment.freeThemeId;
+  }
+}

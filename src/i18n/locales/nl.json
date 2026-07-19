@@ -595,6 +595,8 @@
     "noActiveTitle": "Geen actieve opdracht",
     "noActiveExplain": "Er staat niets klaar voor deze klas. Leerlingen die code {{code}} invoeren kunnen nu vrij componeren. Kies hieronder een opdracht om er wél iets voor klaar te zetten.",
     "reactivate": "Activeer",
+    "historyView": "Bekijk inzendingen ({{count}})",
+    "historyViewEmpty": "Nog geen inzendingen bij deze opdracht",
     "replaceConfirmTitle": "Opdracht vervangen?",
     "replaceConfirmBody": "De klas werkt nu aan \"{{name}}\". Als je een nieuwe opdracht kiest, vervang je die — de leerlingen werken daarna aan de nieuwe opdracht. Eerdere inzendingen blijven bewaard.",
     "replaceConfirmButton": "Kies nieuwe opdracht",

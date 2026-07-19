@@ -595,6 +595,8 @@
     "noActiveTitle": "No active assignment",
     "noActiveExplain": "Nothing is set up for this class. Students who enter code {{code}} can compose freely for now. Choose an assignment below to set something up.",
     "reactivate": "Activate",
+    "historyView": "View submissions ({{count}})",
+    "historyViewEmpty": "No submissions for this assignment yet",
     "replaceConfirmTitle": "Replace assignment?",
     "replaceConfirmBody": "The class is currently working on \"{{name}}\". Choosing a new assignment replaces it — students will then work on the new one. Earlier submissions are kept.",
     "replaceConfirmButton": "Choose new assignment",

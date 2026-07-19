@@ -25,7 +25,11 @@ export interface Submission {
   save_code?: string | null;
   last_updated_at?: string | null;
   assignment_id?: string | null;
-  assignment_type?: 'template' | 'praatplaat' | null;
+  /** Tekst-ref voor storyboard/free-opdrachten (migratie 015/018) */
+  assignment_ref?: string | null;
+  /** Legacy praatplaat-koppeling (migratie 005); nieuwe flow zet assignment_id */
+  praatplaat_id?: string | null;
+  assignment_type?: 'template' | 'praatplaat' | 'storyboard' | 'free' | null;
   /** Formeel ingeleverd-stempel (migratie 026). Sinds v2 heeft élke
    *  klas-inzending een save_code, dus dít onderscheidt ingeleverd van WIP. */
   submitted_at?: string | null;

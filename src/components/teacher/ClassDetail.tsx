@@ -11,7 +11,7 @@ import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
-import { updateAssignmentDuration } from '../../lib/assignments';
+import { updateAssignmentDuration, submissionMatchesAssignment } from '../../lib/assignments';
 import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
@@ -648,6 +648,25 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       {new Date(pa.activatedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
+                  {/* Bekijken bij élk niet-praatplaat-type: opent de presentatie
+                      met de bijbehorende inzendingen (I5, testronde 4 — Berts
+                      storyboard-rij had alleen 'Deel album'). Praatplaat houdt
+                      zijn eigen oog dat het bord opent. */}
+                  {pa.type !== 'praatplaat' && (() => {
+                    const matching = submitted.filter((s) => submissionMatchesAssignment(s, pa));
+                    return (
+                      <button
+                        onClick={() => setPresentIds(matching.map((s) => s.id))}
+                        disabled={matching.length === 0}
+                        className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors shrink-0 disabled:opacity-30 disabled:pointer-events-none"
+                        title={matching.length === 0
+                          ? t('assignments.historyViewEmpty')
+                          : t('assignments.historyView', { count: matching.length })}
+                      >
+                        <Eye className="w-4 h-4" aria-hidden="true" />
+                      </button>
+                    );
+                  })()}
                   {/* Album delen kan bij élk type uit de historie (R4) */}
                   <button
                     onClick={() => setAlbumTarget({ assignmentId: pa.id, name: pa.assignmentName })}
