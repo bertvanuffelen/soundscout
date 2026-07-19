@@ -370,14 +370,18 @@ export function PresentationSurface({
       <div className="flex-1 flex min-h-0 relative">
         {/* Hoofdpodium */}
         <div className="flex-1 flex flex-col min-w-0 relative">
-          {/* Aankondigingsoverlay (concert-gevoel, alleen presentatie) */}
+          {/* Aankondiging (concert-gevoel, alleen presentatie).
+              Bewust GEEN vlakdekkende waas meer: die dimde de hele kaart —
+              inclusief de montagelijn — en las als "grijs aan het laden"
+              (bevinding Bert, testronde 4). Nu een zwevende kaart die zichzelf
+              donker maakt; de inhoud eronder blijft helder en leesbaar. */}
           {mode === 'teacher-present' && announcing && (
-            <div className="absolute inset-0 z-10 flex items-center justify-center bg-brand-900/85 pointer-events-none">
-              <div className="text-center px-6">
-                <Music className="w-10 h-10 text-accent-400 mx-auto mb-3" aria-hidden="true" />
+            <div className="absolute inset-x-0 top-6 z-10 flex justify-center px-6 pointer-events-none">
+              <div className="text-center bg-brand-900/95 rounded-2xl shadow-2xl px-8 py-5 max-w-lg">
+                <Music className="w-8 h-8 text-accent-400 mx-auto mb-2" aria-hidden="true" />
                 <p className="text-brand-300 text-sm font-semibold mb-1">{t('teacher.presentation.nowPlaying')}</p>
-                <p className="text-white text-3xl sm:text-4xl font-extrabold tracking-tight">{current.composition_name}</p>
-                <p className="text-brand-200 text-lg mt-1">{current.student_name}</p>
+                <p className="text-white text-2xl sm:text-3xl font-extrabold tracking-tight">{current.composition_name}</p>
+                <p className="text-brand-200 text-base mt-1">{current.student_name}</p>
               </div>
             </div>
           )}
