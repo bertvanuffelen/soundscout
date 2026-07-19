@@ -86,6 +86,11 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [showPeerOverview, setShowPeerOverview] = useState(false);
   // Presentatiemodus: ids in presentatievolgorde (null = gesloten)
   const [presentIds, setPresentIds] = useState<string[] | null>(null);
+  // Keuzemodaal Presenteren: actieve opdracht of alles (I8, testronde 4)
+  const [showPresentChoice, setShowPresentChoice] = useState(false);
+  // Welke lijst er draait (I7): bij 'active'/'all' komen nieuwe inzendingen
+  // via polling achteraan de playlist; 'custom' (top 3, historie) blijft vast.
+  const [presentMode, setPresentMode] = useState<'active' | 'all' | 'custom'>('custom');
   const [activeTab, setActiveTab] = useState<'submitted' | 'wip'>('submitted');
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -276,6 +281,46 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     return { submitted, workInProgress, newCount };
   }, [submissions]);
 
+  // Inzendingen die bij de actieve opdracht horen (I8): drijft de
+  // Presenteren-keuze "actieve opdracht" vs "alle composities".
+  const activeMatching = useMemo(
+    () => (activeAssignment ? submitted.filter((s) => submissionMatchesAssignment(s, activeAssignment)) : []),
+    [submitted, activeAssignment]
+  );
+
+  const handlePresentClick = useCallback(() => {
+    // Keuze alleen tonen als die iets toevoegt: er is een actieve opdracht
+    // mét inzendingen, en die lijst verschilt van "alles".
+    if (activeAssignment && activeMatching.length > 0 && activeMatching.length < submitted.length) {
+      setShowPresentChoice(true);
+    } else {
+      setPresentMode('all');
+      setPresentIds(submitted.map((s) => s.id));
+    }
+  }, [activeAssignment, activeMatching, submitted]);
+
+  // I7: tijdens een lopende presentatie elke 20s de inzendingen verversen;
+  // nieuwe items komen achteraan de playlist (append-effect hieronder), de
+  // playback blijft onverstoord (dataKey in useCompositionPlayback is
+  // inhouds-gebaseerd, geen referentie-churn).
+  useEffect(() => {
+    if (!presentIds || presentMode === 'custom') return;
+    const interval = setInterval(() => { void refetch(); }, 20_000);
+    return () => clearInterval(interval);
+  }, [presentIds, presentMode, refetch]);
+
+  useEffect(() => {
+    if (!presentIds || presentMode === 'custom') return;
+    const target = presentMode === 'active' ? activeMatching : submitted;
+    const missing = target.filter((s) => !presentIds.includes(s.id)).map((s) => s.id);
+    if (missing.length === 0) return;
+    // setTimeout-tick: huispatroon voor set-state-in-effect
+    const timer = setTimeout(() => {
+      setPresentIds((prev) => (prev ? [...prev, ...missing.filter((id) => !prev.includes(id))] : prev));
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [presentIds, presentMode, activeMatching, submitted]);
+
   const handleRefresh = async () => {
     setRefreshing(true);
     await refetch();
@@ -354,7 +399,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         {!loading && (
           <div className="mb-8 grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
             <button
-              onClick={() => setPresentIds(submitted.map((s) => s.id))}
+              onClick={handlePresentClick}
               disabled={submitted.length === 0}
               className="flex items-center justify-center gap-2.5 rounded-2xl px-4 py-4 sm:py-5 text-base sm:text-lg font-extrabold tracking-tight border-2 bg-brand-900 text-white border-brand-900 shadow-md hover:bg-brand-800 transition-all disabled:opacity-40 disabled:pointer-events-none"
             >
@@ -656,7 +701,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     const matching = submitted.filter((s) => submissionMatchesAssignment(s, pa));
                     return (
                       <button
-                        onClick={() => setPresentIds(matching.map((s) => s.id))}
+                        onClick={() => {
+                          setPresentMode('custom');
+                          setPresentIds(matching.map((s) => s.id));
+                        }}
                         disabled={matching.length === 0}
                         className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors shrink-0 disabled:opacity-30 disabled:pointer-events-none"
                         title={matching.length === 0
@@ -838,9 +886,54 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         submissions={submissions}
         onPresentTop3={(ids) => {
           setShowPeerOverview(false);
+          setPresentMode('custom');
           setPresentIds(ids);
         }}
       />
+
+      {/* Presenteren-keuze: actieve opdracht of alles (I8, testronde 4) */}
+      <Modal
+        isOpen={showPresentChoice}
+        onClose={() => setShowPresentChoice(false)}
+        title={t('teacher.presentation.chooseTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-4 leading-relaxed">
+          {t('teacher.presentation.chooseDescription')}
+        </p>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={() => {
+              setShowPresentChoice(false);
+              setPresentMode('active');
+              setPresentIds(activeMatching.map((s) => s.id));
+            }}
+            className="w-full text-left rounded-xl border-2 border-accent-300 bg-accent-50 hover:bg-accent-100 px-4 py-3 transition-colors"
+          >
+            <span className="block text-sm font-bold text-text-main">
+              {t('teacher.presentation.chooseActive', { count: activeMatching.length })}
+            </span>
+            <span className="block text-xs text-text-muted truncate">
+              {activeAssignment?.assignmentName}
+            </span>
+          </button>
+          <button
+            onClick={() => {
+              setShowPresentChoice(false);
+              setPresentMode('all');
+              setPresentIds(submitted.map((s) => s.id));
+            }}
+            className="w-full text-left rounded-xl border-2 border-border-subtle bg-bg-surface hover:bg-neutral-50 px-4 py-3 transition-colors"
+          >
+            <span className="block text-sm font-bold text-text-main">
+              {t('teacher.presentation.chooseAll', { count: submitted.length })}
+            </span>
+            <span className="block text-xs text-text-muted">
+              {t('teacher.presentation.chooseAllHint')}
+            </span>
+          </button>
+        </div>
+      </Modal>
 
       {/* Universele presentatiemodus (digibord) */}
       {presentIds && (
@@ -851,6 +944,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           onClose={() => setPresentIds(null)}
           onSetFeedback={(id, feedback) => setFeedback(id, feedback)}
           classId={classData.id}
+          onRefresh={() => void refetch()}
         />
       )}
 

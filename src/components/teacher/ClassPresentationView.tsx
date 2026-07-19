@@ -25,9 +25,11 @@ interface ClassPresentationViewProps {
   ) => Promise<void>;
   /** Klas-id voor de peer-sterren in het zijpaneel (migratie 030) */
   classId?: string;
+  /** Ververs de inzendingen (I7): kopbalk-knop; polling doet ClassDetail */
+  onRefresh?: () => void;
 }
 
-export function ClassPresentationView({ playlist, onClose, onSetFeedback, classId }: ClassPresentationViewProps) {
+export function ClassPresentationView({ playlist, onClose, onSetFeedback, classId, onRefresh }: ClassPresentationViewProps) {
   const [peerStars, setPeerStars] = useState<Map<string, number> | undefined>(undefined);
 
   useEffect(() => {
@@ -46,6 +48,7 @@ export function ClassPresentationView({ playlist, onClose, onSetFeedback, classI
       onClose={onClose}
       onSetFeedback={onSetFeedback}
       peerStars={peerStars}
+      onRefresh={onRefresh}
     />
   );
 }

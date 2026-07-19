@@ -23,7 +23,7 @@ import { useTranslation } from 'react-i18next';
 import {
   X, Play, Pause, SkipBack, SkipForward, ListMusic, Loader2,
   Repeat, Star, PanelRightClose, PanelRightOpen, Music, Rows3,
-  Maximize, Minimize, Film, ImageIcon, AlertCircle,
+  Maximize, Minimize, Film, ImageIcon, AlertCircle, RefreshCw,
 } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 import { getReviewStatus } from '../../hooks/useSubmissions';
@@ -65,6 +65,9 @@ interface PresentationSurfaceProps {
    * komen uit composition_data.praatplaatPosition van elk item.
    */
   interactiveBoard?: { imageUrl: string; name: string } | null;
+  /** Ververs de playlist-bron (I7): toont een ververs-knop in de kopbalk;
+   *  de eigenaar pollt daarnaast zelf en levert nieuwe items via `playlist`. */
+  onRefresh?: () => void;
 }
 
 // Kort genoeg om niet te storen (de donkere overlay dimt ook de montagelijn —
@@ -97,6 +100,7 @@ export function PresentationSurface({
   ratingSlot,
   respectLoop = false,
   interactiveBoard = null,
+  onRefresh,
 }: PresentationSurfaceProps) {
   const { t } = useTranslation();
 
@@ -313,6 +317,15 @@ export function PresentationSurface({
         </span>
 
         <div className="flex items-center gap-1 shrink-0">
+          {onRefresh && (
+            <button
+              onClick={onRefresh}
+              className="p-2 text-brand-300 hover:text-white rounded-lg hover:bg-brand-800 transition-colors"
+              title={t('teacher.presentation.refresh')}
+            >
+              <RefreshCw className="w-5 h-5" aria-hidden="true" />
+            </button>
+          )}
           {hasVisual && (
             <button
               onClick={() => setMontageOpen((v) => !v)}
