@@ -392,6 +392,8 @@
     "syncFailed": "Online kopie niet bijgewerkt — controleer je internetverbinding",
     "presentButton": "Presenteren op het digibord",
     "actionsPresentHint": "Laat je compositie groot zien en horen",
+    "submitToClass": "Lever in",
+    "submitToClassHint": "Sla op en stuur naar {{className}}",
     "exportKeepTabOpen": "Bezig met exporteren — houd dit tabblad zichtbaar, anders pauzeert de browser de export.",
     "exportReadyMp3": "MP3 gedownload!",
     "exportReadyVideo": "Video gedownload!",

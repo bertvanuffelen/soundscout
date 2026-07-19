@@ -225,13 +225,28 @@ export function StageActionsModal({
                 colorClasses="bg-brand-100 text-brand-800"
               />
               <div className="flex flex-col gap-2">
-                {/* Presenteren: compositie fullscreen op het digibord (fase 2) */}
-                <ActionButton
-                  icon={<MonitorPlay size={18} className="text-brand-700" />}
-                  label={t('stage.presentButton')}
-                  hint={t('stage.actionsPresentHint')}
-                  onClick={() => { onPresent(); onClose(); }}
-                />
+                {/* Presenteren op het digibord: docent-actie (I11 — de leerling
+                    luistert op het podium zelf, niet fullscreen op het bord) */}
+                {isTeacher && (
+                  <ActionButton
+                    icon={<MonitorPlay size={18} className="text-brand-700" />}
+                    label={t('stage.presentButton')}
+                    hint={t('stage.actionsPresentHint')}
+                    onClick={() => { onPresent(); onClose(); }}
+                  />
+                )}
+                {/* Expliciet inleveren (I11): zelfde opslaan-/submit-pad, maar
+                    als knop met de woorden die de leerling zoekt. Blijft na een
+                    eerdere inzending beschikbaar (bijwerken = opnieuw sturen). */}
+                {hasClassSession && (
+                  <ActionButton
+                    icon={<Send size={18} className="text-brand-700" />}
+                    label={t('stage.submitToClass')}
+                    hint={t('stage.submitToClassHint', { className: className ?? '' })}
+                    onClick={() => { onSave(); onClose(); }}
+                    disabled={nameDisabled}
+                  />
+                )}
                 {hasClassSession ? (
                   <div className="rounded-xl bg-brand-100/60 border border-brand-100 px-3 py-2.5">
                     {submissionSynced ? (

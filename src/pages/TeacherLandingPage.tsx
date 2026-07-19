@@ -743,6 +743,12 @@ function LessonDetail({ lesson }: { lesson: PublicLessonCard }) {
   const loc = localizeLessonCard(t, lesson);
   return (
     <div className="flex flex-col gap-4">
+      {/* Cover boven het detail, net als in het dashboard (I12) */}
+      {lesson.coverImage && (
+        <div className="w-full aspect-[16/9] rounded-xl overflow-hidden bg-neutral-100">
+          <img src={lesson.coverImage} alt="" className="w-full h-full object-cover" />
+        </div>
+      )}
       <div className="flex flex-col gap-1">
         <div className="flex items-center gap-3 flex-wrap">
           <h3 className="text-xl font-extrabold text-text-main">{loc.title}</h3>
