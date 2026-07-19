@@ -136,6 +136,41 @@ Beschikbaar op `/editor` (beveiligd pad). Gebruik voor:
 
 ---
 
+## 4b. Wat staat waar aan/uit — het beheerpaneel in code
+
+Er is (nog) **geen admin-scherm in de app**. Alles wat je als ontwerper aan- of
+uitzet, staat op één van de plekken hieronder. Wijzigen = bestand aanpassen +
+opnieuw bouwen en uploaden (of, bij de SQL-regels, een migratie draaien).
+
+| Wat wil je aan/uit zetten | Waar | Hoe |
+|---|---|---|
+| **Thema zichtbaar voor iedereen** | `src/data/themes/{thema}/index.ts` → `isPublic` | `true` = staat in de themakiezer, `false` = alleen via `?theme={id}` |
+| **Thema alleen in een seizoen** | zelfde bestand → `activeFrom` / `activeUntil` (`'MM-DD'`) | Beide weglaten = altijd beschikbaar; venster over de jaargrens mag (`'11-15'` → `'01-15'`). Leerling-kiezers verbergen buiten-seizoen thema's, docent-kiezers tonen ze mét badge (`isThemeInSeason` in `src/data/themes/index.ts`) |
+| **Welke leskaarten op `/teacher` staan** | `src/pages/TeacherLandingPage.tsx` → `LANDING_LESSON_KEYS` | Lijst van `builtin_key`s, in deze volgorde getoond |
+| **Welke statische lespagina's bestaan** (`/les/<key>`) | `scripts/generate-les-pages.mjs` + `public/les/` | Draait automatisch bij `npm run build` (prebuild) |
+| **Praatplaten die de docent kan activeren** | `src/data/praatplaatCatalog.ts` (+ `src/data/praatplaatImages.ts`) | `availableFor: 'teacher' \| 'student' \| 'both'` bepaalt waar een plaat opduikt |
+| **Storyboards (verhaal in beeld)** | `src/data/storyboards.ts` + `/public/images/storyboards/{id}/` | Registry-entry + i18n-teksten onder `storyboards.{id}.*` |
+| **Standaard-leskaarten (built-ins)** | SQL-seeds, migratie `020` (+ `023` voor de systeem-template) | Nieuwe built-in = nieuwe additieve migratie; nooit een oude aanpassen |
+| **Statistieken-paneel zichtbaar** | `.env.local` → `VITE_ADMIN_EMAILS` | Kommagescheiden e-mails; moet óók bij de productie-build gezet zijn |
+| **Klassenlimiet per docent** | Supabase, kolom `teachers.max_classes` | Default 8; `NULL` = onbeperkt (zo staat Berts eigen account) |
+| **Hotspots op een locatieplaat** | `/editor` in de browser | Slepen → exporteren als JSON → in `locations.ts` plakken |
+| **Alle teksten (NL + EN)** | `docs/TEKSTEN.md` | Zie `npm run teksten:export` / `teksten:import` — bewerk het document, ik verwerk het terug |
+
+### Toekomst: een echte admin-werkruimte
+
+Wat een admin-scherm zou moeten kunnen (staat als toekomst-taak in Notion):
+
+- Thema's en leskaarten aan/uit zetten zonder release (vlaggen uit de database i.p.v. uit code).
+- Praatplaten en storyboards uploaden en publiceren met een formulier.
+- Built-in leskaarten bewerken (nu alleen via migraties).
+- Gebruiksstatistieken en misbruik-signalen naast elkaar zien.
+
+De randvoorwaarde is dat inhoud verhuist van code-registries naar databasetabellen
+met RLS (alleen beheerders schrijven, iedereen leest). Dat is een op zichzelf
+staand project; tot die tijd is deze tabel het beheerpaneel.
+
+---
+
 ## 5. Dagelijks onderhoud
 
 ### Wat automatisch gaat
@@ -182,6 +217,10 @@ npm run test:coverage    # Met coverage rapport
 
 # Enkel testbestand
 npx vitest run src/utils/__tests__/audio.test.ts
+
+# Teksten (zie sectie 4b)
+npm run teksten:export   # docs/TEKSTEN.md opnieuw genereren uit nl.json + en.json
+npm run teksten:import   # bewerkte docs/TEKSTEN.md terugschrijven naar de json's
 ```
 
 ---
@@ -193,6 +232,7 @@ npx vitest run src/utils/__tests__/audio.test.ts
 | `CLAUDE.md` | Architectuur, conventies, Tone.js pitfalls |
 | `docs/TODO.md` | Alle open en afgeronde issues |
 | `docs/TESTEN.md` | Handmatige testchecklist |
+| `docs/TEKSTEN.md` | Alle app-teksten (NL + EN) in één bewerkbaar document |
 | `docs/DEPLOY-INSTRUCTIES.md` | Strato deployment stappen |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Handleiding nieuwe thema's/locaties |
 | `docs/TONEJS-KENNISBANK.md` | Tone.js kennisbank en beperkingen |

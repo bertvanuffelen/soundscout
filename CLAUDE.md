@@ -399,7 +399,8 @@ VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts
 | `docs/PLAN-CLIP-LOOP-EFFECTS.md` | Clip loop + effects implementation plan (#65, #33) |
 | `docs/PLAN-AUDIO-REFACTOR.md` | Audio engine refactor: on-demand fire-and-forget players (PERF-1) |
 | `docs/PLAN-72-PRAATPLAAT.md` | Praatplaat collaborative sound map design (#72) |
-| `docs/HANDLEIDING-BEHEER.md` | Technical admin guide (deployment, Supabase, maintenance) |
+| `docs/HANDLEIDING-BEHEER.md` | Technical admin guide (deployment, Supabase, maintenance) + §4b "wat staat waar aan/uit" |
+| `docs/TEKSTEN.md` | Generated NL+EN copy deck — edit the table, then `npm run teksten:import` |
 | `docs/LOGBOEK-MASTERPLAN.md` | 6-weken masterplan logbook (besluiten, sessies, acties voor Bert) |
 | `docs/TESTPLAN-MASTERPLAN.md` | Manual test plan + hertest-lijsten per testronde |
 | `docs/AUDIT-EXPORTS.md` | Exports audit (MP3 + video): 16 findings + prioritized fix plan |
