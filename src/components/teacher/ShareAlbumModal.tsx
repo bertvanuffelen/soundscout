@@ -97,6 +97,13 @@ export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName 
 
       {shareUrl && shareCode && (
         <>
+          {/* Code groot en prominent (I2, wens Bert 19-7) — zelfde stijl als de
+              klascode in ClassDetail; intypbaar via "Ik heb een code". */}
+          <div className="flex justify-center mb-3">
+            <span className="inline-flex items-center bg-accent-100 text-accent-800 px-5 py-2.5 rounded-xl font-mono font-extrabold text-2xl sm:text-3xl tracking-widest">
+              {shareCode}
+            </span>
+          </div>
           <button
             onClick={handleCopy}
             className="w-full flex items-center justify-between gap-2 bg-accent-50 border border-accent-200 rounded-xl px-3 py-2.5 mb-2 hover:bg-accent-100 transition-colors"
@@ -106,7 +113,7 @@ export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName 
             {copied ? <Check className="w-4 h-4 text-success-600 shrink-0" /> : <Copy className="w-4 h-4 text-accent-600 shrink-0" />}
           </button>
           <p className="text-text-muted text-xs mb-4 text-center">
-            {t('album.codeHint', { code: shareCode })} · {t('album.validity')}
+            {t('album.validity')}
           </p>
 
           <Button

@@ -2127,7 +2127,6 @@
     "shareButton": "Deel album",
     "shareDescription": "Deel alle ingeleverde composities van \"{{name}}\" met één luisterlink — voor de ouderavond, nieuwsbrief of het digibord.",
     "copyLink": "Link kopiëren",
-    "codeHint": "Code: {{code}}",
     "validity": "30 dagen geldig (opnieuw delen verlengt)",
     "showQr": "Toon QR-code",
     "hideQr": "Verberg QR-code",

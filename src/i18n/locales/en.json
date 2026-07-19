@@ -2127,7 +2127,6 @@
     "shareButton": "Share album",
     "shareDescription": "Share all submitted compositions of \"{{name}}\" with one listening link — for parent evenings, newsletters or the whiteboard.",
     "copyLink": "Copy link",
-    "codeHint": "Code: {{code}}",
     "validity": "Valid for 30 days (sharing again extends it)",
     "showQr": "Show QR code",
     "hideQr": "Hide QR code",
