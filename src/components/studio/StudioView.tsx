@@ -438,6 +438,12 @@ export function StudioView() {
         {/* Timeline - fixed at bottom above transport controls */}
         <Timeline
           tracks={tracks}
+          /* Clips oplossen via de eigen bibliotheek, niet via het actieve thema.
+             Zonder deze prop viel Track terug op themeGetSampleById: open je een
+             compositie op een ánder apparaat (bewaarcode), dan staat daar thema
+             'basis' actief en werden clips uit een ander thema niet gevonden —
+             lege tijdlijn (bevinding Bert, testronde 4 / punt A3). */
+          samples={librarySamples}
           bpm={bpm}
           totalBeats={totalBeats}
           isPlaying={isPlaying}
