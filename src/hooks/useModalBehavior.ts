@@ -83,12 +83,23 @@ export function useModalBehavior(
 
       if (e.key !== 'Tab') return;
 
-      const focusable = containerRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
-      if (!focusable || focusable.length === 0) return;
+      const container = containerRef.current;
+      const focusable = container?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
+      if (!container || !focusable || focusable.length === 0) return;
 
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
       const active = document.activeElement as HTMLElement;
+
+      // Focus buiten de modal (bijv. op <body> na een klik op een
+      // niet-focusbaar vlak, of nadat het gefocuste element uit de DOM
+      // verdween — EffectsModal: reset-knop unmount bij waarde 0): een
+      // native Tab zou dan uit de modal ontsnappen (bug 1c, hertest Bert).
+      if (!container.contains(active)) {
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+        return;
+      }
 
       if (e.shiftKey) {
         if (active === first) {
