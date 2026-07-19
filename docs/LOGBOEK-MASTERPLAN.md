@@ -220,6 +220,20 @@ Gates overal groen; hertest-blok "Restpunten + dashboard/landing" bovenaan het t
 
 Bert vroeg de hele Notion-testpagina "Test sessie 16-7" na te lopen. Alles wat nog open en bouwbaar was is gebouwd: **per-tab dashboard-uitleg** ("Zo bouw je eigen materiaal" / "Zo werk je met leskaarten" — testronde 3-punt) · **tijdsduur-vermelding** (migratie 033: `duration_label`, instel-veld op de actieve kaart, klok-weergave op de leerling-landing — testronde 1-wens) · **gids-content**: nieuwe sectie "Tips voor feedback geven" (met voorbeeldzinnen + GuideLink vanuit het inzendingenblok) en organisatie-tips in "Tips voor de klas" (NL+EN — testronde 2-wensen). De Notion-pagina zelf is bijgewerkt met een ✅-blok per wens; blijft bij Bert: exports-controle per vorm, content-sessie extra opdrachtkaarten, woordenlijst-aanvullingen, migraties 032+033.
 
+## Testronde 4-fixronde (19-7): I-ronde + testplan-herstructurering
+
+Bert leverde het testplan terug met x/-/?-annotaties en vulde op Notion "Test-ronde 4". Alles wat daaruit bouwbaar was is gedaan (twaalf punten, elk met browser-verificatie en een eigen commit):
+
+**Bugs**: publieke albumviewer toonde geen afspeellijst (`hasPlaylistUi` gold alleen voor `teacher-present`; nu ook `public`, mét status-toggle docent-only) · albumcode was te klein in de deel-modal (nu even groot als de klascode) · "Bekijk de leskaart" opende de app i.p.v. de lespagina (Vite dev kent geen directory-index → expliciet `/les/<key>/index.html` + nieuw tabblad) · **EffectsModal focus-trap ontsnapte nóg steeds**: de eerdere disabled-fix was niet genoeg — als het gefocuste element uit de DOM verdween (reset-knop bij waarde 0) stond de focus op `body` en liet de trap Tab passeren; nu vangt hij focus-buiten-de-modal af · historie-rijen misten "Bekijk inzendingen" bij niet-praatplaat-types (nieuwe helper `submissionMatchesAssignment` matcht template/praatplaat op UUID en storyboard/free op `assignment_ref`).
+
+**Wensen**: montagelijn-achtergrond wit in readOnly · ververs-knop in het presentatiescherm + 20s-polling met append-aan-het-eind (playback onverstoord; `presentMode` onderscheidt actief/alles/vast) · Presenteren-keuzemodaal "Actieve opdracht / Alle composities" (alleen als die keuze iets toevoegt) · klaslokaal-startkeuze: vier type-kaarten meteen open, "Stel zelf samen" vervallen, leskaart als knop eronder · "Beluister" → "Open code" · echte **"Lever in"**-knop in de kolom Voor de klas + "Presenteren op het digibord" alleen voor de ingelogde docent · leskaart-cover in het landing-detailpaneel.
+
+**Beheer + teksten (Berts twee vragen)**: er is géén admin-scherm; in plaats van een tweede beheerdoc is `HANDLEIDING-BEHEER.md` uitgebreid met **§4b "Wat staat waar aan/uit"** — een tabel met per schakelaar het exacte bestand (thema-`isPublic`, `activeFrom`/`activeUntil`, `LANDING_LESSON_KEYS`, praatplaat-catalogus, storyboards, built-in-seeds, `VITE_ADMIN_EMAILS`, `max_classes`, /editor) plus een uitgewerkt toekomst-blokje voor een echte admin-werkruimte. Voor de teksten: `npm run teksten:export` genereert **docs/TEKSTEN.md** (1593 teksten, 44 secties, tabel sleutel|NL|EN), Bert bewerkt de kolommen, `npm run teksten:import` schrijft alleen gewijzigde waarden terug — round-trip getest (één wijziging → exact één regel per json-bestand).
+
+**Testplan**: volledig geherstructureerd — actieve testen nu gegroepeerd per activiteit (leerling-basisflow · studio · podium & delen · klascode/praatplaat · klaslokaal · materiaal & leskaarten · presentatiescherm · landing & SEO · apparaten), afgevinkte punten compact naar "✅ Afgerond" onderaan, Berts [?]-vragen in-place beantwoord (o.a. wat "bewaarcode → podium" precies inhoudt, wat de lespagina's zijn en hoe je de SEO-checks concreet uitvoert) en zijn twee acties bovenaan (Supabase Redirect URL voor soundscout.techindeles.nl + migraties 032/033).
+
+**Werkfout gecorrigeerd**: één commit landde per ongeluk in de hoofdrepo (git-commando zonder `-C` naar de worktree) en nam Berts ongecommitte piraten-/instellingenbestanden mee; teruggedraaid met `reset --soft` zodat de hoofdrepo weer exact op `d6884f7` staat met dezelfde ongecommitte wijzigingen als bij sessiestart.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
@@ -231,6 +245,7 @@ Bert vroeg de hele Notion-testpagina "Test sessie 16-7" na te lopen. Alles wat n
 
 ## Voor Bert (acties buiten de code)
 
+- **Supabase Redirect URL voor de testserver**: Authentication → URL Configuration → voeg `https://soundscout.techindeles.nl/*` toe. Zonder deze regel eindigt elke reset-mail op `otp_expired` (precies wat testronde 4 liet zien). Daarna een vérse mail aanvragen.
 - **Migraties 032 + 033 uitvoeren** (`032_fix_lesson_card_inline_match.sql` — juiste uitlegkaart bij template-leskaarten · `033_assignment_duration_label.sql` — tijdsduur-veld). Zonder 033 geeft het tijdsduur-veld een nette foutmelding bij opslaan.
 - **Migratie 031 uitvoeren** (`supabase/migrations/031_class_album_share.sql`) — klas-album delen (R4). Zonder deze migratie geeft "Deel album" een nette foutmelding; al het andere werkt.
 - **Deploy-notitie (R4)**: bij de eerstvolgende deploy ook **`dist/les/`** mee-uploaden (statische leskaart-pagina's; worden automatisch gegenereerd bij `npm run build` via de prebuild-hook). Apache serveert `/les/robotfabriek` dan via DirectoryIndex.
