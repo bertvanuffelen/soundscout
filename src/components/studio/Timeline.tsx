@@ -657,7 +657,11 @@ export const Timeline = memo(function Timeline({
 
       <div
         ref={scrollContainerRef}
-        className="relative overflow-x-auto overflow-y-auto overscroll-contain min-h-0 flex-1 bg-neutral-50/50 md:bg-neutral-100/50"
+        className={`relative overflow-x-auto overflow-y-auto overscroll-contain min-h-0 flex-1 ${
+          // Presentatie/review (readOnly) hoort bij de witte inhoudskaart:
+          // geen grijze studio-tint achter de montagelijn (I6, wens Bert 19-7)
+          readOnly ? 'bg-bg-surface' : 'bg-neutral-50/50 md:bg-neutral-100/50'
+        }`}
         onClick={handleTimelineClick}
       >
         {/* Scrollable content wrapper — exact zo hoog als de inhoud, zodat
