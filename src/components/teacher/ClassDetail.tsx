@@ -288,15 +288,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   );
 
   const handlePresentClick = useCallback(() => {
-    // Keuze alleen tonen als die iets toevoegt: er is een actieve opdracht
-    // mét inzendingen, en die lijst verschilt van "alles".
-    if (activeAssignment && activeMatching.length > 0 && activeMatching.length < submitted.length) {
+    // Zodra er een actieve opdracht is, vraagt hij wát je wilt presenteren
+    // (I8, wens Bert). Ook bij nul inzendingen: dan zie je in de keuze dat
+    // die opdracht nog leeg is, i.p.v. verrast te worden door "alles".
+    if (activeAssignment) {
       setShowPresentChoice(true);
     } else {
       setPresentMode('all');
       setPresentIds(submitted.map((s) => s.id));
     }
-  }, [activeAssignment, activeMatching, submitted]);
+  }, [activeAssignment, submitted]);
 
   // I7: tijdens een lopende presentatie elke 20s de inzendingen verversen;
   // nieuwe items komen achteraan de playlist (append-effect hieronder), de
@@ -881,13 +882,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               setPresentMode('active');
               setPresentIds(activeMatching.map((s) => s.id));
             }}
-            className="w-full text-left rounded-xl border-2 border-accent-300 bg-accent-50 hover:bg-accent-100 px-4 py-3 transition-colors"
+            disabled={activeMatching.length === 0}
+            className="w-full text-left rounded-xl border-2 border-accent-300 bg-accent-50 hover:bg-accent-100 px-4 py-3 transition-colors disabled:opacity-50 disabled:pointer-events-none"
           >
             <span className="block text-sm font-bold text-text-main">
               {t('teacher.presentation.chooseActive', { count: activeMatching.length })}
             </span>
             <span className="block text-xs text-text-muted truncate">
-              {activeAssignment?.assignmentName}
+              {activeMatching.length === 0
+                ? t('teacher.presentation.chooseActiveEmpty')
+                : activeAssignment?.assignmentName}
             </span>
           </button>
           <button

@@ -1557,6 +1557,7 @@
       "chooseTitle": "Wat wil je presenteren?",
       "chooseDescription": "Presenteer alleen de inzendingen van de actieve opdracht, of alle composities van de klas.",
       "chooseActive": "Actieve opdracht ({{count}})",
+      "chooseActiveEmpty": "Nog geen inzendingen bij deze opdracht",
       "chooseAll": "Alle composities ({{count}})",
       "chooseAllHint": "Inclusief eerdere opdrachten en vrij werk",
       "refresh": "Ververs inzendingen (gaat ook automatisch elke 20 seconden)",

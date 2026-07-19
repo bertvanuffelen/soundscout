@@ -1557,6 +1557,7 @@
       "chooseTitle": "What do you want to present?",
       "chooseDescription": "Present only the submissions for the active assignment, or all compositions from the class.",
       "chooseActive": "Active assignment ({{count}})",
+      "chooseActiveEmpty": "No submissions for this assignment yet",
       "chooseAll": "All compositions ({{count}})",
       "chooseAllHint": "Including earlier assignments and free work",
       "refresh": "Refresh submissions (also happens automatically every 20 seconds)",
