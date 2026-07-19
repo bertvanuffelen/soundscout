@@ -6,7 +6,7 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, SlidersHorizontal, Clock, Check } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, Clock, Check } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
@@ -149,7 +149,6 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [albumTarget, setAlbumTarget] = useState<{ assignmentId: string; name: string } | null>(null);
   // Startkeuze (opdrachten-model 17-7): leskaart-picker of zelf samenstellen
   const [showLessonPicker, setShowLessonPicker] = useState(false);
-  const [showSelfCompose, setShowSelfCompose] = useState(false);
   // Historie: praatplaat verwijderen (incl. inzendingen) met bevestiging
   const [deletePastRow, setDeletePastRow] = useState<ClassAssignmentRow | null>(null);
   const [deletingPast, setDeletingPast] = useState(false);
@@ -491,23 +490,11 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     </p>
                   </div>
                 </div>
-                {/* Startkeuze (17-7): leskaart of zelf samenstellen */}
-                <div className="grid gap-3 sm:grid-cols-2 mb-3">
-                  <StartChoiceCard
-                    Icon={GraduationCap}
-                    title={t('assignments.startChoiceLesson')}
-                    description={t('assignments.startChoiceLessonDesc')}
-                    onClick={() => setShowLessonPicker(true)}
-                  />
-                  <StartChoiceCard
-                    Icon={SlidersHorizontal}
-                    title={t('assignments.startChoiceCustom')}
-                    description={t('assignments.startChoiceCustomDesc')}
-                    active={showSelfCompose}
-                    onClick={() => setShowSelfCompose((v) => !v)}
-                  />
-                </div>
-                {showSelfCompose && <AssignmentTypeCards onSelect={handlePickType} />}
+                {/* Startkeuze (I9, wens Bert 19-7): de vier type-kaarten staan
+                    meteen open — de tussenklik "Stel zelf samen" verviel. Wie
+                    liever een kant-en-klare leskaart pakt, klikt de knop eronder. */}
+                <AssignmentTypeCards onSelect={handlePickType} />
+                <LessonCardChoice onClick={() => setShowLessonPicker(true)} />
               </div>
             )}
 
@@ -632,28 +619,14 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               </div>
             )}
 
-            {/* Wijzig opdracht → startkeuze (17-7): leskaart of zelf samenstellen */}
+            {/* Wijzig opdracht → type-kaarten open + leskaart-knop (I9) */}
             {!assignmentLoading && activeAssignment && (
               <div className="mt-6">
                 <p className="text-sm font-semibold text-text-main mb-3">
                   {t('assignments.changeAssignment')}
                 </p>
-                <div className="grid gap-3 sm:grid-cols-2 mb-3">
-                  <StartChoiceCard
-                    Icon={GraduationCap}
-                    title={t('assignments.startChoiceLesson')}
-                    description={t('assignments.startChoiceLessonDesc')}
-                    onClick={() => setShowLessonPicker(true)}
-                  />
-                  <StartChoiceCard
-                    Icon={SlidersHorizontal}
-                    title={t('assignments.startChoiceCustom')}
-                    description={t('assignments.startChoiceCustomDesc')}
-                    active={showSelfCompose}
-                    onClick={() => setShowSelfCompose((v) => !v)}
-                  />
-                </div>
-                {showSelfCompose && <AssignmentTypeCards onSelect={handlePickType} />}
+                <AssignmentTypeCards onSelect={handlePickType} />
+                <LessonCardChoice onClick={() => setShowLessonPicker(true)} />
               </div>
             )}
           </div>
@@ -1125,38 +1098,22 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   );
 }
 
-// --- Startkeuze-kaart (leskaart / zelf samenstellen) ---
+// --- Alternatief onder de type-kaarten: kant-en-klare leskaart (I9) ---
 
-function StartChoiceCard({
-  Icon,
-  title,
-  description,
-  onClick,
-  active = false,
-}: {
-  Icon: typeof GraduationCap;
-  title: string;
-  description: string;
-  onClick: () => void;
-  active?: boolean;
-}) {
+function LessonCardChoice({ onClick }: { onClick: () => void }) {
+  const { t } = useTranslation();
   return (
     <button
       type="button"
       onClick={onClick}
-      aria-pressed={active}
-      className={`text-left p-4 rounded-2xl border-2 transition-all flex items-start gap-3 ${
-        active
-          ? 'border-accent-400 bg-accent-50'
-          : 'border-border-subtle bg-bg-surface hover:border-accent-300'
-      }`}
+      className="mt-3 w-full text-left p-4 rounded-2xl border-2 border-border-subtle bg-bg-surface hover:border-accent-300 transition-all flex items-center gap-3"
     >
       <div className="w-10 h-10 rounded-xl bg-accent-100 text-accent-700 flex items-center justify-center shrink-0">
-        <Icon className="w-5 h-5" aria-hidden="true" />
+        <GraduationCap className="w-5 h-5" aria-hidden="true" />
       </div>
       <div className="min-w-0">
-        <p className="font-semibold text-text-main text-sm">{title}</p>
-        <p className="text-text-muted text-xs mt-0.5">{description}</p>
+        <p className="font-semibold text-text-main text-sm">{t('assignments.startChoiceLessonAlt')}</p>
+        <p className="text-text-muted text-xs mt-0.5">{t('assignments.startChoiceLessonDesc')}</p>
       </div>
     </button>
   );

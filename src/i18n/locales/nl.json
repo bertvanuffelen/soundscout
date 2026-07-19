@@ -545,7 +545,7 @@
     "loading": "Compositie laden...",
     "listenTitle": "Heb je een compositie code?",
     "listenPlaceholder": "Voer code in",
-    "listen": "Beluister",
+    "listen": "Open code",
     "invalidCode": "Voer een geldige code in",
     "codeNotFound": "Code niet gevonden. Controleer het aantal tekens en of de code klopt.",
     "codeFormatHint": "4 cijfers = klascode · 6 tekens = bewaarcode · 8 tekens = luistercode",
@@ -628,8 +628,7 @@
     },
     "startChoiceLesson": "Gebruik een leskaart",
     "startChoiceLessonDesc": "Kant-en-klaar pakket met lesdoel en fases",
-    "startChoiceCustom": "Stel zelf samen",
-    "startChoiceCustomDesc": "Kies zelf de vorm, inhoud en opdrachtkaart",
+    "startChoiceLessonAlt": "Of kies een kant-en-klare leskaart",
     "durationLabel": "Tijdsduur (optioneel, zichtbaar voor leerlingen)",
     "durationPlaceholder": "bijv. 2 lessen"
   },

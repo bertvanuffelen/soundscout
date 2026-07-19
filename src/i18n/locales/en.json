@@ -545,7 +545,7 @@
     "loading": "Loading composition...",
     "listenTitle": "Got a composition code?",
     "listenPlaceholder": "Enter code",
-    "listen": "Listen",
+    "listen": "Open code",
     "invalidCode": "Please enter a valid code",
     "codeNotFound": "Code not found. Check the number of characters and if the code is correct.",
     "codeFormatHint": "4 digits = class code · 6 characters = save code · 8 characters = listen code",
@@ -628,8 +628,7 @@
     },
     "startChoiceLesson": "Use a lesson card",
     "startChoiceLessonDesc": "Ready-made package with lesson goal and phases",
-    "startChoiceCustom": "Build your own",
-    "startChoiceCustomDesc": "Pick the form, content and assignment card yourself",
+    "startChoiceLessonAlt": "Or pick a ready-made lesson card",
     "durationLabel": "Duration (optional, shown to pupils)",
     "durationPlaceholder": "e.g. 2 lessons"
   },
