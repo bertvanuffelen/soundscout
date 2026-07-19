@@ -181,7 +181,10 @@ export function StageActionsModal({
                   icon={saveSuccess ? <Check size={18} className="text-success-600" /> : <Save size={18} className="text-accent-600" />}
                   label={saveSuccess ? t('stage.saved') : t('stage.save')}
                   hint={t('stage.actionsSaveHint')}
-                  onClick={onSave}
+                  /* Sluit na opslaan (wens Bert, A3): de bevestiging verschijnt
+                     op het podium zelf — of de bewaar-waarschuwing neemt het
+                     over. In de modal blijven hangen voelde als "en nu?". */
+                  onClick={() => { onSave(); onClose(); }}
                   disabled={saveSuccess}
                 />
                 {/* Online bewaren: verborgen in klascode-flow (auto-sync regelt het) */}
