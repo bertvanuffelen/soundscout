@@ -60,9 +60,12 @@ Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
       praatplaat-rijen houden hun eigen oog/deel/prullenbak. Het oog opent de
       presentatie met precies de inzendingen van díe opdracht (grijs als er nog
       geen zijn).
-- [ ] **6. Presenteren-keuze**: klaslokaal → "Presenteren" → als er een actieve
-      opdracht mét inzendingen is én er zijn ook andere composities, vraagt hij
-      eerst: **"Actieve opdracht (n)"** of **"Alle composities (n)"**.
+- [ ] **6. Presenteren-keuze**: klaslokaal → "Presenteren" → zodra er een
+      actieve opdracht is, vraagt hij eerst: **"Actieve opdracht (n)"** of
+      **"Alle composities (n)"**. Heeft de actieve opdracht nog geen inzendingen,
+      dan staat die optie grijs met "Nog geen inzendingen bij deze opdracht" —
+      zo zie je meteen waaróm er niets van die opdracht te presenteren valt.
+      (Zonder actieve opdracht opent hij direct alles; dan valt er niets te kiezen.)
 - [ ] **7. Ververs tijdens presenteren**: in het presentatiescherm staat een
       ververs-knop (ronde pijl) in de kopbalk; nieuwe inzendingen komen daarnaast
       **elke 20 seconden vanzelf** achteraan de lijst, zonder de muziek te storen.
