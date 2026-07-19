@@ -6,7 +6,8 @@
  *   (zijpaneel, doorspelen, aankondigingsoverlay, feedbackrij)
  * - 'teacher-review': docent bekijkt één inzending (montagelijn default
  *   uitgeklapt, metadata-regel, feedbackrij)
- * - 'public': publieke luisterlink (kaal: geen zijpaneel/feedback)
+ * - 'public': publieke luisterlink (geen feedback; bij een album-playlist
+ *   van >1 items wél het zijpaneel + doorspelen, zonder status-toggle)
  * - 'peer': leerling beoordeelt anoniem (ratingSlot onder de kaart,
  *   geen namen)
  *
@@ -101,7 +102,9 @@ export function PresentationSurface({
 
   // --- Modus-afgeleide features ---
   const isTeacherMode = mode === 'teacher-present' || mode === 'teacher-review';
-  const hasPlaylistUi = mode === 'teacher-present' && playlist.length > 1;
+  // Zijpaneel + prev/next ook in de publieke albumviewer (I1, wens Bert 19-7):
+  // dit is hetzelfde universele presentatiescherm, alleen zonder docent-feedback.
+  const hasPlaylistUi = (mode === 'teacher-present' || mode === 'public') && playlist.length > 1;
   const showNames = mode !== 'peer';
 
   const [index, setIndex] = useState(0);
@@ -634,6 +637,7 @@ export function PresentationSurface({
                 <ListMusic className="w-4 h-4 text-accent-500" aria-hidden="true" />
                 {t('teacher.presentation.submissions', { count: playlist.length })}
               </span>
+              {isTeacherMode && (
               <button
                 onClick={() => setFeedbackStatusOn((v) => !v)}
                 aria-pressed={feedbackStatusOn}
@@ -656,6 +660,7 @@ export function PresentationSurface({
                   />
                 </span>
               </button>
+              )}
             </div>
 
             <ul className="p-2 space-y-1 overflow-y-auto flex-1">
