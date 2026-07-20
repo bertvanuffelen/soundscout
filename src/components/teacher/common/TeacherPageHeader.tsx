@@ -7,6 +7,7 @@
 
 import type { ReactNode } from 'react';
 import { ArrowLeft } from 'lucide-react';
+import { LanguageSwitcher } from '../../ui/LanguageSwitcher';
 import { cn } from '../../../utils/cn';
 
 interface TeacherPageHeaderProps {
@@ -18,6 +19,8 @@ interface TeacherPageHeaderProps {
   breadcrumb?: ReactNode;
   /** Rechtsboven: knoppen zoals Hulp / Uitloggen. */
   actions?: ReactNode;
+  /** Taalknop rechtsboven (default aan) — vaste plek op élk docentscherm. */
+  showLanguageSwitcher?: boolean;
   className?: string;
 }
 
@@ -28,6 +31,7 @@ export function TeacherPageHeader({
   backLabel,
   breadcrumb,
   actions,
+  showLanguageSwitcher = true,
   className,
 }: TeacherPageHeaderProps) {
   return (
@@ -49,7 +53,14 @@ export function TeacherPageHeader({
           </h1>
           {subtitle && <p className="text-sm text-brand-300 mt-0.5">{subtitle}</p>}
         </div>
-        {actions && <div className="flex items-center gap-3 flex-shrink-0">{actions}</div>}
+        {/* Taalknop staat altijd rechtsboven op dezelfde plek (wens Bert 19-7):
+            één voorspelbaar punt over dashboard, klaslokaal en gids heen. */}
+        {(actions || showLanguageSwitcher) && (
+          <div className="flex items-center gap-3 flex-shrink-0">
+            {actions}
+            {showLanguageSwitcher && <LanguageSwitcher variant="dark" />}
+          </div>
+        )}
       </div>
     </header>
   );

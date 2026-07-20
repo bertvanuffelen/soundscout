@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, ChevronDown, Play } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { Button } from '../ui';
+import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { cn } from '../../utils/cn';
 
 // --- Video helpers (zelfde provider als TutorialScreen) ---
@@ -166,7 +167,7 @@ export default function TeacherGuideScreen() {
           >
             <ArrowLeft className="w-5 h-5" />
           </button>
-          <div>
+          <div className="min-w-0 flex-1">
             <h1 className="text-xl sm:text-2xl font-bold text-white">
               {t('teacher.guide.title')}
             </h1>
@@ -174,6 +175,8 @@ export default function TeacherGuideScreen() {
               {t('teacher.guide.subtitle')}
             </p>
           </div>
+          {/* Taalknop op de vaste plek rechtsboven (wens Bert 19-7) */}
+          <LanguageSwitcher variant="dark" />
         </div>
       </header>
 

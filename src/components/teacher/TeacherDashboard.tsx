@@ -23,7 +23,6 @@ import type { Opdrachtkaart } from '../../types';
 import { signOut } from '../../lib/auth';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
-import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { CreateClassModal } from './CreateClassModal';
 import { ClassCard } from './ClassCard';
 import { TemplateCard } from './TemplateCard';
@@ -156,7 +155,6 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         backLabel={t('teacher.common.backToSoundScout')}
         actions={
           <>
-            <LanguageSwitcher variant="dark" />
             {isAdminEmail(user?.email) && (
               <button
                 onClick={() => setShowStats(true)}

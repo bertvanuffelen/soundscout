@@ -5,7 +5,22 @@ import en from './locales/en.json';
 
 // Persist language preference
 const LANG_KEY = 'soundscout-lang';
-const savedLang = localStorage.getItem(LANG_KEY) || 'nl';
+
+/**
+ * Starttaal bij een eerste bezoek: volg de browser (besluit Bert 19-7).
+ * Engelse browser → Engelse app; al het andere → Nederlands (de doelgroep is
+ * Nederlandstalig, dus NL is de veilige default). Een handmatige keuze wordt
+ * opgeslagen en wint altijd — ook als de browser iets anders zegt.
+ */
+function detectInitialLanguage(): string {
+  const saved = localStorage.getItem(LANG_KEY);
+  if (saved === 'nl' || saved === 'en') return saved;
+  const browserLangs = navigator.languages?.length ? navigator.languages : [navigator.language];
+  const prefersEnglish = browserLangs.some((l) => l?.toLowerCase().startsWith('en'));
+  return prefersEnglish ? 'en' : 'nl';
+}
+
+const savedLang = detectInitialLanguage();
 
 i18n.use(initReactI18next).init({
   resources: {
