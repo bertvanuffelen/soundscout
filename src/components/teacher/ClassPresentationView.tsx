@@ -27,9 +27,15 @@ interface ClassPresentationViewProps {
   classId?: string;
   /** Ververs de inzendingen (I7): kopbalk-knop; polling doet ClassDetail */
   onRefresh?: () => void;
+  /**
+   * Praatplaat-bord: bij een praatplaat-opdracht toont de presentatie de plaat
+   * met klikbare plekken i.p.v. één visual per inzending (bevinding Bert 19-7:
+   * het gedeelde album deed dit al wél, de docent-presentatie niet).
+   */
+  interactiveBoard?: { imageUrl: string; name: string } | null;
 }
 
-export function ClassPresentationView({ playlist, onClose, onSetFeedback, classId, onRefresh }: ClassPresentationViewProps) {
+export function ClassPresentationView({ playlist, onClose, onSetFeedback, classId, onRefresh, interactiveBoard = null }: ClassPresentationViewProps) {
   const [peerStars, setPeerStars] = useState<Map<string, number> | undefined>(undefined);
 
   useEffect(() => {
@@ -49,6 +55,7 @@ export function ClassPresentationView({ playlist, onClose, onSetFeedback, classI
       onSetFeedback={onSetFeedback}
       peerStars={peerStars}
       onRefresh={onRefresh}
+      interactiveBoard={interactiveBoard}
     />
   );
 }

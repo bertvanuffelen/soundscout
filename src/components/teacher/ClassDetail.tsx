@@ -922,6 +922,17 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           onSetFeedback={(id, feedback) => setFeedback(id, feedback)}
           classId={classData.id}
           onRefresh={() => void refetch()}
+          /* Praatplaat-opdracht → klikbaar bord i.p.v. losse visuals. Alleen
+             als je de áctieve opdracht presenteert: bij "alle composities"
+             zitten er ook inzendingen van andere opdrachten in de lijst, die
+             geen plek op dit bord hebben (bevinding Bert 19-7). */
+          interactiveBoard={
+            presentMode === 'active'
+              && activeAssignment?.type === 'praatplaat'
+              && activeAssignment.imageUrl
+              ? { imageUrl: activeAssignment.imageUrl, name: activeAssignment.assignmentName }
+              : null
+          }
         />
       )}
 
