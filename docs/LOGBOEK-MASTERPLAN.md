@@ -247,6 +247,17 @@ Bert liep het herstructureerde testplan na en zette er vier opmerkingen bij. Dri
 
 Daarnaast Berts besluiten uitgevoerd: **taalknop vast rechtsboven** op élk docentscherm (`TeacherPageHeader` draagt hem nu zelf; dubbele knop uit het dashboard) · **browsertaal bij een eerste bezoek** (`detectInitialLanguage`, opgeslagen keuze wint altijd; vier gevallen nagerekend) · **één "Delen"-knop per opdrachtrij** — bij een praatplaat vraagt een keuzemodaal bord-of-afspeellijst, want daar zijn écht twee dingen te delen; historie-rijen zijn nu uniform (oog + delen, prullenbak alleen bij praatplaat). Kleiner: "Opslaan" sluit de Opslaan & Delen-modal.
 
+## Historie-acties gelijkgetrokken (19-7 avond) + vondst: destructieve prullenbak
+
+Bert vroeg waarom alleen praatplaat-rijen een prullenbak hadden. Het onderzoek leverde meer op dan de vraag:
+
+- **Ik gaf eerst een fout antwoord.** Op grond van de comments in `005_praatplaten.sql` (r206) en `src/lib/praatplaat.ts` (r164) — beide: *"submissions blijven bewaard, praatplaat_id wordt NULL"* — meldde ik dat de waarschuwing "Alle ingestuurde composities worden ook verwijderd!" onjuist was. **Migratie 009 (`009_hard_delete_cascade.sql`, r16-21) zette die foreign key om naar `ON DELETE CASCADE`.** De waarschuwing klopt dus; de twee comments zijn sinds 009 achterhaald. Gecorrigeerd naar Bert en de comment in `praatplaat.ts` herschreven mét de reden, zodat niemand hier nog een tweede keer intrapt.
+- **Daarmee was de asymmetrie ernstiger dan gedacht**: op één rijtype stond een knop die onherstelbaar leerlingwerk vernietigde, op de andere drie niets.
+- **Opgelost volgens Berts lijn ("eenduidig voor alle vormen")**: `deleteAssignmentFromHistory` verwijdert alléén de `class_assignments`-regel; leerlingwerk blijft altijd staan en zichtbaar bij de inzendingen. Eén prullenbak op elke rij, eerlijke bevestigingstekst. Geen migratie nodig — de DELETE-policy bestaat al sinds migratie 006 (r91-93) — plus een `is_active`-klem zodat de lopende opdracht er nooit via deze weg uit kan.
+- `deletePraatplaat`/`usePraatplaten` blijken nergens meer aangeroepen (restcode van de verwijderde dashboard-library). Bewust laten staan: een heel subsysteem slopen vlak vóór deploy is een groter risico dan wat dode code.
+
+**Bewaartermijnen** (Berts vervolgvraag "hoe lang blijft het in Supabase staan?") uitgezocht en vastgelegd in `HANDLEIDING-BEHEER.md` §3: verwijderen is hard en direct, maar de "60 dagen" van bewaarcodes en de "30 dagen" van deellinks verwijderen níets — dat zijn filters in de RPC's; de rijen blijven onbeperkt bestaan. Er draait geen pg_cron. Openstaande AVG-vraag (Notion-taak): willen we een echte bewaartermijn voor leerlingwerk met namen erbij?
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).

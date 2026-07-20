@@ -111,6 +111,14 @@ Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
       Wisselen van compositie doe je in het zijpaneel, met ←/→ of via
       "Doorspelen". *(Jouw punt: hetzelfde icoon moest overal hetzelfde doen.)*
 
+- [ ] **21. Historie opruimen — overal hetzelfde, nooit destructief**: klaslokaal
+      → "Eerdere opdrachten" → élke rij heeft nu dezelfde vier acties (oog ·
+      delen · prullenbak · Activeer). Klik de prullenbak bij een storyboard- of
+      template-rij → de tekst zegt dat het leerlingwerk bewaard blijft →
+      bevestigen → de rij is weg **en de composities staan nog gewoon bij de
+      inzendingen**. Dat laatste is het punt: voorheen wiste de prullenbak bij
+      een praatplaat de inzendingen écht mee.
+
 ---
 
 ## 🎒 A. Leerling — basisflow

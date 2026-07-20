@@ -106,6 +106,31 @@ WHERE share_code IS NOT NULL
 DELETE FROM rate_limits WHERE key LIKE '%<klascode-of-sessie>%';
 ```
 
+### Bewaartermijnen — wat blijft er staan, en hoe lang?
+
+**Stand 19-7: er is geen automatische opschoning.** Goed om te weten voordat je
+hierover iets aan scholen belooft:
+
+| Actie | Wat gebeurt er echt |
+|---|---|
+| Klas verwijderen | Harde delete. Alle inzendingen van die klas gaan cascade mee (migratie 009). Direct weg, geen prullenbak. |
+| Praatplaat verwijderen | Harde delete. De inzendingen van díe praatplaat gaan mee (migratie 009 — de comment in migratie 005 zegt iets anders en is achterhaald). |
+| Opdracht uit historie halen | Alleen de `class_assignments`-regel. Leerlingwerk blijft staan. |
+| Bewaarcode "verlopen" na 60 dagen | **Verwijdert niets.** Het is een filter in de RPC's (`AND last_updated_at > NOW() - INTERVAL '60 days'`): de code werkt niet meer, de rij blijft onbeperkt bestaan. |
+| Deel-/albumcode "verlopen" na 30 dagen | Idem — de link werkt niet meer, de rij blijft. |
+
+Er draait **geen** pg_cron of scheduled function. De opruim-queries hierboven in
+deze sectie zijn handmatig en worden nu door niemand periodiek uitgevoerd.
+
+Let daarnaast op de **backups** van Supabase: ook een harde delete leeft daarin
+door tot de backup-retentie van je abonnement verlopen is (na te kijken in het
+Supabase-dashboard onder Database → Backups).
+
+**Open vraag** (staat als taak in Notion): willen we een echte bewaartermijn —
+bijvoorbeeld leerlingwerk automatisch opruimen na X maanden inactiviteit — en
+sluit onze privacytekst daarop aan? Het gaat om werk van kinderen met hun naam
+erbij, dus dit is een AVG-vraag en niet alleen een opruimkwestie.
+
 ---
 
 ## 4. Thema's en locaties
