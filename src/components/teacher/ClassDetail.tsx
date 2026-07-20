@@ -147,6 +147,21 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const [shareTarget, setShareTarget] = useState<{ praatplaatId: string; name: string } | null>(null);
   // Klas-album delen (R4): per opdracht, elk type
   const [albumTarget, setAlbumTarget] = useState<{ assignmentId: string; name: string } | null>(null);
+  // Eén "Delen"-knop per rij (wens Bert 19-7). Bij een praatplaat kun je twee
+  // dingen delen — het klikbare bord óf de composities als afspeellijst — dus
+  // vraagt dit keuzemodaal eerst welke van de twee. Andere types: direct album.
+  const [shareChoice, setShareChoice] = useState<
+    { assignmentId: string; name: string; praatplaatId: string } | null
+  >(null);
+
+  /** Deel-actie voor één opdrachtrij: keuze bij praatplaat, anders het album. */
+  const openShare = useCallback((row: { id: string; assignmentName: string; type: AssignmentType; praatplaatId: string | null }) => {
+    if (row.type === 'praatplaat' && row.praatplaatId) {
+      setShareChoice({ assignmentId: row.id, name: row.assignmentName, praatplaatId: row.praatplaatId });
+    } else {
+      setAlbumTarget({ assignmentId: row.id, name: row.assignmentName });
+    }
+  }, []);
   // Startkeuze (opdrachten-model 17-7): leskaart-picker of zelf samenstellen
   const [showLessonPicker, setShowLessonPicker] = useState(false);
   // Historie: praatplaat verwijderen (incl. inzendingen) met bevestiging
@@ -582,27 +597,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       {t('teacher.praatplaat.openPraatplaat')}
                     </Button>
                   )}
-                  {/* Deel link — voor praatplaat (#73) */}
-                  {activeAssignment.type === 'praatplaat' && activeAssignment.praatplaatId && (
-                    <Button
-                      variant="secondary"
-                      size="sm"
-                      onClick={() => setShareTarget({ praatplaatId: activeAssignment.praatplaatId!, name: activeAssignment.assignmentName })}
-                      className="inline-flex items-center gap-1"
-                    >
-                      <Share2 className="w-4 h-4" />
-                      {t('teacher.praatplaat.share')}
-                    </Button>
-                  )}
-                  {/* Klas-album delen (R4) — elk opdrachttype */}
+                  {/* Eén deelknop (wens Bert 19-7): bij een praatplaat vraagt
+                      hij eerst bord of afspeellijst, anders direct het album. */}
                   <Button
                     variant="secondary"
                     size="sm"
-                    onClick={() => setAlbumTarget({ assignmentId: activeAssignment.id, name: activeAssignment.assignmentName })}
+                    onClick={() => openShare(activeAssignment)}
                     className="inline-flex items-center gap-1"
                   >
-                    <MonitorPlay className="w-4 h-4" />
-                    {t('album.shareButton')}
+                    <Share2 className="w-4 h-4" />
+                    {t('teacher.share.button')}
                   </Button>
                   <Button
                     variant="ghost"
@@ -667,53 +671,44 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       {new Date(pa.activatedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
-                  {/* Bekijken bij élk niet-praatplaat-type: opent de presentatie
-                      met de bijbehorende inzendingen (I5, testronde 4 — Berts
-                      storyboard-rij had alleen 'Deel album'). Praatplaat houdt
-                      zijn eigen oog dat het bord opent. */}
-                  {pa.type !== 'praatplaat' && (() => {
+                  {/* Elke rij dezelfde twee acties (wens Bert 19-7): bekijken
+                      en delen. Bij een praatplaat opent het oog het klikbare
+                      bord; bij de rest de presentatie met díe inzendingen. */}
+                  {(() => {
                     const matching = submitted.filter((s) => submissionMatchesAssignment(s, pa));
+                    const isBoard = pa.type === 'praatplaat' && !!pa.praatplaatId;
                     return (
                       <button
                         onClick={() => {
-                          setPresentMode('custom');
-                          setPresentIds(matching.map((s) => s.id));
+                          if (isBoard) {
+                            void openPraatplaatById(pa.praatplaatId!);
+                          } else {
+                            setPresentMode('custom');
+                            setPresentIds(matching.map((s) => s.id));
+                          }
                         }}
-                        disabled={matching.length === 0}
+                        disabled={!isBoard && matching.length === 0}
                         className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors shrink-0 disabled:opacity-30 disabled:pointer-events-none"
-                        title={matching.length === 0
-                          ? t('assignments.historyViewEmpty')
-                          : t('assignments.historyView', { count: matching.length })}
+                        title={isBoard
+                          ? t('teacher.praatplaat.openPraatplaat')
+                          : matching.length === 0
+                            ? t('assignments.historyViewEmpty')
+                            : t('assignments.historyView', { count: matching.length })}
                       >
                         <Eye className="w-4 h-4" aria-hidden="true" />
                       </button>
                     );
                   })()}
-                  {/* Album delen kan bij élk type uit de historie (R4) */}
                   <button
-                    onClick={() => setAlbumTarget({ assignmentId: pa.id, name: pa.assignmentName })}
+                    onClick={() => openShare(pa)}
                     className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors shrink-0"
-                    title={t('album.shareButton')}
+                    title={t('teacher.share.button')}
                   >
-                    <MonitorPlay className="w-4 h-4" aria-hidden="true" />
+                    <Share2 className="w-4 h-4" aria-hidden="true" />
                   </button>
-                  {/* Praatplaat-historie: bekijken/delen/verwijderen zonder heractiveren (M3) */}
+                  {/* Alleen praatplaten kunnen echt weg (incl. inzendingen, M3) */}
                   {pa.type === 'praatplaat' && pa.praatplaatId && (
                     <div className="flex items-center gap-0.5 shrink-0">
-                      <button
-                        onClick={() => void openPraatplaatById(pa.praatplaatId!)}
-                        className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors"
-                        title={t('teacher.praatplaat.openPraatplaat')}
-                      >
-                        <Eye className="w-4 h-4" aria-hidden="true" />
-                      </button>
-                      <button
-                        onClick={() => setShareTarget({ praatplaatId: pa.praatplaatId!, name: pa.assignmentName })}
-                        className="p-2 text-text-muted hover:text-text-main rounded-lg hover:bg-neutral-100 transition-colors"
-                        title={t('teacher.praatplaat.share')}
-                      >
-                        <Share2 className="w-4 h-4" aria-hidden="true" />
-                      </button>
                       <button
                         onClick={() => setDeletePastRow(pa)}
                         className="p-2 text-text-muted hover:text-error-500 rounded-lg hover:bg-neutral-100 transition-colors"
@@ -864,6 +859,42 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           setPresentIds(ids);
         }}
       />
+
+      {/* Deel-keuze bij een praatplaat: bord of afspeellijst (wens Bert 19-7) */}
+      <Modal
+        isOpen={!!shareChoice}
+        onClose={() => setShareChoice(null)}
+        title={t('teacher.share.chooseTitle')}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-4 leading-relaxed">
+          {t('teacher.share.chooseDescription')}
+        </p>
+        <div className="flex flex-col gap-2">
+          <button
+            onClick={() => {
+              if (!shareChoice) return;
+              setShareTarget({ praatplaatId: shareChoice.praatplaatId, name: shareChoice.name });
+              setShareChoice(null);
+            }}
+            className="w-full text-left rounded-xl border-2 border-accent-300 bg-accent-50 hover:bg-accent-100 px-4 py-3 transition-colors"
+          >
+            <span className="block text-sm font-bold text-text-main">{t('teacher.share.chooseBoard')}</span>
+            <span className="block text-xs text-text-muted">{t('teacher.share.chooseBoardHint')}</span>
+          </button>
+          <button
+            onClick={() => {
+              if (!shareChoice) return;
+              setAlbumTarget({ assignmentId: shareChoice.assignmentId, name: shareChoice.name });
+              setShareChoice(null);
+            }}
+            className="w-full text-left rounded-xl border-2 border-border-subtle bg-bg-surface hover:bg-neutral-50 px-4 py-3 transition-colors"
+          >
+            <span className="block text-sm font-bold text-text-main">{t('teacher.share.chooseAlbum')}</span>
+            <span className="block text-xs text-text-muted">{t('teacher.share.chooseAlbumHint')}</span>
+          </button>
+        </div>
+      </Modal>
 
       {/* Presenteren-keuze: actieve opdracht of alles (I8, testronde 4) */}
       <Modal

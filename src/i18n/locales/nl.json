@@ -1768,6 +1768,15 @@
         "video_export": "Video-exports",
         "teacher_dashboard_opened": "Docentendashboard geopend"
       }
+    },
+    "share": {
+      "button": "Delen",
+      "chooseTitle": "Wat wil je delen?",
+      "chooseDescription": "Van een praatplaat kun je twee dingen delen: het bord om op te klikken, of de composities als afspeellijst.",
+      "chooseBoard": "Het bord",
+      "chooseBoardHint": "De plaat met klikbare plekken — luisteraars klikken zelf rond",
+      "chooseAlbum": "De composities",
+      "chooseAlbumHint": "Alle ingeleverde composities als afspeellijst achter elkaar"
     }
   },
   "praatplaatImages": {

@@ -21,10 +21,10 @@ Automatische gates zijn groen: `npx tsc -b --noEmit` · `npm run test:run` (266 
 
 ## ⚠️ Eerst dit (acties voor Bert)
 
-- [ ] **Migraties 032 en 033 draaien** in de Supabase SQL Editor:
+- [x] **Migraties 032 en 033 draaien** in de Supabase SQL Editor:
       `032_fix_lesson_card_inline_match.sql` (juiste uitlegkaart bij template-leskaarten) ·
       `033_assignment_duration_label.sql` (tijdsduur-veld op een opdracht).
-- [ ] **Supabase Redirect URLs**: Authentication → URL Configuration → toevoegen:
+- [x] **Supabase Redirect URLs**: Authentication → URL Configuration → toevoegen:
       `https://soundscout.techindeles.nl/*` (naast localhost). Zónder deze regel
       landt elke wachtwoord-reset-mail op `otp_expired` — dat is wat je zag bij 1a.
 - [ ] Daarna **een verse reset-mail** aanvragen en direct klikken (elke eerder
@@ -36,83 +36,83 @@ Automatische gates zijn groen: `npx tsc -b --noEmit` · `npm run test:run` (266 
 
 Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
 
-- [ ] **1. Album met afspeellijst** (was: geen zijpaneel): open een album-link met
+- [x] **1. Album met afspeellijst** (was: geen zijpaneel): open een album-link met
       ≥2 composities → rechts staat nu het zijpaneel met alle composities, plus
       vorige/volgende-knoppen en "Doorspelen". Geen docent-feedbackstatus — dat
       blijft docent-only. *(Antwoord op je vraag: ja, dit ís het universele
       presentatiescherm; de publieke variant miste alleen de lijst.)*
-- [ ] **2. Albumcode groot**: klaslokaal → "Deel album" → de 8-tekens code staat
+- [X] **2. Albumcode groot**: klaslokaal → "Deel album" → de 8-tekens code staat
       nu groot bovenaan de modal (zelfde formaat als de klascode), met daaronder
       de link + QR.
-- [ ] **3. Leskaart-pagina opent in een nieuw tabblad**: `/teacher` → een leskaart
+- [X] **3. Leskaart-pagina opent in een nieuw tabblad**: `/teacher` → een leskaart
       → "Bekijk de leskaart" → nieuw tabblad met de lespagina (niet meer de app).
       *(Antwoord op je vraag "hoe kom ik daar en wat is de functie?": je komt er
       via deze knop op `/teacher`; de pagina is een **lees-/deelpagina** — bedoeld
       om aan een collega te sturen of te laten vinden via Google. Lesgeven doe je
-      via "Open voor je klas".)*
-- [ ] **4. EffectsModal focus-trap**: studio → clip selecteren → effecten →
+      via "Open voor je klas".)* ==> WERKT GOED. Hoe en waar maken we deze lespagina's aan om beschibaar te stellen voor delen. En hoe kan ik eventuele teksten aanpassen?
+- [X] **4. EffectsModal focus-trap**: studio → clip selecteren → effecten →
       **Tab** blijven drukken, ook nadat je pitch/reverb op 0 zet: de focus blijft
       binnen de modal. *(Oorzaak die nog restte: als het gefocuste element
       verdween — de reset-knop verdwijnt bij waarde 0 — sprong de focus naar de
       achtergrond. Nu vangt de trap dat af.)*
-- [ ] **5. Historie-acties compleet**: klaslokaal → "Eerdere opdrachten" → élke
+- [? X ] **5. Historie-acties compleet**: klaslokaal → "Eerdere opdrachten" → élke
       rij heeft nu **oog (bekijk inzendingen)**, **Deel album** en **Activeer**;
       praatplaat-rijen houden hun eigen oog/deel/prullenbak. Het oog opent de
       presentatie met precies de inzendingen van díe opdracht (grijs als er nog
-      geen zijn).
-- [ ] **6. Presenteren-keuze**: klaslokaal → "Presenteren" → zodra er een
+      geen zijn). ==> Werkt maar waarom behandelen we praatplaten anders? Is dit niet gewoon universeel? En waarom staat er bij praatplaten delen met leerlingen als dit eigenlijk gewoon via klascode gaat? Of heeft dit een andere betekenis?
+- [X] **6. Presenteren-keuze**: klaslokaal → "Presenteren" → zodra er een
       actieve opdracht is, vraagt hij eerst: **"Actieve opdracht (n)"** of
       **"Alle composities (n)"**. Heeft de actieve opdracht nog geen inzendingen,
       dan staat die optie grijs met "Nog geen inzendingen bij deze opdracht" —
       zo zie je meteen waaróm er niets van die opdracht te presenteren valt.
       (Zonder actieve opdracht opent hij direct alles; dan valt er niets te kiezen.)
-- [ ] **7. Ververs tijdens presenteren**: in het presentatiescherm staat een
+- [X] **7. Ververs tijdens presenteren**: in het presentatiescherm staat een
       ververs-knop (ronde pijl) in de kopbalk; nieuwe inzendingen komen daarnaast
       **elke 20 seconden vanzelf** achteraan de lijst, zonder de muziek te storen.
-- [ ] **8. Montagelijn wit**: presentatiescherm → montagelijn openen → de balk
+- [X] **8. Montagelijn wit**: presentatiescherm → montagelijn openen → de balk
       achter de sporen is wit (was grijzig).
-- [ ] **9. Klaslokaal-startkeuze**: "Kies/Wijzig opdracht" toont nu meteen de
+- [X] **9. Klaslokaal-startkeuze**: "Kies/Wijzig opdracht" toont nu meteen de
       **vier type-kaarten** (geen tussenklik "Stel zelf samen" meer), met daaronder
       één knop **"Of kies een kant-en-klare leskaart"**.
-- [ ] **10. "Open code"**: startscherm → "Ik heb een code" → de knop heet nu
+- [X] **10. "Open code"**: startscherm → "Ik heb een code" → de knop heet nu
       **Open code** (was "Beluister"). Ook in EN controleren.
-- [ ] **11. "Lever in"-knop**: leerling met klascode → podium → Opslaan & Delen →
+- [X] **11. "Lever in"-knop**: leerling met klascode → podium → Opslaan & Delen →
       kolom "Voor de klas" heeft nu een echte knop **"Lever in"**; de modal sluit
       na het inleveren en de knop is bij een volgende keer gewoon weer beschikbaar.
       **"Presenteren op het digibord" is daar weg voor leerlingen** — die knop is
       alleen nog zichtbaar als jij als docent bent ingelogd.
-- [ ] **12. Leskaart-covers op /teacher**: het detailpaneel rechts toont nu de
+- [X] **12. Leskaart-covers op /teacher**: het detailpaneel rechts toont nu de
       plaat/cover boven de titel (zoals in het dashboard).
 
 ---
 
 ## 🎒 A. Leerling — basisflow
 
-- [ ] **A1. Rooktest**: Start → Nieuwe compositie → thema → Kaart → Locatie →
+- [X] **A1. Rooktest**: Start → Nieuwe compositie → thema → Kaart → Locatie →
       geluiden verzamelen → Studio → Podium. Geluid speelt, geen console-fouten.
-- [ ] **A2. Taal**: NL/EN wisselen op het startscherm én op `/teacher` en in het
+- [? X ] **A2. Taal**: NL/EN wisselen op het startscherm én op `/teacher` en in het
       dashboard; steekproef dat teksten meeveranderen (ook nieuwe knoppen uit
-      testronde 4: "Open code", "Lever in", "Bekijk inzendingen").
-- [ ] **A3. Composities hervatten**: "Mijn composities" → een opgeslagen werk
-      heropenen → studio en podium kloppen.
-- [ ] **A4. Tutorial**: "Hoe werkt het?" → video's spelen (op iPad: geen zwart vlak).
+      testronde 4: "Open code", "Lever in", "Bekijk inzendingen"). ==> WERKT maar zou er altijd in alle teacher en dashboard schermen die kleine toggle EN/NE helemaal rechtsboven kunnen staan? Het zou mooi zijn als we een universele plek hebben die altijd snel te vinden is in je scherm. En is de standaard taalkeuze altijd gekoppeld aan de browser instelling?
+- [-] **A3. Composities hervatten**: "Mijn composities" → een opgeslagen werk
+      heropenen → studio en podium kloppen. ==> Opslaan werkt. Kan je n de modal "Opslaan & Delen" als je op de knop "Opslaan" klikt na het opslaan de modal laten sluiten? En kan je de tab-functie in deze modal ook aanzetten? Ik had overigens geklikt op "Bewaar online" en wilde de code openen in een andere browser. Hij vond de code maar de tijd-/montagelijn was leeg. Wordt de tijdlijn montagelijn wel opgeslagen voordat het online wordt bewaard?
+- [X] **A4. Tutorial**: "Hoe werkt het?" → video's spelen (op iPad: geen zwart vlak).
 
 ## 🎛️ B. Studio (DAW-ronde) — nog niet getest
 
 ### B1. Tijdlijn en sporen
-- [ ] Onder de sporen is **"spoor toevoegen" de onderste rij** — geen grijs vlak
+- [X] Onder de sporen is **"spoor toevoegen" de onderste rij** — geen grijs vlak
       of doorlopende afspeellijn eronder.
-- [ ] Sleep een sample zodat de auto-scroll je omlaag duwt: je kunt niet voorbij
+- [X] Sleep een sample zodat de auto-scroll je omlaag duwt: je kunt niet voorbij
       de "spoor toevoegen"-rij scrollen; scrollen "lekt" niet naar de pagina.
-- [ ] **"+8" / "−8"**: liniaal telt door (36, 40, …), clips blijven exact staan;
+- [X] **"+8" / "−8"**: liniaal telt door (36, 40, …), clips blijven exact staan;
       vier keer "+8" → 64 maten → knop inactief; "−8" tot 16 maten → inactief.
-- [ ] **Inhoud-bescherming**: clip op maat 20 → "−8" kan tot 24, niet verder
+- [X] **Inhoud-bescherming**: clip op maat 20 → "−8" kan tot 24, niet verder
       (knop inactief). Zelfde voor secties.
-- [ ] Clip op maat 40 speelt af **én** zit in de MP3-export; opslaan/heropenen
+- [X] Clip op maat 40 speelt af **én** zit in de MP3-export; opslaan/heropenen
       behoudt de lengte; een oude compositie opent gewoon op 32 maten.
-- [ ] **"+ spoor"**: tot 12 sporen; regel verdwijnt op 12. **Cruciaal**: een clip
+- [X] **"+ spoor"**: tot 12 sporen; regel verdwijnt op 12. **Cruciaal**: een clip
       op spoor 9+ is hoorbaar.
-- [ ] **Solo**: spoorkop → volume-icoon → koptelefoon → alleen dat spoor klinkt,
+- [X] **Solo**: spoorkop → volume-icoon → koptelefoon → alleen dat spoor klinkt,
       ook midden in het afspelen. Solo is tijdelijk: "Naar podium" → volle mix.
 
 ### B2. Secties, zoom, clips

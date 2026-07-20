@@ -1768,6 +1768,15 @@
         "video_export": "Video exports",
         "teacher_dashboard_opened": "Teacher dashboard opened"
       }
+    },
+    "share": {
+      "button": "Share",
+      "chooseTitle": "What do you want to share?",
+      "chooseDescription": "A sound map can be shared two ways: the board to click on, or the compositions as a playlist.",
+      "chooseBoard": "The board",
+      "chooseBoardHint": "The image with clickable spots — listeners explore it themselves",
+      "chooseAlbum": "The compositions",
+      "chooseAlbumHint": "All submitted compositions as one playlist"
     }
   },
   "praatplaatImages": {
