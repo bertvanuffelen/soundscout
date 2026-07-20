@@ -106,6 +106,11 @@ Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
       taalinstelling → app start in het Engels; Nederlandse browser → Nederlands.
       Zet je zelf de taal om, dan wint die keuze altijd.
 
+- [ ] **20. Transportknoppen in de presentatie**: ⏮ zet de compositie die je
+      hoort terug naar het begin (net als in de studio); er is geen ⏭ meer.
+      Wisselen van compositie doe je in het zijpaneel, met ←/→ of via
+      "Doorspelen". *(Jouw punt: hetzelfde icoon moest overal hetzelfde doen.)*
+
 ---
 
 ## 🎒 A. Leerling — basisflow
