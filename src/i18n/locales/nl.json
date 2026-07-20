@@ -632,7 +632,9 @@
     "startChoiceLessonDesc": "Kant-en-klaar pakket met lesdoel en fases",
     "startChoiceLessonAlt": "Of kies een kant-en-klare leskaart",
     "durationLabel": "Tijdsduur (optioneel, zichtbaar voor leerlingen)",
-    "durationPlaceholder": "bijv. 2 lessen"
+    "durationPlaceholder": "bijv. 2 lessen",
+    "historyDeleteTitle": "Opdracht uit je overzicht halen",
+    "historyDeleteConfirm": "\"{{name}}\" verdwijnt uit Eerdere opdrachten.\n\nDe composities van je leerlingen blijven gewoon bewaard — die vind je terug bij de inzendingen. Let op: een gedeeld album van déze opdracht werkt daarna niet meer."
   },
   "assignmentCards": {
     "sectionTitle": "Mijn opdrachtkaarten",
@@ -1027,7 +1029,8 @@
       "activateTemplate": "Kon template niet activeren",
       "activateStoryboard": "Kon storyboard niet activeren",
       "activateFree": "Kon vrije opdracht niet activeren",
-      "duration": "Kon tijdsduur niet opslaan"
+      "duration": "Kon tijdsduur niet opslaan",
+      "delete": "Deze opdracht kon niet uit je overzicht worden gehaald."
     },
     "classes": {
       "load": "Kon klassen niet laden",

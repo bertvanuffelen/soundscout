@@ -11,6 +11,7 @@ import {
   fetchPastAssignments,
   activateAssignment,
   deactivateAssignment,
+  deleteAssignmentFromHistory,
 } from '../lib/assignments';
 import type { ClassAssignmentRow } from '../lib/assignments';
 import { activatePraatplaatFromCatalog } from '../lib/praatplaat';
@@ -40,6 +41,8 @@ interface UseClassAssignmentReturn {
   activateFree: (themeId: string, cardId?: string | null) => Promise<void>;
   /** Deactiveer de huidige opdracht */
   deactivate: () => Promise<void>;
+  /** Haal een afgeronde opdracht uit de historie (leerlingwerk blijft staan) */
+  removeFromHistory: (assignmentId: string) => Promise<void>;
   /** Herlaad data */
   refetch: () => Promise<void>;
 }
@@ -149,9 +152,23 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     }
   }, [classId]);
 
+  /** Haal een afgeronde opdracht uit de historie (leerlingwerk blijft staan). */
+  const removeFromHistory = useCallback(async (assignmentId: string) => {
+    setOperationError(null);
+    try {
+      await deleteAssignmentFromHistory(assignmentId);
+      setPastAssignments((prev) => prev.filter((row) => row.id !== assignmentId));
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.delete');
+      setOperationError(msg);
+      throw err;
+    }
+  }, []);
+
   return {
     activeAssignment,
     pastAssignments,
+    removeFromHistory,
     loading,
     error,
     operationError,

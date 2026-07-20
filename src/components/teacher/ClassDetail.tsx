@@ -107,6 +107,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     activateStoryboard: activateStoryboardAssignment,
     activateFree: activateFreeAssignment,
     deactivate: deactivateAssignment,
+    removeFromHistory,
     refetch: refetchAssignment,
   } = useClassAssignment(classData.id);
 
@@ -706,18 +707,17 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   >
                     <Share2 className="w-4 h-4" aria-hidden="true" />
                   </button>
-                  {/* Alleen praatplaten kunnen echt weg (incl. inzendingen, M3) */}
-                  {pa.type === 'praatplaat' && pa.praatplaatId && (
-                    <div className="flex items-center gap-0.5 shrink-0">
-                      <button
-                        onClick={() => setDeletePastRow(pa)}
-                        className="p-2 text-text-muted hover:text-error-500 rounded-lg hover:bg-neutral-100 transition-colors"
-                        title={t('common.delete')}
-                      >
-                        <Trash2 className="w-4 h-4" aria-hidden="true" />
-                      </button>
-                    </div>
-                  )}
+                  {/* Uit je overzicht halen — bij élk type hetzelfde, en nooit
+                      destructief: het leerlingwerk blijft bij de inzendingen
+                      staan (besluit Bert 19-7; voorheen alleen bij praatplaat,
+                      en dáár verdwenen de inzendingen wél mee). */}
+                  <button
+                    onClick={() => setDeletePastRow(pa)}
+                    className="p-2 text-text-muted hover:text-error-500 rounded-lg hover:bg-neutral-100 transition-colors shrink-0"
+                    title={t('assignments.historyDeleteTitle')}
+                  >
+                    <Trash2 className="w-4 h-4" aria-hidden="true" />
+                  </button>
                   <Button
                     variant="secondary"
                     size="sm"
@@ -1048,15 +1048,15 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
         onActivated={() => { void refetchAssignment(); }}
       />
 
-      {/* Praatplaat uit historie verwijderen (incl. inzendingen) */}
+      {/* Opdracht uit de historie halen — leerlingwerk blijft bewaard */}
       <Modal
         isOpen={!!deletePastRow}
         onClose={() => setDeletePastRow(null)}
-        title={t('teacher.praatplaat.deleteTitle')}
+        title={t('assignments.historyDeleteTitle')}
         size="sm"
       >
         <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line text-center">
-          {t('teacher.praatplaat.deleteConfirm')}
+          {t('assignments.historyDeleteConfirm', { name: deletePastRow?.assignmentName ?? '' })}
         </p>
         <div className="flex gap-3">
           <Button variant="secondary" onClick={() => setDeletePastRow(null)} className="flex-1" disabled={deletingPast}>
@@ -1066,15 +1066,13 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             variant="primary"
             isLoading={deletingPast}
             onClick={async () => {
-              if (!deletePastRow?.praatplaatId) return;
+              if (!deletePastRow) return;
               setDeletingPast(true);
               try {
-                const { deletePraatplaat } = await import('../../lib/praatplaat');
-                await deletePraatplaat(deletePastRow.praatplaatId);
-                await refetchAssignment();
+                await removeFromHistory(deletePastRow.id);
                 setDeletePastRow(null);
               } catch (err) {
-                logger.error('Praatplaat verwijderen mislukt:', err);
+                logger.error('Opdracht uit historie halen mislukt:', err);
               }
               setDeletingPast(false);
             }}

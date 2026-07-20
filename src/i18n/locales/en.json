@@ -632,7 +632,9 @@
     "startChoiceLessonDesc": "Ready-made package with lesson goal and phases",
     "startChoiceLessonAlt": "Or pick a ready-made lesson card",
     "durationLabel": "Duration (optional, shown to pupils)",
-    "durationPlaceholder": "e.g. 2 lessons"
+    "durationPlaceholder": "e.g. 2 lessons",
+    "historyDeleteTitle": "Remove assignment from your overview",
+    "historyDeleteConfirm": "\"{{name}}\" disappears from Previous assignments.\n\nYour students' compositions are kept — you'll still find them with the submissions. Note: a shared album of this assignment will stop working."
   },
   "assignmentCards": {
     "sectionTitle": "My assignment cards",
@@ -1027,7 +1029,8 @@
       "activateTemplate": "Could not activate the template",
       "activateStoryboard": "Could not activate the storyboard",
       "activateFree": "Could not activate the free assignment",
-      "duration": "Could not save the duration"
+      "duration": "Could not save the duration",
+      "delete": "This assignment could not be removed from your overview."
     },
     "classes": {
       "load": "Could not load your classes",

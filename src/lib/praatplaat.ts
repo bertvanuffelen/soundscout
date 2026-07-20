@@ -161,7 +161,16 @@ export async function deactivatePraatplaat(praatplaatId: string): Promise<boolea
 }
 
 /**
- * Verwijder een praatplaat. Submissions blijven bewaard (praatplaat_id wordt NULL).
+ * Verwijder een praatplaat — DESTRUCTIEF.
+ *
+ * ⚠️ De inzendingen van deze praatplaat gaan mee: migratie 009 zette
+ * `submissions.praatplaat_id` om naar `ON DELETE CASCADE`. De comments in
+ * migratie 005 ("praatplaat_id wordt NULL") zijn sindsdien achterhaald —
+ * ze hebben al een keer tot een verkeerde conclusie geleid.
+ *
+ * Wil je alleen een opdracht uit het historie-overzicht halen zónder
+ * leerlingwerk te wissen, gebruik dan `deleteAssignmentFromHistory`
+ * uit `src/lib/assignments.ts`.
  */
 export async function deletePraatplaat(praatplaatId: string): Promise<boolean> {
   const supabase = await getSupabase();

@@ -476,6 +476,30 @@ export async function updateAssignmentDuration(
 }
 
 /**
+ * Haal een afgeronde opdracht uit de historie van een klas.
+ *
+ * Verwijdert alléén de class_assignments-regel: het leerlingwerk blijft staan
+ * (submissions hangen aan de klas, niet aan deze rij) en blijft zichtbaar bij
+ * de inzendingen. Bewust niet-destructief — opruimen van je overzicht en
+ * leerlingwerk weggooien horen twee verschillende dingen te zijn.
+ *
+ * De is_active-klem maakt het onmogelijk om via deze weg de lopende opdracht
+ * te wissen; de historie toont sowieso alleen inactieve rijen.
+ */
+export async function deleteAssignmentFromHistory(assignmentId: string): Promise<void> {
+  const supabase = await getSupabase();
+  const { error } = await supabase
+    .from('class_assignments')
+    .delete()
+    .eq('id', assignmentId)
+    .eq('is_active', false);
+  if (error) {
+    logger.error('deleteAssignmentFromHistory error:', sanitizeError(error));
+    throw new Error(i18n.t('errors.assignments.delete'));
+  }
+}
+
+/**
  * Haal eerdere (gedeactiveerde) opdrachten op voor een klas.
  * Gesorteerd op activated_at (nieuwste eerst).
  */
