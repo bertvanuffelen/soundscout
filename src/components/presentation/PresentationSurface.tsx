@@ -21,7 +21,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  X, Play, Pause, SkipBack, SkipForward, ListMusic, Loader2,
+  X, Play, Pause, SkipBack, ListMusic, Loader2,
   Repeat, Star, PanelRightClose, PanelRightOpen, Music, Rows3,
   Maximize, Minimize, Film, ImageIcon, AlertCircle, RefreshCw,
 } from 'lucide-react';
@@ -562,11 +562,16 @@ export function PresentationSurface({
 
           {/* Onderbalk: transport + toggles */}
           <div className="flex items-center justify-center gap-3 px-4 py-3 shrink-0">
+            {/* Terug naar het begin — zelfde betekenis als in de studio en op
+                het podium (wens Bert 19-7). Wisselen van compositie doe je in
+                het zijpaneel, met ←/→ of via Doorspelen; de transportknoppen
+                gaan altijd over de compositie die je nú hoort. */}
             <button
-              onClick={() => (hasPlaylistUi ? goTo(index - 1, isPlaying) : stopComposition())}
-              disabled={hasPlaylistUi ? index === 0 : effectiveState === 'error'}
+              onClick={() => seekComposition(0)}
+              disabled={isLoading || effectiveState === 'error'}
               className="w-11 h-11 rounded-full bg-brand-800 hover:bg-brand-700 disabled:opacity-30 text-white flex items-center justify-center transition-colors"
-              aria-label={hasPlaylistUi ? t('teacher.presentation.previous') : t('transport.rewind')}
+              aria-label={t('transport.rewind')}
+              title={t('transport.rewind')}
             >
               <SkipBack className="w-5 h-5" aria-hidden="true" />
             </button>
@@ -584,17 +589,6 @@ export function PresentationSurface({
                 <Play className="w-6 h-6 ml-0.5" aria-hidden="true" />
               )}
             </button>
-            {hasPlaylistUi && (
-              <button
-                onClick={() => goTo(index + 1, isPlaying)}
-                disabled={index >= playlist.length - 1}
-                className="w-11 h-11 rounded-full bg-brand-800 hover:bg-brand-700 disabled:opacity-30 text-white flex items-center justify-center transition-colors"
-                aria-label={t('teacher.presentation.next')}
-              >
-                <SkipForward className="w-5 h-5" aria-hidden="true" />
-              </button>
-            )}
-
             {(hasPlaylistUi || (isTeacherMode && onSetFeedback)) && (
               <div className="w-px h-8 bg-brand-700 mx-1" aria-hidden="true" />
             )}

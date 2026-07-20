@@ -1562,8 +1562,6 @@
       "chooseAllHint": "Including earlier assignments and free work",
       "refresh": "Refresh submissions (also happens automatically every 20 seconds)",
       "nowPlaying": "Now playing",
-      "previous": "Previous composition",
-      "next": "Next composition",
       "autoAdvance": "Play through",
       "autoAdvanceHint": "Automatically play the next composition when one ends",
       "feedbackRow": "Give feedback",
