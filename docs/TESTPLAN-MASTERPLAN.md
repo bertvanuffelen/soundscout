@@ -84,6 +84,28 @@ Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
 - [X] **12. Leskaart-covers op /teacher**: het detailpaneel rechts toont nu de
       plaat/cover boven de titel (zoals in het dashboard).
 
+- [ ] **13. Bewaarcode → volle tijdlijn** (was: lege tijdlijn): bewaar een
+      compositie online in thema Piraten (of een ander niet-standaard thema),
+      open de code op een ánder apparaat → de clips staan er gewoon. *(Oorzaak:
+      de tijdlijn zocht samples in het actieve thema i.p.v. in je eigen
+      bibliotheek — jouw bevinding bij A3.)*
+- [ ] **14. "Opslaan" sluit de modal**: podium → Opslaan & Delen → Opslaan →
+      de modal sluit en de bewaar-bevestiging verschijnt.
+- [ ] **15. Aankondiging dimt niets meer**: presenteren → volgende compositie →
+      "Nu te horen" verschijnt als zwevend kaartje bovenin; de kaart eronder
+      (inclusief montagelijn) blijft helder wit. *(Dit was het "grijs bij laden".)*
+- [ ] **16. Praatplaat-bord bij presenteren**: klaslokaal met een actieve
+      praatplaat-opdracht → Presenteren → "Actieve opdracht" → je krijgt het
+      klikbare bord (zoals in het gedeelde album), niet losse visuals.
+- [ ] **17. Eén deelknop**: elke opdrachtrij heeft nu één "Delen". Bij een
+      praatplaat vraagt hij eerst: het bord (klikbaar) of de composities
+      (afspeellijst). Bij andere types opent direct de album-modal.
+- [ ] **18. Taalknop overal**: dashboard, klaslokaal én gids hebben de NL/EN-knop
+      rechtsboven op dezelfde plek — precies één per scherm.
+- [ ] **19. Browsertaal**: verse browser (of gewiste opslag) met Engelse
+      taalinstelling → app start in het Engels; Nederlandse browser → Nederlands.
+      Zet je zelf de taal om, dan wint die keuze altijd.
+
 ---
 
 ## 🎒 A. Leerling — basisflow

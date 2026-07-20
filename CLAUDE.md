@@ -151,6 +151,8 @@ The Stage screen (`StageView.tsx`) is the performance screen where students list
 
 ### Presentation Surface (universeel presentatiescherm)
 
+**Studio Timeline**: `StudioView` passes `samples={librarySamples}` — Track resolves clips via that array, falling back to the theme only when the prop is absent. Never drop it: a composition opened in a different theme context (bewaarcode on another device) would then render an empty timeline.
+
 `src/components/presentation/PresentationSurface.tsx` is THE single presentation screen (mockup style: light content card on `brand-900` backdrop, "Nu te horen" pill). Four `mode`s drive feature flags: `teacher-present` (playlist sidebar bij n>1, doorspelen/auto-advance, aankondigingsoverlay, feedbackrij), `teacher-review` (single submission, metadata line, montagelijn default open), `public` (no feedback; since 19-7 the playlist sidebar + prev/next DO appear when an album playlist has >1 items, without the feedback-status toggle), `peer` (anonymous, `ratingSlot` ReactNode under the card). An optional `onRefresh` prop adds a refresh button to the header (used by `ClassPresentationView`; `ClassDetail` also polls submissions every 20s and appends new ones to the end of the playlist). Key elements:
 
 - **Montagelijn-toggle** — only for beeld-vormen (storyboard/praatplaat/afbeelding); expanding shrinks the visual (flex 2:1) and shows the read-only Timeline below. Vrij/template: the timeline IS the visual (always shown, no toggle). Visuals scale to fill the card (`StoryboardViewer` `fill` prop; praatplaat image `h-full` with shrink-wrapped wrapper so `PraatplaatMarker` positions stay correct).

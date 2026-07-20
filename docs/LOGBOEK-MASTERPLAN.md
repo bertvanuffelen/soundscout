@@ -234,6 +234,17 @@ Bert leverde het testplan terug met x/-/?-annotaties en vulde op Notion "Test-ro
 
 **Werkfout gecorrigeerd**: één commit landde per ongeluk in de hoofdrepo (git-commando zonder `-C` naar de worktree) en nam Berts ongecommitte piraten-/instellingenbestanden mee; teruggedraaid met `reset --soft` zodat de hoofdrepo weer exact op `d6884f7` staat met dezelfde ongecommitte wijzigingen als bij sessiestart.
 
+## Nacontrole testronde 4 (19-7 middag): vier bevindingen van Bert
+
+Bert liep het herstructureerde testplan na en zette er vier opmerkingen bij. Drie waren echte bugs die ik eerder had gemist of half had opgelost:
+
+- **Lege tijdlijn na bewaarcode (A3)** — Berts vraag was "wordt de tijdlijn wel opgeslagen?"; het schrijven klopte (8 sporen, 2 clips, 2 samples in de database), het teruglezen niet. `StudioView` gaf de `Timeline` geen `samples`-prop, waardoor `Track` terugviel op `themeGetSampleById`. Open je een piraten-compositie op een apparaat waar thema 'basis' draait, dan werd élke clip overgeslagen: volle data, lege tijdlijn. Gereproduceerd (0 clips getekend) en na de fix opnieuw gemeten (2 clips, juiste posities/kleuren). Trof niet alleen bewaarcodes maar elke compositie in een andere themacontext.
+- **"Grijs bij laden" was de aankondiging** — ik had eerder alleen `ANNOUNCE_MS` verlaagd (2,5 → 1,2s) in plaats van te stoppen met dimmen. De overlay lag als `bg-brand-900/85` over de héle kolom. Nu een zwevend kaartje bovenin; gemeten tijdens de aankondiging: omhullende laag transparant, kaartje eindigt op 276px, tijdlijn begint op 303px — geen overlap.
+- **Presenteren-keuze verscheen niet** — mijn extra voorwaarde ("alleen als de actieve opdracht al inzendingen heeft") sloeg de vraag stilzwijgend over bij Berts net geactiveerde praatplaat (0 eigen inzendingen, 8 van eerdere opdrachten). Voorwaarde eruit; de lege optie staat nu zichtbaar-maar-uitgeschakeld met uitleg.
+- **Praatplaat-bord ontbrak bij presenteren** — Berts vervolgvraag legde bloot dat het gedeelde album al `interactiveBoard` doorgaf, maar `ClassPresentationView` niet. Nu gelijk, mits je de áctieve opdracht presenteert (bij "alle composities" horen andere inzendingen niet op dat bord).
+
+Daarnaast Berts besluiten uitgevoerd: **taalknop vast rechtsboven** op élk docentscherm (`TeacherPageHeader` draagt hem nu zelf; dubbele knop uit het dashboard) · **browsertaal bij een eerste bezoek** (`detectInitialLanguage`, opgeslagen keuze wint altijd; vier gevallen nagerekend) · **één "Delen"-knop per opdrachtrij** — bij een praatplaat vraagt een keuzemodaal bord-of-afspeellijst, want daar zijn écht twee dingen te delen; historie-rijen zijn nu uniform (oog + delen, prullenbak alleen bij praatplaat). Kleiner: "Opslaan" sluit de Opslaan & Delen-modal.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
