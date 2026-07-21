@@ -405,6 +405,7 @@ VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts
 | `docs/PLAN-72-PRAATPLAAT.md` | Praatplaat collaborative sound map design (#72) |
 | `docs/HANDLEIDING-BEHEER.md` | Technical admin guide (deployment, Supabase, maintenance) + §4b "wat staat waar aan/uit" |
 | `docs/TEKSTEN.md` | Generated NL+EN copy deck — edit the table, then `npm run teksten:import` |
+| `docs/VIDEO-DRAAIBOEK.md` | Shot-by-shot script for the three `/teacher` videos (NL+EN labels, prep, where the IDs go) |
 | `docs/LOGBOEK-MASTERPLAN.md` | 6-weken masterplan logbook (besluiten, sessies, acties voor Bert) |
 | `docs/TESTPLAN-MASTERPLAN.md` | Manual test plan + hertest-lijsten per testronde |
 | `docs/AUDIT-EXPORTS.md` | Exports audit (MP3 + video): 16 findings + prioritized fix plan |
