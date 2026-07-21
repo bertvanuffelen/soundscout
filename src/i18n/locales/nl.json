@@ -2129,7 +2129,7 @@
     },
     "videos": {
       "title": "Zo werkt het — in beeld",
-      "subtitle": "Twee korte demo's: één vanuit de leerling, één vanuit jou als docent.",
+      "subtitle": "Korte demo's: wat je leerlingen doen, hoe je je klas klaarzet, en hoe je hun werk op het digibord laat horen.",
       "play": "Speel video af",
       "student": {
         "title": "Zo componeert een leerling",
@@ -2138,6 +2138,11 @@
       "teacher": {
         "title": "Zo beheer je je klas",
         "description": "Klassen, opdrachten en inzendingen in het dashboard."
+      },
+      "dutchSpoken": "Nederlands gesproken",
+      "presentation": {
+        "title": "Zo klinkt het op het digibord",
+        "description": "De composities van je klas achter elkaar, met beeld dat meebeweegt."
       }
     }
   },

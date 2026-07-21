@@ -29,9 +29,14 @@ interface LandingVideoProps {
   description: string;
   /** Toegankelijk label voor de play-knop, bv. "Speel video af". */
   playLabel: string;
+  /**
+   * Eerlijk taallabel wanneer er nog geen opname in de taal van de bezoeker is
+   * ("Dutch spoken"). Beter vooraf melden dan de kijker het laten ontdekken.
+   */
+  languageNote?: string;
 }
 
-export function LandingVideo({ youtubeId, title, description, playLabel }: LandingVideoProps) {
+export function LandingVideo({ youtubeId, title, description, playLabel, languageNote }: LandingVideoProps) {
   const [isPlaying, setIsPlaying] = useState(false);
 
   return (
@@ -67,7 +72,14 @@ export function LandingVideo({ youtubeId, title, description, playLabel }: Landi
         )}
       </div>
       <div>
-        <h3 className="text-base font-bold text-text-main">{title}</h3>
+        <h3 className="text-base font-bold text-text-main">
+          {title}
+          {languageNote && (
+            <span className="ml-2 inline-flex items-center rounded-full bg-neutral-100 text-text-muted text-[11px] font-semibold px-2 py-0.5 align-middle">
+              {languageNote}
+            </span>
+          )}
+        </h3>
         <p className="text-sm text-text-muted leading-relaxed">{description}</p>
       </div>
     </div>

@@ -531,16 +531,40 @@ function ComposeSection({
   );
 }
 
-// --- Sectie 3 (nieuw): Zo werkt het — in beeld (2 demovideo's) ---
-// Video-ID's staan in code (niet in i18n): makkelijk te wisselen. Standaard een
-// leerling-uitleg + een docent/dashboard-demo, hergebruikt uit de tutorials.
-const LANDING_VIDEOS = [
-  { key: 'student', youtubeId: 'WRvXvKsIQfc' },
-  { key: 'teacher', youtubeId: 'clA69CeXXcM' },
-] as const;
+// --- Sectie 3: Zo werkt het — in beeld ---
+//
+// ▼▼▼ HIER ZET JE DE VIDEO-ID'S ▼▼▼
+//
+// Drie video's, precies de drie vragen van een docent: wat doen mijn leerlingen ·
+// hoeveel werk is het voor mij · wat kan ik ermee in de les. Het draaiboek per
+// video staat in docs/VIDEO-DRAAIBOEK.md.
+//
+// Per video een Nederlands en een Engels YouTube-id (de EN-versie is een eigen
+// opname met de app in het Engels — ondertiteling volstaat niet, want anders
+// staat het scherm in het Nederlands).
+//   · `nl: null`  → de kaart verschijnt nog niet op de pagina
+//   · `en: null`  → Engelse bezoekers zien de NL-video mét een eerlijk label
+//
+const LANDING_VIDEOS: { key: string; nl: string | null; en: string | null }[] = [
+  { key: 'student', nl: 'WRvXvKsIQfc', en: null },
+  { key: 'teacher', nl: 'clA69CeXXcM', en: null },
+  { key: 'presentation', nl: null, en: null },
+];
 
 function VideosSection() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const prefersEnglish = i18n.language?.startsWith('en');
+
+  // Alleen video's die al bestaan; per taal het juiste id, met NL als terugval.
+  const videos = LANDING_VIDEOS.flatMap(({ key, nl, en }) => {
+    if (!nl && !en) return [];
+    const preferred = prefersEnglish ? en : nl;
+    const youtubeId = preferred ?? nl ?? en!;
+    return [{ key, youtubeId, isFallbackLanguage: prefersEnglish && !en }];
+  });
+
+  if (videos.length === 0) return null;
+
   return (
     <section id="demo" className="flex flex-col gap-6 sm:gap-8 scroll-mt-24">
       <div className="text-center max-w-2xl mx-auto flex flex-col gap-2">
@@ -551,14 +575,15 @@ function VideosSection() {
           {t('teacherLanding.videos.subtitle')}
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-        {LANDING_VIDEOS.map(({ key, youtubeId }) => (
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        {videos.map(({ key, youtubeId, isFallbackLanguage }) => (
           <LandingVideo
             key={key}
             youtubeId={youtubeId}
             title={t(`teacherLanding.videos.${key}.title`)}
             description={t(`teacherLanding.videos.${key}.description`)}
             playLabel={t('teacherLanding.videos.play')}
+            languageNote={isFallbackLanguage ? t('teacherLanding.videos.dutchSpoken') : undefined}
           />
         ))}
       </div>

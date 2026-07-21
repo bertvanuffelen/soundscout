@@ -2129,7 +2129,7 @@
     },
     "videos": {
       "title": "How it works — in pictures",
-      "subtitle": "Two short demos: one from the student's side, one from yours as a teacher.",
+      "subtitle": "Short demos: what your students do, how you set up your class, and how you play their work on the whiteboard.",
       "play": "Play video",
       "student": {
         "title": "How a student composes",
@@ -2138,6 +2138,11 @@
       "teacher": {
         "title": "How you manage your class",
         "description": "Classes, assignments and submissions in the dashboard."
+      },
+      "dutchSpoken": "Dutch spoken",
+      "presentation": {
+        "title": "How it sounds on the whiteboard",
+        "description": "Your class's compositions one after another, with the visuals moving along."
       }
     }
   },
