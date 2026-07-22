@@ -8,13 +8,31 @@
  * - Klas detail
  */
 
-import { useState } from 'react';
+import { useState, type ReactNode } from 'react';
 import { useAuth } from '../contexts/useAuth';
 import { useAppStore } from '../stores/appStore';
 import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherResetPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
+import { LanguageSwitcher } from '../components/ui/LanguageSwitcher';
 import type { TeacherClass } from '../hooks/useClasses';
 
 type TeacherView = 'login' | 'register' | 'forgot-password' | 'dashboard' | 'class-detail';
+
+/**
+ * De auth-schermen (login/registreer/wachtwoord) zijn gecentreerde kaarten
+ * zonder de TeacherPageHeader, dus zonder taalknop. Deze wrapper legt er een
+ * vaste NL/EN-knop rechtsboven overheen, zodat de toggle op élk docentscherm
+ * op dezelfde plek staat (testronde 5 / A2).
+ */
+function withLanguageSwitcher(node: ReactNode): ReactNode {
+  return (
+    <>
+      {node}
+      <div className="fixed top-4 right-4 z-50">
+        <LanguageSwitcher variant="light" />
+      </div>
+    </>
+  );
+}
 
 export function TeacherPage() {
   const { user, loading, passwordRecovery, clearPasswordRecovery } = useAuth();
@@ -45,7 +63,7 @@ export function TeacherPage() {
   // Gaat vóór alle andere views: de recovery-sessie logt de docent al in,
   // maar die moet eerst een nieuw wachtwoord instellen.
   if (passwordRecovery) {
-    return (
+    return withLanguageSwitcher(
       <TeacherResetPassword
         onDone={() => {
           clearPasswordRecovery();
@@ -61,7 +79,7 @@ export function TeacherPage() {
 
   // Login view
   if (view === 'login') {
-    return (
+    return withLanguageSwitcher(
       <TeacherLogin
         onSuccess={() => setView('dashboard')}
         onSwitchToRegister={() => setView('register')}
@@ -73,7 +91,7 @@ export function TeacherPage() {
 
   // Forgot password view
   if (view === 'forgot-password') {
-    return (
+    return withLanguageSwitcher(
       <TeacherForgotPassword
         onSwitchToLogin={() => setView('login')}
         onBack={goToStart}
@@ -83,7 +101,7 @@ export function TeacherPage() {
 
   // Register view
   if (view === 'register') {
-    return (
+    return withLanguageSwitcher(
       <TeacherRegister
         onSwitchToLogin={() => setView('login')}
         onBack={goToStart}
