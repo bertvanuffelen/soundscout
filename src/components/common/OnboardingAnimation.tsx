@@ -23,8 +23,19 @@ export function OnboardingAnimation({ className }: { className?: string }) {
     const iframe = animRef.current;
     if (!iframe) return;
     let ro: ResizeObserver | undefined;
+    // `.document` op een cross-origin (of door CSP geblokkeerde) frame gooit een
+    // SecurityError — dat is een property-getter, dus optional chaining vangt
+    // het niet af. Zonder try/catch crasht een verkeerd geconfigureerde
+    // frame-src CSP dit hele component i.p.v. gewoon de hoogte-sync over te slaan.
+    const getDoc = () => {
+      try {
+        return iframe.contentWindow?.document ?? null;
+      } catch {
+        return null;
+      }
+    };
     const setup = () => {
-      const doc = iframe.contentWindow?.document;
+      const doc = getDoc();
       if (!doc) return;
       const apply = () => { iframe.style.height = doc.documentElement.scrollHeight + 'px'; };
       apply();
@@ -33,7 +44,7 @@ export function OnboardingAnimation({ className }: { className?: string }) {
       ro.observe(doc.documentElement);
     };
     iframe.addEventListener('load', setup);
-    if (iframe.contentWindow?.document?.readyState === 'complete') setup();
+    if (getDoc()?.readyState === 'complete') setup();
     return () => { iframe.removeEventListener('load', setup); ro?.disconnect(); };
     // lang: bij een taalwissel herlaadt het iframe → opnieuw meten.
   }, [lang]);
