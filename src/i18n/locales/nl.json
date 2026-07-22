@@ -1032,6 +1032,7 @@
       "activateStoryboard": "Kon storyboard niet activeren",
       "activateFree": "Kon vrije opdracht niet activeren",
       "duration": "Kon tijdsduur niet opslaan",
+      "card": "Kon de opdrachtkaart niet bijwerken",
       "delete": "Deze opdracht kon niet uit je overzicht worden gehaald."
     },
     "classes": {

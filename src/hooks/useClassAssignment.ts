@@ -12,6 +12,7 @@ import {
   activateAssignment,
   deactivateAssignment,
   deleteAssignmentFromHistory,
+  updateAssignmentCard,
 } from '../lib/assignments';
 import type { ClassAssignmentRow } from '../lib/assignments';
 import { activatePraatplaatFromCatalog } from '../lib/praatplaat';
@@ -43,6 +44,8 @@ interface UseClassAssignmentReturn {
   deactivate: () => Promise<void>;
   /** Haal een afgeronde opdracht uit de historie (leerlingwerk blijft staan) */
   removeFromHistory: (assignmentId: string) => Promise<void>;
+  /** Koppel of wis de opdrachtkaart op de actieve opdracht (null = blanco) */
+  updateCard: (assignmentId: string, cardId: string | null) => Promise<void>;
   /** Herlaad data */
   refetch: () => Promise<void>;
 }
@@ -165,10 +168,24 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     }
   }, []);
 
+  /** Koppel of wis de opdrachtkaart op de actieve opdracht (TR5#2). */
+  const updateCard = useCallback(async (assignmentId: string, cardId: string | null) => {
+    setOperationError(null);
+    try {
+      await updateAssignmentCard(assignmentId, cardId);
+      await fetch();
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.card');
+      setOperationError(msg);
+      throw err;
+    }
+  }, [fetch]);
+
   return {
     activeAssignment,
     pastAssignments,
     removeFromHistory,
+    updateCard,
     loading,
     error,
     operationError,

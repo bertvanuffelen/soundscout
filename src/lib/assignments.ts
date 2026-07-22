@@ -101,6 +101,8 @@ export interface ClassAssignmentRow {
   activatedAt: string;
   /** Optionele tijdsduur-vermelding voor leerlingen (migratie 033) */
   durationLabel: string | null;
+  /** Gekoppelde opdrachtkaart (migratie 016), null = per-type default. */
+  cardId: string | null;
   // Joined / resolved names
   assignmentName: string;
   /** Preview-afbeelding: praatplaat-image (join), storyboard-cover of thema-map (registry); null bij template. */
@@ -382,6 +384,7 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
         is_active,
         activated_at,
         duration_label,
+        card_id,
         templates:template_id ( name ),
         praatplaten:praatplaat_id ( name, image_url )
       `)
@@ -415,6 +418,7 @@ interface RawAssignmentRow {
   is_active: boolean;
   activated_at: string;
   duration_label?: string | null;
+  card_id?: string | null;
   templates: JoinedName | JoinedName[] | null;
   praatplaten: JoinedName | JoinedName[] | null;
 }
@@ -451,6 +455,7 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
     isActive: row.is_active,
     activatedAt: row.activated_at,
     durationLabel: row.duration_label ?? null,
+    cardId: row.card_id ?? null,
     assignmentName,
     imageUrl,
   };
@@ -472,6 +477,26 @@ export async function updateAssignmentDuration(
   if (error) {
     logger.error('updateAssignmentDuration error:', sanitizeError(error));
     throw new Error(i18n.t('errors.assignments.duration'));
+  }
+}
+
+/**
+ * Koppel of ontkoppel een opdrachtkaart op een actieve opdracht (migratie 016).
+ * `null` = geen kaart → de leerling ziet de per-type default. Docent-eigendom
+ * wordt afgedwongen door de UPDATE-RLS-policy (006). Testronde 5 (TR5#2).
+ */
+export async function updateAssignmentCard(
+  assignmentId: string,
+  cardId: string | null,
+): Promise<void> {
+  const supabase = await getSupabase();
+  const { error } = await supabase
+    .from('class_assignments')
+    .update({ card_id: cardId })
+    .eq('id', assignmentId);
+  if (error) {
+    logger.error('updateAssignmentCard error:', sanitizeError(error));
+    throw new Error(i18n.t('errors.assignments.card'));
   }
 }
 

@@ -11,6 +11,7 @@ import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
+import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { updateAssignmentDuration, submissionMatchesAssignment } from '../../lib/assignments';
 import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
@@ -108,8 +109,22 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     activateFree: activateFreeAssignment,
     deactivate: deactivateAssignment,
     removeFromHistory,
+    updateCard,
     refetch: refetchAssignment,
   } = useClassAssignment(classData.id);
+
+  // Opdrachtkaarten van de docent — voor de kaart-keuze op de actieve opdracht (TR5#2).
+  const { cards: assignmentCards } = useAssignmentCards();
+  const [cardSaved, setCardSaved] = useState(false);
+  const handleChangeCard = useCallback(async (cardId: string | null) => {
+    if (!activeAssignment) return;
+    try {
+      await updateCard(activeAssignment.id, cardId);
+      setCardSaved(true);
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : String(err));
+    }
+  }, [activeAssignment, updateCard]);
 
   // Tijdsduur-vermelding (migratie 033): draft volgt de actieve opdracht;
   // opslaan op blur/Enter. setTimeout-tick wegens de set-state-in-effect-regel.
@@ -119,6 +134,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     const timer = setTimeout(() => {
       setDurationDraft(activeAssignment?.durationLabel ?? '');
       setDurationSaved(false);
+      setCardSaved(false);
     }, 0);
     return () => clearTimeout(timer);
   }, [activeAssignment?.id, activeAssignment?.durationLabel]);
@@ -417,12 +433,12 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             <button
               onClick={handlePresentClick}
               disabled={submitted.length === 0}
-              className="flex items-center justify-center gap-2.5 rounded-2xl px-4 py-4 sm:py-5 text-base sm:text-lg font-extrabold tracking-tight border-2 bg-brand-900 text-white border-brand-900 shadow-md hover:bg-brand-800 transition-all disabled:opacity-40 disabled:pointer-events-none"
+              className="flex items-center justify-center gap-2.5 rounded-2xl px-4 py-4 sm:py-5 text-base sm:text-lg font-extrabold tracking-tight border-2 bg-accent-400 text-accent-900 border-accent-400 shadow-md hover:bg-accent-500 hover:border-accent-500 transition-all disabled:opacity-40 disabled:pointer-events-none"
             >
               <MonitorPlay className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" aria-hidden="true" />
               {t('teacher.presentation.openButton')}
               {submitted.length > 0 && (
-                <span className="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-sm font-bold bg-white/20 text-white">
+                <span className="inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-sm font-bold bg-accent-900/15 text-accent-900">
                   {submitted.length}
                 </span>
               )}
@@ -578,6 +594,31 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     className="w-44 px-3 py-1.5 text-sm border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none bg-neutral-50 text-text-main placeholder:text-text-muted/50"
                   />
                   {durationSaved && (
+                    <span className="text-xs text-success-600 inline-flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" /> {t('common.saved')}
+                    </span>
+                  )}
+                </div>
+
+                {/* Opdrachtkaart-keuze op de actieve opdracht (TR5#2): de docent
+                    kan hier een kaart aan-/uitzetten; leeg = per-type default. */}
+                <div className="mt-3 flex flex-wrap items-center gap-2">
+                  <label htmlFor="assignment-card" className="text-sm text-text-muted inline-flex items-center gap-1.5">
+                    <FileText className="w-4 h-4 text-accent-500" aria-hidden="true" />
+                    {t('assignments.cardLabel')}
+                  </label>
+                  <select
+                    id="assignment-card"
+                    value={activeAssignment.cardId ?? ''}
+                    onChange={(e) => void handleChangeCard(e.target.value || null)}
+                    className="w-56 px-3 py-1.5 text-sm border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none bg-neutral-50 text-text-main"
+                  >
+                    <option value="">{t('assignments.cardNone')}</option>
+                    {assignmentCards.map((card) => (
+                      <option key={card.id} value={card.id}>{card.title}</option>
+                    ))}
+                  </select>
+                  {cardSaved && (
                     <span className="text-xs text-success-600 inline-flex items-center gap-1">
                       <Check className="w-3.5 h-3.5" /> {t('common.saved')}
                     </span>

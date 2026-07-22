@@ -1032,6 +1032,7 @@
       "activateStoryboard": "Could not activate the storyboard",
       "activateFree": "Could not activate the free assignment",
       "duration": "Could not save the duration",
+      "card": "Could not update the assignment card",
       "delete": "This assignment could not be removed from your overview."
     },
     "classes": {
