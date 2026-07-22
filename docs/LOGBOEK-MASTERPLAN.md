@@ -258,6 +258,24 @@ Bert vroeg waarom alleen praatplaat-rijen een prullenbak hadden. Het onderzoek l
 
 **Bewaartermijnen** (Berts vervolgvraag "hoe lang blijft het in Supabase staan?") uitgezocht en vastgelegd in `HANDLEIDING-BEHEER.md` §3: verwijderen is hard en direct, maar de "60 dagen" van bewaarcodes en de "30 dagen" van deellinks verwijderen níets — dat zijn filters in de RPC's; de rijen blijven onbeperkt bestaan. Er draait geen pg_cron. Openstaande AVG-vraag (Notion-taak): willen we een echte bewaartermijn voor leerlingwerk met namen erbij?
 
+## Video-draaiboek + hero-animatie tweetalig (21–22-7)
+
+- **K-ronde (21-7)**: de taak "6 instructievideo's inbedden" bleek de verkeerde taak (alle 7 bestaande video's verouderd). Vervangen door `docs/VIDEO-DRAAIBOEK.md` (drie gerichte video's: leerlingflow · klas klaarzetten · digibord) + een videosectie die drie kaarten én twee talen aankan (`TeacherLandingPage`, "Dutch spoken"-label bij terugval). Bert neemt de opnames zelf; EN wordt een echte opname met de app op EN.
+- **L-ronde (22-7)**: de 4-stappen-hero-animatie stond hardgecodeerd in het Nederlands, óók op de EN-pagina en in tutorial/first-run. Opgelost met **één bestand, twee woordenlijsten**: `onboarding-4-stappen.html` heeft een `TEXTS`-blok (nl/en) en leest de taal uit `?lang=`; `OnboardingAnimation.tsx` hangt die param automatisch aan. Geen dubbel font, geen dubbele animatielogica. `2df7f4e`.
+
+## Testronde 5 (22-7): 6 fixes + testplan-opschoning
+
+Bert testte het testplan opnieuw (x/-/?) en vulde Notion-testronde 5. **Verkenning met drie Explore-agents wees uit dat twee van de drie "bugs" al gefixt waren op `main` sinds 19-7** (A3 lege montagelijn = `de24f70`, Opslaan sluit de modal = `1dc28ce`) — Bert reproduceerde ze op een oudere build. Alleen de sectie-loop was écht kapot. De rest was nieuw wensen-/vraagwerk.
+
+- **Fix 1 — sectie-loop** (`e…`): de grote loop-knop uit zette `loopRegion` definitief op null, dus weer-aanzetten viel terug op een hele-tijdlijn-loop en de sectie toonde "uit". Nu geparkeerd in `savedLoopRegion` (`parkLoopRegion`/`restoreLoopRegion`) en hersteld bij weer-aanzetten. 4 store-tests.
+- **Fix 2 — praatplaat-thema** (besluit Bert: docent kiest, auto voorgeselecteerd): niemand riep ooit `setTheme` aan in de praatplaat-flow → leerling zat altijd in 'stad'. Nu een thema-dropdown bij activeren (voorgevuld op het praatplaat-eigen thema) + `setTheme` in de leerlingflow. Migratie **034** laat `activate_praatplaat_from_catalog` de `theme_id` ook op een bestaande rij bijwerken.
+- **Fix 3 — opdrachtkaart op de actieve opdracht**: `updateAssignmentCard` (lib) + `updateCard` (hook) + select in `ClassDetail`; `card_id` toegevoegd aan `fetchClassAssignment`.
+- **Fix 4 — Presenteren-knop geel** (was blauw = leest als tab): `bg-accent-400` + `text-accent-900`, conform de actieknop-huisstijl.
+- **Fix 5 — praatplaat-plek-tekst** groter + "Klik op de plek waar jij een soundscape voor gaat maken" (NL+EN).
+- **Fix 6 — taalknop op de auth-schermen**: `TeacherPage` legt een vaste rechtsboven-`LanguageSwitcher` over login/registreer/wachtwoord.
+
+**Vragen beantwoord in het testplan** (lespagina's aanmaken/bewerken · waarom praatplaat-delen apart is · taalknop+browsertaal · hoe een leerling dagen later feedback terugziet). **Testplan opgeschoond** volgens Berts werkwijze: werkend → Afgerond, hertest → schoon leeg vinkje, met een "Hertest ronde 5"-blok bovenaan (incl. de deploy-afhankelijke items uit testronde 4).
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
@@ -272,6 +290,8 @@ Bert vroeg waarom alleen praatplaat-rijen een prullenbak hadden. Het onderzoek l
 - **Supabase Redirect URL voor de testserver**: Authentication → URL Configuration → voeg `https://soundscout.techindeles.nl/*` toe. Zonder deze regel eindigt elke reset-mail op `otp_expired` (precies wat testronde 4 liet zien). Daarna een vérse mail aanvragen.
 - **Migraties 032 + 033 uitvoeren** (`032_fix_lesson_card_inline_match.sql` — juiste uitlegkaart bij template-leskaarten · `033_assignment_duration_label.sql` — tijdsduur-veld). Zonder 033 geeft het tijdsduur-veld een nette foutmelding bij opslaan.
 - **Migratie 031 uitvoeren** (`supabase/migrations/031_class_album_share.sql`) — klas-album delen (R4). Zonder deze migratie geeft "Deel album" een nette foutmelding; al het andere werkt.
+- **Verse build uploaden (testronde 5)**: de test-server draait nog een build van vóór 19-7, waardoor Bert al-gefixte dingen als kapot zag (lege montagelijn, Opslaan-modal, aankondiging, transportknoppen, uniforme prullenbak). Een verse `npm run build` + upload lost dat op; de hertest-lijst "Hertest ronde 5" staat bovenaan het testplan.
+- **Migratie 034 uitvoeren** (`supabase/migrations/034_praatplaat_theme_update.sql`) — laat de docent het thema-geluidenpalet van een praatplaat kiezen/wijzigen (`activate_praatplaat_from_catalog` werkt `theme_id` nu ook op een bestaande klas+plaat-rij bij). Zonder deze migratie werkt een verse praatplaat wél goed; alleen achteraf wijzigen niet.
 - **Deploy-notitie (R4)**: bij de eerstvolgende deploy ook **`dist/les/`** mee-uploaden (statische leskaart-pagina's; worden automatisch gegenereerd bij `npm run build` via de prebuild-hook). Apache serveert `/les/robotfabriek` dan via DirectoryIndex.
 - **Migratie 030 uitvoeren** (`supabase/migrations/030_peer_stars_batch.sql`) — batch peer-sterren voor het zijpaneel van het presentatiescherm. Zonder deze migratie werkt de presentatie gewoon, alleen zonder sterren per inzending.
 - **Migratie 029 uitvoeren** (`supabase/migrations/029_fix_load_saved_composition_class_code.sql`) — fixt de testronde-1-bug "bewaarcode niet gevonden": migratie 028 had een typefout (`class_code TEXT` vs kolom `CHAR(4)`) waardoor élke bewaarcode-load faalde. Verifieer daarna met `SELECT * FROM load_saved_composition('BBD6KD');` of door de code in de app in te voeren.
