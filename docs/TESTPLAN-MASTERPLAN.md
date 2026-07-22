@@ -49,7 +49,9 @@ Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 5".
       **thema-keuze**, voorgevuld op *Piraten*. Activeer → leerling voert de
       klascode in → kiest een plek → gaat naar de kaart → verzamelt **piraten**-
       geluiden (niet stad). Kies in de dropdown een ánder thema → dan hoort de
-      leerling díe geluiden. *(Vergt migratie 034 voor het wijzigen achteraf.)*
+      leerling díe geluiden. Je kunt het thema óók op de **actieve opdracht**
+      wijzigen (dropdown naast de opdrachtkaart in het klaslokaal). *(Vergt
+      migratie 034 voor het wijzigen achteraf.)*
 - [ ] **R5-3. Opdrachtkaart op de actieve opdracht**: klaslokaal → actieve
       opdracht → naast de tijdsduur staat nu een **"Opdrachtkaart"-keuze**. Kies
       een kaart → "Opgeslagen" → de leerling-landing van die klas toont die
