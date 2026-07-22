@@ -103,6 +103,8 @@ export interface ClassAssignmentRow {
   durationLabel: string | null;
   /** Gekoppelde opdrachtkaart (migratie 016), null = per-type default. */
   cardId: string | null;
+  /** Thema-geluidenpalet van de praatplaat (alleen bij type praatplaat). */
+  praatplaatThemeId: string | null;
   // Joined / resolved names
   assignmentName: string;
   /** Preview-afbeelding: praatplaat-image (join), storyboard-cover of thema-map (registry); null bij template. */
@@ -152,6 +154,7 @@ function parseCard(raw: unknown): OpdrachtkaartContent | null {
 interface JoinedName {
   name: string;
   image_url?: string | null;
+  theme_id?: string | null;
 }
 
 /** Safely extract name from a Supabase FK join (typed as array, returned as object) */
@@ -166,6 +169,13 @@ function getJoinedImage(data: JoinedName | JoinedName[] | null): string | null {
   if (!data) return null;
   if (Array.isArray(data)) return data[0]?.image_url ?? null;
   return data.image_url ?? null;
+}
+
+/** Safely extract theme_id from a Supabase FK join (typed as array, returned as object) */
+function getJoinedTheme(data: JoinedName | JoinedName[] | null): string | null {
+  if (!data) return null;
+  if (Array.isArray(data)) return data[0]?.theme_id ?? null;
+  return data.theme_id ?? null;
 }
 
 // --- Lock options parsing (shared with templates.ts) ---
@@ -386,7 +396,7 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
         duration_label,
         card_id,
         templates:template_id ( name ),
-        praatplaten:praatplaat_id ( name, image_url )
+        praatplaten:praatplaat_id ( name, image_url, theme_id )
       `)
       .eq('class_id', classId)
       .eq('is_active', true)
@@ -456,6 +466,7 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
     activatedAt: row.activated_at,
     durationLabel: row.duration_label ?? null,
     cardId: row.card_id ?? null,
+    praatplaatThemeId: type === 'praatplaat' ? getJoinedTheme(row.praatplaten) : null,
     assignmentName,
     imageUrl,
   };

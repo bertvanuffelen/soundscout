@@ -25,7 +25,8 @@ import { PraatplaatViewer } from '../praatplaat/PraatplaatViewer';
 import { SharePraatplaatModal } from './SharePraatplaatModal';
 import { ShareAlbumModal } from './ShareAlbumModal';
 import { LessonCardPickerModal } from './LessonCardPickerModal';
-import { type PraatplaatRow } from '../../lib/praatplaat';
+import { type PraatplaatRow, updatePraatplaatTheme } from '../../lib/praatplaat';
+import { getTeacherThemes } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { SectionTitle, TeacherPageHeader, GuideLink } from './common';
@@ -45,6 +46,9 @@ const ASSIGNMENT_ICON = {
   storyboard: Clapperboard,
   free: Music,
 } as const;
+
+// Docent-thema's voor de praatplaat-thema-keuze op de actieve opdracht (TR5).
+const assignableThemes = getTeacherThemes();
 
 const ASSIGNMENT_LABEL_KEY = {
   template: 'templates.typeTemplate',
@@ -126,6 +130,19 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     }
   }, [activeAssignment, updateCard]);
 
+  // Thema-geluidenpalet van de actieve praatplaat wijzigen (TR5 / D2).
+  const [themeSaved, setThemeSaved] = useState(false);
+  const handleChangePraatplaatTheme = useCallback(async (themeId: string) => {
+    if (!activeAssignment?.praatplaatId) return;
+    try {
+      await updatePraatplaatTheme(activeAssignment.praatplaatId, themeId);
+      setThemeSaved(true);
+      void refetchAssignment();
+    } catch (err) {
+      setActionError(err instanceof Error ? err.message : String(err));
+    }
+  }, [activeAssignment, refetchAssignment]);
+
   // Tijdsduur-vermelding (migratie 033): draft volgt de actieve opdracht;
   // opslaan op blur/Enter. setTimeout-tick wegens de set-state-in-effect-regel.
   const [durationDraft, setDurationDraft] = useState('');
@@ -135,6 +152,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
       setDurationDraft(activeAssignment?.durationLabel ?? '');
       setDurationSaved(false);
       setCardSaved(false);
+      setThemeSaved(false);
     }, 0);
     return () => clearTimeout(timer);
   }, [activeAssignment?.id, activeAssignment?.durationLabel]);
@@ -624,6 +642,32 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     </span>
                   )}
                 </div>
+
+                {/* Praatplaat: thema-geluidenpalet wijzigen op de actieve opdracht
+                    (TR5 / D2 — de leerling verzamelt geluiden uit dit thema). */}
+                {activeAssignment.type === 'praatplaat' && activeAssignment.praatplaatId && (
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <label htmlFor="assignment-pp-theme" className="text-sm text-text-muted inline-flex items-center gap-1.5">
+                      <Music className="w-4 h-4 text-accent-500" aria-hidden="true" />
+                      {t('assignments.praatplaatThemeLabel')}
+                    </label>
+                    <select
+                      id="assignment-pp-theme"
+                      value={activeAssignment.praatplaatThemeId ?? ''}
+                      onChange={(e) => void handleChangePraatplaatTheme(e.target.value)}
+                      className="w-56 px-3 py-1.5 text-sm border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none bg-neutral-50 text-text-main"
+                    >
+                      {assignableThemes.map((theme) => (
+                        <option key={theme.id} value={theme.id}>{t(theme.name)}</option>
+                      ))}
+                    </select>
+                    {themeSaved && (
+                      <span className="text-xs text-success-600 inline-flex items-center gap-1">
+                        <Check className="w-3.5 h-3.5" /> {t('common.saved')}
+                      </span>
+                    )}
+                  </div>
+                )}
 
                 {/* Actions */}
                 <div className="flex gap-2 mt-4">

@@ -1033,6 +1033,7 @@
       "activateFree": "Kon vrije opdracht niet activeren",
       "duration": "Kon tijdsduur niet opslaan",
       "card": "Kon de opdrachtkaart niet bijwerken",
+      "praatplaatTheme": "Kon het thema van de praatplaat niet wijzigen",
       "delete": "Deze opdracht kon niet uit je overzicht worden gehaald."
     },
     "classes": {

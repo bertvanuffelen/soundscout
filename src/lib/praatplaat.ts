@@ -140,6 +140,24 @@ export async function activatePraatplaat(praatplaatId: string): Promise<boolean>
 }
 
 /**
+ * Wijzig het thema-geluidenpalet van een bestaande praatplaat (TR5 / D2).
+ * Directe update op de rij; docent-eigendom wordt afgedwongen door de
+ * UPDATE-RLS-policy (migratie 005). Zo kan de docent het thema ook wijzigen
+ * op een reeds actieve praatplaat, niet alleen bij het activeren.
+ */
+export async function updatePraatplaatTheme(praatplaatId: string, themeId: string): Promise<void> {
+  const supabase = await getSupabase();
+  const { error } = await supabase
+    .from('praatplaten')
+    .update({ theme_id: themeId })
+    .eq('id', praatplaatId);
+  if (error) {
+    logger.error('Fout bij wijzigen praatplaat-thema:', sanitizeError(error));
+    throw new Error(i18n.t('errors.assignments.praatplaatTheme'));
+  }
+}
+
+/**
  * Deactiveer een praatplaat.
  */
 export async function deactivatePraatplaat(praatplaatId: string): Promise<boolean> {

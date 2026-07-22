@@ -1033,6 +1033,7 @@
       "activateFree": "Could not activate the free assignment",
       "duration": "Could not save the duration",
       "card": "Could not update the assignment card",
+      "praatplaatTheme": "Could not change the sound map's theme",
       "delete": "This assignment could not be removed from your overview."
     },
     "classes": {
