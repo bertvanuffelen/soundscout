@@ -25,12 +25,46 @@ Automatische gates zijn groen: `npx tsc -b --noEmit` · `npm run test:run` (269 
       Opslaan sluit de modal, aankondiging dimt niets, transportknoppen,
       uniforme prullenbak) zijn **al gefixt sinds 19-7**, maar zaten nog niet in
       de build die jij testte. Ze staan hieronder als "hertest ná deploy".
-- [ ] **Migratie 034 draaien** in de Supabase SQL Editor:
+- [x] **Migratie 034 draaien** in de Supabase SQL Editor:
       `034_praatplaat_theme_update.sql` — laat de docent het thema van een
       praatplaat wijzigen (nodig voor het praatplaat-thema hieronder).
       *(032 en 033 heb je al gedraaid.)*
 - [ ] **Verse reset-mail** aanvragen en direct klikken (elke eerder geklikte
       link is verbruikt). De Redirect-URL staat goed sinds testronde 4.
+
+---
+
+## 🚨 Console-fouten meteen na deploy op ss-dev.techindeles.nl (22-7)
+
+Twee dingen gevonden en gefixt, één actie voor jou op de server:
+
+- [ ] **R5-15. YouTube-thumbnails laden weer** (was: CSP blokkeerde
+      `img-src`) — de CSP-lijst miste `https://img.youtube.com`, waar de
+      video-voorbeeldplaatjes op `/teacher`, de tutorial en de docentengids
+      vandaan komen. Toegevoegd aan `.htaccess`. Check na de upload: die
+      thumbnails tonen (geen kapotte-afbeelding-icoontjes), geen
+      `img-src`-melding meer in de console.
+- ✅ **Defensieve fix**: als een animatie-frame (zoals de hero-animatie) om
+      welke reden dan ook niet laadt, gooit de app daar nu geen onafgevangen
+      fout meer over — de rest van de pagina blijft gewoon werken.
+- [ ] **Server-actie (kan ik niet vanuit de code oplossen)**: de browser
+      meldde `frame-src 'none'` én blokkeerde daardoor de hero-animatie
+      (`Framing '…/animaties/onboarding-4-stappen.html' violates … "frame-src
+      'none'"`). Onze `.htaccess` zegt zelf `frame-src 'self' …` — dus die
+      `'none'` komt ergens anders vandaan. Check op de server (`ss-dev.techindeles.nl`):
+      1. Is dit dezelfde upload/map als `soundscout.techindeles.nl`, of een
+         losse dev-omgeving met een eigen, strenger beveiligingsprofiel
+         (sommige hosting-panelen zetten standaard een eigen CSP)?
+      2. Staat `mod_headers` aan voor die (sub)domein-configuratie? Zonder
+         mod_headers wordt onze `Header set Content-Security-Policy`-regel
+         in `.htaccess` genegeerd en kan een andere, strengere default
+         doorschemeren.
+      3. Simpele check: open de site, F12 → Network → klik het hoofddocument
+         → tab "Headers" → zoek `content-security-policy` → vergelijk de
+         `frame-src`-waarde met wat in `public/.htaccess` staat.
+      *(De `searchAnalyzer.js`-foutmelding in je console hoort niet bij
+      SoundScout — dat bestand zit niet in de app; vermoedelijk een
+      browserextensie. Geen actie nodig.)*
 
 ---
 

@@ -276,6 +276,12 @@ Bert testte het testplan opnieuw (x/-/?) en vulde Notion-testronde 5. **Verkenni
 
 **Vragen beantwoord in het testplan** (lespagina's aanmaken/bewerken · waarom praatplaat-delen apart is · taalknop+browsertaal · hoe een leerling dagen later feedback terugziet). **Testplan opgeschoond** volgens Berts werkwijze: werkend → Afgerond, hertest → schoon leeg vinkje, met een "Hertest ronde 5"-blok bovenaan (incl. de deploy-afhankelijke items uit testronde 4).
 
+**Extra (na eerste upload naar `ss-dev.techindeles.nl`, 22-7)**: Bert plakte console-fouten meteen na deploy. Twee losse zaken:
+- **Echte codefout**: `img-src` in `.htaccess` miste `https://img.youtube.com`, waar de video-thumbnails vandaan komen (`LandingVideo`/`TutorialScreen`/`TeacherGuideScreen`). Toegevoegd.
+- **Defensieve fix**: `OnboardingAnimation` las `iframe.contentWindow.document` zonder try/catch — die property-getter gooit een `SecurityError` zodra de frame niet same-origin laadt (bv. door een CSP-blokkade elders), en `?.` vangt dat niet af omdat het de getter zelf is die gooit, niet een null-referentie. Nu in try/catch.
+- **Niet fixbaar vanuit de code**: de browser meldde `frame-src 'none'`, terwijl onze `.htaccess` zelf `frame-src 'self' …` zegt. Dat wijst op een server-configuratie op `ss-dev.techindeles.nl` (mogelijk `mod_headers` uit, of een eigen hosting-CSP) die onze regel overschrijft — actie-item voor Bert in het testplan (§"Console-fouten meteen na deploy").
+- `searchAnalyzer.js`-fout is bevestigd niet-van-ons (geen match in de repo) — vermoedelijk een browserextensie.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
