@@ -154,7 +154,7 @@
 <div class="film">
   <div class="stepbar">
     <div class="stepnum" id="stepnum">1</div>
-    <div class="steptxt"><div class="k">Stap <span id="stepk">1</span> van 4</div><div class="t" id="steptitle">Verken een locatie en klik op geluiden</div></div>
+    <div class="steptxt"><div class="k" id="stepk"></div><div class="t" id="steptitle"></div></div>
   </div>
 
   <div class="stage" id="stage">
@@ -176,16 +176,16 @@
     <!-- ACT 2 -->
     <div class="act" id="act2"><div class="pad">
       <div class="rec">
-        <div class="rec-h"><span class="ic-mic"></span><span>Recorder</span><span class="cnt" id="reccnt">0/6</span></div>
+        <div class="rec-h"><span class="ic-mic"></span><span id="lblRecorder"></span><span class="cnt" id="reccnt">0/6</span></div>
         <div class="slots" id="slots"></div>
       </div>
     </div></div>
 
     <!-- ACT 3 -->
     <div class="act" id="act3"><div class="pad">
-      <div class="lib-h">BIBLIOTHEEK</div>
+      <div class="lib-h" id="lblLibrary"></div>
       <div class="lib" id="lib"></div>
-      <div class="tl-h" style="margin-top:18px">TIJDLIJN</div>
+      <div class="tl-h" id="lblTimeline" style="margin-top:18px"></div>
       <div class="tl">
         <div class="ruler" id="ruler"></div>
         <div class="grid-wrap">
@@ -199,14 +199,14 @@
     <!-- ACT 4 -->
     <div class="act" id="act4"><div class="pad">
       <div class="tlbg"></div>
-      <div class="editclip c-drone" id="editclip"><span class="ic-waves"></span><span>Rolschaatsen</span><div class="handle"></div></div>
+      <div class="editclip c-drone" id="editclip"><span class="ic-waves"></span><span id="lblEditClip"></span><div class="handle"></div></div>
       <div class="vol" id="vol">
-        <div class="vol-lab"><span class="ic-vol"></span>Volume</div>
+        <div class="vol-lab"><span class="ic-vol"></span><span id="lblVolume"></span></div>
         <div class="track"><div class="vol-fill" id="volfill"></div><div class="thumb" id="volthumb"></div>
           <div class="bars" id="bars"></div>
         </div>
       </div>
-      <div class="done" id="done"><div class="ic ic-spark"></div><div class="t">Jouw compositie!</div></div>
+      <div class="done" id="done"><div class="ic ic-spark"></div><div class="t" id="lblDone"></div></div>
       <svg class="cursor" id="cursor4" viewBox="0 0 24 24"><path d="M4 2 L4 19 L8.5 14.6 L11.6 21.4 L14.3 20.2 L11.2 13.6 L17.5 13.6 Z" fill="#fff" stroke="#222" stroke-width="1.5" stroke-linejoin="round"/></svg>
     </div></div>
 
@@ -216,7 +216,7 @@
 
   <div class="titlecard" id="titlecard">
     <div class="tc-num" id="tcNum">1</div>
-    <div class="tc-k" id="tcK">Stap 1 van 4</div>
+    <div class="tc-k" id="tcK"></div>
     <div class="tc-t" id="tcT"></div>
     <div class="tc-d" id="tcD"></div>
   </div>
@@ -235,33 +235,92 @@ const IC = {
 };
 function svg(name, extra){ return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"'+(extra||'')+'>'+IC[name]+'</svg>'; }
 
+/* ---------------- teksten (NL + EN) ----------------
+   Alle zichtbare tekst staat hier, nergens anders in dit bestand. De taal komt
+   uit de URL: ?lang=en → Engels, anders Nederlands. OnboardingAnimation.tsx
+   hangt die parameter er automatisch aan op basis van de app-taal.
+   De geluidsnamen zijn letterlijk overgenomen uit src/i18n/locales/*.json
+   (samples.gymzaal-rolschaatsen enz.) zodat animatie en app hetzelfde zeggen. */
+const TEXTS = {
+  nl: {
+    title: 'SoundScout — In 4 stappen aan de slag',
+    stepOf: 'Stap {n} van 4',
+    steps: [
+      'Verken een locatie en klik op geluiden',
+      'Verzamel geluiden in je recorder',
+      'Sleep je geluiden op de tijdlijn in de studio',
+      'Combineer, bewerk en maak je eigen compositie!'
+    ],
+    desc: [
+      'Elke locatie zit vol geluiden. Klik ze aan om ze te verzamelen.',
+      'Je recorder heeft plek voor zes geluiden. Vul ’m met je favorieten.',
+      'In de studio sleep je je geluiden op de sporen van de tijdlijn.',
+      'Maak geluiden langer of korter en pas het volume aan — klaar is je compositie!'
+    ],
+    sounds: {
+      voetbal: 'Voetbal', skateboard: 'Skateboard',
+      rolschaatsen: 'Rolschaatsen', bal: 'Bal', vallen: 'Vallen'
+    },
+    ui: {
+      recorder: 'Recorder', empty: 'Leeg', library: 'BIBLIOTHEEK',
+      timeline: 'TIJDLIJN', volume: 'Volume', done: 'Jouw compositie!'
+    }
+  },
+  en: {
+    title: 'SoundScout — Get started in 4 steps',
+    stepOf: 'Step {n} of 4',
+    steps: [
+      'Explore a location and click on sounds',
+      'Collect sounds in your recorder',
+      'Drag your sounds onto the timeline in the studio',
+      'Combine, edit and make your own composition!'
+    ],
+    desc: [
+      'Every location is full of sounds. Click them to collect them.',
+      'Your recorder holds six sounds. Fill it with your favourites.',
+      'In the studio you drag your sounds onto the tracks of the timeline.',
+      'Make sounds longer or shorter and adjust the volume — your composition is done!'
+    ],
+    sounds: {
+      voetbal: 'Football', skateboard: 'Skateboard',
+      rolschaatsen: 'Roller Skating', bal: 'Ball', vallen: 'Falling'
+    },
+    ui: {
+      recorder: 'Recorder', empty: 'Empty', library: 'LIBRARY',
+      timeline: 'TIMELINE', volume: 'Volume', done: 'Your composition!'
+    }
+  }
+};
+const LANG = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'nl';
+const T = TEXTS[LANG];
+document.documentElement.lang = LANG;
+document.title = T.title;
+
 /* ---------------- data ---------------- */
 // De drie geluiden die door alle stappen lopen (kleur uit de vaste palet-hex).
 const SND = [
-  {label:'Rolschaatsen', cls:'c-drone',  icon:'bike'},
-  {label:'Bal',          cls:'c-vissen', icon:'circle-dot'},
-  {label:'Vallen',       cls:'c-voetbal',icon:'waves'}
+  {label:T.sounds.rolschaatsen, cls:'c-drone',  icon:'bike'},
+  {label:T.sounds.bal,          cls:'c-vissen', icon:'circle-dot'},
+  {label:T.sounds.vallen,       cls:'c-voetbal',icon:'waves'}
 ];
 // Bibliotheek in stap 3 (5 chips).
 const LIBSND = [
-  {label:'Voetbal',     cls:'c-voetbal',icon:'circle-dot'},
-  {label:'Skateboard',  cls:'c-skate',  icon:'zap'},
-  {label:'Rolschaatsen',cls:'c-drone',  icon:'bike'},
-  {label:'Bal',         cls:'c-vissen', icon:'circle-dot'},
-  {label:'Vallen',      cls:'c-robot',  icon:'sparkles'}
+  {label:T.sounds.voetbal,     cls:'c-voetbal',icon:'circle-dot'},
+  {label:T.sounds.skateboard,  cls:'c-skate',  icon:'zap'},
+  {label:T.sounds.rolschaatsen,cls:'c-drone',  icon:'bike'},
+  {label:T.sounds.bal,         cls:'c-vissen', icon:'circle-dot'},
+  {label:T.sounds.vallen,      cls:'c-robot',  icon:'sparkles'}
 ];
-const STEPS = [
-  'Verken een locatie en klik op geluiden',
-  'Verzamel geluiden in je recorder',
-  'Sleep je geluiden op de tijdlijn in de studio',
-  'Combineer, bewerk en maak je eigen compositie!'
-];
-const TOEL = [
-  'Elke locatie zit vol geluiden. Klik ze aan om ze te verzamelen.',
-  'Je recorder heeft plek voor zes geluiden. Vul ’m met je favorieten.',
-  'In de studio sleep je je geluiden op de sporen van de tijdlijn.',
-  'Maak geluiden langer of korter en pas het volume aan — klaar is je compositie!'
-];
+const STEPS = T.steps;
+const TOEL = T.desc;
+
+// Vaste labels in de decors één keer neerzetten.
+document.getElementById('lblRecorder').textContent = T.ui.recorder;
+document.getElementById('lblLibrary').textContent  = T.ui.library;
+document.getElementById('lblTimeline').textContent = T.ui.timeline;
+document.getElementById('lblVolume').textContent   = T.ui.volume;
+document.getElementById('lblDone').textContent     = T.ui.done;
+document.getElementById('lblEditClip').textContent = T.sounds.rolschaatsen;
 
 /* ---------------- opbouw DOM ---------------- */
 // losse icoontjes injecteren
@@ -282,7 +341,7 @@ const rings=hotEls.map(e=>e.querySelector('.ring')), pulses=hotEls.map(e=>e.quer
 // Act 2 — 6 slots
 const slotsEl=document.getElementById('slots'); const slotEls=[];
 for(let i=0;i<6;i++){ const s=document.createElement('div'); s.className='slot';
-  s.innerHTML='<span class="leeg">Leeg</span><div class="cin"><span class="ic"></span><span class="lb"></span></div>';
+  s.innerHTML='<span class="leeg">'+T.ui.empty+'</span><div class="cin"><span class="ic"></span><span class="lb"></span></div>';
   slotsEl.appendChild(s); slotEls.push(s); }
 
 // Act 3 — bibliotheek + tijdlijn
@@ -336,7 +395,7 @@ function render(t){
   let cur=3; for(let i=0;i<4;i++){ if(t<START[i]+LEN[i]){ cur=i; break; } }
   for(let i=0;i<4;i++){ acts[i].style.opacity=actVisible(i,t); }
   document.getElementById('stepnum').textContent=cur+1;
-  document.getElementById('stepk').textContent=cur+1;
+  document.getElementById('stepk').textContent=T.stepOf.replace('{n}',cur+1);
   document.getElementById('steptitle').textContent=STEPS[cur];
   dots.forEach((d,i)=>{ d.style.background=i===cur?'var(--accent)':'#dfe3e8';
     d.style.transform='scale('+(i===cur?1.25:1)+')'; });
@@ -351,7 +410,7 @@ function render(t){
   tcEl.style.opacity=tco;
   if(tco>0){
     if(blank){ tcNum.style.opacity=0; tcK.textContent=''; tcT.textContent=''; tcD.textContent=''; }
-    else { tcNum.style.opacity=1; tcNum.textContent=cur+1; tcK.textContent='Stap '+(cur+1)+' van 4';
+    else { tcNum.style.opacity=1; tcNum.textContent=cur+1; tcK.textContent=T.stepOf.replace('{n}',cur+1);
       tcT.textContent=STEPS[cur]; tcD.textContent=TOEL[cur]; }
   }
 

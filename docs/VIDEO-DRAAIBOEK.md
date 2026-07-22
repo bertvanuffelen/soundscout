@@ -165,8 +165,9 @@ De EN-video's zijn **echte nieuwe opnames**, geen ondertitels: het gaat om
 schermopnames, dus als de interface Nederlands blijft heeft een Engelse kijker er
 weinig aan. Zelfde route, app op EN, Engelse voice-over.
 
-> **Losse bevinding (21 juli):** de vier-stappen-animatie in de hero van
-> `/teacher` heeft de Nederlandse tekst hardgecodeerd in
-> `public/animaties/onboarding-4-stappen.html` ("Verzamel", "Sleep je geluiden",
-> "STAP 1 VAN 4"). Op de Engelse pagina staat dus Nederlandse tekst in het
-> eerste wat een bezoeker ziet. Dat is een aparte fix, los van deze video's.
+> **Opgelost (22 juli):** de vier-stappen-animatie in de hero van `/teacher` is
+> nu tweetalig. `public/animaties/onboarding-4-stappen.html` heeft één
+> woordenlijst met een NL- en een EN-blok en leest de taal uit `?lang=`;
+> `OnboardingAnimation.tsx` hangt die parameter automatisch aan op basis van de
+> app-taal. Op de Engelse pagina staat de animatie dus ook in het Engels — geldt
+> meteen ook voor de tutorial en de first-run intro, die dezelfde animatie tonen.
