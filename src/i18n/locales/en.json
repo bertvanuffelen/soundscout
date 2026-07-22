@@ -573,6 +573,8 @@
     "cardLabel": "Assignment card (optional)",
     "cardDefault": "Default explanation",
     "cardNone": "No custom card — show default explanation",
+    "praatplaatThemeLabel": "Sounds from this theme",
+    "praatplaatThemeHint": "For this sound map the student collects sounds from this theme.",
     "activate": "Activate",
     "activateError": "Could not activate assignment",
     "deactivate": "Deactivate",
@@ -1788,7 +1790,7 @@
   },
   "praatplaat": {
     "select": {
-      "instruction": "Tap the spot where you want to create sound for",
+      "instruction": "Click the spot where you'll create a soundscape",
       "confirmHint": "Happy with your spot? Press the button to start!",
       "confirm": "Continue",
       "tapHint": "Tap the image to choose your spot",

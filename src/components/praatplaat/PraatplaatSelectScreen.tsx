@@ -12,6 +12,8 @@ import { useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
+import { useThemeStore } from '../../stores/themeStore';
+import { getTheme, DEFAULT_THEME_ID } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { praatplaatToStoryboard } from '../../utils/praatplaatStoryboard';
 
@@ -79,6 +81,12 @@ export function PraatplaatSelectScreen() {
   const handleConfirm = useCallback(() => {
     if (!selectedPos || !activePraatplaat) return;
     setPraatplaatPosition(selectedPos);
+    // Herbevestig het thema-geluidenpalet van deze praatplaat (vangnet als de
+    // leerling na een herlaad direct op dit scherm binnenkomt) — testronde 5 / D2.
+    const ppThemeId = activePraatplaat.themeId;
+    useThemeStore.getState().setTheme(
+      ppThemeId && getTheme(ppThemeId) ? ppThemeId : DEFAULT_THEME_ID,
+    );
     // Stel praatplaat in als storyboard zodat de afbeelding in de studio te zien is
     setActiveStoryboard(praatplaatToStoryboard(activePraatplaat));
     setComposeMode('image');
@@ -110,7 +118,7 @@ export function PraatplaatSelectScreen() {
 
       {/* Instructie */}
       <div className="text-center px-4 py-3">
-        <p className="text-white/80 text-sm sm:text-base">
+        <p className="text-white text-lg sm:text-2xl font-semibold">
           {selectedPos
             ? t('praatplaat.select.confirmHint')
             : t('praatplaat.select.instruction')

@@ -573,6 +573,8 @@
     "cardLabel": "Opdrachtkaart (optioneel)",
     "cardDefault": "Standaard uitleg",
     "cardNone": "Geen eigen kaart — toon standaard uitleg",
+    "praatplaatThemeLabel": "Geluiden uit dit thema",
+    "praatplaatThemeHint": "De leerling verzamelt bij deze praatplaat geluiden uit dit thema.",
     "activate": "Activeren",
     "activateError": "Kon opdracht niet activeren",
     "deactivate": "Deactiveren",
@@ -1788,7 +1790,7 @@
   },
   "praatplaat": {
     "select": {
-      "instruction": "Tik op de plek waar jij geluid voor gaat maken",
+      "instruction": "Klik op de plek waar jij een soundscape voor gaat maken",
       "confirmHint": "Tevreden? Druk op de knop om te beginnen!",
       "confirm": "Ga verder",
       "tapHint": "Tik op de afbeelding om je plek te kiezen",

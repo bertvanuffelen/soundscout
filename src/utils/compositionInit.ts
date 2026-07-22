@@ -13,7 +13,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
-import { getThemeStoryboards, findStoryboardById } from '../data/themes';
+import { getThemeStoryboards, findStoryboardById, getTheme, DEFAULT_THEME_ID } from '../data/themes';
 import { getActiveAssignment, type ActiveAssignment } from '../lib/assignments';
 import { MAX_SECTIONS } from '../constants/config';
 import { logger } from './logger';
@@ -419,6 +419,15 @@ export async function activatePendingAssignment(): Promise<void> {
       themeId: assignment.praatplaat.themeId,
       locationId: assignment.praatplaat.locationId,
     });
+
+    // Zet het thema-geluidenpalet dat de docent aan deze praatplaat koppelde
+    // (voorheen ontbrak dit → de leerling zat altijd in 'stad', ook bij een
+    // piraten-praatplaat — bevinding testronde 5 / D2). Onbekend of ontbrekend
+    // thema valt terug op de standaard.
+    const ppThemeId = assignment.praatplaat.themeId;
+    useThemeStore.getState().setTheme(
+      ppThemeId && getTheme(ppThemeId) ? ppThemeId : DEFAULT_THEME_ID,
+    );
 
     useAppStore.getState().goToPraatplaatSelect();
     return;

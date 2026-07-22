@@ -10,7 +10,7 @@ import { useTranslation } from 'react-i18next';
 import { FileText, MapPin, Clapperboard, Music, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
-import { getAllMultiImageStoryboards, getTeacherThemes, type StoryboardWithTheme } from '../../data/themes';
+import { getAllMultiImageStoryboards, getTeacherThemes, DEFAULT_THEME_ID, type StoryboardWithTheme } from '../../data/themes';
 import type { ThemeConfig } from '../../data/themes';
 import { getPraatplaatCatalog, type PraatplaatCatalogEntry } from '../../data/praatplaatCatalog';
 import type { AssignmentType } from '../../lib/assignments';
@@ -62,6 +62,9 @@ export function ActivateAssignmentModal({
 
   const [selected, setSelected] = useState<Selection>(null);
   const [selectedCardId, setSelectedCardId] = useState<string>(''); // '' = standaard uitleg
+  // Thema-geluidenpalet bij een praatplaat (docent kiest, praatplaat-eigen thema
+  // voorgeselecteerd) — testronde 5 / D2.
+  const [praatplaatThemeId, setPraatplaatThemeId] = useState<string>(DEFAULT_THEME_ID);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -71,6 +74,7 @@ export function ActivateAssignmentModal({
     if (!isOpen) return;
     setSelected(null);
     setSelectedCardId('');
+    setPraatplaatThemeId(DEFAULT_THEME_ID);
     setError(null);
   }, [isOpen, typeFilter]);
 
@@ -112,7 +116,8 @@ export function ActivateAssignmentModal({
         const entry = praatplaatCatalog.find((e) => e.ref === selected.id);
         if (entry) {
           await onActivatePraatplaatFromCatalog(
-            { name: t(entry.nameKey), themeId: entry.themeId, locationId: entry.locationId, imageUrl: entry.imageUrl },
+            // themeId komt van de docent-keuze (voorgevuld op het praatplaat-eigen thema)
+            { name: t(entry.nameKey), themeId: praatplaatThemeId, locationId: entry.locationId, imageUrl: entry.imageUrl },
             cardId,
           );
         }
@@ -172,7 +177,14 @@ export function ActivateAssignmentModal({
               key={entry.ref}
               entry={entry}
               isSelected={selected?.type === 'praatplaat' && selected.id === entry.ref}
-              onSelect={() => setSelected({ type: 'praatplaat', id: entry.ref })}
+              onSelect={() => {
+                setSelected({ type: 'praatplaat', id: entry.ref });
+                // Voorselecteer het thema-geluidenpalet van de praatplaat zelf;
+                // valt het buiten de docent-thema's, dan de standaard.
+                setPraatplaatThemeId(
+                  assignableThemes.some((th) => th.id === entry.themeId) ? entry.themeId : DEFAULT_THEME_ID,
+                );
+              }}
             />
           ))}
         </>
@@ -266,6 +278,26 @@ export function ActivateAssignmentModal({
       {!loading && previewImage && (
         <div className="md:hidden mt-4 pt-4 border-t border-border-subtle">
           <PreviewPanel previewImage={previewImage} storyboard={selectedStoryboard} />
+        </div>
+      )}
+
+      {/* Thema-geluidenpalet — alleen bij een praatplaat (D2). De leerling
+          verzamelt geluiden uit dít thema; voorgevuld op het praatplaat-eigen thema. */}
+      {!loading && selected?.type === 'praatplaat' && (
+        <div className="mt-4 pt-4 border-t border-border-subtle">
+          <label className="block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5">
+            {t('assignments.praatplaatThemeLabel')}
+          </label>
+          <select
+            value={praatplaatThemeId}
+            onChange={(e) => setPraatplaatThemeId(e.target.value)}
+            className="w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm focus:outline-none focus:border-accent-400"
+          >
+            {assignableThemes.map((theme) => (
+              <option key={theme.id} value={theme.id}>{t(theme.name)}</option>
+            ))}
+          </select>
+          <p className="text-text-muted text-xs mt-1.5">{t('assignments.praatplaatThemeHint')}</p>
         </div>
       )}
 
