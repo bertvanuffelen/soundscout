@@ -1,9 +1,8 @@
 # Testplan SoundScout
 
 Handmatig testplan voor alles wat in de worktree `masterplan-6-weken` is gebouwd.
-**Herstructurering 19-7**: de actieve testen staan nu gegroepeerd **per activiteit**,
-zodat je per onderdeel in één keer alles kunt nalopen. Wat je al hebt afgetekend
-staat compact onderaan in **✅ Afgerond**.
+De actieve testen staan **gegroepeerd per activiteit**; wat je hebt afgetekend en
+werkt, staat compact onderaan in **✅ Afgerond**.
 
 **Zo test je:** `- [x]` = werkt · `- [-]` = werkt niet · `- [?]` = twijfel/onduidelijk.
 Zet er bij `-`/`?` een regel onder met wat je zag; ik pak die daarna gericht op.
@@ -11,230 +10,166 @@ Zet er bij `-`/`?` een regel onder met wat je zag; ik pak die daarna gericht op.
 **Lokaal draaien:** `cd .claude/worktrees/masterplan-6-weken && npm run dev`.
 Twee browserprofielen zijn handig (docent in de één, "leerling" incognito in de ander).
 
-Automatische gates zijn groen: `npx tsc -b --noEmit` · `npm run test:run` (266 tests) ·
+Automatische gates zijn groen: `npx tsc -b --noEmit` · `npm run test:run` (269 tests) ·
 `npm run lint` (baseline 27) · i18n-pariteit NL/EN.
 
-> Volledige rol-doorloop: zie [USECASES-QA.md](USECASES-QA.md) — 30 leerling- + 26 docent-usecases.
+> Volledige rol-doorloop: zie [USECASES-QA.md](USECASES-QA.md).
 > Wat je waar aan/uit zet: [HANDLEIDING-BEHEER.md §4b](HANDLEIDING-BEHEER.md).
 
 ---
 
 ## ⚠️ Eerst dit (acties voor Bert)
 
-- [x] **Migraties 032 en 033 draaien** in de Supabase SQL Editor:
-      `032_fix_lesson_card_inline_match.sql` (juiste uitlegkaart bij template-leskaarten) ·
-      `033_assignment_duration_label.sql` (tijdsduur-veld op een opdracht).
-- [x] **Supabase Redirect URLs**: Authentication → URL Configuration → toevoegen:
-      `https://soundscout.techindeles.nl/*` (naast localhost). Zónder deze regel
-      landt elke wachtwoord-reset-mail op `otp_expired` — dat is wat je zag bij 1a.
-- [ ] Daarna **een verse reset-mail** aanvragen en direct klikken (elke eerder
-      geklikte link is verbruikt).
+- [ ] **Verse build uploaden** naar `soundscout.techindeles.nl`. Belangrijk: een
+      paar bevindingen van je vorige ronde (lege montagelijn na bewaarcode,
+      Opslaan sluit de modal, aankondiging dimt niets, transportknoppen,
+      uniforme prullenbak) zijn **al gefixt sinds 19-7**, maar zaten nog niet in
+      de build die jij testte. Ze staan hieronder als "hertest ná deploy".
+- [ ] **Migratie 034 draaien** in de Supabase SQL Editor:
+      `034_praatplaat_theme_update.sql` — laat de docent het thema van een
+      praatplaat wijzigen (nodig voor het praatplaat-thema hieronder).
+      *(032 en 033 heb je al gedraaid.)*
+- [ ] **Verse reset-mail** aanvragen en direct klikken (elke eerder geklikte
+      link is verbruikt). De Redirect-URL staat goed sinds testronde 4.
 
 ---
 
-## 🆕 Hertest testronde 4 (19-7) — begin hier
+## 🆕 Hertest ronde 5 (22-7) — begin hier
 
-Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
+Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 5".
 
-- [x] **1. Album met afspeellijst** (was: geen zijpaneel): open een album-link met
-      ≥2 composities → rechts staat nu het zijpaneel met alle composities, plus
-      vorige/volgende-knoppen en "Doorspelen". Geen docent-feedbackstatus — dat
-      blijft docent-only. *(Antwoord op je vraag: ja, dit ís het universele
-      presentatiescherm; de publieke variant miste alleen de lijst.)*
-- [X] **2. Albumcode groot**: klaslokaal → "Deel album" → de 8-tekens code staat
-      nu groot bovenaan de modal (zelfde formaat als de klascode), met daaronder
-      de link + QR.
-- [X] **3. Leskaart-pagina opent in een nieuw tabblad**: `/teacher` → een leskaart
-      → "Bekijk de leskaart" → nieuw tabblad met de lespagina (niet meer de app).
-      *(Antwoord op je vraag "hoe kom ik daar en wat is de functie?": je komt er
-      via deze knop op `/teacher`; de pagina is een **lees-/deelpagina** — bedoeld
-      om aan een collega te sturen of te laten vinden via Google. Lesgeven doe je
-      via "Open voor je klas".)* ==> WERKT GOED. Hoe en waar maken we deze lespagina's aan om beschibaar te stellen voor delen. En hoe kan ik eventuele teksten aanpassen?
-- [X] **4. EffectsModal focus-trap**: studio → clip selecteren → effecten →
-      **Tab** blijven drukken, ook nadat je pitch/reverb op 0 zet: de focus blijft
-      binnen de modal. *(Oorzaak die nog restte: als het gefocuste element
-      verdween — de reset-knop verdwijnt bij waarde 0 — sprong de focus naar de
-      achtergrond. Nu vangt de trap dat af.)*
-- [? X ] **5. Historie-acties compleet**: klaslokaal → "Eerdere opdrachten" → élke
-      rij heeft nu **oog (bekijk inzendingen)**, **Deel album** en **Activeer**;
-      praatplaat-rijen houden hun eigen oog/deel/prullenbak. Het oog opent de
-      presentatie met precies de inzendingen van díe opdracht (grijs als er nog
-      geen zijn). ==> Werkt maar waarom behandelen we praatplaten anders? Is dit niet gewoon universeel? En waarom staat er bij praatplaten delen met leerlingen als dit eigenlijk gewoon via klascode gaat? Of heeft dit een andere betekenis?
-- [X] **6. Presenteren-keuze**: klaslokaal → "Presenteren" → zodra er een
-      actieve opdracht is, vraagt hij eerst: **"Actieve opdracht (n)"** of
-      **"Alle composities (n)"**. Heeft de actieve opdracht nog geen inzendingen,
-      dan staat die optie grijs met "Nog geen inzendingen bij deze opdracht" —
-      zo zie je meteen waaróm er niets van die opdracht te presenteren valt.
-      (Zonder actieve opdracht opent hij direct alles; dan valt er niets te kiezen.)
-- [X] **7. Ververs tijdens presenteren**: in het presentatiescherm staat een
-      ververs-knop (ronde pijl) in de kopbalk; nieuwe inzendingen komen daarnaast
-      **elke 20 seconden vanzelf** achteraan de lijst, zonder de muziek te storen.
-- [X] **8. Montagelijn wit**: presentatiescherm → montagelijn openen → de balk
-      achter de sporen is wit (was grijzig).
-- [X] **9. Klaslokaal-startkeuze**: "Kies/Wijzig opdracht" toont nu meteen de
-      **vier type-kaarten** (geen tussenklik "Stel zelf samen" meer), met daaronder
-      één knop **"Of kies een kant-en-klare leskaart"**.
-- [X] **10. "Open code"**: startscherm → "Ik heb een code" → de knop heet nu
-      **Open code** (was "Beluister"). Ook in EN controleren.
-- [X] **11. "Lever in"-knop**: leerling met klascode → podium → Opslaan & Delen →
-      kolom "Voor de klas" heeft nu een echte knop **"Lever in"**; de modal sluit
-      na het inleveren en de knop is bij een volgende keer gewoon weer beschikbaar.
-      **"Presenteren op het digibord" is daar weg voor leerlingen** — die knop is
-      alleen nog zichtbaar als jij als docent bent ingelogd.
-- [X] **12. Leskaart-covers op /teacher**: het detailpaneel rechts toont nu de
-      plaat/cover boven de titel (zoals in het dashboard).
+- [ ] **R5-1. Sectie-loop herstelt na uit/aan** (was kapot, B2): maak een sectie
+      → klik erop → "Loop deze sectie" → afspelen loopt dat stuk, de grote
+      loopknop licht op. Zet de grote loopknop **uit** (loop stopt) en dan weer
+      **aan** → de **sectie-loop komt terug** én in de sectie staat "Loop deze
+      sectie" weer aan. *(Voorheen viel hij terug op een hele-tijdlijn-loop en
+      stond de sectie op uit.)*
+- [ ] **R5-2. Praatplaat-thema kiest de docent** (was: altijd stad, D2): docent
+      → activeer een **piraten-praatplaat** → in de activeer-modal staat nu een
+      **thema-keuze**, voorgevuld op *Piraten*. Activeer → leerling voert de
+      klascode in → kiest een plek → gaat naar de kaart → verzamelt **piraten**-
+      geluiden (niet stad). Kies in de dropdown een ánder thema → dan hoort de
+      leerling díe geluiden. *(Vergt migratie 034 voor het wijzigen achteraf.)*
+- [ ] **R5-3. Opdrachtkaart op de actieve opdracht**: klaslokaal → actieve
+      opdracht → naast de tijdsduur staat nu een **"Opdrachtkaart"-keuze**. Kies
+      een kaart → "Opgeslagen" → de leerling-landing van die klas toont die
+      kaart. Zet hem op "Geen eigen kaart" → de leerling ziet weer de standaard.
+- [ ] **R5-4. "Presenteren"-knop is geel**: klaslokaal → de grote **Presenteren**-
+      knop is nu geel (actie-kleur), niet blauw. "Feedback-overzicht" blijft zoals
+      het was.
+- [ ] **R5-5. Praatplaat-plek-tekst**: leerling in de praatplaat-plekkiezer → de
+      regel bovenaan is nu groter en luidt **"Klik op de plek waar jij een
+      soundscape voor gaat maken"**. Ook in EN.
+- [ ] **R5-6. Taalknop op de auth-schermen**: log uit → op het login-, registreer-
+      en wachtwoord-vergeten-scherm staat nu rechtsboven de **NL/EN-knop**, op
+      dezelfde plek als op de andere docentschermen.
 
-- [ ] **13. Bewaarcode → volle tijdlijn** (was: lege tijdlijn): bewaar een
-      compositie online in thema Piraten (of een ander niet-standaard thema),
-      open de code op een ánder apparaat → de clips staan er gewoon. *(Oorzaak:
-      de tijdlijn zocht samples in het actieve thema i.p.v. in je eigen
-      bibliotheek — jouw bevinding bij A3.)*
-- [ ] **14. "Opslaan" sluit de modal**: podium → Opslaan & Delen → Opslaan →
-      de modal sluit en de bewaar-bevestiging verschijnt.
-- [ ] **15. Aankondiging dimt niets meer**: presenteren → volgende compositie →
-      "Nu te horen" verschijnt als zwevend kaartje bovenin; de kaart eronder
-      (inclusief montagelijn) blijft helder wit. *(Dit was het "grijs bij laden".)*
-- [ ] **16. Praatplaat-bord bij presenteren**: klaslokaal met een actieve
-      praatplaat-opdracht → Presenteren → "Actieve opdracht" → je krijgt het
-      klikbare bord (zoals in het gedeelde album), niet losse visuals.
-- [ ] **17. Eén deelknop**: elke opdrachtrij heeft nu één "Delen". Bij een
-      praatplaat vraagt hij eerst: het bord (klikbaar) of de composities
-      (afspeellijst). Bij andere types opent direct de album-modal.
-- [ ] **18. Taalknop overal**: dashboard, klaslokaal én gids hebben de NL/EN-knop
-      rechtsboven op dezelfde plek — precies één per scherm.
-- [ ] **19. Browsertaal**: verse browser (of gewiste opslag) met Engelse
+### Hertest ná een verse deploy (al gefixt in de code)
+
+Deze stonden nog open uit testronde 4; ze zijn gefixt maar je testte een oudere
+build. Even opnieuw op de verse upload:
+
+- [ ] **R5-7. Bewaarcode → volle tijdlijn** (was: lege montagelijn bij A3):
+      bewaar online in thema **Piraten** → open de 6-tekens code in een ánder
+      browserprofiel → de clips staan er gewoon (niet leeg). *(Oorzaak was dat de
+      tijdlijn clips in het actieve thema zocht i.p.v. in je eigen bibliotheek.)*
+- [ ] **R5-8. Opslaan sluit de modal + Tab blijft binnen**: podium → Opslaan &
+      Delen → **Opslaan** → de modal sluit en de bevestiging verschijnt. Met
+      **Tab** door de modal blijft de focus binnen de modal.
+- [ ] **R5-9. Aankondiging dimt niets**: presenteren → volgende compositie → "Nu
+      te horen" komt als zwevend kaartje bovenin; de kaart eronder (incl.
+      montagelijn) blijft helder wit.
+- [ ] **R5-10. Praatplaat-bord bij presenteren**: klaslokaal met actieve
+      praatplaat → Presenteren → "Actieve opdracht" → je krijgt het klikbare bord
+      (zoals het gedeelde album), niet losse visuals.
+- [ ] **R5-11. Eén deelknop**: elke opdrachtrij heeft één "Delen". Bij een
+      praatplaat vraagt hij eerst: bord (klikbaar) of composities (afspeellijst);
+      bij andere types opent direct de album-modal.
+- [ ] **R5-12. Transportknoppen in de presentatie**: ⏮ zet de compositie die je
+      hoort terug naar het begin (net als in de studio); er is geen ⏭ meer.
+      Wisselen doe je in het zijpaneel, met ←/→ of via "Doorspelen".
+- [ ] **R5-13. Historie opruimen — overal hetzelfde, nooit destructief**:
+      klaslokaal → "Eerdere opdrachten" → élke rij heeft dezelfde acties
+      (oog · delen · prullenbak · Activeer). Prullenbak op een storyboard- of
+      template-rij → de tekst zegt dat het leerlingwerk bewaard blijft →
+      bevestigen → rij weg **en de composities staan nog gewoon bij de
+      inzendingen**. *(Voorheen wiste de prullenbak bij een praatplaat de
+      inzendingen écht mee.)*
+- [ ] **R5-14. Browsertaal**: verse browser (of gewiste opslag) met Engelse
       taalinstelling → app start in het Engels; Nederlandse browser → Nederlands.
       Zet je zelf de taal om, dan wint die keuze altijd.
 
-- [ ] **20. Transportknoppen in de presentatie**: ⏮ zet de compositie die je
-      hoort terug naar het begin (net als in de studio); er is geen ⏭ meer.
-      Wisselen van compositie doe je in het zijpaneel, met ←/→ of via
-      "Doorspelen". *(Jouw punt: hetzelfde icoon moest overal hetzelfde doen.)*
+---
 
-- [ ] **21. Historie opruimen — overal hetzelfde, nooit destructief**: klaslokaal
-      → "Eerdere opdrachten" → élke rij heeft nu dezelfde vier acties (oog ·
-      delen · prullenbak · Activeer). Klik de prullenbak bij een storyboard- of
-      template-rij → de tekst zegt dat het leerlingwerk bewaard blijft →
-      bevestigen → de rij is weg **en de composities staan nog gewoon bij de
-      inzendingen**. Dat laatste is het punt: voorheen wiste de prullenbak bij
-      een praatplaat de inzendingen écht mee.
+## 💬 Antwoorden op je vragen (uit de vorige ronde)
+
+- **Lespagina's — hoe/waar maak je ze, hoe pas je teksten aan?** (jouw `?` bij
+  "Bekijk de leskaart"). De `/les/<key>`-pagina's worden **automatisch
+  gegenereerd** bij `npm run build` door `scripts/generate-les-pages.mjs`. Wat
+  waar vandaan komt: welke kaarten een pagina krijgen staat in
+  `LANDING_LESSON_KEYS` (in `TeacherLandingPage.tsx`); cover/type/pdf in
+  `scripts/les-pages-data.json`; de teksten (titel, lesdoel, lesfases) in
+  `nl.json`/`en.json` onder `lessonCards.builtin.<key>` (of via de `TEKSTEN.md`-
+  workflow). Volledige uitleg met exacte bestandsplekken: **HANDLEIDING-BEHEER §4b**.
+- **Waarom worden praatplaten anders behandeld in de historie? En "delen met
+  leerlingen"?** (jouw `?` bij historie-acties). De historie is nu **uniform** —
+  elke rij heeft dezelfde vier acties (hertest R5-13). De aparte "Delen"-keuze bij
+  een praatplaat (bord vs. composities) bestaat omdat een praatplaat óók als
+  **publiek klikbaar bord** deelbaar is (via een 8-tekens deelcode, `?pp-share=`).
+  Dat is delen **buiten** de klas — bijvoorbeeld naar ouders of een collega — en
+  staat los van de klascode waarmee je leerlingen binnenkomen.
+- **Taalknop overal + standaardtaal aan de browser gekoppeld?** (A2). De NL/EN-
+  knop staat nu op élk docentscherm rechtsboven, ook op de auth-schermen (R5-6).
+  En ja: de standaardtaal **volgt de browser** — een Engelse browser start de app
+  in het Engels, anders Nederlands; jouw eigen keuze wint daarna altijd.
+- **Hoe ziet een leerling dagen later zijn feedback terug?** (C2/C3). Op
+  **hetzelfde apparaat/dezelfde browser** verschijnt "Je hebt een reactie!" op het
+  startscherm en laadt zijn werk automatisch terug (bewaard in de browser). Op een
+  **ander of leeggemaakt apparaat** (of een gedeelde Chromebook) is de
+  **bewaarcode** (6 tekens) de weg terug: die voert de leerling in en ziet dan zijn
+  compositie + feedback op het podium. Een inzending die alleen via de klascode
+  ging en waarvan de leerling géén bewaarcode noteerde, kan hij op een vreemd
+  apparaat niet zelf terughalen — dat is een bewuste privacykeuze (we vragen geen
+  leerling-mailadres). Wil je dit later anders, dan is het een apart ontwerp-
+  besluit (bv. de docent deelt de feedback terug via het digibord of een album).
 
 ---
 
-## 🎒 A. Leerling — basisflow
+## 🎛️ B. Studio — nog te testen
 
-- [X] **A1. Rooktest**: Start → Nieuwe compositie → thema → Kaart → Locatie →
-      geluiden verzamelen → Studio → Podium. Geluid speelt, geen console-fouten.
-- [? X ] **A2. Taal**: NL/EN wisselen op het startscherm én op `/teacher` en in het
-      dashboard; steekproef dat teksten meeveranderen (ook nieuwe knoppen uit
-      testronde 4: "Open code", "Lever in", "Bekijk inzendingen"). ==> WERKT maar zou er altijd in alle teacher en dashboard schermen die kleine toggle EN/NE helemaal rechtsboven kunnen staan? Het zou mooi zijn als we een universele plek hebben die altijd snel te vinden is in je scherm. En is de standaard taalkeuze altijd gekoppeld aan de browser instelling?
-- [-] **A3. Composities hervatten**: "Mijn composities" → een opgeslagen werk
-      heropenen → studio en podium kloppen. ==> Opslaan werkt. Kan je n de modal "Opslaan & Delen" als je op de knop "Opslaan" klikt na het opslaan de modal laten sluiten? En kan je de tab-functie in deze modal ook aanzetten? Ik had overigens geklikt op "Bewaar online" en wilde de code openen in een andere browser. Hij vond de code maar de tijd-/montagelijn was leeg. Wordt de tijdlijn montagelijn wel opgeslagen voordat het online wordt bewaard?
-- [X] **A4. Tutorial**: "Hoe werkt het?" → video's spelen (op iPad: geen zwart vlak).
-
-## 🎛️ B. Studio (DAW-ronde) — nog niet getest
-
-### B1. Tijdlijn en sporen
-- [X] Onder de sporen is **"spoor toevoegen" de onderste rij** — geen grijs vlak
-      of doorlopende afspeellijn eronder.
-- [X] Sleep een sample zodat de auto-scroll je omlaag duwt: je kunt niet voorbij
-      de "spoor toevoegen"-rij scrollen; scrollen "lekt" niet naar de pagina.
-- [X] **"+8" / "−8"**: liniaal telt door (36, 40, …), clips blijven exact staan;
-      vier keer "+8" → 64 maten → knop inactief; "−8" tot 16 maten → inactief.
-- [X] **Inhoud-bescherming**: clip op maat 20 → "−8" kan tot 24, niet verder
-      (knop inactief). Zelfde voor secties.
-- [X] Clip op maat 40 speelt af **én** zit in de MP3-export; opslaan/heropenen
-      behoudt de lengte; een oude compositie opent gewoon op 32 maten.
-- [X] **"+ spoor"**: tot 12 sporen; regel verdwijnt op 12. **Cruciaal**: een clip
-      op spoor 9+ is hoorbaar.
-- [X] **Solo**: spoorkop → volume-icoon → koptelefoon → alleen dat spoor klinkt,
-      ook midden in het afspelen. Solo is tijdelijk: "Naar podium" → volle mix.
-
-### B2. Secties, zoom, clips
-- [ ] **Markeer deel** (vlag): grijs met tooltip zolang de afspeellijn op 0 staat;
-      na afspelen/klikken actief.
-- [ ] **Sectie-loop**: sectie maken → tik erop → "Loop deze sectie" → afspelen
-      loopt exact dat stuk; de transport-loopknop licht op; loopknop uit stopt
-      ook de sectie-loop.
-- [ ] Smal venster/iPad: **zoomknoppen zichtbaar** in de werkbalk (fit alleen op desktop).
-- [ ] **Clip-loop**: sleep de resize-greep van een clip naar rechts → hij loopt
-      door; hij stopt netjes vóór de volgende clip (geen overlap).
+- [ ] **Zoomknoppen op smal venster/iPad**: zoomknoppen zichtbaar in de werkbalk
+      (de "fit"-knop alleen op desktop).
 - [ ] **Effecten**: pitch/reverb/fade toepassen → hoorbaar bij afspelen én in de
       MP3-export.
 
-### B3. Iconen
-- [ ] Steekproef: feedback-stickers, foutschermen, trim-schaartje, laad-spinners,
-      sleepgreep — overal lijn-iconen, nergens emoji.
+## 🎤 C. Podium, opslaan en delen — nog te testen
 
-## 🎤 C. Podium, opslaan en delen
-
-- [ ] **C1. Bewaarcode → keuzescherm**: code invoeren op een ander apparaat →
-      keuze "Studio / Podium" → Podium toont compositie + feedbackblok + code-badge.
-      *(Dit is punt 3 uit het vorige blok waar je vroeg wat ik bedoelde: bij het
-      openen via een bewaarcode hoort de **compositienaam al ingevuld** te staan
-      op het podium — vroeger was dat veld leeg. En als je daarna "Nieuwe
-      compositie" kiest, moet die naam én de bewaarcontext echt weg zijn, zodat
-      je nieuwe werk niet stilletjes over het oude heen wordt opgeslagen.)*
-- [ ] **C2. Docent-feedback zien**: compositie met feedback openen → banner met
-      sticker/sterren/tekst; "Je hebt een reactie!" op het startscherm opent het podium.
-- [ ] **C3. Klasgenoot-sterren zien**: ontvanger ziet per criterium gemiddelde
-      sterren + aantal ("Ritme ★★★ (3)").
 - [ ] **C4. MP3-export**: klinkt zoals in de app (tempo klopt), ook met effecten.
 - [ ] **C5. Video-export** (storyboard): mp4 met beeldwissels en geluid.
-- [ ] **C6. Deel-link**: link maken → in een ander venster openen → luisterpagina werkt.
-- [ ] **C7. Online bewaren**: code + QR verschijnen; op een ander apparaat invoeren
-      laadt de compositie.
 
-## 🏫 D. Klascode, praatplaat en peer-feedback (leerling)
+## 🏫 D. Klascode en peer-feedback (leerling) — nog te testen
 
-- [ ] **D1. Klascode-landing**: 4 cijfers → landingsscherm met titel, beeld,
-      opdrachtkaart en (na migratie 033) de tijdsduur → "Starten".
-- [ ] **D2. Praatplaat**: klascode van een praatplaat-opdracht → plek kiezen →
-      componeren → opslaan → succesmelding; "Kies een nieuwe plek" werkt.
-- [ ] **D3. Storyboard-opdracht**: beelden in de studio, pijltjes werken, opslaan.
-- [ ] **D4. Vrije opdracht**: thema staat vast, verder vrij componeren.
-- [ ] **D5. Route C** (geen actieve opdracht): code invoeren → herstelopties
-      ("Vrij componeren" / "Andere code").
 - [ ] **D6. Luister naar klasgenoten**: fullscreen presentatiescherm, anoniem,
       sterren-rij + versturen; eigen werk komt nooit voorbij; na 3 beoordelingen
       nette lege-melding.
 - [ ] **D7. Ronde gesloten**: docent zet peer-feedback uit of laat de timer
       verlopen → leerling krijgt een eerlijke melding (geen nep-confetti).
 
-## 👩‍🏫 E. Klaslokaal (docent)
+## 👩‍🏫 E. Klaslokaal (docent) — nog te testen
 
-- [ ] **E1. Klas + opdracht**: klas aanmaken → opdracht activeren (elk van de vier
-      types) → klascode groot in beeld → vervang-waarschuwing bij een actieve opdracht.
-- [ ] **E2. Tijdsduur** (na 033): "bijv. 2 lessen" invullen → Enter → groene
-      "Opgeslagen" → zichtbaar op de leerling-landing.
 - [ ] **E3. Inzendingen**: nieuw-teller, "Beluisterd"-badge, tab "In bewerking".
-- [ ] **E4. Feedback geven**: sticker + sterren slaan direct op ("Opgeslagen"),
-      tekst via Versturen; status in de lijst klopt.
 - [ ] **E5. Peer-feedback instellen**: toggle aan, feedbackkaart kiezen, eigen
       kaart maken, **tijdslot** (10 min) → aftelling → "Ronde gesloten" +
       "Opnieuw openen". *(Server-side check: uitzetten moet ook echt weigeren.)*
 - [ ] **E6. Feedback-overzicht**: top 3 klopt met de sterren; tab Ontvangen toont
       per-criterium gemiddelden + wie-gaf-wat; tab Gegeven zet 0-gevers bovenaan.
-- [ ] **E7. Historie**: heractiveren, bekijken, praatplaat verwijderen (waarschuwt
-      dat inzendingen meegaan).
-- [ ] **E8. Album delen**: op de actieve opdracht én op elke historie-rij.
 
-## 🧰 F. Materiaal en leskaarten (docent)
+## 🧰 F. Materiaal en leskaarten (docent) — nog te testen
 
-- [ ] **F1. Mijn materiaal**: "Mijn opdrachtkaarten" + "Mijn templates"; tellers kloppen.
-- [ ] **F2. Opdrachtkaart maken** en koppelen aan een opdracht.
-- [ ] **F3. Bewaar als opdracht** (podium, docent) → verschijnt bij Mijn templates.
-- [ ] **F4. Bewaar als leskaart**: vanaf een template-kaart én vanuit het
-      succes-scherm van "Opslaan als opdracht" → editor opent voorgevuld → na
-      opslaan staat de kaart bij Leskaarten.
-- [ ] **F5. Leskaarten-tab**: groepen "Standaard" / "Mijn leskaarten";
-      thema- en niveaufilters (Groep 1-2 … 7-8); buiten-seizoen kaart toont
-      ⏱-badge en vraagt één zachte bevestiging.
-- [ ] **F6. Leskaart activeren** vanuit de picker → klascode groot in beeld.
 - [ ] **F7. Vrije-thema-kiezers**: buiten-seizoen thema's zichtbaar mét badge voor
       de docent; leerling-kiezers verbergen ze nog steeds.
 
-## 📽️ G. Presentatiescherm (digibord)
+## 📽️ G. Presentatiescherm (digibord) — nog te testen
 
 - [ ] **G1. Docent-presentatie**: klas met ≥2 inzendingen → zijpaneel met rijen,
       klik = springen, in-/uitschuiven met randknop + badge "2/8".
@@ -248,23 +183,17 @@ Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
       — plaat groot, klikbare spots (klik = spelen, nogmaals = pauze, cluster =
       keuzemenu), montagelijn-toggle.
 
-## 🌐 H. Landing, lespagina's en SEO
+## 🌐 H. Landing, lespagina's en SEO — nog te testen
 
-- [ ] **H1. `/teacher` doorlopen**: beide tabbladen in de juiste volgorde; hero-
-      animatie; "Drie manieren" met meebewegende preview; leskaarten met cover.
-- [ ] **H2. Lespagina's**: `/les/robotfabriek/index.html` (en drumbeat /
-      verspringen / vrij-basis) — cover, lesdoel, 4 lesfases, "Open voor je klas"
-      → login/dashboard op de juiste leskaart.
-- [ ] **H3. SEO na deploy** — *concreet wat je doet*: open
+- [ ] **H3. SEO na deploy**: open
       [search.google.com/test/rich-results](https://search.google.com/test/rich-results),
       plak `https://soundscout.techindeles.nl/teacher`, klik "URL testen". Je wilt
-      zien: **WebPage** en **FAQPage** in de lijst met gevonden items, zonder
-      rode fouten. Daarna in Chrome: F12 → Lighthouse → alleen "SEO" aanvinken →
-      rapport genereren → score ≥ 95.
-- [ ] **H4. robots/sitemap na deploy**: `…/robots.txt` en `…/sitemap.xml` openen
-      in de browser — beide moeten laden en `/` en `/teacher` noemen.
+      **WebPage** en **FAQPage** in de lijst, zonder rode fouten. Daarna in Chrome:
+      F12 → Lighthouse → alleen "SEO" → rapport → score ≥ 95.
+- [ ] **H4. robots/sitemap na deploy**: `…/robots.txt` en `…/sitemap.xml` openen —
+      beide moeten laden en `/` en `/teacher` noemen.
 
-## 📱 I. Apparaten
+## 📱 I. Apparaten — nog te testen
 
 - [ ] **I1. iPad — video's**: tutorial en docentengids, geen zwart vlak.
 - [ ] **I2. iPad — touch-targets**: werkbalkknoppen boven de tijdlijn, spoor-volume
@@ -287,91 +216,135 @@ Gefixt n.a.v. jouw testplan-annotaties en het Notion-blok "Test-ronde 4".
   van een code.
 - De peer-batch geeft alleen inzendingen met `submitted_at` — een klas met één
   inzending toont terecht "nog geen composities om te beluisteren".
-- Nieuw sinds testronde 4: de presentatie-playlist ververst elke 20s. Als je iets
-  raars ziet tijdens het presenteren (item springt), noteer wélke lijst je koos
-  (actieve opdracht of alles).
+- De presentatie-playlist ververst elke 20s. Zie je iets raars tijdens het
+  presenteren (item springt), noteer wélke lijst je koos (actieve opdracht of alles).
+- Praatplaat-thema (nieuw): het thema komt van de docent-keuze bij activeren. Een
+  onbekend thema valt terug op 'stad' — dat is bewust, geen bug.
 
 ---
 
 # ✅ Afgerond
 
-Alles hieronder is door jou getest en akkoord bevonden. Bewaard als
-regressie-referentie — niet opnieuw nodig, tenzij er iets in dat gebied verandert.
+Alles hieronder is door jou getest en akkoord bevonden (of in een eerdere ronde
+afgesloten). Bewaard als regressie-referentie — niet opnieuw nodig, tenzij er iets
+in dat gebied verandert.
 
-### Rooktest en basis
-- ✅ Start → kaart → locatie → studio → podium; taalwissel NL/EN op het startscherm.
+### Testronde 5 (22-7) — getest en akkoord
+*(verplaats hierheen zodra je de R5-punten hierboven hebt afgevinkt)*
 
-### Week 1 — fundament
-- ✅ Wachtwoord-reset: mail aanvragen werkt (het klikken zelf hangt nog op de
-  Supabase Redirect URL — zie "Eerst dit").
-- ✅ SEO-build: unieke titles/descriptions, canonical, og-image, robots + sitemap
-  bevatten `/` en `/teacher` (door mij in de dist gecontroleerd).
-- ✅ TrimModal: Escape + focus-trap. Podium-modals: Escape sluit, focus keert terug.
-- ✅ Bundle: main chunk ~152 kB, `ComposePreview` in een eigen chunk.
-- ✅ Privacytekst: "anonieme, cookieloze statistieken" incl. uitleg over de bewaarcode.
+### Leerling-basisflow
+- ✅ **A1. Rooktest**: Start → thema → kaart → locatie → geluiden → studio → podium;
+  geluid speelt, geen console-fouten.
+- ✅ **A2. Taal**: NL/EN wisselen op start, `/teacher` en dashboard; teksten
+  veranderen mee (ook "Open code", "Lever in", "Bekijk inzendingen"). *(Taalknop nu
+  ook op de auth-schermen — R5-6; standaardtaal volgt de browser.)*
+- ✅ **A4. Tutorial**: "Hoe werkt het?" → video's spelen (op iPad geen zwart vlak).
 
-### Week 2 — inleveren en feedback
-- ✅ Klas aanmaken, opdracht activeren, klascode noteren.
-- ✅ Leerling levert in → "Jouw code: XXXXXX" op het podium.
-- ✅ Docent ziet "Nieuw" + teller; feedback geven → kaart toont "Beoordeeld".
-- ✅ Escape sluit de inzendings-weergave (was kapot, gefixt).
-- ✅ "Beluisterd"-badge bij openen zonder feedback (was onzichtbaar, gefixt).
-- ✅ Bewaarcode laadt weer (migratie 029 — de code-niet-gevonden-bug).
+### Studio
+- ✅ **B1. Tijdlijn en sporen**: "spoor toevoegen" is de onderste rij (geen grijs
+  vlak/doorlopende afspeellijn); auto-scroll lekt niet naar de pagina;
+  "+8"/"−8" telt door (max 64, min 16) met inhoud-bescherming; clip op maat 40
+  speelt + zit in de MP3-export; "+ spoor" tot 12 (clip op spoor 9+ hoorbaar);
+  solo isoleert één spoor, ook tijdens afspelen, en is tijdelijk.
+- ✅ **B2. Markeer deel** (vlag): grijs met tooltip op beat 0, actief na afspelen.
+- ✅ **B2. Clip-loop**: resize-greep naar rechts → clip loopt door, stopt vóór de
+  volgende clip (geen overlap).
+- ✅ **B3. Iconen**: overal lijn-iconen, nergens emoji.
 
-### Week 3 — onboarding en taal
-- ✅ Eenmalige intro-animatie; verschijnt daarna niet meer.
-- ✅ Kaart- en studio-tips als TipModal (lamp-icoon).
-- ✅ Geen kindertaal; "docent" i.p.v. "juf/meester". Woordenlijst-aanzet:
-  `docs/WOORDENLIJST.md` (vul aan wanneer je wilt).
+### Podium, opslaan en delen
+- ✅ **C1. Bewaarcode → keuzescherm**: code op ander apparaat → keuze Studio/Podium
+  → Podium toont compositie + feedbackblok + code-badge; naam is voorgevuld;
+  "Nieuwe compositie" wist naam + bewaarcontext.
+- ✅ **C6. Deel-link**: link maken → in ander venster openen → luisterpagina werkt.
+- ✅ **C7. Online bewaren**: code + QR verschijnen; op ander apparaat invoeren laadt
+  de compositie.
+- ✅ **14. "Opslaan" sluit de modal** (testronde 4). *(Empty-timeline + tab-focus
+  opnieuw te bevestigen op de verse build — R5-7/R5-8.)*
+
+### Klascode, praatplaat en peer (leerling)
+- ✅ **D1. Klascode-landing**: 4 cijfers → landingsscherm met titel, beeld,
+  opdrachtkaart en tijdsduur (033) → "Starten".
+- ✅ **D3. Storyboard-opdracht**: beelden in de studio, pijltjes werken, opslaan.
+- ✅ **D4. Vrije opdracht**: thema staat vast, verder vrij componeren.
+- ✅ **D5. Route C** (geen actieve opdracht): herstelopties ("Vrij componeren" /
+  "Andere code").
+
+### Klaslokaal (docent)
+- ✅ **E1. Klas + opdracht**: klas aanmaken → opdracht activeren (elk van de vier
+  types) → klascode groot → vervang-waarschuwing bij een actieve opdracht.
+- ✅ **E2. Tijdsduur** (033): "bijv. 2 lessen" → Enter → groene "Opgeslagen" →
+  zichtbaar op de leerling-landing.
+- ✅ **E4. Feedback geven**: sticker + sterren slaan direct op, tekst via Versturen;
+  status in de lijst klopt.
+- ✅ **E7. Historie**: heractiveren, bekijken, verwijderen. *(Uniforme,
+  niet-destructieve prullenbak opnieuw te bevestigen op de verse build — R5-13.)*
+- ✅ **E8. Album delen**: op de actieve opdracht én op elke historie-rij.
+
+### Materiaal en leskaarten (docent)
+- ✅ **F1. Mijn materiaal**: "Mijn opdrachtkaarten" + "Mijn templates"; tellers kloppen.
+- ✅ **F2. Opdrachtkaart maken** en koppelen aan een opdracht. *(Nieuw: kaart ook op
+  de actieve opdracht wijzigbaar — R5-3.)*
+- ✅ **F3. Bewaar als opdracht** (podium, docent) → verschijnt bij Mijn templates.
+- ✅ **F4. Bewaar als leskaart**: vanaf een template-kaart én vanuit het
+  succes-scherm → editor voorgevuld → na opslaan bij Leskaarten.
+- ✅ **F5. Leskaarten-tab**: groepen "Standaard"/"Mijn leskaarten"; thema- en
+  niveaufilters (Groep 1-2 … 7-8); buiten-seizoen kaart met badge + zachte bevestiging.
+- ✅ **F6. Leskaart activeren** vanuit de picker → klascode groot in beeld.
+
+### Landing en lespagina's
+- ✅ **H1. `/teacher` doorlopen**: tabbladen in de juiste volgorde; hero-animatie
+  (nu tweetalig); "Drie manieren" met preview; leskaarten met cover.
+- ✅ **H2. Lespagina's**: `/les/robotfabriek/index.html` (+ drumbeat / verspringen /
+  vrij-basis) — cover, lesdoel, 4 lesfases, "Open voor je klas" → login/dashboard.
+
+### Hertest testronde 4 (19-7) — akkoord
+- ✅ **1. Album met afspeellijst** (zijpaneel + vorige/volgende/doorspelen).
+- ✅ **2. Albumcode groot** in de deel-modal.
+- ✅ **3. Leskaart-pagina opent in nieuw tabblad**. *(Hoe je ze maakt/bewerkt: zie
+  "Antwoorden op je vragen".)*
+- ✅ **4. EffectsModal focus-trap** blijft binnen de modal.
+- ✅ **5. Historie-acties compleet** (oog · deel · activeer op elke rij). *(Waarom
+  praatplaat "delen" apart is: zie "Antwoorden op je vragen".)*
+- ✅ **6. Presenteren-keuze** (actieve opdracht / alle composities).
+- ✅ **7. Ververs tijdens presenteren** + auto-refresh elke 20s.
+- ✅ **8. Montagelijn wit** bij laden.
+- ✅ **9. Klaslokaal-startkeuze**: vier type-kaarten + "Of kies een leskaart".
+- ✅ **10. "Open code"** (was "Beluister").
+- ✅ **11. "Lever in"-knop** + digibord alleen voor de docent.
+- ✅ **12. Leskaart-covers op /teacher**.
+
+### Eerdere rondes (samengevat)
+- ✅ **Rooktest + week 1**: start→podium; wachtwoord-reset-mail aanvragen; SEO-build
+  (titles/descriptions/canonical/og/robots/sitemap); TrimModal + podium-modals
+  Escape/focus-trap; bundel ~152 kB; privacytekst.
+- ✅ **Week 2**: klas + opdracht + klascode; leerling levert in ("Jouw code");
+  docent ziet "Nieuw" + feedback; Escape sluit inzendings-weergave; "Beluisterd"-
+  badge; bewaarcode laadt (migratie 029).
+- ✅ **Week 3**: eenmalige intro-animatie; kaart-/studio-tips (TipModal); geen
+  kindertaal ("docent"); woordenlijst-aanzet.
+- ✅ **Week 5**: peer-feedback docent (toggle, kaart, eigen kaart); leerling 3
+  anonieme composities + max 3; eigen werk nooit in de batch; codeblok toont niet
+  meer een vórige code; "Luister naar klasgenoten" toont beeld groot; feedback-flow
+  op het podium; `/teacher` twee tabbladen + FAQ + thema-deeplink + privacy +
+  mobiele stapeling; seizoenschip (unit-tests).
+- ✅ **Testronde 3**: storyboard-verlies-bug; "Opslaan & Delen"-modal; "Terug naar
+  plattegrond"; `/teacher`-CTA kent inlogstatus; leskaarten in dashboard-stijl;
+  docent-verklaring bij registratie.
+- ✅ **Presentatiescherm fase 2**: zijpaneel + badge; feedback-status-toggle;
+  doorspelen/pijltjes/aankondiging/feedbackrij; docent-review (montagelijn,
+  metadataregel, gezien-stempel); fullscreen (knop, `F`, Escape).
+- ✅ **Opdrachten-model**: "Mijn materiaal" opgeschoond; leskaarten-tab met filters
+  + seizoensbadge; startkeuze/klas-historie (heringedeeld in testronde 4).
+- ✅ **R4 — album + lespagina's**: album delen (link + QR, 30 dagen); album-code op
+  het startscherm; lesfases nagelezen; albumviewer/code-grootte/leskaart-link.
+- ✅ **Restpunten 18-7**: juiste uitlegkaart per type (032); "Markeer deel" grijs op
+  beat 0; leskaarten gegroepeerd + niveau-buckets; "Mijn opdrachtkaarten"/"Mijn
+  templates"; hero-animatie + drie-manieren-layout; presentatiescherm-verfijningen
+  (aankondiging 1,2s, Open montage, direct opslaan sticker/sterren); tijdsduur
+  (033); dashboard-uitleg per tab; gids-secties feedback + klas-organisatie.
+- ✅ **Hero-animatie tweetalig** (22-7): `/teacher`-hero, tutorial en first-run
+  intro tonen de 4-stappen-animatie in de taal van de app.
 
 ### Week 4 — thema-wizard
 - ⏸️ **Door jou geparkeerd** (18-7): "ik heb hier niet de juiste materialen voor,
   dit test ik op een ander moment." Stappen 1-3 waren toen groen.
-
-### Week 5 — peer-feedback en landing
-- ✅ Peer-feedback docent: toggle, ingebouwde feedbackkaart, eigen kaart maken.
-- ✅ Leerling: 3 anonieme composities, chips, "klaar"-scherm; maximum 3 werkt.
-- ✅ Eigen werk komt nooit in de batch (server-side uitgesloten).
-- ✅ Codeblok toont niet meer de code van een vórige leerling (localStorage-bug).
-- ✅ "Luister naar klasgenoten" toont het storyboard/de praatplaat groot.
-- ✅ Feedback-flow verhuisd naar het podium (keuzescherm Studio/Podium, feedbackblok,
-  code-badge, "Naar het podium"-knop).
-- ✅ `/teacher` als twee tabbladen in jouw volgorde; lichte privacyband; demo-knop.
-- ✅ FAQ, thema-kaarten met `?theme=`-deeplink (thema staat vooraan met badge),
-  privacymodal, footer-links, mobiele stapeling.
-- ✅ Seizoenschip: gedekt door unit-tests; "geen chip" is correct zolang geen
-  thema een venster heeft.
-
-### Testronde 3 (16-7)
-- ✅ Storyboard-verlies-bug; "Opslaan & Delen"-modal; "Terug naar plattegrond";
-  `/teacher`-CTA kent inlogstatus; leskaarten in dashboard-stijl; docent-verklaring
-  bij registratie.
-
-### Presentatiescherm fase 2 (17-7)
-- ✅ Zijpaneel met rijen + in-/uitschuiven met badge; feedback-status-toggle;
-  doorspelen, pijltjes, aankondiging, feedbackrij.
-- ✅ Docent-review: montagelijn uitgeklapt, metadataregel, "Beluisterd"-stempel.
-- ✅ Podium → "Presenteren op het digibord" (nu docent-only, zie testronde 4).
-- ✅ Fullscreen: knop, `F`, Escape.
-
-### Opdrachten-model (17-7)
-- ✅ "Mijn materiaal" opgeschoond; leskaarten-tab als kiesplek met filters en
-  seizoensbadge.
-- ✅ Startkeuze en klas-historie: werkten, maar zijn op jouw verzoek heringedeeld —
-  zie testronde 4, punten 5 en 9.
-
-### R4 — klas-album en lespagina's (17-7)
-- ✅ Album delen vanaf de actieve opdracht en elke historie-rij (link + QR, 30 dagen).
-- ✅ Album-code op het startscherm; lesfases van Verspringen / Vrij componeren /
-  Drum beat nagelezen.
-- ✅ Albumviewer, code-grootte en de lespagina-link: aangepast in testronde 4
-  (punten 1, 2, 3).
-
-### Restpunten + dashboard/landing (18-7)
-- ✅ Juiste uitlegkaart per opdrachttype (migratie 032).
-- ✅ "Markeer deel" grijs op beat 0; leskaarten gegroepeerd + niveau-buckets;
-  "Mijn opdrachtkaarten"/"Mijn templates"; hero-animatie + drie-manieren-layout.
-- ✅ Presentatiescherm: aankondiging 1,2s, "Open montage"-knop, direct opslaan van
-  sticker/sterren.
-- ✅ Album-gate-tekst; tijdsduur-vermelding (033); dashboard-uitleg per tab;
-  gids-secties "Tips voor feedback geven" en uitgebreide "Tips voor de klas".
