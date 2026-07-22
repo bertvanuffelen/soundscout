@@ -132,6 +132,16 @@ interface TimelineStore {
   loopRegion: { startBeat: number; endBeat: number } | null;
   setLoopRegion: (region: { startBeat: number; endBeat: number } | null) => void;
 
+  /** Geparkeerde sectie-loop-regio — sessie-state. Wanneer de grote loop-knop
+   *  wordt uitgezet terwijl er een sectie-loop actief is, verhuist die regio
+   *  hierheen zodat weer-aanzetten hem herstelt (i.p.v. terugvallen op een
+   *  hele-tijdlijn-loop). Bevinding testronde 5 (B2). */
+  savedLoopRegion: { startBeat: number; endBeat: number } | null;
+  /** Park de actieve sectie-loop en zet loopen uit (grote knop → uit). */
+  parkLoopRegion: () => void;
+  /** Herstel een geparkeerde sectie-loop en zet loopen aan (grote knop → aan). */
+  restoreLoopRegion: () => void;
+
   // Load saved composition
   loadTimeline: (timeline: TimelineState) => void;
 
@@ -688,6 +698,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       tracks: createEmptyTracks(),
       soloTrackIndex: null,
       loopRegion: null,
+      savedLoopRegion: null,
       audioVersion: prev.audioVersion + 1,
     }));
   },
@@ -726,13 +737,36 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   },
 
   loopRegion: null,
+  savedLoopRegion: null,
   setLoopRegion: (region) => {
     // Live toegepast via de transport-loop (aanroeper synct engine);
     // hier alleen UI-state. Regio aan = ook isLooping aan (één mentaal
     // model: de loop-knop toont dat er geloopt wordt).
+    // Een expliciete sectie-actie (nieuwe regio óf sectie-loop uit) overschrijft
+    // een eventueel geparkeerde regio — anders zou die later onterecht herleven.
     set((prev) => ({
       loopRegion: region,
       isLooping: region ? true : prev.isLooping,
+      savedLoopRegion: null,
+    }));
+  },
+  parkLoopRegion: () => {
+    // Grote loop-knop uit terwijl een sectie-loop actief is: bewaar de regio
+    // zodat weer-aanzetten hem herstelt. loopRegion leeg = schone "loop uit".
+    set((prev) => ({
+      savedLoopRegion: prev.loopRegion,
+      loopRegion: null,
+      isLooping: false,
+      audioVersion: prev.audioVersion + 1,
+    }));
+  },
+  restoreLoopRegion: () => {
+    // Grote loop-knop aan: herstel een geparkeerde sectie-loop (indien aanwezig).
+    set((prev) => ({
+      loopRegion: prev.savedLoopRegion,
+      savedLoopRegion: null,
+      isLooping: true,
+      audioVersion: prev.audioVersion + 1,
     }));
   },
 
@@ -745,6 +779,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       sections: timeline.sections ?? [],
       soloTrackIndex: null,
       loopRegion: null,
+      savedLoopRegion: null,
       audioVersion: prev.audioVersion + 1,
     }));
   },

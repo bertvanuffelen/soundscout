@@ -55,6 +55,8 @@ describe('timelineStore', () => {
       bpm: 120,
       totalBeats: 32,
       isLooping: false,
+      loopRegion: null,
+      savedLoopRegion: null,
     });
   });
 
@@ -177,6 +179,43 @@ describe('timelineStore', () => {
         totalBeats: 128,
         isLooping: false,
       });
+      expect(useTimelineStore.getState().loopRegion).toBeNull();
+    });
+
+    // Testronde 5 (B2): grote loop-knop uit → aan moet de sectie-loop herstellen.
+    it('park + restore: sectie-loop overleeft uit/aan van de grote loop-knop', () => {
+      const region = { startBeat: 16, endBeat: 48 };
+      useTimelineStore.getState().setLoopRegion(region); // sectie-loop aan
+      expect(useTimelineStore.getState().isLooping).toBe(true);
+
+      // Grote loop-knop uit → regio geparkeerd, schone "loop uit"-staat
+      useTimelineStore.getState().parkLoopRegion();
+      expect(useTimelineStore.getState().loopRegion).toBeNull();
+      expect(useTimelineStore.getState().isLooping).toBe(false);
+      expect(useTimelineStore.getState().savedLoopRegion).toEqual(region);
+
+      // Grote loop-knop weer aan → sectie-loop hersteld
+      useTimelineStore.getState().restoreLoopRegion();
+      expect(useTimelineStore.getState().loopRegion).toEqual(region);
+      expect(useTimelineStore.getState().isLooping).toBe(true);
+      expect(useTimelineStore.getState().savedLoopRegion).toBeNull();
+    });
+
+    it('een nieuwe sectie-loop overschrijft een geparkeerde regio', () => {
+      useTimelineStore.getState().setLoopRegion({ startBeat: 0, endBeat: 16 });
+      useTimelineStore.getState().parkLoopRegion();
+      expect(useTimelineStore.getState().savedLoopRegion).toEqual({ startBeat: 0, endBeat: 16 });
+
+      // Expliciete nieuwe sectie-loop → geparkeerde regio verdwijnt
+      useTimelineStore.getState().setLoopRegion({ startBeat: 32, endBeat: 64 });
+      expect(useTimelineStore.getState().savedLoopRegion).toBeNull();
+      expect(useTimelineStore.getState().loopRegion).toEqual({ startBeat: 32, endBeat: 64 });
+    });
+
+    it('restore zonder geparkeerde regio = hele-tijdlijn-loop (loopRegion blijft null)', () => {
+      useTimelineStore.setState({ isLooping: false, loopRegion: null, savedLoopRegion: null });
+      useTimelineStore.getState().restoreLoopRegion();
+      expect(useTimelineStore.getState().isLooping).toBe(true);
       expect(useTimelineStore.getState().loopRegion).toBeNull();
     });
   });

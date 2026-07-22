@@ -23,7 +23,9 @@ export function useStudioPlayback() {
   const isLooping = useTimelineStore((s) => s.isLooping);
   const setLooping = useTimelineStore((s) => s.setLooping);
   const loopRegion = useTimelineStore((s) => s.loopRegion);
-  const setLoopRegion = useTimelineStore((s) => s.setLoopRegion);
+  const savedLoopRegion = useTimelineStore((s) => s.savedLoopRegion);
+  const parkLoopRegion = useTimelineStore((s) => s.parkLoopRegion);
+  const restoreLoopRegion = useTimelineStore((s) => s.restoreLoopRegion);
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
 
   const librarySamples = useLibraryStore((s) => s.librarySamples);
@@ -102,14 +104,25 @@ export function useStudioPlayback() {
     stopTimeline();
   }, [stopTimeline]);
 
-  // Toggle loop — uitzetten wist ook een actieve sectie-loop-regio (B4):
-  // één mentaal model, de loop-knop is de aan/uit-schakelaar voor loopen
+  // Toggle loop — de grote loop-knop is de aan/uit-schakelaar voor loopen.
+  // Een actieve sectie-loop wordt bij uitzetten geparkeerd (niet gewist) zodat
+  // weer-aanzetten hem herstelt i.p.v. terug te vallen op een hele-tijdlijn-loop
+  // (bevinding testronde 5, B2).
   const handleToggleLoop = useCallback(() => {
     const newLooping = !isLooping;
-    setLooping(newLooping);
-    if (!newLooping && loopRegion) setLoopRegion(null);
-    setTransportLoop(newLooping, totalBeats, newLooping ? loopRegion : null);
-  }, [setLooping, isLooping, setTransportLoop, totalBeats, loopRegion, setLoopRegion]);
+    if (newLooping) {
+      // Aan: herstel een geparkeerde sectie-loop, anders hele-tijdlijn-loop.
+      const region = savedLoopRegion ?? loopRegion;
+      if (savedLoopRegion) restoreLoopRegion();
+      else setLooping(true);
+      setTransportLoop(true, totalBeats, region);
+    } else {
+      // Uit: park een actieve sectie-loop, anders gewoon loopen uit.
+      if (loopRegion) parkLoopRegion();
+      else setLooping(false);
+      setTransportLoop(false, totalBeats, null);
+    }
+  }, [isLooping, savedLoopRegion, loopRegion, restoreLoopRegion, parkLoopRegion, setLooping, setTransportLoop, totalBeats]);
 
   // Preview a sample
   const handlePreview = useCallback(
