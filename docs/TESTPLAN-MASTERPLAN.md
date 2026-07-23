@@ -72,13 +72,13 @@ Twee dingen gevonden en gefixt, één actie voor jou op de server:
 
 Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 5".
 
-- [ ] **R5-1. Sectie-loop herstelt na uit/aan** (was kapot, B2): maak een sectie
+- [x] **R5-1. Sectie-loop herstelt na uit/aan** (was kapot, B2): maak een sectie
       → klik erop → "Loop deze sectie" → afspelen loopt dat stuk, de grote
       loopknop licht op. Zet de grote loopknop **uit** (loop stopt) en dan weer
       **aan** → de **sectie-loop komt terug** én in de sectie staat "Loop deze
       sectie" weer aan. *(Voorheen viel hij terug op een hele-tijdlijn-loop en
       stond de sectie op uit.)*
-- [ ] **R5-2. Praatplaat-thema kiest de docent** (was: altijd stad, D2): docent
+- [x] **R5-2. Praatplaat-thema kiest de docent** (was: altijd stad, D2): docent
       → activeer een **piraten-praatplaat** → in de activeer-modal staat nu een
       **thema-keuze**, voorgevuld op *Piraten*. Activeer → leerling voert de
       klascode in → kiest een plek → gaat naar de kaart → verzamelt **piraten**-
@@ -86,17 +86,17 @@ Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 5".
       leerling díe geluiden. Je kunt het thema óók op de **actieve opdracht**
       wijzigen (dropdown naast de opdrachtkaart in het klaslokaal). *(Vergt
       migratie 034 voor het wijzigen achteraf.)*
-- [ ] **R5-3. Opdrachtkaart op de actieve opdracht**: klaslokaal → actieve
+- [x] **R5-3. Opdrachtkaart op de actieve opdracht**: klaslokaal → actieve
       opdracht → naast de tijdsduur staat nu een **"Opdrachtkaart"-keuze**. Kies
       een kaart → "Opgeslagen" → de leerling-landing van die klas toont die
       kaart. Zet hem op "Geen eigen kaart" → de leerling ziet weer de standaard.
-- [ ] **R5-4. "Presenteren"-knop is geel**: klaslokaal → de grote **Presenteren**-
+- [x] **R5-4. "Presenteren"-knop is geel**: klaslokaal → de grote **Presenteren**-
       knop is nu geel (actie-kleur), niet blauw. "Feedback-overzicht" blijft zoals
       het was.
-- [ ] **R5-5. Praatplaat-plek-tekst**: leerling in de praatplaat-plekkiezer → de
+- [x] **R5-5. Praatplaat-plek-tekst**: leerling in de praatplaat-plekkiezer → de
       regel bovenaan is nu groter en luidt **"Klik op de plek waar jij een
       soundscape voor gaat maken"**. Ook in EN.
-- [ ] **R5-6. Taalknop op de auth-schermen**: log uit → op het login-, registreer-
+- [x] **R5-6. Taalknop op de auth-schermen**: log uit → op het login-, registreer-
       en wachtwoord-vergeten-scherm staat nu rechtsboven de **NL/EN-knop**, op
       dezelfde plek als op de andere docentschermen.
 
@@ -109,29 +109,29 @@ build. Even opnieuw op de verse upload:
       bewaar online in thema **Piraten** → open de 6-tekens code in een ánder
       browserprofiel → de clips staan er gewoon (niet leeg). *(Oorzaak was dat de
       tijdlijn clips in het actieve thema zocht i.p.v. in je eigen bibliotheek.)*
-- [ ] **R5-8. Opslaan sluit de modal + Tab blijft binnen**: podium → Opslaan &
+- [x] **R5-8. Opslaan sluit de modal + Tab blijft binnen**: podium → Opslaan &
       Delen → **Opslaan** → de modal sluit en de bevestiging verschijnt. Met
       **Tab** door de modal blijft de focus binnen de modal.
-- [ ] **R5-9. Aankondiging dimt niets**: presenteren → volgende compositie → "Nu
+- [x] **R5-9. Aankondiging dimt niets**: presenteren → volgende compositie → "Nu
       te horen" komt als zwevend kaartje bovenin; de kaart eronder (incl.
       montagelijn) blijft helder wit.
-- [ ] **R5-10. Praatplaat-bord bij presenteren**: klaslokaal met actieve
+- [x] **R5-10. Praatplaat-bord bij presenteren**: klaslokaal met actieve
       praatplaat → Presenteren → "Actieve opdracht" → je krijgt het klikbare bord
       (zoals het gedeelde album), niet losse visuals.
-- [ ] **R5-11. Eén deelknop**: elke opdrachtrij heeft één "Delen". Bij een
+- [x] **R5-11. Eén deelknop**: elke opdrachtrij heeft één "Delen". Bij een
       praatplaat vraagt hij eerst: bord (klikbaar) of composities (afspeellijst);
       bij andere types opent direct de album-modal.
-- [ ] **R5-12. Transportknoppen in de presentatie**: ⏮ zet de compositie die je
+- [x] **R5-12. Transportknoppen in de presentatie**: ⏮ zet de compositie die je
       hoort terug naar het begin (net als in de studio); er is geen ⏭ meer.
       Wisselen doe je in het zijpaneel, met ←/→ of via "Doorspelen".
-- [ ] **R5-13. Historie opruimen — overal hetzelfde, nooit destructief**:
+- [x] **R5-13. Historie opruimen — overal hetzelfde, nooit destructief**:
       klaslokaal → "Eerdere opdrachten" → élke rij heeft dezelfde acties
       (oog · delen · prullenbak · Activeer). Prullenbak op een storyboard- of
       template-rij → de tekst zegt dat het leerlingwerk bewaard blijft →
       bevestigen → rij weg **en de composities staan nog gewoon bij de
       inzendingen**. *(Voorheen wiste de prullenbak bij een praatplaat de
       inzendingen écht mee.)*
-- [ ] **R5-14. Browsertaal**: verse browser (of gewiste opslag) met Engelse
+- [x] **R5-14. Browsertaal**: verse browser (of gewiste opslag) met Engelse
       taalinstelling → app start in het Engels; Nederlandse browser → Nederlands.
       Zet je zelf de taal om, dan wint die keuze altijd.
 
@@ -175,12 +175,15 @@ build. Even opnieuw op de verse upload:
 
 - [ ] **Zoomknoppen op smal venster/iPad**: zoomknoppen zichtbaar in de werkbalk
       (de "fit"-knop alleen op desktop).
-- [ ] **Effecten**: pitch/reverb/fade toepassen → hoorbaar bij afspelen én in de
-      MP3-export.
+- [-] **Effecten**: pitch/reverb/fade toepassen → hoorbaar bij afspelen én in de
+      MP3-export. ==> De effecten zijn hoorbaar maar met enorm veel gestotter en glitches. Geen mooie export. Dit is vooral op de samples waar ik dus de effetcen op heb toegepast.
+      **→ APART ONDERZOEK.** Oorzaak in principe gevonden (offline-render bouwt de
+      effectketen los van live; `Tone.PitchShift` in offline is hoofdverdachte).
+      Verdient een gefocuste dieptesessie — volledig dossier: `docs/ONDERZOEK-EXPORT-EFFECTGLITCH.md`.
 
 ## 🎤 C. Podium, opslaan en delen — nog te testen
 
-- [ ] **C4. MP3-export**: klinkt zoals in de app (tempo klopt), ook met effecten.
+- [-] **C4. MP3-export**: klinkt zoals in de app (tempo klopt), ook met effecten. ==> De effecten zijn hoorbaar maar met enorm veel gestotter en glitches. Geen mooie export. Dit is vooral op de samples waar ik dus de effetcen op heb toegepast.
 - [ ] **C5. Video-export** (storyboard): mp4 met beeldwissels en geluid.
 
 ## 🏫 D. Klascode en peer-feedback (leerling) — nog te testen
@@ -207,27 +210,27 @@ build. Even opnieuw op de verse upload:
 
 ## 📽️ G. Presentatiescherm (digibord) — nog te testen
 
-- [ ] **G1. Docent-presentatie**: klas met ≥2 inzendingen → zijpaneel met rijen,
+- [x] **G1. Docent-presentatie**: klas met ≥2 inzendingen → zijpaneel met rijen,
       klik = springen, in-/uitschuiven met randknop + badge "2/8".
 - [ ] **G2. Peer-sterren per rij** (★-totaal; alleen bij inzendingen die
       peer-feedback kregen — migratie 030).
-- [ ] **G3. Doorspelen** + pijltjestoetsen + aankondiging (~1,2s) + feedbackrij.
-- [ ] **G4. Per vorm**: storyboard beweegt mee · praatplaat toont pulserende spot ·
+- [x] **G3. Doorspelen** + pijltjestoetsen + aankondiging (~1,2s) + feedbackrij.
+- [x] **G4. Per vorm**: storyboard beweegt mee · praatplaat toont pulserende spot ·
       vrij/template toont de meebewegende tijdlijn.
-- [ ] **G5. Fullscreen**: knop, `F`, Escape verlaat eerst fullscreen; ook op iPad.
-- [ ] **G6. Praatplaat-bord**: docent-viewer én publieke deelviewer (`?pp-share=`)
+- [?] **G5. Fullscreen**: knop, `F`, Escape verlaat eerst fullscreen; ook op iPad. ==> Werkt, maar kan de full screen mode enkel de afbeelding/storyboard full screen tonen met donkere achtergrond (echt alleen in full screen). De buttons e.d. blijven uiteraard we staan maar bij full screen wel standaard montage uit (behave als docent erop klikt) en zijpaneel ingeklapt (behalve als docent erop klikt)
+- [x] **G6. Praatplaat-bord**: docent-viewer én publieke deelviewer (`?pp-share=`)
       — plaat groot, klikbare spots (klik = spelen, nogmaals = pauze, cluster =
       keuzemenu), montagelijn-toggle.
 
 ## 🌐 H. Landing, lespagina's en SEO — nog te testen
 
-- [ ] **H3. SEO na deploy**: open
+- [?] **H3. SEO na deploy**: open
       [search.google.com/test/rich-results](https://search.google.com/test/rich-results),
       plak `https://soundscout.techindeles.nl/teacher`, klik "URL testen". Je wilt
       **WebPage** en **FAQPage** in de lijst, zonder rode fouten. Daarna in Chrome:
-      F12 → Lighthouse → alleen "SEO" → rapport → score ≥ 95.
-- [ ] **H4. robots/sitemap na deploy**: `…/robots.txt` en `…/sitemap.xml` openen —
-      beide moeten laden en `/` en `/teacher` noemen.
+      F12 → Lighthouse → alleen "SEO" → rapport → score ≥ 95. ==> Laten we dit als een losse grote test doen. Ook checken met andere url's want hoofd server domein is straks soundscout.nl
+- [?] **H4. robots/sitemap na deploy**: `…/robots.txt` en `…/sitemap.xml` openen —
+      beide moeten laden en `/` en `/teacher` noemen. ==> Laten we dit als een losse grote test doen. Ook checken met andere url's want hoofd server domein is straks soundscout.nl
 
 ## 📱 I. Apparaten — nog te testen
 
