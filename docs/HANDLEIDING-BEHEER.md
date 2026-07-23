@@ -265,7 +265,7 @@ npm run teksten:import   # bewerkte docs/TEKSTEN.md terugschrijven naar de json'
 | `docs/TEKSTEN.md` | Alle app-teksten (NL + EN) in één bewerkbaar document |
 | `docs/DEPLOY-INSTRUCTIES.md` | Strato deployment stappen |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Handleiding nieuwe thema's/locaties |
-| `docs/TONEJS-KENNISBANK.md` | Tone.js kennisbank en beperkingen |
+| `docs/audio/TONEJS-KENNISBANK.md` | Tone.js kennisbank en beperkingen |
 | `docs/PLAN-*.md` | Feature-plannen per issue |
 | `docs/ROADMAP-*.md` | Technische roadmaps |
 | `soundscout-prd.md` | Product requirements document |

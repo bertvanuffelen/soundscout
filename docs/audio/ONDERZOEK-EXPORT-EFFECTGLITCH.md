@@ -146,7 +146,7 @@ boosdoener bij **niet-realtime `OfflineAudioContext`-rendering**: de korrel-
 crossfade kan verkeerd doorlopen → periodieke **korrelklikjes / gestotter** —
 precies wat Bert beschrijft. Live monitoren maskeert het; een schone offline
 bounce legt het bloot.
-- Corroboratie: het team flagde PitchShift al als fragiel — `docs/PLAN-CLIP-LOOP-EFFECTS.md:937` "PitchShift CPU te zwaar … Max 2-3 clips met pitch tegelijk."
+- Corroboratie: het team flagde PitchShift al als fragiel — `docs/audio/archief/PLAN-CLIP-LOOP-EFFECTS.md:937` "PitchShift CPU te zwaar … Max 2-3 clips met pitch tegelijk."
 - Betrokken Tone-API's: `Tone.PitchShift`, interne `Tone.LFO`/`Tone.Delay`, `Tone.Offline`/`OfflineAudioContext`.
 - **Waarschuwing bij dit spoor:** een `OfflineAudioContext` rendert oscillatoren
   in principe correct. Bevestig dus éérst empirisch (§9) dat pitch-only écht
@@ -176,14 +176,14 @@ gepland. Onwaarschijnlijk de hoofdoorzaak, maar controleer randgevallen waar
 ### H5 — UITGESLOTEN: node-count / CPU in offline
 Offline is **niet-realtime**: de berekening per sample is deterministisch,
 ongeacht het aantal nodes. CPU kan geen "stotter" veroorzaken.
-`docs/AUDIT-EXPORTS.md:53` bevestigt: geen caps, de live-bus-limiet geldt offline
+`docs/audio/AUDIT-EXPORTS.md:53` bevestigt: geen caps, de live-bus-limiet geldt offline
 niet. **Niet de oorzaak.**
 
 ---
 
 ## 8. Waarom de bestaande audit dit miste
 
-`docs/AUDIT-EXPORTS.md` (17-7) noemde de pijplijn "architectonisch gezond" en nam
+`docs/audio/AUDIT-EXPORTS.md` (17-7) noemde de pijplijn "architectonisch gezond" en nam
 aan dat live- en offline-effectketens "1-op-1 gelijk" zijn (`:52`). Bekende
 export-items: #5 reverb-staart (✅ gefixt), #6 reverb-IR-gereedheid (✅ gefixt),
 #8 hidden-tab-throttling (⏳ open), #13 BPM (⏳ deels). **Er is géén bevinding over
@@ -274,14 +274,14 @@ niet schoon wordt, R-C voor (in elk geval de) effect-composities.
 
 ## 13. Relevante bestaande documentatie
 
-- `docs/AUDIT-EXPORTS.md` — exports-audit (17-7); #5/#6 reverb gefixt, #8 open;
+- `docs/audio/AUDIT-EXPORTS.md` — exports-audit (17-7); #5/#6 reverb gefixt, #8 open;
   géén PitchShift-bevinding (het gat).
-- `docs/PLAN-AUDIO-REFACTOR.md` — on-demand fire-and-forget-architectuur (PERF-1);
+- `docs/audio/archief/PLAN-AUDIO-REFACTOR.md` — on-demand fire-and-forget-architectuur (PERF-1);
   bevestigt dat de export bewust aparte players per clip maakt.
-- `docs/PLAN-CLIP-LOOP-EFFECTS.md` — clip-loop + effecten (#65/#33); `:937` flagt
+- `docs/audio/archief/PLAN-CLIP-LOOP-EFFECTS.md` — clip-loop + effecten (#65/#33); `:937` flagt
   PitchShift als CPU-/stabiliteitsrisico.
-- `docs/PLAN-EXPORT-MP3.md` — oorspronkelijk MP3-export-ontwerp.
-- `docs/TONEJS-KENNISBANK.md` — Tone.js-valkuilen.
+- `docs/audio/archief/PLAN-EXPORT-MP3.md` — oorspronkelijk MP3-export-ontwerp.
+- `docs/audio/TONEJS-KENNISBANK.md` — Tone.js-valkuilen.
 
 ---
 
@@ -364,4 +364,4 @@ Gekozen richting (Bert akkoord, 23-7): **PitchShift volledig vervangen** door
 vooraf gebakken pitch-buffers via **Signalsmith Stretch** (WASM, MIT, npm
 `signalsmith-stretch`) + één gedeelde graph-builder voor live/preview/export +
 deterministische reverb-IR's + export-validator met realtime-capture-vangnet.
-Volledig plan: `docs/PLAN-AUDIO-ENGINE-V2.md`.
+Volledig plan: `docs/audio/PLAN-AUDIO-ENGINE-V2.md`.

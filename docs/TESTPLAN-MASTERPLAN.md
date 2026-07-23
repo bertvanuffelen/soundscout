@@ -141,7 +141,7 @@ Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 6".
       MP3-export. ==> De effecten zijn hoorbaar maar met enorm veel gestotter en glitches. Geen mooie export. Dit is vooral op de samples waar ik dus de effetcen op heb toegepast.
       **→ APART ONDERZOEK.** Oorzaak in principe gevonden (offline-render bouwt de
       effectketen los van live; `Tone.PitchShift` in offline is hoofdverdachte).
-      Verdient een gefocuste dieptesessie — volledig dossier: `docs/ONDERZOEK-EXPORT-EFFECTGLITCH.md`.
+      Verdient een gefocuste dieptesessie — volledig dossier: `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md`.
 
 ## 🎤 C. Podium, opslaan en delen — nog te testen
 

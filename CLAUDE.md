@@ -99,7 +99,7 @@ AudioService (singleton)
 └── ambientPlayer: Tone.Player | null
 ```
 
-**On-demand fire-and-forget architecture (PERF-1, 2026-04-22)**: Replaced 170+ permanent `Tone.Player` nodes with on-demand players created per clip event. Root cause of audio dropouts: each Player creates a permanent GainNode; 170+ GainNodes exceeded the 2.9ms render quantum budget (128 samples @ 44.1kHz). Now: `ToneAudioBuffer` stores sample data (zero audio graph footprint), `createOnDemandPlayer()` creates a fresh Player from the buffer at event time, routes through trackBus, and auto-disposes via `onstop` callback. `activeSources` Set tracks all live players. On pause: all activeSources are disposed, Part stays valid. On resume: Part callback + `startActiveClips()` create fresh players. See `docs/PLAN-AUDIO-REFACTOR.md` for full design rationale and implementation log.
+**On-demand fire-and-forget architecture (PERF-1, 2026-04-22)**: Replaced 170+ permanent `Tone.Player` nodes with on-demand players created per clip event. Root cause of audio dropouts: each Player creates a permanent GainNode; 170+ GainNodes exceeded the 2.9ms render quantum budget (128 samples @ 44.1kHz). Now: `ToneAudioBuffer` stores sample data (zero audio graph footprint), `createOnDemandPlayer()` creates a fresh Player from the buffer at event time, routes through trackBus, and auto-disposes via `onstop` callback. `activeSources` Set tracks all live players. On pause: all activeSources are disposed, Part stays valid. On resume: Part callback + `startActiveClips()` create fresh players. See `docs/audio/archief/PLAN-AUDIO-REFACTOR.md` for full design rationale and implementation log.
 
 **Playback flow**: `scheduleTimeline()` creates a `Tone.Part` with all clip events (each carrying `trackIndex` + `effects` config) → `play(fromBeat)` starts transport. Part callback calls `createOnDemandPlayer()` per event. For seek (fromBeat > 0), a **hybrid approach** is used: clips already active at the seek position are started directly via `startActiveClips()` (which also creates on-demand players), while future clips play via `Tone.Part`.
 
@@ -366,7 +366,7 @@ These are hard-won lessons — violating them causes subtle audio bugs:
 
 5. **On-demand players must auto-dispose**: Since PERF-1 refactor, all playback uses fire-and-forget players created from `ToneAudioBuffer`. Each player MUST register an `onstop` callback that disposes itself and removes from `activeSources`. Failing to dispose causes memory leaks. On pause/stop, `disposeActiveSources()` explicitly cleans up all tracked players.
 
-6. **Permanent nodes cause audio dropouts at scale**: 170+ permanent `Tone.Player` nodes (each with a GainNode) exceed the audio render quantum budget (~2.9ms). Solution: use `ToneAudioBuffer` for storage (zero graph footprint) + on-demand players + track bus submix (9 permanent nodes total). See `docs/PLAN-AUDIO-REFACTOR.md`.
+6. **Permanent nodes cause audio dropouts at scale**: 170+ permanent `Tone.Player` nodes (each with a GainNode) exceed the audio render quantum budget (~2.9ms). Solution: use `ToneAudioBuffer` for storage (zero graph footprint) + on-demand players + track bus submix (9 permanent nodes total). See `docs/audio/archief/PLAN-AUDIO-REFACTOR.md`.
 
 7. **CSS `transition-all` conflicts with pointer-based resize**: When resizing clips via pointer events, `transition-all` animates the width change, but absolutely-positioned children reposition instantly based on the final width. This creates visual jitter. Solution: conditionally disable `transition-all` during resize operations.
 
@@ -400,21 +400,21 @@ VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts
 |---|---|
 | `docs/TODO.md` | Backlog (bundels, mobile-audit, device-tests) |
 | `docs/USECASES-QA.md` | Rol-doorloop leerling+docent (56 usecases) + QA-bevindingen |
-| `docs/TONEJS-KENNISBANK.md` | Tone.js knowledge base & critical limitations |
+| `docs/audio/TONEJS-KENNISBANK.md` | Tone.js knowledge base & critical limitations |
 | `docs/NIEUWE-LOCATIE-THEMA.md` | Guide for adding locations and themes |
 | `docs/PLAN-KLASCODE-SYSTEEM.md` | Supabase integration plan |
 | `docs/PLAN-52-BEWAARCODE.md` | Online save code system design (#52) |
-| `docs/PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` | Real-time reschedule design (#22) |
-| `docs/PLAN-CLIP-LOOP-EFFECTS.md` | Clip loop + effects implementation plan (#65, #33) |
-| `docs/PLAN-AUDIO-REFACTOR.md` | Audio engine refactor: on-demand fire-and-forget players (PERF-1) |
+| `docs/audio/archief/PLAN-22-REALTIME-CLIP-TOEVOEGEN.md` | Real-time reschedule design (#22) |
+| `docs/audio/archief/PLAN-CLIP-LOOP-EFFECTS.md` | Clip loop + effects implementation plan (#65, #33) |
+| `docs/audio/archief/PLAN-AUDIO-REFACTOR.md` | Audio engine refactor: on-demand fire-and-forget players (PERF-1) |
 | `docs/PLAN-72-PRAATPLAAT.md` | Praatplaat collaborative sound map design (#72) |
 | `docs/HANDLEIDING-BEHEER.md` | Technical admin guide (deployment, Supabase, maintenance) + §4b "wat staat waar aan/uit" |
 | `docs/TEKSTEN.md` | Generated NL+EN copy deck — edit the table, then `npm run teksten:import` |
 | `docs/VIDEO-DRAAIBOEK.md` | Shot-by-shot script for the three `/teacher` videos (NL+EN labels, prep, where the IDs go) |
 | `docs/LOGBOEK-MASTERPLAN.md` | 6-weken masterplan logbook (besluiten, sessies, acties voor Bert) |
 | `docs/TESTPLAN-MASTERPLAN.md` | Manual test plan + hertest-lijsten per testronde |
-| `docs/AUDIT-EXPORTS.md` | Exports audit (MP3 + video): 16 findings + prioritized fix plan |
-| `docs/ONDERZOEK-EXPORT-EFFECTGLITCH.md` | Open onderzoek: waarom clip-effecten (pitch/reverb) glitchen in de export (TR6) — voorbereidingsdossier voor aparte dieptesessie |
+| `docs/audio/AUDIT-EXPORTS.md` | Exports audit (MP3 + video): 16 findings + prioritized fix plan |
+| `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md` | Open onderzoek: waarom clip-effecten (pitch/reverb) glitchen in de export (TR6) — voorbereidingsdossier voor aparte dieptesessie |
 | `docs/BEWAREN-VAN-COMPOSITIES.md` | Leesbaar naslag: wanneer/waar/hoe lang leerlingwerk bewaard blijft en hoe je het terugvindt |
 | `docs/WOORDENLIJST.md` | Terminology glossary (rollen, codes, termen) — draft |
 | `soundscout-prd.md` | Product requirements document |

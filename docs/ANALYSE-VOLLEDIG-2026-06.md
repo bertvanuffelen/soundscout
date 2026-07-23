@@ -24,7 +24,7 @@ Strategische context (uit de projectchats, mei 2026): de code is "af", de app is
 ### Sterk
 
 - Heldere lagenscheiding: `stores/`, `services/`, `hooks/`, `components/` (per feature), `lib/`, `utils/`, `data/`. Zeven Zustand-stores met enkelvoudige verantwoordelijkheid; `timelineStore` accepteert `samples` als parameter in plaats van een afhankelijkheid op `libraryStore` — nette decoupling.
-- AudioService on-demand fire-and-forget architectuur is goed gedocumenteerd (`docs/PLAN-AUDIO-REFACTOR.md`) en lost een echt gemeten probleem op (render quantum budget).
+- AudioService on-demand fire-and-forget architectuur is goed gedocumenteerd (`docs/audio/archief/PLAN-AUDIO-REFACTOR.md`) en lost een echt gemeten probleem op (render quantum budget).
 - Alle zware schermen zijn `React.lazy()`; Tone.js, dnd-kit, lamejs en Supabase zitten in aparte chunks; Supabase wordt pas geladen bij eerste gebruik via `getSupabase()`.
 
 ### Zwak

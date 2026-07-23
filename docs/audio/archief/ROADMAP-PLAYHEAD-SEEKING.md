@@ -271,7 +271,7 @@ const handlePlay = useCallback(() => {
 >
 > **Oplossing:** Start actieve clips DIRECT voordat transport begint.
 >
-> **Zie:** `docs/TONEJS-KENNISBANK.md` sectie 8 voor volledige uitleg.
+> **Zie:** `docs/audio/TONEJS-KENNISBANK.md` sectie 8 voor volledige uitleg.
 
 ---
 
@@ -599,4 +599,4 @@ De hybride aanpak combineert het beste van beide: directe start voor actieve cli
 - [Tone.Part Documentation](https://tonejs.github.io/docs/15.0.4/classes/Part.html)
 - [Tone.js Transport Wiki](https://github.com/Tonejs/Tone.js/wiki/Transport)
 - [Tone.js Events Wiki](https://github.com/Tonejs/Tone.js/wiki/Events)
-- `docs/TONEJS-KENNISBANK.md` - Interne kennisbank
+- `docs/audio/TONEJS-KENNISBANK.md` - Interne kennisbank

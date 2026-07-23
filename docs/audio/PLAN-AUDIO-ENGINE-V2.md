@@ -2,7 +2,7 @@
 
 > **Status:** plan goedgekeurd qua richting (Bert, 23-7-2026 — Signalsmith-keuze
 > en "offline + vangnet" bevestigd), implementatie nog niet gestart.
-> **Voorwerk:** `docs/ONDERZOEK-EXPORT-EFFECTGLITCH.md` §15 (empirische
+> **Voorwerk:** `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md` §15 (empirische
 > bevindingen, MP3-vingerafdruk-analyse, metingen live vs offline).
 > **Werkwijze:** in deze worktree, commit per fase, `tsc` + tests groen per fase.
 
