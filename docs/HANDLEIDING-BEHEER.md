@@ -108,6 +108,10 @@ DELETE FROM rate_limits WHERE key LIKE '%<klascode-of-sessie>%';
 
 ### Bewaartermijnen — wat blijft er staan, en hoe lang?
 
+> Voor de **menselijke uitleg** (wanneer wordt werk bewaard, waar, hoe lang, hoe
+> vind je het terug) zie het losse naslag: `docs/BEWAREN-VAN-COMPOSITIES.md`.
+> Hieronder de technische feiten.
+
 **Stand 19-7: er is geen automatische opschoning.** Goed om te weten voordat je
 hierover iets aan scholen belooft:
 
