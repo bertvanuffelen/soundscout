@@ -16,6 +16,22 @@
  * fullscreen-knop altijd aanwezig (browser-Fullscreen API) · montagelijn-
  * toggle alleen bij beeld-vormen (bij vrij/template ís de tijdlijn de
  * visual). Audio via useCompositionPlayback (fase 1-fundament).
+ *
+ * ── WAT STAAT AAN PER MODUS (snel naslag; nog geen aparte config-tabel) ──
+ * Er is (nog) géén los config-bestand; de per-modus-schakelaars staan hier als
+ * afgeleide booleans + useState-defaults. Zoek naar deze plekken om te tweaken:
+ *   • `isTeacherMode` (teacher-present + teacher-review) — docent-only knoppen
+ *     (feedbackrij, feedback-status-toggle).
+ *   • `hasPlaylistUi` (teacher-present + public, playlist > 1) — zijpaneel,
+ *     prev/next, "Doorspelen".
+ *   • `hasVisual` (storyboard/praatplaat/afbeelding) — montagelijn-toggle-knop.
+ *   • `showNames` (alles behalve peer) — leerlingnamen.
+ *   • defaults in useState: `autoAdvance` (Doorspelen, default UIT), `montageOpen`
+ *     (default open in teacher-review), `sidebarOpen` (default open), `announcing`
+ *     (default aan in teacher-present).
+ *   • fullscreen-effect: klapt montage + zijpaneel dicht bij het ingaan.
+ * Een echte centrale MODE_CONFIG-tabel is een latere verbetering (zie
+ * HANDLEIDING-BEHEER §4b).
  */
 
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
@@ -112,7 +128,9 @@ export function PresentationSurface({
   const showNames = mode !== 'peer';
 
   const [index, setIndex] = useState(0);
-  const [autoAdvance, setAutoAdvance] = useState(true);
+  // "Doorspelen" staat standaard UIT — alleen aan als de docent er bewust op
+  // klikt (wens Bert, testronde 6).
+  const [autoAdvance, setAutoAdvance] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [showFeedbackRow, setShowFeedbackRow] = useState(false);
   const [feedbackStatusOn, setFeedbackStatusOn] = useState(false);
@@ -221,6 +239,18 @@ export function PresentationSurface({
   // oude oppervlakken). autoFocus uit: focus niet ongevraagd verplaatsen.
   const dialogRef = useModalBehavior(handleEscapeClose, { autoFocus: false });
   const { isFullscreen, isSupported: fullscreenSupported, toggle: toggleFullscreen } = useFullscreen(dialogRef);
+
+  // Fullscreen = "alleen het beeld" (wens Bert, testronde 6 / G5): bij het
+  // ingaan van fullscreen klapt de montagelijn dicht en het zijpaneel in, zodat
+  // op het digibord standaard alleen het beeld op de donkere achtergrond staat.
+  // De docent kan beide daarna weer openen (blijft dan open — deze sync loopt
+  // alleen op de fullscreen-overgang). setMontageOpen(false) is veilig zonder
+  // visual: showTimeline valt dan terug op !hasVisual (tijdlijn blijft zichtbaar).
+  useEffect(() => {
+    if (!isFullscreen) return;
+    const timer = setTimeout(() => { setMontageOpen(false); setSidebarOpen(false); }, 0);
+    return () => clearTimeout(timer);
+  }, [isFullscreen]);
 
   // --- Toetsenbord: spatie = play/pauze, pijlen = wisselen, F = fullscreen
   // (Escape loopt via useModalBehavior met fullscreen-guard) ---
@@ -621,9 +651,10 @@ export function PresentationSurface({
               </button>
             )}
             {/* Open montage — zelfde toggle als bovenin, maar in de controls-rij
-                waar de docent tóch al kijkt (G9, wens Bert 18-7). Alleen bij
-                beeld-vormen: zonder beeld staat de montagelijn altijd open. */}
-            {isTeacherMode && hasVisual && (
+                waar de docent tóch al kijkt (G9, wens Bert 18-7). Ook in de
+                deel-/albumweergave (public), niet alleen docent-modi (TR6).
+                Alleen bij beeld-vormen: zonder beeld staat de montagelijn altijd open. */}
+            {(isTeacherMode || mode === 'public') && hasVisual && (
               <button
                 onClick={() => setMontageOpen((v) => !v)}
                 aria-pressed={montageOpen}
