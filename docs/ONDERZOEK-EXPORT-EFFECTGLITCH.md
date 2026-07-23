@@ -298,3 +298,70 @@ trek daarna de offline-render **gelijk aan live** (gedeelde `buildEffectChain`),
 stem PitchShift af, en val zo nodig terug op een **realtime-capture-export** die
 gegarandeerd als live klinkt (Bert akkoord met dat vangnet). Verifieer objectief
 met buffer-discontinuïteitsanalyse én op Berts gehoor.
+
+---
+
+## 15. Empirische bevindingen onderzoekssessie (23/24-7-2026) — AFGEROND
+
+Het isolatie-protocol uit §9 is uitgevoerd in de browser (Chromium, Mac, Tone
+15.1.22, echte theme-samples, verbatim kopie van de worktree-`renderOffline`),
+met een objectieve klik-metriek: sprongen in `|x[n] − x[n−1]|` boven drempel.
+Daarnaast is **Berts echte glitchende export geanalyseerd**
+(`~/Downloads/Test-23-7-8_16.mp3`, testronde 6, 18.1s).
+
+### 15.1 De vingerafdruk in Berts MP3 (de doorslag)
+
+- **Klik-clusters met periodiciteit ~12 Hz** (op 2.304 / 2.387 / 2.471 / 2.554 /
+  2.638 s — spacing ≈ 0.0835 s), sprongen tot **0.70**. 12 Hz is exact de
+  korrelfrequentie van `Tone.PitchShift` bij **pitch +12** met default
+  `windowSize 0.1` (`factor · 1.2/0.1`, factor = 2^(12/12) − 1 = 1). Het
+  "gestotter" is dus een mitrailleur van korrelklikjes op een +12-clip.
+- **Geen clipping** (0 samples op full scale) — dat spoor is dood.
+- De "dropouts" rond 4 s bleken stil materiaal van de compositie zelf.
+
+### 15.2 Meetresultaten (kern)
+
+| Test | Resultaat |
+|---|---|
+| Sinus, offline: kaal / pitch±7 / reverb / loop-hergebruik / verse players | **allemaal schoon** (0 kliks) |
+| Drums, offline: fade-only / reverb-only / 16 gelijktijdige pitch+reverb-ketens / 70 s render | **schoon** |
+| Drums, offline: pitch −5 | 1-2 korrelklikjes (inherent granulair artefact, ook live) |
+| Loop met gedeelde player+fadeGain vs verse players (H3) | **identiek resultaat** — H3 weerlegd als glitchbron |
+| Twee renders van dezelfde pitch-clip | bit-identiek (deterministisch binnen sessie) |
+| lamejs MP3-encode (float→int16 clampt correct) | **schoon**, geen wrap-around |
+| Sinus 0.8, offline 44.1k, **pitch +12** | **366 kliks** (periodiek — hoorbaar gekraak) |
+| Zelfde keten **live** (48k, AudioWorklet-capture) pitch +12 | 30 kliks (~12× minder); pitch +7 live: 0 |
+| Zelfde offline render, **later in dezelfde paginasessie** | **16.164 kliks, amplitude tot 1.59** — catastrofale modus |
+
+### 15.3 Conclusies
+
+1. **H1 bevestigd, in verfijnde vorm.** `Tone.PitchShift` produceert bij hoge
+   pitchwaarden (±10..12) periodieke korrelklikken; offline (44.1k) is dat
+   ~12× erger dan live (48k). Er bestaat bovendien een **sessie-afhankelijke
+   catastrofale modus** waarin de crossfade-LFO van PitchShift in de offline
+   render effectief niet loopt: beide delay-takken worden ongemaskeerd opgeteld
+   (amplitude ×2, sawtooth-wraps volledig hoorbaar = het "enorme gestotter").
+   Die modus was in één sessie 100% deterministisch reproduceerbaar (16.164
+   kliks bij elke render, ook na context-suspend), maar de precieze trigger is
+   niet geïsoleerd (Tone.start, worklet-registratie, live afspelen via de echte
+   AudioService en app-niveau-export triggeren hem elk afzonderlijk níet).
+   Berts app-exports hebben de vingerafdruk van deze modus.
+2. **H2 (reverb) en H3 (keten-hergebruik bij loops) niet gereproduceerd** als
+   glitchbron. Ze blijven architectonische zwaktes maar zijn niet de oorzaak.
+3. **H5 blijft uitgesloten**; ook de MP3-encodestap en de 48k→44.1k
+   buffer-resampling zijn schoon gemeten.
+4. `windowSize` afstemmen (R-B, 0.03/0.05) **verergerde** de catastrofale modus
+   — geen begaanbare route.
+5. Extra gevonden (architectuurkaart): hoorbare live≠export-verschillen die los
+   van de glitch bestaan — loops faden in export alleen op eerste/laatste
+   iteratie i.p.v. elke iteratie (D4), **solo wordt in export genegeerd** (D6),
+   reverbstaart wordt live afgekapt maar in export volledig gerenderd (D12),
+   `pan` is een dood veld, `exportToWav` is dode code.
+
+### 15.4 Besluit
+
+Gekozen richting (Bert akkoord, 23-7): **PitchShift volledig vervangen** door
+vooraf gebakken pitch-buffers via **Signalsmith Stretch** (WASM, MIT, npm
+`signalsmith-stretch`) + één gedeelde graph-builder voor live/preview/export +
+deterministische reverb-IR's + export-validator met realtime-capture-vangnet.
+Volledig plan: `docs/PLAN-AUDIO-ENGINE-V2.md`.

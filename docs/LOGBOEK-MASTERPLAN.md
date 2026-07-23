@@ -328,6 +328,14 @@ Bert testte verder (app steeds stabieler) en parkeerde bewust mobiel (één grot
 
 ## Sessielog
 
+### Sessie — 2026-07-23/24 (avond/nacht) — Diepteonderzoek export-effectglitch + plan Audio Engine v2
+- Isolatie-protocol uit `ONDERZOEK-EXPORT-EFFECTGLITCH.md` §9 volledig uitgevoerd in de browser (objectieve klik-metriek) én **Berts echte glitchende export geanalyseerd** (`Test-23-7-8_16.mp3`).
+- **Oorzaak gevonden:** `Tone.PitchShift` bij pitch +12 — 12 Hz-korrelklik-vingerafdruk in de MP3; offline ~12× erger dan live; sessie-afhankelijke catastrofale modus (crossfade-LFO valt uit). H2 (reverb) en H3 (loop-keten-hergebruik) weerlegd als glitchbron; MP3-encode en 48k→44.1k-resampling schoon gemeten. `windowSize`-tuning verergert het. Alles vastgelegd in dossier **§15**.
+- Extra architectuurbevindingen: loops faden in export anders dan live (D4), solo genegeerd in export (D6), reverbstaart live afgekapt (D12), dode code (`exportToWav`, `pan`).
+- **Besluiten Bert:** pitch vervangen door Signalsmith Stretch (voorgebakken buffers), export blijft offline mét realtime-capture-vangnet.
+- **Plan geschreven:** `docs/PLAN-AUDIO-ENGINE-V2.md` — gedeelde graph-builder, pitch-prebake, deterministische reverb-IR's, export-validator, 6 fasen. Implementatie nog niet gestart.
+- Voor Bert: plan lezen/goedkeuren; daarna start Fase 0+1 in deze worktree.
+
 ### Sessie 1 — 2026-07-13
 - Codebase-doorlichting met 3 verkenningsagenten (docent / leerling+studio / infra+SEO+thema's).
 - 6-wekenplan geschreven en geaccepteerd.
