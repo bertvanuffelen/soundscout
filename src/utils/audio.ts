@@ -111,3 +111,31 @@ export function getEffectiveClipEndBeat(
 ): number {
   return clip.startBeat + getEffectiveClipDurationBeats(clip, sample, bpm);
 }
+
+/**
+ * Vind de sectie (het bereik tussen twee sectie-markeringen) waarin een gegeven
+ * beat valt. Secties dragen alleen een `endBeat`; een sectie loopt van de vorige
+ * `endBeat` (of 0) tot de eigen `endBeat`, en het staartstuk ná de laatste
+ * markering loopt door tot `totalBeats`.
+ *
+ * Gebruikt door de loop-keuze "Deze sectie": loop het stuk waar de afspeellijn
+ * op dat moment staat (testronde 6).
+ *
+ * @returns het bereik `{ startBeat, endBeat }`, of `null` als er geen secties
+ *          zijn (dan ís de hele compositie het enige "stuk").
+ */
+export function sectionAt(
+  beat: number,
+  sections: { endBeat: number }[],
+  totalBeats: number,
+): { startBeat: number; endBeat: number } | null {
+  if (sections.length === 0) return null;
+  const bounds = sections.map((s) => s.endBeat).sort((a, b) => a - b);
+  let lo = 0;
+  for (const hi of bounds) {
+    if (beat < hi) return { startBeat: lo, endBeat: hi };
+    lo = hi;
+  }
+  // Beat valt na de laatste markering → staartstuk tot het einde van de tijdlijn.
+  return { startBeat: lo, endBeat: totalBeats };
+}

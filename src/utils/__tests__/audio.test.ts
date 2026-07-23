@@ -8,6 +8,7 @@ import {
   getClipEndBeat,
   getClipTrimStart,
   getClipTrimEnd,
+  sectionAt,
 } from '../audio';
 import type { Clip, Sample } from '../../types';
 
@@ -476,6 +477,40 @@ describe('audio.ts utilities', () => {
 
       // For untrimmed clips, both should match
       expect(deprecatedResult).toBe(newResult);
+    });
+  });
+
+  // Testronde 6 — loop-keuze "Deze sectie"
+  describe('sectionAt', () => {
+    const sections = [{ endBeat: 16 }, { endBeat: 32 }];
+    const total = 64;
+
+    it('returns null when there are no sections', () => {
+      expect(sectionAt(10, [], total)).toBeNull();
+    });
+
+    it('finds the first section for a beat before the first mark', () => {
+      expect(sectionAt(4, sections, total)).toEqual({ startBeat: 0, endBeat: 16 });
+    });
+
+    it('finds the middle section', () => {
+      expect(sectionAt(20, sections, total)).toEqual({ startBeat: 16, endBeat: 32 });
+    });
+
+    it('returns the tail (last mark → totalBeats) for a beat after the last mark', () => {
+      expect(sectionAt(50, sections, total)).toEqual({ startBeat: 32, endBeat: 64 });
+    });
+
+    it('treats a boundary beat as belonging to the next section', () => {
+      // beat === endBeat of the first section falls in the second section
+      expect(sectionAt(16, sections, total)).toEqual({ startBeat: 16, endBeat: 32 });
+    });
+
+    it('handles unsorted section input', () => {
+      expect(sectionAt(20, [{ endBeat: 32 }, { endBeat: 16 }], total)).toEqual({
+        startBeat: 16,
+        endBeat: 32,
+      });
     });
   });
 });

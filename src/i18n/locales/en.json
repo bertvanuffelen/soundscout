@@ -332,6 +332,12 @@
     "stop": "Stop",
     "rewind": "Rewind",
     "loop": "Loop",
+    "loopChoose": "What do you want to loop?",
+    "loopWhole": "Whole composition",
+    "loopSection": "This section",
+    "loopSectionHint": "Make a section first",
+    "loopSectionBadge": "section",
+    "loopStop": "Click to stop looping",
     "clearAll": "Clear All",
     "confirmClear": "Are you sure?"
   },

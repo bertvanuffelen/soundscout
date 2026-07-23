@@ -332,6 +332,12 @@
     "stop": "Stop",
     "rewind": "Terug",
     "loop": "Herhalen",
+    "loopChoose": "Wat wil je herhalen?",
+    "loopWhole": "Hele compositie",
+    "loopSection": "Deze sectie",
+    "loopSectionHint": "Maak eerst een sectie",
+    "loopSectionBadge": "sectie",
+    "loopStop": "Klik om te stoppen met herhalen",
     "clearAll": "Alles wissen",
     "confirmClear": "Weet je het zeker?"
   },

@@ -107,12 +107,15 @@ export function StudioView() {
   // Custom hooks - get playback first so we have samples for DnD
   const {
     librarySamples,
-    isLooping,
+    loopMode,
+    canLoopSection,
     handlePlay,
     handlePause,
     handleStop,
     handleRewind,
-    handleToggleLoop,
+    handleLoopWhole,
+    handleLoopSection,
+    handleLoopOff,
     handlePreview,
     handleSeek,
   } = useStudioPlayback();
@@ -501,12 +504,15 @@ export function StudioView() {
       {/* Transport Controls */}
       <TransportControls
         isPlaying={isPlaying}
-        isLooping={isLooping}
         hasClips={hasClips}
         onPlay={handlePlay}
         onPause={handlePause}
         onRewind={handleRewind}
-        onToggleLoop={handleToggleLoop}
+        loopMode={loopMode}
+        canLoopSection={canLoopSection}
+        onLoopWhole={handleLoopWhole}
+        onLoopSection={handleLoopSection}
+        onLoopOff={handleLoopOff}
       />
 
       {/* Trim Modal */}
