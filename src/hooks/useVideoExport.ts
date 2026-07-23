@@ -102,8 +102,11 @@ export function useVideoExport(
           samples,
           totalBeats,
           sections,
-          // Compositie-tempo meegeven (B0) — zie useAudioExport
-          { bpm: useTimelineStore.getState().bpm },
+          // Compositie-tempo (B0) + solo (D6) meegeven — zie useAudioExport
+          {
+            bpm: useTimelineStore.getState().bpm,
+            soloTrackIndex: useTimelineStore.getState().soloTrackIndex,
+          },
           (percent) => {
             setVideoProgress(percent);
           },

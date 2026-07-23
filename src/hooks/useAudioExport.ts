@@ -58,11 +58,15 @@ export function useAudioExport(
         logger.info('Starting MP3 export');
 
         // Compositie-tempo meegeven (B0): zonder dit zou de export het vaste
-        // standaardtempo gebruiken zodra BPM ooit variabel wordt
-        const bpm = useTimelineStore.getState().bpm;
-        const { blob, missingSampleIds } = await exportToMp3(tracks, samples, { bitrate: 128, bpm }, (p) => {
-          setProgress(Math.round(p * 100));
-        });
+        // standaardtempo gebruiken zodra BPM ooit variabel wordt.
+        // Solo meegeven (D6): export = wat je hoort — een gesoloed spoor
+        // exporteert alleen dat spoor, gemute clips blijven stil.
+        const { bpm, soloTrackIndex } = useTimelineStore.getState();
+        const { blob, missingSampleIds } = await exportToMp3(
+          tracks, samples, { bitrate: 128, bpm, soloTrackIndex }, (p) => {
+            setProgress(Math.round(p * 100));
+          }
+        );
 
         // Eerlijkheid boven stilte (audit #1): geslaagd mét ontbrekende
         // geluiden is een waarschuwing waard, geen stilzwijgen

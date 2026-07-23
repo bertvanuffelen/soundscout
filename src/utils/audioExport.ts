@@ -9,8 +9,9 @@ import * as Tone from 'tone';
 import toWav from 'audiobuffer-to-wav';
 import type { Track, Sample } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
-import { beatsToSeconds, getClipTrimStart, getClipDuration } from './audio';
 import { logger } from './logger';
+import { generateClipEvents } from '../services/audioEvents';
+import { buildClipChain, scheduleFadeCurves } from '../services/audioGraph';
 
 // =============================================================================
 // Types
@@ -25,6 +26,8 @@ export interface ExportOptions {
    *  parameter zou de export het vaste standaardtempo gebruiken en bij een
    *  ooit-variabel tempo verkeerd renderen. */
   bpm?: number;
+  /** Solo-spoor (D6): export = wat je hoort. null/undefined = geen solo. */
+  soloTrackIndex?: number | null;
 }
 
 export interface Mp3ExportOptions extends ExportOptions {
@@ -90,37 +93,23 @@ export function findMissingSampleIds(
 
 /**
  * Calculate total duration of timeline in seconds.
+ *
+ * Gebruikt de gedeelde event-generatie: hoorbaar einde inclusief galmstaart
+ * (exports-audit #5), exclusief gemute/weggesoloede clips — de export duurt
+ * precies zo lang als wat je hoort.
  */
 export function calculateTimelineDuration(
   tracks: Track[],
   samples: Sample[],
-  bpm: number = DEFAULT_BPM
+  bpm: number = DEFAULT_BPM,
+  soloTrackIndex: number | null = null
 ): number {
-  const sampleMap = new Map(samples.map((s) => [s.id, s]));
-  let maxEndTime = 0;
-
-  tracks.forEach((track) => {
-    track.clips.forEach((clip) => {
-      const sample = sampleMap.get(clip.sampleId);
-      if (!sample) return;
-
-      const startSeconds = beatsToSeconds(clip.startBeat, bpm);
-      // Use loop duration if looping, otherwise trimmed sample duration
-      const effectiveDuration = clip.loop && clip.loopDurationBeats
-        ? beatsToSeconds(clip.loopDurationBeats, bpm)
-        : getClipDuration(clip, sample);
-      // Reverb-staart meenemen (exports-audit #5): de galm loopt door ná het
-      // clip-einde (decay = 1.5 + reverb/100*3, zie renderOffline) — zonder
-      // deze marge wordt een galm-clip aan het eind hoorbaar afgekapt
-      const reverbAmount = clip.effects?.reverb ?? 0;
-      const reverbTail = reverbAmount > 0 ? 1.5 + (reverbAmount / 100) * 3 : 0;
-      const endSeconds = startSeconds + effectiveDuration + reverbTail;
-      maxEndTime = Math.max(maxEndTime, endSeconds);
-    });
+  const { lastAudibleSeconds } = generateClipEvents(tracks, samples, {
+    bpm,
+    soloTrackIndex,
   });
-
   // Add a small buffer at the end (0.5 seconds)
-  return maxEndTime + 0.5;
+  return lastAudibleSeconds + 0.5;
 }
 
 /**
@@ -137,59 +126,17 @@ function floatTo16BitPCM(input: Float32Array): Int16Array {
 }
 
 // =============================================================================
-// Fade Curve Helpers (#79)
-// =============================================================================
-
-/**
- * Create a fade curve matching AudioService.createFadeCurve.
- * - Fade-in: x² — gradual build from silence to full volume
- * - Fade-out: (1-x)² — smooth descent from full volume to silence
- */
-function createFadeCurve(type: 'in' | 'out', steps: number = 128): number[] {
-  const curve: number[] = new Array(steps);
-  for (let i = 0; i < steps; i++) {
-    const progress = i / (steps - 1);
-    if (type === 'in') {
-      curve[i] = progress * progress;
-    } else {
-      curve[i] = (1 - progress) * (1 - progress);
-    }
-  }
-  return curve;
-}
-
-const fadeInCurve = createFadeCurve('in');
-const fadeOutCurve = createFadeCurve('out');
-
-/**
- * Schedule fade-in and/or fade-out curves on a Gain node.
- */
-function scheduleFadeCurves(
-  fadeGain: Tone.Gain,
-  time: number,
-  duration: number,
-  fadeIn: number,
-  fadeOut: number,
-): void {
-  const gainParam = fadeGain.gain;
-  if (fadeIn > 0) {
-    gainParam.setValueAtTime(0, time);
-    gainParam.setValueCurveAtTime(fadeInCurve, time, fadeIn);
-  }
-  if (fadeOut > 0) {
-    const fadeOutStart = time + duration - fadeOut;
-    if (fadeOutStart >= time + fadeIn) {
-      gainParam.setValueCurveAtTime(fadeOutCurve, fadeOutStart, fadeOut);
-    }
-  }
-}
-
-// =============================================================================
 // Core Rendering Function
 // =============================================================================
 
 /**
  * Render timeline to AudioBuffer using Tone.Offline.
+ *
+ * Audio Engine v2: gebruikt exact dezelfde event-generatie
+ * (generateClipEvents) en ketenbouwer (buildClipChain) als de live motor.
+ * Per event een vérse keten en player (ook per loop-iteratie — D1/D2/D3),
+ * fades op elke iteratie zoals live (D4), bus-structuur (D5) en solo/mute
+ * in de events gebakken (D6). Zie docs/audio/PLAN-AUDIO-ENGINE-V2.md.
  */
 export async function renderOffline(
   tracks: Track[],
@@ -199,129 +146,56 @@ export async function renderOffline(
   options: ExportOptions = {},
   onProgress?: ExportProgressCallback
 ): Promise<AudioBuffer> {
-  const { sampleRate = 44100, channels = 2, bpm = DEFAULT_BPM } = options;
+  const {
+    sampleRate = 44100,
+    channels = 2,
+    bpm = DEFAULT_BPM,
+    soloTrackIndex = null,
+  } = options;
 
   logger.info('Starting offline render', { duration, sampleRate, channels });
 
-  // Create sample lookup map
-  const sampleMap = new Map(samples.map((s) => [s.id, s]));
+  // Gedeelde event-generatie — identiek aan AudioService.scheduleTimeline
+  const generated = generateClipEvents(tracks, samples, {
+    bpm,
+    soloTrackIndex,
+    hasBuffer: (sampleId) => bufferMap.has(sampleId),
+  });
 
   // Render offline using Tone.Offline
   const renderedToneBuffer = await Tone.Offline(
     async ({ transport }) => {
       transport.bpm.value = bpm;
 
+      // Bus-structuur zoals live: trackBus per spoor → master → destination.
+      // Mute/solo zit al in de events (isMuted), dus alle buses op gain 1.
+      const masterBus = new Tone.Volume(0).toDestination();
+      const trackBuses = tracks.map(() => new Tone.Gain(1).connect(masterBus));
+
       // Reverbs genereren hun impulse-response asynchroon; verzamel ze zodat
       // we vóór het renderen op `ready` kunnen wachten (exports-audit #6) —
-      // anders kan de galm droog of stil renderen
+      // de offline klok wacht daar niet vanzelf op
       const reverbs: Tone.Reverb[] = [];
 
-      // Schedule all clips (with loop + effects support)
-      tracks.forEach((track) => {
-        const trackVolume = track.volume ?? 0;
-        const trackMuted = track.mute ?? false;
+      generated.events.forEach((event) => {
+        if (event.isMuted) return;
+        const buffer = bufferMap.get(event.sampleId);
+        if (!buffer) return;
 
-        track.clips.forEach((clip) => {
-          const buffer = bufferMap.get(clip.sampleId);
-          const sample = sampleMap.get(clip.sampleId);
+        // Verse keten + player per event (gedeelde builder)
+        const chain = buildClipChain(event.volumeDb, event.effects);
+        if (chain.reverb) reverbs.push(chain.reverb);
 
-          if (!buffer || !sample) return;
+        const player = new Tone.Player(buffer);
+        player.chain(...chain.nodes, trackBuses[event.trackIndex] ?? masterBus);
 
-          // Skip muted clips/tracks
-          const clipMuted = clip.effects?.mute ?? false;
-          if (trackMuted || clipMuted) return;
-
-          // Calculate combined volume (track + clip)
-          const clipVolume = clip.effects?.volume ?? 0;
-          const totalVolumeDb = trackVolume + clipVolume;
-
-          // Build audio chain: player → [effects] → [fadeGain] → volume → destination
-          const hasEffects = ((clip.effects?.pitch ?? 0) !== 0) ||
-                             ((clip.effects?.reverb ?? 0) > 0) ||
-                             ((clip.effects?.fadeIn ?? 0) > 0) ||
-                             ((clip.effects?.fadeOut ?? 0) > 0);
-
-          let targetNode: Tone.ToneAudioNode;
-          let fadeGain: Tone.Gain | null = null;
-          if (hasEffects) {
-            const chainNodes: Tone.ToneAudioNode[] = [];
-
-            if ((clip.effects?.pitch ?? 0) !== 0) {
-              chainNodes.push(new Tone.PitchShift({ pitch: clip.effects!.pitch }));
-            }
-            if ((clip.effects?.reverb ?? 0) > 0) {
-              const reverb = new Tone.Reverb({
-                decay: 1.5 + (clip.effects!.reverb / 100) * 3,
-              });
-              reverb.wet.value = clip.effects!.reverb / 100;
-              chainNodes.push(reverb);
-              reverbs.push(reverb);
-            }
-
-            // FadeGain node (#79) — separate from volume for independent control
-            const clipFadeIn = clip.effects?.fadeIn ?? 0;
-            const clipFadeOut = clip.effects?.fadeOut ?? 0;
-            if (clipFadeIn > 0 || clipFadeOut > 0) {
-              fadeGain = new Tone.Gain(1);
-              chainNodes.push(fadeGain);
-            }
-
-            const vol = new Tone.Volume(totalVolumeDb);
-            chainNodes.push(vol);
-
-            // Connect chain: node[0] → node[1] → ... → destination
-            for (let i = 0; i < chainNodes.length - 1; i++) {
-              chainNodes[i].connect(chainNodes[i + 1]);
-            }
-            chainNodes[chainNodes.length - 1].toDestination();
-            targetNode = chainNodes[0];
-          } else {
-            targetNode = new Tone.Volume(totalVolumeDb).toDestination();
+        const { time, trimStart, duration: eventDuration, fadeIn, fadeOut } = event;
+        transport.schedule((t) => {
+          if (chain.fadeGain) {
+            scheduleFadeCurves(chain.fadeGain, t, eventDuration, fadeIn, fadeOut);
           }
-
-          const player = new Tone.Player(buffer).connect(targetNode);
-          const startSeconds = beatsToSeconds(clip.startBeat, bpm);
-          const trimStart = getClipTrimStart(clip);
-          const singleDuration = getClipDuration(clip, sample);
-
-          // Fade durations (#79)
-          const fadeIn = clip.effects?.fadeIn ?? 0;
-          const fadeOut = clip.effects?.fadeOut ?? 0;
-
-          // Loop logic (#65): schedule multiple events for looping clips
-          if (clip.loop && clip.loopDurationBeats) {
-            const totalSeconds = beatsToSeconds(clip.loopDurationBeats, bpm);
-            let offset = 0;
-            let iterIndex = 0;
-
-            while (offset < totalSeconds - 0.001) {
-              const remaining = totalSeconds - offset;
-              const dur = Math.min(singleDuration, remaining);
-              const scheduleTime = startSeconds + offset;
-              const isFirst = iterIndex === 0;
-              const isLast = offset + singleDuration >= totalSeconds - 0.001;
-              const eventFadeIn = isFirst ? fadeIn : 0;
-              const eventFadeOut = isLast ? fadeOut : 0;
-              transport.schedule((time) => {
-                // Schedule fade curves (#79)
-                if (fadeGain) {
-                  scheduleFadeCurves(fadeGain, time, dur, eventFadeIn, eventFadeOut);
-                }
-                player.start(time, trimStart, dur);
-              }, scheduleTime);
-              offset += singleDuration;
-              iterIndex++;
-            }
-          } else {
-            transport.schedule((time) => {
-              // Schedule fade curves (#79)
-              if (fadeGain) {
-                scheduleFadeCurves(fadeGain, time, singleDuration, fadeIn, fadeOut);
-              }
-              player.start(time, trimStart, singleDuration);
-            }, startSeconds);
-          }
-        });
+          player.start(t, trimStart, eventDuration);
+        }, time);
       });
 
       // Wacht tot alle reverb-impulse-responses gegenereerd zijn — Tone.Offline
@@ -363,7 +237,9 @@ export async function exportToWav(
   onProgress?.(0);
 
   // Calculate duration
-  const duration = calculateTimelineDuration(tracks, samples, options.bpm);
+  const duration = calculateTimelineDuration(
+    tracks, samples, options.bpm, options.soloTrackIndex ?? null
+  );
   if (duration <= 0.5) {
     throw new Error('No clips on timeline');
   }
@@ -417,7 +293,9 @@ export async function exportToMp3(
   lamejsPromise.catch(() => { /* fout komt terug bij de await in encodeToMp3 */ });
 
   // Calculate duration
-  const duration = calculateTimelineDuration(tracks, samples, options.bpm);
+  const duration = calculateTimelineDuration(
+    tracks, samples, options.bpm, options.soloTrackIndex ?? null
+  );
   if (duration <= 0.5) {
     throw new Error('No clips on timeline');
   }

@@ -23,6 +23,17 @@ import {
 } from '../constants/config';
 import { logger } from '../utils/logger';
 import { audioDiag } from '../utils/audioDiagnostics';
+import {
+  clipHasEffects,
+  generateClipEvents,
+  type ClipEvent,
+  type ClipEffectsConfig,
+} from './audioEvents';
+import {
+  buildClipChain,
+  scheduleFadeCurves,
+  scheduleFadeCurvesAtOffset,
+} from './audioGraph';
 
 type BeatUpdateCallback = (beat: number) => void;
 type PlaybackEndCallback = () => void;
@@ -50,8 +61,9 @@ export class AudioService {
   private beatUpdateCallbacks: Set<BeatUpdateCallback> = new Set();
   private playbackEndCallbacks: Set<PlaybackEndCallback> = new Set();
 
-  // Auto-stop: beat position where the last clip finishes (0 = not calculated)
-  private lastActiveBeat: number = 0;
+  // Auto-stop: beat waarop het laatste geluid is uitgestorven, inclusief
+  // galmstaart (D12) — gelijk aan wat de export rendert. 0 = niet berekend.
+  private autoStopBeat: number = 0;
 
   // Ambient audio
   private ambientPlayer: Tone.Player | null = null;
@@ -378,59 +390,22 @@ export class AudioService {
       return;
     }
 
-    const nodes: Tone.ToneAudioNode[] = [];
-
-    // Build chain: player → [pitchShift] → [reverb] → [fadeGain] → destination
-    if (effects.pitch !== 0) {
-      nodes.push(new Tone.PitchShift({ pitch: effects.pitch }));
-    }
-
-    if (effects.reverb > 0) {
-      const reverb = new Tone.Reverb({
-        decay: 1.5 + (effects.reverb / 100) * 3,
-      });
-      reverb.wet.value = effects.reverb / 100;
-      nodes.push(reverb);
-    }
-
-    // FadeGain node for fade-in/out
-    let fadeGain: Tone.Gain | null = null;
-    if (effects.fadeIn > 0 || effects.fadeOut > 0) {
-      fadeGain = new Tone.Gain(1);
-      nodes.push(fadeGain);
-    }
-
-    // Create isolated player from the shared buffer
+    // Zelfde gedeelde keten als de timeline en de export (audioGraph):
+    // player → [pitchShift] → [reverb] → [fadeGain] → volume → destination
+    const chain = buildClipChain(0, effects);
     const player = new Tone.Player(buffer);
-
-    if (nodes.length > 0) {
-      player.chain(...nodes, Tone.getDestination());
-    } else {
-      player.toDestination();
-    }
+    player.chain(...chain.nodes, Tone.getDestination());
 
     // Schedule fade curves
     const now = Tone.now() + 0.05;
-    if (fadeGain) {
-      const gainParam = fadeGain.gain;
-      if (effects.fadeIn > 0) {
-        const curve = this.createFadeCurve('in');
-        gainParam.setValueAtTime(0, now);
-        gainParam.setValueCurveAtTime(curve, now, effects.fadeIn);
-      }
-      if (effects.fadeOut > 0) {
-        const fadeOutStart = now + durationSeconds - effects.fadeOut;
-        if (fadeOutStart >= now + effects.fadeIn) {
-          const curve = this.createFadeCurve('out');
-          gainParam.setValueCurveAtTime(curve, fadeOutStart, effects.fadeOut);
-        }
-      }
+    if (chain.fadeGain) {
+      scheduleFadeCurves(chain.fadeGain, now, durationSeconds, effects.fadeIn, effects.fadeOut);
     }
 
     // Start playback
     player.start(now, offsetSeconds, durationSeconds);
 
-    this.previewChain = { player, nodes };
+    this.previewChain = { player, nodes: chain.nodes };
     logger.audio('playWithEffects', { sampleId, effects });
   }
 
@@ -579,35 +554,6 @@ export class AudioService {
 
   // --- Effect chain helpers (#33) ---
 
-  /** Check if a clip has non-default effects (pitch, reverb, or fade) */
-  private clipHasEffects(clip: Clip): boolean {
-    const fx = clip.effects;
-    if (!fx) return false;
-    return (fx.pitch !== 0 && fx.pitch !== undefined) ||
-           (fx.reverb !== 0 && fx.reverb !== undefined) ||
-           (fx.fadeIn > 0) ||
-           (fx.fadeOut > 0);
-  }
-
-  /**
-   * Create a fade curve for setValueCurveAtTime.
-   * - Fade-in: x² — gradual build from silence to full volume
-   * - Fade-out: (1-x)² — smooth descent from full volume to silence
-   * Symmetric equal-power pair. Matches the visual curve in Waveform.tsx.
-   */
-  private createFadeCurve(type: 'in' | 'out', steps: number = 128): number[] {
-    const curve: number[] = new Array(steps);
-    for (let i = 0; i < steps; i++) {
-      const progress = i / (steps - 1);
-      if (type === 'in') {
-        curve[i] = progress * progress;
-      } else {
-        curve[i] = (1 - progress) * (1 - progress);
-      }
-    }
-    return curve;
-  }
-
   /**
    * Create an on-demand player with optional effects, routed through a track bus.
    * Used by Part callback and startActiveClips() — each call creates a fresh
@@ -615,6 +561,7 @@ export class AudioService {
    *
    * The player shares the source ToneAudioBuffer — no extra memory.
    * Routes: player → [effects] → volume → trackBus[trackIndex]
+   * De keten zelf komt uit de gedeelde audioGraph-builder (Audio Engine v2).
    *
    * Returns the created source entry (added to activeSources) and the
    * fadeGain node (if applicable, for external fade curve scheduling).
@@ -623,33 +570,10 @@ export class AudioService {
     buffer: Tone.ToneAudioBuffer,
     volumeDb: number,
     trackIndex: number,
-    effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number },
+    effects?: ClipEffectsConfig,
   ): { player: Tone.Player; fadeGain: Tone.Gain | null; source: { player: Tone.Player; nodes: Tone.ToneAudioNode[] } } {
-    const nodes: Tone.ToneAudioNode[] = [];
-
-    // Build effect nodes (order: pitch → reverb → fadeGain → volume)
-    if (effects) {
-      if (effects.pitch !== 0) {
-        nodes.push(new Tone.PitchShift({ pitch: effects.pitch }));
-      }
-      if (effects.reverb > 0) {
-        const reverb = new Tone.Reverb({
-          decay: 1.5 + (effects.reverb / 100) * 3,
-        });
-        reverb.wet.value = effects.reverb / 100;
-        nodes.push(reverb);
-      }
-    }
-
-    // FadeGain node (#79) — separate from volume for independent control
-    let fadeGain: Tone.Gain | null = null;
-    if (effects && (effects.fadeIn > 0 || effects.fadeOut > 0)) {
-      fadeGain = new Tone.Gain(1);
-      nodes.push(fadeGain);
-    }
-
-    // Volume node (always)
-    nodes.push(new Tone.Volume(volumeDb));
+    const chain = buildClipChain(volumeDb, effects);
+    const { nodes, fadeGain } = chain;
 
     // Create player from shared buffer
     const player = new Tone.Player(buffer);
@@ -714,119 +638,22 @@ export class AudioService {
     // and sync mute/solo
     this.updateTrackBuses(tracks);
 
-    // Build lookup map for quick sample access
-    const sampleMap = new Map(samples.map((s) => [s.id, s]));
-
-    // Define event type for Tone.Part — on-demand: no pre-created chains,
-    // callback creates players at event time and disposes them when done.
-    type ClipEvent = {
-      time: number;
-      sampleId: string;
-      trimStart: number;
-      duration: number;
-      volumeDb: number;  // Combined track + clip volume
-      isMuted: boolean;
-      trackIndex: number;
-      // Effects config for on-demand chain creation (undefined = no effects)
-      effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number };
-      fadeIn?: number;   // Per-event fade-in (may differ per loop iteration)
-      fadeOut?: number;  // Per-event fade-out
-    };
-
-    // Build events array — NO upfront chain creation, just data
-    const events: ClipEvent[] = [];
-    let totalClipCount = 0;
-    let mutedClipCount = 0;
-
-    tracks.forEach((track, trackIndex) => {
-      const trackVolume = track.volume ?? 0;
-      const trackMuted = track.mute ?? false;
-
-      track.clips.forEach((clip) => {
-        const buffer = this.buffers.get(clip.sampleId);
-        const sample = sampleMap.get(clip.sampleId);
-
-        if (!buffer || !buffer.loaded || !sample) return;
-        totalClipCount++;
-
-        const clipVolume = clip.effects?.volume ?? 0;
-        const clipMuted = clip.effects?.mute ?? false;
-        const volumeDb = trackVolume + clipVolume;
-        const isMuted = trackMuted || clipMuted;
-        if (isMuted) mutedClipCount++;
-        const trimStart = getClipTrimStart(clip);
-        const singleDuration = getClipDuration(clip, sample);
-
-        // Build effects config only if clip has non-default effects
-        const effects = this.clipHasEffects(clip) ? {
-          pitch: clip.effects?.pitch ?? 0,
-          reverb: clip.effects?.reverb ?? 0,
-          fadeIn: clip.effects?.fadeIn ?? 0,
-          fadeOut: clip.effects?.fadeOut ?? 0,
-        } : undefined;
-
-        // Fade durations (#79) — also included at event level for per-iteration control
-        const fadeIn = clip.effects?.fadeIn ?? 0;
-        const fadeOut = clip.effects?.fadeOut ?? 0;
-
-        // Loop logic (#65): generate multiple events for looping clips
-        // UX-FADE-LOOP: fade per iteration (pulse effect) — every repetition
-        // gets its own fade-in and fade-out
-        if (clip.loop && clip.loopDurationBeats) {
-          const totalSeconds = beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM);
-          const startSeconds = beatsToSeconds(clip.startBeat, DEFAULT_BPM);
-          let offset = 0;
-
-          while (offset < totalSeconds - 0.001) {
-            const remaining = totalSeconds - offset;
-            const dur = Math.min(singleDuration, remaining);
-            events.push({
-              time: startSeconds + offset,
-              sampleId: clip.sampleId,
-              trimStart,
-              duration: dur,
-              volumeDb,
-              isMuted,
-              trackIndex,
-              effects,
-              fadeIn,
-              fadeOut,
-            });
-            offset += singleDuration;
-          }
-        } else {
-          events.push({
-            time: beatsToSeconds(clip.startBeat, DEFAULT_BPM),
-            sampleId: clip.sampleId,
-            trimStart,
-            duration: singleDuration,
-            volumeDb,
-            isMuted,
-            trackIndex,
-            effects,
-            fadeIn,
-            fadeOut,
-          });
-        }
-      });
+    // Gedeelde event-generatie (Audio Engine v2): identiek aan wat de export
+    // gebruikt — loop-iteraties, per-iteratie-fades, mute, volumes.
+    const generated = generateClipEvents(tracks, samples, {
+      bpm: DEFAULT_BPM,
+      // Solo wordt live dynamisch via bus-gains geregeld (setSoloTrack),
+      // dus hier NIET in de events bakken.
+      hasBuffer: (sampleId) => {
+        const buffer = this.buffers.get(sampleId);
+        return !!buffer && buffer.loaded;
+      },
     });
+    const { events, totalClipCount, mutedClipCount } = generated;
 
-    // Calculate lastActiveBeat: the beat where the last clip finishes playing
-    this.lastActiveBeat = 0;
-    tracks.forEach((track) => {
-      track.clips.forEach((clip) => {
-        const sample = sampleMap.get(clip.sampleId);
-        if (!sample) return;
-        const endBeat = getEffectiveClipEndBeat(clip, sample, DEFAULT_BPM);
-        if (endBeat > this.lastActiveBeat) {
-          this.lastActiveBeat = endBeat;
-        }
-      });
-    });
-
-    // Pre-compute fade curves (#79) — captured by closure, used in callback
-    const fadeInCurve = this.createFadeCurve('in');
-    const fadeOutCurve = this.createFadeCurve('out');
+    // Auto-stop-grens: hoorbaar einde incl. galmstaart (D12 — live laat de
+    // reverb nu net als de export uitklinken)
+    this.autoStopBeat = Math.max(generated.lastContentBeat, generated.lastAudibleBeat);
 
     // Create Tone.Part with ON-DEMAND player creation in callback.
     // Each event creates a fresh player → effects → trackBus, plays it,
@@ -844,19 +671,9 @@ export class AudioService {
           buffer, event.volumeDb, event.trackIndex, event.effects
         );
 
-        // Schedule fade curves on the fadeGain node (#79)
+        // Schedule fade curves on the fadeGain node (#79) — gedeelde planner
         if (fadeGain) {
-          const gainParam = fadeGain.gain;
-          if (event.fadeIn && event.fadeIn > 0) {
-            gainParam.setValueAtTime(0, time);
-            gainParam.setValueCurveAtTime(fadeInCurve, time, event.fadeIn);
-          }
-          if (event.fadeOut && event.fadeOut > 0) {
-            const fadeOutStart = time + event.duration - event.fadeOut;
-            if (fadeOutStart >= time + (event.fadeIn ?? 0)) {
-              gainParam.setValueCurveAtTime(fadeOutCurve, fadeOutStart, event.fadeOut);
-            }
-          }
+          scheduleFadeCurves(fadeGain, time, event.duration, event.fadeIn, event.fadeOut);
         }
 
         try {
@@ -983,7 +800,7 @@ export class AudioService {
         }
 
         // Build effects config if clip has non-default effects
-        const effects = this.clipHasEffects(clip) ? {
+        const effects = clipHasEffects(clip) ? {
           pitch: clip.effects?.pitch ?? 0,
           reverb: clip.effects?.reverb ?? 0,
           fadeIn: clip.effects?.fadeIn ?? 0,
@@ -1031,65 +848,20 @@ export class AudioService {
         buffer, volumeDb, trackIndex, effects
       );
 
-      // Schedule fade curves for seek position (#79)
+      // Schedule fade curves for seek position (#79) — gedeelde planner
+      // UX-FADE-LOOP: fade per iteratie — effectiveElapsed binnen de huidige
+      // (loop-)iteratie bepaalt de tussenwaarde en het curve-restant.
       if (fadeGain && effects) {
-        const fadeIn = effects.fadeIn;
-        const fadeOut = effects.fadeOut;
         const elapsedBeats = seekBeat - clip.startBeat;
         const elapsedSeconds = beatsToSeconds(elapsedBeats, DEFAULT_BPM);
         const singleDuration = getClipDuration(clip, sample);
-
-        // For looping clips, calculate elapsed within current iteration
-        // UX-FADE-LOOP: fade per iteration — use effectiveElapsed for both
-        // fade-in and fade-out calculations (pulse effect)
         const effectiveElapsed = (clip.loop && clip.loopDurationBeats)
           ? elapsedSeconds % singleDuration
           : elapsedSeconds;
-
-        const gainParam = fadeGain.gain;
-
-        // Determine if we're in a fade-in zone (within current iteration)
-        if (fadeIn > 0 && effectiveElapsed < fadeIn) {
-          const progress = effectiveElapsed / fadeIn;
-          const currentValue = progress * progress; // x² fade-in
-          const remainingFade = fadeIn - effectiveElapsed;
-          const remainingCurve = this.createFadeCurve('in');
-          const startIdx = Math.floor(progress * remainingCurve.length);
-          const partialCurve = remainingCurve.slice(startIdx);
-          if (partialCurve.length >= 2) {
-            gainParam.setValueAtTime(currentValue, startTime);
-            gainParam.setValueCurveAtTime(partialCurve, startTime, remainingFade);
-          } else {
-            gainParam.setValueAtTime(currentValue, startTime);
-          }
-        } else {
-          gainParam.setValueAtTime(1, startTime);
-        }
-
-        // Schedule fade-out if applicable (per iteration, not total loop span)
-        if (fadeOut > 0) {
-          const fadeOutStartInIteration = singleDuration - fadeOut;
-          if (effectiveElapsed >= fadeOutStartInIteration) {
-            // Already in fade-out zone of this iteration
-            const fadeOutElapsed = effectiveElapsed - fadeOutStartInIteration;
-            const progress = fadeOutElapsed / fadeOut;
-            const currentValue = (1 - progress) * (1 - progress);
-            const remainingFade = fadeOut - fadeOutElapsed;
-            const remainingCurve = this.createFadeCurve('out');
-            const startIdx = Math.floor(progress * remainingCurve.length);
-            const partialCurve = remainingCurve.slice(startIdx);
-            if (partialCurve.length >= 2) {
-              gainParam.setValueAtTime(currentValue, startTime);
-              gainParam.setValueCurveAtTime(partialCurve, startTime, remainingFade);
-            } else {
-              gainParam.setValueAtTime(currentValue, startTime);
-            }
-          } else {
-            const fadeOutStartFromNow = fadeOutStartInIteration - effectiveElapsed;
-            const fadeOutCurve = this.createFadeCurve('out');
-            gainParam.setValueCurveAtTime(fadeOutCurve, startTime + fadeOutStartFromNow, fadeOut);
-          }
-        }
+        scheduleFadeCurvesAtOffset(
+          fadeGain, startTime, effectiveElapsed, singleDuration,
+          effects.fadeIn, effects.fadeOut,
+        );
       }
 
       player.start(startTime, adjustedTrimStart, remainingDuration);
@@ -1250,8 +1022,9 @@ export class AudioService {
       const currentBeat = (seconds / 60) * DEFAULT_BPM;
       this.beatUpdateCallbacks.forEach((cb) => cb(currentBeat));
 
-      // Auto-stop: when not looping and playhead passed last clip end
-      if (!transport.loop && this.lastActiveBeat > 0 && currentBeat >= this.lastActiveBeat) {
+      // Auto-stop: when not looping and playhead passed the audible end
+      // (incl. galmstaart — D12: live laat de reverb net als de export uitklinken)
+      if (!transport.loop && this.autoStopBeat > 0 && currentBeat >= this.autoStopBeat) {
         this.stop();
         this.playbackEndCallbacks.forEach((cb) => cb());
       }
@@ -1485,7 +1258,7 @@ export class AudioService {
 
     this.beatUpdateCallbacks.clear();
     this.playbackEndCallbacks.clear();
-    this.lastActiveBeat = 0;
+    this.autoStopBeat = 0;
     this.isInitialized = false;
   }
 
