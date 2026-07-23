@@ -68,72 +68,34 @@ Twee dingen gevonden en gefixt, één actie voor jou op de server:
 
 ---
 
-## 🆕 Hertest ronde 5 (22-7) — begin hier
+## 🆕 Hertest ronde 6 (23-7) — begin hier
 
-Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 5".
+Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 6".
 
-- [x] **R5-1. Sectie-loop herstelt na uit/aan** (was kapot, B2): maak een sectie
-      → klik erop → "Loop deze sectie" → afspelen loopt dat stuk, de grote
-      loopknop licht op. Zet de grote loopknop **uit** (loop stopt) en dan weer
-      **aan** → de **sectie-loop komt terug** én in de sectie staat "Loop deze
-      sectie" weer aan. *(Voorheen viel hij terug op een hele-tijdlijn-loop en
-      stond de sectie op uit.)*
-- [x] **R5-2. Praatplaat-thema kiest de docent** (was: altijd stad, D2): docent
-      → activeer een **piraten-praatplaat** → in de activeer-modal staat nu een
-      **thema-keuze**, voorgevuld op *Piraten*. Activeer → leerling voert de
-      klascode in → kiest een plek → gaat naar de kaart → verzamelt **piraten**-
-      geluiden (niet stad). Kies in de dropdown een ánder thema → dan hoort de
-      leerling díe geluiden. Je kunt het thema óók op de **actieve opdracht**
-      wijzigen (dropdown naast de opdrachtkaart in het klaslokaal). *(Vergt
-      migratie 034 voor het wijzigen achteraf.)*
-- [x] **R5-3. Opdrachtkaart op de actieve opdracht**: klaslokaal → actieve
-      opdracht → naast de tijdsduur staat nu een **"Opdrachtkaart"-keuze**. Kies
-      een kaart → "Opgeslagen" → de leerling-landing van die klas toont die
-      kaart. Zet hem op "Geen eigen kaart" → de leerling ziet weer de standaard.
-- [x] **R5-4. "Presenteren"-knop is geel**: klaslokaal → de grote **Presenteren**-
-      knop is nu geel (actie-kleur), niet blauw. "Feedback-overzicht" blijft zoals
-      het was.
-- [x] **R5-5. Praatplaat-plek-tekst**: leerling in de praatplaat-plekkiezer → de
-      regel bovenaan is nu groter en luidt **"Klik op de plek waar jij een
-      soundscape voor gaat maken"**. Ook in EN.
-- [x] **R5-6. Taalknop op de auth-schermen**: log uit → op het login-, registreer-
-      en wachtwoord-vergeten-scherm staat nu rechtsboven de **NL/EN-knop**, op
-      dezelfde plek als op de andere docentschermen.
+- [ ] **R6-1. Loop-knop met keuze ná klikken** (was verwarrend): studio → klik op
+      de loop-knop terwijl er niet geloopt wordt → je krijgt een keuze **"Hele
+      compositie"** of **"Deze sectie"**. "Deze sectie" loopt het stuk waar de
+      afspeellijn op dat moment staat; als er nog geen sectie is, staat die optie
+      uit met de hint "Maak eerst een sectie". Bij een sectie-loop toont de knop
+      een klein **"sectie"**-label. Loopt hij al → klikken zet uit. *(De
+      sectie-popover "Loop deze sectie" werkt nog steeds als tweede ingang.)*
+- [ ] **R6-2. "Doorspelen" staat standaard uit**: presentatiescherm openen → de
+      "Doorspelen"-knop is uit; pas als jij erop klikt speelt hij automatisch door
+      naar de volgende compositie.
+- [ ] **R6-3. "Open montage" ook in de deelweergave**: open een gedeeld album of
+      een gedeelde opdracht (deelcode) met een beeld-vorm → in de onderste
+      knoppenrij staat nu ook **"Open montage"**.
+- [ ] **R6-4. Fullscreen toont alleen het beeld** (G5): presenteren met een
+      beeld-vorm → fullscreen (knop of `F`) → alleen het beeld op de donkere
+      achtergrond; de **montagelijn is dicht** en het **zijpaneel is ingeklapt**.
+      Jij kunt beide daarna weer openen (blijven dan open).
 
-### Hertest ná een verse deploy (al gefixt in de code)
-
-Deze stonden nog open uit testronde 4; ze zijn gefixt maar je testte een oudere
-build. Even opnieuw op de verse upload:
+### Nog open uit ronde 5 (deploy-afhankelijk)
 
 - [ ] **R5-7. Bewaarcode → volle tijdlijn** (was: lege montagelijn bij A3):
       bewaar online in thema **Piraten** → open de 6-tekens code in een ánder
-      browserprofiel → de clips staan er gewoon (niet leeg). *(Oorzaak was dat de
-      tijdlijn clips in het actieve thema zocht i.p.v. in je eigen bibliotheek.)*
-- [x] **R5-8. Opslaan sluit de modal + Tab blijft binnen**: podium → Opslaan &
-      Delen → **Opslaan** → de modal sluit en de bevestiging verschijnt. Met
-      **Tab** door de modal blijft de focus binnen de modal.
-- [x] **R5-9. Aankondiging dimt niets**: presenteren → volgende compositie → "Nu
-      te horen" komt als zwevend kaartje bovenin; de kaart eronder (incl.
-      montagelijn) blijft helder wit.
-- [x] **R5-10. Praatplaat-bord bij presenteren**: klaslokaal met actieve
-      praatplaat → Presenteren → "Actieve opdracht" → je krijgt het klikbare bord
-      (zoals het gedeelde album), niet losse visuals.
-- [x] **R5-11. Eén deelknop**: elke opdrachtrij heeft één "Delen". Bij een
-      praatplaat vraagt hij eerst: bord (klikbaar) of composities (afspeellijst);
-      bij andere types opent direct de album-modal.
-- [x] **R5-12. Transportknoppen in de presentatie**: ⏮ zet de compositie die je
-      hoort terug naar het begin (net als in de studio); er is geen ⏭ meer.
-      Wisselen doe je in het zijpaneel, met ←/→ of via "Doorspelen".
-- [x] **R5-13. Historie opruimen — overal hetzelfde, nooit destructief**:
-      klaslokaal → "Eerdere opdrachten" → élke rij heeft dezelfde acties
-      (oog · delen · prullenbak · Activeer). Prullenbak op een storyboard- of
-      template-rij → de tekst zegt dat het leerlingwerk bewaard blijft →
-      bevestigen → rij weg **en de composities staan nog gewoon bij de
-      inzendingen**. *(Voorheen wiste de prullenbak bij een praatplaat de
-      inzendingen écht mee.)*
-- [x] **R5-14. Browsertaal**: verse browser (of gewiste opslag) met Engelse
-      taalinstelling → app start in het Engels; Nederlandse browser → Nederlands.
-      Zet je zelf de taal om, dan wint die keuze altijd.
+      browserprofiel → de clips staan er gewoon (niet leeg). *(Gefixt in de code;
+      even op de verse upload bevestigen.)*
 
 ---
 
@@ -217,7 +179,9 @@ build. Even opnieuw op de verse upload:
 - [x] **G3. Doorspelen** + pijltjestoetsen + aankondiging (~1,2s) + feedbackrij.
 - [x] **G4. Per vorm**: storyboard beweegt mee · praatplaat toont pulserende spot ·
       vrij/template toont de meebewegende tijdlijn.
-- [?] **G5. Fullscreen**: knop, `F`, Escape verlaat eerst fullscreen; ook op iPad. ==> Werkt, maar kan de full screen mode enkel de afbeelding/storyboard full screen tonen met donkere achtergrond (echt alleen in full screen). De buttons e.d. blijven uiteraard we staan maar bij full screen wel standaard montage uit (behave als docent erop klikt) en zijpaneel ingeklapt (behalve als docent erop klikt)
+- [ ] **G5. Fullscreen**: knop, `F`, Escape verlaat eerst fullscreen; ook op iPad.
+      → Jouw wens (bij fullscreen alleen het beeld op donker, montage dicht +
+      zijpaneel ingeklapt tenzij je klikt) is gebouwd — **hertest via R6-4** bovenaan.
 - [x] **G6. Praatplaat-bord**: docent-viewer én publieke deelviewer (`?pp-share=`)
       — plaat groot, klikbare spots (klik = spelen, nogmaals = pauze, cluster =
       keuzemenu), montagelijn-toggle.
@@ -269,7 +233,15 @@ afgesloten). Bewaard als regressie-referentie — niet opnieuw nodig, tenzij er 
 in dat gebied verandert.
 
 ### Testronde 5 (22-7) — getest en akkoord
-*(verplaats hierheen zodra je de R5-punten hierboven hebt afgevinkt)*
+- ✅ **R5-1** sectie-loop herstelt na uit/aan · **R5-2** praatplaat-thema kiest de
+  docent (+ wijzigbaar op de actieve opdracht, migratie 034) · **R5-3**
+  opdrachtkaart op de actieve opdracht · **R5-4** Presenteren-knop geel · **R5-5**
+  praatplaat-plek-tekst groter + "…soundscape…" · **R5-6** taalknop op de
+  auth-schermen · **R5-8** Opslaan sluit de modal + Tab-trap · **R5-9**
+  aankondiging dimt niets · **R5-10** praatplaat-bord bij presenteren · **R5-11**
+  één deelknop · **R5-12** transportknoppen (⏮ naar begin) · **R5-13** historie
+  opruimen niet-destructief · **R5-14** browsertaal.
+  *(R5-7 bewaarcode→volle tijdlijn staat nog open — deploy-afhankelijk.)*
 
 ### Leerling-basisflow
 - ✅ **A1. Rooktest**: Start → thema → kaart → locatie → geluiden → studio → podium;

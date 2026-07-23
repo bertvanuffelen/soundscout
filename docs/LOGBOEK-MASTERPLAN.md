@@ -282,6 +282,16 @@ Bert testte het testplan opnieuw (x/-/?) en vulde Notion-testronde 5. **Verkenni
 - **Niet fixbaar vanuit de code**: de browser meldde `frame-src 'none'`, terwijl onze `.htaccess` zelf `frame-src 'self' …` zegt. Dat wijst op een server-configuratie op `ss-dev.techindeles.nl` (mogelijk `mod_headers` uit, of een eigen hosting-CSP) die onze regel overschrijft — actie-item voor Bert in het testplan (§"Console-fouten meteen na deploy").
 - `searchAnalyzer.js`-fout is bevestigd niet-van-ons (geen match in de repo) — vermoedelijk een browserextensie.
 
+## Testronde 6 (23-7): export-onderzoek, loop-keuze, presentatie-tweaks, bewaar-doc
+
+Bert testte verder (app steeds stabieler) en parkeerde bewust mobiel (één grote losse test), peer-feedback (losse sessie) en SEO (losse grote test; hoofddomein wordt `soundscout.nl`). Verkenning met 3 Explore-agents; daarna overlegd en per onderdeel een besluit gekozen.
+
+- **Grootste hindernis — export-effectglitch**: effecten (pitch/reverb/fade) klinken bij afspelen goed maar glitchen in de MP3/video-export. Oorzaak in principe gevonden: de export bouwt de effectketen in een **losse offline-implementatie** (`renderOffline`) los van live (`createOnDemandPlayer`); `Tone.PitchShift` in `Tone.Offline` is de hoofdverdachte. **Besluit Bert: apart diepteonderzoek in een verse chat** — daarom een zeer uitgebreid dossier `docs/ONDERZOEK-EXPORT-EFFECTGLITCH.md` + Notion To Do-taak (P1). Geen fix deze ronde.
+- **Loop-knop — keuze ná klikken** (besluit Bert): de knop maakte geen zichtbaar onderscheid tussen hele-loop en sectie-loop. Nu: klik → "Hele compositie" / "Deze sectie" (sectie = het bereik onder de afspeellijn via nieuwe `sectionAt`-helper + 6 tests); knop toont "sectie"-label bij sectie-loop. `useStudioPlayback` levert nu `loopMode`/`handleLoopWhole/Section/Off`. De R5-park/restore-functies blijven bestaan maar zijn niet meer door de knop gebruikt.
+- **Presentatiescherm — drie kleine tweaks** (besluit Bert: alleen tweaks): "Doorspelen" default **uit**; "Open montage"-knop óók in de deel-/albumweergave (public); fullscreen klapt montage + zijpaneel dicht (alleen-beeld-op-donker, docent kan heropenen). Comment-blok bovenin `PresentationSurface` + `HANDLEIDING-BEHEER §4b` als snel naslag van wat per modus aan/uit staat (centrale MODE_CONFIG = latere verbetering).
+- **Bewaar-doc** (wens Bert): los leesbaar naslag `docs/BEWAREN-VAN-COMPOSITIES.md` — wanneer/waar/hoe lang leerlingwerk bewaard blijft en hoe je het terugvindt; verwijst naar `HANDLEIDING-BEHEER §Bewaartermijnen`.
+- **Testplan** opgeschoond: R5-items → Afgerond (R5-7 blijft open, deploy-afhankelijk); nieuw "Hertest ronde 6"-blok; G5 → gebouwd (R6-4); export-`-`-punten herlabeld naar apart onderzoek; SEO (H3/H4) als losse latere test met `soundscout.nl`-notitie.
+
 ## Besluitenlog
 
 - **2026-07-13** — Plan geaccepteerd. Keuzes: freemium (ruime gratis laag) · NL-first, internationaal voorbereiden · thema's code-first + begeleide wizard · docent-feedback = kernfeature incl. peer-feedback (anonieme complimenten-chips, geen vrije tekst).
