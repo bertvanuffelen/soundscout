@@ -17,61 +17,85 @@ import * as Tone from 'tone';
 import {
   FADE_IN_CURVE,
   FADE_OUT_CURVE,
-  reverbDecay,
   type ClipEffectsConfig,
 } from './audioEvents';
+import { getReverbIR } from './ReverbIRService';
 
 // --- Ketenbouw ---
 
 export interface ClipChain {
-  /** Alle nodes ná de player, in volgorde (voor player.chain(...nodes, dest)) */
+  /** Eerste node van de keten — verbind de player hiermee */
+  input: Tone.ToneAudioNode;
+  /** Laatste node van de keten — verbind deze met de bestemming */
+  output: Tone.ToneAudioNode;
+  /** Alle aangemaakte nodes (voor lifecycle-administratie) */
   nodes: Tone.ToneAudioNode[];
   /** Gain-node voor fades, of null als de clip geen fades heeft */
   fadeGain: Tone.Gain | null;
-  /**
-   * Reverb-node indien aanwezig — de offline render moet vóór transport.start
-   * op `reverb.ready` wachten (de IR wordt asynchroon gegenereerd en de
-   * offline klok wacht daar niet op; zie TONEJS-KENNISBANK).
-   */
-  reverb: Tone.Reverb | null;
   /** Alles in één keer opruimen (voor fire-and-forget-afhandeling) */
   dispose: () => void;
 }
 
 /**
- * Bouw de effect-nodes voor één clip-event.
- * De aanroeper verbindt: `player.chain(...chain.nodes, destination)`.
+ * Bouw de effectketen voor één clip-event:
+ *   input → [PitchShift] → [reverb-unit] → [fadeGain] → Volume = output
+ *
+ * De reverb-unit (Fase 2) is een deterministische vervanging van Tone.Reverb:
+ * een parallelle Convolver met geseede IR (ReverbIRService) achter een
+ * equal-power CrossFade — zelfde wet/dry-model en klankregeling als
+ * Tone.Reverb, maar synchroon (geen ready-await) en bit-reproduceerbaar.
+ *
+ * Aansluiten: `player.connect(chain.input); chain.output.connect(dest);`
  */
 export function buildClipChain(
   volumeDb: number,
   effects?: ClipEffectsConfig
 ): ClipChain {
   const nodes: Tone.ToneAudioNode[] = [];
+  let input: Tone.ToneAudioNode | null = null;
+  let tail: Tone.ToneAudioNode | null = null;
   let fadeGain: Tone.Gain | null = null;
-  let reverb: Tone.Reverb | null = null;
+
+  const append = (node: Tone.ToneAudioNode): void => {
+    nodes.push(node);
+    if (tail) tail.connect(node);
+    else input = node;
+    tail = node;
+  };
 
   if (effects) {
     if (effects.pitch !== 0) {
-      nodes.push(new Tone.PitchShift({ pitch: effects.pitch }));
+      append(new Tone.PitchShift({ pitch: effects.pitch }));
     }
     if (effects.reverb > 0) {
-      reverb = new Tone.Reverb({ decay: reverbDecay(effects.reverb) });
-      reverb.wet.value = effects.reverb / 100;
-      nodes.push(reverb);
+      // Wet/dry zoals Tone.Reverb: CrossFade (equal-power) tussen droog (a)
+      // en convolver (b), fade = reverb/100 — met deterministische IR
+      const entry = new Tone.Gain(1);
+      const convolver = new Tone.Convolver(
+        getReverbIR(effects.reverb, Tone.getContext().sampleRate)
+      );
+      const crossFade = new Tone.CrossFade(effects.reverb / 100);
+      append(entry); // lineair aangesloten; splitst hieronder in droog/nat
+      entry.connect(crossFade.a);
+      entry.connect(convolver);
+      convolver.connect(crossFade.b);
+      nodes.push(convolver, crossFade);
+      tail = crossFade;
     }
     if (effects.fadeIn > 0 || effects.fadeOut > 0) {
       fadeGain = new Tone.Gain(1);
-      nodes.push(fadeGain);
+      append(fadeGain);
     }
   }
 
   // Volume-node (altijd) — track+clip-volume per keten gebakken
-  nodes.push(new Tone.Volume(volumeDb));
+  append(new Tone.Volume(volumeDb));
 
   return {
+    input: input!,
+    output: tail!,
     nodes,
     fadeGain,
-    reverb,
     dispose: () => {
       nodes.forEach((node) => {
         try { node.dispose(); } catch { /* ignore */ }

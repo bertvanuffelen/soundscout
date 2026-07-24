@@ -172,11 +172,8 @@ export async function renderOffline(
       const masterBus = new Tone.Volume(0).toDestination();
       const trackBuses = tracks.map(() => new Tone.Gain(1).connect(masterBus));
 
-      // Reverbs genereren hun impulse-response asynchroon; verzamel ze zodat
-      // we vóór het renderen op `ready` kunnen wachten (exports-audit #6) —
-      // de offline klok wacht daar niet vanzelf op
-      const reverbs: Tone.Reverb[] = [];
-
+      // Reverb is sinds Fase 2 een deterministische Convolver-IR
+      // (ReverbIRService) — synchroon, dus géén ready-await meer nodig.
       generated.events.forEach((event) => {
         if (event.isMuted) return;
         const buffer = bufferMap.get(event.sampleId);
@@ -184,10 +181,10 @@ export async function renderOffline(
 
         // Verse keten + player per event (gedeelde builder)
         const chain = buildClipChain(event.volumeDb, event.effects);
-        if (chain.reverb) reverbs.push(chain.reverb);
 
         const player = new Tone.Player(buffer);
-        player.chain(...chain.nodes, trackBuses[event.trackIndex] ?? masterBus);
+        player.connect(chain.input);
+        chain.output.connect(trackBuses[event.trackIndex] ?? masterBus);
 
         const { time, trimStart, duration: eventDuration, fadeIn, fadeOut } = event;
         transport.schedule((t) => {
@@ -197,12 +194,6 @@ export async function renderOffline(
           player.start(t, trimStart, eventDuration);
         }, time);
       });
-
-      // Wacht tot alle reverb-impulse-responses gegenereerd zijn — Tone.Offline
-      // wacht op de callback-promise vóór het daadwerkelijke renderen
-      if (reverbs.length > 0) {
-        await Promise.all(reverbs.map((r) => r.ready));
-      }
 
       // Start transport immediately in offline context
       transport.start(0);

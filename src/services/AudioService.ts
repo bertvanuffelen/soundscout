@@ -394,7 +394,8 @@ export class AudioService {
     // player → [pitchShift] → [reverb] → [fadeGain] → volume → destination
     const chain = buildClipChain(0, effects);
     const player = new Tone.Player(buffer);
-    player.chain(...chain.nodes, Tone.getDestination());
+    player.connect(chain.input);
+    chain.output.connect(Tone.getDestination());
 
     // Schedule fade curves
     const now = Tone.now() + 0.05;
@@ -580,7 +581,8 @@ export class AudioService {
 
     // Chain: player → [effects] → volume → trackBus
     const destination = this.trackBuses[trackIndex] || Tone.getDestination();
-    player.chain(...nodes, destination);
+    player.connect(chain.input);
+    chain.output.connect(destination);
 
     // Track in activeSources for lifecycle management
     const source = { player, nodes };
