@@ -1,8 +1,12 @@
 # Onderzoek — glitches/gestotter bij export van geluidseffecten
 
-> **Status:** open onderzoek. Dit is géén opgeloste bug — het is een
-> voorbereidingsdossier zodat een aparte, gefocuste sessie (verse chat) er
-> direct diep in kan. Geschreven na testronde 6 (23-7-2026).
+> **Status: AFGEROND & OPGELOST (24-7-2026).** Oorzaak empirisch bewezen
+> (§15: Tone.PitchShift-korrelkliks, 12 Hz-vingerafdruk in Berts export-MP3)
+> en structureel verholpen met **Audio Engine v2**
+> (`docs/audio/PLAN-AUDIO-ENGINE-V2.md`): gedeelde motor, pitch-prebake via
+> Signalsmith, deterministische reverb-IR's, export-validator + realtime-
+> vangnet. §1–14 hieronder zijn het oorspronkelijke voorbereidingsdossier
+> (geschreven na testronde 6, 23-7-2026).
 >
 > **Kernvraag:** waarom klinken clip-effecten (pitch / reverb / fade) prima
 > tijdens het **afspelen** in de app, maar komen ze er bij de **export**

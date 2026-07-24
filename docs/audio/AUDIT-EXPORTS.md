@@ -9,7 +9,12 @@
 > - ✅ #13 (deels) video-beeldwissels volgen nu de compositie-bpm · ✅ #14 vroege lamejs-import · ✅ #16 (deels) foutstrings via i18n
 > - ➖ #4 **gecorrigeerd**: `compositionInit` herstelt de praatplaat-context wél als er een snapshot is; alleen oude composities zónder snapshot missen de video-knop — daarvoor bestaat de afbeelding simpelweg niet meer aan de clientkant (geen fix mogelijk, wordt gelogd).
 > - ✅ #7 afgesloten (18-7): geen probleem — `StudioView.handleGoToStage` zet solo altijd uit vóór het podium (B3-besluit "solo is studio-monitoring"), dus de export bevat per definitie de volledige mix én dat is ook wat de gebruiker op het podium hoort.
-> - ⏳ Open (bewust): #9 render-progress · #10/#11 MediaRecorder-fallback-robustheid · #12 encode naar Worker · #15 preload-scope · 'unsupported'-uitleg.
+> - ⏳ Open (bewust): #9 render-progress · #10/#11 MediaRecorder-fallback-robustheid · 'unsupported'-uitleg.
+>
+> **Update 24-7 (Audio Engine v2, `docs/audio/PLAN-AUDIO-ENGINE-V2.md`):**
+> - ✅ #12 MP3-encode draait nu in een Web Worker (`src/workers/mp3EncoderWorker.ts`, main-thread-fallback)
+> - ✅ #15 `preloadBuffers` hergebruikt al door de studio geladen buffers
+> - ✅ Het gat dat deze audit miste — effect-clips glitchen in de offline render (PitchShift) — is opgelost: pitch is een gebakken buffer, reverb een deterministische IR, en elke render wordt objectief gevalideerd met een realtime-vangnet.
 
 Read-only doorlichting van de volledige exportketen, op verzoek van Bert (taak "Alle exports nalopen", P2). Twee code-audits (audio- en videoketen, alle vier de vormen: vrij / template / storyboard / praatplaat) + live browser-verificatie. **Er is in deze ronde niets aan de code veranderd** — fixes volgen na Berts hertest van het presentatiescherm, zodat zijn testsessie niet herlaadt.
 

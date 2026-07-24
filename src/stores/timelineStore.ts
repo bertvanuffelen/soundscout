@@ -381,7 +381,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                     // Proportionally scale both fades to fit
                     const scale = newDuration / totalFade;
                     updated.effects = {
-                      ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                      ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
                       fadeIn: Math.round(fadeIn * scale * 10) / 10,
                       fadeOut: Math.round(fadeOut * scale * 10) / 10,
                     };
@@ -500,7 +500,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
                         volume: clamped,
                       },
                     }
@@ -524,7 +524,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
                         mute: muted,
                       },
                     }
@@ -622,7 +622,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
                         pitch: clamped,
                       },
                     }
@@ -647,7 +647,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
                         reverb: clamped,
                       },
                     }
@@ -671,7 +671,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                   ? {
                       ...clip,
                       effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 }),
+                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
                         ...effects,
                       },
                     }

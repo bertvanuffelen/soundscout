@@ -6,7 +6,6 @@
  */
 
 import * as Tone from 'tone';
-import toWav from 'audiobuffer-to-wav';
 import type { Track, Sample } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
 import { logger } from './logger';
@@ -67,9 +66,16 @@ export async function preloadBuffers(
   await Promise.all(
     samples.map(async (sample) => {
       try {
-        const buffer = new Tone.ToneAudioBuffer();
-        await buffer.load(sample.audioUrl);
-        bufferMap.set(sample.id, buffer);
+        // Hergebruik buffers die de studio al geladen heeft (audit #15) —
+        // scheelt een dubbele download/decodeer-slag per sample
+        const existing = audioService.getLoadedBuffer(sample.id);
+        if (existing) {
+          bufferMap.set(sample.id, existing);
+        } else {
+          const buffer = new Tone.ToneAudioBuffer();
+          await buffer.load(sample.audioUrl);
+          bufferMap.set(sample.id, buffer);
+        }
       } catch (err) {
         logger.warn(`Failed to preload buffer for "${sample.id}"`, err);
         failedIds.push(sample.id);
@@ -240,50 +246,6 @@ export async function renderOffline(
 // =============================================================================
 // Export Functions
 // =============================================================================
-
-/**
- * Export timeline as WAV file.
- */
-export async function exportToWav(
-  tracks: Track[],
-  samples: Sample[],
-  options: ExportOptions = {},
-  onProgress?: ExportProgressCallback
-): Promise<Blob> {
-  onProgress?.(0);
-
-  // Calculate duration
-  const duration = calculateTimelineDuration(
-    tracks, samples, options.bpm, options.soloTrackIndex ?? null
-  );
-  if (duration <= 0.5) {
-    throw new Error('No clips on timeline');
-  }
-
-  // Preload all buffers + pitch-bakes
-  const { bufferMap } = await preloadBuffers(samples, onProgress);
-  await ensurePitchBuffers(tracks, bufferMap);
-
-  // Render offline
-  const audioBuffer = await renderOffline(
-    tracks,
-    samples,
-    duration,
-    bufferMap,
-    options,
-    onProgress
-  );
-
-  // Convert to WAV
-  const wavArrayBuffer = toWav(audioBuffer);
-  onProgress?.(0.9);
-
-  const blob = new Blob([wavArrayBuffer], { type: 'audio/wav' });
-  onProgress?.(1);
-
-  logger.info('WAV export complete', { size: blob.size });
-  return blob;
-}
 
 export interface Mp3ExportResult {
   blob: Blob;

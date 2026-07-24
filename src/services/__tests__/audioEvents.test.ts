@@ -57,7 +57,7 @@ describe('generateClipEvents', () => {
     const result = generateClipEvents(
       [track([clip({
         id: 'c1', sampleId: 'drums', startBeat: 0, loop: true, loopDurationBeats: 4,
-        effects: { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0.2, fadeOut: 0.3 },
+        effects: { volume: 0, pitch: 0, reverb: 0, fadeIn: 0.2, fadeOut: 0.3 },
       })])],
       samples,
       { bpm: BPM }
@@ -75,7 +75,7 @@ describe('generateClipEvents', () => {
       [
         track([clip({
           id: 'c1', sampleId: 'piano', startBeat: 0,
-          effects: { volume: -6, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0, mute: true },
+          effects: { volume: -6, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0, mute: true },
         })], { volume: -3 }),
         track([clip({ id: 'c2', sampleId: 'drums', startBeat: 0 })], { mute: true }),
       ],
@@ -107,7 +107,7 @@ describe('generateClipEvents', () => {
     const result = generateClipEvents(
       [track([clip({
         id: 'c1', sampleId: 'piano', startBeat: 0,
-        effects: { volume: 0, pitch: 0, reverb: 50, pan: 0, fadeIn: 0, fadeOut: 0 },
+        effects: { volume: 0, pitch: 0, reverb: 50, fadeIn: 0, fadeOut: 0 },
       })])],
       samples,
       { bpm: BPM }
@@ -157,11 +157,11 @@ describe('effect-helpers', () => {
     expect(clipHasEffects(clip({ id: 'c', sampleId: 's', startBeat: 0 }))).toBe(false);
     expect(clipHasEffects(clip({
       id: 'c', sampleId: 's', startBeat: 0,
-      effects: { volume: 0, pitch: 0, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 },
+      effects: { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 },
     }))).toBe(false);
     expect(clipHasEffects(clip({
       id: 'c', sampleId: 's', startBeat: 0,
-      effects: { volume: 0, pitch: 5, reverb: 0, pan: 0, fadeIn: 0, fadeOut: 0 },
+      effects: { volume: 0, pitch: 5, reverb: 0, fadeIn: 0, fadeOut: 0 },
     }))).toBe(true);
   });
 

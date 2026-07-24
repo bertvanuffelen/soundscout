@@ -1,7 +1,10 @@
 # PLAN — Audio Engine v2: één motor voor live, preview én export
 
-> **Status:** plan goedgekeurd qua richting (Bert, 23-7-2026 — Signalsmith-keuze
-> en "offline + vangnet" bevestigd), implementatie nog niet gestart.
+> **Status: UITGEVOERD (24-7-2026).** Alle fasen 0–5 geïmplementeerd en
+> browser-geverifieerd in deze worktree (commits `756c42d`…, zie git log).
+> Rest: Berts eind-luistertest. Backup-tag vóór de verbouwing:
+> `backup-pre-audio-engine-v2`.
+> Richting goedgekeurd door Bert (23-7: Signalsmith-keuze + offline+vangnet).
 > **Voorwerk:** `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md` §15 (empirische
 > bevindingen, MP3-vingerafdruk-analyse, metingen live vs offline).
 > **Werkwijze:** in deze worktree, commit per fase, `tsc` + tests groen per fase.

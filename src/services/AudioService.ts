@@ -481,6 +481,15 @@ export class AudioService {
   }
 
   /**
+   * Reeds geladen buffer voor hergebruik door de export (audit #15) —
+   * scheelt een dubbele download/decodeer-slag bij exporteren vanuit de app.
+   */
+  getLoadedBuffer(sampleId: string): Tone.ToneAudioBuffer | undefined {
+    const buffer = this.buffers.get(sampleId);
+    return buffer && buffer.loaded ? buffer : undefined;
+  }
+
+  /**
    * Clear waveform cache for a specific sample.
    */
   clearWaveformCache(sampleId?: string): void {

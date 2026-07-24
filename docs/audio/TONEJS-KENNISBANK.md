@@ -753,3 +753,17 @@ De `Waveform`-component toont fades visueel via twee effecten per bar:
 | 2026-02-04 | **KRITIEK:** Sectie 8 toegevoegd - Seeking naar midden van actieve clips probleem + hybride oplossing |
 | 2026-02-04 | ✅ Sectie 10 bijgewerkt - Hybride aanpak volledig geïmplementeerd en werkend |
 | 2026-04-16 | Sectie 11 toegevoegd - Fade In/Out: x² / (1-x)² curves, FadeGain node, seek in fade-zone, loop-interactie, trim clamping, preview |
+| 2026-07-24 | Sectie 12 toegevoegd — lessen Audio Engine v2 (PitchShift-offline-glitch, worklet-capture) |
+
+---
+
+## 12. Lessen uit Audio Engine v2 (24-7-2026)
+
+Volledige empirie: `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md` §15; architectuur: `docs/audio/PLAN-AUDIO-ENGINE-V2.md`.
+
+1. **`Tone.PitchShift` is onbetrouwbaar in `Tone.Offline`.** Het is een granulaire delay-lijn-shifter (2 delays + 3 phase-locked LFO's, korrelfrequentie `factor·1.2/windowSize`). Bij hoge pitchwaarden produceert hij periodieke korrelkliks — offline (44.1k) ~12× erger dan live (48k), met een sessie-afhankelijke catastrofale modus waarin de crossfade-LFO effectief stilvalt (beide delay-takken ongemaskeerd opgeteld, amplitude ×2, mitrailleurkliks op de korrelfrequentie). `windowSize`-tuning maakt het érger. Oplossing: pitch vooraf bakken (Signalsmith Stretch in een eigen `OfflineAudioContext`) en gewone buffers afspelen.
+2. **Bouw live- en offline-audio op dezélfde modules.** De export was een parallelle implementatie van de live keten en was daar op vier punten hoorbaar van afgeweken (loop-fades, solo, buses, staart). Sinds v2: `audioEvents.generateClipEvents` + `audioGraph.buildClipChain` zijn de enige bron.
+3. **`Tone.Reverb` genereert zijn IR met échte random noise in een geneste offline render** — asynchroon (`ready`) én niet-deterministisch: twee exports klonken per definitie nét anders. Een geseede noise-IR met envelope `exp(-6t/decay)` in een `Tone.Convolver` + `Tone.CrossFade` klinkt gelijkwaardig, is synchroon en bit-reproduceerbaar.
+4. **`Param.setValueCurveAtTime` in Tone is géén native curve**: hij wordt ontleed in `setValueAtTime` + N `linearRampToValueAtTime`-events. Overlappende curves gooien dus geen fout maar stapelen stilletjes ramps.
+5. **AudioWorklet-capture**: (a) `inputs[0]` wordt leeg zodra upstream-bronnen verdwijnen — stilte expliciet zelf aanvullen; (b) het eerste poortbericht kan honderden ms na node-creatie aankomen (module-compile) — doe een ping/pong-handshake en werk frame-geïndexeerd (`currentFrame`) in plaats van "begin bij bericht X"; (c) rond de transportstart is `transport.seconds` onbetrouwbaar (lookahead) — wacht op `rawContext.currentTime`.
+6. **Objectieve render-validatie loont**: sprongen in `|x[n]−x[n−1]|` + klik-trein-detectie (regelmatige intervallen 0.02–0.5s) vangen precies de PitchShift-signatuur. Zie `src/utils/renderValidation.ts` (dev-metriek én export-poortwachter).

@@ -199,8 +199,6 @@ export interface ClipEffects {
   pitch: number;
   /** Reverb wet mix percentage (0-100, default 0) */
   reverb: number;
-  /** Stereo panning (-1 left to +1 right, default 0 center) */
-  pan: number;
   /** Fade in duration in seconds (0 = off, default 0) */
   fadeIn: number;
   /** Fade out duration in seconds (0 = off, default 0) */
@@ -214,7 +212,6 @@ export const DEFAULT_CLIP_EFFECTS: ClipEffects = {
   volume: 0,
   pitch: 0,
   reverb: 0,
-  pan: 0,
   fadeIn: 0,
   fadeOut: 0,
 };

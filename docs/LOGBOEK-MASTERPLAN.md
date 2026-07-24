@@ -328,6 +328,13 @@ Bert testte verder (app steeds stabieler) en parkeerde bewust mobiel (één grot
 
 ## Sessielog
 
+### Sessie — 2026-07-24 (vervolg) — Audio Engine v2 volledig geïmplementeerd
+- **Alle fasen 0–5 van `docs/audio/PLAN-AUDIO-ENGINE-V2.md` gebouwd, per fase gecommit en browser-geverifieerd** (tsc + 295 tests groen per fase; backup-tag `backup-pre-audio-engine-v2`):
+  - F0 `renderValidation.ts` (klik/klik-trein-metriek, 8 tests) · F1 gedeelde motor (`audioEvents` + `audioGraph`, 12 tests; export = live: loop-fades per iteratie, solo/mute, buses, verse keten per event, galmstaart klinkt live uit) · F2 deterministische reverb-IR's (`ReverbIRService`, exports bit-identiek) · F3 pitch-prebake (`PitchBufferService` + signalsmith-stretch; +12 = exact 880 Hz, 0 kliks — was 366–16k met PitchShift) · F4 export-validator + realtime-capture-vangnet + MP3-encode in Web Worker · F5 opruiming (exportToWav + audiobuffer-to-wav weg, dood `pan`-veld weg, preload-hergebruik) + docs (CLAUDE.md, KENNISBANK §12, audit-status).
+- Storyboard-video-duur gecontroleerd (vraag Bert): zit al goed — video = max(audio, volledige tijdlijn), stille staart wordt gerenderd; praatplaat/MP3 = hoorbare compositieduur.
+- Solo in export: motor honoreert solo (export = wat je hoort); in de praktijk ongewijzigd omdat `handleGoToStage` solo al uitzet vóór het podium.
+- **Voor Bert: eind-luistertest** — effecten-composities (pitch ±12, reverb, loops+fades) exporteren als MP3 én video en vergelijken met live.
+
 ### Sessie — 2026-07-23/24 (avond/nacht) — Diepteonderzoek export-effectglitch + plan Audio Engine v2
 - Isolatie-protocol uit `ONDERZOEK-EXPORT-EFFECTGLITCH.md` §9 volledig uitgevoerd in de browser (objectieve klik-metriek) én **Berts echte glitchende export geanalyseerd** (`Test-23-7-8_16.mp3`).
 - **Oorzaak gevonden:** `Tone.PitchShift` bij pitch +12 — 12 Hz-korrelklik-vingerafdruk in de MP3; offline ~12× erger dan live; sessie-afhankelijke catastrofale modus (crossfade-LFO valt uit). H2 (reverb) en H3 (loop-keten-hergebruik) weerlegd als glitchbron; MP3-encode en 48k→44.1k-resampling schoon gemeten. `windowSize`-tuning verergert het. Alles vastgelegd in dossier **§15**.
