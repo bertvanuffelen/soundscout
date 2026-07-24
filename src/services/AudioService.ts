@@ -35,6 +35,10 @@ import {
   scheduleFadeCurvesAtOffset,
 } from './audioGraph';
 import { pitchBufferService } from './PitchBufferService';
+import {
+  buildLimiterProcessorCode,
+  applyLimiterToChannels,
+} from './masterLimiter';
 
 type BeatUpdateCallback = (beat: number) => void;
 type PlaybackEndCallback = () => void;
@@ -162,6 +166,9 @@ export class AudioService {
 
     await Tone.start();
     this.isInitialized = true;
+    // Master-limiter klaarzetten (fire-and-forget; herroutet de master zodra
+    // de worklet geladen is — tot die tijd master → Destination zonder limiter)
+    void this.ensureMasterLimiter();
   }
 
   isReady(): boolean {
@@ -525,10 +532,105 @@ export class AudioService {
    */
   private ensureTrackBuses(count: number = AudioService.TRACK_BUS_COUNT): void {
     if (!this.masterBus) {
-      this.masterBus = new Tone.Volume(0).toDestination();
+      this.masterBus = new Tone.Volume(0);
+      this.connectMasterOutput();
     }
     while (this.trackBuses.length < count) {
       this.trackBuses.push(new Tone.Gain(1).connect(this.masterBus));
+    }
+  }
+
+  // --- Master-limiter (Audio Engine v2) ---
+
+  /** Live limiter-node op de master (zelfde kernel als offline/vangnet) */
+  private limiterNode: AudioWorkletNode | null = null;
+  /** Context waarvoor de limiter is opgezet (contexts wisselen na dispose) */
+  private limiterContext: object | null = null;
+
+  /**
+   * Verbind de master met zijn uitgang: via de limiter als die klaar is,
+   * anders rechtstreeks naar Destination. Ook gebruikt om de routing te
+   * herstellen na captureRender.
+   */
+  private connectMasterOutput(): void {
+    if (!this.masterBus) return;
+    if (this.limiterNode && this.limiterContext === Tone.getContext()) {
+      this.masterBus.connect(this.limiterNode);
+    } else {
+      this.masterBus.toDestination();
+    }
+  }
+
+  /**
+   * Zet de master-limiter op: lookahead brickwall (−1 dBFS) als
+   * AudioWorklet ná de masterBus. Exact dezelfde DSP-kernel als de offline
+   * export en het vangnet (masterLimiter.ts) — live == export blijft gelden.
+   * Faalt stil naar "geen live limiter" op oude browsers; de export heeft
+   * de limiter dan alsnog (pure JS).
+   */
+  /**
+   * Alle SoundScout-processors in ÉÉN worklet-module. Tone's context-wrapper
+   * ondersteunt effectief maar één addAudioWorkletModule per context: een
+   * twééde module registreert schijnbaar "ok", maar nodes ervan gooien
+   * NotSupportedError (empirisch vastgesteld 24-7). Meerdere processors in
+   * één module werken wél onbeperkt.
+   */
+  private buildDspWorkletCode(): string {
+    return buildLimiterProcessorCode() + '\n' + this.buildCaptureWorkletCode();
+  }
+
+  /**
+   * Maak een worklet-node uit de gedeelde DSP-module; registreer die module
+   * precies één keer per context. Het register hangt aan het cóntext-object
+   * zelf, zodat een tweede service-instantie op dezelfde context (HMR in
+   * dev) niet dubbel registreert (dubbele registerProcessor met dezelfde
+   * naam gooit NotSupportedError).
+   */
+  private async createWorkletNode(
+    ctx: ReturnType<typeof Tone.getContext>,
+    name: string,
+    options: AudioWorkletNodeOptions
+  ): Promise<AudioWorkletNode> {
+    const holder = ctx as unknown as {
+      __soundscoutDspModule?: Promise<void>;
+    };
+    if (!holder.__soundscoutDspModule) {
+      const url = URL.createObjectURL(
+        new Blob([this.buildDspWorkletCode()], { type: 'application/javascript' })
+      );
+      holder.__soundscoutDspModule = ctx.addAudioWorkletModule(url);
+    }
+    try {
+      await holder.__soundscoutDspModule;
+    } catch (err) {
+      // Mislukte registratie niet cachen — volgende poging mag opnieuw
+      holder.__soundscoutDspModule = undefined;
+      throw err;
+    }
+    return ctx.createAudioWorkletNode(name, options);
+  }
+
+  private async ensureMasterLimiter(): Promise<void> {
+    const ctx = Tone.getContext();
+    if (this.limiterNode && this.limiterContext === ctx) return;
+    try {
+      const node = await this.createWorkletNode(ctx, 'soundscout-limiter', {
+        numberOfInputs: 1,
+        numberOfOutputs: 1,
+        outputChannelCount: [2],
+        channelCount: 2,
+      });
+      Tone.connect(node, Tone.getDestination());
+      this.limiterNode = node;
+      this.limiterContext = ctx;
+      // Bestaat de master al, herroute die dan door de limiter
+      if (this.masterBus) {
+        try { this.masterBus.disconnect(); } catch { /* ignore */ }
+        this.masterBus.connect(node);
+      }
+      logger.info('Master-limiter actief (−1 dBFS, 5ms lookahead, 150ms release)');
+    } catch (err) {
+      logger.warn('Master-limiter-worklet niet beschikbaar — live zonder limiter (export limit wél)', err);
     }
   }
 
@@ -576,6 +678,11 @@ export class AudioService {
     if (this.masterBus) {
       try { this.masterBus.dispose(); } catch { /* ignore */ }
       this.masterBus = null;
+    }
+    if (this.limiterNode) {
+      try { this.limiterNode.disconnect(); } catch { /* ignore */ }
+      this.limiterNode = null;
+      this.limiterContext = null;
     }
   }
 
@@ -1058,16 +1165,11 @@ export class AudioService {
   // REALTIME-CAPTURE-VANGNET (Audio Engine v2, Fase 4)
   // ==========================================================================
 
-  /** Worklet-registratie per context (contexts kunnen wisselen na dispose) */
-  private captureWorkletReady: WeakMap<object, Promise<void>> = new WeakMap();
-
-  private ensureCaptureWorklet(ctx: ReturnType<typeof Tone.getContext>): Promise<void> {
-    let ready = this.captureWorkletReady.get(ctx);
-    if (!ready) {
-      // De worklet vangt ALLES vanaf zijn geboorte, frame-geïndexeerd; de
-      // main thread knipt het exacte venster uit. Zo maakt de latentie van
-      // het start-bericht (module-compile kan honderden ms duren) niet uit.
-      const workletCode = `
+  private buildCaptureWorkletCode(): string {
+    // De worklet vangt ALLES vanaf zijn geboorte, frame-geïndexeerd; de
+    // main thread knipt het exacte venster uit. Zo maakt de latentie van
+    // het start-bericht (module-compile kan honderden ms duren) niet uit.
+    return `
         class SoundScoutCapture extends AudioWorkletProcessor {
           constructor() {
             super();
@@ -1112,11 +1214,6 @@ export class AudioService {
         }
         registerProcessor('soundscout-capture', SoundScoutCapture);
       `;
-      const url = URL.createObjectURL(new Blob([workletCode], { type: 'application/javascript' }));
-      ready = ctx.addAudioWorkletModule(url);
-      this.captureWorkletReady.set(ctx, ready);
-    }
-    return ready;
   }
 
   /**
@@ -1134,9 +1231,8 @@ export class AudioService {
     await this.initialize();
     const ctx = Tone.getContext();
     const sampleRate = ctx.sampleRate;
-    await this.ensureCaptureWorklet(ctx);
 
-    const cap = ctx.createAudioWorkletNode('soundscout-capture', {
+    const cap = await this.createWorkletNode(ctx, 'soundscout-capture', {
       numberOfInputs: 1,
       numberOfOutputs: 1,
       channelCount: 2,
@@ -1205,7 +1301,7 @@ export class AudioService {
       this.disposeActiveSources();
       this._isScheduled = false;
       try { master.disconnect(); } catch { /* ignore */ }
-      master.toDestination();
+      this.connectMasterOutput();
       try { cap.disconnect(); } catch { /* ignore */ }
       try { silent.dispose(); } catch { /* ignore */ }
     }
@@ -1229,6 +1325,9 @@ export class AudioService {
         `Realtime capture onvolledig (${framesWritten}/${totalFrames} frames)`
       );
     }
+    // Master-limiter — de capture tapt vóór de live limiter af, dus hier
+    // dezelfde kernel toepassen zodat de opname klinkt als de live uitgang
+    applyLimiterToChannels([left, right], sampleRate);
     logger.info('Realtime capture afgerond', { durationSeconds, sampleRate, framesWritten, totalFrames });
     return buffer;
   }

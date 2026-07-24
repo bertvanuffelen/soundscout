@@ -14,6 +14,7 @@ import { buildClipChain, scheduleFadeCurves } from '../services/audioGraph';
 import { pitchBufferService } from '../services/PitchBufferService';
 import { analyzeAudioBuffer, formatRenderAnalysis } from './renderValidation';
 import { audioService } from '../services/AudioService';
+import { applyLimiterToBuffer } from '../services/masterLimiter';
 
 // =============================================================================
 // Types
@@ -238,6 +239,15 @@ export async function renderOffline(
 
   // Convert ToneAudioBuffer to native AudioBuffer
   const renderedBuffer = renderedToneBuffer.get() as AudioBuffer;
+
+  // Master-limiter (Audio Engine v2): exact dezelfde kernel als de live
+  // masterbus-worklet — voorkomt digitaal clippen bij hard gestapelde
+  // sporen, transparant (unity gain) zolang de mix onder −1 dBFS blijft.
+  const limiterStats = applyLimiterToBuffer(renderedBuffer);
+  if (limiterStats.maxReductionDb > 0.1) {
+    logger.info('Master-limiter greep in bij de export', limiterStats);
+  }
+
   logger.info('Offline render complete', { length: renderedBuffer.length });
 
   return renderedBuffer;
