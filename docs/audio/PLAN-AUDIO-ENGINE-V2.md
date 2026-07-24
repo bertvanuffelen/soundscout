@@ -2,8 +2,9 @@
 
 > **Status: UITGEVOERD (24-7-2026).** Alle fasen 0–5 geïmplementeerd en
 > browser-geverifieerd in deze worktree (commits `756c42d`…, zie git log).
-> Rest: Berts eind-luistertest. Backup-tag vóór de verbouwing:
-> `backup-pre-audio-engine-v2`.
+> Berts eind-luistertest: ✅ **GESLAAGD (24-7)** — effecten (pitch ±12,
+> reverb, loops+fades) + bewust keiharde mix, MP3 én video, klinkt goed.
+> Backup-tag vóór de verbouwing: `backup-pre-audio-engine-v2`.
 > Richting goedgekeurd door Bert (23-7: Signalsmith-keuze + offline+vangnet).
 > **Voorwerk:** `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md` §15 (empirische
 > bevindingen, MP3-vingerafdruk-analyse, metingen live vs offline).

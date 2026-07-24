@@ -328,6 +328,9 @@ Bert testte verder (app steeds stabieler) en parkeerde bewust mobiel (één grot
 
 ## Sessielog
 
+### Sessie — 2026-07-24 — Berts luistertest GESLAAGD ✅
+- Bert testte de export met effecten (pitch ±12, reverb, loops+fades) én een bewust keiharde mix, als MP3 én video: klinkt goed. Audio Engine v2 + master-limiter zijn daarmee ook op gehoor bevestigd. Vastgelegd in CLAUDE.md, PLAN-AUDIO-ENGINE-V2 (status), Notion (taak Afgerond + Stand-blok).
+
 ### Sessie — 2026-07-24 (ochtend, deel 2) — Master-limiter
 - **Master-limiter gebouwd** (`src/services/masterLimiter.ts`, commit `66b9202`): lookahead brickwall op de master — plafond −1.0 dBFS, 5 ms lookahead, 1 ms attack / 150 ms release. Eén pure kernel op drie plekken (live-worklet, offline render, vangnet-opname) → "live == export" en bit-determinisme blijven gelden. 7 unit-tests (o.a. blok==buffer-equivalentie, bit-transparantie onder het plafond).
 - Browser-geverifieerd: 6 sporen op +6 dB → export- én capture-peak exact 0.8913 (−1 dBFS), klik-vrij; normale mix onaangeroerd.
