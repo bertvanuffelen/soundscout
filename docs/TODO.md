@@ -8,7 +8,12 @@
 
 > Plaats hier ideeën, bugs of verzoeken. Claude verwerkt ze later naar de juiste prioriteit.
 
-_Inbox is leeg — handmatige bugs/ideeën hier toevoegen._
+**Toekomstideeën (24-7, van Bert — nog ideeën, niet ingepland):**
+
+- **[Idee] Sequencer-modal** — geluiden in een sequencer-achtige modal plaatsen om ritmische motieven te componeren. *Prioritering-advies: hoogste muzikale/didactische waarde (raakt de kern: componeren + ritme), maar grootste bouw (DAW-achtig) en overlapt met partituur-idee (#68). Eerste kandidaat voor een post-release feature-sprint.*
+- **[Idee] Conditionele/lineaire locatie-volgorde** — locaties in een bepaalde volgorde of onder voorwaarden ontgrendelen. *Prioritering-advies: goedkoopst en contained (kaart/locatie-state + unlock-regels); mooie scaffolding/differentiatie voor de docent, maar meer gamification dan muzikaal → secundair.*
+- **[Idee] Muzikale escape room in locaties** — per locatie een puzzel/uitdaging waarbij je geluiden vrijspeelt of verder mag. *Prioritering-advies: hoogste wow/engagement, maar grootste bouw en een héle nieuwe modus i.p.v. uitbreiding; ontwerp-eerst, niet vóór het kernproduct geland is.*
+- Volgorde-advies: eerst de sequencer (muzikale kern), locatie-unlock als goedkope engagement-win ernaast, escape room als grotere ontwerp-gedreven gok later. Ook in Notion To Do (P3, App - SoundScout).
 
 ---
 
