@@ -328,6 +328,11 @@ Bert testte verder (app steeds stabieler) en parkeerde bewust mobiel (één grot
 
 ## Sessielog
 
+### Sessie — 2026-07-24 (ochtend, deel 2) — Master-limiter
+- **Master-limiter gebouwd** (`src/services/masterLimiter.ts`, commit `66b9202`): lookahead brickwall op de master — plafond −1.0 dBFS, 5 ms lookahead, 1 ms attack / 150 ms release. Eén pure kernel op drie plekken (live-worklet, offline render, vangnet-opname) → "live == export" en bit-determinisme blijven gelden. 7 unit-tests (o.a. blok==buffer-equivalentie, bit-transparantie onder het plafond).
+- Browser-geverifieerd: 6 sporen op +6 dB → export- én capture-peak exact 0.8913 (−1 dBFS), klik-vrij; normale mix onaangeroerd.
+- **Vondst**: Tone's context-wrapper ondersteunt maar één `addAudioWorkletModule` per context (tweede module → NotSupportedError bij node-creatie). Limiter + capture zitten nu in één DSP-module. Vastgelegd in kennisbank §12.7–12.9 + CLAUDE.md pitfall 10 + plan-addendum.
+
 ### Sessie — 2026-07-24 (ochtend) — Validator-herkalibratie na vals alarm
 - Berts eerste echte export triggerde onterecht het realtime-vangnet: 523 "kliks" bleken drum-transiënten (de vangnet-opname van dezelfde muziek gaf 483 — twee motoren, zelfde profiel = muziek, geen glitch).
 - Herkalibratie `renderValidation.ts`: kale klik-teller geschrapt als afkeurcriterium; trein-detectie nu lokaal én strikt in het korrelbereik 0.02–0.11 s (muzikale ritmes vallen erbuiten); catastrofale modus = ≥10 extreme sprongen ≥0.9. Overeenstemmings-check in `validateOrCapture`: flagt de capture hetzelfde → offline render gebruiken, geen melding.
