@@ -223,3 +223,33 @@ Fase-0-metriek draaien + kort logboek-item in `LOGBOEK-MASTERPLAN.md`.
 | `src/components/studio/EffectsModal.tsx` | preview via gebakken pitch-buffer |
 | `src/types/index.ts` | `pan` verwijderen (of implementeren) |
 | `package.json` | + `signalsmith-stretch`, − `audiobuffer-to-wav` |
+
+---
+
+## Addendum 24-7 (na Berts eerste praktijktest): herkalibratie + master-limiter
+
+**Validator-herkalibratie** (vals alarm op drum-transiënten, commit `98a4881`):
+de kale klik-teller is geen afkeurcriterium meer; afkeuren gebeurt alleen op
+(a) een lokale regelmatige klik-trein in het korrelbereik 0.02–0.11 s of
+(b) ≥ 10 extreme sprongen ≥ 0.9. `validateOrCapture` kreeg een
+overeenstemmings-check: flagt de vangnet-opname hetzelfde profiel als de
+offline render, dan zijn de vlaggen de muziek zelf → offline render, geen
+melding. Geverifieerd op Berts echte bestanden (Test-23-7 → nog steeds
+verdacht via de 12 Hz-trein; Test-24-7 → schoon).
+
+**Master-limiter** (§5-risico "geen limiter" opgelost, commit `66b9202`):
+`src/services/masterLimiter.ts` — lookahead brickwall (−1.0 dBFS, 5 ms
+lookahead, 1 ms attack / 150 ms release, harde clamp als vangrail). Eén pure
+kernel op drie plekken (live-worklet ná de masterBus, `applyLimiterToBuffer`
+ná de offline render, en op de vangnet-opname) — de v2-garantie
+"live == export" blijft daardoor gelden, en twee exports blijven bit-identiek.
+Unit-getest (7 tests, o.a. blok==buffer-equivalentie en bit-transparantie
+onder het plafond); browser-geverifieerd (6 sporen op +6 dB → peak exact
+0.8913, klik-vrij; normale mix onaangeroerd).
+
+**Belangrijke vondst**: Tone's context-wrapper ondersteunt effectief maar één
+`addAudioWorkletModule` per context (nodes van een tweede module gooien
+NotSupportedError). Alle eigen processors (limiter + capture) zitten daarom
+in één DSP-module (`AudioService.buildDspWorkletCode`), geregistreerd via één
+promise op het context-object. Zie kennisbank §12.7–12.9 en CLAUDE.md
+pitfall 10.
