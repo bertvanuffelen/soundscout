@@ -1046,6 +1046,185 @@ export class AudioService {
   }
 
   // ==========================================================================
+  // REALTIME-CAPTURE-VANGNET (Audio Engine v2, Fase 4)
+  // ==========================================================================
+
+  /** Worklet-registratie per context (contexts kunnen wisselen na dispose) */
+  private captureWorkletReady: WeakMap<object, Promise<void>> = new WeakMap();
+
+  private ensureCaptureWorklet(ctx: ReturnType<typeof Tone.getContext>): Promise<void> {
+    let ready = this.captureWorkletReady.get(ctx);
+    if (!ready) {
+      // De worklet vangt ALLES vanaf zijn geboorte, frame-geïndexeerd; de
+      // main thread knipt het exacte venster uit. Zo maakt de latentie van
+      // het start-bericht (module-compile kan honderden ms duren) niet uit.
+      const workletCode = `
+        class SoundScoutCapture extends AudioWorkletProcessor {
+          constructor() {
+            super();
+            this.capturing = true;
+            this.bufs = [];
+            this.count = 0;
+            this.port.onmessage = (e) => {
+              const d = e.data;
+              if (d.cmd === 'ping') { this.port.postMessage({ type: 'pong' }); }
+              if (d.cmd === 'flush') {
+                this.capturing = false;
+                this.flush();
+                this.port.postMessage({ type: 'end' });
+              }
+            };
+          }
+          flush() {
+            if (this.bufs.length) {
+              this.port.postMessage({ type: 'chunks', chunks: this.bufs });
+              this.bufs = [];
+              this.count = 0;
+            }
+          }
+          process(inputs) {
+            if (!this.capturing) return true;
+            const inp = inputs[0];
+            if (!inp || !inp[0]) {
+              // Inactieve input (bv. na de laatste clip) = stilte — óók
+              // vastleggen, anders mist het venster zijn stille staart.
+              const zeros = new Float32Array(128);
+              this.bufs.push({ f: currentFrame, L: zeros, R: zeros });
+            } else {
+              this.bufs.push({
+                f: currentFrame,
+                L: inp[0].slice(0),
+                R: (inp[1] || inp[0]).slice(0),
+              });
+            }
+            if (++this.count >= 64) this.flush();
+            return true;
+          }
+        }
+        registerProcessor('soundscout-capture', SoundScoutCapture);
+      `;
+      const url = URL.createObjectURL(new Blob([workletCode], { type: 'application/javascript' }));
+      ready = ctx.addAudioWorkletModule(url);
+      this.captureWorkletReady.set(ctx, ready);
+    }
+    return ready;
+  }
+
+  /**
+   * Vangnet-export: speel de compositie via de échte live motor af (onhoorbaar,
+   * master → capture → gain 0) en neem de output sample-exact op. Duurt zo
+   * lang als de compositie, maar klinkt per definitie als live. Wordt alleen
+   * gebruikt wanneer de validator de offline render afkeurt (Fase 4).
+   */
+  async captureRender(
+    tracks: Track[],
+    samples: Sample[],
+    durationSeconds: number,
+    onProgress?: (fraction: number) => void,
+  ): Promise<AudioBuffer> {
+    await this.initialize();
+    const ctx = Tone.getContext();
+    const sampleRate = ctx.sampleRate;
+    await this.ensureCaptureWorklet(ctx);
+
+    const cap = ctx.createAudioWorkletNode('soundscout-capture', {
+      numberOfInputs: 1,
+      numberOfOutputs: 1,
+      channelCount: 2,
+      channelCountMode: 'explicit',
+    });
+    type CaptureChunk = { f: number; L: Float32Array; R: Float32Array };
+    const collected: CaptureChunk[] = [];
+    let endResolve: () => void = () => {};
+    const endPromise = new Promise<void>((resolve) => { endResolve = resolve; });
+    let pongResolve: () => void = () => {};
+    const pongPromise = new Promise<void>((resolve) => { pongResolve = resolve; });
+    cap.port.onmessage = (e) => {
+      const d = e.data as { type: string; chunks?: CaptureChunk[] };
+      if (d.type === 'chunks' && d.chunks) collected.push(...d.chunks);
+      if (d.type === 'pong') pongResolve();
+      if (d.type === 'end') endResolve();
+    };
+
+    // Onhoorbaar meeluisteren: master → capture → gain(0) → destination
+    const silent = new Tone.Gain(0).toDestination();
+    this.ensureTrackBuses(Math.max(AudioService.TRACK_BUS_COUNT, tracks.length));
+    const master = this.masterBus!;
+    master.disconnect();
+    master.connect(cap);
+    Tone.connect(cap, silent);
+
+    const transport = Tone.getTransport();
+    let startFrame = 0;
+    const totalFrames = Math.ceil(durationSeconds * sampleRate);
+    try {
+      // Schone transport-uitgangspositie vóór het plannen
+      try { transport.cancel(); transport.stop(); transport.seconds = 0; } catch { /* ignore */ }
+      this.scheduleTimeline(tracks, samples);
+      this.setLoop(false, 0, null);
+
+      // Handshake: pas als de worklet aantoonbaar draait het startmoment
+      // kiezen — anders kan module-compile-latentie het venster missen.
+      cap.port.postMessage({ cmd: 'ping' });
+      await Promise.race([pongPromise, new Promise((r) => setTimeout(r, 3000))]);
+
+      const raw = ctx.rawContext;
+      const startAt = raw.currentTime + 0.2;
+      startFrame = Math.round(startAt * sampleRate);
+      transport.start(startAt, 0);
+
+      // Wachten tot alle frames gerenderd zijn. Bewust op de cóntext-klok
+      // (raw.currentTime): transport.seconds is rond de start onbetrouwbaar
+      // (lookahead-race) en kan de lus te vroeg laten aflopen.
+      const endTime = startAt + durationSeconds + 0.1;
+      const deadline = performance.now() + (durationSeconds + 15) * 1000;
+      await new Promise<void>((resolve) => {
+        const tick = () => {
+          const now = raw.currentTime;
+          onProgress?.(Math.min(1, Math.max(0, (now - startAt) / durationSeconds)));
+          if (now >= endTime || performance.now() > deadline) resolve();
+          else setTimeout(tick, 100);
+        };
+        tick();
+      });
+
+      cap.port.postMessage({ cmd: 'flush' });
+      await Promise.race([endPromise, new Promise((r) => setTimeout(r, 2000))]);
+    } finally {
+      // Motor stoppen en routing herstellen
+      try { transport.cancel(); transport.stop(); transport.seconds = 0; } catch { /* ignore */ }
+      this.disposeActiveSources();
+      this._isScheduled = false;
+      try { master.disconnect(); } catch { /* ignore */ }
+      master.toDestination();
+      try { cap.disconnect(); } catch { /* ignore */ }
+      try { silent.dispose(); } catch { /* ignore */ }
+    }
+
+    // Frame-geïndexeerde chunks in het exacte venster [startFrame, +totalFrames)
+    const buffer = new AudioBuffer({ numberOfChannels: 2, length: totalFrames, sampleRate });
+    const left = buffer.getChannelData(0);
+    const right = buffer.getChannelData(1);
+    let framesWritten = 0;
+    collected.forEach(({ f, L, R }) => {
+      const from = Math.max(0, startFrame - f);
+      const to = Math.min(L.length, startFrame + totalFrames - f);
+      if (to <= from) return;
+      const dest = f + from - startFrame;
+      left.set(L.subarray(from, to), dest);
+      right.set(R.subarray(from, to), dest);
+      framesWritten += to - from;
+    });
+    if (framesWritten < totalFrames * 0.9) {
+      throw new Error(
+        `Realtime capture onvolledig (${framesWritten}/${totalFrames} frames)`
+      );
+    }
+    logger.info('Realtime capture afgerond', { durationSeconds, sampleRate, framesWritten, totalFrames });
+    return buffer;
+  }
+
+  // ==========================================================================
   // PLAYHEAD / BEAT UPDATES
   // ==========================================================================
 

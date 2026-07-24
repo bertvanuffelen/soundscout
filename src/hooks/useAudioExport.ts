@@ -62,7 +62,7 @@ export function useAudioExport(
         // Solo meegeven (D6): export = wat je hoort — een gesoloed spoor
         // exporteert alleen dat spoor, gemute clips blijven stil.
         const { bpm, soloTrackIndex } = useTimelineStore.getState();
-        const { blob, missingSampleIds } = await exportToMp3(
+        const { blob, missingSampleIds, usedRealtimeFallback } = await exportToMp3(
           tracks, samples, { bitrate: 128, bpm, soloTrackIndex }, (p) => {
             setProgress(Math.round(p * 100));
           }
@@ -72,6 +72,9 @@ export function useAudioExport(
         // geluiden is een waarschuwing waard, geen stilzwijgen
         if (missingSampleIds.length > 0) {
           setWarning(i18n.t('stage.exportMissingSamples', { count: missingSampleIds.length }));
+        } else if (usedRealtimeFallback) {
+          // Fase 4: vangnet gebruikt — informeer eerlijk, geen fout
+          setWarning(i18n.t('stage.exportRealtimeFallback'));
         }
 
         // Trigger download

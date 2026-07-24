@@ -404,6 +404,7 @@
     "exportReadyMp3": "MP3 gedownload!",
     "exportReadyVideo": "Video gedownload!",
     "exportMissingSamples": "Let op: {{count}} geluid(en) konden niet worden geladen en ontbreken in de export.",
+    "exportRealtimeFallback": "Let op: de snelle export gaf een kwaliteitsprobleem; je compositie is daarom in realtime opnieuw opgenomen. Het resultaat klinkt precies zoals in de app.",
     "videoMissingImages": "Let op: {{count}} afbeelding(en) konden niet worden geladen (zwart beeld in de video).",
     "videoNoContent": "Geen clips op de tijdlijn en geen afbeeldingen",
     "videoNoImages": "Geen afbeeldingen konden worden geladen"

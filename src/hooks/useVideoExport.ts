@@ -121,6 +121,10 @@ export function useVideoExport(
         if (result.missingImages > 0) {
           warnings.push(i18n.t('stage.videoMissingImages', { count: result.missingImages }));
         }
+        if (result.usedRealtimeFallback) {
+          // Fase 4: realtime-vangnet gebruikt voor de audio — informatief
+          warnings.push(i18n.t('stage.exportRealtimeFallback'));
+        }
         if (warnings.length > 0) setVideoWarning(warnings.join(' '));
 
         // Trigger download

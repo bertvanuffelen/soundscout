@@ -13,6 +13,8 @@ import { logger } from './logger';
 import { generateClipEvents } from '../services/audioEvents';
 import { buildClipChain, scheduleFadeCurves } from '../services/audioGraph';
 import { pitchBufferService } from '../services/PitchBufferService';
+import { analyzeAudioBuffer, formatRenderAnalysis } from './renderValidation';
+import { audioService } from '../services/AudioService';
 
 // =============================================================================
 // Types
@@ -287,6 +289,45 @@ export interface Mp3ExportResult {
   blob: Blob;
   /** Tijdlijn-samples die niet geladen konden worden en dus in de MP3 ontbreken */
   missingSampleIds: string[];
+  /** True als de validator de offline render afkeurde en het realtime-vangnet is gebruikt */
+  usedRealtimeFallback: boolean;
+}
+
+/**
+ * Valideer een offline render en val zo nodig terug op de realtime capture
+ * (Fase 4). Geeft de definitieve buffer + of het vangnet is gebruikt.
+ */
+export async function validateOrCapture(
+  audioBuffer: AudioBuffer,
+  tracks: Track[],
+  samples: Sample[],
+  duration: number,
+  onProgress?: (fraction: number) => void
+): Promise<{ buffer: AudioBuffer; usedRealtimeFallback: boolean }> {
+  const analysis = analyzeAudioBuffer(audioBuffer);
+  logger.info('Export-validatie: ' + formatRenderAnalysis(analysis));
+  if (!analysis.suspicious) {
+    return { buffer: audioBuffer, usedRealtimeFallback: false };
+  }
+  logger.warn('Offline render verdacht — realtime-capture-vangnet wordt gebruikt', {
+    reasons: analysis.reasons,
+  });
+  try {
+    const captured = await audioService.captureRender(tracks, samples, duration, onProgress);
+    const capturedAnalysis = analyzeAudioBuffer(captured);
+    logger.info('Vangnet-validatie: ' + formatRenderAnalysis(capturedAnalysis));
+    // Nooit stilte exporteren: is de capture (vrijwel) stil terwijl de
+    // offline render dat niet was, dan is de opname mislukt — liever de
+    // verdachte render dan een leeg bestand.
+    if (capturedAnalysis.peak < 0.001 && analysis.peak >= 0.001) {
+      logger.warn('Realtime-vangnet leverde stilte — offline render tóch gebruikt');
+      return { buffer: audioBuffer, usedRealtimeFallback: false };
+    }
+    return { buffer: captured, usedRealtimeFallback: true };
+  } catch (err) {
+    logger.warn('Realtime-vangnet mislukt — offline render tóch gebruikt', err);
+    return { buffer: audioBuffer, usedRealtimeFallback: false };
+  }
 }
 
 /**
@@ -321,7 +362,7 @@ export async function exportToMp3(
   await ensurePitchBuffers(tracks, bufferMap);
 
   // Render offline
-  const audioBuffer = await renderOffline(
+  const renderedBuffer = await renderOffline(
     tracks,
     samples,
     duration,
@@ -330,15 +371,25 @@ export async function exportToMp3(
     onProgress
   );
 
+  // Fase 4: objectieve validatie + realtime-vangnet als de render verdacht is
+  const { buffer: audioBuffer, usedRealtimeFallback } = await validateOrCapture(
+    renderedBuffer, tracks, samples, duration,
+    (fraction) => onProgress?.(0.3 + fraction * 0.4)
+  );
+
   // Encode to MP3
   const mp3Blob = await encodeToMp3(audioBuffer, bitrate, onProgress, lamejsPromise);
 
-  logger.info('MP3 export complete', { size: mp3Blob.size, bitrate, missingSampleIds });
-  return { blob: mp3Blob, missingSampleIds };
+  logger.info('MP3 export complete', {
+    size: mp3Blob.size, bitrate, missingSampleIds, usedRealtimeFallback,
+  });
+  return { blob: mp3Blob, missingSampleIds, usedRealtimeFallback };
 }
 
 /**
- * Encode AudioBuffer to MP3 using lamejs.
+ * Encode AudioBuffer to MP3 — bij voorkeur in een Web Worker (audit #12:
+ * de encode van een lange compositie blokkeerde de UI), met de oude
+ * main-thread-encode als fallback.
  */
 async function encodeToMp3(
   audioBuffer: AudioBuffer,
@@ -347,50 +398,91 @@ async function encodeToMp3(
   lamejsPromise?: Promise<typeof import('@breezystack/lamejs')>
 ): Promise<Blob> {
   const channels = audioBuffer.numberOfChannels;
-  const sampleRate = audioBuffer.sampleRate;
-  const totalSamples = audioBuffer.length;
-
-  // Dynamically load lamejs (TP5-3: -169KB from initial bundle)
-  const { Mp3Encoder } = await (lamejsPromise ?? import('@breezystack/lamejs'));
-  const encoder = new Mp3Encoder(channels, sampleRate, kbps);
-  const mp3Chunks: ArrayBuffer[] = [];
-
-  // Get channel data
   const leftChannel = audioBuffer.getChannelData(0);
-  const rightChannel =
-    channels > 1 ? audioBuffer.getChannelData(1) : leftChannel;
-
-  // Convert to Int16
+  const rightChannel = channels > 1 ? audioBuffer.getChannelData(1) : leftChannel;
   const leftInt16 = floatTo16BitPCM(leftChannel);
   const rightInt16 = floatTo16BitPCM(rightChannel);
 
-  // Encode in chunks (1152 samples per MP3 frame)
+  try {
+    return await encodeInWorker(leftInt16, rightInt16, audioBuffer.sampleRate, kbps, onProgress);
+  } catch (err) {
+    logger.warn('MP3-worker niet beschikbaar — encode op de main thread', err);
+    return encodeOnMainThread(leftInt16, rightInt16, audioBuffer.sampleRate, kbps, onProgress, lamejsPromise);
+  }
+}
+
+function encodeInWorker(
+  left: Int16Array,
+  right: Int16Array,
+  sampleRate: number,
+  kbps: number,
+  onProgress?: ExportProgressCallback
+): Promise<Blob> {
+  return new Promise<Blob>((resolve, reject) => {
+    let worker: Worker;
+    try {
+      worker = new Worker(new URL('../workers/mp3EncoderWorker.ts', import.meta.url), {
+        type: 'module',
+      });
+    } catch (err) {
+      reject(err);
+      return;
+    }
+    const cleanup = () => worker.terminate();
+    worker.onerror = (event) => {
+      cleanup();
+      reject(event.error ?? new Error(event.message || 'MP3-worker-fout'));
+    };
+    worker.onmessage = (event) => {
+      const data = event.data as
+        | { type: 'progress'; processed: number; total: number }
+        | { type: 'done'; chunks: ArrayBuffer[] }
+        | { type: 'error'; message: string };
+      if (data.type === 'progress') {
+        // Progress from 70% to 95%
+        onProgress?.(0.7 + (data.processed / data.total) * 0.25);
+      } else if (data.type === 'done') {
+        cleanup();
+        onProgress?.(1);
+        resolve(new Blob(data.chunks, { type: 'audio/mp3' }));
+      } else {
+        cleanup();
+        reject(new Error(data.message));
+      }
+    };
+    // Bewust géén transferables: bij een worker-fout ná verzending moeten de
+    // arrays nog bruikbaar zijn voor de main-thread-fallback
+    worker.postMessage({ left, right, sampleRate, bitrate: kbps });
+  });
+}
+
+async function encodeOnMainThread(
+  leftInt16: Int16Array,
+  rightInt16: Int16Array,
+  sampleRate: number,
+  kbps: number,
+  onProgress?: ExportProgressCallback,
+  lamejsPromise?: Promise<typeof import('@breezystack/lamejs')>
+): Promise<Blob> {
+  const { Mp3Encoder } = await (lamejsPromise ?? import('@breezystack/lamejs'));
+  const encoder = new Mp3Encoder(2, sampleRate, kbps);
+  const mp3Chunks: ArrayBuffer[] = [];
+  const totalSamples = leftInt16.length;
   const blockSize = 1152;
-  let processedSamples = 0;
 
   for (let i = 0; i < totalSamples; i += blockSize) {
-    const leftChunk = leftInt16.subarray(i, Math.min(i + blockSize, totalSamples));
-    const rightChunk = rightInt16.subarray(i, Math.min(i + blockSize, totalSamples));
-
-    const mp3buf = encoder.encodeBuffer(leftChunk, rightChunk);
+    const end = Math.min(i + blockSize, totalSamples);
+    const mp3buf = encoder.encodeBuffer(leftInt16.subarray(i, end), rightInt16.subarray(i, end));
     if (mp3buf.length > 0) {
-      // Convert Int8Array to ArrayBuffer
       mp3Chunks.push(new Uint8Array(mp3buf).buffer);
     }
-
-    processedSamples += blockSize;
-    // Progress from 70% to 95%
-    onProgress?.(0.7 + (processedSamples / totalSamples) * 0.25);
+    onProgress?.(0.7 + (end / totalSamples) * 0.25);
   }
-
-  // Flush remaining data
   const mp3End = encoder.flush();
   if (mp3End.length > 0) {
     mp3Chunks.push(new Uint8Array(mp3End).buffer);
   }
-
   onProgress?.(1);
-
   return new Blob(mp3Chunks, { type: 'audio/mp3' });
 }
 

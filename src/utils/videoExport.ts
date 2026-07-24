@@ -15,7 +15,7 @@
 import type { Track, Sample, Section, Storyboard } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
 import { beatsToSeconds } from './audio';
-import { preloadBuffers, renderOffline, calculateTimelineDuration, findMissingSampleIds, ensurePitchBuffers } from './audioExport';
+import { preloadBuffers, renderOffline, calculateTimelineDuration, findMissingSampleIds, ensurePitchBuffers, validateOrCapture } from './audioExport';
 import { preloadImages, computeImageTimeline } from './canvasFrameRenderer';
 import { detectBestEngine } from './videoExportEngines';
 import type { EngineName } from './videoExportEngines';
@@ -54,6 +54,8 @@ export interface VideoExportResult {
   missingSampleIds: string[];
   /** Aantal storyboard-afbeeldingen dat niet geladen kon worden (zwart segment) */
   missingImages: number;
+  /** True als de audio via het realtime-vangnet is opgenomen (Fase 4) */
+  usedRealtimeFallback: boolean;
 }
 
 export type VideoProgressCallback = (percent: number) => void;
@@ -124,7 +126,7 @@ export async function exportToVideo(
   // Pitch-bakes vooraf (Fase 3) — video gebruikt dezelfde offline render
   await ensurePitchBuffers(tracks, bufferMap);
 
-  const audioBuffer = await renderOffline(
+  const renderedBuffer = await renderOffline(
     tracks,
     samples,
     duration,
@@ -134,6 +136,12 @@ export async function exportToVideo(
       // renderOffline progress: 0.3–0.7 → map naar 10–25%
       onProgress?.(10 + Math.round((p - 0.3) * 37.5));
     },
+  );
+
+  // Fase 4: validatie + realtime-vangnet — video gebruikt dezelfde audio
+  const { buffer: audioBuffer, usedRealtimeFallback } = await validateOrCapture(
+    renderedBuffer, tracks, samples, duration,
+    (fraction) => onProgress?.(10 + Math.round(fraction * 15)),
   );
 
   onProgress?.(25);
@@ -195,5 +203,6 @@ export async function exportToVideo(
     engineName: engine.name,
     missingSampleIds,
     missingImages,
+    usedRealtimeFallback,
   };
 }

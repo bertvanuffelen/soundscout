@@ -404,6 +404,7 @@
     "exportReadyMp3": "MP3 downloaded!",
     "exportReadyVideo": "Video downloaded!",
     "exportMissingSamples": "Note: {{count}} sound(s) could not be loaded and are missing from the export.",
+    "exportRealtimeFallback": "Note: the fast export had a quality issue, so your composition was re-recorded in real time. The result sounds exactly like in the app.",
     "videoMissingImages": "Note: {{count}} image(s) could not be loaded (black frame in the video).",
     "videoNoContent": "No clips on the timeline and no images",
     "videoNoImages": "No images could be loaded"
