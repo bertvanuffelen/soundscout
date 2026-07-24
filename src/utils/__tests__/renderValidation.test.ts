@@ -25,7 +25,7 @@ function injectClick(data: Float32Array, tSec: number, size = 0.8): void {
   }
 }
 
-describe('analyzeRender', () => {
+describe('analyzeRender — herkalibratie 24-7 (alleen echte glitch-signaturen)', () => {
   it('keurt een schone sinus goed', () => {
     const result = analyzeRender({ channelData: [cleanSine(2)], sampleRate: SR });
     expect(result.suspicious).toBe(false);
@@ -35,52 +35,93 @@ describe('analyzeRender', () => {
     expect(result.reasons).toEqual([]);
   });
 
-  it('telt losse kliks maar keurt 1-2 inherente korrelklikjes niet af', () => {
+  it('telt losse kliks informatief, zonder af te keuren', () => {
     const data = cleanSine(2);
-    // realistische korrelklikjes: sprong ~0.5 (zoals gemeten in onderzoek §15.2)
     injectClick(data, 0.5, 0.25);
     injectClick(data, 1.3, 0.25);
     const result = analyzeRender({ channelData: [data], sampleRate: SR });
     expect(result.clickCount).toBeGreaterThan(0);
     expect(result.clickTrain).toBe(false);
-    // een paar losse klikjes (inherent granulair artefact) is geen afkeuring
+    expect(result.suspicious).toBe(false);
+  });
+
+  it('keurt VEEL onregelmatige transiënten NIET af (drums zijn muziek, geen glitch)', () => {
+    // Nabootsing van Berts eerste echte export: honderden sprongen 0.35-0.55
+    // op onregelmatige muzikale posities — géén afkeuring waard
+    // (zachte drager zodat klik+draaggolf onder de extreme-drempel blijft)
+    const data = cleanSine(10, 0.2);
+    let t = 0.13;
+    const irregular = [0.31, 0.17, 0.23, 0.41, 0.19, 0.29, 0.37];
+    for (let i = 0; t < 9.5; i++) {
+      injectClick(data, t, 0.27); // sprong ~0.54
+      t += irregular[i % irregular.length];
+    }
+    const result = analyzeRender({ channelData: [data], sampleRate: SR });
+    expect(result.clickCount).toBeGreaterThan(20);
+    expect(result.clickTrain).toBe(false);
+    expect(result.suspicious).toBe(false);
+  });
+
+  it('keurt een REGELMATIG drumritme niet af (16e noten @120bpm = 125ms)', () => {
+    const data = cleanSine(4);
+    for (let t = 0.2; t < 3.8; t += 0.125) {
+      injectClick(data, t, 0.3);
+    }
+    const result = analyzeRender({ channelData: [data], sampleRate: SR });
+    // 8 Hz is muzikaal tempo-gebied, buiten het korrelbereik (9-50 Hz)
+    expect(result.clickTrain).toBe(false);
     expect(result.suspicious).toBe(false);
   });
 
   it('herkent een 12Hz-klik-trein (PitchShift-signatuur)', () => {
     const data = cleanSine(2);
     for (let t = 0.2; t < 1.8; t += 1 / 12) {
-      injectClick(data, t, 0.6);
+      injectClick(data, t, 0.3);
     }
     const result = analyzeRender({ channelData: [data], sampleRate: SR });
     expect(result.clickTrain).toBe(true);
     expect(result.suspicious).toBe(true);
     expect(result.clickTrainIntervalSec).not.toBeNull();
-    // interval ~1/12s → frequentie ~12Hz
     expect(1 / result.clickTrainIntervalSec!).toBeGreaterThan(9);
     expect(1 / result.clickTrainIntervalSec!).toBeLessThan(15);
     expect(result.reasons.join(' ')).toContain('klik-trein');
   });
 
-  it('keurt af op extreem veel kliks, ook zonder regelmaat', () => {
-    const data = cleanSine(3);
-    // 25 kliks op onregelmatige (niet-treinvormige) posities
-    const irregular = [0.11, 0.13, 0.45, 0.46, 0.9, 1.5, 1.52, 1.9, 2.0, 2.05,
-      2.3, 2.31, 2.5, 2.52, 2.7, 2.71, 2.8, 2.81, 2.85, 2.86, 2.9, 2.91, 2.95, 2.96, 2.98];
-    irregular.forEach((t) => injectClick(data, t, 0.7));
+  it('herkent óók een korte 12Hz-passage van ~0.4s (zoals Berts glitch-bestand)', () => {
+    // Test-23-7 had 5 klik-clusters op 2.304/2.387/2.471/2.554/2.638s
+    const data = cleanSine(5);
+    [2.304, 2.387, 2.471, 2.554, 2.638].forEach((t) => injectClick(data, t, 0.35));
+    // plus wat losse muzikale transiënten elders — mogen niet storen
+    [0.5, 1.2, 3.9, 4.4].forEach((t) => injectClick(data, t, 0.25));
     const result = analyzeRender({ channelData: [data], sampleRate: SR });
-    expect(result.clickCount).toBeGreaterThanOrEqual(20);
+    expect(result.clickTrain).toBe(true);
     expect(result.suspicious).toBe(true);
   });
 
-  it('keurt af op een extreme sprong (catastrofale modus, amplitude ~2x)', () => {
+  it('keurt af op VEEL extreme sprongen (catastrofale modus, amplitude ~2x)', () => {
+    const data = cleanSine(2);
+    // 12 extreme sprongen ≥0.9 op onregelmatige posities
+    const times = [0.2, 0.33, 0.51, 0.68, 0.79, 0.97, 1.14, 1.29, 1.42, 1.61, 1.75, 1.88];
+    times.forEach((t) => {
+      const i = Math.round(t * SR);
+      data[i] = 0.95;
+      data[i + 1] = -0.95;
+    });
+    const result = analyzeRender({ channelData: [data], sampleRate: SR });
+    expect(result.extremeJumpCount).toBeGreaterThanOrEqual(10);
+    expect(result.suspicious).toBe(true);
+    expect(result.reasons.join(' ')).toContain('extreme sprongen');
+  });
+
+  it('keurt één losse extreme sprong NIET af (kan hard muzikaal materiaal zijn)', () => {
     const data = cleanSine(1);
     const i = Math.round(0.5 * SR);
     data[i] = 0.95;
     data[i + 1] = -0.95; // sprong van 1.9
     const result = analyzeRender({ channelData: [data], sampleRate: SR });
     expect(result.maxJump).toBeGreaterThan(1.5);
-    expect(result.suspicious).toBe(true);
+    expect(result.extremeJumpCount).toBeLessThan(10);
+    expect(result.suspicious).toBe(false);
   });
 
   it('meet peak en bijna-clipping', () => {
@@ -88,7 +129,6 @@ describe('analyzeRender', () => {
     const result = analyzeRender({ channelData: [data], sampleRate: SR });
     expect(result.peak).toBeGreaterThan(0.98);
     expect(result.nearClipSamples).toBeGreaterThan(0);
-    // luid maar continu → niet verdacht
     expect(result.suspicious).toBe(false);
   });
 
@@ -104,7 +144,7 @@ describe('analyzeRender', () => {
     const clean = analyzeRender({ channelData: [cleanSine(1)], sampleRate: SR });
     expect(formatRenderAnalysis(clean)).toContain('schoon');
     const data = cleanSine(2);
-    for (let t = 0.2; t < 1.8; t += 1 / 12) injectClick(data, t, 0.6);
+    for (let t = 0.2; t < 1.8; t += 1 / 12) injectClick(data, t, 0.3);
     const bad = analyzeRender({ channelData: [data], sampleRate: SR });
     expect(formatRenderAnalysis(bad)).toContain('VERDACHT');
   });

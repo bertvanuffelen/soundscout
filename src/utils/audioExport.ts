@@ -285,6 +285,17 @@ export async function validateOrCapture(
       logger.warn('Realtime-vangnet leverde stilte — offline render tóch gebruikt');
       return { buffer: audioBuffer, usedRealtimeFallback: false };
     }
+    // Overeenstemmings-check (herkalibratie 24-7): flagt de vangnet-opname
+    // hetzélfde profiel, dan zijn de vlaggen de muziek zelf — twee
+    // onafhankelijke motoren die overeenstemmen zijn samen het bewijs dat
+    // de render correct is. Gebruik dan de deterministische offline render
+    // en val de gebruiker niet lastig met een waarschuwing.
+    if (capturedAnalysis.suspicious) {
+      logger.info(
+        'Offline render en realtime opname stemmen overeen — vlaggen zijn muzikaal, offline render gebruikt'
+      );
+      return { buffer: audioBuffer, usedRealtimeFallback: false };
+    }
     return { buffer: captured, usedRealtimeFallback: true };
   } catch (err) {
     logger.warn('Realtime-vangnet mislukt — offline render tóch gebruikt', err);

@@ -328,6 +328,11 @@ Bert testte verder (app steeds stabieler) en parkeerde bewust mobiel (één grot
 
 ## Sessielog
 
+### Sessie — 2026-07-24 (ochtend) — Validator-herkalibratie na vals alarm
+- Berts eerste echte export triggerde onterecht het realtime-vangnet: 523 "kliks" bleken drum-transiënten (de vangnet-opname van dezelfde muziek gaf 483 — twee motoren, zelfde profiel = muziek, geen glitch).
+- Herkalibratie `renderValidation.ts`: kale klik-teller geschrapt als afkeurcriterium; trein-detectie nu lokaal én strikt in het korrelbereik 0.02–0.11 s (muzikale ritmes vallen erbuiten); catastrofale modus = ≥10 extreme sprongen ≥0.9. Overeenstemmings-check in `validateOrCapture`: flagt de capture hetzelfde → offline render gebruiken, geen melding.
+- Geverifieerd op Berts echte bestanden: Test-23-7 (glitch) → nog steeds VERDACHT (trein @12.0 Hz); Test-24-7 (schoon) → goedgekeurd. Zware testcompositie exporteert weer in ~1,3 s zonder melding. 298 tests groen.
+
 ### Sessie — 2026-07-24 (vervolg) — Audio Engine v2 volledig geïmplementeerd
 - **Alle fasen 0–5 van `docs/audio/PLAN-AUDIO-ENGINE-V2.md` gebouwd, per fase gecommit en browser-geverifieerd** (tsc + 295 tests groen per fase; backup-tag `backup-pre-audio-engine-v2`):
   - F0 `renderValidation.ts` (klik/klik-trein-metriek, 8 tests) · F1 gedeelde motor (`audioEvents` + `audioGraph`, 12 tests; export = live: loop-fades per iteratie, solo/mute, buses, verse keten per event, galmstaart klinkt live uit) · F2 deterministische reverb-IR's (`ReverbIRService`, exports bit-identiek) · F3 pitch-prebake (`PitchBufferService` + signalsmith-stretch; +12 = exact 880 Hz, 0 kliks — was 366–16k met PitchShift) · F4 export-validator + realtime-capture-vangnet + MP3-encode in Web Worker · F5 opruiming (exportToWav + audiobuffer-to-wav weg, dood `pan`-veld weg, preload-hergebruik) + docs (CLAUDE.md, KENNISBANK §12, audit-status).
