@@ -15,7 +15,7 @@
 import type { Track, Sample, Section, Storyboard } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
 import { beatsToSeconds } from './audio';
-import { preloadBuffers, renderOffline, calculateTimelineDuration, findMissingSampleIds } from './audioExport';
+import { preloadBuffers, renderOffline, calculateTimelineDuration, findMissingSampleIds, ensurePitchBuffers } from './audioExport';
 import { preloadImages, computeImageTimeline } from './canvasFrameRenderer';
 import { detectBestEngine } from './videoExportEngines';
 import type { EngineName } from './videoExportEngines';
@@ -121,6 +121,8 @@ export async function exportToVideo(
   });
   // Ontbrekende geluiden zichtbaar maken i.p.v. stil weglaten (exports-audit #1)
   const missingSampleIds = findMissingSampleIds(tracks, bufferMap);
+  // Pitch-bakes vooraf (Fase 3) — video gebruikt dezelfde offline render
+  await ensurePitchBuffers(tracks, bufferMap);
 
   const audioBuffer = await renderOffline(
     tracks,

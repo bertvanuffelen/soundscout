@@ -34,6 +34,7 @@ import {
   scheduleFadeCurves,
   scheduleFadeCurvesAtOffset,
 } from './audioGraph';
+import { pitchBufferService } from './PitchBufferService';
 
 type BeatUpdateCallback = (beat: number) => void;
 type PlaybackEndCallback = () => void;
@@ -369,17 +370,19 @@ export class AudioService {
 
   // Preview effect chain (for EffectsModal preview)
   private previewChain: { player: Tone.Player; nodes: Tone.ToneAudioNode[] } | null = null;
+  // Race-guard: alleen de laatst gestarte preview mag gaan spelen (na bake-await)
+  private previewToken: object | null = null;
 
   /**
    * Play a sample region with effects applied (for EffectsModal preview).
    * Creates a temporary isolated player with pitch, reverb, and fade.
    */
-  playSampleWithEffects(
+  async playSampleWithEffects(
     sampleId: string,
     offsetSeconds: number,
     durationSeconds: number,
     effects: { pitch: number; reverb: number; fadeIn: number; fadeOut: number },
-  ): void {
+  ): Promise<void> {
     // Stop any currently playing preview before starting a new one
     this.stopAllSamples();
     this.stopPreviewWithEffects();
@@ -390,10 +393,24 @@ export class AudioService {
       return;
     }
 
+    // Pitch als gebakken buffer (Fase 3): de preview klinkt daarmee exact
+    // als de timeline én de export. Bake is snel (~50-100 ms) en gecachet.
+    const previewToken = {};
+    this.previewToken = previewToken;
+    if (effects.pitch !== 0) {
+      const source = buffer.get() as AudioBuffer | undefined;
+      if (source) {
+        await pitchBufferService.bake(sampleId, effects.pitch, source);
+      }
+      // Klikte de gebruiker intussen een nieuwe preview aan? Dan afbreken.
+      if (this.previewToken !== previewToken) return;
+    }
+    const resolved = pitchBufferService.resolveForPlayback(sampleId, effects, buffer);
+
     // Zelfde gedeelde keten als de timeline en de export (audioGraph):
-    // player → [pitchShift] → [reverb] → [fadeGain] → volume → destination
-    const chain = buildClipChain(0, effects);
-    const player = new Tone.Player(buffer);
+    // player → [pitchShift-fallback] → [reverb] → [fadeGain] → volume → destination
+    const chain = buildClipChain(0, resolved.effects);
+    const player = new Tone.Player(resolved.buffer);
     player.connect(chain.input);
     chain.output.connect(Tone.getDestination());
 
@@ -568,7 +585,7 @@ export class AudioService {
    * fadeGain node (if applicable, for external fade curve scheduling).
    */
   private createOnDemandPlayer(
-    buffer: Tone.ToneAudioBuffer,
+    buffer: Tone.ToneAudioBuffer | AudioBuffer,
     volumeDb: number,
     trackIndex: number,
     effects?: ClipEffectsConfig,
@@ -640,6 +657,15 @@ export class AudioService {
     // and sync mute/solo
     this.updateTrackBuses(tracks);
 
+    // Pitch-bakes klaarzetten (Fase 3, fire-and-forget): de Part-callback
+    // lost per event op, dus zodra een bake klaar is gebruiken volgende
+    // events hem vanzelf — geen reschedule nodig. Eerste afspeelbeurt kan
+    // nog op de PitchShift-fallback lopen; de export wacht wél op de bakes.
+    void pitchBufferService.ensureForTracks(tracks, (sampleId) => {
+      const buf = this.buffers.get(sampleId);
+      return buf?.loaded ? (buf.get() as AudioBuffer | undefined) : undefined;
+    });
+
     // Gedeelde event-generatie (Audio Engine v2): identiek aan wat de export
     // gebruikt — loop-iteraties, per-iteratie-fades, mute, volumes.
     const generated = generateClipEvents(tracks, samples, {
@@ -668,9 +694,15 @@ export class AudioService {
         const buffer = this.buffers.get(event.sampleId);
         if (!buffer) return;
 
+        // Pitch als gebakken buffer (Fase 3): is er een Signalsmith-bake in
+        // de cache, dan speelt die zonder PitchShift-node; anders fallback.
+        const resolved = pitchBufferService.resolveForPlayback(
+          event.sampleId, event.effects, buffer
+        );
+
         // Create on-demand player with effects, routed to track bus
         const { player, fadeGain } = this.createOnDemandPlayer(
-          buffer, event.volumeDb, event.trackIndex, event.effects
+          resolved.buffer, event.volumeDb, event.trackIndex, resolved.effects
         );
 
         // Schedule fade curves on the fadeGain node (#79) — gedeelde planner
@@ -845,9 +877,14 @@ export class AudioService {
       const buffer = this.buffers.get(clip.sampleId);
       if (!buffer) return;
 
+      // Pitch als gebakken buffer (Fase 3) — zelfde resolutie als de Part
+      const resolved = pitchBufferService.resolveForPlayback(
+        clip.sampleId, effects, buffer
+      );
+
       // Create on-demand player routed to track bus
       const { player, fadeGain } = this.createOnDemandPlayer(
-        buffer, volumeDb, trackIndex, effects
+        resolved.buffer, volumeDb, trackIndex, resolved.effects
       );
 
       // Schedule fade curves for seek position (#79) — gedeelde planner
@@ -1212,6 +1249,8 @@ export class AudioService {
     if (disposedCount > 0) {
       logger.info(`Disposed ${disposedCount} unused audio buffers`);
     }
+    // Pitch-bakes van verdwenen samples ook opruimen (Fase 3)
+    pitchBufferService.prune(activeSampleIds);
   }
 
   dispose(): void {

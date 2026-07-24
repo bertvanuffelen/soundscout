@@ -12,6 +12,7 @@ import { DEFAULT_BPM } from '../constants/config';
 import { logger } from './logger';
 import { generateClipEvents } from '../services/audioEvents';
 import { buildClipChain, scheduleFadeCurves } from '../services/audioGraph';
+import { pitchBufferService } from '../services/PitchBufferService';
 
 // =============================================================================
 // Types
@@ -77,6 +78,21 @@ export async function preloadBuffers(
   );
 
   return { bufferMap, failedIds };
+}
+
+/**
+ * Bak alle pitch-buffers voor deze tijdlijn (Fase 3). VÓÓR renderOffline
+ * awaiten: de export mag nooit op de PitchShift-fallback renderen zolang
+ * Signalsmith beschikbaar is.
+ */
+export async function ensurePitchBuffers(
+  tracks: Track[],
+  bufferMap: Map<string, Tone.ToneAudioBuffer>
+): Promise<void> {
+  await pitchBufferService.ensureForTracks(tracks, (sampleId) => {
+    const buffer = bufferMap.get(sampleId);
+    return buffer?.loaded ? (buffer.get() as AudioBuffer | undefined) : undefined;
+  });
 }
 
 /**
@@ -179,10 +195,17 @@ export async function renderOffline(
         const buffer = bufferMap.get(event.sampleId);
         if (!buffer) return;
 
-        // Verse keten + player per event (gedeelde builder)
-        const chain = buildClipChain(event.volumeDb, event.effects);
+        // Pitch als gebakken buffer (Fase 3) — exportflows hebben de bakes
+        // vooraf ge-await via ensurePitchBuffers, dus dit is vrijwel altijd
+        // de Signalsmith-buffer; anders PitchShift-fallback (zoals live).
+        const resolved = pitchBufferService.resolveForPlayback(
+          event.sampleId, event.effects, buffer
+        );
 
-        const player = new Tone.Player(buffer);
+        // Verse keten + player per event (gedeelde builder)
+        const chain = buildClipChain(event.volumeDb, resolved.effects);
+
+        const player = new Tone.Player(resolved.buffer);
         player.connect(chain.input);
         chain.output.connect(trackBuses[event.trackIndex] ?? masterBus);
 
@@ -235,8 +258,9 @@ export async function exportToWav(
     throw new Error('No clips on timeline');
   }
 
-  // Preload all buffers
+  // Preload all buffers + pitch-bakes
   const { bufferMap } = await preloadBuffers(samples, onProgress);
+  await ensurePitchBuffers(tracks, bufferMap);
 
   // Render offline
   const audioBuffer = await renderOffline(
@@ -291,9 +315,10 @@ export async function exportToMp3(
     throw new Error('No clips on timeline');
   }
 
-  // Preload all buffers
+  // Preload all buffers + pitch-bakes
   const { bufferMap } = await preloadBuffers(samples, onProgress);
   const missingSampleIds = findMissingSampleIds(tracks, bufferMap);
+  await ensurePitchBuffers(tracks, bufferMap);
 
   // Render offline
   const audioBuffer = await renderOffline(
