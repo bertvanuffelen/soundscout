@@ -29,7 +29,8 @@
     "by": "Door",
     "location": "Locatie",
     "zoom": "Vergroten",
-    "saved": "Opgeslagen"
+    "saved": "Opgeslagen",
+    "dateLocale": "nl-NL"
   },
   "language": {
     "nl": "Nederlands",
@@ -1563,7 +1564,8 @@
       "tabSubmitted": "Ingeleverd ({{count}})",
       "tabWip": "In bewerking ({{count}})",
       "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd.",
-      "newCount": "{{count}} nieuw"
+      "newCount": "{{count}} nieuw",
+      "retentionWarning": "Let op: {{count}} inzending(en) van deze klas worden vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren."
     },
     "presentation": {
       "title": "Presentatiemodus",
@@ -1895,9 +1897,9 @@
     "title": "Privacy & gegevens",
     "button": "Privacy",
     "dataTitle": "Hoe SoundScout je gegevens gebruikt",
-    "dataText": "Composities die je maakt worden opgeslagen op je eigen apparaat (in de browser). Er wordt geen account aangemaakt en er worden geen persoonlijke gegevens verzameld. Als je een compositie online bewaart met een bewaarcode, wordt deze tijdelijk opgeslagen in de cloud en na 60 dagen inactiviteit automatisch verwijderd.",
+    "dataText": "Composities die je maakt worden opgeslagen op je eigen apparaat (in de browser). Er wordt geen account aangemaakt en er worden geen persoonlijke gegevens verzameld. Als je een compositie online bewaart met een bewaarcode, wordt deze tijdelijk in de cloud opgeslagen en na 60 dagen inactiviteit automatisch en definitief verwijderd. Werk dat je bij een docent inlevert, blijft maximaal één schooljaar bewaard en wordt daarna automatisch verwijderd; je docent kan het ook eerder verwijderen. Gedeelde links en klasalbums verlopen na 30 dagen.",
     "classCodeTitle": "Klascode & docent",
-    "classCodeText": "Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld.",
+    "classCodeText": "Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd.",
     "cookiesTitle": "Cookies & tracking",
     "cookiesText": "SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities, je taalvoorkeur en — als je een compositie online bewaart of inlevert — je bewaarcode, zodat je je werk kunt terugvinden. Er worden geen gegevens gedeeld met derden.",
     "contact": "Vragen over privacy? Neem contact op via <mail>bvanuffelen@gmail.com</mail>."

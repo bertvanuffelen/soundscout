@@ -6,13 +6,14 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, Clock, Check } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, Clock, Check, AlertTriangle } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { updateAssignmentDuration, submissionMatchesAssignment } from '../../lib/assignments';
+import { getClassDeletionWarning } from '../../lib/retention';
 import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
@@ -329,6 +330,23 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     const newCount = submitted.filter((s) => getReviewStatus(s) === 'new').length;
     return { submitted, workInProgress, newCount };
   }, [submissions]);
+
+  // AVG-bewaartermijn: inzendingen worden na 1 schooljaar automatisch
+  // verwijderd (server-side, migratie 035). Waarschuw de docent 30 dagen
+  // vooraf zodat werk dat bewaard moet blijven geëxporteerd/gedeeld kan worden.
+  const deletionWarning = useMemo(
+    () => getClassDeletionWarning(submissions),
+    [submissions]
+  );
+  const formatRetentionDate = useCallback(
+    (date: Date) =>
+      new Intl.DateTimeFormat(t('common.dateLocale', { defaultValue: 'nl-NL' }), {
+        day: 'numeric',
+        month: 'long',
+        year: 'numeric',
+      }).format(date),
+    [t]
+  );
 
   // Inzendingen die bij de actieve opdracht horen (I8): drijft de
   // Presenteren-keuze "actieve opdracht" vs "alle composities".
@@ -838,6 +856,20 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                 variant="inline"
                 label={t('teacher.guide.sections.feedback-tips.title')}
               />
+            </p>
+          </div>
+        )}
+
+        {/* AVG-bewaartermijn-waarschuwing: inzendingen worden na 1 schooljaar
+            automatisch verwijderd; 30 dagen vooraf waarschuwen */}
+        {!loading && deletionWarning && (
+          <div className="mb-6 bg-warning-50 border border-warning-200 text-warning-800 rounded-xl p-4 flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 shrink-0 mt-0.5 text-warning-600" aria-hidden="true" />
+            <p className="text-sm leading-relaxed">
+              {t('teacher.classDetail.retentionWarning', {
+                count: deletionWarning.count,
+                date: formatRetentionDate(deletionWarning.date),
+              })}
             </p>
           </div>
         )}

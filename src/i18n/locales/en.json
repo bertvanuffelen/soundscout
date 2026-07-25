@@ -29,7 +29,8 @@
     "by": "By",
     "location": "Location",
     "zoom": "Zoom in",
-    "saved": "Saved"
+    "saved": "Saved",
+    "dateLocale": "en-GB"
   },
   "language": {
     "nl": "Nederlands",
@@ -1563,7 +1564,8 @@
       "tabSubmitted": "Submitted ({{count}})",
       "tabWip": "In progress ({{count}})",
       "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet.",
-      "newCount": "{{count}} new"
+      "newCount": "{{count}} new",
+      "retentionWarning": "Note: {{count}} submission(s) from this class will be automatically deleted from {{date}} (retention: one school year after last activity). Export or share any work you want to keep."
     },
     "presentation": {
       "title": "Presentation mode",
@@ -1895,9 +1897,9 @@
     "title": "Privacy & data",
     "button": "Privacy",
     "dataTitle": "How SoundScout uses your data",
-    "dataText": "Compositions you create are stored on your own device (in the browser). No account is created and no personal data is collected. If you save a composition online with a save code, it is temporarily stored in the cloud and automatically deleted after 60 days of inactivity.",
+    "dataText": "Compositions you make are stored on your own device (in the browser). No account is created and no personal data is collected. If you save a composition online with a save code, it's stored temporarily in the cloud and automatically and permanently deleted after 60 days of inactivity. Work you submit to a teacher is kept for at most one school year and then deleted automatically; your teacher can also delete it sooner. Shared links and class albums expire after 30 days.",
     "classCodeTitle": "Class code & teacher",
-    "classCodeText": "When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself.",
+    "classCodeText": "When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself. Submitted work is kept for at most one school year and then deleted automatically.",
     "cookiesTitle": "Cookies & tracking",
     "cookiesText": "SoundScout does not use tracking cookies or advertisements. We only count anonymously how often the app is used (daily totals, without personal data, without cookies and without third parties); your browser's 'Do Not Track' setting is respected. The only local storage is for your compositions, your language preference and — if you save or submit a composition online — your save code, so you can find your work again. No data is shared with third parties.",
     "contact": "Questions about privacy? Contact us at <mail>bvanuffelen@gmail.com</mail>."
