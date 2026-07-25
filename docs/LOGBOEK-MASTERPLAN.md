@@ -328,6 +328,14 @@ Bert testte verder (app steeds stabieler) en parkeerde bewust mobiel (één grot
 
 ## Sessielog
 
+### Sessie — 2026-07-25 — Deploy ss-dev, AVG-bewaartermijn live, animatie-CSP, migratie 030
+- **AVG-bewaartermijn nu écht actief.** Bert zette pg_cron aan + draaide migratie 035; cron `soundscout-cleanup` staat gepland (dagelijks 03:00), eerste run ruimde 1120 verlopen losse bewaarcodes op — géén klaswerk aangeraakt (klas-inzendingen hebben altijd een class_id → vallen onder de 365-dagen-regel, niet de 60-dagen-regel).
+- **Supabase auth-URL's** gedocumenteerd (`HANDLEIDING-BEHEER.md`): Redirect-allow-list per domein + Site URL = soundscout.nl. Bert heeft de allow-list gezet; reset-mail-test staat nog open.
+- **Verse build gemaakt (worktree, 16 commits vóór op main) + geüpload naar ss-dev.** Grote zorg opgelost: de server respecteert de `.htaccess`-CSP nu wél (iframe laadt).
+- **Uitleg-animatie CSP-schoon gemaakt.** Was een zelfstandig bestand (inline script + data:-fonts) → botste met `script-src 'self'` / `font-src 'self'`. Nu: extern JS-bestand + Nunito via Google Fonts (app whitelistet gstatic al) + scoped `.htaccess` weg. HTML 98KB→14KB, tweetaligheid ongewijzigd, browser-geverifieerd (nl+en). **Animatie-skill bijgewerkt**: nieuw `scripts/maak-site-variant.py`, SKILL.md-sectie "Embedden in de app zelf", native React als voorkeursroute.
+- **Migratie 030 geverifieerd**: functie `get_peer_stars_for_class` bestaat (gedraaid); de "Geen toegang"-fout in de SQL Editor is de bewuste eigenaar-check die correct werkt.
+- **Voor Bert (morgen):** reset-mail end-to-end testen (Site URL + verse mail), hertest-lijst doorlopen (incl. animatie live checken), daarna docentenpagina NL+EN + leskaarten/thema's.
+
 ### Sessie — 2026-07-24 — Berts luistertest GESLAAGD ✅
 - Bert testte de export met effecten (pitch ±12, reverb, loops+fades) én een bewust keiharde mix, als MP3 én video: klinkt goed. Audio Engine v2 + master-limiter zijn daarmee ook op gehoor bevestigd. Vastgelegd in CLAUDE.md, PLAN-AUDIO-ENGINE-V2 (status), Notion (taak Afgerond + Stand-blok).
 
