@@ -112,28 +112,32 @@ DELETE FROM rate_limits WHERE key LIKE '%<klascode-of-sessie>%';
 > vind je het terug) zie het losse naslag: `docs/BEWAREN-VAN-COMPOSITIES.md`.
 > Hieronder de technische feiten.
 
-**Stand 19-7: er is geen automatische opschoning.** Goed om te weten voordat je
-hierover iets aan scholen belooft:
+**Stand 24-7: er is nu WÉL automatische opschoning (migratie 035).** De
+privacy-belofte wordt echt uitgevoerd i.p.v. alleen de toegang te blokkeren.
 
 | Actie | Wat gebeurt er echt |
 |---|---|
 | Klas verwijderen | Harde delete. Alle inzendingen van die klas gaan cascade mee (migratie 009). Direct weg, geen prullenbak. |
-| Praatplaat verwijderen | Harde delete. De inzendingen van díe praatplaat gaan mee (migratie 009 — de comment in migratie 005 zegt iets anders en is achterhaald). |
-| Opdracht uit historie halen | Alleen de `class_assignments`-regel. Leerlingwerk blijft staan. |
-| Bewaarcode "verlopen" na 60 dagen | **Verwijdert niets.** Het is een filter in de RPC's (`AND last_updated_at > NOW() - INTERVAL '60 days'`): de code werkt niet meer, de rij blijft onbeperkt bestaan. |
-| Deel-/albumcode "verlopen" na 30 dagen | Idem — de link werkt niet meer, de rij blijft. |
+| Praatplaat verwijderen | Harde delete. De inzendingen van díe praatplaat gaan mee (migratie 009). |
+| Opdracht uit historie halen | Alleen de `class_assignments`-regel. Leerlingwerk blijft staan (tot de automatische termijn). |
+| **Docent-inzending, 1 schooljaar na laatste activiteit** | **Automatisch verwijderd** (migratie 035, dagelijks 03:00). Alléén de inzending — klas/opdracht/code blijven. Docent krijgt 30 dagen vooraf een waarschuwingsbanner in het dashboard. |
+| **Losse bewaarcode/deellink zonder klas, 60 dagen inactiviteit** | **Automatisch verwijderd** (migratie 035). |
+| Bewaarcode "verlopen" na 60 dagen (toegang) | De code werkt niet meer (RPC-filter). Vanaf migratie 035 wordt de rij daarna ook echt verwijderd. |
+| Deel-/albumcode "verlopen" na 30 dagen | De link werkt niet meer; migratie 035 wist de vervallen code (rij blijft als het een geldige inzending is). |
 
-Er draait **geen** pg_cron of scheduled function. De opruim-queries hierboven in
-deze sectie zijn handmatig en worden nu door niemand periodiek uitgevoerd.
+**De opruimtaak:** `cleanup_expired_data()` (SECURITY DEFINER) draait via
+**pg_cron** elke dag om 03:00. Handmatig testen: `SELECT public.cleanup_expired_data();`
+(geeft een telling terug). **Eenmalig aanzetten:** pg_cron moet aanstaan in het
+Supabase-dashboard (Database → Extensions → pg_cron → Enable) vóór migratie 035
+draait.
 
 Let daarnaast op de **backups** van Supabase: ook een harde delete leeft daarin
-door tot de backup-retentie van je abonnement verlopen is (na te kijken in het
-Supabase-dashboard onder Database → Backups).
+door tot de backup-retentie van je abonnement verlopen is (Database → Backups).
+Voor volledige AVG-wissing rouleren die backups vanzelf uit.
 
-**Open vraag** (staat als taak in Notion): willen we een echte bewaartermijn —
-bijvoorbeeld leerlingwerk automatisch opruimen na X maanden inactiviteit — en
-sluit onze privacytekst daarop aan? Het gaat om werk van kinderen met hun naam
-erbij, dus dit is een AVG-vraag en niet alleen een opruimkwestie.
+**Vervolgstap (P2, staat in Notion):** de docent-waarschuwing gaat nu via een
+dashboardbanner. Een e-mailwaarschuwing (30 dagen vooraf) vergt een Supabase
+Edge Function + mailprovider (Resend/Postmark) — EmailJS werkt alleen client-side.
 
 ---
 

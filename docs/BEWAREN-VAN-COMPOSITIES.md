@@ -16,15 +16,18 @@
 |---|---|---|---|
 | **Lokaal** ("Mijn composities") | In de browser (localStorage) van dát apparaat | Automatisch, op hetzelfde apparaat | Blijft, maar **max. 10** — de oudste verdwijnt; weg bij browser-opschoning |
 | **Online bewaarcode** | Onze database (Supabase) | De **6-tekens bewaarcode** | Werkt tot **60 dagen** ná de laatste wijziging |
-| **Klas-inzending** (klascode) | Onze database | De **klascode** (docent) · de bewaarcode (leerling) | Blijft staan (zie "hoe lang" hieronder) |
+| **Klas-inzending** (klascode) | Onze database | De **klascode** (docent) · de bewaarcode (leerling) | **1 schooljaar** na de laatste activiteit, dan automatisch verwijderd (docent 30 d vooraf gewaarschuwd) |
 | **Praatplaat-inzending** | Onze database | Via de klas/praatplaat (docent) | Zoals klas-inzending |
 | **Deel-link** (luisteren) | Onze database | De **8-tekens deelcode** | Link werkt **30 dagen** |
 | **Album-link** (hele opdracht) | Onze database | De **8-tekens albumcode** | Link werkt **30 dagen** (verlengbaar) |
 
-> **Belangrijke nuance:** "60 dagen" en "30 dagen" betekenen dat de **code/link
-> stopt met werken** — het is een **filter**, geen wisser. De gegevens worden op
-> dat moment **niet verwijderd**; de rij blijft staan (en zit ook in back-ups).
-> Zie "Wat betekent 'verloopt' precies?" onderaan.
+> **Belangrijke nuance (bijgewerkt 24-7):** "60 dagen" en "30 dagen" betekenen
+> eerst dat de **code/link stopt met werken**. Sinds migratie 035 wordt het werk
+> daarna óók echt **automatisch verwijderd**: losse bewaarcodes/deellinks na
+> 60 dagen inactiviteit, en klas-inzendingen (leerlingwerk met voornaam) na
+> **1 schooljaar** — alléén de inzending, de klas/opdracht/code blijven. De
+> opruiming draait dagelijks (pg_cron); de docent krijgt 30 dagen vooraf een
+> waarschuwing in het dashboard. Back-ups van Supabase rouleren daarna vanzelf uit.
 
 ---
 

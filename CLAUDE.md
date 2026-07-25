@@ -265,9 +265,13 @@ A teacher shares all formally submitted compositions of an assignment as one pub
 
 **Zod validation on RPC responses**: `parseCompositionData()` validates composition data from all Supabase RPC responses (`loadSavedComposition`, `getSharedComposition`, `getPraatplaatSubmissions`). Invalid data returns `null` + `logger.warn`.
 
+### Data-retentie (AVG, migratie 035)
+
+Auto-verwijdering die de privacy-belofte waarmaakt (`cleanup_expired_data()` via pg_cron, dagelijks 03:00; termijnen gedeeld in `src/lib/retention.ts`): **docent-inzendingen** (leerlingwerk mét voornaam) worden **1 schooljaar** na de laatste activiteit hard verwijderd — alléén de inzending, klas/opdracht/code blijven; **losse bewaarcodes/deellinks** (geen `class_id`/`praatplaat_id`) na 60 dagen; vervallen deel-/albumcodes worden gewist. `ClassDetail` toont een waarschuwingsbanner 30 dagen vóór verwijdering (`getClassDeletionWarning`). Privacy-teksten (`privacy.*`) + teacher.html-FAQ zijn hierop afgestemd. E-mailwaarschuwing = vervolgstap (vergt Edge Function + mailprovider; EmailJS is client-only). Bert zet pg_cron aan in het Supabase-dashboard vóór migratie 035.
+
 ### Online Bewaarcode (#52)
 
-Students can save compositions online with a 6-character save code. On another device, entering the code loads the composition into the studio to continue working. Compositions expire after 60 days of inactivity (`last_updated_at`).
+Students can save compositions online with a 6-character save code. On another device, entering the code loads the composition into the studio to continue working. Compositions expire after 60 days of inactivity (`last_updated_at`); since migration 035 the row is then also hard-deleted (see **Data-retentie** above).
 
 **Code types** (distinguished by length in `ShareCodeInput`):
 - 4 digits → class code (teacher submission)
