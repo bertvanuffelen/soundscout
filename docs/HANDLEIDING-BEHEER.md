@@ -62,6 +62,33 @@ Login: [https://supabase.com/dashboard](https://supabase.com/dashboard)
 
 SQL-bestanden in `supabase/migrations/`, genummerd 002 t/m 012. Bij database-wijzigingen: nieuw bestand met volgend nummer. Altijd RLS policies toevoegen bij nieuwe tabellen.
 
+### Auth-URL's (wachtwoord-reset + bevestigingsmails) — moet kloppen per domein
+
+De app vraagt bij een reset de redirect `window.location.origin + "/?screen=reset-password"`
+aan (`src/lib/auth.ts`). Supabase honoreert die **alleen als het domein in de
+allow-list staat**; anders valt het terug op de **Site URL** — dat was de bug in
+testronde 1 (reset-mail landde op de oude site).
+
+**Supabase dashboard → Authentication → URL Configuration:**
+
+- **Site URL:** `https://soundscout.nl` (fallback + basis voor bevestigingsmails).
+- **Redirect URLs** (allow-list — voeg elk domein toe waar de app draait):
+  ```
+  https://soundscout.nl/**
+  https://ss-dev.techindeles.nl/**
+  https://soundscout.techindeles.nl/**
+  http://localhost:5173/**
+  http://localhost:5199/**
+  ```
+  `/**` (dubbele ster) is het veiligst; `/*` werkt ook voor de reset-URL omdat
+  `?screen=reset-password` geen slashes bevat. De checkbox vóór een regel is een
+  *selectie om te verwijderen* — niet aan/uit; gebruik "Clear selection" om te
+  deselecteren.
+
+**Testen:** altijd een **verse** reset-mail aanvragen (oude links zijn eenmalig/
+verlopen) → klik → je moet op hetzelfde domein op het `?screen=reset-password`-
+scherm landen. Wijzigingen propageren ~1 minuut.
+
 ### Veelvoorkomende taken
 
 **Docent-wachtwoord resetten:**
