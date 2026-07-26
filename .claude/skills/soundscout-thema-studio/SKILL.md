@@ -144,6 +144,8 @@ credits/beeld — geen key nodig; zie [reference/api-setup.md](reference/api-set
    (Gemini-fallback: `scripts/genereer-afbeelding.py … --style-ref …`, alleen als de
    `GEMINI_API_KEY` gezet is / je Higgsfield-credits wilt sparen.)
 3. `python3 scripts/verwerk-afbeelding.py --in … --out kandidaten/{beeld-id}-v{n}.jpg`
+   (app-beelden en posters: default `--formaat breed` = 1920x1080; **cast-portretten:
+   `--formaat vierkant`** — genereer die met `--aspect-ratio 1:1`)
 4. **Read** het jpg en loop de checklist af: per criterium ✓/✗ met één regel toelichting;
    log het resultaat in manifest.json.
 5. Alles ✓ → toon aan Bert (pad + samenvatting). Bert keurt goed of stuurt bij.

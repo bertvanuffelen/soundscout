@@ -99,8 +99,9 @@ overheen komt). Referentie: `.thema-studio/piraten/kandidaten/sb-schattenjacht-1
 
 ## Canonieke referentiebeelden
 
-Elk lid wordt één keer los gestyled als schoon full-body portret op neutrale achtergrond en
-opgeslagen als `reference/cast/{naam}.jpg`. Dit zijn de **canonieke referenties**: ze gaan
+Elk lid wordt één keer los gestyled als schoon full-body portret op neutrale achtergrond
+(`--aspect-ratio 1:1` → `verwerk-afbeelding.py --formaat vierkant`) en opgeslagen als
+`reference/cast/{naam}.jpg`. Dit zijn de **canonieke referenties**: ze gaan
 als `--image-reference` mee bij het genereren van praatplaten en storyboards, en dienen
 tegelijk als promomateriaal (character line-up).
 
