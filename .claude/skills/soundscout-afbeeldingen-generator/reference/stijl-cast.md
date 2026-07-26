@@ -92,10 +92,11 @@ no extra or floating limbs or detached hands; do not change any robot's body sha
 size or base colour.
 ```
 
-**Finn = onze bestaande piraten-storyboardheld, maar in thema-neutrale basis**: dezelfde
-koperoranje android + cyaan gezicht + papegaaitje, **zónder piratenkleding** (geen
-driekante hoed, ooglap of houten been — dat is piraten-flavor die er per thema los
-overheen komt). Referentie: `.thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png`.
+**Herkomst van Finn**: hij is afgeleid van de piraten-storyboardheld, maar dan in
+thema-neutrale basis — dezelfde koperoranje android + cyaan gezicht + papegaaitje, **zónder
+piratenkleding** (geen driekante hoed, ooglap of houten been; dat is piraten-flavor die er
+per thema los overheen komt). De canonieke referentie is nu `reference/cast/finn.jpg`,
+niet het oude storyboardframe.
 
 ## Canonieke referentiebeelden
 
