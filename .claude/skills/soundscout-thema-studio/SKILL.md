@@ -101,9 +101,19 @@ Stijlcontracten: **[stijl-robots](reference/stijl-robots.md) (de robotfamilie + 
 kleur/vorm/grootte-diversiteit — geldt voor álle beelden)** ·
 [stijl-praatplaat](reference/stijl-praatplaat.md) ·
 [stijl-locatie](reference/stijl-locatie.md) · [stijl-storyboard](reference/stijl-storyboard.md) ·
-[stijl-plattegrond](reference/stijl-plattegrond.md). Checklist:
-[beoordeling-checklist.md](reference/beoordeling-checklist.md). Neem in élke beeldprompt
-het robot-standaardblok uit stijl-robots.md op.
+[stijl-plattegrond](reference/stijl-plattegrond.md) ·
+**[stijl-cast](reference/stijl-cast.md) (de 6 vaste mascotte-robots als hoofdrolspelers)**.
+Checklist: [beoordeling-checklist.md](reference/beoordeling-checklist.md). Neem in élke
+beeldprompt het robot-standaardblok uit stijl-robots.md op.
+
+**Vaste cast (eenmalig, cross-thema):** de 6 mascotte-robots (Finn, Bolt, Pip, Nova, Ziggy,
+Mossy) zijn al gestyled en liggen als canonieke referenties in `reference/cast/*.jpg` (+
+groepsposters neutraal & piraten). Bij praatplaten/storyboards: kies 3-6 relevante leden,
+benoem ze bij naam + kenmerk, geef ze thema-flavor, en stuur hun `reference/cast/*.jpg` mee
+als `--image-reference` naast het stijlanker (zie [stijl-cast.md](reference/stijl-cast.md)).
+Bij een compleet nieuw thema hoeft de cast niet opnieuw gestyled te worden — alleen de flavor
+wisselt. Alleen als Bert een cast-lid wil toevoegen/wijzigen: stylen als los portret op
+neutrale achtergrond → Bert-akkoord → opslaan in `reference/cast/`.
 
 **Ankersysteem:**
 - Thema in de bestaande basis-stijl → gebruik de 3 bestaande praatplaten

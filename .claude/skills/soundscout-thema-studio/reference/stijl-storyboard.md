@@ -9,6 +9,11 @@ Cinematisch en dynamisch: **één heldpersonage** centraal, actie/close-up, ster
 beweging, neon-/gloedaccenten, rijker gerenderd dan de praatplaten. Elk frame is één
 scène uit een kort verhaal.
 
+> **Held = vast cast-lid.** Kies de held (en evt. één sidekick) bij voorkeur uit de
+> [vaste cast](stijl-cast.md) — meestal Finn — en geef zijn `reference/cast/*.jpg` mee als
+> `--image-reference` naast frame 1. Zo is de held gezicht-getrouw én merk-herkenbaar over
+> thema's heen. De thema-flavor (piratenhoed, ...) komt er los overheen.
+
 ## Functionele eisen
 
 - **3-5 frames** die samen één duidelijke handeling vertellen (begin → midden → eind);

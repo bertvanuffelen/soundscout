@@ -29,11 +29,14 @@ variëren in shot: straatscène / dwarsdoorsnede / overzicht — kies per plaat 
    vallen"). Elke activiteit is **sonificeerbaar met ≥1 sample uit het thema** (richting:
    activiteit → sample). Streef naar spreiding over alle locatie-klankwerelden; bij een
    thema met veel samples hoeft niet elke sample afgebeeld te worden.
-5. **Diversiteit**: neem het robot-standaardblok uit
+5. **Vaste cast**: laat 3-6 leden van de [vaste cast](stijl-cast.md) als hoofdrolspelers
+   opduiken (bij naam + kenmerk + thema-flavor), met hun `reference/cast/*.jpg` als
+   `--image-reference` naast het stijlanker. Vul de rest aan met random familie-robots.
+6. **Diversiteit**: neem het robot-standaardblok uit
    [stijl-robots.md](stijl-robots.md) op — brede kleurmix (geen kleur > ~20%), variatie
    in vorm (blik/android/chibi) en grootte.
-6. **Verborgen zoekdetails**: 3-5 kleine elementen om te vinden.
-7. **Stijl & mood**: cartoon line-art, clean bold outlines, heldere licht verweerde
+7. **Verborgen zoekdetails**: 3-5 kleine elementen om te vinden.
+8. **Stijl & mood**: cartoon line-art, clean bold outlines, heldere licht verweerde
    kleuren, dominante themakleur benoemen, kindvriendelijk, 4k detail.
 
 ## Negatieve prompt (altijd, letterlijk opnemen)

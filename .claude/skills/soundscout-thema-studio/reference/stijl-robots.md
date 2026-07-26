@@ -10,6 +10,10 @@ robotfamilie mét bewuste diversiteit. Bekijk als ijkbeelden met Read:
 `public/images/praatplaten/sportveld.jpg`, `public/images/themes/basis/klaslokaal.jpg`,
 `public/images/themes/basis/boerderij.jpg`.
 
+> **Vaste cast**: naast de anonieme familie heeft SoundScout 6 vaste mascotte-robots die
+> als hoofdrolspelers terugkomen in élke praatplaat/storyboard — zie
+> [stijl-cast.md](stijl-cast.md). Zij volgen exact deze robotfamilie-stijl.
+
 ## De robotfamilie (herkenbare stijl)
 
 - **Cartoon line-art**: dikke, donkere, schone contouren; cel-shaded; warme belichting.

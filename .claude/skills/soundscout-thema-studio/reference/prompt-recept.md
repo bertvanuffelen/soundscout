@@ -40,12 +40,16 @@ pas na zijn akkoord.** Zo ziet hij vooraf of het genoeg/klopt.
 3. **Omgeving**: niveaus, zones en de staat van de locatie (nieuw/versleten/besneeuwd/...).
 4. **Activiteiten**: 20-30 specifieke acties; de **sound-hotspots** expliciet (personage +
    werkwoord + hoorbaar geluid) + on-theme klungel-gags eromheen.
-5. **Robot-standaardblok** uit [stijl-robots.md](stijl-robots.md): kleur/vorm/grootte-
+5. **Vaste cast als hoofdrolspelers** (praatplaat/storyboard) uit
+   [stijl-cast.md](stijl-cast.md): kies 3-6 relevante cast-leden, **benoem ze bij naam +
+   kenmerk** in de prompt, geef ze de thema-flavor, en stuur hun `reference/cast/*.jpg` mee
+   als `--image-reference` (samen met het stijlanker; ≤14 refs). Rest = random familie-robots.
+6. **Robot-standaardblok** uit [stijl-robots.md](stijl-robots.md): kleur/vorm/grootte-
    diversiteit, geen kleur > ~20%.
-6. **Verborgen zoekdetails**: 3-5 kleine zoekelementen.
-7. **Stijl & mood**: cartoon line-art, duidelijke omtrekken, **heldere maar licht versleten
+7. **Verborgen zoekdetails**: 3-5 kleine zoekelementen.
+8. **Stijl & mood**: cartoon line-art, duidelijke omtrekken, **heldere maar licht versleten
    kleuren**, palet + belichting van de mini-wizard, kindvriendelijk, 4k.
-8. **Negatief-blok** (zie hieronder — altijd, verbatim).
+9. **Negatief-blok** (zie hieronder — altijd, verbatim).
 
 ## 3. Vast negatief-blok (ALTIJD meesturen)
 
