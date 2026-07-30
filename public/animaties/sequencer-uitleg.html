@@ -1,0 +1,149 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>SoundScout — Zo werkt de sequencer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  /* ===================================================================
+     SOUNDSCOUT — "Zo werkt de sequencer"
+     Eén samengestelde, herhalende animatie in vier acts:
+       1. leeg raster (3 sporen x 16 vakjes) verschijnt
+       2. muis klikt vakjes aan, per spoor een eigen okertint
+       3. afspeellijn loopt twee rondes rond — het patroon herhaalt
+       4. het patroon wordt een blokje dat naar de tijdlijn gaat en uitrekt
+     Eén rAF-klok: elke frame wordt de staat volledig berekend uit
+     t = (now - start) % PERIOD (robuust tegen tab-throttling).
+     Huisstijl: Nunito, egale kleuren met vaste hex, Lucide-iconen,
+     rode afspeellijn #e5342b, radii 13/14/16px.
+     Tekst staat in de JS (TEXTS), taal via ?lang=nl|en.
+     =================================================================== */
+  :root{
+    --ss-font: 'Nunito', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+    --line:#eceef1; --ruler:#9aa0a6; --playhead:#e5342b;
+    --ink:#243244; --muted:#6b7280;
+    /* sequencer-palet (accent-familie uit de app) */
+    --c-1:#F59E0B; --c-2:#B45309; --c-3:#FBBF24;
+    --cell:#ffffff; --cell-line:#e3e6ea;
+  }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:transparent; font-family:var(--ss-font); color:var(--ink); }
+
+  .film{
+    max-width:940px; margin:0 auto; background:#fff; position:relative;
+    border:1px solid var(--line); border-radius:16px; overflow:hidden;
+    box-shadow:0 8px 30px rgba(20,30,50,.08);
+  }
+
+  /* ---------- kopbalk ---------- */
+  .head{ display:flex; align-items:center; gap:12px; padding:14px 20px; border-bottom:1px solid var(--line); }
+  .head .badge{
+    width:38px; height:38px; border-radius:11px; background:var(--c-1); color:#4a3b00;
+    display:flex; align-items:center; justify-content:center; flex:0 0 auto;
+    box-shadow:0 3px 10px rgba(245,158,11,.45);
+  }
+  .head .badge svg{ width:20px; height:20px; }
+  .head .k{ font-size:11px; font-weight:800; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; }
+  .head .t{ font-size:17px; font-weight:800; line-height:1.15; margin-top:1px; }
+  .head .hint{
+    margin-left:auto; font-size:12px; font-weight:700; color:#8a6100;
+    background:#fdf3dd; border:1px solid #f6dfa8; border-radius:999px; padding:5px 12px; white-space:nowrap;
+  }
+
+  /* ---------- sequencer-raster ---------- */
+  .seq{ padding:16px 20px 8px; }
+  .seqrow{ display:grid; grid-template-columns:132px 1fr; align-items:center; gap:10px; margin-bottom:8px; }
+  .pill{
+    display:flex; align-items:center; gap:7px; padding:7px 10px; border-radius:11px;
+    background:#fff; border:1.5px solid var(--line); font-size:13px; font-weight:700;
+    box-shadow:0 1px 3px rgba(20,30,50,.05); opacity:0; white-space:nowrap; overflow:hidden;
+  }
+  .pill .dot{ width:9px; height:9px; border-radius:50%; flex:0 0 auto; }
+  .pill svg{ width:14px; height:14px; flex:0 0 auto; color:var(--muted); }
+  .cells{ display:grid; grid-template-columns:repeat(16, 1fr); gap:4px; }
+  .cell{
+    height:32px; border-radius:8px; background:var(--cell); border:1.5px solid var(--cell-line);
+    opacity:0; will-change:transform,opacity;
+  }
+  .cell.bar{ margin-left:5px; }
+
+  /* ---------- afspeellijn over het raster ---------- */
+  .seqarea{ position:relative; }
+  .ph{
+    position:absolute; top:-4px; bottom:-2px; width:2px; background:var(--playhead);
+    opacity:0; pointer-events:none; border-radius:2px;
+  }
+  .ph::before{
+    content:""; position:absolute; top:-5px; left:-4px; width:10px; height:10px;
+    border-radius:50%; background:var(--playhead);
+  }
+
+  /* ---------- tijdlijn onderin ---------- */
+  .tl{ border-top:1px solid var(--line); padding:12px 20px 16px; background:#fbfbfc; }
+  .tl .k{ font-size:11px; font-weight:800; letter-spacing:.14em; color:var(--muted); text-transform:uppercase; margin-bottom:8px; }
+  .tlgrid{
+    position:relative; height:44px; border-radius:10px; border:1px solid var(--line); background:#fff;
+    background-image:repeating-linear-gradient(to right, var(--line) 0 1px, transparent 1px 12.5%);
+    overflow:hidden;
+  }
+  .tlclip{
+    position:absolute; top:6px; bottom:6px; left:0; width:0; border-radius:9px;
+    display:flex; align-items:center; gap:6px; padding:0 10px; color:#4a3b00;
+    font-size:12px; font-weight:800; white-space:nowrap; overflow:hidden; opacity:0;
+    box-shadow:0 2px 6px rgba(0,0,0,.14);
+    background:var(--c-1);
+    background-image:repeating-linear-gradient(90deg, rgba(255,255,255,.28) 0 7px, transparent 7px 14px);
+  }
+  .tlclip svg{ width:13px; height:13px; flex:0 0 auto; }
+
+  /* zwevend blokje (van raster naar tijdlijn) */
+  .bundle{
+    position:absolute; left:0; top:0; z-index:40; display:flex; align-items:center; gap:6px;
+    padding:7px 12px; border-radius:11px; font-size:12.5px; font-weight:800; color:#4a3b00;
+    background:var(--c-1); border:1.5px dashed #8a6100; opacity:0; pointer-events:none;
+    box-shadow:0 6px 16px rgba(20,30,50,.18); white-space:nowrap;
+  }
+  .bundle svg{ width:14px; height:14px; }
+
+  /* ---------- muis ---------- */
+  .mouse{ position:absolute; left:0; top:0; width:22px; height:22px; z-index:60; opacity:0; pointer-events:none; }
+  .mouse svg{ width:22px; height:22px; filter:drop-shadow(0 1px 2px rgba(0,0,0,.35)); }
+
+  /* ---------- onderschrift (eigen strook, overlapt niets) ---------- */
+  .cap{
+    min-height:44px; display:flex; align-items:center; justify-content:center;
+    padding:10px 20px 14px; border-top:1px solid var(--line); background:#fff;
+    font-size:13.5px; font-weight:700; color:var(--ink); text-align:center; opacity:0;
+  }
+</style>
+
+<div class="film" id="film">
+  <div class="head">
+    <span class="badge" id="headIcon"></span>
+    <span>
+      <span class="k" id="headKicker"></span>
+      <span class="t" id="headTitle"></span>
+    </span>
+    <span class="hint" id="headHint"></span>
+  </div>
+
+  <div class="seq">
+    <div class="seqarea" id="seqarea">
+      <div id="rows"></div>
+      <div class="ph" id="ph"></div>
+    </div>
+  </div>
+
+  <div class="tl">
+    <div class="k" id="tlKicker"></div>
+    <div class="tlgrid" id="tlgrid">
+      <div class="tlclip" id="tlclip"></div>
+    </div>
+  </div>
+
+  <div class="bundle" id="bundle"></div>
+  <div class="mouse" id="mouse"></div>
+  <div class="cap" id="cap"></div>
+</div>
+
+<script src="sequencer-uitleg.js"></script>

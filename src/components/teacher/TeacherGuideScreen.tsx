@@ -13,6 +13,7 @@ import { useAppStore } from '../../stores/appStore';
 import { Button } from '../ui';
 import { LanguageSwitcher } from '../ui/LanguageSwitcher';
 import { cn } from '../../utils/cn';
+import { SoundScoutAnimation } from '../common/OnboardingAnimation';
 
 // --- Video helpers (zelfde provider als TutorialScreen) ---
 
@@ -48,6 +49,8 @@ interface GuideSection {
   videoId?: string;
   /** i18n-key voor videotitel (valt terug op sectietitel) */
   videoTitleKey?: string;
+  /** Uitleg-animatie uit public/animaties/ (bestandsnaam zonder extensie) */
+  animation?: string;
 }
 
 // Volgorde volgt de docent-reis: oriëntatie → opzetten → content maken →
@@ -82,6 +85,7 @@ const SECTIONS: GuideSection[] = [
     id: 'sequencer',
     titleKey: 'teacher.guide.sections.sequencer.title',
     contentKey: 'teacher.guide.sections.sequencer.content',
+    animation: 'sequencer-uitleg',
   },
   {
     id: 'templates',
@@ -250,6 +254,17 @@ export default function TeacherGuideScreen() {
                           return <p key={i}>{item}</p>;
                         })}
                       </div>
+
+                      {/* Optionele uitleg-animatie (looping, geen geluid) */}
+                      {section.animation && (
+                        <div className="mt-5 rounded-xl overflow-hidden border border-border-subtle">
+                          <SoundScoutAnimation
+                            name={section.animation}
+                            title={t(section.titleKey)}
+                            initialHeight={420}
+                          />
+                        </div>
+                      )}
 
                       {/* Optional embedded video */}
                       {section.videoId && (

@@ -1,21 +1,36 @@
 /**
- * OnboardingAnimation - Ingebedde "In 4 stappen"-animatie
+ * SoundScoutAnimation — herbruikbare iframe-embed van een uitleg-animatie uit
+ * public/animaties/. De hoogte groeit automatisch mee met de inhoud
+ * (ResizeObserver), zodat de animatie op elke breedte netjes past.
  *
- * Herbruikbare iframe-embed van public/animaties/onboarding-4-stappen.html.
- * De hoogte groeit automatisch mee met de inhoud (ResizeObserver), zodat de
- * animatie op elke breedte netjes past. Gebruikt op de tutorialpagina, in de
- * first-run intro bij "Nieuwe compositie" en in de hero van /teacher.
- *
- * De animatie is tweetalig: ?lang=nl|en kiest de woordenlijst in het
+ * Animaties zijn tweetalig: ?lang=nl|en kiest de woordenlijst in het
  * html-bestand. Bij een taalwissel krijgt het iframe een nieuwe src en herlaadt
  * het vanzelf.
+ *
+ * `OnboardingAnimation` is de dunne wrapper voor "In 4 stappen aan de slag"
+ * (tutorialpagina, first-run intro bij "Nieuwe compositie", hero van /teacher).
  */
 
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 
-export function OnboardingAnimation({ className }: { className?: string }) {
-  const { t, i18n } = useTranslation();
+interface SoundScoutAnimationProps {
+  /** Bestandsnaam zonder extensie in public/animaties/ */
+  name: string;
+  /** Toegankelijke titel van het iframe */
+  title: string;
+  className?: string;
+  /** Starthoogte in px vóór de eerste meting (voorkomt springen) */
+  initialHeight?: number;
+}
+
+export function SoundScoutAnimation({
+  name,
+  title,
+  className,
+  initialHeight = 520,
+}: SoundScoutAnimationProps) {
+  const { i18n } = useTranslation();
   const animRef = useRef<HTMLIFrameElement>(null);
   const lang = i18n.language?.startsWith('en') ? 'en' : 'nl';
 
@@ -37,11 +52,17 @@ export function OnboardingAnimation({ className }: { className?: string }) {
     const setup = () => {
       const doc = getDoc();
       if (!doc) return;
-      const apply = () => { iframe.style.height = doc.documentElement.scrollHeight + 'px'; };
+      // LET OP: documentElement.scrollHeight is minstens de viewport-hoogte van
+      // het iframe — daarmee kan het frame wel groeien maar nooit krimpen. De
+      // body groeit alleen met de inhoud mee, dus die is de juiste maatstaf.
+      const apply = () => {
+        const h = Math.ceil(doc.body?.getBoundingClientRect().height || 0);
+        iframe.style.height = (h || doc.documentElement.scrollHeight) + 'px';
+      };
       apply();
       ro?.disconnect();
       ro = new ResizeObserver(apply);
-      ro.observe(doc.documentElement);
+      ro.observe(doc.body ?? doc.documentElement);
     };
     iframe.addEventListener('load', setup);
     if (getDoc()?.readyState === 'complete') setup();
@@ -52,11 +73,22 @@ export function OnboardingAnimation({ className }: { className?: string }) {
   return (
     <iframe
       ref={animRef}
-      src={`/animaties/onboarding-4-stappen.html?lang=${lang}`}
-      title={t('tutorial.quickStart')}
+      src={`/animaties/${name}.html?lang=${lang}`}
+      title={title}
       loading="lazy"
       className={className ?? 'w-full block'}
-      style={{ border: 0, height: 520 }}
+      style={{ border: 0, height: initialHeight }}
+    />
+  );
+}
+
+export function OnboardingAnimation({ className }: { className?: string }) {
+  const { t } = useTranslation();
+  return (
+    <SoundScoutAnimation
+      name="onboarding-4-stappen"
+      title={t('tutorial.quickStart')}
+      className={className}
     />
   );
 }
