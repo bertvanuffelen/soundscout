@@ -43,6 +43,12 @@
   dan verdwijnt de oudste. Alles is weg als de browsergegevens gewist worden
   (of op een ander apparaat — het staat er niet).
 
+> **Sequences horen bij de compositie.** Heeft een leerling met de sequencer een
+> ritmepatroon gemaakt, dan reist dat automatisch mee: bij lokaal opslaan, bij de
+> bewaarcode, bij een deel-link én bij het inleveren met een klascode. Ook in de
+> MP3- en video-export klinkt het patroon precies zoals in de studio. Er is dus
+> niets aparts om te bewaren.
+
 ## 2. Online bewaarcode (6 tekens)
 
 - **Wanneer:** podium → **Opslaan & Delen** → **Bewaar online**. De leerling

@@ -165,7 +165,9 @@ Een step sequencer ("filmmuziek-generator"): leerlingen vullen een grid (1 vakje
 - **Audio = één plek**: `audioEvents.generateClipEvents` krijgt `options.sequences` en pakt sequence-clips uit naar gewone `ClipEvent`s (choke deterministisch afgekapt over iteratiegrenzen, declick-fades op trim/choke/clipgrens). Live, MP3- én video-export zijn per constructie identiek. De pure generator `src/services/sequencerEvents.ts` (Tone-vrij) is de bron; `SequencerEngine` (eigen `Tone.Clock`, NOOIT de globale Transport — die wordt door AudioService gecanceld) speelt hem in lab/sequencer-modus.
 - **Persistentie**: `TimelineState.sequences` + `CompositionData.sequences` (Zod: `SequencerSequenceSchema` in `utils/schemas.ts`) — bewaarcode, delen, inleveren en templates nemen sequences automatisch mee. Undo-restore behoudt de huidige sequences (bewust buiten de historie). `findMissingSampleIds` slaat `seq:`-clips over en checkt de patroon-geluiden (vals-alarm-fix TR7).
 - **UI**: gele bundel-chips in de bibliotheek (gestippeld, raster-icoon; klik = patroon bewerken, slepen = plaatsen als gewone sample-drag) + gestippelde "+ Sequence toevoegen"-chip achteraan. `StudioSequencerPanel` vervangt de volledige tijdlijnzone (modus-bewuste werkbalk: tabs Montagelijn | naam ✕ links, hernoem/dupliceer/verwijder + lengte ± rechts; tab bestaat alleen zolang een sequence open is — "rustig tenzij"). Klik buiten het panel (bibliotheek/beeldzone, `display:contents`-wrapper met `onClickCapture`) sluit de tab; transportbalk en modals niet. `TransportControls` is modus-bewust: sequencer-tab open → play speelt de sequence (rondlopend, loop vast aan) via `sequencerEngine`; montagelijn-tab → de compositie. Clip-bewerkbalk toont voor sequence-clips "patroon bewerken" i.p.v. trim/effecten; `Clip.tsx` geeft ze een blokjespatroon-achtergrond.
-- **Let op bij bewerken**: sequencer-mutaties in de studio lopen via `sequencerStore` (mode 'studio') → `timelineStore.setSequences` → `audioVersion`-bump (live reschedule-conventie #22). `StudioView` heeft DRIE `SampleLibrary`-renders (kaal, desktop-split, mobiel) — props op alle drie doorvoeren. Preview-knopjes in bibliotheek en picker hebben een aan/uit-status (stop-icoon, klik = stop).
+- **Kleuren**: `SEQUENCE_COLORS` (types/sequencer.ts) — de EERSTE is altijd accent-500 (#F59E0B, huisstijl-oker), daarna warme oker-varianten en bredere kleuren. `nextSequenceColor()` kent bij aanmaken/dupliceren de eerstvolgende vrije kleur toe; de kleur wordt gepersisteerd (`SequencerSequence.color`, Zod) en gebruikt door chip, tab, panel-tint en clip. Herkenbaarheid komt van raster-icoon + stippelrand + blokjespatroon, niet van de kleur alleen.
+- **Uitleg-laag (30-7)**: naam- en positioneringsbesluit staat in `docs/WOORDENLIJST.md` §Sequencer — overal "sequencer", ook richting leerlingen; gereedschap **bínnen** de drie compositievormen (geen vierde vorm, geen vijfde opdrachttype). Leerling krijgt één `TipModal` bij de eerste opening (firstRun-vlag `sequencer-hint`); docent krijgt handleidingsectie `teacher.guide.sections.sequencer.*` (na `compose-modes`) + een tip in `classroom-tips`. Nog bewust NIET gedaan: leskaart + `/les/`-pagina, tutorial-video, plek op de publieke docentenpagina (pas ná een klasproef).
+- **Let op bij bewerken**: sequencer-mutaties in de studio lopen via `sequencerStore` (mode 'studio') → `timelineStore.setSequences` → `audioVersion`-bump (live reschedule-conventie #22). `StudioView` heeft DRIE `SampleLibrary`-renders (kaal, desktop-split, mobiel) — props op alle drie doorvoeren. Preview-knopjes in bibliotheek en picker hebben een aan/uit-status (stop-icoon, klik = stop). `findMissingSampleIds` (audioExport) slaat `seq:`-clips over en checkt de patroon-geluiden — anders meldt de export vals "geluid ontbreekt" (TR7).
 
 ### Stage / Podium Screen
 
@@ -186,6 +188,17 @@ The Stage screen (`StageView.tsx`) is the performance screen where students list
 - **Audio** — `src/hooks/useCompositionPlayback.ts` (shared engine: AbortController load with progress, schedule/play/pause/resume via existing Part, ~30fps beat tracking with loop-modulo, `onEnded` for auto-advance, `respectLoop`/`autoLoad` options). NOT used by StageView itself (that stays on useAudioEngine/audioStore).
 
 Thin wrappers: `ClassPresentationView` (teacher-present + fetches peer stars), `SubmissionPlayer` (teacher-review + gezien-stempel), `SharedPlayer` (data fetch + gesture-gate, then public mode), `PeerReviewModal` (stappenflow + surface for the listen/rate step), and since M5 also `PraatplaatViewer` (teacher-present + `interactiveBoard`) and `SharedPraatplaatViewer` (statemachine + gesture-gate, then public + `interactiveBoard`). The **`interactiveBoard` prop** renders one fixed board image with clustered clickable spots (`praatplaatClustering` + `PraatplaatSpot`) for the whole playlist — click plays that submission, multi-spot clusters open a picker.
+
+### Uitleg-animaties (public/animaties/)
+
+Losse, herhalende uitleg-animaties in de huisstijl (Nunito, egale kleuren, Lucide-iconen, rode afspeellijn). Formaat: **standalone HTML + extern JS** (CSP-schoon: `script-src 'self'`, Nunito via Google Fonts, géén inline script/`data:`-fonts). Tweetalig via `?lang=nl|en`; alle zichtbare tekst staat in één `TEXTS`-object bovenin het JS-bestand. **Verplicht patroon: één `requestAnimationFrame`-klok** die elke frame de staat berekent uit `t = (now - start) % PERIOD` (geen setTimeout-ketens — die batchen op een achtergrond-tab), plus `prefers-reduced-motion` → statische eindstaat. Zie `docs/ANIMATIE-RICHTLIJNEN.md` en de skill `soundscout-animatie`.
+
+| Bestand | Waar gebruikt |
+|---|---|
+| `onboarding-4-stappen.{html,js}` | TutorialScreen, first-run intro bij "Nieuwe compositie", hero van `/teacher` |
+| `sequencer-uitleg.{html,js}` | Handleidingsectie "De sequencer" (4 acts: raster → kliks → afspeellijn 2 rondes → blokje naar de tijdlijn) |
+
+Inbedden via `SoundScoutAnimation` (`src/components/common/OnboardingAnimation.tsx`): iframe met `name`+`title`, hoogte-sync via ResizeObserver op **`doc.body`** (niet `documentElement` — dat is minstens de viewporthoogte en kan dus nooit krimpen). `OnboardingAnimation` is de dunne wrapper voor de onboarding. Een handleidingsectie krijgt een animatie via het optionele veld `animation` in `SECTIONS` (TeacherGuideScreen).
 
 ### Theme System
 
@@ -451,5 +464,8 @@ VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts
 | `docs/audio/PLAN-AUDIO-ENGINE-V2.md` | **Audio Engine v2** (uitgevoerd 24-7): gedeelde motor, pitch-prebake, reverb-IR's, export-validator + vangnet |
 | `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md` | Afgerond onderzoek export-effectglitch (TR6) — §15 bevat de empirische bevindingen (PitchShift ontmaskerd) |
 | `docs/BEWAREN-VAN-COMPOSITIES.md` | Leesbaar naslag: wanneer/waar/hoe lang leerlingwerk bewaard blijft en hoe je het terugvindt |
-| `docs/WOORDENLIJST.md` | Terminology glossary (rollen, codes, termen) — draft |
+| `docs/WOORDENLIJST.md` | Terminology glossary (rollen, codes, termen) — incl. §Sequencer (naambesluit 30-7) |
+| `docs/PLAN-SEQUENCER-FASE2-STUDIO.md` | **Sequencer** — ontwerpbesluiten fase 2 (studio-integratie), status GEBOUWD |
+| `docs/ANIMATIE-RICHTLIJNEN.md` | Regels voor looping uitleg-animaties (één rAF-klok, checklist) |
+| `docs/ANIMATIES-EN-PROMO.md` | Backlog van geplande animaties + promovideo-script |
 | `soundscout-prd.md` | Product requirements document |

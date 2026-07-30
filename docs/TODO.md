@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-07-06
+**Laatst bijgewerkt**: 2026-07-30
 
 ---
 
@@ -10,7 +10,7 @@
 
 **Toekomstideeën (24-7, van Bert — nog ideeën, niet ingepland):**
 
-- **[Idee] Sequencer-modal** — geluiden in een sequencer-achtige modal plaatsen om ritmische motieven te componeren. *Prioritering-advies: hoogste muzikale/didactische waarde (raakt de kern: componeren + ritme), maar grootste bouw (DAW-achtig) en overlapt met partituur-idee (#68). Eerste kandidaat voor een post-release feature-sprint.*
+- ~~**[Idee] Sequencer-modal**~~ → ✅ **GEBOUWD (30-7)**, zie `#SEQUENCER` onder P2. Werd geen modal maar een volwaardig paneel in de studio, achter dev-vlag.
 - **[Idee] Conditionele/lineaire locatie-volgorde** — locaties in een bepaalde volgorde of onder voorwaarden ontgrendelen. *Prioritering-advies: goedkoopst en contained (kaart/locatie-state + unlock-regels); mooie scaffolding/differentiatie voor de docent, maar meer gamification dan muzikaal → secundair.*
 - **[Idee] Muzikale escape room in locaties** — per locatie een puzzel/uitdaging waarbij je geluiden vrijspeelt of verder mag. *Prioritering-advies: hoogste wow/engagement, maar grootste bouw en een héle nieuwe modus i.p.v. uitbreiding; ontwerp-eerst, niet vóór het kernproduct geland is.*
 - Volgorde-advies: eerst de sequencer (muzikale kern), locatie-unlock als goedkope engagement-win ernaast, escape room als grotere ontwerp-gedreven gok later. Ook in Notion To Do (P3, App - SoundScout).
@@ -144,6 +144,25 @@ Moet opgelost of bewust geaccepteerd zijn vóór eerste studententest. Vereist h
 ---
 
 ### P2 — Hoge prioriteit
+
+#### #SEQUENCER — Step sequencer in de studio ✅ GEBOUWD (30-7-2026), ⏳ WACHT OP KLASPROEF
+**Complexiteit:** Groot (2 fasen) · **Bron:** Idee Bert 24-7 · **Status:** Gebouwd achter dev-vlag `sequencer`, staat in de masterplan-worktree klaar voor de grote testronde
+
+Leerlingen bouwen een herhalend ritmepatroon met hun verzamelde geluiden (1 vakje = 1 tel, 16 vakjes standaard, 4–32; 3–8 sporen; uitklinken/afkappen per spoor; trim; duur-arcering). Een sequence verschijnt als gekleurd blokje in de bibliotheek, gaat als clip op de montagelijn (uitrekken = herhalen) en blijft **levend** bewerkbaar. Sequences gaan mee in opslaan, bewaarcode, delen, inleveren, MP3- en video-export.
+
+- **Fase 1** — los lab op `/sequencer` (dev-only route) ✅
+- **Fase 2** — studio-integratie achter dev-vlag ✅
+- **Uitleg** — woordenlijst/naambesluit, eerste-keer-tip (leerling), handleidingsectie + klastip (docent), looping uitleg-animatie ✅
+- Architectuur + besluiten: `docs/PLAN-SEQUENCER-FASE2-STUDIO.md`, CLAUDE.md §Sequencer
+
+**Nog open (bewust uitgesteld tot ná een klasproef):**
+- [ ] Ingebouwde **leskaart** + `/les/`-pagina (route: compositie bouwen → opslaan als opdracht → promoveren via migratie, net als "Drum beat")
+- [ ] **Tutorial-video** voor leerlingen (7e video) + hoofdstuk in `docs/VIDEO-DRAAIBOEK.md`
+- [ ] Plek op de **publieke docentenpagina** `/teacher` (USP en/of FAQ-vraag; bewust géén vierde compositievorm)
+- [ ] **Undo/redo** binnen de sequencer-tab (togglen is nu zelf-herstellend)
+- [ ] Besluit **dev-vlag weg / default aan** bij publieke uitrol (`docs/HANDLEIDING-BEHEER.md` §4b)
+- [ ] Optioneel later: **BPM-slider** in het lab (datamodel is er klaar voor), rijen `USECASES-QA.md` + `TESTPLAN-MASTERPLAN.md`, `npm run teksten:export` voor de nieuwe `sequencer.*`-teksten
+
 
 #### #MOBILE-AUDIT-BELANGRIJK — Belangrijke verbeteringen uit mobile audit ⏳ NA TESTEN
 **Complexiteit:** Klein-Medium · **Bron:** Audit (2026-04-14) · **Type:** UX · **Status:** Wacht op hands-on device test

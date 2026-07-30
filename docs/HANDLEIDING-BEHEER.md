@@ -215,6 +215,7 @@ opnieuw bouwen en uploaden (of, bij de SQL-regels, een migratie draaien).
 | **Klassenlimiet per docent** | Supabase, kolom `teachers.max_classes` | Default 8; `NULL` = onbeperkt (zo staat Berts eigen account) |
 | **Hotspots op een locatieplaat** | `/editor` in de browser | Slepen → exporteren als JSON → in `locations.ts` plakken |
 | **Alle teksten (NL + EN)** | `docs/TEKSTEN.md` | Zie `npm run teksten:export` / `teksten:import` — bewerk het document, ik verwerk het terug |
+| **Sequencer aan/uit** (in ontwikkeling) | `src/stores/devFlagsStore.ts` → vlag `sequencer` | Staat standaard **uit**; aanzetten met `?dev=true` in de URL (blijft in localStorage staan). Vlag uit = de studio is exact zoals voorheen; composities mét een sequence blijven wél afspeelbaar. Bij publieke uitrol: default op `true` zetten of de vlag verwijderen |
 | **Wat aan/uit staat per presentatie-modus** (digibord/review/delen/peer) | `src/components/presentation/PresentationSurface.tsx` (comment-blok bovenaan) | De per-modus-schakelaars staan als afgeleide booleans (`isTeacherMode`/`hasPlaylistUi`/`hasVisual`/`showNames`) + `useState`-defaults (o.a. `autoAdvance`=Doorspelen default uit, `montageOpen`, `sidebarOpen`). Nog geen centrale config-tabel — dat is een latere verbetering |
 
 ### Toekomst: een echte admin-werkruimte
