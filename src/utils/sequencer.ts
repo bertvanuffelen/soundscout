@@ -11,6 +11,7 @@ import {
   SEQ_MAX_STEPS,
   SEQ_MIN_STEPS,
   SEQUENCE_COLOR,
+  SEQUENCE_COLORS,
   SEQUENCE_ICON,
   SEQUENCE_SAMPLE_PREFIX,
   type SequencerSequence,
@@ -92,8 +93,18 @@ export function createSequenceSample(sequence: SequencerSequence): Sample {
     audioUrl: '',
     duration: (sequence.lengthSteps * 60) / sequence.bpm,
     icon: SEQUENCE_ICON,
-    color: SEQUENCE_COLOR,
+    color: sequence.color ?? SEQUENCE_COLOR,
   };
+}
+
+/**
+ * Eerstvolgende vrije kleur uit het palet (oker-geel voorop). Zijn alle
+ * kleuren in gebruik, dan wordt er cyclisch verder geteld.
+ */
+export function nextSequenceColor(existing: SequencerSequence[]): string {
+  const used = new Set(existing.map((seq) => seq.color ?? SEQUENCE_COLOR));
+  const free = SEQUENCE_COLORS.find((color) => !used.has(color));
+  return free ?? SEQUENCE_COLORS[existing.length % SEQUENCE_COLORS.length];
 }
 
 /** Sample-lijst aangevuld met de virtuele sequence-samples */
@@ -106,11 +117,15 @@ export function withSequenceSamples(
 }
 
 /** Maak een verse standaard-sequence (3 lege sporen, 16 vakjes, 120 BPM) */
-export function createDefaultSequence(name: string): SequencerSequence {
+export function createDefaultSequence(
+  name: string,
+  color: string = SEQUENCE_COLOR
+): SequencerSequence {
   const now = new Date().toISOString();
   return {
     id: generateId(),
     name,
+    color,
     lengthSteps: SEQ_DEFAULT_STEPS,
     bpm: SEQ_DEFAULT_BPM,
     tracks: Array.from({ length: SEQ_DEFAULT_TRACKS }, () =>

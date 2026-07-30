@@ -37,9 +37,26 @@ export const SEQ_CHOKE_FADE_SECONDS = 0.01;
  * uitgepakt naar gewone geluids-events.
  */
 export const SEQUENCE_SAMPLE_PREFIX = 'seq:';
-/** Kleur van sequence-bundels/-clips — accent-500 uit de huisstijl (oker-geel);
- *  herkenbaarheid komt van het raster-icoon, de stippelrand en het blokjespatroon */
-export const SEQUENCE_COLOR = '#F59E0B';
+/**
+ * Kleurenpalet voor sequence-bundels/-clips. De EERSTE kleur is altijd het
+ * oker-geel van de huisstijl (accent-500) — zo blijft "sequence = geel" de
+ * eerste indruk. Daarna variaties (warme oker-familie eerst, dan bredere
+ * kleuren) zodat meerdere sequences uit elkaar te houden zijn. Herkenbaar
+ * blijven ze door raster-icoon, stippelrand en blokjespatroon.
+ */
+export const SEQUENCE_COLORS = [
+  '#F59E0B', // oker-geel (accent-500) — altijd als eerste
+  '#B45309', // brons (accent-700)
+  '#FBBF24', // licht amber (accent-300)
+  '#EA580C', // oranje
+  '#84CC16', // limoen
+  '#0D9488', // teal
+  '#6366F1', // indigo
+  '#DB2777', // magenta
+] as const;
+
+/** Standaardkleur (= de eerste uit het palet) */
+export const SEQUENCE_COLOR = SEQUENCE_COLORS[0];
 /** Lucide-icoon voor sequence-bundels */
 export const SEQUENCE_ICON = 'Grid3x3';
 
@@ -68,6 +85,8 @@ export interface SequencerTrack {
 export interface SequencerSequence {
   id: string;
   name: string;
+  /** Kleur uit SEQUENCE_COLORS (undefined = eerste kleur, oker-geel) */
+  color?: string;
   /** 4..32, veelvoud van 4 */
   lengthSteps: number;
   /** Vast 120 in v1 */

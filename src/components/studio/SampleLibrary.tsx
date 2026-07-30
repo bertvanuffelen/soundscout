@@ -6,6 +6,7 @@ import { Play, Square, MapPin, GripVertical, Grid3x3, Plus as PlusIcon } from 'l
 import type { Sample } from '../../types';
 import type { SequencerSequence } from '../../types/sequencer';
 import { createSequenceSample } from '../../utils/sequencer';
+import { SEQUENCE_COLOR } from '../../types/sequencer';
 import { SampleIcon } from '../../utils/iconMap';
 
 interface SampleLibraryProps {
@@ -23,7 +24,7 @@ interface SampleLibraryProps {
   onAddSequence?: () => void;
 }
 
-/** Paarse bundel-chip: sleepbaar (virtuele sample) + klik = patroon bewerken */
+/** Bundel-chip in de kleur van de sequence: sleepbaar + klik = patroon bewerken */
 const DraggableBundle = memo(function DraggableBundle({
   sequence,
   onOpen,
@@ -33,6 +34,7 @@ const DraggableBundle = memo(function DraggableBundle({
 }) {
   const { t } = useTranslation();
   const virtualSample = createSequenceSample(sequence);
+  const color = sequence.color ?? SEQUENCE_COLOR;
   const { attributes, listeners, setNodeRef, transform, isDragging } =
     useDraggable({
       id: `bundle-${sequence.id}`,
@@ -51,23 +53,24 @@ const DraggableBundle = memo(function DraggableBundle({
         touchAction: 'none',
         WebkitTouchCallout: 'none',
         userSelect: 'none',
+        borderColor: color,
+        backgroundColor: `${color}1a`,
       }}
       onClick={() => onOpen?.(sequence.id)}
       {...listeners}
       {...attributes}
       className={`
         flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border sm:border-2 border-dashed
-        border-accent-500 bg-accent-50
         transition-all duration-150 select-none shrink-0 cursor-grab active:cursor-grabbing
         ${isDragging ? 'opacity-30 scale-95' : 'hover:shadow-md active:shadow-sm'}
       `}
       title={t('sequencer.studio.editPattern')}
     >
-      <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 pointer-events-none text-accent-600">
+      <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 pointer-events-none" style={{ color }}>
         <GripVertical className="w-3 h-4 sm:w-4 sm:h-5" aria-hidden="true" />
       </div>
-      <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4 text-accent-800" aria-hidden="true" />
-      <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap text-accent-800">
+      <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" style={{ color }} aria-hidden="true" />
+      <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap text-text-main">
         {sequence.name}
       </span>
     </div>

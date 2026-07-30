@@ -74,6 +74,7 @@ export const SequencerTrackSchema = z.object({
 export const SequencerSequenceSchema = z.object({
   id: z.string(),
   name: z.string().max(60),
+  color: z.string().optional(),
   lengthSteps: z.number().int().min(4).max(32),
   bpm: z.number().positive(),
   tracks: z.array(SequencerTrackSchema).min(1).max(8),

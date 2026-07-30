@@ -18,6 +18,7 @@ import { useSequencerStore } from '../../stores/sequencerStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { sequencerEngine } from '../../services/SequencerEngine';
 import { sequenceSampleId } from '../../utils/sequencer';
+import { SEQUENCE_COLOR } from '../../types/sequencer';
 import SequencerGrid from './SequencerGrid';
 import {
   SEQ_MAX_STEPS,
@@ -138,8 +139,11 @@ export default function StudioSequencerPanel({
         >
           {t('studio.timeline')}
         </button>
-        <span className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold shrink-0 max-w-40 bg-accent-100 text-accent-800">
-          <Grid3x3 size={12} aria-hidden />
+        <span
+          className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold shrink-0 max-w-40 text-text-main"
+          style={{ backgroundColor: `${sequence.color ?? SEQUENCE_COLOR}33` }}
+        >
+          <Grid3x3 size={12} aria-hidden style={{ color: sequence.color ?? SEQUENCE_COLOR }} />
           <span className="truncate">{sequence.name}</span>
           <button
             type="button"
@@ -215,7 +219,10 @@ export default function StudioSequencerPanel({
       </div>
 
       {/* --- Grid (zelfde plek als de tijdlijnsporen) --- */}
-      <div className="overflow-y-auto min-h-0 flex-1 px-2 sm:px-4 py-2 bg-accent-50/40">
+      <div
+        className="overflow-y-auto min-h-0 flex-1 px-2 sm:px-4 py-2"
+        style={{ backgroundColor: `${sequence.color ?? SEQUENCE_COLOR}0d` }}
+      >
         <SequencerGrid samples={samples} />
         <div className="mt-2">
           <Button

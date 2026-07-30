@@ -18,19 +18,21 @@ interface StoryboardLightboxProps {
   isOpen: boolean;
   onClose: () => void;
   storyboard: Storyboard | null;
+  /** Afbeelding waarop geopend wordt (default 0) */
+  startIndex?: number;
 }
 
 const SWIPE_THRESHOLD_PX = 50;
 
-export function StoryboardLightbox({ isOpen, onClose, storyboard }: StoryboardLightboxProps) {
+export function StoryboardLightbox({ isOpen, onClose, storyboard, startIndex = 0 }: StoryboardLightboxProps) {
   const { t } = useTranslation();
   const [index, setIndex] = useState(0);
   const touchStartX = useRef<number | null>(null);
 
-  // Reset naar eerste afbeelding bij elke opening / nieuwe storyboard
+  // Bij elke opening starten op de gevraagde afbeelding (default de eerste)
   useEffect(() => {
-    if (isOpen) setIndex(0);
-  }, [isOpen, storyboard?.id]);
+    if (isOpen) setIndex(startIndex);
+  }, [isOpen, storyboard?.id, startIndex]);
 
   const total = storyboard?.images.length ?? 0;
 

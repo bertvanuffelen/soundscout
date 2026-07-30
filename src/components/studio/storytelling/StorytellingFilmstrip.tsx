@@ -16,7 +16,8 @@
 
 import { useCallback, useEffect, useRef, useState, type RefObject } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play } from 'lucide-react';
+import { Play, Maximize2 } from 'lucide-react';
+import { StoryboardLightbox } from '../../start/StoryboardLightbox';
 import { useAppStore } from '../../../stores/appStore';
 import { useAudioStore } from '../../../stores/audioStore';
 import { useTimelineStore } from '../../../stores/timelineStore';
@@ -39,6 +40,10 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
 
   const outerRef = useRef<HTMLDivElement>(null);
   const rafRef = useRef<number | null>(null);
+
+  // Vergroot bekijken (testronde 7): de thumbnails blijven vullend (cover),
+  // het vergrootglas opent de bestaande lightbox op de gekozen scène.
+  const [lightboxIndex, setLightboxIndex] = useState<number | null>(null);
 
   const images = activeStoryboard?.images ?? [];
   const imageCount = images.length;
@@ -172,7 +177,7 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
                       : 'border-border-subtle hover:border-accent-300',
                   )}
                 >
-                  <img src={img.url} alt={t(img.label)} className="w-full h-full object-contain" />
+                  <img src={img.url} alt={t(img.label)} className="w-full h-full object-cover" />
 
                   {/* Scène-nummer linksboven */}
                   <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/55 text-white text-xs font-bold flex items-center justify-center">
@@ -186,8 +191,30 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
                     </span>
                   )}
 
+                  {/* Vergroot bekijken — opent de lightbox op deze scène */}
+                  <span
+                    role="button"
+                    tabIndex={0}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      setLightboxIndex(i);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        setLightboxIndex(i);
+                      }
+                    }}
+                    title={t('storyboardLightbox.openPreview')}
+                    aria-label={t('storyboardLightbox.openPreview')}
+                    className="absolute bottom-1.5 right-1.5 w-7 h-7 rounded-full bg-black/55 hover:bg-black/75 text-white flex items-center justify-center transition-colors cursor-pointer"
+                  >
+                    <Maximize2 size={13} />
+                  </span>
+
                   {/* Scène-label onderaan */}
-                  <span className="absolute inset-x-0 bottom-0 px-2 py-1 text-[11px] font-medium text-white bg-gradient-to-t from-black/60 to-transparent truncate">
+                  <span className="absolute inset-x-0 bottom-0 px-2 py-1 pr-10 text-[11px] font-medium text-white bg-gradient-to-t from-black/60 to-transparent truncate">
                     {t(img.label)}
                   </span>
                 </div>
@@ -196,6 +223,13 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
           })}
         </div>
       </div>
+
+      <StoryboardLightbox
+        isOpen={lightboxIndex !== null}
+        startIndex={lightboxIndex ?? 0}
+        storyboard={activeStoryboard}
+        onClose={() => setLightboxIndex(null)}
+      />
     </div>
   );
 }

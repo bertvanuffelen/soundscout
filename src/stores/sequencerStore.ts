@@ -13,6 +13,7 @@ import {
   clampLengthSteps,
   createDefaultSequence,
   createEmptyTrack,
+  nextSequenceColor,
   resizeSteps,
 } from '../utils/sequencer';
 import { loadSequences, saveSequences } from '../services/sequencerStorage';
@@ -262,7 +263,7 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
     // --- Sequences ---
 
     createSequence: (name) => {
-      const seq = createDefaultSequence(name);
+      const seq = createDefaultSequence(name, nextSequenceColor(get().sequences));
       set((state) => ({
         sequences: [...state.sequences, seq],
         activeSequenceId: seq.id,
@@ -291,6 +292,9 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
         ...source,
         id: generateId(),
         name: `${source.name}${copySuffix}`.slice(0, 60),
+        // Kopie krijgt een eigen kleur — anders zijn origineel en kopie
+        // visueel niet te onderscheiden op de montagelijn
+        color: nextSequenceColor(get().sequences),
         tracks: source.tracks.map((track) => ({
           ...track,
           id: generateId(),
