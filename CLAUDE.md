@@ -60,7 +60,7 @@ StartScreen has two primary CTAs: "Nieuwe compositie" (opens `ComposeModeModal` 
 
 ### State Management (Zustand Stores)
 
-Seven independent stores in `src/stores/`:
+Eight independent stores in `src/stores/`:
 
 | Store | Responsibility |
 |---|---|
@@ -71,6 +71,7 @@ Seven independent stores in `src/stores/`:
 | `userStore` | User session, role (guest/student/teacher), class code |
 | `themeStore` | Active theme, locations, samples, map config (loaded from `?theme=` URL param) |
 | `selectionStore` | Selected clip ID + track index for inline clip edit |
+| `sequencerStore` | Sequencer (fase 1+2): sequences, actieve/open sequence, `mode: 'lab' \| 'studio'` — lab persisteert naar eigen localStorage-sleutel `soundscout:sequencer-lab`, studio spiegelt elke mutatie direct naar `timelineStore.setSequences` (bumpt `audioVersion`) |
 
 **Pattern**: Direct selectors `useStore((s) => s.field)`. For non-reactive reads in callbacks, use `useStore.getState().field` to avoid unnecessary re-renders (see Tone.js Pitfalls below).
 
@@ -151,6 +152,20 @@ The Timeline has `max-h-[50dvh]` to guarantee the sample library gets enough spa
 - **Clip repositioning**: Delta-based — new position = original position + drag delta (not cursor position)
 - **Smart snap** (`src/utils/clipCollision.ts`): Try original position → shift after blocking clip → try tracks below → reject
 - Sensors: PointerSensor (8px distance) + TouchSensor (150ms delay)
+
+### Sequencer (fase 1 lab + fase 2 studio-integratie — dev-vlag)
+
+Een step sequencer ("filmmuziek-generator"): leerlingen vullen een grid (1 vakje = 1 tel, standaard 16 vakjes = 4 maten, ±4 instelbaar 4–32; 3–8 sporen) met bibliotheekgeluiden. Per spoor: geluid kiezen, **Uitklinken/Afkappen** (choke), trim, volume, mute; permanente **duur-arcering** toont hoeveel vakjes een (getrimd) geluid beslaat. Volledig ontwerpdossier: `docs/PLAN-SEQUENCER-FASE2-STUDIO.md` (status GEBOUWD).
+
+**Fase 1 — lab** op `/sequencer` (dev-only route in `App.tsx`, patroon `/editor`): `src/pages/SequencerLab.tsx` + `src/components/sequencer/*`. Eigen opslag (`sequencerStorage.ts`, sleutel `soundscout:sequencer-lab`, eigen Zod via de gedeelde schema's).
+
+**Fase 2 — studio** achter dev-vlag `sequencer` (devFlagsStore, aan via `?dev=true`). Vlag uit = studio pixel-identiek aan voorheen; composities mét sequence-clips blijven voor iedereen afspeelbaar.
+
+- **Kernconstructie — virtuele sample**: een sequence-clip is een gewone `Clip` met `sampleId: 'seq:<sequenceId>'`. `withSequenceSamples()`/`createSequenceSample()` (`src/utils/sequencer.ts`) vullen de sample-lijsten aan met een virtuele sample (duur = vakjes × teldur, kleur `SEQUENCE_COLOR` = accent-500) — collision, clip-breedte, loop-uitrekken (= patroon herhalen), dupliceren en undo werken daardoor ONGEWIJZIGD. Geen nieuw Clip-veld, dus ook `duplicateClip`/`tracksEqual` onaangeraakt.
+- **Audio = één plek**: `audioEvents.generateClipEvents` krijgt `options.sequences` en pakt sequence-clips uit naar gewone `ClipEvent`s (choke deterministisch afgekapt over iteratiegrenzen, declick-fades op trim/choke/clipgrens). Live, MP3- én video-export zijn per constructie identiek. De pure generator `src/services/sequencerEvents.ts` (Tone-vrij) is de bron; `SequencerEngine` (eigen `Tone.Clock`, NOOIT de globale Transport — die wordt door AudioService gecanceld) speelt hem in lab/sequencer-modus.
+- **Persistentie**: `TimelineState.sequences` + `CompositionData.sequences` (Zod: `SequencerSequenceSchema` in `utils/schemas.ts`) — bewaarcode, delen, inleveren en templates nemen sequences automatisch mee. Undo-restore behoudt de huidige sequences (bewust buiten de historie). `findMissingSampleIds` slaat `seq:`-clips over en checkt de patroon-geluiden (vals-alarm-fix TR7).
+- **UI**: gele bundel-chips in de bibliotheek (gestippeld, raster-icoon; klik = patroon bewerken, slepen = plaatsen als gewone sample-drag) + gestippelde "+ Sequence toevoegen"-chip achteraan. `StudioSequencerPanel` vervangt de volledige tijdlijnzone (modus-bewuste werkbalk: tabs Montagelijn | naam ✕ links, hernoem/dupliceer/verwijder + lengte ± rechts; tab bestaat alleen zolang een sequence open is — "rustig tenzij"). Klik buiten het panel (bibliotheek/beeldzone, `display:contents`-wrapper met `onClickCapture`) sluit de tab; transportbalk en modals niet. `TransportControls` is modus-bewust: sequencer-tab open → play speelt de sequence (rondlopend, loop vast aan) via `sequencerEngine`; montagelijn-tab → de compositie. Clip-bewerkbalk toont voor sequence-clips "patroon bewerken" i.p.v. trim/effecten; `Clip.tsx` geeft ze een blokjespatroon-achtergrond.
+- **Let op bij bewerken**: sequencer-mutaties in de studio lopen via `sequencerStore` (mode 'studio') → `timelineStore.setSequences` → `audioVersion`-bump (live reschedule-conventie #22). `StudioView` heeft DRIE `SampleLibrary`-renders (kaal, desktop-split, mobiel) — props op alle drie doorvoeren. Preview-knopjes in bibliotheek en picker hebben een aan/uit-status (stop-icoon, klik = stop).
 
 ### Stage / Podium Screen
 
