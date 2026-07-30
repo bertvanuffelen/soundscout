@@ -2,8 +2,10 @@ import { memo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, MapPin, GripVertical } from 'lucide-react';
+import { Play, MapPin, GripVertical, Grid3x3 } from 'lucide-react';
 import type { Sample } from '../../types';
+import type { SequencerSequence } from '../../types/sequencer';
+import { createSequenceSample } from '../../utils/sequencer';
 import { SampleIcon } from '../../utils/iconMap';
 
 interface SampleLibraryProps {
@@ -11,7 +13,63 @@ interface SampleLibraryProps {
   onPreview: (sampleId: string) => void;
   selectedSampleId?: string | null;
   onSelectSample?: (sampleId: string | null) => void;
+  /** Sequencer-bundels (fase 2, dev-vlag) — sleepbaar als virtuele sample */
+  sequences?: SequencerSequence[];
+  /** Open een sequence in de sequencer-tab (klik op de chip) */
+  onOpenSequence?: (sequenceId: string) => void;
 }
+
+/** Paarse bundel-chip: sleepbaar (virtuele sample) + klik = patroon bewerken */
+const DraggableBundle = memo(function DraggableBundle({
+  sequence,
+  onOpen,
+}: {
+  sequence: SequencerSequence;
+  onOpen?: (sequenceId: string) => void;
+}) {
+  const { t } = useTranslation();
+  const virtualSample = createSequenceSample(sequence);
+  const { attributes, listeners, setNodeRef, transform, isDragging } =
+    useDraggable({
+      id: `bundle-${sequence.id}`,
+      data: { type: 'sample', sample: virtualSample },
+    });
+
+  const style = transform
+    ? { transform: CSS.Translate.toString(transform) }
+    : undefined;
+
+  return (
+    <div
+      ref={setNodeRef}
+      style={{
+        ...style,
+        touchAction: 'none',
+        WebkitTouchCallout: 'none',
+        userSelect: 'none',
+        borderColor: '#7F77DD',
+        backgroundColor: '#EEEDFE',
+      }}
+      onClick={() => onOpen?.(sequence.id)}
+      {...listeners}
+      {...attributes}
+      className={`
+        flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border sm:border-2 border-dashed
+        transition-all duration-150 select-none shrink-0 cursor-grab active:cursor-grabbing
+        ${isDragging ? 'opacity-30 scale-95' : 'hover:shadow-md active:shadow-sm'}
+      `}
+      title={t('sequencer.studio.editPattern')}
+    >
+      <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 pointer-events-none" style={{ color: '#7F77DD' }}>
+        <GripVertical className="w-3 h-4 sm:w-4 sm:h-5" aria-hidden="true" />
+      </div>
+      <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4" style={{ color: '#3C3489' }} aria-hidden="true" />
+      <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap" style={{ color: '#3C3489' }}>
+        {sequence.name}
+      </span>
+    </div>
+  );
+});
 
 const DraggableSample = memo(function DraggableSample({
   sample,
@@ -91,10 +149,12 @@ export const SampleLibrary = memo(function SampleLibrary({
   onPreview,
   selectedSampleId,
   onSelectSample,
+  sequences = [],
+  onOpenSequence,
 }: SampleLibraryProps) {
   const { t } = useTranslation();
 
-  if (samples.length === 0) {
+  if (samples.length === 0 && sequences.length === 0) {
     return (
       <div className="flex-1 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
         <p className="text-xs sm:text-sm text-text-muted italic">{t('studio.emptyLibrary')}</p>
@@ -119,6 +179,13 @@ export const SampleLibrary = memo(function SampleLibrary({
             onPreview={onPreview}
             isSelected={selectedSampleId === sample.id}
             onSelect={onSelectSample ? (id) => onSelectSample(selectedSampleId === id ? null : id) : undefined}
+          />
+        ))}
+        {sequences.map((sequence) => (
+          <DraggableBundle
+            key={sequence.id}
+            sequence={sequence}
+            onOpen={onOpenSequence}
           />
         ))}
       </div>

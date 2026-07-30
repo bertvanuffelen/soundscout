@@ -9,6 +9,7 @@
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button, Modal } from '../ui';
+import type { Sample } from '../../types';
 import { useSequencerStore } from '../../stores/sequencerStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { sequencerEngine } from '../../services/SequencerEngine';
@@ -16,7 +17,15 @@ import SequencerTrackRow from './SequencerTrackRow';
 import SamplePickerModal from './SamplePickerModal';
 import SequencerTrimModal from './SequencerTrimModal';
 
-export default function SequencerGrid() {
+interface SequencerGridProps {
+  /**
+   * Kiesbare geluiden. Lab: weggelaten → alle themasamples.
+   * Studio (fase 2): de verzamelde bibliotheek van de leerling.
+   */
+  samples?: Sample[];
+}
+
+export default function SequencerGrid({ samples: samplesProp }: SequencerGridProps) {
   const { t } = useTranslation();
   const sequence = useSequencerStore((s) =>
     s.sequences.find((seq) => seq.id === s.activeSequenceId)
@@ -28,8 +37,13 @@ export default function SequencerGrid() {
   const toggleTrackMute = useSequencerStore((s) => s.toggleTrackMute);
   const setTrackVolume = useSequencerStore((s) => s.setTrackVolume);
   const removeTrack = useSequencerStore((s) => s.removeTrack);
-  const getSampleById = useThemeStore((s) => s.getSampleById);
+  const themeGetSampleById = useThemeStore((s) => s.getSampleById);
   const getSamples = useThemeStore((s) => s.getSamples);
+  const availableSamples = samplesProp ?? getSamples();
+  const getSampleById = (id: string): Sample | undefined =>
+    samplesProp
+      ? samplesProp.find((sample) => sample.id === id)
+      : themeGetSampleById(id);
 
   const [currentStep, setCurrentStep] = useState(-1);
   const [pickerTrackId, setPickerTrackId] = useState<string | null>(null);
@@ -88,7 +102,7 @@ export default function SequencerGrid() {
       {/* --- Sample-picker --- */}
       <SamplePickerModal
         isOpen={!!pickerTrack}
-        samples={getSamples()}
+        samples={availableSamples}
         selectedSampleId={pickerTrack?.sampleId ?? null}
         onSelect={(sample) => {
           if (pickerTrackId) {

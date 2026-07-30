@@ -2230,6 +2230,14 @@
       "untitled": "Sequence {{number}}",
       "copySuffix": " (copy)",
       "namePlaceholder": "Name of your sequence"
+    },
+    "studio": {
+      "addSequence": "Add sequence",
+      "editPattern": "Edit pattern",
+      "closeTab": "Close sequencer",
+      "libraryHeading": "Sequences",
+      "deleteWithClips": "This sequence is still on the timeline. Deleting it also removes those blocks.",
+      "playsSequence": "Plays this sequence (loops)"
     }
   }
 }

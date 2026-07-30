@@ -202,7 +202,11 @@ export function useCompositionPlayback(
         audioDiag.resumeWithExistingSchedule(startBeat);
         audioService.play(startBeat);
       } else {
-        audioService.scheduleTimeline(current.tracks ?? [], current.samples ?? []);
+        audioService.scheduleTimeline(
+          current.tracks ?? [],
+          current.samples ?? [],
+          current.sequences ?? []
+        );
         audioService.setLoop(loopingRef.current, totalBeatsRef.current);
         audioService.play(startBeat);
       }

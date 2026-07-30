@@ -2230,6 +2230,14 @@
       "untitled": "Sequence {{number}}",
       "copySuffix": " (kopie)",
       "namePlaceholder": "Naam van je sequence"
+    },
+    "studio": {
+      "addSequence": "Sequence toevoegen",
+      "editPattern": "Patroon bewerken",
+      "closeTab": "Sequencer sluiten",
+      "libraryHeading": "Sequences",
+      "deleteWithClips": "Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg.",
+      "playsSequence": "Speelt deze sequence (loopt rond)"
     }
   }
 }

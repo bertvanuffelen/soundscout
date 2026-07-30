@@ -40,6 +40,8 @@ import {
   Droplet,
   Bug,
   Skull,
+  // Sequencer-bundels (fase 2)
+  Grid3x3,
 } from 'lucide-react';
 
 const sampleIconMap: Record<string, LucideIcon> = {
@@ -83,6 +85,8 @@ const sampleIconMap: Record<string, LucideIcon> = {
   Droplet,
   Bug,
   Skull,
+  // Sequencer-bundels (fase 2)
+  Grid3x3,
 };
 
 interface SampleIconProps {

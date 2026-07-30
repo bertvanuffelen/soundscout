@@ -1,7 +1,7 @@
 import { memo, useRef, useEffect, useCallback, useMemo, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles } from 'lucide-react';
+import { Undo2, Redo2, Plus, Flag, Scissors, Trash2, Copy, Volume2, VolumeX, Eraser, ZoomIn, ZoomOut, Maximize2, Tag, Sparkles, Grid3x3 } from 'lucide-react';
 import type { Track as TrackType, Sample, Clip, Section, ClipEffects } from '../../types';
 import { Track } from './Track';
 import { Playhead } from './Playhead';
@@ -29,6 +29,9 @@ interface ClipEditProps {
   onClipMuteToggle?: (muted: boolean) => void;
   onClipLabelChange?: (label: string) => void;
   onClipEffectsApply?: (effects: Partial<ClipEffects>) => void;
+  /** Sequence-clip (fase 2): opent het patroon in de sequencer-tab.
+   *  Aanwezig = dit is een sequence-clip (trim/effecten verbergen). */
+  onEditPattern?: () => void;
   locked?: boolean;
 }
 
@@ -52,6 +55,8 @@ interface TimelineProps {
   onAddToTrack?: () => void;
   // Clip editing (inline in header bar)
   clipEdit?: ClipEditProps | null;
+  /** Fase 2 (dev-vlag): maak een nieuwe sequence + open de sequencer-tab */
+  onAddSequence?: () => void;
   /** Optionele externe scroll-container-ref (Feature F): laat de studio-filmstrip
    *  dezelfde horizontale scroll delen. Default = interne ref. */
   externalScrollRef?: RefObject<HTMLDivElement | null>;
@@ -74,6 +79,7 @@ export const Timeline = memo(function Timeline({
   selectedLibrarySampleName,
   onAddToTrack,
   clipEdit,
+  onAddSequence,
   sections: propSections,
   externalScrollRef,
 }: TimelineProps) {
@@ -387,8 +393,8 @@ export const Timeline = memo(function Timeline({
                 )
               )}
 
-              {/* Trim — hidden for locked clips */}
-              {!clipEdit.locked && (
+              {/* Trim — hidden for locked clips en sequence-clips */}
+              {!clipEdit.locked && !clipEdit.onEditPattern && (
                 <button
                   onClick={clipEdit.onTrim}
                   aria-label={t('studio.trim')}
@@ -433,8 +439,21 @@ export const Timeline = memo(function Timeline({
                 </button>
               )}
 
-              {/* Effects (#33, #79) — pitch, reverb, fade */}
-              {clipEdit.onClipEffectsApply && (
+              {/* Patroon bewerken — alleen voor sequence-clips (fase 2) */}
+              {clipEdit.onEditPattern && (
+                <button
+                  onClick={clipEdit.onEditPattern}
+                  aria-label={t('sequencer.studio.editPattern')}
+                  title={t('sequencer.studio.editPattern')}
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center rounded-lg transition-colors"
+                  style={{ backgroundColor: '#EEEDFE', color: '#3C3489' }}
+                >
+                  <Grid3x3 size={14} />
+                </button>
+              )}
+
+              {/* Effects (#33, #79) — pitch, reverb, fade — niet voor sequence-clips */}
+              {clipEdit.onClipEffectsApply && !clipEdit.onEditPattern && (
                 <button
                   onClick={handleEffectsClick}
                   aria-label={t('studio.effects')}
@@ -476,6 +495,18 @@ export const Timeline = memo(function Timeline({
               className="p-1 rounded text-accent-600 hover:text-accent-700 hover:bg-accent-100/60 transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
             >
               <Plus size={16} />
+            </button>
+          )}
+          {/* Sequence toevoegen (fase 2, dev-vlag) */}
+          {!readOnly && onAddSequence && (
+            <button
+              onClick={onAddSequence}
+              aria-label={t('sequencer.studio.addSequence')}
+              title={t('sequencer.studio.addSequence')}
+              className="p-1 rounded transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center hover:opacity-80"
+              style={{ backgroundColor: '#EEEDFE', color: '#3C3489', border: '1px solid #AFA9EC' }}
+            >
+              <Grid3x3 size={14} />
             </button>
           )}
           {/* Mark section button — only in edit mode, hidden when template sections locked */}

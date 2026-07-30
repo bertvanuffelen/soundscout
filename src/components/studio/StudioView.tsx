@@ -7,7 +7,7 @@
  * - Cleanup (useAudioCleanup)
  */
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, pointerWithin, closestCenter, MeasuringStrategy, type CollisionDetection } from '@dnd-kit/core';
 import { Music, Image } from 'lucide-react';
@@ -33,6 +33,15 @@ import { Button } from '../ui';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { audioService } from '../../services/AudioService';
 import { generateClipId } from '../../utils/uuid';
+import { useDevFlagsStore } from '../../stores/devFlagsStore';
+import { useSequencerStore } from '../../stores/sequencerStore';
+import { sequencerEngine } from '../../services/SequencerEngine';
+import StudioSequencerPanel from '../sequencer/StudioSequencerPanel';
+import {
+  getSequenceIdFromSampleId,
+  isSequenceSampleId,
+  withSequenceSamples,
+} from '../../utils/sequencer';
 
 /**
  * Custom collision detection: prefer the track the pointer is actually inside,
@@ -120,6 +129,62 @@ export function StudioView() {
     handleSeek,
   } = useStudioPlayback();
 
+  // --- Sequencer in de studio (fase 2, dev-vlag) ---
+  const sequencerEnabled = useDevFlagsStore((st) => st.sequencer);
+  const sequences = useTimelineStore((st) => st.sequences);
+  const openSequenceId = useSequencerStore((st) => st.openSequenceId);
+  const setOpenSequenceId = useSequencerStore((st) => st.setOpenSequenceId);
+  const seqIsPlaying = useSequencerStore((st) => st.isPlaying);
+  const sequencerOpen = sequencerEnabled && !!openSequenceId;
+
+  // Compositie-sequences in de werk-store laden (studio-modus: mutaties
+  // spiegelen direct terug naar timelineStore, incl. audioVersion-bump)
+  useEffect(() => {
+    if (sequencerEnabled) {
+      useSequencerStore
+        .getState()
+        .hydrateForStudio(useTimelineStore.getState().sequences);
+    }
+  }, [sequencerEnabled]);
+
+  // Sample-lijst aangevuld met virtuele sequence-samples: hierdoor werken
+  // collision, clip-breedte, dupliceren en DnD ongewijzigd voor bundels
+  const samplesWithSequences = useMemo(
+    () =>
+      sequencerEnabled
+        ? withSequenceSamples(librarySamples, sequences)
+        : librarySamples,
+    [sequencerEnabled, librarySamples, sequences]
+  );
+
+  const handleOpenSequence = useCallback(
+    (sequenceId: string) => {
+      // Compositie-afspelen pauzeren vóór het wisselen van context
+      if (useAudioStore.getState().isPlaying) handlePause();
+      setOpenSequenceId(sequenceId);
+    },
+    [handlePause, setOpenSequenceId]
+  );
+
+  const handleAddSequence = useCallback(() => {
+    const store = useSequencerStore.getState();
+    store.createSequence(
+      t('sequencer.sequences.untitled', { number: store.sequences.length + 1 })
+    );
+    const newId = useSequencerStore.getState().activeSequenceId;
+    if (newId) handleOpenSequence(newId);
+  }, [t, handleOpenSequence]);
+
+  const handleSeqPlay = useCallback(async () => {
+    await sequencerEngine.start();
+    useSequencerStore.getState().setIsPlaying(true);
+  }, []);
+
+  const handleSeqStop = useCallback(() => {
+    sequencerEngine.stop();
+    useSequencerStore.getState().setIsPlaying(false);
+  }, []);
+
   // DnD hook needs samples for collision detection
   const {
     sensors,
@@ -130,7 +195,7 @@ export function StudioView() {
     handleDragMove,
     handleDragEnd,
     handleDragCancel,
-  } = useStudioDnD({ samples: librarySamples });
+  } = useStudioDnD({ samples: samplesWithSequences });
 
   // Cleanup on unmount
   useAudioCleanup();
@@ -179,11 +244,11 @@ export function StudioView() {
     const clip = track.clips.find((c) => c.id === selectedClipId);
     if (!clip) return null;
 
-    const sample = librarySamples.find((s) => s.id === clip.sampleId);
+    const sample = samplesWithSequences.find((s) => s.id === clip.sampleId);
     if (!sample) return null;
 
     return { clip, sample, trackIndex: selectedTrackIndex };
-  }, [selectedClipId, selectedTrackIndex, tracks, librarySamples]);
+  }, [selectedClipId, selectedTrackIndex, tracks, samplesWithSequences]);
 
   // Toolbar action handlers
   const handleTrimClick = useCallback(() => {
@@ -202,14 +267,14 @@ export function StudioView() {
       const result = duplicateClip(
         selectedClipData.trackIndex,
         selectedClipData.clip.id,
-        librarySamples,
+        samplesWithSequences,
       );
       // Select the new clip if duplication was successful
       if (result.reason !== 'rejected' && result.newClipId) {
         selectClip(result.newClipId, result.trackIndex);
       }
     }
-  }, [selectedClipData, duplicateClip, selectClip, librarySamples]);
+  }, [selectedClipData, duplicateClip, selectClip, samplesWithSequences]);
 
   // Handle trim apply from modal
   const handleTrimApply = useCallback(
@@ -285,11 +350,11 @@ export function StudioView() {
     };
 
     // Try track 0 first — smart snap will find the best position
-    addClip(0, clip, librarySamples);
+    addClip(0, clip, samplesWithSequences);
 
     // Clear selection after adding
     setSelectedLibrarySampleId(null);
-  }, [selectedLibrarySampleId, addClip, activeTemplate, templateLockOptions.allowNewClips, librarySamples]);
+  }, [selectedLibrarySampleId, addClip, activeTemplate, templateLockOptions.allowNewClips, samplesWithSequences]);
 
   // Get translated name of selected library sample for the "+" button aria-label
   const selectedLibrarySampleName = useMemo(() => {
@@ -397,6 +462,8 @@ export function StudioView() {
             onPreview={handlePreview}
             selectedSampleId={selectedLibrarySampleId}
             onSelectSample={setSelectedLibrarySampleId}
+            sequences={sequencerEnabled ? sequences : []}
+            onOpenSequence={handleOpenSequence}
           />
         ) : (
           <>
@@ -413,6 +480,8 @@ export function StudioView() {
                       onPreview={handlePreview}
                       selectedSampleId={selectedLibrarySampleId}
                       onSelectSample={setSelectedLibrarySampleId}
+                      sequences={sequencerEnabled ? sequences : []}
+                      onOpenSequence={handleOpenSequence}
                     />
                   )}
                   {effectiveMode !== 'library' && (
@@ -430,6 +499,8 @@ export function StudioView() {
                   onPreview={handlePreview}
                   selectedSampleId={selectedLibrarySampleId}
                   onSelectSample={setSelectedLibrarySampleId}
+                  sequences={sequencerEnabled ? sequences : []}
+                  onOpenSequence={handleOpenSequence}
                 />
               ) : (
                 <StorytellingPanel className="flex-1" />
@@ -438,7 +509,15 @@ export function StudioView() {
           </>
         )}
 
-        {/* Timeline - fixed at bottom above transport controls */}
+        {/* Timeline - fixed at bottom above transport controls.
+            Fase 2: met een geopende sequence vervangt het sequencer-panel de
+            volledige tijdlijnzone (incl. werkbalk) — "rustig tenzij". */}
+        {sequencerOpen ? (
+          <StudioSequencerPanel
+            samples={librarySamples}
+            isFreeMode={composeMode === 'free'}
+          />
+        ) : (
         <Timeline
           tracks={tracks}
           /* Clips oplossen via de eigen bibliotheek, niet via het actieve thema.
@@ -446,7 +525,7 @@ export function StudioView() {
              compositie op een ánder apparaat (bewaarcode), dan staat daar thema
              'basis' actief en werden clips uit een ander thema niet gevonden —
              lege tijdlijn (bevinding Bert, testronde 4 / punt A3). */
-          samples={librarySamples}
+          samples={samplesWithSequences}
           bpm={bpm}
           totalBeats={totalBeats}
           isPlaying={isPlaying}
@@ -469,9 +548,17 @@ export function StudioView() {
             onClipMuteToggle: handleClipMuteToggle,
             onClipLabelChange: handleClipLabelChange,
             onClipEffectsApply: handleClipEffectsApply,
+            onEditPattern: isSequenceSampleId(selectedClipData.clip.sampleId)
+              ? () => {
+                  const seqId = getSequenceIdFromSampleId(selectedClipData.clip.sampleId);
+                  if (seqId) handleOpenSequence(seqId);
+                }
+              : undefined,
             locked: templateLockOptions.clipsLocked && (selectedClipData.clip.fromTemplate === true),
           } : null}
+          onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
         />
+        )}
 
         {/* Drag Overlay - hidden when snap preview is visible (only snap preview shows drop location) */}
         <DragOverlay>
@@ -502,17 +589,19 @@ export function StudioView() {
       </DndContext>
 
       {/* Transport Controls */}
+      {/* Modus-bewust: met een open sequencer-tab speelt de grote play-knop
+          de sequence (rondlopend, eigen engine); anders de compositie. */}
       <TransportControls
-        isPlaying={isPlaying}
-        hasClips={hasClips}
-        onPlay={handlePlay}
-        onPause={handlePause}
-        onRewind={handleRewind}
-        loopMode={loopMode}
-        canLoopSection={canLoopSection}
-        onLoopWhole={handleLoopWhole}
-        onLoopSection={handleLoopSection}
-        onLoopOff={handleLoopOff}
+        isPlaying={sequencerOpen ? seqIsPlaying : isPlaying}
+        hasClips={sequencerOpen ? true : hasClips}
+        onPlay={sequencerOpen ? handleSeqPlay : handlePlay}
+        onPause={sequencerOpen ? handleSeqStop : handlePause}
+        onRewind={sequencerOpen ? handleSeqStop : handleRewind}
+        loopMode={sequencerOpen ? 'whole' : loopMode}
+        canLoopSection={sequencerOpen ? false : canLoopSection}
+        onLoopWhole={sequencerOpen ? () => undefined : handleLoopWhole}
+        onLoopSection={sequencerOpen ? () => undefined : handleLoopSection}
+        onLoopOff={sequencerOpen ? () => undefined : handleLoopOff}
       />
 
       {/* Trim Modal */}

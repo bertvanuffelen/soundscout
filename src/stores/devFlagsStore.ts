@@ -17,6 +17,8 @@ interface DevFlags {
   sections: boolean;
   /** Enable template system for teachers */
   templates: boolean;
+  /** Enable de sequencer in de studio (fase 2 — admin-testfase) */
+  sequencer: boolean;
 }
 
 interface DevFlagsStore extends DevFlags {
@@ -50,26 +52,32 @@ export const useDevFlagsStore = create<DevFlagsStore>((set, get) => ({
   // Default: all flags off
   sections: false,
   templates: false,
+  sequencer: false,
 
   setAllFlags: (enabled) => {
-    const flags: DevFlags = { sections: enabled, templates: enabled };
+    const flags: DevFlags = { sections: enabled, templates: enabled, sequencer: enabled };
     persistFlags(flags);
     set(flags);
   },
 
   setFlag: (flag, enabled) => {
-    const { sections, templates } = get();
-    const flags: DevFlags = { sections, templates, [flag]: enabled };
+    const { sections, templates, sequencer } = get();
+    const flags: DevFlags = { sections, templates, sequencer, [flag]: enabled };
     persistFlags(flags);
     set({ [flag]: enabled });
   },
 
   hydrate: () => {
     const saved = loadFlags();
-    if (saved.sections !== undefined || saved.templates !== undefined) {
+    if (
+      saved.sections !== undefined ||
+      saved.templates !== undefined ||
+      saved.sequencer !== undefined
+    ) {
       set({
         sections: saved.sections ?? false,
         templates: saved.templates ?? false,
+        sequencer: saved.sequencer ?? false,
       });
     }
   },

@@ -56,6 +56,7 @@ import { useModalBehavior } from '../../hooks/useModalBehavior';
 import { DEFAULT_BPM } from '../../constants/config';
 import { resolveStoryboard } from '../../utils/resolveStoryboard';
 import { cn } from '../../utils/cn';
+import { withSequenceSamples } from '../../utils/sequencer';
 
 export type PresentationMode = 'teacher-present' | 'teacher-review' | 'public' | 'peer';
 
@@ -563,7 +564,7 @@ export function PresentationSurface({
                       onSeek={seekComposition}
                       snapPreview={null}
                       readOnly
-                      samples={data?.samples ?? []}
+                      samples={withSequenceSamples(data?.samples ?? [], data?.sequences ?? [])}
                       sections={data?.sections ?? []}
                     />
                   </div>

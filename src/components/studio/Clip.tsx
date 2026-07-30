@@ -6,6 +6,7 @@ import { Lock, Sparkles } from 'lucide-react';
 import type { Clip as ClipType, Sample } from '../../types';
 import { getClipDurationBeats, getEffectiveClipDurationBeats, beatsToSeconds } from '../../utils/audio';
 import { SampleIcon } from '../../utils/iconMap';
+import { isSequenceSampleId } from '../../utils/sequencer';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 
@@ -203,6 +204,13 @@ export const Clip = memo(function Clip({
         left: `${leftPercent}%`,
         width: `${Math.min(widthPercent, 100 - leftPercent)}%`,
         backgroundColor: `${sample.color}cc`,
+        // Sequence-clip (fase 2): blokjespatroon-uiterlijk
+        ...(isSequenceSampleId(clip.sampleId)
+          ? {
+              backgroundImage:
+                'repeating-linear-gradient(90deg, rgba(255,255,255,0.25) 0 8px, transparent 8px 16px)',
+            }
+          : {}),
         minWidth: 0,
         touchAction: 'none',
         WebkitTouchCallout: 'none',
