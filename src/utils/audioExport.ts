@@ -8,6 +8,7 @@
 import * as Tone from 'tone';
 import type { Track, Sample } from '../types';
 import { DEFAULT_BPM } from '../constants/config';
+import { getSequenceIdFromSampleId } from './sequencer';
 import { logger } from './logger';
 import { generateClipEvents } from '../services/audioEvents';
 import { buildClipChain, scheduleFadeCurves } from '../services/audioGraph';
@@ -112,9 +113,28 @@ export async function ensurePitchBuffers(
  */
 export function findMissingSampleIds(
   tracks: Track[],
-  bufferMap: Map<string, Tone.ToneAudioBuffer>
+  bufferMap: Map<string, Tone.ToneAudioBuffer>,
+  sequences: import('../types/sequencer').SequencerSequence[] = []
 ): string[] {
-  const used = new Set(tracks.flatMap((t) => t.clips.map((c) => c.sampleId)));
+  // Sequence-clips (fase 2) verwijzen naar een virtuele sample (`seq:<id>`)
+  // die nooit in de bufferMap staat — dat is géén ontbrekend geluid. Check
+  // in plaats daarvan de échte geluiden van het patroon (vals-alarm-fix,
+  // testronde 7).
+  const sequenceMap = new Map(sequences.map((seq) => [seq.id, seq]));
+  const used = new Set<string>();
+  for (const track of tracks) {
+    for (const clip of track.clips) {
+      const sequenceId = getSequenceIdFromSampleId(clip.sampleId);
+      if (sequenceId) {
+        const sequence = sequenceMap.get(sequenceId);
+        for (const patternTrack of sequence?.tracks ?? []) {
+          if (patternTrack.sampleId) used.add(patternTrack.sampleId);
+        }
+        continue;
+      }
+      used.add(clip.sampleId);
+    }
+  }
   return [...used].filter((id) => !bufferMap.has(id));
 }
 
@@ -351,7 +371,7 @@ export async function exportToMp3(
 
   // Preload all buffers + pitch-bakes
   const { bufferMap } = await preloadBuffers(samples, onProgress);
-  const missingSampleIds = findMissingSampleIds(tracks, bufferMap);
+  const missingSampleIds = findMissingSampleIds(tracks, bufferMap, options.sequences ?? []);
   await ensurePitchBuffers(tracks, bufferMap);
 
   // Render offline

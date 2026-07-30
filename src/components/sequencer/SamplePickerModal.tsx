@@ -3,8 +3,9 @@
  * Toont per geluid de duur en hoeveel vakjes het (ongetrimd) beslaat.
  */
 
+import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play } from 'lucide-react';
+import { Play, Square } from 'lucide-react';
 import { Modal } from '../ui';
 import type { Sample } from '../../types';
 import { SampleIcon } from '../../utils/iconMap';
@@ -30,9 +31,38 @@ export default function SamplePickerModal({
 }: SamplePickerModalProps) {
   const { t } = useTranslation();
 
+  // Aan/uit-status van de preview-knopjes (testronde 7)
+  const [playingSampleId, setPlayingSampleId] = useState<string | null>(null);
+  const playingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (playingTimerRef.current) clearTimeout(playingTimerRef.current);
+  }, []);
+  // Modal dicht → preview stoppen en status resetten
+  useEffect(() => {
+    if (!isOpen) {
+      sequencerEngine.stopPreview();
+      setPlayingSampleId(null);
+    }
+  }, [isOpen]);
+
+  const handlePreviewToggle = (sample: Sample) => {
+    if (playingTimerRef.current) clearTimeout(playingTimerRef.current);
+    if (playingSampleId === sample.id) {
+      sequencerEngine.stopPreview();
+      setPlayingSampleId(null);
+      return;
+    }
+    void sequencerEngine.previewSample(sample);
+    setPlayingSampleId(sample.id);
+    playingTimerRef.current = setTimeout(
+      () => setPlayingSampleId(null),
+      sample.duration * 1000 + 150
+    );
+  };
+
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('sequencer.samplePicker.title')} size="lg">
-      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 max-h-[60dvh] overflow-y-auto pr-1">
+    <Modal isOpen={isOpen} onClose={onClose} title={t('sequencer.samplePicker.title')} size="xl">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-h-[65dvh] overflow-y-auto pr-1">
         {samples.map((sample) => {
           const isSelected = sample.id === selectedSampleId;
           return (
@@ -67,13 +97,18 @@ export default function SamplePickerModal({
               <div className="flex gap-1.5 mt-auto">
                 <button
                   type="button"
-                  onClick={() => {
-                    void sequencerEngine.previewSample(sample);
-                  }}
+                  onClick={() => handlePreviewToggle(sample)}
                   aria-label={t('sequencer.preview')}
-                  className="w-9 h-9 rounded-lg border border-border-subtle bg-white hover:bg-neutral-50 flex items-center justify-center text-text-main"
+                  aria-pressed={playingSampleId === sample.id}
+                  className={`w-9 h-9 rounded-lg border flex items-center justify-center ${
+                    playingSampleId === sample.id
+                      ? 'bg-accent-400 border-accent-400 text-accent-900 hover:bg-accent-500'
+                      : 'border-border-subtle bg-white hover:bg-neutral-50 text-text-main'
+                  }`}
                 >
-                  <Play className="w-4 h-4" aria-hidden />
+                  {playingSampleId === sample.id
+                    ? <Square className="w-4 h-4" aria-hidden />
+                    : <Play className="w-4 h-4" aria-hidden />}
                 </button>
                 <button
                   type="button"

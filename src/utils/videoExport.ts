@@ -125,7 +125,7 @@ export async function exportToVideo(
     onProgress?.(2 + Math.round(p * 27));
   });
   // Ontbrekende geluiden zichtbaar maken i.p.v. stil weglaten (exports-audit #1)
-  const missingSampleIds = findMissingSampleIds(tracks, bufferMap);
+  const missingSampleIds = findMissingSampleIds(tracks, bufferMap, sequences);
   // Pitch-bakes vooraf (Fase 3) — video gebruikt dezelfde offline render
   await ensurePitchBuffers(tracks, bufferMap);
 

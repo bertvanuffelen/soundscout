@@ -1,8 +1,8 @@
-import { memo } from 'react';
+import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, MapPin, GripVertical, Grid3x3 } from 'lucide-react';
+import { Play, Square, MapPin, GripVertical, Grid3x3, Plus as PlusIcon } from 'lucide-react';
 import type { Sample } from '../../types';
 import type { SequencerSequence } from '../../types/sequencer';
 import { createSequenceSample } from '../../utils/sequencer';
@@ -13,10 +13,14 @@ interface SampleLibraryProps {
   onPreview: (sampleId: string) => void;
   selectedSampleId?: string | null;
   onSelectSample?: (sampleId: string | null) => void;
+  /** Stop de preview van dit geluid (voor de aan/uit-status van de play-knop) */
+  onStopPreview?: (sampleId: string) => void;
   /** Sequencer-bundels (fase 2, dev-vlag) — sleepbaar als virtuele sample */
   sequences?: SequencerSequence[];
   /** Open een sequence in de sequencer-tab (klik op de chip) */
   onOpenSequence?: (sequenceId: string) => void;
+  /** Maak een nieuwe sequence (gestippelde plus-chip achteraan) */
+  onAddSequence?: () => void;
 }
 
 /** Paarse bundel-chip: sleepbaar (virtuele sample) + klik = patroon bewerken */
@@ -47,24 +51,23 @@ const DraggableBundle = memo(function DraggableBundle({
         touchAction: 'none',
         WebkitTouchCallout: 'none',
         userSelect: 'none',
-        borderColor: '#7F77DD',
-        backgroundColor: '#EEEDFE',
       }}
       onClick={() => onOpen?.(sequence.id)}
       {...listeners}
       {...attributes}
       className={`
         flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border sm:border-2 border-dashed
+        border-accent-500 bg-accent-50
         transition-all duration-150 select-none shrink-0 cursor-grab active:cursor-grabbing
         ${isDragging ? 'opacity-30 scale-95' : 'hover:shadow-md active:shadow-sm'}
       `}
       title={t('sequencer.studio.editPattern')}
     >
-      <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 pointer-events-none" style={{ color: '#7F77DD' }}>
+      <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 pointer-events-none text-accent-600">
         <GripVertical className="w-3 h-4 sm:w-4 sm:h-5" aria-hidden="true" />
       </div>
-      <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4" style={{ color: '#3C3489' }} aria-hidden="true" />
-      <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap" style={{ color: '#3C3489' }}>
+      <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4 text-accent-800" aria-hidden="true" />
+      <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap text-accent-800">
         {sequence.name}
       </span>
     </div>
@@ -74,11 +77,13 @@ const DraggableBundle = memo(function DraggableBundle({
 const DraggableSample = memo(function DraggableSample({
   sample,
   onPreview,
+  isPlaying,
   isSelected,
   onSelect,
 }: {
   sample: Sample;
   onPreview: (sampleId: string) => void;
+  isPlaying?: boolean;
   isSelected?: boolean;
   onSelect?: (sampleId: string) => void;
 }) {
@@ -135,10 +140,17 @@ const DraggableSample = memo(function DraggableSample({
       <button
         onClick={(e) => { e.stopPropagation(); onPreview(sample.id); }}
         onPointerDown={(e) => e.stopPropagation()}
-        className="ml-0.5 sm:ml-1 w-6 h-6 sm:w-9 sm:h-9 flex items-center justify-center rounded-full bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-500 hover:text-neutral-700 text-sm cursor-pointer shrink-0 transition-colors"
+        aria-pressed={isPlaying}
+        className={`ml-0.5 sm:ml-1 w-6 h-6 sm:w-9 sm:h-9 flex items-center justify-center rounded-full text-sm cursor-pointer shrink-0 transition-colors ${
+          isPlaying
+            ? 'bg-accent-400 text-accent-900 hover:bg-accent-500'
+            : 'bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-500 hover:text-neutral-700'
+        }`}
         title={t('recorder.preview')}
       >
-        <Play className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
+        {isPlaying
+          ? <Square className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+          : <Play className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />}
       </button>
     </div>
   );
@@ -149,10 +161,34 @@ export const SampleLibrary = memo(function SampleLibrary({
   onPreview,
   selectedSampleId,
   onSelectSample,
+  onStopPreview,
   sequences = [],
   onOpenSequence,
+  onAddSequence,
 }: SampleLibraryProps) {
   const { t } = useTranslation();
+
+  // Aan/uit-status van de preview-knopjes (testronde 7): bijhouden welk
+  // geluid klinkt; na de sampleduur (of een tweede klik) weer uit.
+  const [playingSampleId, setPlayingSampleId] = useState<string | null>(null);
+  const playingTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (playingTimerRef.current) clearTimeout(playingTimerRef.current);
+  }, []);
+  const handlePreviewToggle = (sample: Sample) => {
+    if (playingTimerRef.current) clearTimeout(playingTimerRef.current);
+    if (playingSampleId === sample.id) {
+      onStopPreview?.(sample.id);
+      setPlayingSampleId(null);
+      return;
+    }
+    onPreview(sample.id);
+    setPlayingSampleId(sample.id);
+    playingTimerRef.current = setTimeout(
+      () => setPlayingSampleId(null),
+      sample.duration * 1000 + 100
+    );
+  };
 
   if (samples.length === 0 && sequences.length === 0) {
     return (
@@ -176,7 +212,8 @@ export const SampleLibrary = memo(function SampleLibrary({
           <DraggableSample
             key={sample.id}
             sample={sample}
-            onPreview={onPreview}
+            onPreview={() => handlePreviewToggle(sample)}
+            isPlaying={playingSampleId === sample.id}
             isSelected={selectedSampleId === sample.id}
             onSelect={onSelectSample ? (id) => onSelectSample(selectedSampleId === id ? null : id) : undefined}
           />
@@ -188,6 +225,20 @@ export const SampleLibrary = memo(function SampleLibrary({
             onOpen={onOpenSequence}
           />
         ))}
+        {onAddSequence && (
+          <button
+            type="button"
+            onClick={onAddSequence}
+            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border sm:border-2 border-dashed border-accent-400 text-accent-700 hover:bg-accent-50 transition-colors select-none shrink-0"
+            title={t('sequencer.studio.addSequence')}
+          >
+            <PlusIcon className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+            <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
+            <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap">
+              {t('sequencer.studio.addSequence')}
+            </span>
+          </button>
+        )}
       </div>
     </div>
   );

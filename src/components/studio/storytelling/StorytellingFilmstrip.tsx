@@ -172,7 +172,7 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
                       : 'border-border-subtle hover:border-accent-300',
                   )}
                 >
-                  <img src={img.url} alt={t(img.label)} className="w-full h-full object-cover" />
+                  <img src={img.url} alt={t(img.label)} className="w-full h-full object-contain" />
 
                   {/* Scène-nummer linksboven */}
                   <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/55 text-white text-xs font-bold flex items-center justify-center">

@@ -55,8 +55,6 @@ interface TimelineProps {
   onAddToTrack?: () => void;
   // Clip editing (inline in header bar)
   clipEdit?: ClipEditProps | null;
-  /** Fase 2 (dev-vlag): maak een nieuwe sequence + open de sequencer-tab */
-  onAddSequence?: () => void;
   /** Optionele externe scroll-container-ref (Feature F): laat de studio-filmstrip
    *  dezelfde horizontale scroll delen. Default = interne ref. */
   externalScrollRef?: RefObject<HTMLDivElement | null>;
@@ -79,7 +77,6 @@ export const Timeline = memo(function Timeline({
   selectedLibrarySampleName,
   onAddToTrack,
   clipEdit,
-  onAddSequence,
   sections: propSections,
   externalScrollRef,
 }: TimelineProps) {
@@ -445,8 +442,7 @@ export const Timeline = memo(function Timeline({
                   onClick={clipEdit.onEditPattern}
                   aria-label={t('sequencer.studio.editPattern')}
                   title={t('sequencer.studio.editPattern')}
-                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center rounded-lg transition-colors"
-                  style={{ backgroundColor: '#EEEDFE', color: '#3C3489' }}
+                  className="p-1 sm:p-1.5 min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center rounded-lg transition-colors bg-accent-50 text-accent-600 hover:bg-accent-100"
                 >
                   <Grid3x3 size={14} />
                 </button>
@@ -495,18 +491,6 @@ export const Timeline = memo(function Timeline({
               className="p-1 rounded text-accent-600 hover:text-accent-700 hover:bg-accent-100/60 transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center"
             >
               <Plus size={16} />
-            </button>
-          )}
-          {/* Sequence toevoegen (fase 2, dev-vlag) */}
-          {!readOnly && onAddSequence && (
-            <button
-              onClick={onAddSequence}
-              aria-label={t('sequencer.studio.addSequence')}
-              title={t('sequencer.studio.addSequence')}
-              className="p-1 rounded transition-colors min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] relative after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5 flex items-center justify-center hover:opacity-80"
-              style={{ backgroundColor: '#EEEDFE', color: '#3C3489', border: '1px solid #AFA9EC' }}
-            >
-              <Grid3x3 size={14} />
             </button>
           )}
           {/* Mark section button — only in edit mode, hidden when template sections locked */}

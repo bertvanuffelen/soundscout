@@ -157,6 +157,10 @@ export function StudioView() {
     [sequencerEnabled, librarySamples, sequences]
   );
 
+  const handleStopPreview = useCallback((sampleId: string) => {
+    audioService.stopSample(sampleId);
+  }, []);
+
   const handleOpenSequence = useCallback(
     (sequenceId: string) => {
       // Compositie-afspelen pauzeren vóór het wisselen van context
@@ -184,6 +188,14 @@ export function StudioView() {
     sequencerEngine.stop();
     useSequencerStore.getState().setIsPlaying(false);
   }, []);
+
+  // Klik buiten het sequencer-panel (bibliotheek/beeldzone) → terug naar de
+  // montagelijn (testronde 7). De transportbalk en modals sluiten NIET.
+  const handleCloseSequencer = useCallback(() => {
+    sequencerEngine.stop();
+    useSequencerStore.getState().setIsPlaying(false);
+    setOpenSequenceId(null);
+  }, [setOpenSequenceId]);
 
   // DnD hook needs samples for collision detection
   const {
@@ -454,7 +466,13 @@ export function StudioView() {
         onDragEnd={handleDragEnd}
         onDragCancel={handleDragCancel}
       >
-        {/* Content area: Library, Split, or Image — depends on storytelling state */}
+        {/* Content area: Library, Split, or Image — depends on storytelling state.
+            Klik hier terwijl de sequencer open is → terug naar de montagelijn
+            (display:contents laat de flex-layout intact). */}
+        <div
+          className="contents"
+          onClickCapture={sequencerOpen ? handleCloseSequencer : undefined}
+        >
         {!hasStorytelling ? (
           /* No storytelling: library only (existing behavior) */
           <SampleLibrary
@@ -464,6 +482,8 @@ export function StudioView() {
             onSelectSample={setSelectedLibrarySampleId}
             sequences={sequencerEnabled ? sequences : []}
             onOpenSequence={handleOpenSequence}
+            onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
+            onStopPreview={handleStopPreview}
           />
         ) : (
           <>
@@ -482,6 +502,8 @@ export function StudioView() {
                       onSelectSample={setSelectedLibrarySampleId}
                       sequences={sequencerEnabled ? sequences : []}
                       onOpenSequence={handleOpenSequence}
+                      onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
+                      onStopPreview={handleStopPreview}
                     />
                   )}
                   {effectiveMode !== 'library' && (
@@ -501,6 +523,8 @@ export function StudioView() {
                   onSelectSample={setSelectedLibrarySampleId}
                   sequences={sequencerEnabled ? sequences : []}
                   onOpenSequence={handleOpenSequence}
+                  onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
+                  onStopPreview={handleStopPreview}
                 />
               ) : (
                 <StorytellingPanel className="flex-1" />
@@ -508,6 +532,7 @@ export function StudioView() {
             </div>
           </>
         )}
+        </div>
 
         {/* Timeline - fixed at bottom above transport controls.
             Fase 2: met een geopende sequence vervangt het sequencer-panel de
@@ -556,7 +581,6 @@ export function StudioView() {
               : undefined,
             locked: templateLockOptions.clipsLocked && (selectedClipData.clip.fromTemplate === true),
           } : null}
-          onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
         />
         )}
 

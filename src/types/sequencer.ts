@@ -37,8 +37,9 @@ export const SEQ_CHOKE_FADE_SECONDS = 0.01;
  * uitgepakt naar gewone geluids-events.
  */
 export const SEQUENCE_SAMPLE_PREFIX = 'seq:';
-/** Kleur van sequence-bundels/-clips (paars, buiten de sample-paletten) */
-export const SEQUENCE_COLOR = '#7C6FE0';
+/** Kleur van sequence-bundels/-clips — accent-500 uit de huisstijl (oker-geel);
+ *  herkenbaarheid komt van het raster-icoon, de stippelrand en het blokjespatroon */
+export const SEQUENCE_COLOR = '#F59E0B';
 /** Lucide-icoon voor sequence-bundels */
 export const SEQUENCE_ICON = 'Grid3x3';
 
