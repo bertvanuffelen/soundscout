@@ -16,6 +16,7 @@ import { useSequencerStore } from '../stores/sequencerStore';
 import { sequencerEngine } from '../services/SequencerEngine';
 import SequencerTransport from '../components/sequencer/SequencerTransport';
 import SequencerGrid from '../components/sequencer/SequencerGrid';
+import SequenceManagerBar from '../components/sequencer/SequenceManagerBar';
 import { SEQ_MAX_TRACKS } from '../types/sequencer';
 
 export default function SequencerLab() {
@@ -99,6 +100,7 @@ export default function SequencerLab() {
 
       {/* --- Inhoud --- */}
       <main className="flex-1 flex flex-col gap-4 p-3 sm:p-4 overflow-hidden">
+        <SequenceManagerBar />
         <SequencerTransport />
 
         <div className="flex-1 overflow-y-auto min-h-0">
