@@ -79,6 +79,11 @@ const SECTIONS: GuideSection[] = [
     contentKey: 'teacher.guide.sections.compose-modes.content',
   },
   {
+    id: 'sequencer',
+    titleKey: 'teacher.guide.sections.sequencer.title',
+    contentKey: 'teacher.guide.sections.sequencer.content',
+  },
+  {
     id: 'templates',
     titleKey: 'teacher.guide.sections.templates.title',
     contentKey: 'teacher.guide.sections.templates.content',

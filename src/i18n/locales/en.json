@@ -1366,7 +1366,8 @@
               "type": "heading",
               "text": "Wrapping up and presenting"
             },
-            "Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects."
+            "Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects.",
+            "Sequencer: have students fill one track first and only then add a second. The difference between 'ring out' and 'cut off' makes a fine listening task: the same pattern sounds completely different."
           ]
         },
         "feedback-tips": {
@@ -1398,6 +1399,35 @@
               "text": "Peer feedback as a warm-up"
             },
             "Turn on Peer feedback so pupils review each other's work on the criteria of your feedback card first. It trains their listening vocabulary — and your feedback lands better once the class is in \"listening mode\"."
+          ]
+        },
+        "sequencer": {
+          "title": "The sequencer",
+          "content": [
+            "The sequencer is a grid in which a student builds a rhythm that repeats itself. It is not a separate way of composing but a tool inside the studio: it works with free composing, with an image, with a storyboard and with a sound map.",
+            {
+              "type": "heading",
+              "text": "How it works"
+            },
+            "Every cell in the grid is one beat, so sixteen cells make four bars. The student links one sound from their own library to each track and clicks cells: on every active cell that sound plays. A sequence starts with three tracks and can grow to eight. The length is adjustable from four to thirty-two cells.",
+            "Once a sequence exists it appears as a coloured block in the library. The student drags that block onto the timeline just like an ordinary sound. Stretching it repeats the pattern; duplicating and volume work as with any other block. If the student edits the pattern later, every placed copy changes along with it.",
+            {
+              "type": "heading",
+              "text": "Ring out or cut off"
+            },
+            "For each track the student chooses what happens when a sound is still playing as the next step begins. With 'ring out' sounds may overlap, which gives a flowing, cinematic result. With 'cut off' the previous sound stops immediately, producing a tight, percussive rhythm. Let students compare the two on purpose: it is a fine way into the concepts legato and staccato.",
+            {
+              "type": "heading",
+              "text": "Educational value"
+            },
+            "The sequencer makes metre visible: students literally see the four beats of a bar as cells. That supports pulse, time signature and repetition, and it is a natural bridge to notation — the grid is a graphic score. Because the pattern keeps looping, students hear the effect of a change straight away, which invites experimenting without fear of failure.",
+            "Good assignments include: build a rhythm that matches the weather on the sound map, make a tense underlay for scene three of the storyboard, or let two students fill two bars each in turn (call and response).",
+            {
+              "type": "heading",
+              "text": "Practical"
+            },
+            "Sequences belong to the composition: they are included automatically when saving, in the save code, when sharing a listening link and when handing in with a class code. In the MP3 and video export the pattern sounds exactly as it does in the studio. There is nothing separate to store.",
+            "Note: the sequencer is still in development and is off by default. It only appears once the feature has been enabled for your environment."
           ]
         }
       }
@@ -2237,7 +2267,8 @@
       "closeTab": "Close sequencer",
       "libraryHeading": "Sequences",
       "deleteWithClips": "This sequence is still on the timeline. Deleting it also removes those blocks.",
-      "playsSequence": "Plays this sequence (loops)"
+      "playsSequence": "Plays this sequence (loops)",
+      "firstRunHint": "In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Done? Drag your sequence from the library onto the timeline."
     }
   }
 }

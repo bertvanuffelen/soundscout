@@ -82,8 +82,12 @@ alleen voor Bert (admin/dev-vlag).
 
 ## Open punten (bewust nog niet besloten)
 
-- Leerling-naam van de feature als hij ooit publiek gaat ("beat", "ritme",
-  "patroon"?) — i18n-keuze, pas relevant ná de testfase.
+- ~~Leerling-naam van de feature~~ — **besloten 30-7**: overal "sequencer",
+  ook richting leerlingen; uitgelegd via een eerste-keer-tip en de
+  docentenhandleiding. Zie `docs/WOORDENLIJST.md` §Sequencer.
+- **Positionering besloten 30-7**: gereedschap bínnen de drie compositievormen
+  (vrij / praatplaat / storyboard), géén vierde vorm en géén vijfde
+  opdrachttype. De landing houdt "drie manieren om te componeren".
 - Undo/redo binnen de sequencer-tab (v1 lab heeft het niet; togglen is
   zelf-herstellend).
 - Wat als een sequence verwijderd wordt terwijl er clips van op de montagelijn

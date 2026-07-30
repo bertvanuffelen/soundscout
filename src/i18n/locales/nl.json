@@ -1366,7 +1366,8 @@
               "type": "heading",
               "text": "Afronden en presenteren"
             },
-            "Reserveer de laatste tien minuten voor het presenteren: open het presentatiescherm vanuit het klaslokaal en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen Peer feedback geven of hun compositie verfijnen met effecten."
+            "Reserveer de laatste tien minuten voor het presenteren: open het presentatiescherm vanuit het klaslokaal en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen Peer feedback geven of hun compositie verfijnen met effecten.",
+            "Sequencer: laat leerlingen eerst één spoor vullen en pas daarna een tweede toevoegen. Het verschil tussen 'uitklinken' en 'afkappen' is een mooie luisteropdracht: hetzelfde patroon klinkt er heel anders door."
           ]
         },
         "feedback-tips": {
@@ -1398,6 +1399,35 @@
               "text": "Peer feedback als opwarmer"
             },
             "Zet Peer feedback aan zodat leerlingen elkaars werk eerst beoordelen op de criteria van jouw feedbackkaart. Dat traint hun luistertaal — en jouw feedback landt daarna beter, omdat de klas al in \"luistermodus\" staat."
+          ]
+        },
+        "sequencer": {
+          "title": "De sequencer",
+          "content": [
+            "De sequencer is een raster waarin een leerling een ritme bouwt dat zichzelf herhaalt. Het is geen aparte compositievorm, maar gereedschap bínnen de studio: je kunt hem gebruiken bij vrij componeren, bij een afbeelding, bij een storyboard en bij een praatplaat.",
+            {
+              "type": "heading",
+              "text": "Hoe het werkt"
+            },
+            "Elk vakje in het raster is één tel; zestien vakjes zijn dus vier maten. De leerling koppelt per spoor één geluid uit de eigen bibliotheek en klikt vakjes aan: op elk aangeklikt vakje klinkt dat geluid. Een sequence start met drie sporen en kan groeien tot acht. De lengte is instelbaar van vier tot tweeëndertig vakjes.",
+            "Zodra een sequence gemaakt is, verschijnt hij als gekleurd blokje in de bibliotheek. Dat blokje sleept de leerling naar de tijdlijn, net als een gewoon geluid. Uitrekken laat het patroon zich herhalen; dupliceren en volume werken zoals bij elk ander blokje. Bewerkt de leerling het patroon later, dan veranderen álle geplaatste kopieën mee.",
+            {
+              "type": "heading",
+              "text": "Uitklinken of afkappen"
+            },
+            "Per spoor kiest de leerling wat er gebeurt als een geluid nog klinkt terwijl de volgende stap begint. Bij 'uitklinken' mogen geluiden over elkaar heen doorklinken — dat geeft een vloeiend, filmisch resultaat. Bij 'afkappen' stopt het vorige geluid meteen, wat een strak en percussief ritme oplevert. Laat leerlingen het verschil bewust vergelijken: het is een mooie ingang voor de begrippen legato en staccato.",
+            {
+              "type": "heading",
+              "text": "Didactische waarde"
+            },
+            "De sequencer maakt maatstructuur zichtbaar: leerlingen zien de vier tellen per maat letterlijk als vakjes. Dat helpt bij puls, maatsoort en herhaling, en het is een natuurlijke brug naar notatie — het raster ís een grafische partituur. Omdat het patroon blijft doorlopen, hoort de leerling direct wat een verandering doet; dat nodigt uit tot experimenteren zonder faalangst.",
+            "Mooie opdrachten zijn bijvoorbeeld: bouw een ritme dat past bij het weer op de praatplaat, maak een spannende ondergrond voor scène drie van het storyboard, of laat twee leerlingen om de beurt twee maten vullen (vraag en antwoord).",
+            {
+              "type": "heading",
+              "text": "Praktisch"
+            },
+            "Sequences horen bij de compositie: ze gaan automatisch mee bij opslaan, bij de bewaarcode, bij het delen van een luisterlink en bij het inleveren via de klascode. Ook in de MP3- en video-export klinkt het patroon precies zoals in de studio. Je hoeft dus niets apart te bewaren.",
+            "Let op: de sequencer is nog in ontwikkeling en staat standaard uit. Hij verschijnt pas als de functie voor jouw omgeving is aangezet."
           ]
         }
       }
@@ -2237,7 +2267,8 @@
       "closeTab": "Sequencer sluiten",
       "libraryHeading": "Sequences",
       "deleteWithClips": "Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg.",
-      "playsSequence": "Speelt deze sequence (loopt rond)"
+      "playsSequence": "Speelt deze sequence (loopt rond)",
+      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn."
     }
   }
 }

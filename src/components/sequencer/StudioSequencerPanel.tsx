@@ -13,6 +13,8 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Copy, Grid3x3, Minus, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { Button, Modal } from '../ui';
+import TipModal from '../ui/TipModal';
+import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import type { Sample } from '../../types';
 import { useSequencerStore } from '../../stores/sequencerStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -51,6 +53,16 @@ export default function StudioSequencerPanel({
   const [renameOpen, setRenameOpen] = useState(false);
   const [renameValue, setRenameValue] = useState('');
   const [deleteOpen, setDeleteOpen] = useState(false);
+
+  // Eenmalige uitleg bij de allereerste keer dat de sequencer opengaat —
+  // dit is de enige uitleg die een leerling vanzelf krijgt.
+  const [showFirstRunHint, setShowFirstRunHint] = useState(
+    () => !hasSeenFirstRun('sequencer-hint')
+  );
+  const dismissFirstRunHint = () => {
+    markFirstRunSeen('sequencer-hint');
+    setShowFirstRunHint(false);
+  };
 
   // Engine voeden met de bibliotheek + buffers van toegewezen samples laden
   useEffect(() => {
@@ -236,6 +248,13 @@ export default function StudioSequencerPanel({
           </Button>
         </div>
       </div>
+
+      {/* --- Eenmalige uitleg (leerling) --- */}
+      <TipModal
+        isOpen={showFirstRunHint}
+        onDismiss={dismissFirstRunHint}
+        text={t('sequencer.studio.firstRunHint')}
+      />
 
       {/* --- Hernoemen --- */}
       <Modal

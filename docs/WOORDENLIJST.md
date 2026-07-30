@@ -56,6 +56,24 @@ DAW-termen alleen waar ze ingeburgerd zijn.
 | **solo** | Alleen dít spoor horen (koptelefoon-icoon) | |
 | **compositie** | Het muziekstuk van de leerling | liedje, song |
 
+## Sequencer (besluit 30-7)
+
+De term **"sequencer"** wordt bewust in álle teksten gebruikt — ook richting
+leerlingen (besluit Bert, 30-7). Het is een echt muziekwoord dat kinderen ook
+buiten SoundScout tegenkomen; de app legt hem uit via een eerste-keer-tip en
+de docentenhandleiding. De sequencer is **gereedschap bínnen** de drie
+compositievormen (vrij / praatplaat / storyboard), geen vierde vorm.
+
+| Term | Betekenis | Opmerking |
+|---|---|---|
+| **sequencer** | Het raster waarin je een herhalend ritmepatroon bouwt met je eigen geluiden | overal "sequencer" — niet "beat", "ritmeblok" of "patroon-maker" |
+| **sequence** | Eén gemaakt patroon; verschijnt als gekleurd blokje in de bibliotheek | "een sequence maken/bewerken"; nooit "een sequencer maken" |
+| **vakje** | Eén hokje in het raster = één tel | "stap"/"step" alleen in code |
+| **spoor** (sequencer) | Eén rij in de sequencer, met één geluid | zelfde woord als op de tijdlijn — bewust |
+| **uitklinken** | Het geluid mag doorklinken als de volgende stap begint (standaard) | tegenhanger van afkappen; in code `ring` |
+| **afkappen** | Een nieuwe stap stopt het vorige geluid op dat spoor | in code `cut` (choke) |
+| **patroon** | De inhoud van een sequence (welke vakjes aan staan) | "patroon bewerken" is de knop op een sequence-blokje |
+
 ## Feedback
 
 | Term | Betekenis |
@@ -73,3 +91,4 @@ DAW-termen alleen waar ze ingeburgerd zijn.
 - **"Peer feedback"** (Engels) vs "klasgenoten-feedback": nu Peer feedback (jouw keuze 16-7).
 - **"praatplaat"** heet richting leerlingen soms "bij een afbeelding" — één noemer kiezen?
 - **"inleveren" vs "opslaan"**: de leerling klikt "Opslaan" en levert daarmee (in een klas-sessie) automatisch in — benoemen we dat verschil ergens expliciet?
+- ~~**Naam van de sequencer** richting leerlingen~~ — besloten 30-7: overal "sequencer" (zie de sectie hierboven).
