@@ -2180,5 +2180,55 @@
     "expiredTitle": "Link expired",
     "expiredDescription": "This album link has expired. The teacher can create a new one.",
     "gestureHint": "Click the button below to open the album and listen to the compositions."
+  },
+  "sequencer": {
+    "title": "Sequencer Lab",
+    "devBadge": "DEV",
+    "subtitle": "Build a rhythm pattern with your sounds",
+    "play": "Play",
+    "stop": "Stop",
+    "addTrack": "Add track",
+    "removeTrack": "Remove track",
+    "removeTrackConfirm": "Are you sure you want to remove this track? Its steps will be lost.",
+    "chooseSample": "Choose a sound",
+    "changeSample": "Change sound",
+    "noSample": "No sound yet",
+    "preview": "Listen",
+    "select": "Select",
+    "loading": "Loading sounds...",
+    "mode": {
+      "label": "On a new step",
+      "ring": "Ring out",
+      "cut": "Cut off"
+    },
+    "mute": "Mute",
+    "unmute": "Unmute",
+    "volume": "Volume",
+    "trim": {
+      "title": "Trim sound",
+      "save": "Apply",
+      "hint": "Drag the handles to shorten the sound."
+    },
+    "length": {
+      "bars": "{{beats}} beats · {{bars}} bars",
+      "add": "+4 beats",
+      "remove": "−4 beats"
+    },
+    "steps": "Step {{step}}",
+    "samplePicker": {
+      "title": "Choose a sound",
+      "duration": "{{seconds}} sec · ±{{cells}} cells"
+    },
+    "sequences": {
+      "title": "My sequences",
+      "new": "New sequence",
+      "rename": "Rename",
+      "duplicate": "Duplicate",
+      "delete": "Delete",
+      "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
+      "untitled": "Sequence {{number}}",
+      "copySuffix": " (copy)",
+      "namePlaceholder": "Name of your sequence"
+    }
   }
 }

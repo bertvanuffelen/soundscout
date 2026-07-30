@@ -2180,5 +2180,55 @@
     "expiredTitle": "Link verlopen",
     "expiredDescription": "Deze albumlink is verlopen. De docent kan een nieuwe maken.",
     "gestureHint": "Klik op de knop hieronder om het album te openen en composities te beluisteren."
+  },
+  "sequencer": {
+    "title": "Sequencer Lab",
+    "devBadge": "DEV",
+    "subtitle": "Bouw een ritmepatroon met je geluiden",
+    "play": "Afspelen",
+    "stop": "Stoppen",
+    "addTrack": "Spoor toevoegen",
+    "removeTrack": "Spoor verwijderen",
+    "removeTrackConfirm": "Weet je zeker dat je dit spoor wilt verwijderen? De stappen van dit spoor gaan verloren.",
+    "chooseSample": "Kies een geluid",
+    "changeSample": "Ander geluid",
+    "noSample": "Nog geen geluid",
+    "preview": "Luister",
+    "select": "Kiezen",
+    "loading": "Geluiden laden...",
+    "mode": {
+      "label": "Bij een nieuwe stap",
+      "ring": "Uitklinken",
+      "cut": "Afkappen"
+    },
+    "mute": "Dempen",
+    "unmute": "Dempen opheffen",
+    "volume": "Volume",
+    "trim": {
+      "title": "Geluid knippen",
+      "save": "Toepassen",
+      "hint": "Sleep de handvatten om het geluid korter te maken."
+    },
+    "length": {
+      "bars": "{{beats}} tellen · {{bars}} maten",
+      "add": "+4 tellen",
+      "remove": "−4 tellen"
+    },
+    "steps": "Stap {{step}}",
+    "samplePicker": {
+      "title": "Kies een geluid",
+      "duration": "{{seconds}} sec · ±{{cells}} vakjes"
+    },
+    "sequences": {
+      "title": "Mijn sequences",
+      "new": "Nieuwe sequence",
+      "rename": "Naam wijzigen",
+      "duplicate": "Dupliceren",
+      "delete": "Verwijderen",
+      "deleteConfirm": "Weet je zeker dat je \"{{name}}\" wilt verwijderen?",
+      "untitled": "Sequence {{number}}",
+      "copySuffix": " (kopie)",
+      "namePlaceholder": "Naam van je sequence"
+    }
   }
 }

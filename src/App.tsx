@@ -21,6 +21,10 @@ const EditorHub = lazy(() =>
   import('./pages/EditorHub').then((m) => ({ default: m.EditorHub }))
 );
 
+// Dev-only prototype: step sequencer lab (/sequencer). Volledig geïsoleerd —
+// eigen store, engine en opslag; raakt de reguliere app niet.
+const SequencerLab = lazy(() => import('./pages/SequencerLab'));
+
 // Lazy-loaded screen components for code splitting
 const StudioView = lazy(() => import('./components/studio/StudioView'));
 const StageView = lazy(() => import('./components/stage/StageView'));
@@ -39,6 +43,11 @@ const TeacherLandingPage = lazy(() => import('./pages/TeacherLandingPage'));
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
   return window.location.pathname === '/editor';
+}
+
+// Check if we're on the sequencer lab route (dev-only prototype)
+function isSequencerRoute(): boolean {
+  return window.location.pathname === '/sequencer';
 }
 
 // Check if we're on the public teacher landing route (#docentenpagina, stap 1).
@@ -416,6 +425,19 @@ function App() {
       <ErrorBoundary>
         <Suspense fallback={null}>
           <EditorHub />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
+  // Sequencer Lab (/sequencer) — dev-only prototype, eigen route buiten de
+  // app-shell (zelfde patroon als /editor). In productie valt /sequencer door
+  // naar de normale app-render (AppContent).
+  if (isSequencerRoute() && import.meta.env.DEV) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <SequencerLab />
         </Suspense>
       </ErrorBoundary>
     );
