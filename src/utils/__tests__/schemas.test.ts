@@ -734,3 +734,68 @@ describe('parseLibraryState', () => {
     expect(result?.samples.length).toBe(2);
   });
 });
+
+// =============================================================================
+// Sequences in compositie-opslag (fase 2)
+// =============================================================================
+
+describe('CompositionData met sequences (fase 2)', () => {
+  const sequence = {
+    id: 'seq-1',
+    name: 'Mijn beat',
+    lengthSteps: 16,
+    bpm: 120,
+    tracks: [
+      {
+        id: 'strack-1',
+        sampleId: 'park-birds',
+        steps: Array.from({ length: 16 }, (_, i) => i % 4 === 0),
+        mode: 'ring' as const,
+        trimStart: 0.5,
+        trimEnd: 2.0,
+        volume: 0.8,
+      },
+    ],
+    createdAt: '2026-07-30T10:00:00.000Z',
+    updatedAt: '2026-07-30T10:00:00.000Z',
+  };
+
+  it('roundtrip: sequences overleven parseCompositionData volledig', () => {
+    const data = { ...validCompositionData, sequences: [sequence] };
+    const result = parseCompositionData(data);
+    expect(result).not.toBeNull();
+    expect(result?.sequences).toEqual([sequence]);
+  });
+
+  it('composities zonder sequences blijven geldig (backward compat)', () => {
+    const result = parseCompositionData(validCompositionData);
+    expect(result).not.toBeNull();
+    expect(result?.sequences).toBeUndefined();
+  });
+
+  it('ongeldige sequence (lengthSteps buiten bereik) keurt de compositie af', () => {
+    const data = {
+      ...validCompositionData,
+      sequences: [{ ...sequence, lengthSteps: 64 }],
+    };
+    expect(parseCompositionData(data)).toBeNull();
+  });
+
+  it('sequence-clips (sampleId seq:...) zijn gewone geldige clips', () => {
+    const data = {
+      ...validCompositionData,
+      tracks: [
+        {
+          id: 'track-1',
+          clips: [
+            { id: 'clip-1', sampleId: 'seq:seq-1', startBeat: 4, loop: true, loopDurationBeats: 32 },
+          ],
+        },
+      ],
+      sequences: [sequence],
+    };
+    const result = parseCompositionData(data);
+    expect(result).not.toBeNull();
+    expect(result?.tracks[0].clips[0].sampleId).toBe('seq:seq-1');
+  });
+});

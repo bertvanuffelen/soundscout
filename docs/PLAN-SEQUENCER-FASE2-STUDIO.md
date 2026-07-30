@@ -1,8 +1,10 @@
 # Plan — Sequencer fase 2: studio-integratie (ontwerpbesluiten)
 
-> Status: **ontwerp vastgesteld met Bert (2026-07-30), nog NIET bouwen.**
-> Bouwen pas ná de merge van de masterplan-branch (Audio Engine v2) naar `main`.
-> Fase 1 (het lab op `/sequencer`) staat op branch `feature/sequencer-lab` en is af.
+> Status: **GEBOUWD (2026-07-30)** — na de fast-forward-merge van de
+> masterplan-branch (Audio Engine v2) naar `main` en rebase van
+> `feature/sequencer-lab`. Alle besluiten hieronder zijn geïmplementeerd
+> zoals beschreven; aanzetten met `?dev=true` (vlag `sequencer`).
+> Fase 1 (het lab op `/sequencer`) blijft daarnaast gewoon werken.
 
 ## Kernidee: "rustig tenzij"
 
