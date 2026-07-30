@@ -2207,7 +2207,8 @@
     "trim": {
       "title": "Geluid knippen",
       "save": "Toepassen",
-      "hint": "Sleep de handvatten om het geluid korter te maken."
+      "hint": "Sleep de handvatten om het geluid korter te maken.",
+      "cells": "±{{cells}} vakjes"
     },
     "length": {
       "bars": "{{beats}} tellen · {{bars}} maten",

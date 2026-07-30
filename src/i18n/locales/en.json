@@ -2207,7 +2207,8 @@
     "trim": {
       "title": "Trim sound",
       "save": "Apply",
-      "hint": "Drag the handles to shorten the sound."
+      "hint": "Drag the handles to shorten the sound.",
+      "cells": "±{{cells}} cells"
     },
     "length": {
       "bars": "{{beats}} beats · {{bars}} bars",

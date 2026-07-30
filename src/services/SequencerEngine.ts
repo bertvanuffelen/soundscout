@@ -233,9 +233,13 @@ export class SequencerEngine {
     this.stepIndex = (step + 1) % sequence.lengthSteps;
   };
 
-  // --- Preview (sample-picker) ---
+  // --- Preview (sample-picker + trim-modal) ---
 
-  async previewSample(sample: Sample): Promise<void> {
+  async previewSample(
+    sample: Sample,
+    offsetSeconds?: number,
+    durationSeconds?: number
+  ): Promise<void> {
     await this.ensureBuffer(sample);
     const buffer = this.buffers.get(sample.id);
     if (!buffer) return;
@@ -258,7 +262,11 @@ export class SequencerEngine {
       if (this.previewPlayer === player) this.previewPlayer = null;
     };
     // Directe (niet-geplande) start: kleine offset is hier wél correct
-    player.start('+0.05');
+    if (durationSeconds !== undefined) {
+      player.start('+0.05', offsetSeconds ?? 0, durationSeconds);
+    } else {
+      player.start('+0.05');
+    }
     this.previewPlayer = player;
   }
 
