@@ -39,6 +39,8 @@ export interface VideoExportOptions {
   bpm?: number;
   /** Solo-spoor (D6): export = wat je hoort. null/undefined = geen solo. */
   soloTrackIndex?: number | null;
+  /** Sequencer-patronen (fase 2) — nodig om sequence-clips uit te pakken */
+  sequences?: import('../types/sequencer').SequencerSequence[];
 }
 
 export interface VideoExportResult {
@@ -85,6 +87,7 @@ export async function exportToVideo(
     crossfadeDuration = 0.5,
     bpm = DEFAULT_BPM,
     soloTrackIndex = null,
+    sequences = [],
   } = options;
 
   logger.info('[videoExport] Starting video export', {
@@ -109,7 +112,7 @@ export async function exportToVideo(
   // --- Fase 2: Audio renderen (2–25%) ---
   // Video-duur = maximum van audio-duur en volledige timeline-duur.
   // Zo wordt het storyboard volledig getoond, ook als de laatste secties stil zijn.
-  const audioDuration = calculateTimelineDuration(tracks, samples, bpm, soloTrackIndex);
+  const audioDuration = calculateTimelineDuration(tracks, samples, bpm, soloTrackIndex, sequences);
   const timelineDuration = beatsToSeconds(totalBeats, bpm) + 0.5;
   const duration = Math.max(audioDuration, timelineDuration);
 
@@ -131,7 +134,7 @@ export async function exportToVideo(
     samples,
     duration,
     bufferMap,
-    { sampleRate: 44100, channels: 2, bpm, soloTrackIndex },
+    { sampleRate: 44100, channels: 2, bpm, soloTrackIndex, sequences },
     (p) => {
       // renderOffline progress: 0.3–0.7 → map naar 10–25%
       onProgress?.(10 + Math.round((p - 0.3) * 37.5));

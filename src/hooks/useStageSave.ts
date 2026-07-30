@@ -144,6 +144,8 @@ export function useStageSave() {
         isLooping: timelineState.isLooping,
         samples: librarySamples,
         sections: sections.length > 0 ? sections : undefined,
+        // Sequencer-patronen (fase 2) — levend, dus geëmbed meesturen
+        sequences: timelineState.sequences,
         storyboardId: activeStoryboard?.id,
         // Snapshot van praatplaat-context (#72) zodat online-bewaarcode en
         // templates de afbeelding + positie bij heropening kunnen herstellen.

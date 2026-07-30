@@ -26,6 +26,22 @@ export const SEQ_DECLICK_IN_SECONDS = 0.003;
 /** Micro-fade-out (s) bij choke-stop — klikvrij afkappen */
 export const SEQ_CHOKE_FADE_SECONDS = 0.01;
 
+// --- Fase 2: sequence-clips op de montagelijn ---
+
+/**
+ * Een sequence-clip is een gewone Clip waarvan sampleId naar een VIRTUELE
+ * sample verwijst: `seq:<sequenceId>`. De virtuele sample (duur = vakjes ×
+ * tel-duur) wordt on-the-fly aan de sample-lijsten toegevoegd, waardoor
+ * collision, clip-breedte, loop-uitrekken, dupliceren en undo ongewijzigd
+ * blijven werken. Bij het inplannen (audioEvents) wordt het patroon
+ * uitgepakt naar gewone geluids-events.
+ */
+export const SEQUENCE_SAMPLE_PREFIX = 'seq:';
+/** Kleur van sequence-bundels/-clips (paars, buiten de sample-paletten) */
+export const SEQUENCE_COLOR = '#7C6FE0';
+/** Lucide-icoon voor sequence-bundels */
+export const SEQUENCE_ICON = 'Grid3x3';
+
 // --- Datamodel ---
 
 /** Gedrag van een spoor wanneer een nieuwe stap start terwijl de vorige nog klinkt */

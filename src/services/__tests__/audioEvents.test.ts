@@ -179,3 +179,175 @@ describe('effect-helpers', () => {
     expect(fadeOut).toEqual([1, 0.25, 0]);
   });
 });
+
+// =============================================================================
+// Sequence-clips (fase 2) — patroon-uitpakken naar geluids-events
+// =============================================================================
+
+import type { SequencerSequence, SequencerTrack } from '../../types/sequencer';
+import { sequenceSampleId } from '../../utils/sequencer';
+
+const seqTrack = (
+  overrides: Partial<SequencerTrack> & { id: string; sampleId: string }
+): SequencerTrack => ({
+  steps: [true, false, false, false],
+  mode: 'ring',
+  ...overrides,
+});
+
+const sequence = (
+  tracks: SequencerTrack[],
+  lengthSteps = 4,
+  id = 'seq-1'
+): SequencerSequence => ({
+  id,
+  name: 'Beat',
+  lengthSteps,
+  bpm: 120,
+  tracks,
+  createdAt: '2026-01-01T00:00:00.000Z',
+  updatedAt: '2026-01-01T00:00:00.000Z',
+});
+
+describe('generateClipEvents — sequence-clips (fase 2)', () => {
+  const samples = [sample('piano', 2), sample('drums', 1)];
+
+  it('pakt een sequence-clip uit naar events van de onderliggende samples', () => {
+    const seq = sequence([
+      seqTrack({ id: 'a', sampleId: 'drums', steps: [true, false, true, false] }),
+    ]);
+    const result = generateClipEvents(
+      [track([clip({ id: 'c1', sampleId: sequenceSampleId('seq-1'), startBeat: 4 })])],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    // Clip start op beat 4 (=2s); stappen 0 en 2 → 2s en 3s
+    expect(result.events).toHaveLength(2);
+    expect(result.events.map((e) => e.time)).toEqual([2, 3]);
+    expect(result.events.every((e) => e.sampleId === 'drums')).toBe(true);
+    expect(result.totalClipCount).toBe(1);
+    // Patroonbreedte = lengthSteps tellen: 4 + 4 = 8
+    expect(result.lastContentBeat).toBe(8);
+  });
+
+  it('uitrekken (clip.loop) herhaalt het patroon tot loopDurationBeats', () => {
+    const seq = sequence([seqTrack({ id: 'a', sampleId: 'drums' })]);
+    const result = generateClipEvents(
+      [track([clip({
+        id: 'c1', sampleId: sequenceSampleId('seq-1'), startBeat: 0,
+        loop: true, loopDurationBeats: 12,
+      })])],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    // Stap 0 van elke iteratie: 0s, 2s, 4s (3 iteraties van 4 tellen)
+    expect(result.events.map((e) => e.time)).toEqual([0, 2, 4]);
+    expect(result.lastContentBeat).toBe(12);
+  });
+
+  it('zonder bijbehorende sequence worden er geen events gemaakt (graceful)', () => {
+    const result = generateClipEvents(
+      [track([clip({ id: 'c1', sampleId: sequenceSampleId('bestaat-niet'), startBeat: 0 })])],
+      samples,
+      { bpm: BPM, sequences: [] }
+    );
+    expect(result.events).toHaveLength(0);
+    expect(result.totalClipCount).toBe(0);
+  });
+
+  it('choke (cut): een volgende stap kapt het vorige event op dat spoor af', () => {
+    const seq = sequence([
+      seqTrack({
+        id: 'a', sampleId: 'piano', mode: 'cut',
+        steps: [true, true, false, false],
+      }),
+    ]);
+    const result = generateClipEvents(
+      [track([clip({ id: 'c1', sampleId: sequenceSampleId('seq-1'), startBeat: 0 })])],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    // Piano duurt 2s; stap 1 begint op 0.5s → eerste event afgekapt op 0.5s.
+    // Het tweede event wordt op de clipgrens (4 tellen = 2s) afgekapt: 1.5s.
+    expect(result.events).toHaveLength(2);
+    expect(result.events[0].duration).toBe(0.5);
+    expect(result.events[1].duration).toBe(1.5);
+    // Choke krijgt een micro-fade-out (klikvrij) via de effects-config
+    expect(result.events[0].effects?.fadeOut).toBeCloseTo(0.01, 10);
+  });
+
+  it('choke werkt ook over de iteratiegrens heen', () => {
+    const seq = sequence([
+      seqTrack({
+        id: 'a', sampleId: 'piano', mode: 'cut',
+        steps: [false, false, false, true],
+      }),
+    ]);
+    const result = generateClipEvents(
+      [track([clip({
+        id: 'c1', sampleId: sequenceSampleId('seq-1'), startBeat: 0,
+        loop: true, loopDurationBeats: 8,
+      })])],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    // Stap 3 van iteratie 1 (t=1.5) wordt gechoked door stap 3 van iteratie 2 (t=3.5)
+    expect(result.events.map((e) => e.time)).toEqual([1.5, 3.5]);
+    expect(result.events[0].duration).toBe(2); // 3.5 - 1.5
+  });
+
+  it('spoorvolume (lineair) wordt omgerekend naar dB in volumeDb', () => {
+    const seq = sequence([
+      seqTrack({ id: 'a', sampleId: 'drums', volume: 0.5 }),
+    ]);
+    const result = generateClipEvents(
+      [track([clip({ id: 'c1', sampleId: sequenceSampleId('seq-1'), startBeat: 0 })])],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    expect(result.events[0].volumeDb).toBeCloseTo(20 * Math.log10(0.5), 5);
+  });
+
+  it('mute op het montagelijn-spoor dempt alle patroon-events', () => {
+    const seq = sequence([seqTrack({ id: 'a', sampleId: 'drums' })]);
+    const result = generateClipEvents(
+      [track(
+        [clip({ id: 'c1', sampleId: sequenceSampleId('seq-1'), startBeat: 0 })],
+        { mute: true }
+      )],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    expect(result.events.every((e) => e.isMuted)).toBe(true);
+    expect(result.mutedClipCount).toBe(1);
+  });
+
+  it('trim van een sequencer-spoor komt terug in de events (declick-fade-in)', () => {
+    const seq = sequence([
+      seqTrack({ id: 'a', sampleId: 'piano', trimStart: 0.5, trimEnd: 1.0 }),
+    ]);
+    const result = generateClipEvents(
+      [track([clip({ id: 'c1', sampleId: sequenceSampleId('seq-1'), startBeat: 0 })])],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    expect(result.events[0].trimStart).toBe(0.5);
+    expect(result.events[0].duration).toBe(0.5);
+    expect(result.events[0].effects?.fadeIn).toBeCloseTo(0.003, 10);
+  });
+
+  it('gemixte tijdlijn: gewone clips en sequence-clips samen', () => {
+    const seq = sequence([seqTrack({ id: 'a', sampleId: 'drums' })]);
+    const result = generateClipEvents(
+      [track([
+        clip({ id: 'c1', sampleId: 'piano', startBeat: 0 }),
+        clip({ id: 'c2', sampleId: sequenceSampleId('seq-1'), startBeat: 8 }),
+      ])],
+      samples,
+      { bpm: BPM, sequences: [seq] }
+    );
+    expect(result.totalClipCount).toBe(2);
+    expect(result.events.map((e) => e.sampleId)).toEqual(['piano', 'drums']);
+    expect(result.events[1].time).toBe(4); // beat 8
+  });
+});

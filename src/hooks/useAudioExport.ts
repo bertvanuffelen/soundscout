@@ -61,9 +61,9 @@ export function useAudioExport(
         // standaardtempo gebruiken zodra BPM ooit variabel wordt.
         // Solo meegeven (D6): export = wat je hoort — een gesoloed spoor
         // exporteert alleen dat spoor, gemute clips blijven stil.
-        const { bpm, soloTrackIndex } = useTimelineStore.getState();
+        const { bpm, soloTrackIndex, sequences } = useTimelineStore.getState();
         const { blob, missingSampleIds, usedRealtimeFallback } = await exportToMp3(
-          tracks, samples, { bitrate: 128, bpm, soloTrackIndex }, (p) => {
+          tracks, samples, { bitrate: 128, bpm, soloTrackIndex, sequences }, (p) => {
             setProgress(Math.round(p * 100));
           }
         );

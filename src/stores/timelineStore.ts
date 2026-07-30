@@ -38,6 +38,13 @@ interface TimelineStore {
   isLooping: boolean;
   sections: Section[];
 
+  /** Sequencer-patronen (fase 2) — horen bij de compositie, worden mee-opgeslagen */
+  sequences: import('../types/sequencer').SequencerSequence[];
+  /** Vervang de volledige sequence-lijst (gespiegeld vanuit sequencerStore) */
+  setSequences: (
+    sequences: import('../types/sequencer').SequencerSequence[]
+  ) => void;
+
   /** Horizontale zoom van de timeline (widthMultiplier). Gedeeld met de studio-filmstrip (Feature F). */
   zoomLevel: number;
   setZoomLevel: (zoom: number) => void;
@@ -160,6 +167,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   totalBeats: DEFAULT_TOTAL_BEATS,
   isLooping: false,
   sections: [],
+  sequences: [],
   // Init net als de oude lokale Timeline-state: mobiel ingezoomd, desktop fit-all.
   zoomLevel: (typeof window !== 'undefined' && window.innerWidth < 640)
     ? ZOOM_DEFAULT_MOBILE
@@ -777,6 +785,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       totalBeats: timeline.totalBeats,
       isLooping: timeline.isLooping,
       sections: timeline.sections ?? [],
+      sequences: timeline.sequences ?? [],
       soloTrackIndex: null,
       loopRegion: null,
       savedLoopRegion: null,
@@ -792,7 +801,16 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       totalBeats: state.totalBeats,
       isLooping: state.isLooping,
       sections: state.sections.length > 0 ? state.sections : undefined,
+      sequences: state.sequences.length > 0 ? state.sequences : undefined,
     };
+  },
+
+  setSequences: (sequences) => {
+    set((prev) => ({
+      sequences,
+      // Levend patroon: elke wijziging is hoorbaar op de tijdlijn (#22)
+      audioVersion: prev.audioVersion + 1,
+    }));
   },
 
   selectHasClips: () => {

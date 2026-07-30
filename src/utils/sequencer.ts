@@ -10,6 +10,9 @@ import {
   SEQ_DEFAULT_TRACKS,
   SEQ_MAX_STEPS,
   SEQ_MIN_STEPS,
+  SEQUENCE_COLOR,
+  SEQUENCE_ICON,
+  SEQUENCE_SAMPLE_PREFIX,
   type SequencerSequence,
   type SequencerTrack,
 } from '../types/sequencer';
@@ -55,6 +58,51 @@ export function createEmptyTrack(lengthSteps: number): SequencerTrack {
     steps: Array<boolean>(lengthSteps).fill(false),
     mode: 'ring',
   };
+}
+
+// --- Fase 2: virtuele samples voor sequence-clips op de montagelijn ---
+
+/** sampleId van de virtuele sample die bij een sequence hoort */
+export function sequenceSampleId(sequenceId: string): string {
+  return `${SEQUENCE_SAMPLE_PREFIX}${sequenceId}`;
+}
+
+/** Is dit sampleId een sequence-verwijzing? */
+export function isSequenceSampleId(sampleId: string): boolean {
+  return sampleId.startsWith(SEQUENCE_SAMPLE_PREFIX);
+}
+
+/** Haal het sequenceId uit een `seq:`-sampleId (of null) */
+export function getSequenceIdFromSampleId(sampleId: string): string | null {
+  return isSequenceSampleId(sampleId)
+    ? sampleId.slice(SEQUENCE_SAMPLE_PREFIX.length)
+    : null;
+}
+
+/**
+ * Virtuele Sample voor een sequence: duur = vakjes × tel-duur. Hierdoor
+ * werken collision, clip-breedte en loop-uitrekken zonder aanpassingen.
+ * Wordt NOOIT gepersisteerd (afgeleid) en heeft geen audioUrl.
+ */
+export function createSequenceSample(sequence: SequencerSequence): Sample {
+  return {
+    id: sequenceSampleId(sequence.id),
+    name: sequence.name,
+    locationId: 'sequencer',
+    audioUrl: '',
+    duration: (sequence.lengthSteps * 60) / sequence.bpm,
+    icon: SEQUENCE_ICON,
+    color: SEQUENCE_COLOR,
+  };
+}
+
+/** Sample-lijst aangevuld met de virtuele sequence-samples */
+export function withSequenceSamples(
+  samples: Sample[],
+  sequences: SequencerSequence[]
+): Sample[] {
+  if (sequences.length === 0) return samples;
+  return [...samples, ...sequences.map(createSequenceSample)];
 }
 
 /** Maak een verse standaard-sequence (3 lege sporen, 16 vakjes, 120 BPM) */

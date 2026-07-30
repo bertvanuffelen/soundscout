@@ -11,6 +11,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { audioService } from '../services/AudioService';
 import { useAudioStore } from '../stores/audioStore';
+import { useTimelineStore } from '../stores/timelineStore';
 import { logger } from '../utils/logger';
 import type { Sample, Track } from '../types';
 
@@ -94,7 +95,9 @@ export function useAudioEngine() {
   // --- Timeline Playback ---
 
   const scheduleTimeline = useCallback((tracks: Track[], samples: Sample[]) => {
-    audioService.scheduleTimeline(tracks, samples);
+    // Sequences horen bij de compositie (fase 2) — imperatief meelezen
+    const sequences = useTimelineStore.getState().sequences;
+    audioService.scheduleTimeline(tracks, samples, sequences);
   }, []);
 
   const playTimeline = useCallback((fromBeat: number = 0) => {
@@ -130,7 +133,9 @@ export function useAudioEngine() {
 
   const rescheduleWhilePlaying = useCallback(
     (tracks: Track[], samples: Sample[], looping: boolean, totalBeats: number) => {
-      audioService.rescheduleWhilePlaying(tracks, samples, looping, totalBeats);
+      // Verse sequences meelezen zodat live patroon-edits hoorbaar worden
+      const sequences = useTimelineStore.getState().sequences;
+      audioService.rescheduleWhilePlaying(tracks, samples, looping, totalBeats, sequences);
     }, []
   );
 

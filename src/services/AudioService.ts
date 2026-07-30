@@ -10,6 +10,7 @@
 
 import * as Tone from 'tone';
 import type { Clip, Sample, Track } from '../types';
+import type { SequencerSequence } from '../types/sequencer';
 import { beatsToSeconds, getClipTrimStart, getClipDuration, getEffectiveClipEndBeat } from '../utils/audio';
 import { createWaveformData, type WaveformData } from '../utils/waveform';
 import {
@@ -82,6 +83,8 @@ export class AudioService {
   // Timeline data (for active clip detection during seek)
   private scheduledTracks: Track[] = [];
   private scheduledSamples: Sample[] = [];
+  /** Sequencer-patronen van de huidige schedule (fase 2) */
+  private scheduledSequences: SequencerSequence[] = [];
 
   // Active on-demand sources: created by Part callback and startActiveClips().
   // Each entry is a player + its effect nodes, auto-disposed when done.
@@ -750,7 +753,11 @@ export class AudioService {
     this.activeSources.clear();
   }
 
-  scheduleTimeline(tracks: Track[], samples: Sample[]): void {
+  scheduleTimeline(
+    tracks: Track[],
+    samples: Sample[],
+    sequences: SequencerSequence[] = [],
+  ): void {
     const scheduleStartTime = performance.now();
     const transport = Tone.getTransport();
     transport.cancel(); // Clear previous schedule
@@ -759,6 +766,7 @@ export class AudioService {
     // Store timeline data for active clip detection during seek
     this.scheduledTracks = tracks;
     this.scheduledSamples = samples;
+    this.scheduledSequences = sequences;
 
     // Dispose previous Part (important for memory)
     if (this.timelinePart) {
@@ -792,6 +800,7 @@ export class AudioService {
         const buffer = this.buffers.get(sampleId);
         return !!buffer && buffer.loaded;
       },
+      sequences,
     });
     const { events, totalClipCount, mutedClipCount } = generated;
 
@@ -1141,7 +1150,13 @@ export class AudioService {
    * doesn't fire events at the old transport position. play(currentBeat) then
    * cleanly restarts with the +0.05s buffer that startActiveClips() relies on.
    */
-  rescheduleWhilePlaying(tracks: Track[], samples: Sample[], looping: boolean, totalBeats: number): void {
+  rescheduleWhilePlaying(
+    tracks: Track[],
+    samples: Sample[],
+    looping: boolean,
+    totalBeats: number,
+    sequences?: SequencerSequence[],
+  ): void {
     audioDiag.rescheduleTriggered(`live edit at beat ${this.getCurrentBeat().toFixed(2)}`);
     const currentBeat = this.getCurrentBeat();
     const transport = Tone.getTransport();
@@ -1154,7 +1169,7 @@ export class AudioService {
     this.stopPlayheadUpdates();
 
     // 2. Full reschedule (disposes old Part + active sources, builds new Part)
-    this.scheduleTimeline(tracks, samples);
+    this.scheduleTimeline(tracks, samples, sequences ?? this.scheduledSequences);
     this.setLoop(looping, totalBeats, this.loopRegion);
 
     // 3. Resume playback from the same position
@@ -1227,6 +1242,7 @@ export class AudioService {
     samples: Sample[],
     durationSeconds: number,
     onProgress?: (fraction: number) => void,
+    sequences: SequencerSequence[] = [],
   ): Promise<AudioBuffer> {
     await this.initialize();
     const ctx = Tone.getContext();
@@ -1265,7 +1281,7 @@ export class AudioService {
     try {
       // Schone transport-uitgangspositie vóór het plannen
       try { transport.cancel(); transport.stop(); transport.seconds = 0; } catch { /* ignore */ }
-      this.scheduleTimeline(tracks, samples);
+      this.scheduleTimeline(tracks, samples, sequences);
       this.setLoop(false, 0, null);
 
       // Handshake: pas als de worklet aantoonbaar draait het startmoment

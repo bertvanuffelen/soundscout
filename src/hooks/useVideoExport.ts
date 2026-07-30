@@ -106,6 +106,7 @@ export function useVideoExport(
           {
             bpm: useTimelineStore.getState().bpm,
             soloTrackIndex: useTimelineStore.getState().soloTrackIndex,
+            sequences: useTimelineStore.getState().sequences,
           },
           (percent) => {
             setVideoProgress(percent);

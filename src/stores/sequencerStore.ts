@@ -16,18 +16,36 @@ import {
   resizeSteps,
 } from '../utils/sequencer';
 import { loadSequences, saveSequences } from '../services/sequencerStorage';
+import { useTimelineStore } from './timelineStore';
 import {
   SEQ_MAX_TRACKS,
   type SequencerSequence,
   type SequencerTrackMode,
 } from '../types/sequencer';
 
-// --- Gedebouncede opslag ---
+/**
+ * Persistentie-modus (fase 2):
+ * - 'lab'    → eigen localStorage-sleutel (het /sequencer-prototype)
+ * - 'studio' → sequences horen bij de compositie; elke mutatie wordt
+ *              direct gespiegeld naar timelineStore.setSequences (die
+ *              audioVersion bumpt, dus live reschedule + opslaan werken).
+ */
+type SequencerPersistMode = 'lab' | 'studio';
+
+// --- Persistentie (gedebounced voor lab, direct voor studio) ---
 
 const SAVE_DEBOUNCE_MS = 500;
 let saveTimer: ReturnType<typeof setTimeout> | null = null;
 
-function scheduleSave(getSequences: () => SequencerSequence[]): void {
+function persistSequences(
+  mode: SequencerPersistMode,
+  getSequences: () => SequencerSequence[]
+): void {
+  if (mode === 'studio') {
+    // Direct spiegelen: de compositie is de bron van waarheid
+    useTimelineStore.getState().setSequences(getSequences());
+    return;
+  }
   if (saveTimer) clearTimeout(saveTimer);
   saveTimer = setTimeout(() => {
     saveTimer = null;
@@ -42,12 +60,25 @@ interface SequencerStore {
   activeSequenceId: string | null;
   isPlaying: boolean;
   hasHydrated: boolean;
+  /** 'lab' (localStorage) of 'studio' (gespiegeld naar de compositie) */
+  mode: SequencerPersistMode;
 
   /** Actieve sequence (of null) — voor imperatieve reads: getState().activeSequence() */
   activeSequence: () => SequencerSequence | null;
 
-  /** Laad uit localStorage; maak een verse default als er niets (geldigs) is */
+  /** Laad uit localStorage (lab); maak een verse default als er niets (geldigs) is */
   hydrate: (defaultName: string) => void;
+
+  /**
+   * Studio-modus (fase 2): laad de sequences van de huidige compositie.
+   * Vervangt de store-inhoud volledig; mutaties spiegelen daarna direct
+   * naar timelineStore. Aanroepen bij het openen van de studio.
+   */
+  hydrateForStudio: (sequences: SequencerSequence[]) => void;
+
+  /** Open een specifieke sequence in de studio-tab (of sluit met null) */
+  openSequenceId: string | null;
+  setOpenSequenceId: (id: string | null) => void;
 
   // Stappen & lengte
   toggleStep: (trackId: string, stepIndex: number) => void;
@@ -86,7 +117,7 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
           : seq
       ),
     }));
-    scheduleSave(() => get().sequences);
+    persistSequences(get().mode, () => get().sequences);
   };
 
   const updateTrack = (
@@ -108,6 +139,8 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
     activeSequenceId: null,
     isPlaying: false,
     hasHydrated: false,
+    mode: 'lab' as SequencerPersistMode,
+    openSequenceId: null,
 
     activeSequence: () => {
       const { sequences, activeSequenceId } = get();
@@ -115,7 +148,9 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
     },
 
     hydrate: (defaultName) => {
-      if (get().hasHydrated) return;
+      // Opnieuw laden als we uit studio-modus komen (composities en het lab
+      // delen de store, maar nooit elkaars data)
+      if (get().hasHydrated && get().mode === 'lab') return;
       let sequences = loadSequences();
       if (sequences.length === 0) {
         sequences = [createDefaultSequence(defaultName)];
@@ -125,7 +160,26 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
         sequences,
         activeSequenceId: sequences[0].id,
         hasHydrated: true,
+        mode: 'lab',
+        openSequenceId: null,
+        isPlaying: false,
       });
+    },
+
+    hydrateForStudio: (sequences) => {
+      set({
+        sequences,
+        activeSequenceId: sequences[0]?.id ?? null,
+        hasHydrated: true,
+        mode: 'studio',
+        openSequenceId: null,
+        isPlaying: false,
+      });
+    },
+
+    setOpenSequenceId: (id) => {
+      set({ openSequenceId: id });
+      if (id) set({ activeSequenceId: id });
     },
 
     // --- Stappen & lengte ---
@@ -213,7 +267,7 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
         sequences: [...state.sequences, seq],
         activeSequenceId: seq.id,
       }));
-      scheduleSave(() => get().sequences);
+      persistSequences(get().mode, () => get().sequences);
     },
 
     renameSequence: (id, name) => {
@@ -226,7 +280,7 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
             : seq
         ),
       }));
-      scheduleSave(() => get().sequences);
+      persistSequences(get().mode, () => get().sequences);
     },
 
     duplicateSequence: (id, copySuffix) => {
@@ -249,7 +303,7 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
         sequences: [...state.sequences, copy],
         activeSequenceId: copy.id,
       }));
-      scheduleSave(() => get().sequences);
+      persistSequences(get().mode, () => get().sequences);
     },
 
     deleteSequence: (id, fallbackName) => {
@@ -265,7 +319,7 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
             : state.activeSequenceId;
         return { sequences, activeSequenceId };
       });
-      scheduleSave(() => get().sequences);
+      persistSequences(get().mode, () => get().sequences);
     },
 
     setActiveSequence: (id) => {

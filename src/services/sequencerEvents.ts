@@ -110,3 +110,9 @@ export function eventsAtStep(
 export function patternDurationSeconds(sequence: SequencerSequence): number {
   return sequence.lengthSteps * (60 / sequence.bpm);
 }
+
+/** Lineaire gain (0..1) naar dB, geklemd op −60 (stil) */
+export function gainToDb(gain: number): number {
+  if (gain <= 0.001) return -60;
+  return 20 * Math.log10(gain);
+}

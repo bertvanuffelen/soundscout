@@ -57,6 +57,31 @@ export const SampleSchema = z.object({
 });
 
 // =============================================================================
+// SEQUENCER (fase 2 — sequences geëmbed in de compositie)
+// =============================================================================
+
+export const SequencerTrackSchema = z.object({
+  id: z.string(),
+  sampleId: z.string().nullable(),
+  steps: z.array(z.boolean()).min(4).max(32),
+  mode: z.enum(['ring', 'cut']),
+  trimStart: z.number().min(0).optional(),
+  trimEnd: z.number().min(0).optional(),
+  volume: z.number().min(0).max(1).optional(),
+  mute: z.boolean().optional(),
+});
+
+export const SequencerSequenceSchema = z.object({
+  id: z.string(),
+  name: z.string().max(60),
+  lengthSteps: z.number().int().min(4).max(32),
+  bpm: z.number().positive(),
+  tracks: z.array(SequencerTrackSchema).min(1).max(8),
+  createdAt: z.string(),
+  updatedAt: z.string(),
+});
+
+// =============================================================================
 // SECTIONS (Musical Form / Vormschema)
 // =============================================================================
 
@@ -103,6 +128,8 @@ export const CompositionDataSchema = z.object({
   storyboardId: z.string().optional(),
   praatplaat: ActivePraatplaatSchema.optional(),
   praatplaatPosition: PraatplaatPositionSchema.optional(),
+  /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed */
+  sequences: z.array(SequencerSequenceSchema).optional(),
 });
 
 // =============================================================================
@@ -115,6 +142,8 @@ export const TimelineStateSchema = z.object({
   totalBeats: z.number().positive(),
   isLooping: z.boolean(),
   sections: z.array(SectionSchema).optional(),
+  /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed */
+  sequences: z.array(SequencerSequenceSchema).optional(),
 });
 
 // =============================================================================

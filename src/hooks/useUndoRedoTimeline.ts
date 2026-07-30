@@ -168,6 +168,8 @@ export function useUndoRedoTimeline() {
       totalBeats: useTimelineStore.getState().totalBeats,
       isLooping: useTimelineStore.getState().isLooping,
       sections: cloneSections(snapshot.sections),
+      // Sequences vallen buiten de undo-historie (fase 2) — huidige behouden
+      sequences: useTimelineStore.getState().sequences,
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;
@@ -194,6 +196,8 @@ export function useUndoRedoTimeline() {
       totalBeats: useTimelineStore.getState().totalBeats,
       isLooping: useTimelineStore.getState().isLooping,
       sections: cloneSections(snapshot.sections),
+      // Sequences vallen buiten de undo-historie (fase 2) — huidige behouden
+      sequences: useTimelineStore.getState().sequences,
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;

@@ -11,38 +11,14 @@
 
 import { z } from 'zod';
 import { logger } from '../utils/logger';
-import {
-  SEQ_MAX_STEPS,
-  SEQ_MAX_TRACKS,
-  SEQ_MIN_STEPS,
-  type SequencerSequence,
-} from '../types/sequencer';
+import { SequencerSequenceSchema } from '../utils/schemas';
+import type { SequencerSequence } from '../types/sequencer';
 
 // Lokale literal — bewust NIET in de StorageKey-union van types/index.ts
 const STORAGE_KEY = 'soundscout:sequencer-lab';
 
-// --- Schema's ---
-
-const SequencerTrackSchema = z.object({
-  id: z.string(),
-  sampleId: z.string().nullable(),
-  steps: z.array(z.boolean()).min(SEQ_MIN_STEPS).max(SEQ_MAX_STEPS),
-  mode: z.enum(['ring', 'cut']),
-  trimStart: z.number().min(0).optional(),
-  trimEnd: z.number().min(0).optional(),
-  volume: z.number().min(0).max(1).optional(),
-  mute: z.boolean().optional(),
-});
-
-const SequencerSequenceSchema = z.object({
-  id: z.string(),
-  name: z.string().max(60),
-  lengthSteps: z.number().int().min(SEQ_MIN_STEPS).max(SEQ_MAX_STEPS),
-  bpm: z.number().positive(),
-  tracks: z.array(SequencerTrackSchema).min(1).max(SEQ_MAX_TRACKS),
-  createdAt: z.string(),
-  updatedAt: z.string(),
-});
+// Schema's zijn sinds fase 2 canoniek in utils/schemas.ts (gedeeld met de
+// compositie-opslag); dit bestand hergebruikt ze voor de lab-opslag.
 
 // Envelop losjes parsen zodat één kapotte sequence niet de hele opslag sloopt
 const StorageEnvelopeSchema = z.object({

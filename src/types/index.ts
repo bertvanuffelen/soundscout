@@ -261,6 +261,8 @@ export interface TimelineState {
   isLooping: boolean;
   /** Optional sections for musical form (vormschema) */
   sections?: Section[];
+  /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed in de compositie */
+  sequences?: import('./sequencer').SequencerSequence[];
 }
 
 export interface Track {
@@ -408,6 +410,8 @@ export interface CompositionData {
   praatplaat?: ActivePraatplaat;
   /** Position on the praatplaat (0-1 normalized), if applicable */
   praatplaatPosition?: PraatplaatPosition;
+  /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed */
+  sequences?: import('./sequencer').SequencerSequence[];
 }
 
 // --- Template (Fase 5 - Docent-aangemaakt sjabloon) ---

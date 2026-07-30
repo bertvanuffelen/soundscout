@@ -31,6 +31,8 @@ export interface ExportOptions {
   bpm?: number;
   /** Solo-spoor (D6): export = wat je hoort. null/undefined = geen solo. */
   soloTrackIndex?: number | null;
+  /** Sequencer-patronen (fase 2) — nodig om sequence-clips uit te pakken */
+  sequences?: import('../types/sequencer').SequencerSequence[];
 }
 
 export interface Mp3ExportOptions extends ExportOptions {
@@ -127,11 +129,13 @@ export function calculateTimelineDuration(
   tracks: Track[],
   samples: Sample[],
   bpm: number = DEFAULT_BPM,
-  soloTrackIndex: number | null = null
+  soloTrackIndex: number | null = null,
+  sequences: import('../types/sequencer').SequencerSequence[] = []
 ): number {
   const { lastAudibleSeconds } = generateClipEvents(tracks, samples, {
     bpm,
     soloTrackIndex,
+    sequences,
   });
   // Add a small buffer at the end (0.5 seconds)
   return lastAudibleSeconds + 0.5;
@@ -176,6 +180,7 @@ export async function renderOffline(
     channels = 2,
     bpm = DEFAULT_BPM,
     soloTrackIndex = null,
+    sequences = [],
   } = options;
 
   logger.info('Starting offline render', { duration, sampleRate, channels });
@@ -185,6 +190,7 @@ export async function renderOffline(
     bpm,
     soloTrackIndex,
     hasBuffer: (sampleId) => bufferMap.has(sampleId),
+    sequences,
   });
 
   // Render offline using Tone.Offline
@@ -274,7 +280,8 @@ export async function validateOrCapture(
   tracks: Track[],
   samples: Sample[],
   duration: number,
-  onProgress?: (fraction: number) => void
+  onProgress?: (fraction: number) => void,
+  sequences: import('../types/sequencer').SequencerSequence[] = []
 ): Promise<{ buffer: AudioBuffer; usedRealtimeFallback: boolean }> {
   const analysis = analyzeAudioBuffer(audioBuffer);
   logger.info('Export-validatie: ' + formatRenderAnalysis(analysis));
@@ -285,7 +292,9 @@ export async function validateOrCapture(
     reasons: analysis.reasons,
   });
   try {
-    const captured = await audioService.captureRender(tracks, samples, duration, onProgress);
+    const captured = await audioService.captureRender(
+      tracks, samples, duration, onProgress, sequences
+    );
     const capturedAnalysis = analyzeAudioBuffer(captured);
     logger.info('Vangnet-validatie: ' + formatRenderAnalysis(capturedAnalysis));
     // Nooit stilte exporteren: is de capture (vrijwel) stil terwijl de
@@ -333,7 +342,8 @@ export async function exportToMp3(
 
   // Calculate duration
   const duration = calculateTimelineDuration(
-    tracks, samples, options.bpm, options.soloTrackIndex ?? null
+    tracks, samples, options.bpm, options.soloTrackIndex ?? null,
+    options.sequences ?? []
   );
   if (duration <= 0.5) {
     throw new Error('No clips on timeline');
@@ -357,7 +367,8 @@ export async function exportToMp3(
   // Fase 4: objectieve validatie + realtime-vangnet als de render verdacht is
   const { buffer: audioBuffer, usedRealtimeFallback } = await validateOrCapture(
     renderedBuffer, tracks, samples, duration,
-    (fraction) => onProgress?.(0.3 + fraction * 0.4)
+    (fraction) => onProgress?.(0.3 + fraction * 0.4),
+    options.sequences ?? []
   );
 
   // Encode to MP3
