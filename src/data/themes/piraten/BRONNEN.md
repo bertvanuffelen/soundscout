@@ -19,10 +19,12 @@ deze lijst voedt de centrale colofonpagina van de app.
 | `jungle-krekels.mp3` | Sound of crickets at night | joanaseabra | http://creativecommons.org/publicdomain/zero/1.0/ | https://freesound.org/people/joanaseabra/sounds/424871/ |
 | `jungle-vogels.mp3` | woodland_kingfisher.wav | soundbytez | http://creativecommons.org/licenses/by/3.0/ | https://freesound.org/people/soundbytez/sounds/114450/ |
 | `jungle-waterval.mp3` | little waterfall.m4a | HelenaMRose | http://creativecommons.org/licenses/by/3.0/ | https://freesound.org/people/HelenaMRose/sounds/515891/ |
+| `schip-anker.mp3` | Big Water Splash | qubodup | http://creativecommons.org/publicdomain/zero/1.0/ | https://freesound.org/people/qubodup/sounds/442773/ |
 | `schip-kanon.mp3` | Cannon shot | SamsterBirdies | http://creativecommons.org/publicdomain/zero/1.0/ | https://freesound.org/people/SamsterBirdies/sounds/467883/ |
 | `schip-stuurwiel.mp3` | Ball bearing click 2.wav | mattgirling | http://creativecommons.org/licenses/by/3.0/ | https://freesound.org/people/mattgirling/sounds/493537/ |
 | `schip-wind.mp3` | Wind howling | paf60 | http://creativecommons.org/publicdomain/zero/1.0/ | https://freesound.org/people/paf60/sounds/767148/ |
 | `schip-zeilen.mp3` | flag_flap_2.wav | RichieMcMullen | http://creativecommons.org/publicdomain/zero/1.0/ | https://freesound.org/people/RichieMcMullen/sounds/386797/ |
+| `voodoohut-botten.mp3` | Rattling Bones.wav | spookymodem | http://creativecommons.org/publicdomain/zero/1.0/ | https://freesound.org/people/spookymodem/sounds/202102/ |
 | `voodoohut-druppel.mp3` | Dripping Water.wav | spookymodem | http://creativecommons.org/publicdomain/zero/1.0/ | https://freesound.org/people/spookymodem/sounds/249806/ |
 | `voodoohut-gong.mp3` | Gong-Cambodia | cdrk | https://creativecommons.org/licenses/by/4.0/ | https://freesound.org/people/cdrk/sounds/379865/ |
 | `voodoohut-ketel.mp3` | boiling bubbles 1.wav | Jace | https://creativecommons.org/licenses/by/4.0/ | https://freesound.org/people/Jace/sounds/19841/ |
