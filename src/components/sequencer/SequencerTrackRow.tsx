@@ -70,8 +70,8 @@ export default memo(function SequencerTrackRow({
 
   return (
     <div className="flex items-stretch gap-2">
-      {/* Bediening — sticky zodat hij zichtbaar blijft bij horizontaal scrollen */}
-      <div className="sticky left-0 z-10 w-44 sm:w-52 shrink-0 bg-bg-app pr-1">
+      {/* Bediening — vaste breedte; alleen de vakjes schalen mee */}
+      <div className="w-44 sm:w-52 shrink-0 bg-bg-app pr-1">
         <TrackControls
           track={track}
           sample={sample}
@@ -85,8 +85,8 @@ export default memo(function SequencerTrackRow({
         />
       </div>
 
-      {/* Stapcellen */}
-      <div className="flex items-center gap-1">
+      {/* Stapcellen — schalen mee met de vensterbreedte (flex-1), max 44px */}
+      <div className="flex items-center gap-1 flex-1 min-w-0">
         {Array.from({ length: lengthSteps }, (_, index) => {
           const isActive = track.steps[index] === true;
           const isShaded = !isActive && shadedCells.has(index);
@@ -99,7 +99,7 @@ export default memo(function SequencerTrackRow({
               aria-pressed={isActive}
               aria-label={t('sequencer.steps', { step: index + 1 })}
               className={cn(
-                'relative w-11 h-11 rounded-lg border-2 shrink-0 transition-colors',
+                'relative flex-1 min-w-0 max-w-11 h-11 rounded-lg border-2 transition-colors',
                 index % 4 === 0 && index > 0 && 'ml-2',
                 isActive
                   ? 'border-transparent'

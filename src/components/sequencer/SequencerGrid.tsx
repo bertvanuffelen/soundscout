@@ -59,8 +59,8 @@ export default function SequencerGrid() {
 
   return (
     <>
-      <div className="overflow-x-auto pb-2">
-        <div className="flex flex-col gap-2 min-w-max">
+      <div className="pb-2">
+        <div className="flex flex-col gap-2">
           {sequence.tracks.map((track) => (
             <SequencerTrackRow
               key={track.id}
