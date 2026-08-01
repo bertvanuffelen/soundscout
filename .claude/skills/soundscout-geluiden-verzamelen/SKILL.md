@@ -2,12 +2,13 @@
 name: soundscout-geluiden-verzamelen
 description: >-
   Zoekt, genereert en produceert de geluiden voor SoundScout: doorzoekt Freesound op
-  bruikbare samples (met licentiefilter), genereert sfx via ElevenLabs, bouwt een klikbare
-  HTML-luisterpagina zodat Bert snel kan kiezen, en verwerkt het gekozen geluid naar de
-  app-spec (mp3, sfx 2-8s, muziekloops exact 8.0s @ 120 BPM) inclusief bronvermelding en
-  licentieregistratie. Gebruik deze skill wanneer Bert geluiden nodig heeft — "zoek een
-  geluid voor…", "geluiden bij dit thema", "genereer een sfx", "loop van 8 seconden",
-  "welke licentie heeft dit geluid" — los of als onderdeel van een compleet thema.
+  bruikbare samples (met licentiefilter), genereert geluidseffecten en robotstemmen via de
+  Higgsfield CLI, bouwt een klikbare HTML-luisterpagina zodat Bert snel kan kiezen, en
+  verwerkt het gekozen geluid naar de app-spec (mp3, sfx 2-8s, muziekloops exact 8.0s @ 120
+  BPM) inclusief bronvermelding en licentieregistratie. Gebruik deze skill wanneer Bert
+  geluiden nodig heeft — "zoek een geluid voor…", "geluiden bij dit thema", "genereer een
+  sfx", "maak een robotstem", "loop van 8 seconden", "welke licentie heeft dit geluid" —
+  los of als onderdeel van een compleet thema.
 ---
 
 # SoundScout Geluiden-verzamelen
@@ -24,15 +25,20 @@ Specificaties (hard, afgedwongen door `check-audio.py`):
 [reference/audio-specificaties.md](reference/audio-specificaties.md).
 Keys en tooling: [reference/api-setup.md](reference/api-setup.md).
 
-## Drie verwervingsroutes
+## Verwervingsroutes
 
 Bepaal per geluid vooraf de route — dat scheelt zoekwerk:
 
 | Route | Wanneer | Hoe |
 |---|---|---|
-| **F — Freesound** | alledaagse, opneembare geluiden (deur, meeuw, hamer, gejuich) | zoeken + previews downloaden |
-| **E — ElevenLabs** | niet-bestaande of te specifieke geluiden (robotstem, magisch effect) | genereren uit een tekstprompt |
-| **C — checklist** | muziek, complexe stems, of alles waar Bert zelf een bron voor heeft | opnemen in `zoektermen-checklist.md` met zoektermen, duur/type en doelbestandsnaam |
+| **F — Freesound** | alledaagse, opneembare geluiden (deur, ketting, water, hamer, gejuich) | zoeken + previews downloaden |
+| **H — Higgsfield** | **dieren en stemmen**, en alles wat niet bestaat of te specifiek is | genereren uit een tekstprompt (sfx of stem) |
+| **C — checklist** | **muziek** (Suno) en alles waar Bert zelf een bron voor heeft | opnemen in `zoektermen-checklist.md` met zoektermen, duur/type en doelbestandsnaam |
+| **E — ElevenLabs** | alternatief voor H | alleen bruikbaar als `ELEVENLABS_API_KEY` gevuld is — **die is nu leeg** |
+
+**Vuistregel F vs H**: bestaat het geluid in het echt en is het opneembaar → zoeken. Gaat
+het om een dier of een stem → genereren, want Freesound is daar onder CC0/CC-BY dun én een
+gegenereerde *robot*papegaai past bij de huisstijl waar een echte papegaai dat niet doet.
 
 ## Route F — Freesound
 
@@ -54,13 +60,36 @@ python3 scripts/maak-audio-preview.py --map kandidaten/audio --titel "…" --ope
 Eén HTML-pagina met per sample een play-knop en keuzerondjes; Bert klikt "Kopieer mijn
 keuzes" en plakt ze terug in de chat. Terminal-`afplay` is de fallback.
 
-## Route E — ElevenLabs
+## Route H — Higgsfield (genereren)
+
+Volledig recept, modellen en kosten: [reference/higgsfield-audio.md](reference/higgsfield-audio.md).
+Geen API-key nodig — de CLI is ingelogd.
+
+```bash
+# geluidseffect (0,25 credit/sec, dus 4s = 1 credit)
+python3 scripts/genereer-geluid-higgsfield.py \
+  --prompt "A mechanical robot parrot squawking twice, metallic servo whirr, clean and dry, no music, no reverb" \
+  --duur 4 --out kandidaten/audio/{sampleId}/hf-v1.mp3 --manifest <manifest.json>
+
+# stem (~0,01 credit) — pitch omlaag = grote logge robot, omhoog = klein robotje
+python3 scripts/genereer-geluid-higgsfield.py --modus stem --prompt "…" \
+  --voice-id <id> --pitch 0.8 --tempo 0.9 --instructie "raspy robotic voice" --out …
+python3 scripts/genereer-geluid-higgsfield.py --stemmen    # 57 stemmen met hun id
+```
+
+Drie dingen die het verschil maken in de prompt: **noem een aantal** ("squawking twice"),
+**maak het mechanisch** ("metallic servo whirr") en **houd het droog** ("no music, no
+reverb"). Maximaal **2-3 pogingen** per geluid; lukt het dan niet, schakel naar route F of C.
+
+## Route E — ElevenLabs (alternatief, nu niet bruikbaar)
 
 ```bash
 python3 scripts/genereer-geluid.py --prompt "…" --duur … --out …
 ```
-Bert luistert. Maximaal **2 pogingen** — lukt het dan niet, schakel naar route F of C in
-plaats van door te blijven genereren.
+Werkt alleen met een gevulde `ELEVENLABS_API_KEY`; die is er nu niet, en de key kost geld.
+**Gebruik route H** tenzij Bert expliciet ElevenLabs wil. Wil hij ElevenLabs-kwaliteit
+zonder eigen key: `higgsfield generate create text2speech_v2 --variant elevenlabs …` loopt
+via Higgsfield-credits (0,15 credit).
 
 ## Verwerken (altijd, ongeacht route)
 
@@ -80,12 +109,19 @@ python3 scripts/check-audio.py --map <audio-map>
 
 → **Gate: Bert heeft alles gehoord en goedgekeurd.**
 
-## Mixbare muziek per thema
+## Mixbare muziek per thema — route C (Suno)
 
-Wil Bert muziekloops uit verschillende locaties kunnen combineren, dan moeten ze onderling
-mixbaar zijn: één tempo (120 BPM, 4/4), één toonsoort + akkoordenschema voor het hele thema,
+**Muziek maakt Bert zelf in Suno**, niet met deze skill. Reden: loops uit verschillende
+locaties moeten onderling mixbaar zijn, en dat vraagt controle over tempo, toonsoort en
+akkoorden. Leg per thema vast: één tempo (120 BPM, 4/4), één toonsoort + akkoordenschema,
 en per locatie één instrument-rol. Details in
 [audio-specificaties.md](reference/audio-specificaties.md).
+
+Jouw rol: de specificatie opschrijven in `zoektermen-checklist.md` en het aangeleverde
+bestand door `verwerk-geluid.py --duur-exact 8.0` halen.
+
+> Higgsfield kán muziek genereren (`sonilo_music`, 0,5 credit per 8s) — bewust niet
+> ingebouwd. Noem het hooguit als Bert er zelf naar vraagt.
 
 ## Licenties & bronvermelding
 
@@ -98,10 +134,15 @@ Alles landt in `BRONNEN.md` naast de audio; die reist mee naar
 
 ## Bekende beperkingen (eerlijk benoemen)
 
-- Je hoort niets — je kunt alleen op metadata, duur en beschrijving voorselecteren.
+- Je hoort niets — je kunt alleen op metadata, duur en beschrijving voorselecteren. Een
+  gegenereerd geluid kan technisch perfect zijn (juiste duur, formaat, grootte) en toch
+  nergens op lijken; `check-audio.py` bewijst de spec, nooit de klank.
 - Freesound-previews zijn mp3 van wisselende kwaliteit; ruis of een lange stilte-aanloop
   zie je niet in de metadata.
-- ElevenLabs is sterk in korte sfx, zwak in muziek.
+- Genereren is sterk in korte sfx en stemmen, zwak in muziek — daarom blijft muziek Suno.
+- `qwen_audio_tts` heeft **geen Nederlands** in zijn talenlijst; laat Bert de uitspraak
+  beoordelen of gebruik `inworld_text_to_speech` (NL-stemmen, 2 credits).
+- ElevenLabs (route E) is nu niet bruikbaar: de key is leeg.
 
 ## Onderdeel van een thema?
 

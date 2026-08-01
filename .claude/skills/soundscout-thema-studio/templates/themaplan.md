@@ -23,7 +23,7 @@
 
 | sampleId | Naam NL / EN | Geluidsbeschrijving | Type | Icon | Kleur | Route |
 |---|---|---|---|---|---|---|
-| {{LOCATION_ID}}-… | … / … | … | sfx-2-8s \| loop-8.0s | Lucide-naam | #…… | F/E/C |
+| {{LOCATION_ID}}-… | … / … | … | sfx-2-8s \| loop-8.0s | Lucide-naam | #…… | F/H/C |
 
 *(herhaal per locatie)*
 

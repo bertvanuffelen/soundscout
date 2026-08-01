@@ -26,7 +26,7 @@ de assets maken door de deelskills, en assembleert het pakket.
 | Skill | Doet | Roep aan in |
 |---|---|---|
 | **soundscout-afbeeldingen-generator** | alle beelden + huisstijlbewaking + de vaste cast | fase C |
-| **soundscout-geluiden-verzamelen** | Freesound/ElevenLabs, verwerken, licenties | fase D |
+| **soundscout-geluiden-verzamelen** | Freesound zoeken, Higgsfield genereren, verwerken, licenties | fase D |
 | **deze skill** | brainstorm, themaplan, assemblage, integratie | A, B, E |
 
 De deelskills bevatten de stijlcontracten, checklists, scripts en valkuilen van hun domein —
@@ -74,7 +74,9 @@ Vul [templates/themaplan.md](templates/themaplan.md) in en initialiseer `manifes
 Eisen (details in [reference/datamodel-thema.md](reference/datamodel-thema.md)):
 
 - Per locatie **6-8 samples** (= de sound-hotspots): id, NL/EN-naam, geluidsbeschrijving,
-  type (`loop-8.0s` of `sfx-2-8s`), Lucide-icon, hex-kleur, verwervingsroute **F**/**E**/**C**.
+  type (`loop-8.0s` of `sfx-2-8s`), Lucide-icon, hex-kleur, en de verwervingsroute:
+  **F** (Freesound zoeken) · **H** (Higgsfield genereren — dieren en stemmen) ·
+  **C** (checklist, incl. muziek via Suno).
 - Elke locatieplaat is een **vólle wemelscène (~20-30 acties)**: de 6-8 samples zijn de
   herkenbare sound-hotspots, aangevuld met ~15-20 on-theme klungel-gags zonder eigen sample.
   Schrijf per locatie die actielijst uit (sound-sources gemarkeerd).
@@ -106,7 +108,7 @@ Wat jij hier bewaakt:
 
 ## Fase D — Geluidsproductie → soundscout-geluiden-verzamelen
 
-Draag over met de sample-lijst uit het themaplan, inclusief per sample de route (F/E/C),
+Draag over met de sample-lijst uit het themaplan, inclusief per sample de route (F/H/C),
 type (loop/sfx), gewenste duur en beschrijving. Die skill zoekt/genereert, bouwt de
 luisterpagina, verwerkt en registreert licenties.
 
