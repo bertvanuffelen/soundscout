@@ -31,14 +31,21 @@ Bepaal per geluid vooraf de route — dat scheelt zoekwerk:
 
 | Route | Wanneer | Hoe |
 |---|---|---|
-| **F — Freesound** | alledaagse, opneembare geluiden (deur, ketting, water, hamer, gejuich) | zoeken + previews downloaden |
-| **H — Higgsfield** | **dieren en stemmen**, en alles wat niet bestaat of te specifiek is | genereren uit een tekstprompt (sfx of stem) |
+| **F — Freesound** | alledaagse, opneembare geluiden **én dieren** (deur, ketting, water, hamer, gejuich, papegaai, aap) | zoeken + previews downloaden |
+| **H — Higgsfield** | geluiden die **niet bestaan**: machines, magische effecten, abstracte sfeer | genereren uit een tekstprompt |
 | **C — checklist** | **muziek** (Suno) en alles waar Bert zelf een bron voor heeft | opnemen in `zoektermen-checklist.md` met zoektermen, duur/type en doelbestandsnaam |
 | **E — ElevenLabs** | alternatief voor H | alleen bruikbaar als `ELEVENLABS_API_KEY` gevuld is — **die is nu leeg** |
 
-**Vuistregel F vs H**: bestaat het geluid in het echt en is het opneembaar → zoeken. Gaat
-het om een dier of een stem → genereren, want Freesound is daar onder CC0/CC-BY dun én een
-gegenereerde *robot*papegaai past bij de huisstijl waar een echte papegaai dat niet doet.
+**Vuistregel F vs H**: bestaat het geluid in het echt → **zoeken**, ook als het een dier is.
+Herkenbaarheid gaat vóór stijl: een kind moet in één seconde horen wát het is, en daar is
+een echte opname beter in dan een gegenereerde. De robot-flavor komt er eventueel achteraf
+overheen als licht effect — niet door het dier van de grond af te genereren. Bestaat het
+geluid níét (machine, magie, abstracte sfeer) → genereren.
+Onderbouwing en testresultaten: [reference/higgsfield-audio.md](reference/higgsfield-audio.md).
+
+**Stemmen staan geparkeerd** (2026-08-01): TTS klinkt te verzorgd voor robotpiraten en
+spreekt Nederlands met een Engels accent. Richting voor later: kreten, gemompel en grommen
+in plaats van volzinnen. Niet zelf oppakken zonder Berts akkoord.
 
 ## Route F — Freesound
 
@@ -68,18 +75,19 @@ Geen API-key nodig — de CLI is ingelogd.
 ```bash
 # geluidseffect (0,25 credit/sec, dus 4s = 1 credit)
 python3 scripts/genereer-geluid-higgsfield.py \
-  --prompt "A mechanical robot parrot squawking twice, metallic servo whirr, clean and dry, no music, no reverb" \
+  --prompt "A heavy wooden crane winch turning three times, creaking rope under load, clean and dry, no music, no reverb" \
   --duur 4 --out kandidaten/audio/{sampleId}/hf-v1.mp3 --manifest <manifest.json>
 
-# stem (~0,01 credit) — pitch omlaag = grote logge robot, omhoog = klein robotje
+# stem — GEPARKEERD, alleen op Berts verzoek gebruiken
 python3 scripts/genereer-geluid-higgsfield.py --modus stem --prompt "…" \
   --voice-id <id> --pitch 0.8 --tempo 0.9 --instructie "raspy robotic voice" --out …
 python3 scripts/genereer-geluid-higgsfield.py --stemmen    # 57 stemmen met hun id
 ```
 
-Drie dingen die het verschil maken in de prompt: **noem een aantal** ("squawking twice"),
-**maak het mechanisch** ("metallic servo whirr") en **houd het droog** ("no music, no
-reverb"). Maximaal **2-3 pogingen** per geluid; lukt het dan niet, schakel naar route F of C.
+Drie dingen die het verschil maken in de prompt: **noem een aantal** ("turning three times"),
+**beschrijf het materiaal en de beweging** ("heavy wooden", "creaking rope under load") en
+**houd het droog** ("no music, no reverb"). Maximaal **2-3 pogingen** per geluid; lukt het
+dan niet, schakel naar route F of C — dat is geen nederlaag maar de goedkoopste uitkomst.
 
 ## Route E — ElevenLabs (alternatief, nu niet bruikbaar)
 

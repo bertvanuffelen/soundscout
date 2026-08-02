@@ -75,10 +75,29 @@ altijd de uitspraak beoordelen. Moet het echt goed Nederlands zijn, gebruik dan
 
 ## Wanneer genereren en wanneer zoeken
 
+> **Getoetst op 2026-08-01 — en de eerste aanname bleek fout.** Ik had opgeschreven dat
+> dieren en stemmen het beste gegenereerd konden worden. Bert heeft beide tests beluisterd
+> en afgekeurd. Onderstaande tabel is wat er ná dat oordeel overblijft.
+
 | Kies | Waarvoor |
 |---|---|
-| **Zoeken (Freesound)** | alledaagse, opneembare geluiden: deuren, kettingen, water, gereedschap, gejuich |
-| **Genereren (route H)** | **dieren en stemmen** — daar is Freesound onder CC0/CC-BY dun, én genereren levert meteen een *robot*versie die bij de huisstijl past |
+| **Zoeken (Freesound)** | alledaagse, opneembare geluiden **én dieren**: deuren, kettingen, water, gereedschap, gejuich, papegaai, apen, raaf |
+| **Genereren (route H)** | geluiden die **niet bestaan** of niet op te nemen zijn: machines, magische effecten, abstracte sfeer, ongewone combinaties |
+
+### Wat de tests lieten zien
+
+- **Dieren: niet genereren.** Een prompt voor een mechanische robotpapegaai (4s) leverde
+  iets op dat volgens Bert "totaal niet als een papegaai" klonk. `mirelo_text_to_audio`
+  maakt wél een geloofwaardige *textuur*, maar geen **herkenbaar** dier. En herkenbaarheid
+  is nu juist de eis: een kind moet in één seconde horen wát het is.
+  → **Dieren zoek je op Freesound, zo echt mogelijk.** De robot-flavor komt er eventueel
+  achteraf overheen als een licht effect (pitch/metaal in de verwerkingsstap) — niet door
+  het dier van de grond af te genereren.
+- **Stemmen: voorlopig geparkeerd.** `qwen_audio_tts` klinkt "te netjes" — een verzorgde
+  voorleesstem, terwijl een robotpiraat juist ruw moet klinken. Nederlandse tekst krijgt
+  bovendien een Engels accent (Nederlands staat niet in de talenlijst van dat model).
+  → Richting voor later: niet naar volzinnen streven maar naar **kreten, gemompel,
+  grommen en korte uitroepen**. Dat vraagt eerder een sfx-aanpak dan TTS.
 
 ## Kostenbewaking
 
