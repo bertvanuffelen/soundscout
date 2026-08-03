@@ -12,9 +12,10 @@ import { useThemeStore } from '../../stores/themeStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { Button } from '../ui';
 import { LocationMarker } from './LocationMarker';
+import { getMapBackgroundImage } from '../../data/themes';
 
 export function MapView() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const goToStart = useAppStore((s) => s.goToStart);
   const goToLocation = useAppStore((s) => s.goToLocation);
   const goToStudio = useAppStore((s) => s.goToStudio);
@@ -24,6 +25,9 @@ export function MapView() {
   const locations = useThemeStore((s) => s.getLocations());
 
   const isSampleCollected = useLibraryStore((s) => s.isSampleCollected);
+
+  // De plattegrond bevat plaatsnamen, dus die volgt de app-taal (EN-kaart bij EN-sessie)
+  const mapBackground = getMapBackgroundImage(mapConfig, i18n.language);
 
   // Get collected sample count per location
   const getCollectedCountForLocation = (locationId: string) => {
@@ -76,9 +80,9 @@ export function MapView() {
           {/* 16:9 Canvas container */}
           <div className="relative w-full aspect-video rounded-lg md:rounded-2xl overflow-hidden shadow-2xl md:shadow-lg">
             {/* Background Image */}
-            {mapConfig.backgroundImage ? (
+            {mapBackground ? (
               <img
-                src={mapConfig.backgroundImage}
+                src={mapBackground}
                 alt={t('map.cityMapAlt')}
                 className="absolute inset-0 w-full h-full object-cover"
               />

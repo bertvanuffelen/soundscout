@@ -19,6 +19,7 @@
 
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getMapBackgroundImage } from '../../data/themes';
 import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2 } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment } from '../../utils/compositionInit';
@@ -316,9 +317,9 @@ function StoryboardBody({ storyboard }: { storyboard: AssignmentStoryboard }) {
 }
 
 function FreeBody({ free }: { free: { themeId: string; themeName: string } }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const theme = getTheme(free.themeId);
-  const preview = theme?.map.backgroundImage ?? null;
+  const preview = theme ? getMapBackgroundImage(theme.map, i18n.language) : null;
   return (
     <div>
       <div className="flex items-start gap-3 mb-4">

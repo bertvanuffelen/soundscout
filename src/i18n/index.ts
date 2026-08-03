@@ -19,6 +19,10 @@ i18n.use(initReactI18next).init({
   },
 });
 
+// Sync direct bij het laden: het languageChanged-event vuurt niet bij init, waardoor
+// <html lang> anders op de standaardtaal bleef staan in een opgeslagen EN-sessie.
+document.documentElement.lang = savedLang;
+
 // Save language preference on change + sync document lang attribute
 i18n.on('languageChanged', (lng) => {
   localStorage.setItem(LANG_KEY, lng);

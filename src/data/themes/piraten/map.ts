@@ -6,6 +6,9 @@ import type { MapConfig } from '../types';
 
 export const mapConfig: MapConfig = {
   backgroundImage: '/images/themes/piraten/plattegrond.jpg',
+  backgroundImageByLocale: {
+    en: '/images/themes/piraten/plattegrond-en.jpg',
+  },
 
   locationPositions: [
     { locationId: 'grogkroeg', x: 16, y: 40 },
