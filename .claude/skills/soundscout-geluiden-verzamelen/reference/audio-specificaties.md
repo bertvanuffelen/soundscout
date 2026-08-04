@@ -25,8 +25,11 @@
 Om leerlingen muziek-loops uit verschillende locaties te laten combineren, moeten álle
 muzikale loops **onderling mixbaar** zijn. Lock daarom voor het hele thema:
 - **Tempo**: 120 BPM (app-vast), 4/4.
-- **Eén toonsoort + één akkoordenschema** voor alle muziek (bv. D mineur, `Dm–C–Bb–A`,
-  4 maten = 8,0 s = één loop).
+- **Eén toonsoort + één akkoordenschema** voor alle muziek. Voor een Caribische/eiland-sfeer:
+  **natuurlijk mineur (Aeolisch) met i–♭VII–♭VI–♭III**, bv. D mineur `Dm–C–Bb–F`,
+  4 maten = 8,0 s = één loop.
+  > Let op: `Dm–C–Bb–**A**` (i–♭VII–♭VI–**V**) is de Andalusische cadens en klinkt
+  > **Spaans/flamenco**, niet Caribisch. Eén akkoord verschil, maar het bepaalt de sfeer.
 - **Elke locatie = één instrument-rol (stem)**: bv. accordeon (melodie) · viool/whistle
   (lead) · bas+mandoline (fundament) · handtrommels (ritme, toon-neutraal) · marimba
   (sfeer). Sparse/solo prompts mixen veel beter dan volle arrangementen.

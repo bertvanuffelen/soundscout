@@ -29,9 +29,15 @@ def main() -> None:
     ap.add_argument("--in", dest="inp", required=True)
     ap.add_argument("--out", required=True)
     ap.add_argument("--duur-exact", type=float, help="Exacte einddering in s (bv. 8.0 voor loops)")
+    ap.add_argument("--naar-tempo", type=float, metavar="GEMETEN",
+                    help="Rek de gemeten lusduur in s naar --duur-exact, met behoud van "
+                         "toonhoogte (bv. --naar-tempo 8.13 --duur-exact 8.0)")
     ap.add_argument("--fade", type=float, default=0.02, help="Micro-fade in/uit in s (default 0.02, 0 = uit)")
     ap.add_argument("--normaliseer", action="store_true", help="EBU R128 loudness-normalisatie")
     args = ap.parse_args()
+
+    if args.naar_tempo is not None and not args.duur_exact:
+        ap.error("--naar-tempo vereist --duur-exact (het doel om naartoe te rekken)")
 
     if not shutil.which("ffmpeg"):
         sys.exit("FOUT: ffmpeg niet gevonden. Installeer met: brew install ffmpeg")
@@ -43,6 +49,17 @@ def main() -> None:
 
     duur = args.duur_exact or ffprobe_duur(src)
     filters = []
+    if args.naar_tempo is not None:
+        # Eerst rekken, dan pas trimmen: anders knip je uit het verkeerde tempo.
+        # atempo behoudt de toonhoogte (in tegenstelling tot asetrate).
+        factor = args.naar_tempo / args.duur_exact
+        if not 0.5 <= factor <= 2.0:
+            sys.exit(f"FOUT: rekfactor {factor:.3f} valt buiten 0.5-2.0; "
+                     f"klopt de gemeten lusduur {args.naar_tempo}s wel?")
+        bpm = 960 / args.naar_tempo  # 4 maten 4/4 = 16 tellen
+        print(f"Tempo: lus van {args.naar_tempo}s = {bpm:.1f} BPM "
+              f"-> rekfactor {factor:.4f} naar {args.duur_exact}s")
+        filters.append(f"atempo={factor:.6f}")
     if args.duur_exact:
         filters.append(f"apad=whole_dur={args.duur_exact}")
         filters.append(f"atrim=0:{args.duur_exact}")
