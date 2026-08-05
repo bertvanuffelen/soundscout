@@ -171,6 +171,97 @@ Avoid: no vocals, no bright melodies.
 
 ---
 
+---
+
+## Losse stemmen bovenop de basisgroove
+
+> **Praktijkbevinding (Bert, 2026-08-02): Suno houdt zich niet aan een akkoordenschema.**
+> `Dm - C - Bb - F` in de prompt zetten werkt niet. Wat wél werkt:
+>
+> 1. **Upload de basisgroove** en laat Suno er een laag overheen maken (Cover / Remix /
+>    audio-upload, v5+). De nieuwe partij volgt dan je bestaande harmonie **op gehoor**.
+>    Dit is de betrouwbaarste route voor alles met toonhoogte.
+> 2. Lukt dat niet: noem alleen de **toonsoort** (D minor) en vraag om een **modale, statische**
+>    partij rond één tooncentrum — geen akkoordwisselingen. Hoe minder harmonische beweging,
+>    hoe kleiner de kans op botsing.
+> 3. **Toon-neutrale partijen** (percussie, bassdrum) passen altijd — die kun je zorgeloos los
+>    genereren.
+
+### 7. Tinfluit / panfluit solo — kroeg
+
+```
+Solo tin whistle and pan flute, wistful and breathy, 120 BPM with a laid-back half-time feel.
+One unaccompanied melody line in D minor, modal and static around one tonal centre,
+simple syncopated phrases with long rests between them.
+Completely solo, no accompaniment of any kind. Dry close-miked recording.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, drums, bass, guitar, chords
+```
+
+### 8. Accordeon — kroeg
+
+```
+Solo tavern accordion, warm and slightly wheezy, 120 BPM with a laid-back half-time feel.
+Bellows-driven chords played on the offbeats plus a simple folk melody, in D minor,
+modal and static, sitting in one register.
+Completely solo, no accompaniment. Slightly worn, close and intimate.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, drums, bass, brass
+```
+
+### 9. Conga's — jungle *(toon-neutraal, past altijd)*
+
+```
+Solo congas and bongos, organic and loose, 120 BPM with a half-time feel.
+Syncopated hand-drum pattern leaving beat one open, alternating open tones and muted slaps,
+varied dynamics like a live player.
+Hand percussion only, nothing else at all. Dry close-miked, warm skin tone.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, melody, bass, cymbals, drum kit
+```
+
+### 10. Bassdrum — kroeg *(toon-neutraal, past altijd)*
+
+```
+Solo deep bass drum, heavy and soft-mallet, 120 BPM with a slow half-time feel.
+One-drop pattern: beat one left completely empty, a single deep hit landing on beat three,
+occasional soft ghost note before it. Lots of silence.
+Bass drum only, nothing else. Deep, round, dry.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, melody, snare, hi-hat, cymbals, bass guitar
+```
+
+### 11. Shanty-koor zonder tekst — schip
+
+Dit is de enige loop **mét** stemmen, dus hier gaan de instellingen anders:
+
+- **Instrumental UIT** (anders krijg je geen stemmen)
+- **Style-veld**: de prompt hieronder
+- **Lyrics-veld**: alleen klinkers, géén woorden — zo voorkom je dat Suno tekst verzint:
+
+```
+[Chorus]
+Ooooh ooooh ooooh
+Aaaah aaaah
+Hooo-ooo hooo-ooo
+Ooooh ooooh ooooh
+```
+
+Style-veld:
+
+```
+Wordless sea shanty choir, a group of rough male voices humming and singing open vowels
+in unison and simple harmony, no words at all, 120 BPM with a slow half-time swaying feel.
+In D minor, modal and static, long sustained notes, breathing together like a work song.
+Warm and distant, recorded in a wooden room. Seamless loop, no fade in or out.
+Exclude: lyrics, words, solo lead vocal, drums, guitar
+```
+
+> Suno verzint graag alsnog woorden. Klinkt het als taal, genereer opnieuw of houd de
+> klinkers in het lyrics-veld nóg simpeler (alleen `Ooooh`).
+
+---
+
 ## Aanleveren en verwerken
 
 Lever de gedownloade bestanden aan (pad of in de map
