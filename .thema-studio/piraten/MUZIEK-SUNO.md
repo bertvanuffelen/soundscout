@@ -308,6 +308,74 @@ Exclude: vocals, strings, brass, orchestra, melody, bass guitar, synth, choir
 - **Snare-roll naar de maatstreep**: geeft de lus een hoorbaar startpunt, zodat een kind hoort
   waar de maat begint.
 
+### 13. Bas — double-time ostinato
+
+De akkoordbeweging is hier als **grondtonen** geschreven (F → C), niet als akkoordschema.
+Suno negeert schema's, maar een simpele grondtoonverplaatsing pikt hij vaker wél op.
+
+```
+Driving cinematic bass ostinato, dark and relentless, 120 BPM with a double-time feel.
+Low cellos and double basses plus a deep electric bass doubling them, playing a repeating
+pumping eighth-note ostinato low in their range.
+In F minor: staying on a low F for two bars, then moving to C for two bars, repeating.
+Bass register only, nothing above it. Dry, tight and punchy, minimal reverb.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, drums, percussion, melody, high strings, brass, synth pads
+```
+
+### 14. Strijkers-ostinato — de motor
+
+```
+Urgent cinematic string ostinato, heroic and swashbuckling, 120 BPM with a driving
+double-time feel: relentless sixteenth notes, spiccato and tightly bowed.
+Violins and violas repeating a tight rhythmic figure around one tonal centre in F minor,
+modal and static, no chord changes, no long melody.
+Mid to high strings only. Dry and close, almost no reverb tail, plenty of bite.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, drums, percussion, brass, bass, choir, synth
+```
+
+### 15. Accordeon — double-time folk
+
+```
+Fast folk accordion, spirited and rowdy, 120 BPM with an energetic double-time feel,
+like a tavern reel gathering speed.
+Solo bellows accordion playing quick running eighth and sixteenth-note figures in F minor,
+modal and static around one tonal centre, with a bouncing offbeat pulse underneath.
+Completely solo, no accompaniment. Close, dry and slightly worn.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, drums, percussion, strings, brass, bass
+```
+
+### 16. Lage koperblazers — de heldenstem *(aanrader)*
+
+```
+Heroic low brass hook, bold and adventurous, 120 BPM with a broad double-time feel.
+French horns and trombones in unison playing a short, strong rising motif in F minor,
+just a few long notes with space between them, modal and static.
+Low brass only, nothing else at all. Dry and direct, close-miked, minimal hall.
+Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, drums, percussion, strings, high brass, trumpet fanfare, choir
+```
+
+### Waarom juist deze vier
+
+Ze bezetten **elk een eigen frequentiegebied**, zodat stapelen helder blijft:
+
+| Stem | Register | Rol |
+|---|---|---|
+| Bas | laag | stuwing en fundament |
+| Koperblazers | laag-midden | de heldenmelodie |
+| Accordeon | midden | folkkleur, brug naar de half-time set |
+| Strijkers | midden-hoog | de motor, het beweginggevoel |
+| Drums (#12) | breedband | het ritme |
+
+Twee dingen staan in élke prompt, en dat is niet toevallig:
+- **`modal and static`, geen akkoordwisselingen** — de enige knop die je nog hebt nu Suno
+  schema's negeert. Hoe stiller de harmonie, hoe kleiner de kans op botsing met de Fm/Cm-vamp.
+- **`dry`, minimale galm** — anders wordt een stapel van vier lagen meteen modderig en hoor
+  je de lusnaad.
+
 ## Aanleveren en verwerken
 
 Lever de gedownloade bestanden aan (pad of in de map
