@@ -11,8 +11,8 @@ kroegmuziek en de jungletrommels tegelijk op de tijdlijn zetten en dat moet klop
 |---|---|
 | **Tempo** | **120 BPM**, 4/4 — ligt vast in de app (`DEFAULT_BPM`), niet onderhandelbaar |
 | **Looplengte** | 4 maten = **exact 8,000 seconden** |
-| **Toonsoort** | **D klein (natuurlijk mineur / Aeolisch)** |
-| **Akkoorden** | **Dm ‖ C ‖ B♭ ‖ F** — één maat per akkoord, dan terug naar Dm |
+| **Toonsoort** | **F klein** ← *vastgesteld op het echte materiaal, zie hieronder* |
+| **Akkoorden** | **Fm ‖ Fm ‖ Cm ‖ Cm** — twee maten per akkoord (i – v) |
 | **Basisgroove** | **half-time reggae**: laid-back, tel 1 leeg, skank op de offbeats |
 | **Bezetting per loop** | **één instrumentrol**, sparse — nooit een volledig arrangement |
 | **Altijd** | instrumentaal · geen zang · geen fade in/uit · naadloos loopbaar |
@@ -31,7 +31,22 @@ kan, omdat *feel* en *tempo* twee verschillende dingen zijn. Op hetzelfde 120-ra
 Alle drie delen dezelfde maatstreep, dus ze stapelen probleemloos. Je kunt dus later
 double-time loops maken die naadloos over deze basis passen.
 
-### Waarom Dm – C – B♭ – F
+### De toonsoort is vastgesteld op het materiaal, niet op de theorie
+
+**Bert heeft de gegenereerde basisgroove nagespeeld: Suno gebruikt constant
+`| Fm | Fm | Cm | Cm |`.** Dat is het schema waar alles zich vanaf nu naar voegt — niet het
+schema dat wij vooraf bedachten. Muzikaal is het een **i – v modale vamp in F klein**: twee
+maten tonica, twee maten mineur-dominant. Rustig, hypnotiserend en makkelijk om overheen te
+spelen, precies wat je wilt als kinderen er lagen bij gaan stapelen.
+
+Praktisch gevolg: noem in nieuwe prompts **F minor**, en houd partijen **modaal en statisch**.
+Vraag niet om akkoordwisselingen — Suno negeert ze toch, en hoe minder harmonische beweging
+een partij heeft, hoe kleiner de kans dat hij tegen de Fm/Cm-vamp in botst.
+
+> Het onderstaande stuk over Dm–C–B♭–F is de theoretische onderbouwing van waaróm een
+> Aeolische vamp goed werkt. Het blijft leerzaam, maar **Fm/Cm is wat er echt klinkt**.
+
+### Waarom een Aeolische vamp werkt (achtergrond: Dm – C – B♭ – F)
 
 Dit is **i – ♭VII – ♭VI – ♭III** in natuurlijk mineur: precies de wending waar het
 Monkey Island-hoofdthema op drijft (daar in E klein: Em–D–C–G). Melancholisch én zonnig
@@ -261,6 +276,37 @@ Exclude: lyrics, words, solo lead vocal, drums, guitar
 > klinkers in het lyrics-veld nóg simpeler (alleen `Ooooh`).
 
 ---
+
+---
+
+## Double-time set (zelfde 120 BPM-raster)
+
+Zelfde tempo, zelfde toonsoort (F klein), maar een **dubbel zo druk gevoel**: zestienden in
+plaats van de loome half-time. Sfeer: filmische zeeslag-percussie. Omdat het hetzelfde
+raster deelt, stapelt het over de half-time loops.
+
+### 12. Drums — double-time, filmisch *(toon-neutraal, past altijd)*
+
+```
+Epic cinematic orchestral percussion, swashbuckling high-seas adventure, heroic and urgent,
+120 BPM with a driving double-time feel: relentless sixteenth-note pulse over a steady grid.
+Deep taiko drums and orchestral bass drum marking the downbeats, tight military snare
+playing driving sixteenths with a short roll leading into each bar, low toms answering,
+tambourine and shaker on top.
+Percussion only, no pitched instruments whatsoever. Big and punchy but DRY and close-miked,
+almost no reverb tail. Seamless loop, no fade in or out. Instrumental only.
+Exclude: vocals, strings, brass, orchestra, melody, bass guitar, synth, choir
+```
+
+**Waarom dit zo geschreven is:**
+- **Toon-neutraal**, dus de Fm/Cm-vamp doet er niet toe — deze loop past sowieso.
+- **`DRY`, bijna geen galm**: filmische percussie komt standaard in een badkuip vol reverb.
+  Die staart maakt (a) de lusnaad hoorbaar en (b) de stapeling modderig zodra er meer lagen
+  bij komen. Dit is het belangrijkste woord in de prompt.
+- **`Exclude: strings, brass, orchestra`**: vraag je om filmische percussie, dan schuift Suno
+  er graag een heel orkest bij. Dan heb je geen stem meer maar een compleet nummer.
+- **Snare-roll naar de maatstreep**: geeft de lus een hoorbaar startpunt, zodat een kind hoort
+  waar de maat begint.
 
 ## Aanleveren en verwerken
 
