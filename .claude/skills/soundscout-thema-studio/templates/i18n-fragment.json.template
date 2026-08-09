@@ -1,0 +1,53 @@
+{
+  "_instructie": "Merge 'nl' in src/i18n/locales/nl.json en 'en' in en.json. Keysets moeten identiek zijn (check-pakket.py dwingt dit af).",
+  "nl": {
+    "themes": {
+      "{{THEME_ID}}": {
+        "name": "{{NAAM_NL}}",
+        "description": "{{BESCHRIJVING_NL}}",
+        "locations": {
+          "{{LOCATION_ID}}": "{{LOCATIE_NAAM_NL}}",
+          "{{LOCATION_ID}}_desc": "{{LOCATIE_DESC_NL}}"
+        },
+        "samples": {
+          "{{SAMPLE_ID}}": "{{SAMPLE_NAAM_NL}}"
+        }
+      }
+    },
+    "storyboards": {
+      "{{SB_ID}}": {
+        "name": "{{SB_NAAM_NL}}",
+        "description": "{{SB_DESC_NL}}",
+        "{{FRAME_ID}}": "{{FRAME_LABEL_NL}}"
+      }
+    },
+    "praatplaatImages": {
+      "{{PP_NAAM}}": "{{PP_LABEL_NL}}"
+    }
+  },
+  "en": {
+    "themes": {
+      "{{THEME_ID}}": {
+        "name": "{{NAAM_EN}}",
+        "description": "{{BESCHRIJVING_EN}}",
+        "locations": {
+          "{{LOCATION_ID}}": "{{LOCATIE_NAAM_EN}}",
+          "{{LOCATION_ID}}_desc": "{{LOCATIE_DESC_EN}}"
+        },
+        "samples": {
+          "{{SAMPLE_ID}}": "{{SAMPLE_NAAM_EN}}"
+        }
+      }
+    },
+    "storyboards": {
+      "{{SB_ID}}": {
+        "name": "{{SB_NAAM_EN}}",
+        "description": "{{SB_DESC_EN}}",
+        "{{FRAME_ID}}": "{{FRAME_LABEL_EN}}"
+      }
+    },
+    "praatplaatImages": {
+      "{{PP_NAAM}}": "{{PP_LABEL_EN}}"
+    }
+  }
+}

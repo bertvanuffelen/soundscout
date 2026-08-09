@@ -1,0 +1,13 @@
+/**
+ * Map configuration for the '{{THEME_ID}}' theme.
+ */
+
+import type { MapConfig } from '../types';
+
+export const mapConfig: MapConfig = {
+  backgroundImage: '/images/themes/{{THEME_ID}}/plattegrond.jpg',
+
+  locationPositions: [
+    { locationId: '{{LOCATION_ID}}', x: {{X}}, y: {{Y}} },
+  ],
+};

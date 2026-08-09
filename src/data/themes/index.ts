@@ -5,7 +5,7 @@
  * Handles URL parameter detection and theme loading.
  */
 
-import type { ThemeConfig } from './types';
+import type { ThemeConfig, MapConfig } from './types';
 import type { Storyboard } from '../../types';
 import { basisTheme } from './basis';
 import { winterspelenTheme } from './winterspelen';
@@ -58,6 +58,26 @@ export function isThemeInSeason(theme: ThemeConfig, date: Date = new Date()): bo
   }
   // Venster over de jaargrens heen (bv. november → januari)
   return mmdd >= activeFrom || mmdd <= activeUntil;
+}
+
+/**
+ * Resolve the map background image for the active language.
+ *
+ * The map is the only theme image that deliberately contains text (place labels),
+ * so themes may ship a translated variant via `map.backgroundImageByLocale`.
+ * Falls back to the default image when a theme has no variant for this language.
+ *
+ * Always use this instead of reading `theme.map.backgroundImage` directly, otherwise
+ * an English session gets the Dutch map.
+ */
+export function getMapBackgroundImage(
+  map: Pick<MapConfig, 'backgroundImage' | 'backgroundImageByLocale'> | undefined,
+  language: string,
+): string {
+  if (!map) return '';
+  // 'en-US' -> 'en'
+  const lang = language.split('-')[0];
+  return map.backgroundImageByLocale?.[lang] ?? map.backgroundImage;
 }
 
 /**

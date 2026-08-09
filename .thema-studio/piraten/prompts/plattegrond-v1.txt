@@ -1,0 +1,20 @@
+Wide horizontal illustration. A classic pirate TREASURE MAP seen from above (top-down flat map view) on aged, weathered parchment, cartoon line-art with clean ink outlines, warm parchment tones. A playful kid-friendly treasure map of a pirate island world in a turquoise sea.
+
+The map shows 7 island/zone vignettes, each drawn as a little illustrated place with a small wooden ribbon-banner naming it. Use these EXACT Dutch labels, spelled correctly, in clear readable capital letters:
+- a cozy tavern building on an island — banner: "DE DORSTIGE PAPEGAAI"
+- a little harbor with wooden docks and a moored ship — banner: "DE KADE"
+- a wooden pirate ship sailing on the sea — banner: "HET SCHIP"
+- a jungle with palm trees and a waterfall — banner: "HET JUNGLEPAD"
+- a spooky little hut with green smoke — banner: "DE VOODOO-HUT"
+- a shipwreck in a small cove — banner: "SCHEEPSWRAK-BAAI"
+- a rock shaped like a skull — banner: "SCHEDELROTS"
+
+Map elements:
+- a dotted route line winding between the islands, ending at a big red X
+- a compass rose in the top-right corner with a little robot-skull marking North
+- a small legend scroll in the bottom-left corner with tiny icons and these exact words: "ROUTE", "EILANDEN", "SCHIP", "DE SCHAT"
+- decorative sea details: a friendly cartoon sea-monster coil, a small sailing ship, palm trees, gentle waves and swirls
+
+Color palette: aged parchment (#F3E1BE) with teal (#0E8C8C) sea and treasure-gold (#E8A02C) accents; weathered, hand-drawn treasure-map look, kid-friendly, 4k detail. Any characters are cartoon robots only.
+
+Negative: no text anywhere EXCEPT the specified banner labels ("DE DORSTIGE PAPEGAAI", "DE KADE", "HET SCHIP", "HET JUNGLEPAD", "DE VOODOO-HUT", "SCHEEPSWRAK-BAAI", "SCHEDELROTS") and the legend words ("ROUTE", "EILANDEN", "SCHIP", "DE SCHAT"); spell all of them correctly in Dutch; no other letters, numbers, gibberish text, labels, logos or watermarks; no realistic humans or real animals — robots only; torn parchment edges are fine but no black letterbox bars; fill the entire 16:9 frame with the map.

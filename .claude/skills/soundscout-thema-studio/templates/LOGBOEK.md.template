@@ -1,0 +1,50 @@
+# Logboek — thema {{NAAM}} (`{{THEME_ID}}`)
+
+Levend ontwikkeldossier van dit thema. **Elke plaat, elk geluid, elk element — mét de
+exacte prompt en herkomst**, zodat we later alles kunnen terugvinden en aanpassen zonder
+te zoeken. Bijwerken na élke stap (nieuwe generatie, geluidskeuze, beslissing).
+
+- **id / naam**: `{{THEME_ID}}` / {{NAAM}}
+- **Kleuren**: primary {{PRIMARY}} · accent {{ACCENT}} · mapBackground {{MAPBG}}
+- **Doelgroep / drukte / personages**: {{DOELGROEP}} / {{DRUKTE}} / robots
+- **Aangemaakt**: {{DATUM}} · **Laatst bijgewerkt**: {{DATUM}}
+
+## Beslissingen (thema-specifiek)
+
+| datum | beslissing | reden |
+|---|---|---|
+| {{DATUM}} | … | … |
+
+## Beelden
+
+Per beeld: status, job-id(s), iteraties, de mini-wizard-keuzes, en de **volledige prompt
+van elke versie** (zodat je 'm zo kunt hergebruiken/aanpassen).
+
+### {{BEELD_ID}} — {{TYPE}}
+- **Status**: … · **Job-id(s)**: … · **Iteraties**: … · **Eindpad**: …
+- **Mini-wizard**: shot=… · drukte=… · belichting=…
+- **Prompt v1**:
+  ```
+  (volledige prompt)
+  ```
+- **Beoordeling / Bert-akkoord**: …
+- **Wijzigingen per versie**: v2 = …
+
+## Geluiden
+
+| sampleId | omschrijving | type | route | bron / ElevenLabs-prompt | licentie | duur |
+|---|---|---|---|---|---|---|
+| … | … | sfx/L8 | F/E/C | … | … | … |
+
+## Praatplaten
+
+### {{PP_ID}}
+- Shot / drukte / dominante kleur: …
+- **Activiteitenlijst** (met sample-mapping) — zie ook themaplan.md
+- **Prompt**: (volledige prompt of verwijzing naar het beeld-blok hierboven)
+
+## Storyboards
+
+### {{SB_ID}}
+- Held-beschrijving (letterlijk gebruikt per frame): …
+- Frames + per-frame prompt: …

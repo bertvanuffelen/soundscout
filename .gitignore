@@ -33,3 +33,10 @@ coverage/
 
 # Claude Code worktrees (agent-artefacten)
 .claude/worktrees/
+
+# Thema-studio: bewaar de tekst-records (logboek, themaplan, prompts, manifest);
+# negeer alleen de zware/gegenereerde binaries.
+.thema-studio/*/kandidaten/
+.thema-studio/*/stijlanker/
+.thema-studio/*/package/
+__pycache__/

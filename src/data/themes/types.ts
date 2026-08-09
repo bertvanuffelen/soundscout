@@ -31,8 +31,16 @@ export interface LocationPosition {
  * Map configuration for a theme.
  */
 export interface MapConfig {
-  /** Background image for the map */
+  /** Background image for the map (default locale: nl) */
   backgroundImage: string;
+
+  /**
+   * Locale-specific map images, keyed by language code ('en', ...).
+   * The map is the only image type that deliberately contains text (place labels),
+   * so it needs a translated variant. Resolve with `getMapBackgroundImage()` —
+   * never read `backgroundImage` directly in UI code.
+   */
+  backgroundImageByLocale?: Record<string, string>;
 
   /** Positions of locations on the map */
   locationPositions: LocationPosition[];

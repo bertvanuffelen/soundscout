@@ -14,7 +14,7 @@ import { withTimeout } from '../utils/withTimeout';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
-import { findStoryboardById, getTheme } from '../data/themes';
+import { findStoryboardById, getTheme, getMapBackgroundImage } from '../data/themes';
 import i18n from '../i18n';
 import type { Template, TemplateLockOptions, OpdrachtkaartContent } from '../types';
 import { DEFAULT_LOCK_OPTIONS } from '../types';
@@ -450,7 +450,8 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
   } else {
     // free: naam + preview volgen uit het thema (app-content)
     assignmentName = themeDisplayName(row.free_theme_id);
-    imageUrl = (row.free_theme_id ? getTheme(row.free_theme_id)?.map.backgroundImage : null) ?? null;
+    const vrijThema = row.free_theme_id ? getTheme(row.free_theme_id) : undefined;
+    imageUrl = vrijThema ? getMapBackgroundImage(vrijThema.map, i18n.language) : null;
   }
 
   return {

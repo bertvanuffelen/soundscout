@@ -1,0 +1,530 @@
+{
+  "themeId": "piraten",
+  "fase": "BEELDEN COMPLEET (16 finale beelden). Volgt: geluiden (fase D) + integratie (fase E).",
+  "model": "nano_banana_pro",
+  "engine": "higgsfield-cli",
+  "credits_start": 150,
+  "begroting_credits": 56,
+  "stijlanker": "stijlanker/anker-01.jpg (grogkroeg-v1, goedgekeurd 2026-07-13)",
+  "beelden": {
+    "grogkroeg": {
+      "type": "locatie",
+      "rol": "anker",
+      "status": "goedgekeurd",
+      "iteraties": 1,
+      "job_id": "cb50b6f9-57f1-4492-857e-7360e4b45244",
+      "eindpad": "package/public/images/themes/piraten/grogkroeg.jpg"
+    },
+    "haven": {
+      "type": "locatie",
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "ff55f38d-27b3-4c30-b3f2-b689d3a383e6",
+      "eindpad": "package/public/images/themes/piraten/haven.jpg"
+    },
+    "schip": {
+      "type": "locatie",
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "8f485e30-71dd-4daa-98ac-94b37bfabbe1",
+      "eindpad": "package/public/images/themes/piraten/schip.jpg"
+    },
+    "jungle": {
+      "type": "locatie",
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "6dbabf70-3714-424f-9c46-18f2b33ac43d",
+      "edit_job": "9e9c3e8b-1e6c-48a4-ba4b-24627d783fcf (edit: geen winst)",
+      "eindpad": "package/public/images/themes/piraten/jungle.jpg",
+      "opmerking": "v1 gekozen; dieren-edit gaf geen verbetering"
+    },
+    "voodoohut": {
+      "type": "locatie",
+      "status": "goedgekeurd",
+      "iteraties": 2,
+      "job_id": "20775612-aa02-43e7-abed-cb318d7d0c1c",
+      "edit_job": "74632a42-faea-4c00-b04a-7e6314b3fef9 (piraten-gear toegevoegd)",
+      "eindpad": "package/public/images/themes/piraten/voodoohut.jpg"
+    },
+    "plattegrond": {
+      "type": "plattegrond",
+      "status": "goedgekeurd",
+      "iteraties": 1,
+      "job_id": "4c603dfd-8ea4-4b0f-833c-85943ef02e6f",
+      "en_job": "745539fe-8679-4155-aa59-dc7ce45bee61",
+      "eindpad": "package/public/images/themes/piraten/plattegrond.jpg + plattegrond-en.jpg",
+      "opmerking": "NL+EN varianten; app-codewijziging nodig voor locale-map"
+    },
+    "pp-piratenmarkt": {
+      "type": "praatplaat",
+      "status": "goedgekeurd",
+      "iteraties": 3,
+      "job_id": "fcae0093 (v1) -> 45bbd60d (v2 mini-verhaaltjes) -> 636de33f (v3 tekst weg)",
+      "eindpad": "package/public/images/praatplaten/piratenmarkt.jpg",
+      "opmerking": "taal-neutraal (picture-bordjes); markt-v1 bewaard als backup"
+    },
+    "storyboard-schattenjacht": {
+      "type": "storyboard",
+      "status": "goedgekeurd",
+      "frames": 4,
+      "jobs": {
+        "1-kaart": "c587254d",
+        "2-jungle": "f6539cd0",
+        "3-graven": "e1cb087b",
+        "4-schat-eendje": "de96e4b6 (edit van oliekan 093489f7)"
+      },
+      "cover": "frame 4",
+      "bonus": "frame 4 oliekan-variant bewaard",
+      "eindpad": "package/public/images/storyboards/schattenjacht/schattenjacht-1..4.jpg"
+    },
+    "storyboard-kraken": {
+      "type": "storyboard",
+      "status": "goedgekeurd",
+      "frames": 4,
+      "jobs": {
+        "1-schrik": "1-v4",
+        "2-vlucht": "2-v2",
+        "3-cadeaus": "3-v4",
+        "4-feest": "4-v1"
+      },
+      "cover": "frame 2",
+      "eindpad": "package/public/images/storyboards/kraken/kraken-1..4.jpg"
+    }
+  },
+  "samples_totaal": 36,
+  "loops": [
+    "grogkroeg-accordeon",
+    "haven-golven",
+    "schip-zeemanslied",
+    "jungle-waterval",
+    "jungle-trommels",
+    "voodoohut-ketel"
+  ],
+  "nieuwe_iconen": [
+    "Beer",
+    "DoorOpen",
+    "Dice5",
+    "Waves",
+    "Bell",
+    "Anchor",
+    "Package",
+    "Sailboat",
+    "Wind",
+    "Droplet",
+    "Bug",
+    "Skull"
+  ],
+  "api_calls": [
+    {
+      "tijd": "2026-07-13T20:42:20",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "ff55f38d-27b3-4c30-b3f2-b689d3a383e6",
+      "out": ".thema-studio/piraten/kandidaten/haven-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/haven-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T20:51:24",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "320a90f4-425e-45f5-ba71-b4a70e6c9cc3",
+      "out": ".thema-studio/piraten/kandidaten/schip-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/schip-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T20:54:47",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "8f485e30-71dd-4daa-98ac-94b37bfabbe1",
+      "out": ".thema-studio/piraten/kandidaten/schip-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/schip-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:02:13",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "6dbabf70-3714-424f-9c46-18f2b33ac43d",
+      "out": ".thema-studio/piraten/kandidaten/jungle-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/jungle-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:04:13",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "9e9c3e8b-1e6c-48a4-ba4b-24627d783fcf",
+      "out": ".thema-studio/piraten/kandidaten/jungle-v2.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/jungle-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:13:07",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "20775612-aa02-43e7-abed-cb318d7d0c1c",
+      "out": ".thema-studio/piraten/kandidaten/voodoohut-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/voodoohut-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:15:50",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "74632a42-faea-4c00-b04a-7e6314b3fef9",
+      "out": ".thema-studio/piraten/kandidaten/voodoohut-v2.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/voodoohut-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:26:00",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "4c603dfd-8ea4-4b0f-833c-85943ef02e6f",
+      "out": ".thema-studio/piraten/kandidaten/plattegrond-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/plattegrond-v1.txt",
+      "edit": false,
+      "image_references": []
+    },
+    {
+      "tijd": "2026-07-13T21:29:37",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "745539fe-8679-4155-aa59-dc7ce45bee61",
+      "out": ".thema-studio/piraten/kandidaten/plattegrond-en-v1.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/plattegrond-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:38:50",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "fcae0093-4a95-4dd5-b55e-076287054eba",
+      "out": ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/pp-piratenmarkt-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:52:58",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "45bbd60d-37bd-419b-9efe-2dd8fbcde971",
+      "out": ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/pp-piratenmarkt-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T21:55:31",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "636de33f-8ea0-4bdc-afaf-4fdd7755bb72",
+      "out": ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v3.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/pp-piratenmarkt-v2.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:03:41",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "c587254d-b44f-4d88-8e2a-2aa1dd9484da",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-1-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:05:42",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "f6539cd0-1105-4e0f-bb16-c42db1d69f4e",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-2-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-2-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:07:58",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "e1cb087b-7a6b-4fdf-aac3-3101e6ab0eba",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-3-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-3-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:09:54",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "093489f7-ea70-4800-b3b3-b17c7d3eb8fe",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-4-oliekan-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-schattenjacht-4-oliekan-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:12:20",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "de96e4b6-cc78-49ff-bdee-abab7b43f8e7",
+      "out": ".thema-studio/piraten/kandidaten/sb-schattenjacht-4-eendje-v1.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-4-oliekan-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:21:05",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "dc8da00d-8601-4980-b346-5f83cef0cacc",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-2-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:23:39",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "e6e3de02-6251-4162-9281-166835744cbd",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-1-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-1-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:24:18",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "2e67bf8e-17a3-480e-8f06-81a9a2a870a3",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-3-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-3-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:24:56",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "21bf3e56-ba7e-469c-abb2-7ead85e80eca",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-4-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-4-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:31:06",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "75824b99-a4f5-4fe2-a38f-407b5c16b0fa",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-1-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-1-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:32:32",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "34bcb5a2-cc53-436c-b450-95cef4eab596",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-2-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-2-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:33:11",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "8a61dc54-5bc4-4299-aace-4ac4636f1d76",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-3-v2.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-3-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:42:12",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "e68951b1-8e60-4e42-a12e-4186dd6cb81c",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-1-v3.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-1-v3.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:42:49",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "10618f56-8926-4739-a904-be88986b2342",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-3-v3.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-3-v3.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:49:32",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "f6832b10-d11d-49a0-a1ba-4188e0bb439e",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-1-v4.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-1-v4.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v2.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-13T22:50:07",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "f3c5e159-4368-4ba0-b132-737b47487b57",
+      "out": ".thema-studio/piraten/kandidaten/sb-kraken-3-v4.png",
+      "prompt_file": ".thema-studio/piraten/prompts/sb-kraken-3-v4.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-kraken-2-v2.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-14T14:39:49",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "c9457686-3540-4454-a4b6-f6ce6c52bda6",
+      "out": ".thema-studio/piraten/kandidaten/titel-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/titel-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg",
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-14T15:36:27",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "4925e837-c78c-46f6-83f8-8ccf1dcb14a3",
+      "out": ".thema-studio/piraten/kandidaten/titel-nl-v1.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/titel-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-08-01T08:58:14",
+      "script": "genereer-geluid-higgsfield",
+      "engine": "higgsfield-cli",
+      "modus": "sfx",
+      "model": "mirelo_text_to_audio",
+      "job_id": "28e2969d-854b-4c44-8d13-1abe1d044cec",
+      "out": ".thema-studio/piraten/kandidaten/audio-hf/grogkroeg-papegaai/hf-papegaai-v1.mp3",
+      "prompt": "A mechanical robot parrot squawking twice, metallic servo whirr and small electronic chirps, clean and dry, no music, no reverb",
+      "duur": 4.0
+    },
+    {
+      "tijd": "2026-08-01T08:58:37",
+      "script": "genereer-geluid-higgsfield",
+      "engine": "higgsfield-cli",
+      "modus": "stem",
+      "model": "qwen_audio_tts",
+      "job_id": "5e7a2ce2-94a9-4065-9b09-c4034001571a",
+      "out": ".thema-studio/piraten/kandidaten/audio-hf/stem-test/hf-stem-callum-laag.mp3",
+      "prompt": "Aharr! Welkom aan boord, matroos!",
+      "duur": null
+    }
+  ]
+}

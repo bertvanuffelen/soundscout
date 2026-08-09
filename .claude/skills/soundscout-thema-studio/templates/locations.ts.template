@@ -1,0 +1,22 @@
+/**
+ * Locations for the '{{THEME_ID}}' theme.
+ *
+ * Hotspot-posities: startadvies uit de thema-studio; fijnafstemming via /editor.
+ */
+
+import type { Location } from '../../../types';
+
+export const locations: Location[] = [
+  {
+    id: '{{LOCATION_ID}}',
+    name: 'themes.{{THEME_ID}}.locations.{{LOCATION_ID}}',
+    description: 'themes.{{THEME_ID}}.locations.{{LOCATION_ID}}_desc',
+    backgroundImage: '/images/themes/{{THEME_ID}}/{{LOCATION_ID}}.jpg',
+    ambientAudio: '',
+    unlocked: true,
+    hotspots: [
+      // radius is deprecated — weglaten
+      { id: '{{SAMPLE_ID}}', x: {{X}}, y: {{Y}}, sampleId: '{{SAMPLE_ID}}', visualHint: 'pulse' },
+    ],
+  },
+];

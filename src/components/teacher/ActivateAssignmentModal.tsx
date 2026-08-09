@@ -7,6 +7,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getMapBackgroundImage } from '../../data/themes';
 import { FileText, MapPin, Clapperboard, Music, Check, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
@@ -56,7 +57,7 @@ export function ActivateAssignmentModal({
   onActivateFree,
   typeFilter,
 }: ActivateAssignmentModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { templates, loading } = useTemplates();
   const { cards } = useAssignmentCards();
 
@@ -101,7 +102,7 @@ export function ActivateAssignmentModal({
   const previewImage =
     selectedPraatplaat?.imageUrl ??
     selectedStoryboard?.coverImage ??
-    selectedFreeTheme?.map.backgroundImage ??
+    (selectedFreeTheme ? getMapBackgroundImage(selectedFreeTheme.map, i18n.language) : null) ??
     null;
 
   const handleConfirm = async () => {
@@ -498,7 +499,7 @@ function FreeThemeOption({
   isSelected: boolean;
   onSelect: () => void;
 }) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   return (
     <button
       onClick={onSelect}
@@ -510,7 +511,7 @@ function FreeThemeOption({
     >
       <div className="flex items-center gap-3">
         <div className="w-8 h-8 rounded-lg overflow-hidden shrink-0">
-          <img src={theme.map.backgroundImage} alt={t(theme.name)} className="w-full h-full object-cover" />
+          <img src={getMapBackgroundImage(theme.map, i18n.language)} alt={t(theme.name)} className="w-full h-full object-cover" />
         </div>
         <div className="min-w-0 flex-1">
           <p className="font-medium text-text-main text-sm truncate flex items-center gap-1.5">

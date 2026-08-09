@@ -1,0 +1,35 @@
+# Integratie-instructie — thema `{{THEME_ID}}`
+
+Het pakket in `package/` spiegelt de repo-structuur. Stappen (of laat de thema-studio
+dit uitvoeren, fase E2):
+
+1. **Assets kopiëren**
+   ```bash
+   cp -R .thema-studio/{{THEME_ID}}/package/public/ public/
+   cp -R .thema-studio/{{THEME_ID}}/package/src/data/themes/{{THEME_ID}} src/data/themes/
+   ```
+2. **Registreren** in `src/data/themes/index.ts`:
+   ```ts
+   import { {{THEME_ID_CAMEL}}Theme } from './{{THEME_ID}}';
+   // …
+   const themes: Record<string, ThemeConfig> = { basis: basisTheme, winterspelen: winterspelenTheme, {{THEME_ID}}: {{THEME_ID_CAMEL}}Theme };
+   ```
+3. **i18n mergen**: `i18n-fragments/nl.json` → `src/i18n/locales/nl.json`, idem `en.json`
+   (geneste keys onder `themes.{{THEME_ID}}`, `storyboards.*`, `praatplaatImages.*`).
+4. **Praatplaat-entries** uit `praatplaat-entries.ts.txt` toevoegen aan
+   `src/data/praatplaatImages.ts`; **storyboard-entry** aan `src/data/storyboards.ts`.
+5. **Nieuwe sample-iconen registreren** in `src/utils/iconMap.tsx` (import uit
+   `lucide-react` + toevoegen aan `sampleIconMap`) — anders renderen ze als `?`.
+   Nieuwe iconen in dit thema: {{NIEUWE_ICONEN}}
+6. **Rooktest**: `npm run build` moet groen zijn.
+6. **Hotspots plaatsen** in `/editor` (dev-server → `/editor`). Startadvies per locatie:
+
+### {{LOCATION_ID}}
+| sampleId | x% | y% | Waar in beeld |
+|---|---|---|---|
+| {{SAMPLE_ID}} | {{X}} | {{Y}} | {{OMSCHRIJVING}} |
+
+7. **Map-posities checken**: `locationPositions` in `map.ts` naast de gegenereerde
+   plattegrond leggen; bijstellen waar markers niet op hun zone staan.
+8. **Testen**: dev-server → `?theme={{THEME_ID}}` → kaart → elke locatie → alle hotspots
+   spelen → studio → praatplaat zichtbaar in de docent-catalogus → storyboard in de picker.

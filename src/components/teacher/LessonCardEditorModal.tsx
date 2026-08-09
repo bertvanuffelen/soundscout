@@ -9,6 +9,7 @@
 
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { getMapBackgroundImage } from '../../data/themes';
 import { Plus, Trash2, Loader2 } from 'lucide-react';
 import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
@@ -42,7 +43,7 @@ const storyboards = getAllMultiImageStoryboards();
 const assignableThemes = getTeacherThemes();
 
 export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill = null }: LessonCardEditorModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const { templates } = useTemplates();
   const { cards: assignmentCards, create: createOpdrachtkaart } = useAssignmentCards();
   const activeTemplates = useMemo(() => templates.filter((tmpl) => tmpl.isActive), [templates]);
@@ -181,7 +182,7 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill =
     // free
     const theme = assignableThemes.find((th) => th.id === freeThemeId);
     if (!theme) { setError(t('lessonCards.editor.resourceRequired')); return null; }
-    return { ...base, freeThemeId: theme.id, coverImage: theme.map.backgroundImage };
+    return { ...base, freeThemeId: theme.id, coverImage: getMapBackgroundImage(theme.map, i18n.language) };
   };
 
   const handleSave = async () => {

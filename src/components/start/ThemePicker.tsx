@@ -7,6 +7,7 @@
  */
 
 import { useTranslation } from 'react-i18next';
+import { getMapBackgroundImage } from '../../data/themes';
 import { getPublicThemes, type ThemeConfig } from '../../data/themes';
 
 interface ThemePickerProps {
@@ -49,7 +50,7 @@ interface ThemeCardProps {
 }
 
 function ThemeCard({ theme, onSelect, isLoading, preselected = false }: ThemeCardProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <button
@@ -67,7 +68,7 @@ function ThemeCard({ theme, onSelect, isLoading, preselected = false }: ThemeCar
       {/* Map preview image */}
       <div className="aspect-video w-full overflow-hidden bg-neutral-100">
         <img
-          src={theme.map.backgroundImage}
+          src={getMapBackgroundImage(theme.map, i18n.language)}
           alt={t(theme.name)}
           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
         />

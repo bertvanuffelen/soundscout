@@ -1,0 +1,299 @@
+{
+  "api_calls": [
+    {
+      "tijd": "2026-07-26T15:32:16",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "8d9cb77c-3abc-4860-a5d1-583739e599e5",
+      "out": ".thema-studio/cast/kandidaten/finn-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/finn.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T15:45:25",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "a67536be-1ed2-4c90-bef2-17ee555347e5",
+      "out": ".thema-studio/cast/kandidaten/bolt-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/bolt.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/cast/kandidaten/finn-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T15:46:26",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "0e8c7595-ad16-47aa-a471-af8f49efbdc2",
+      "out": ".thema-studio/cast/kandidaten/pip-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/pip.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/cast/kandidaten/finn-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T15:47:48",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "b9b8c52d-e5a0-4e14-80ba-f5c6dfcc1e68",
+      "out": ".thema-studio/cast/kandidaten/nova-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/nova.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/cast/kandidaten/finn-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T15:48:31",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "de69479c-b83a-4108-88ae-19d39e377666",
+      "out": ".thema-studio/cast/kandidaten/ziggy-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/ziggy.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/cast/kandidaten/finn-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T15:51:10",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "fb549dc9-f614-4f2c-8012-25761aa34206",
+      "out": ".thema-studio/cast/kandidaten/mossy-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/mossy.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/cast/kandidaten/finn-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:18:23",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "845fd5c3-89da-4652-85cd-44f291de8126",
+      "out": ".thema-studio/cast/kandidaten/groep-neutraal-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-neutraal.txt",
+      "edit": false,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/finn.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/bolt.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/pip.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/nova.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/ziggy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/mossy.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:20:34",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "0b3e9d9d-67f1-4025-b868-052037ba83af",
+      "out": ".thema-studio/cast/kandidaten/groep-piraten-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-piraten.txt",
+      "edit": false,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/finn.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/bolt.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/pip.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/nova.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/ziggy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/mossy.jpg",
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:44:06",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "1ae09aff-4ae9-420c-aa73-acea051df062",
+      "out": ".thema-studio/cast/kandidaten/ziggy-v2.png",
+      "prompt_file": ".thema-studio/cast/prompts/ziggy-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/cast/werk/ziggy-neutraal-crop.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/ziggy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/finn.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:45:17",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "85f3c8cc-2089-42b9-8192-711a69a747e8",
+      "out": ".thema-studio/cast/kandidaten/ziggy-v3.png",
+      "prompt_file": ".thema-studio/cast/prompts/ziggy-v3.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/cast/werk/ziggy-neutraal-crop.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:47:04",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "70a2f6b3-603c-418f-af0e-3314979022b6",
+      "out": ".thema-studio/cast/kandidaten/groep-piraten-v2.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-piraten-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/finn.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/bolt.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/pip.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/nova.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/ziggy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/mossy.jpg",
+        ".thema-studio/piraten/stijlanker/anker-01.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:51:52",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "2331325d-d5b2-4f2d-a15e-c64f8dfa091b",
+      "out": ".thema-studio/cast/kandidaten/groep-stad-nl-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-stad-nl.txt",
+      "edit": false,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/finn.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/bolt.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/pip.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/nova.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/ziggy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/mossy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/groep-neutraal.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:57:36",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "e179462a-a19a-4864-8775-5dd3ff26e332",
+      "out": ".thema-studio/cast/kandidaten/groep-neutraal-v2.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-neutraal-v2.txt",
+      "edit": false,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/finn.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/bolt.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/pip.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/nova.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/ziggy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/mossy.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T18:58:59",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "2482a0c2-d481-4f3d-962c-6f3ba0914944",
+      "out": ".thema-studio/cast/kandidaten/groep-neutraal-v3.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-neutraal-v3.txt",
+      "edit": false,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/finn.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/bolt.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/pip.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/nova.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/ziggy.jpg",
+        ".claude/skills/soundscout-thema-studio/reference/cast/mossy.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T19:09:30",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "70ec4e09-ffb0-42da-b82c-be6d378a028f",
+      "out": ".thema-studio/cast/kandidaten/groep-stad-en-v1.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-stad-en.txt",
+      "edit": true,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/groep-stad-nl.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-07-26T19:10:24",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "c919cd06-611b-4981-a67b-aa0aa2126ae8",
+      "out": ".thema-studio/cast/kandidaten/groep-piraten-v3.png",
+      "prompt_file": ".thema-studio/cast/prompts/groep-piraten-v3.txt",
+      "edit": true,
+      "image_references": [
+        ".claude/skills/soundscout-thema-studio/reference/cast/groep-piraten.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-08-02T21:23:53",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "26594f8d-eeab-4e6b-b776-23241a9e000f",
+      "out": ".thema-studio/cast/kandidaten/stad-titel-a.png",
+      "prompt_file": ".thema-studio/cast/prompts/stad-titel-a.txt",
+      "edit": true,
+      "image_references": [
+        ".claude/skills/soundscout-afbeeldingen-generator/reference/cast/groep-stad-nl.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-08-02T21:24:42",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "0e217653-f6e9-4376-abe3-e05eef7205a9",
+      "out": ".thema-studio/cast/kandidaten/stad-titel-b.png",
+      "prompt_file": ".thema-studio/cast/prompts/stad-titel-b.txt",
+      "edit": true,
+      "image_references": [
+        ".claude/skills/soundscout-afbeeldingen-generator/reference/cast/groep-stad-nl.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-08-02T21:26:10",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "830b7ec3-1e57-4a81-9706-281401807aba",
+      "out": ".thema-studio/cast/kandidaten/stad-titel-c.png",
+      "prompt_file": ".thema-studio/cast/prompts/stad-titel-c.txt",
+      "edit": true,
+      "image_references": [
+        ".claude/skills/soundscout-afbeeldingen-generator/reference/cast/groep-stad-nl.jpg"
+      ]
+    },
+    {
+      "tijd": "2026-08-03T19:52:08",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "3b650259-7934-47c2-a4dd-514a99bfd4ca",
+      "out": ".thema-studio/cast/kandidaten/stad-titel-c-en.png",
+      "prompt_file": ".thema-studio/cast/prompts/stad-titel-c-en.txt",
+      "edit": true,
+      "image_references": [
+        ".thema-studio/cast/kandidaten/stad-titel-c.jpg"
+      ]
+    }
+  ]
+}
