@@ -3,14 +3,15 @@
 > Status: **GEBOUWD (2026-07-30)** — na de fast-forward-merge van de
 > masterplan-branch (Audio Engine v2) naar `main` en rebase van
 > `feature/sequencer-lab`. Alle besluiten hieronder zijn geïmplementeerd
-> zoals beschreven; aanzetten met `?dev=true` (vlag `sequencer`).
+> zoals beschreven. **Sinds 9-8 staat de sequencer voor iedereen aan** — de
+> dev-vlag `sequencer` is verwijderd bij de samenvoeging naar `main`.
 > Fase 1 (het lab op `/sequencer`) blijft daarnaast gewoon werken.
 
 ## Kernidee: "rustig tenzij"
 
 De studio blijft pixel-voor-pixel zoals hij is. De sequencer verschijnt pas
 wanneer er bewust een sequence wordt toegevoegd of geopend — en in de testfase
-alleen voor Bert (admin/dev-vlag).
+alleen voor Bert (admin/dev-vlag). *Achterhaald sinds 9-8: de vlag is weg.*
 
 ## Vastgestelde besluiten
 
@@ -50,8 +51,9 @@ alleen voor Bert (admin/dev-vlag).
 
 ### Scope & gating
 
-8. **Admin-only in de testfase**: derde vlag `sequencer` in `devFlagsStore`
-   (naast `sections`/`templates`, aan via `?dev=true`). Vlag uit → studio
+8. **Admin-only in de testfase** *(vervallen 9-8 — vlag verwijderd)*: derde
+   vlag `sequencer` in `devFlagsStore` (naast `sections`/`templates`, aan via
+   `?dev=true`). Vlag uit → studio
    identiek aan nu; composities mét sequence-clips blijven voor iedereen
    afspeelbaar (patroon wordt bij inplannen uitgepakt naar gewone events).
 9. **Alle compositiemodi**: vrij, bij afbeelding, storyboard én praatplaat.

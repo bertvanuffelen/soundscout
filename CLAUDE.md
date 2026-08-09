@@ -153,13 +153,13 @@ The Timeline has `max-h-[50dvh]` to guarantee the sample library gets enough spa
 - **Smart snap** (`src/utils/clipCollision.ts`): Try original position → shift after blocking clip → try tracks below → reject
 - Sensors: PointerSensor (8px distance) + TouchSensor (150ms delay)
 
-### Sequencer (fase 1 lab + fase 2 studio-integratie — dev-vlag)
+### Sequencer (fase 1 lab + fase 2 studio-integratie)
 
 Een step sequencer ("filmmuziek-generator"): leerlingen vullen een grid (1 vakje = 1 tel, standaard 16 vakjes = 4 maten, ±4 instelbaar 4–32; 3–8 sporen) met bibliotheekgeluiden. Per spoor: geluid kiezen, **Uitklinken/Afkappen** (choke), trim, volume, mute; permanente **duur-arcering** toont hoeveel vakjes een (getrimd) geluid beslaat. Volledig ontwerpdossier: `docs/PLAN-SEQUENCER-FASE2-STUDIO.md` (status GEBOUWD).
 
 **Fase 1 — lab** op `/sequencer` (dev-only route in `App.tsx`, patroon `/editor`): `src/pages/SequencerLab.tsx` + `src/components/sequencer/*`. Eigen opslag (`sequencerStorage.ts`, sleutel `soundscout:sequencer-lab`, eigen Zod via de gedeelde schema's).
 
-**Fase 2 — studio** achter dev-vlag `sequencer` (devFlagsStore, aan via `?dev=true`). Vlag uit = studio pixel-identiek aan voorheen; composities mét sequence-clips blijven voor iedereen afspeelbaar.
+**Fase 2 — studio**: sinds 9-8 voor iedereen aan (de dev-vlag `sequencer` is bij de merge naar `main` verwijderd; `devFlagsStore` houdt alleen nog `sections`/`templates`).
 
 - **Kernconstructie — virtuele sample**: een sequence-clip is een gewone `Clip` met `sampleId: 'seq:<sequenceId>'`. `withSequenceSamples()`/`createSequenceSample()` (`src/utils/sequencer.ts`) vullen de sample-lijsten aan met een virtuele sample (duur = vakjes × teldur, kleur `SEQUENCE_COLOR` = accent-500) — collision, clip-breedte, loop-uitrekken (= patroon herhalen), dupliceren en undo werken daardoor ONGEWIJZIGD. Geen nieuw Clip-veld, dus ook `duplicateClip`/`tracksEqual` onaangeraakt.
 - **Audio = één plek**: `audioEvents.generateClipEvents` krijgt `options.sequences` en pakt sequence-clips uit naar gewone `ClipEvent`s (choke deterministisch afgekapt over iteratiegrenzen, declick-fades op trim/choke/clipgrens). Live, MP3- én video-export zijn per constructie identiek. De pure generator `src/services/sequencerEvents.ts` (Tone-vrij) is de bron; `SequencerEngine` (eigen `Tone.Clock`, NOOIT de globale Transport — die wordt door AudioService gecanceld) speelt hem in lab/sequencer-modus.

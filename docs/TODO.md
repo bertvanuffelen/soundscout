@@ -10,7 +10,7 @@
 
 **Toekomstideeën (24-7, van Bert — nog ideeën, niet ingepland):**
 
-- ~~**[Idee] Sequencer-modal**~~ → ✅ **GEBOUWD (30-7)**, zie `#SEQUENCER` onder P2. Werd geen modal maar een volwaardig paneel in de studio, achter dev-vlag.
+- ~~**[Idee] Sequencer-modal**~~ → ✅ **GEBOUWD (30-7)**, zie `#SEQUENCER` onder P2. Werd geen modal maar een volwaardig paneel in de studio.
 - **[Idee] Conditionele/lineaire locatie-volgorde** — locaties in een bepaalde volgorde of onder voorwaarden ontgrendelen. *Prioritering-advies: goedkoopst en contained (kaart/locatie-state + unlock-regels); mooie scaffolding/differentiatie voor de docent, maar meer gamification dan muzikaal → secundair.*
 - **[Idee] Muzikale escape room in locaties** — per locatie een puzzel/uitdaging waarbij je geluiden vrijspeelt of verder mag. *Prioritering-advies: hoogste wow/engagement, maar grootste bouw en een héle nieuwe modus i.p.v. uitbreiding; ontwerp-eerst, niet vóór het kernproduct geland is.*
 - Volgorde-advies: eerst de sequencer (muzikale kern), locatie-unlock als goedkope engagement-win ernaast, escape room als grotere ontwerp-gedreven gok later. Ook in Notion To Do (P3, App - SoundScout).
@@ -146,12 +146,12 @@ Moet opgelost of bewust geaccepteerd zijn vóór eerste studententest. Vereist h
 ### P2 — Hoge prioriteit
 
 #### #SEQUENCER — Step sequencer in de studio ✅ GEBOUWD (30-7-2026), ⏳ WACHT OP KLASPROEF
-**Complexiteit:** Groot (2 fasen) · **Bron:** Idee Bert 24-7 · **Status:** Gebouwd achter dev-vlag `sequencer`, staat in de masterplan-worktree klaar voor de grote testronde
+**Complexiteit:** Groot (2 fasen) · **Bron:** Idee Bert 24-7 · **Status:** Gebouwd en sinds 9-8 gemerged naar `main`; de dev-vlag is verwijderd, de sequencer staat voor iedereen aan
 
 Leerlingen bouwen een herhalend ritmepatroon met hun verzamelde geluiden (1 vakje = 1 tel, 16 vakjes standaard, 4–32; 3–8 sporen; uitklinken/afkappen per spoor; trim; duur-arcering). Een sequence verschijnt als gekleurd blokje in de bibliotheek, gaat als clip op de montagelijn (uitrekken = herhalen) en blijft **levend** bewerkbaar. Sequences gaan mee in opslaan, bewaarcode, delen, inleveren, MP3- en video-export.
 
 - **Fase 1** — los lab op `/sequencer` (dev-only route) ✅
-- **Fase 2** — studio-integratie achter dev-vlag ✅
+- **Fase 2** — studio-integratie ✅
 - **Uitleg** — woordenlijst/naambesluit, eerste-keer-tip (leerling), handleidingsectie + klastip (docent), looping uitleg-animatie ✅
 - Architectuur + besluiten: `docs/PLAN-SEQUENCER-FASE2-STUDIO.md`, CLAUDE.md §Sequencer
 
@@ -160,7 +160,7 @@ Leerlingen bouwen een herhalend ritmepatroon met hun verzamelde geluiden (1 vakj
 - [ ] **Tutorial-video** voor leerlingen (7e video) + hoofdstuk in `docs/VIDEO-DRAAIBOEK.md`
 - [ ] Plek op de **publieke docentenpagina** `/teacher` (USP en/of FAQ-vraag; bewust géén vierde compositievorm)
 - [ ] **Undo/redo** binnen de sequencer-tab (togglen is nu zelf-herstellend)
-- [ ] Besluit **dev-vlag weg / default aan** bij publieke uitrol (`docs/HANDLEIDING-BEHEER.md` §4b)
+- [x] Besluit **dev-vlag weg** — uitgevoerd 9-8 bij de merge naar `main` (`docs/HANDLEIDING-BEHEER.md` §4b)
 - [ ] Optioneel later: **BPM-slider** in het lab (datamodel is er klaar voor), rijen `USECASES-QA.md` + `TESTPLAN-MASTERPLAN.md`, `npm run teksten:export` voor de nieuwe `sequencer.*`-teksten
 
 
