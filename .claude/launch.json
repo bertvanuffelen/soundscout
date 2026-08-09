@@ -7,6 +7,20 @@
       "runtimeArgs": ["run", "dev"],
       "port": 5173,
       "autoPort": true
+    },
+    {
+      "name": "dev-worktree",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", ".claude/worktrees/masterplan-6-weken", "--port", "5199"],
+      "port": 5199,
+      "autoPort": true
+    },
+    {
+      "name": "dev-sequencer",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", ".claude/worktrees/sequencer-lab", "--port", "5188"],
+      "port": 5188,
+      "autoPort": true
     }
   ]
 }
