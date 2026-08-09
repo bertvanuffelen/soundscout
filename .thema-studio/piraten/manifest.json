@@ -476,6 +476,55 @@
       "image_references": [
         ".thema-studio/piraten/kandidaten/sb-kraken-2-v2.png"
       ]
+    },
+    {
+      "tijd": "2026-07-14T14:39:49",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "c9457686-3540-4454-a4b6-f6ce6c52bda6",
+      "out": ".thema-studio/piraten/kandidaten/titel-v1.png",
+      "prompt_file": ".thema-studio/piraten/prompts/titel-v1.txt",
+      "edit": false,
+      "image_references": [
+        ".thema-studio/piraten/stijlanker/anker-01.jpg",
+        ".thema-studio/piraten/kandidaten/sb-schattenjacht-1-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-07-14T15:36:27",
+      "script": "genereer-afbeelding-higgsfield",
+      "engine": "higgsfield-cli",
+      "model": "nano_banana_pro",
+      "job_id": "4925e837-c78c-46f6-83f8-8ccf1dcb14a3",
+      "out": ".thema-studio/piraten/kandidaten/titel-nl-v1.png",
+      "prompt_file": null,
+      "edit": true,
+      "image_references": [
+        ".thema-studio/piraten/kandidaten/titel-v1.png"
+      ]
+    },
+    {
+      "tijd": "2026-08-01T08:58:14",
+      "script": "genereer-geluid-higgsfield",
+      "engine": "higgsfield-cli",
+      "modus": "sfx",
+      "model": "mirelo_text_to_audio",
+      "job_id": "28e2969d-854b-4c44-8d13-1abe1d044cec",
+      "out": ".thema-studio/piraten/kandidaten/audio-hf/grogkroeg-papegaai/hf-papegaai-v1.mp3",
+      "prompt": "A mechanical robot parrot squawking twice, metallic servo whirr and small electronic chirps, clean and dry, no music, no reverb",
+      "duur": 4.0
+    },
+    {
+      "tijd": "2026-08-01T08:58:37",
+      "script": "genereer-geluid-higgsfield",
+      "engine": "higgsfield-cli",
+      "modus": "stem",
+      "model": "qwen_audio_tts",
+      "job_id": "5e7a2ce2-94a9-4065-9b09-c4034001571a",
+      "out": ".thema-studio/piraten/kandidaten/audio-hf/stem-test/hf-stem-callum-laag.mp3",
+      "prompt": "Aharr! Welkom aan boord, matroos!",
+      "duur": null
     }
   ]
 }
