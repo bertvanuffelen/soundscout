@@ -33,7 +33,6 @@ import { Button } from '../ui';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { audioService } from '../../services/AudioService';
 import { generateClipId } from '../../utils/uuid';
-import { useDevFlagsStore } from '../../stores/devFlagsStore';
 import { useSequencerStore } from '../../stores/sequencerStore';
 import { sequencerEngine } from '../../services/SequencerEngine';
 import StudioSequencerPanel from '../sequencer/StudioSequencerPanel';
@@ -129,32 +128,26 @@ export function StudioView() {
     handleSeek,
   } = useStudioPlayback();
 
-  // --- Sequencer in de studio (fase 2, dev-vlag) ---
-  const sequencerEnabled = useDevFlagsStore((st) => st.sequencer);
+  // --- Sequencer in de studio (fase 2) ---
   const sequences = useTimelineStore((st) => st.sequences);
   const openSequenceId = useSequencerStore((st) => st.openSequenceId);
   const setOpenSequenceId = useSequencerStore((st) => st.setOpenSequenceId);
   const seqIsPlaying = useSequencerStore((st) => st.isPlaying);
-  const sequencerOpen = sequencerEnabled && !!openSequenceId;
+  const sequencerOpen = !!openSequenceId;
 
   // Compositie-sequences in de werk-store laden (studio-modus: mutaties
   // spiegelen direct terug naar timelineStore, incl. audioVersion-bump)
   useEffect(() => {
-    if (sequencerEnabled) {
-      useSequencerStore
-        .getState()
-        .hydrateForStudio(useTimelineStore.getState().sequences);
-    }
-  }, [sequencerEnabled]);
+    useSequencerStore
+      .getState()
+      .hydrateForStudio(useTimelineStore.getState().sequences);
+  }, []);
 
   // Sample-lijst aangevuld met virtuele sequence-samples: hierdoor werken
   // collision, clip-breedte, dupliceren en DnD ongewijzigd voor bundels
   const samplesWithSequences = useMemo(
-    () =>
-      sequencerEnabled
-        ? withSequenceSamples(librarySamples, sequences)
-        : librarySamples,
-    [sequencerEnabled, librarySamples, sequences]
+    () => withSequenceSamples(librarySamples, sequences),
+    [librarySamples, sequences]
   );
 
   const handleStopPreview = useCallback((sampleId: string) => {
@@ -480,9 +473,9 @@ export function StudioView() {
             onPreview={handlePreview}
             selectedSampleId={selectedLibrarySampleId}
             onSelectSample={setSelectedLibrarySampleId}
-            sequences={sequencerEnabled ? sequences : []}
+            sequences={sequences}
             onOpenSequence={handleOpenSequence}
-            onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
+            onAddSequence={handleAddSequence}
             onStopPreview={handleStopPreview}
           />
         ) : (
@@ -500,9 +493,9 @@ export function StudioView() {
                       onPreview={handlePreview}
                       selectedSampleId={selectedLibrarySampleId}
                       onSelectSample={setSelectedLibrarySampleId}
-                      sequences={sequencerEnabled ? sequences : []}
+                      sequences={sequences}
                       onOpenSequence={handleOpenSequence}
-                      onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
+                      onAddSequence={handleAddSequence}
                       onStopPreview={handleStopPreview}
                     />
                   )}
@@ -521,9 +514,9 @@ export function StudioView() {
                   onPreview={handlePreview}
                   selectedSampleId={selectedLibrarySampleId}
                   onSelectSample={setSelectedLibrarySampleId}
-                  sequences={sequencerEnabled ? sequences : []}
+                  sequences={sequences}
                   onOpenSequence={handleOpenSequence}
-                  onAddSequence={sequencerEnabled ? handleAddSequence : undefined}
+                  onAddSequence={handleAddSequence}
                   onStopPreview={handleStopPreview}
                 />
               ) : (
