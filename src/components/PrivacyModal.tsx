@@ -7,6 +7,7 @@
 
 import { useTranslation, Trans } from 'react-i18next';
 import { Modal } from './ui';
+import { CONTACT_EMAIL } from '../data/colofon';
 
 interface PrivacyModalProps {
   isOpen: boolean;
@@ -62,7 +63,7 @@ export function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
               components={{
                 mail: (
                   <a
-                    href="mailto:bvanuffelen@gmail.com"
+                    href={`mailto:${CONTACT_EMAIL}`}
                     className="text-brand-700 hover:text-brand-800 font-medium underline underline-offset-2"
                   />
                 ),

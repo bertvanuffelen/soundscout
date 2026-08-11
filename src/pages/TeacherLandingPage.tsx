@@ -165,6 +165,9 @@ function LandingFooter({ onOpenPrivacy, onOpenContact }: { onOpenPrivacy: () => 
           SoundScout
         </span>
         <nav className="flex flex-wrap justify-center gap-x-5 gap-y-1.5 text-sm">
+          <a href="/over" className="text-text-muted hover:text-text-main underline underline-offset-2 transition-colors">
+            {t('teacherLanding.footer.about')}
+          </a>
           <button onClick={onOpenPrivacy} className="text-text-muted hover:text-text-main underline underline-offset-2 transition-colors">
             {t('teacherLanding.footer.privacy')}
           </button>

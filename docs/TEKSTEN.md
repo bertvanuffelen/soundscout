@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1593 teksten in 44 secties._
+_Stand: 1711 teksten in 46 secties._
 
 ## app
 
@@ -63,6 +63,7 @@ _Stand: 1593 teksten in 44 secties._
 | `common.location` | Locatie | Location |
 | `common.zoom` | Vergroten | Zoom in |
 | `common.saved` | Opgeslagen | Saved |
+| `common.dateLocale` | nl-NL | en-GB |
 
 ## language
 
@@ -222,10 +223,6 @@ _Stand: 1593 teksten in 44 secties._
 | `start.teacherLink` | Ben je docent? | Are you a teacher? |
 | `start.createdBy` | Gemaakt door Bert van Uffelen | Created by Bert van Uffelen |
 | `start.aboutButton` | Over deze app | About this app |
-| `start.aboutTitle` | Over deze app | About this app |
-| `start.aboutText1` | SoundScout is gemaakt door Bert van Uffelen, muziekdocent en ontwikkelaar van creatieve digitale tools voor het onderwijs. | SoundScout was created by Bert van Uffelen, music teacher and developer of creative digital tools for education. |
-| `start.aboutText2` | Benieuwd naar meer apps, workshops of muzikale ideeën? Of wil je een training waarin je leert hoe je technologie effectief inzet in de muziekles? | Curious about more apps, workshops or musical ideas? Or would you like training on how to effectively use technology in music class? |
-| `start.aboutText3` | Neem een kijkje op mijn LinkedIn-profiel: | Take a look at my LinkedIn profile: |
 
 ## tutorial
 
@@ -369,6 +366,12 @@ _Stand: 1593 teksten in 44 secties._
 | `transport.stop` | Stop | Stop |
 | `transport.rewind` | Terug | Rewind |
 | `transport.loop` | Herhalen | Loop |
+| `transport.loopChoose` | Wat wil je herhalen? | What do you want to loop? |
+| `transport.loopWhole` | Hele compositie | Whole composition |
+| `transport.loopSection` | Deze sectie | This section |
+| `transport.loopSectionHint` | Maak eerst een sectie | Make a section first |
+| `transport.loopSectionBadge` | sectie | section |
+| `transport.loopStop` | Klik om te stoppen met herhalen | Click to stop looping |
 | `transport.clearAll` | Alles wissen | Clear All |
 | `transport.confirmClear` | Weet je het zeker? | Are you sure? |
 
@@ -438,6 +441,7 @@ _Stand: 1593 teksten in 44 secties._
 | `stage.exportReadyMp3` | MP3 gedownload! | MP3 downloaded! |
 | `stage.exportReadyVideo` | Video gedownload! | Video downloaded! |
 | `stage.exportMissingSamples` | Let op: {{count}} geluid(en) konden niet worden geladen en ontbreken in de export. | Note: {{count}} sound(s) could not be loaded and are missing from the export. |
+| `stage.exportRealtimeFallback` | Let op: de snelle export gaf een kwaliteitsprobleem; je compositie is daarom in realtime opnieuw opgenomen. Het resultaat klinkt precies zoals in de app. | Note: the fast export had a quality issue, so your composition was re-recorded in real time. The result sounds exactly like in the app. |
 | `stage.videoMissingImages` | Let op: {{count}} afbeelding(en) konden niet worden geladen (zwart beeld in de video). | Note: {{count}} image(s) could not be loaded (black frame in the video). |
 | `stage.videoNoContent` | Geen clips op de tijdlijn en geen afbeeldingen | No clips on the timeline and no images |
 | `stage.videoNoImages` | Geen afbeeldingen konden worden geladen | No images could be loaded |
@@ -610,6 +614,8 @@ _Stand: 1593 teksten in 44 secties._
 | `assignments.cardLabel` | Opdrachtkaart (optioneel) | Assignment card (optional) |
 | `assignments.cardDefault` | Standaard uitleg | Default explanation |
 | `assignments.cardNone` | Geen eigen kaart — toon standaard uitleg | No custom card — show default explanation |
+| `assignments.praatplaatThemeLabel` | Geluiden uit dit thema | Sounds from this theme |
+| `assignments.praatplaatThemeHint` | De leerling verzamelt bij deze praatplaat geluiden uit dit thema. | For this sound map the student collects sounds from this theme. |
 | `assignments.activate` | Activeren | Activate |
 | `assignments.activateError` | Kon opdracht niet activeren | Could not activate assignment |
 | `assignments.deactivate` | Deactiveren | Deactivate |
@@ -660,6 +666,8 @@ _Stand: 1593 teksten in 44 secties._
 | `assignments.startChoiceLessonAlt` | Of kies een kant-en-klare leskaart | Or pick a ready-made lesson card |
 | `assignments.durationLabel` | Tijdsduur (optioneel, zichtbaar voor leerlingen) | Duration (optional, shown to pupils) |
 | `assignments.durationPlaceholder` | bijv. 2 lessen | e.g. 2 lessons |
+| `assignments.historyDeleteTitle` | Opdracht uit je overzicht halen | Remove assignment from your overview |
+| `assignments.historyDeleteConfirm` | "{{name}}" verdwijnt uit Eerdere opdrachten.<br><br>De composities van je leerlingen blijven gewoon bewaard — die vind je terug bij de inzendingen. Let op: een gedeeld album van déze opdracht werkt daarna niet meer. | "{{name}}" disappears from Previous assignments.<br><br>Your students' compositions are kept — you'll still find them with the submissions. Note: a shared album of this assignment will stop working. |
 
 ## assignmentCards
 
@@ -999,6 +1007,9 @@ _Stand: 1593 teksten in 44 secties._
 | `errors.assignments.activateStoryboard` | Kon storyboard niet activeren | Could not activate the storyboard |
 | `errors.assignments.activateFree` | Kon vrije opdracht niet activeren | Could not activate the free assignment |
 | `errors.assignments.duration` | Kon tijdsduur niet opslaan | Could not save the duration |
+| `errors.assignments.card` | Kon de opdrachtkaart niet bijwerken | Could not update the assignment card |
+| `errors.assignments.praatplaatTheme` | Kon het thema van de praatplaat niet wijzigen | Could not change the sound map's theme |
+| `errors.assignments.delete` | Deze opdracht kon niet uit je overzicht worden gehaald. | This assignment could not be removed from your overview. |
 | `errors.classes.load` | Kon klassen niet laden | Could not load your classes |
 | `errors.classes.code` | Kon klas-code niet genereren | Could not generate a class code |
 | `errors.classes.codeInvalid` | Ongeldige klas-code ontvangen van de server | Received an invalid class code from the server |
@@ -1185,6 +1196,7 @@ _Stand: 1593 teksten in 44 secties._
 | `teacher.guide.sections.classroom-tips.content.14.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.14.text` | Afronden en presenteren | Wrapping up and presenting |
 | `teacher.guide.sections.classroom-tips.content.15` | Reserveer de laatste tien minuten voor het presenteren: open het presentatiescherm vanuit het klaslokaal en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen Peer feedback geven of hun compositie verfijnen met effecten. | Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects. |
+| `teacher.guide.sections.classroom-tips.content.16` | Sequencer: laat leerlingen eerst één spoor vullen en pas daarna een tweede toevoegen. Het verschil tussen 'uitklinken' en 'afkappen' is een mooie luisteropdracht: hetzelfde patroon klinkt er heel anders door. | Sequencer: have students fill one track first and only then add a second. The difference between 'ring out' and 'cut off' makes a fine listening task: the same pattern sounds completely different. |
 | `teacher.guide.sections.feedback-tips.title` | Tips voor feedback geven | Tips for giving feedback |
 | `teacher.guide.sections.feedback-tips.content.0` | Feedback geven op muziek voelt voor veel docenten lastiger dan op een tekst of werkstuk — er is geen goed of fout. Deze aanpak maakt het concreet, ook zonder muzikale achtergrond. | Giving feedback on music feels harder than on a text or project for many teachers — there is no right or wrong. This approach makes it concrete, even without a musical background. |
 | `teacher.guide.sections.feedback-tips.content.1.type` | heading | heading |
@@ -1202,6 +1214,23 @@ _Stand: 1593 teksten in 44 secties._
 | `teacher.guide.sections.feedback-tips.content.9.type` | heading | heading |
 | `teacher.guide.sections.feedback-tips.content.9.text` | Peer feedback als opwarmer | Peer feedback as a warm-up |
 | `teacher.guide.sections.feedback-tips.content.10` | Zet Peer feedback aan zodat leerlingen elkaars werk eerst beoordelen op de criteria van jouw feedbackkaart. Dat traint hun luistertaal — en jouw feedback landt daarna beter, omdat de klas al in "luistermodus" staat. | Turn on Peer feedback so pupils review each other's work on the criteria of your feedback card first. It trains their listening vocabulary — and your feedback lands better once the class is in "listening mode". |
+| `teacher.guide.sections.sequencer.title` | De sequencer | The sequencer |
+| `teacher.guide.sections.sequencer.content.0` | De sequencer is een raster waarin een leerling een ritme bouwt dat zichzelf herhaalt. Het is geen aparte compositievorm, maar gereedschap bínnen de studio: je kunt hem gebruiken bij vrij componeren, bij een afbeelding, bij een storyboard en bij een praatplaat. | The sequencer is a grid in which a student builds a rhythm that repeats itself. It is not a separate way of composing but a tool inside the studio: it works with free composing, with an image, with a storyboard and with a sound map. |
+| `teacher.guide.sections.sequencer.content.1.type` | heading | heading |
+| `teacher.guide.sections.sequencer.content.1.text` | Hoe het werkt | How it works |
+| `teacher.guide.sections.sequencer.content.2` | Elk vakje in het raster is één tel; zestien vakjes zijn dus vier maten. De leerling koppelt per spoor één geluid uit de eigen bibliotheek en klikt vakjes aan: op elk aangeklikt vakje klinkt dat geluid. Een sequence start met drie sporen en kan groeien tot acht. De lengte is instelbaar van vier tot tweeëndertig vakjes. | Every cell in the grid is one beat, so sixteen cells make four bars. The student links one sound from their own library to each track and clicks cells: on every active cell that sound plays. A sequence starts with three tracks and can grow to eight. The length is adjustable from four to thirty-two cells. |
+| `teacher.guide.sections.sequencer.content.3` | Zodra een sequence gemaakt is, verschijnt hij als gekleurd blokje in de bibliotheek. Dat blokje sleept de leerling naar de tijdlijn, net als een gewoon geluid. Uitrekken laat het patroon zich herhalen; dupliceren en volume werken zoals bij elk ander blokje. Bewerkt de leerling het patroon later, dan veranderen álle geplaatste kopieën mee. | Once a sequence exists it appears as a coloured block in the library. The student drags that block onto the timeline just like an ordinary sound. Stretching it repeats the pattern; duplicating and volume work as with any other block. If the student edits the pattern later, every placed copy changes along with it. |
+| `teacher.guide.sections.sequencer.content.4.type` | heading | heading |
+| `teacher.guide.sections.sequencer.content.4.text` | Uitklinken of afkappen | Ring out or cut off |
+| `teacher.guide.sections.sequencer.content.5` | Per spoor kiest de leerling wat er gebeurt als een geluid nog klinkt terwijl de volgende stap begint. Bij 'uitklinken' mogen geluiden over elkaar heen doorklinken — dat geeft een vloeiend, filmisch resultaat. Bij 'afkappen' stopt het vorige geluid meteen, wat een strak en percussief ritme oplevert. Laat leerlingen het verschil bewust vergelijken: het is een mooie ingang voor de begrippen legato en staccato. | For each track the student chooses what happens when a sound is still playing as the next step begins. With 'ring out' sounds may overlap, which gives a flowing, cinematic result. With 'cut off' the previous sound stops immediately, producing a tight, percussive rhythm. Let students compare the two on purpose: it is a fine way into the concepts legato and staccato. |
+| `teacher.guide.sections.sequencer.content.6.type` | heading | heading |
+| `teacher.guide.sections.sequencer.content.6.text` | Didactische waarde | Educational value |
+| `teacher.guide.sections.sequencer.content.7` | De sequencer maakt maatstructuur zichtbaar: leerlingen zien de vier tellen per maat letterlijk als vakjes. Dat helpt bij puls, maatsoort en herhaling, en het is een natuurlijke brug naar notatie — het raster ís een grafische partituur. Omdat het patroon blijft doorlopen, hoort de leerling direct wat een verandering doet; dat nodigt uit tot experimenteren zonder faalangst. | The sequencer makes metre visible: students literally see the four beats of a bar as cells. That supports pulse, time signature and repetition, and it is a natural bridge to notation — the grid is a graphic score. Because the pattern keeps looping, students hear the effect of a change straight away, which invites experimenting without fear of failure. |
+| `teacher.guide.sections.sequencer.content.8` | Mooie opdrachten zijn bijvoorbeeld: bouw een ritme dat past bij het weer op de praatplaat, maak een spannende ondergrond voor scène drie van het storyboard, of laat twee leerlingen om de beurt twee maten vullen (vraag en antwoord). | Good assignments include: build a rhythm that matches the weather on the sound map, make a tense underlay for scene three of the storyboard, or let two students fill two bars each in turn (call and response). |
+| `teacher.guide.sections.sequencer.content.9.type` | heading | heading |
+| `teacher.guide.sections.sequencer.content.9.text` | Praktisch | Practical |
+| `teacher.guide.sections.sequencer.content.10` | Sequences horen bij de compositie: ze gaan automatisch mee bij opslaan, bij de bewaarcode, bij het delen van een luisterlink en bij het inleveren via de klascode. Ook in de MP3- en video-export klinkt het patroon precies zoals in de studio. Je hoeft dus niets apart te bewaren. | Sequences belong to the composition: they are included automatically when saving, in the save code, when sharing a listening link and when handing in with a class code. In the MP3 and video export the pattern sounds exactly as it does in the studio. There is nothing separate to store. |
+| `teacher.guide.sections.sequencer.content.11` | Let op: de sequencer is nog in ontwikkeling en staat standaard uit. Hij verschijnt pas als de functie voor jouw omgeving is aangezet. | Note: the sequencer is still in development and is off by default. It only appears once the feature has been enabled for your environment. |
 | `teacher.validation.emailRequired` | Voer je e-mailadres in | Please enter your email address |
 | `teacher.validation.passwordRequired` | Voer je wachtwoord in | Please enter your password |
 | `teacher.validation.nameRequired` | Voer je naam in | Please enter your name |
@@ -1328,17 +1357,17 @@ _Stand: 1593 teksten in 44 secties._
 | `teacher.classDetail.tabWip` | In bewerking ({{count}}) | In progress ({{count}}) |
 | `teacher.classDetail.wipDescription` | Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd. | These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet. |
 | `teacher.classDetail.newCount` | {{count}} nieuw | {{count}} new |
+| `teacher.classDetail.retentionWarning` | Let op: {{count}} inzending(en) van deze klas worden vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren. | Note: {{count}} submission(s) from this class will be automatically deleted from {{date}} (retention: one school year after last activity). Export or share any work you want to keep. |
 | `teacher.presentation.title` | Presentatiemodus | Presentation mode |
 | `teacher.presentation.openButton` | Presenteren | Present |
 | `teacher.presentation.chooseTitle` | Wat wil je presenteren? | What do you want to present? |
 | `teacher.presentation.chooseDescription` | Presenteer alleen de inzendingen van de actieve opdracht, of alle composities van de klas. | Present only the submissions for the active assignment, or all compositions from the class. |
 | `teacher.presentation.chooseActive` | Actieve opdracht ({{count}}) | Active assignment ({{count}}) |
+| `teacher.presentation.chooseActiveEmpty` | Nog geen inzendingen bij deze opdracht | No submissions for this assignment yet |
 | `teacher.presentation.chooseAll` | Alle composities ({{count}}) | All compositions ({{count}}) |
 | `teacher.presentation.chooseAllHint` | Inclusief eerdere opdrachten en vrij werk | Including earlier assignments and free work |
 | `teacher.presentation.refresh` | Ververs inzendingen (gaat ook automatisch elke 20 seconden) | Refresh submissions (also happens automatically every 20 seconds) |
 | `teacher.presentation.nowPlaying` | Nu te horen | Now playing |
-| `teacher.presentation.previous` | Vorige compositie | Previous composition |
-| `teacher.presentation.next` | Volgende compositie | Next composition |
 | `teacher.presentation.autoAdvance` | Doorspelen | Play through |
 | `teacher.presentation.autoAdvanceHint` | Speel na afloop automatisch de volgende compositie | Automatically play the next composition when one ends |
 | `teacher.presentation.feedbackRow` | Feedback geven | Give feedback |
@@ -1513,6 +1542,13 @@ _Stand: 1593 teksten in 44 secties._
 | `teacher.stats.events.mp3_export` | MP3-exports | MP3 exports |
 | `teacher.stats.events.video_export` | Video-exports | Video exports |
 | `teacher.stats.events.teacher_dashboard_opened` | Docentendashboard geopend | Teacher dashboard opened |
+| `teacher.share.button` | Delen | Share |
+| `teacher.share.chooseTitle` | Wat wil je delen? | What do you want to share? |
+| `teacher.share.chooseDescription` | Van een praatplaat kun je twee dingen delen: het bord om op te klikken, of de composities als afspeellijst. | A sound map can be shared two ways: the board to click on, or the compositions as a playlist. |
+| `teacher.share.chooseBoard` | Het bord | The board |
+| `teacher.share.chooseBoardHint` | De plaat met klikbare plekken — luisteraars klikken zelf rond | The image with clickable spots — listeners explore it themselves |
+| `teacher.share.chooseAlbum` | De composities | The compositions |
+| `teacher.share.chooseAlbumHint` | Alle ingeleverde composities als afspeellijst achter elkaar | All submitted compositions as one playlist |
 
 ## praatplaatImages
 
@@ -1527,7 +1563,7 @@ _Stand: 1593 teksten in 44 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
-| `praatplaat.select.instruction` | Tik op de plek waar jij geluid voor gaat maken | Tap the spot where you want to create sound for |
+| `praatplaat.select.instruction` | Klik op de plek waar jij een soundscape voor gaat maken | Click the spot where you'll create a soundscape |
 | `praatplaat.select.confirmHint` | Tevreden? Druk op de knop om te beginnen! | Happy with your spot? Press the button to start! |
 | `praatplaat.select.confirm` | Ga verder | Continue |
 | `praatplaat.select.tapHint` | Tik op de afbeelding om je plek te kiezen | Tap the image to choose your spot |
@@ -1631,12 +1667,12 @@ _Stand: 1593 teksten in 44 secties._
 | `privacy.title` | Privacy & gegevens | Privacy & data |
 | `privacy.button` | Privacy | Privacy |
 | `privacy.dataTitle` | Hoe SoundScout je gegevens gebruikt | How SoundScout uses your data |
-| `privacy.dataText` | Composities die je maakt worden opgeslagen op je eigen apparaat (in de browser). Er wordt geen account aangemaakt en er worden geen persoonlijke gegevens verzameld. Als je een compositie online bewaart met een bewaarcode, wordt deze tijdelijk opgeslagen in de cloud en na 60 dagen inactiviteit automatisch verwijderd. | Compositions you create are stored on your own device (in the browser). No account is created and no personal data is collected. If you save a composition online with a save code, it is temporarily stored in the cloud and automatically deleted after 60 days of inactivity. |
+| `privacy.dataText` | Composities die je maakt worden opgeslagen op je eigen apparaat (in de browser). Er wordt geen account aangemaakt en er worden geen persoonlijke gegevens verzameld. Als je een compositie online bewaart met een bewaarcode, wordt deze tijdelijk in de cloud opgeslagen en na 60 dagen inactiviteit automatisch en definitief verwijderd. Werk dat je bij een docent inlevert, blijft maximaal één schooljaar bewaard en wordt daarna automatisch verwijderd; je docent kan het ook eerder verwijderen. Gedeelde links en klasalbums verlopen na 30 dagen. | Compositions you make are stored on your own device (in the browser). No account is created and no personal data is collected. If you save a composition online with a save code, it's stored temporarily in the cloud and automatically and permanently deleted after 60 days of inactivity. Work you submit to a teacher is kept for at most one school year and then deleted automatically; your teacher can also delete it sooner. Shared links and class albums expire after 30 days. |
 | `privacy.classCodeTitle` | Klascode & docent | Class code & teacher |
-| `privacy.classCodeText` | Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld. | When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself. |
+| `privacy.classCodeText` | Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd. | When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself. Submitted work is kept for at most one school year and then deleted automatically. |
 | `privacy.cookiesTitle` | Cookies & tracking | Cookies & tracking |
 | `privacy.cookiesText` | SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities, je taalvoorkeur en — als je een compositie online bewaart of inlevert — je bewaarcode, zodat je je werk kunt terugvinden. Er worden geen gegevens gedeeld met derden. | SoundScout does not use tracking cookies or advertisements. We only count anonymously how often the app is used (daily totals, without personal data, without cookies and without third parties); your browser's 'Do Not Track' setting is respected. The only local storage is for your compositions, your language preference and — if you save or submit a composition online — your save code, so you can find your work again. No data is shared with third parties. |
-| `privacy.contact` | Vragen over privacy? Neem contact op via <mail>bvanuffelen@gmail.com</mail>. | Questions about privacy? Contact us at <mail>bvanuffelen@gmail.com</mail>. |
+| `privacy.contact` | Vragen over privacy? Neem contact op via <mail>hello@soundscout.nl</mail>. | Questions about privacy? Contact us at <mail>hello@soundscout.nl</mail>. |
 
 ## shareCodeModal
 
@@ -1800,13 +1836,17 @@ _Stand: 1593 teksten in 44 secties._
 | `teacherLanding.footer.guide` | Voor docenten | For teachers |
 | `teacherLanding.footer.contact` | Contact | Contact |
 | `teacherLanding.footer.madeBy` | Gemaakt door Bert van Uffelen | Made by Bert van Uffelen |
+| `teacherLanding.footer.about` | Over SoundScout | About |
 | `teacherLanding.videos.title` | Zo werkt het — in beeld | How it works — in pictures |
-| `teacherLanding.videos.subtitle` | Twee korte demo's: één vanuit de leerling, één vanuit jou als docent. | Two short demos: one from the student's side, one from yours as a teacher. |
+| `teacherLanding.videos.subtitle` | Korte demo's: wat je leerlingen doen, hoe je je klas klaarzet, en hoe je hun werk op het digibord laat horen. | Short demos: what your students do, how you set up your class, and how you play their work on the whiteboard. |
 | `teacherLanding.videos.play` | Speel video af | Play video |
 | `teacherLanding.videos.student.title` | Zo componeert een leerling | How a student composes |
 | `teacherLanding.videos.student.description` | Van geluiden verzamelen tot een compositie op de tijdlijn. | From collecting sounds to a composition on the timeline. |
 | `teacherLanding.videos.teacher.title` | Zo beheer je je klas | How you manage your class |
 | `teacherLanding.videos.teacher.description` | Klassen, opdrachten en inzendingen in het dashboard. | Classes, assignments and submissions in the dashboard. |
+| `teacherLanding.videos.dutchSpoken` | Nederlands gesproken | Dutch spoken |
+| `teacherLanding.videos.presentation.title` | Zo klinkt het op het digibord | How it sounds on the whiteboard |
+| `teacherLanding.videos.presentation.description` | De composities van je klas achter elkaar, met beeld dat meebeweegt. | Your class's compositions one after another, with the visuals moving along. |
 
 ## album
 
@@ -1832,3 +1872,91 @@ _Stand: 1593 teksten in 44 secties._
 | `album.expiredTitle` | Link verlopen | Link expired |
 | `album.expiredDescription` | Deze albumlink is verlopen. De docent kan een nieuwe maken. | This album link has expired. The teacher can create a new one. |
 | `album.gestureHint` | Klik op de knop hieronder om het album te openen en composities te beluisteren. | Click the button below to open the album and listen to the compositions. |
+
+## sequencer
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `sequencer.title` | Sequencer Lab | Sequencer Lab |
+| `sequencer.devBadge` | DEV | DEV |
+| `sequencer.subtitle` | Bouw een ritmepatroon met je geluiden | Build a rhythm pattern with your sounds |
+| `sequencer.play` | Afspelen | Play |
+| `sequencer.stop` | Stoppen | Stop |
+| `sequencer.addTrack` | Spoor toevoegen | Add track |
+| `sequencer.removeTrack` | Spoor verwijderen | Remove track |
+| `sequencer.removeTrackConfirm` | Weet je zeker dat je dit spoor wilt verwijderen? De stappen van dit spoor gaan verloren. | Are you sure you want to remove this track? Its steps will be lost. |
+| `sequencer.chooseSample` | Kies een geluid | Choose a sound |
+| `sequencer.changeSample` | Ander geluid | Change sound |
+| `sequencer.noSample` | Nog geen geluid | No sound yet |
+| `sequencer.preview` | Luister | Listen |
+| `sequencer.select` | Kiezen | Select |
+| `sequencer.loading` | Geluiden laden... | Loading sounds... |
+| `sequencer.mode.label` | Bij een nieuwe stap | On a new step |
+| `sequencer.mode.ring` | Uitklinken | Ring out |
+| `sequencer.mode.cut` | Afkappen | Cut off |
+| `sequencer.mute` | Dempen | Mute |
+| `sequencer.unmute` | Dempen opheffen | Unmute |
+| `sequencer.volume` | Volume | Volume |
+| `sequencer.trim.title` | Geluid knippen | Trim sound |
+| `sequencer.trim.save` | Toepassen | Apply |
+| `sequencer.trim.hint` | Sleep de handvatten om het geluid korter te maken. | Drag the handles to shorten the sound. |
+| `sequencer.trim.cells` | ±{{cells}} vakjes | ±{{cells}} cells |
+| `sequencer.length.bars` | {{beats}} tellen · {{bars}} maten | {{beats}} beats · {{bars}} bars |
+| `sequencer.length.add` | +4 tellen | +4 beats |
+| `sequencer.length.remove` | −4 tellen | −4 beats |
+| `sequencer.steps` | Stap {{step}} | Step {{step}} |
+| `sequencer.samplePicker.title` | Kies een geluid | Choose a sound |
+| `sequencer.samplePicker.duration` | {{seconds}} sec · ±{{cells}} vakjes | {{seconds}} sec · ±{{cells}} cells |
+| `sequencer.sequences.title` | Mijn sequences | My sequences |
+| `sequencer.sequences.new` | Nieuwe sequence | New sequence |
+| `sequencer.sequences.rename` | Naam wijzigen | Rename |
+| `sequencer.sequences.duplicate` | Dupliceren | Duplicate |
+| `sequencer.sequences.delete` | Verwijderen | Delete |
+| `sequencer.sequences.deleteConfirm` | Weet je zeker dat je "{{name}}" wilt verwijderen? | Are you sure you want to delete "{{name}}"? |
+| `sequencer.sequences.untitled` | Sequence {{number}} | Sequence {{number}} |
+| `sequencer.sequences.copySuffix` |  (kopie) |  (copy) |
+| `sequencer.sequences.namePlaceholder` | Naam van je sequence | Name of your sequence |
+| `sequencer.studio.addSequence` | Sequence toevoegen | Add sequence |
+| `sequencer.studio.editPattern` | Patroon bewerken | Edit pattern |
+| `sequencer.studio.closeTab` | Sequencer sluiten | Close sequencer |
+| `sequencer.studio.libraryHeading` | Sequences | Sequences |
+| `sequencer.studio.deleteWithClips` | Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg. | This sequence is still on the timeline. Deleting it also removes those blocks. |
+| `sequencer.studio.playsSequence` | Speelt deze sequence (loopt rond) | Plays this sequence (loops) |
+| `sequencer.studio.firstRunHint` | In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn. | In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Done? Drag your sequence from the library onto the timeline. |
+
+## about
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `about.hero.title` | Over SoundScout | About SoundScout |
+| `about.hero.intro` | SoundScout is een gratis lesomgeving waarin leerlingen samen geluiden verzamelen en er muziek van maken. Deze pagina vertelt wie het maakt, waarom het bestaat en hoe je iemand bereikt als er iets misgaat. | SoundScout is a free classroom environment where pupils collect sounds together and turn them into music. This page tells you who makes it, why it exists, and how to reach someone when something goes wrong. |
+| `about.maker.title` | Wie maakt SoundScout | Who makes SoundScout |
+| `about.maker.lead` | Ik train docenten in muziek, technologie en AI, en bouw de tools waarmee ze het in hun eigen klas kunnen doen. SoundScout is daarvan de grootste. | I train teachers in music, technology and AI, and I build the tools that let them do it in their own classroom. SoundScout is the biggest of those. |
+| `about.maker.body` | Ik ben Bert van Uffelen. Ik sta zelf voor de klas, ik leid docenten op, en ik onderzoek wat technologie en AI betekenen voor het muziekonderwijs. SoundScout bouw en onderhoud ik zelf — er zit geen bedrijf, geen redactie en geen investeerder tussen. Dat betekent ook dat je bij problemen bij één iemand terechtkomt, en dat ben ik. | I am Bert van Uffelen. I teach, I train teachers, and I research what technology and AI mean for music education. I build and maintain SoundScout myself — there is no company, no editorial team and no investor in between. It also means that when something breaks, you reach one person, and that person is me. |
+| `about.why.title` | Waarom SoundScout bestaat | Why SoundScout exists |
+| `about.why.body1` | Componeren staat in de kerndoelen, maar valt in de praktijk vaak weg. Niet omdat leerkrachten het onbelangrijk vinden, maar omdat de drempel hoog is: je hebt instrumenten nodig, muzikale voorkennis, of software die voor volwassen muzikanten is gemaakt en waar je een halve les mee kwijt bent voor er één noot klinkt. | Composing is part of the curriculum, but in practice it often falls away. Not because teachers think it does not matter, but because the threshold is high: you need instruments, musical background knowledge, or software built for adult musicians that eats half a lesson before a single note sounds. |
+| `about.why.body2` | SoundScout haalt die drempel weg. Leerlingen verzamelen geluiden, slepen ze op een tijdlijn en horen meteen wat ze maken. Geen account, geen installatie, geen muzikale voorkennis. De leerkracht deelt een code en begeleidt het creatieve proces — de app doet het muzikale werk. | SoundScout removes that threshold. Pupils collect sounds, drag them onto a timeline and hear straight away what they are making. No account, no installation, no musical background needed. The teacher shares a code and guides the creative process — the app does the musical work. |
+| `about.origin.title` | Hoe het begon | How it started |
+| `about.origin.body` | De eerste versie van SoundScout maakte ik jaren geleden in Flash, voor mijn eigen lessen. Toen browsers Flash uitfaseerden verdween hij, terwijl leerlingen er juist enthousiast mee werkten. In 2025 ben ik hem helemaal opnieuw gaan bouwen op moderne webtechniek — dezelfde bedoeling, maar nu op elke Chromebook, iPad en digibord, en met alles wat ik sindsdien over lesgeven heb geleerd erin verwerkt. | I built the first version of SoundScout years ago in Flash, for my own lessons. When browsers phased Flash out it disappeared, just as pupils were getting the most out of it. In 2025 I rebuilt it from scratch on modern web technology — same intention, but now on every Chromebook, iPad and interactive whiteboard, with everything I have learned about teaching since then built in. |
+| `about.cost.title` | Wat het kost | What it costs |
+| `about.cost.body` | De basis blijft gratis. Een docent maakt kosteloos een account aan, zet klassen en opdrachten klaar en laat leerlingen werken en inleveren — zonder betaalmuur, zonder proefperiode en zonder advertenties. Leerlingen hebben helemaal geen account nodig. Als er later een aanvullende, betaalde vorm bij komt, blijft alles wat je nu gebruikt beschikbaar. | The basics stay free. A teacher creates an account at no cost, sets up classes and assignments and lets pupils work and hand in — no paywall, no trial period and no advertising. Pupils need no account at all. If a paid addition arrives later, everything you use today remains available. |
+| `about.contact.title` | Contact | Contact |
+| `about.contact.body` | Loopt er iets vast, klopt er iets niet, of wil je meedenken over hoe SoundScout in jouw les past? Laat het weten. Vragen van leerkrachten sturen dit project sterker dan wat ik zelf bedenk. | Something stuck, something wrong, or an idea about how SoundScout could fit your lessons? Let me know. Questions from teachers shape this project more than anything I come up with on my own. |
+| `about.contact.emailLabel` | E-mail | Email |
+| `about.contact.linkedinLabel` | LinkedIn | LinkedIn |
+| `about.contact.siteLabel` | Mijn website | My website |
+| `about.contact.formHint` | Liever geen e-mail? Gebruik het formulier — dan komt je bericht met de technische gegevens erbij binnen, wat zoeken bij een storing veel sneller maakt. | Rather not email? Use the form — your message arrives with the technical details attached, which makes tracking down a fault far quicker. |
+| `about.contact.formButton` | Bericht sturen | Send a message |
+| `about.contact.responseTime` | Ik lees alle berichten zelf. Op schooldagen reageer ik meestal binnen twee werkdagen; loop je met een klas vast, zet dan "spoed" in het onderwerp. | I read every message myself. On school days I usually reply within two working days; if you are stuck with a class, put "urgent" in the subject line. |
+| `about.colofon.title` | Colofon | Colophon |
+| `about.colofon.responsibleLabel` | Verantwoordelijk voor deze site | Responsible for this site |
+| `about.colofon.responsibleValue` | Bert van Uffelen | Bert van Uffelen |
+| `about.colofon.companyLabel` | Ingeschreven als | Registered as |
+| `about.colofon.kvkLabel` | KvK-nummer | Chamber of Commerce no. |
+| `about.colofon.contactLabel` | Contact | Contact |
+| `about.colofon.privacyText` | SoundScout is met privacy in het ontwerp gebouwd: geen leerling-accounts, geen tracking en geen advertenties. Lees hoe we met gegevens omgaan in de <privacy>privacyverklaring</privacy>. | SoundScout is built with privacy by design: no pupil accounts, no tracking and no advertising. Read how we handle data in the <privacy>privacy statement</privacy>. |
+| `about.credits.title` | Geluiden en bronnen | Sounds and credits |
+| `about.credits.intro` | Een deel van de geluiden in SoundScout komt van <freesound>Freesound</freesound> en is gemaakt door anderen. Hun licenties vragen om naamsvermelding, en die staat hieronder. | Some of the sounds in SoundScout come from <freesound>Freesound</freesound> and were made by other people. Their licences require attribution, and that attribution is listed below. |
+| `about.credits.themeToggle` | Thema {{theme}} — {{count}} geluiden | Theme {{theme}} — {{count}} sounds |
+| `about.footer.app` | Naar de app | Go to the app |
+| `about.meta.title` | Over SoundScout — wie het maakt, waarom het bestaat en hoe je contact opneemt | About SoundScout — who makes it, why it exists and how to get in touch |

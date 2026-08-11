@@ -190,11 +190,7 @@
     "feedbackHint": "Need help or found a bug?",
     "teacherLink": "Are you a teacher?",
     "createdBy": "Created by Bert van Uffelen",
-    "aboutButton": "About this app",
-    "aboutTitle": "About this app",
-    "aboutText1": "SoundScout was created by Bert van Uffelen, music teacher and developer of creative digital tools for education.",
-    "aboutText2": "Curious about more apps, workshops or musical ideas? Or would you like training on how to effectively use technology in music class?",
-    "aboutText3": "Take a look at my LinkedIn profile:"
+    "aboutButton": "About this app"
   },
   "tutorial": {
     "title": "Tutorials & videos",
@@ -1932,7 +1928,7 @@
     "classCodeText": "When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself. Submitted work is kept for at most one school year and then deleted automatically.",
     "cookiesTitle": "Cookies & tracking",
     "cookiesText": "SoundScout does not use tracking cookies or advertisements. We only count anonymously how often the app is used (daily totals, without personal data, without cookies and without third parties); your browser's 'Do Not Track' setting is respected. The only local storage is for your compositions, your language preference and — if you save or submit a composition online — your save code, so you can find your work again. No data is shared with third parties.",
-    "contact": "Questions about privacy? Contact us at <mail>bvanuffelen@gmail.com</mail>."
+    "contact": "Questions about privacy? Contact us at <mail>hello@soundscout.nl</mail>."
   },
   "shareCodeModal": {
     "title": "I have a code",
@@ -2168,7 +2164,8 @@
       "privacy": "Privacy",
       "guide": "For teachers",
       "contact": "Contact",
-      "madeBy": "Made by Bert van Uffelen"
+      "madeBy": "Made by Bert van Uffelen",
+      "about": "About"
     },
     "videos": {
       "title": "How it works — in pictures",
@@ -2269,6 +2266,60 @@
       "deleteWithClips": "This sequence is still on the timeline. Deleting it also removes those blocks.",
       "playsSequence": "Plays this sequence (loops)",
       "firstRunHint": "In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Done? Drag your sequence from the library onto the timeline."
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "About SoundScout",
+      "intro": "SoundScout is a free classroom environment where pupils collect sounds together and turn them into music. This page tells you who makes it, why it exists, and how to reach someone when something goes wrong."
+    },
+    "maker": {
+      "title": "Who makes SoundScout",
+      "lead": "I train teachers in music, technology and AI, and I build the tools that let them do it in their own classroom. SoundScout is the biggest of those.",
+      "body": "I am Bert van Uffelen. I teach, I train teachers, and I research what technology and AI mean for music education. I build and maintain SoundScout myself — there is no company, no editorial team and no investor in between. It also means that when something breaks, you reach one person, and that person is me."
+    },
+    "why": {
+      "title": "Why SoundScout exists",
+      "body1": "Composing is part of the curriculum, but in practice it often falls away. Not because teachers think it does not matter, but because the threshold is high: you need instruments, musical background knowledge, or software built for adult musicians that eats half a lesson before a single note sounds.",
+      "body2": "SoundScout removes that threshold. Pupils collect sounds, drag them onto a timeline and hear straight away what they are making. No account, no installation, no musical background needed. The teacher shares a code and guides the creative process — the app does the musical work."
+    },
+    "origin": {
+      "title": "How it started",
+      "body": "I built the first version of SoundScout years ago in Flash, for my own lessons. When browsers phased Flash out it disappeared, just as pupils were getting the most out of it. In 2025 I rebuilt it from scratch on modern web technology — same intention, but now on every Chromebook, iPad and interactive whiteboard, with everything I have learned about teaching since then built in."
+    },
+    "cost": {
+      "title": "What it costs",
+      "body": "The basics stay free. A teacher creates an account at no cost, sets up classes and assignments and lets pupils work and hand in — no paywall, no trial period and no advertising. Pupils need no account at all. If a paid addition arrives later, everything you use today remains available."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Something stuck, something wrong, or an idea about how SoundScout could fit your lessons? Let me know. Questions from teachers shape this project more than anything I come up with on my own.",
+      "emailLabel": "Email",
+      "linkedinLabel": "LinkedIn",
+      "siteLabel": "My website",
+      "formHint": "Rather not email? Use the form — your message arrives with the technical details attached, which makes tracking down a fault far quicker.",
+      "formButton": "Send a message",
+      "responseTime": "I read every message myself. On school days I usually reply within two working days; if you are stuck with a class, put \"urgent\" in the subject line."
+    },
+    "colofon": {
+      "title": "Colophon",
+      "responsibleLabel": "Responsible for this site",
+      "responsibleValue": "Bert van Uffelen",
+      "companyLabel": "Registered as",
+      "kvkLabel": "Chamber of Commerce no.",
+      "contactLabel": "Contact",
+      "privacyText": "SoundScout is built with privacy by design: no pupil accounts, no tracking and no advertising. Read how we handle data in the <privacy>privacy statement</privacy>."
+    },
+    "credits": {
+      "title": "Sounds and credits",
+      "intro": "Some of the sounds in SoundScout come from <freesound>Freesound</freesound> and were made by other people. Their licences require attribution, and that attribution is listed below.",
+      "themeToggle": "Theme {{theme}} — {{count}} sounds"
+    },
+    "footer": {
+      "app": "Go to the app"
+    },
+    "meta": {
+      "title": "About SoundScout — who makes it, why it exists and how to get in touch"
     }
   }
 }

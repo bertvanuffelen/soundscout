@@ -190,11 +190,7 @@
     "feedbackHint": "Hulp nodig of bug melden?",
     "teacherLink": "Ben je docent?",
     "createdBy": "Gemaakt door Bert van Uffelen",
-    "aboutButton": "Over deze app",
-    "aboutTitle": "Over deze app",
-    "aboutText1": "SoundScout is gemaakt door Bert van Uffelen, muziekdocent en ontwikkelaar van creatieve digitale tools voor het onderwijs.",
-    "aboutText2": "Benieuwd naar meer apps, workshops of muzikale ideeën? Of wil je een training waarin je leert hoe je technologie effectief inzet in de muziekles?",
-    "aboutText3": "Neem een kijkje op mijn LinkedIn-profiel:"
+    "aboutButton": "Over deze app"
   },
   "tutorial": {
     "title": "Uitleg & video's",
@@ -1932,7 +1928,7 @@
     "classCodeText": "Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd.",
     "cookiesTitle": "Cookies & tracking",
     "cookiesText": "SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities, je taalvoorkeur en — als je een compositie online bewaart of inlevert — je bewaarcode, zodat je je werk kunt terugvinden. Er worden geen gegevens gedeeld met derden.",
-    "contact": "Vragen over privacy? Neem contact op via <mail>bvanuffelen@gmail.com</mail>."
+    "contact": "Vragen over privacy? Neem contact op via <mail>hello@soundscout.nl</mail>."
   },
   "shareCodeModal": {
     "title": "Ik heb een code",
@@ -2168,7 +2164,8 @@
       "privacy": "Privacy",
       "guide": "Voor docenten",
       "contact": "Contact",
-      "madeBy": "Gemaakt door Bert van Uffelen"
+      "madeBy": "Gemaakt door Bert van Uffelen",
+      "about": "Over SoundScout"
     },
     "videos": {
       "title": "Zo werkt het — in beeld",
@@ -2269,6 +2266,60 @@
       "deleteWithClips": "Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg.",
       "playsSequence": "Speelt deze sequence (loopt rond)",
       "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn."
+    }
+  },
+  "about": {
+    "hero": {
+      "title": "Over SoundScout",
+      "intro": "SoundScout is een gratis lesomgeving waarin leerlingen samen geluiden verzamelen en er muziek van maken. Deze pagina vertelt wie het maakt, waarom het bestaat en hoe je iemand bereikt als er iets misgaat."
+    },
+    "maker": {
+      "title": "Wie maakt SoundScout",
+      "lead": "Ik train docenten in muziek, technologie en AI, en bouw de tools waarmee ze het in hun eigen klas kunnen doen. SoundScout is daarvan de grootste.",
+      "body": "Ik ben Bert van Uffelen. Ik sta zelf voor de klas, ik leid docenten op, en ik onderzoek wat technologie en AI betekenen voor het muziekonderwijs. SoundScout bouw en onderhoud ik zelf — er zit geen bedrijf, geen redactie en geen investeerder tussen. Dat betekent ook dat je bij problemen bij één iemand terechtkomt, en dat ben ik."
+    },
+    "why": {
+      "title": "Waarom SoundScout bestaat",
+      "body1": "Componeren staat in de kerndoelen, maar valt in de praktijk vaak weg. Niet omdat leerkrachten het onbelangrijk vinden, maar omdat de drempel hoog is: je hebt instrumenten nodig, muzikale voorkennis, of software die voor volwassen muzikanten is gemaakt en waar je een halve les mee kwijt bent voor er één noot klinkt.",
+      "body2": "SoundScout haalt die drempel weg. Leerlingen verzamelen geluiden, slepen ze op een tijdlijn en horen meteen wat ze maken. Geen account, geen installatie, geen muzikale voorkennis. De leerkracht deelt een code en begeleidt het creatieve proces — de app doet het muzikale werk."
+    },
+    "origin": {
+      "title": "Hoe het begon",
+      "body": "De eerste versie van SoundScout maakte ik jaren geleden in Flash, voor mijn eigen lessen. Toen browsers Flash uitfaseerden verdween hij, terwijl leerlingen er juist enthousiast mee werkten. In 2025 ben ik hem helemaal opnieuw gaan bouwen op moderne webtechniek — dezelfde bedoeling, maar nu op elke Chromebook, iPad en digibord, en met alles wat ik sindsdien over lesgeven heb geleerd erin verwerkt."
+    },
+    "cost": {
+      "title": "Wat het kost",
+      "body": "De basis blijft gratis. Een docent maakt kosteloos een account aan, zet klassen en opdrachten klaar en laat leerlingen werken en inleveren — zonder betaalmuur, zonder proefperiode en zonder advertenties. Leerlingen hebben helemaal geen account nodig. Als er later een aanvullende, betaalde vorm bij komt, blijft alles wat je nu gebruikt beschikbaar."
+    },
+    "contact": {
+      "title": "Contact",
+      "body": "Loopt er iets vast, klopt er iets niet, of wil je meedenken over hoe SoundScout in jouw les past? Laat het weten. Vragen van leerkrachten sturen dit project sterker dan wat ik zelf bedenk.",
+      "emailLabel": "E-mail",
+      "linkedinLabel": "LinkedIn",
+      "siteLabel": "Mijn website",
+      "formHint": "Liever geen e-mail? Gebruik het formulier — dan komt je bericht met de technische gegevens erbij binnen, wat zoeken bij een storing veel sneller maakt.",
+      "formButton": "Bericht sturen",
+      "responseTime": "Ik lees alle berichten zelf. Op schooldagen reageer ik meestal binnen twee werkdagen; loop je met een klas vast, zet dan \"spoed\" in het onderwerp."
+    },
+    "colofon": {
+      "title": "Colofon",
+      "responsibleLabel": "Verantwoordelijk voor deze site",
+      "responsibleValue": "Bert van Uffelen",
+      "companyLabel": "Ingeschreven als",
+      "kvkLabel": "KvK-nummer",
+      "contactLabel": "Contact",
+      "privacyText": "SoundScout is met privacy in het ontwerp gebouwd: geen leerling-accounts, geen tracking en geen advertenties. Lees hoe we met gegevens omgaan in de <privacy>privacyverklaring</privacy>."
+    },
+    "credits": {
+      "title": "Geluiden en bronnen",
+      "intro": "Een deel van de geluiden in SoundScout komt van <freesound>Freesound</freesound> en is gemaakt door anderen. Hun licenties vragen om naamsvermelding, en die staat hieronder.",
+      "themeToggle": "Thema {{theme}} — {{count}} geluiden"
+    },
+    "footer": {
+      "app": "Naar de app"
+    },
+    "meta": {
+      "title": "Over SoundScout — wie het maakt, waarom het bestaat en hoe je contact opneemt"
     }
   }
 }

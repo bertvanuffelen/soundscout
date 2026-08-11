@@ -41,7 +41,6 @@ export function StartScreen() {
   const classSession = useAppStore((s) => s.classSession);
   const hasClipsInProgress = useTimelineStore((s) => s.selectHasClips());
   const [isLoading, setIsLoading] = useState(false);
-  const [showAbout, setShowAbout] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
   const [hasCompositions, setHasCompositions] = useState(false);
@@ -378,13 +377,15 @@ export function StartScreen() {
       {/* Footer */}
       <footer className="mt-4 flex items-center gap-3 text-brand-400 md:text-text-muted">
         <span className="text-sm">{t('start.createdBy')}</span>
-        <button
-          onClick={() => setShowAbout(true)}
+        {/* Over/colofon staat op zijn eigen pagina (/over) — één bron van
+            waarheid, en een link die een docent kan doorsturen. */}
+        <a
+          href="/over"
           className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
           title={t('start.aboutButton')}
         >
           <Info className="w-4 h-4" />
-        </button>
+        </a>
         <button
           onClick={() => setShowFeedback(true)}
           className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
@@ -439,33 +440,6 @@ export function StartScreen() {
           </a>
         </div>
       </footer>
-
-      {/* About modal */}
-      <Modal
-        isOpen={showAbout}
-        onClose={() => setShowAbout(false)}
-        title={t('start.aboutTitle')}
-      >
-        <div className="space-y-4 text-text-main">
-          <p>
-            {t('start.aboutText1')}
-          </p>
-          <p>
-            {t('start.aboutText2')}
-          </p>
-          <p>
-            {t('start.aboutText3')}
-          </p>
-          <a
-            href="https://www.linkedin.com/in/bvanuffelen/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="inline-block text-brand-700 hover:text-brand-800 font-semibold underline underline-offset-2"
-          >
-            linkedin.com/in/bvanuffelen
-          </a>
-        </div>
-      </Modal>
 
       {/* Feedback modal */}
       {showFeedback && (
