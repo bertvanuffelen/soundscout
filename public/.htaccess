@@ -5,6 +5,9 @@
   # /teacher serveert zijn eigen HTML met docent-specifieke SEO-meta
   RewriteRule ^teacher/?$ teacher.html [L]
 
+  # /over is de publieke Over/colofon + contactpagina (eigen SEO-meta)
+  RewriteRule ^over/?$ over.html [L]
+
   # Don't rewrite files or directories
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

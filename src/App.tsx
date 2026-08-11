@@ -39,6 +39,7 @@ const AssignmentLandingScreen = lazy(() => import('./components/assignment/Assig
 const SharedPraatplaatViewer = lazy(() => import('./components/praatplaat/SharedPraatplaatViewer'));
 const SharedAlbumViewer = lazy(() => import('./components/share/SharedAlbumViewer'));
 const TeacherLandingPage = lazy(() => import('./pages/TeacherLandingPage'));
+const AboutPage = lazy(() => import('./pages/AboutPage'));
 
 // Check if we're on the editor route
 function isEditorRoute(): boolean {
@@ -57,6 +58,14 @@ function isTeacherLandingRoute(): boolean {
   // rewrite't /teacher daarnaartoe, maar direct openen moet ook werken.
   const path = window.location.pathname;
   return path === '/teacher' || path === '/teacher.html';
+}
+
+// Check if we're on the public about/colophon route.
+// /over.html is de multi-page build-output (eigen SEO-meta); Apache rewrite't
+// /over daarnaartoe, maar direct openen moet ook werken.
+function isAboutRoute(): boolean {
+  const path = window.location.pathname;
+  return path === '/over' || path === '/over.html';
 }
 
 // Loading fallback for lazy-loaded components
@@ -450,6 +459,18 @@ function App() {
       <ErrorBoundary>
         <Suspense fallback={<LoadingFallback />}>
           <TeacherLandingPage />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
+  // Publieke Over/colofon + contactpagina — losse route, zelfde patroon als
+  // /teacher: eigen HTML met eigen SEO-meta, geen theme-init of AuthProvider.
+  if (isAboutRoute()) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={<LoadingFallback />}>
+          <AboutPage />
         </Suspense>
       </ErrorBoundary>
     );
