@@ -2150,6 +2150,10 @@
         "cost": {
           "q": "What does SoundScout cost?",
           "a": "SoundScout is free to use. Create a free teacher account and get started with your class right away."
+        },
+        "sequencer": {
+          "q": "What is the sequencer?",
+          "a": "A grid in the studio where a pupil builds a looping rhythm from the sounds they collected. Each cell is one beat; each track holds one sound. The finished pattern appears as a block in the library and goes onto the timeline, where it can be stretched and duplicated like any other sound. The sequencer is on for everyone and works within every assignment type — there is nothing to switch on."
         }
       }
     },
@@ -2184,6 +2188,15 @@
         "title": "How it sounds on the whiteboard",
         "description": "Your class's compositions one after another, with the visuals moving along."
       }
+    },
+    "sequencer": {
+      "eyebrow": "New in the studio",
+      "title": "The sequencer",
+      "subtitle": "A grid where a pupil builds a rhythm that loops — using the sounds they collected themselves.",
+      "animationTitle": "Animation: how the sequencer works",
+      "body": "Each cell is one beat. The pupil links one sound per track and clicks cells on; the pattern loops round. Once it is done it appears as a coloured block in the library, which they drag onto the timeline like any other sound. The sequencer is not a separate assignment type but a tool inside the studio: it works with free composing, with an image, with a storyboard and with a sound map.",
+      "didactic": "For you as a teacher this is where metre becomes visible: pupils literally see the four beats of a bar laid out as cells. That makes pulse and repetition discussable without writing down a single note.",
+      "guideLink": "Read the chapter in the guide"
     }
   },
   "album": {

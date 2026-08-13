@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1711 teksten in 46 secties._
+_Stand: 1720 teksten in 46 secties._
 
 ## app
 
@@ -1827,6 +1827,8 @@ _Stand: 1711 teksten in 46 secties._
 | `teacherLanding.faq.items.home.a` | Ja. Met hun persoonlijke bewaarcode openen leerlingen hun compositie op elk apparaat — thuis, in de klas of in de bibliotheek. | Yes. With their personal save code, students can open their composition on any device — at home, in class or at the library. |
 | `teacherLanding.faq.items.cost.q` | Wat kost SoundScout? | What does SoundScout cost? |
 | `teacherLanding.faq.items.cost.a` | SoundScout is gratis te gebruiken. Je maakt als docent een gratis account aan en kunt direct met je klas aan de slag. | SoundScout is free to use. Create a free teacher account and get started with your class right away. |
+| `teacherLanding.faq.items.sequencer.q` | Wat is de sequencer? | What is the sequencer? |
+| `teacherLanding.faq.items.sequencer.a` | Een raster in de studio waarin een leerling een herhalend ritme bouwt met zijn eigen verzamelde geluiden. Elk vakje is één tel; per spoor koppel je één geluid. Het gemaakte patroon verschijnt als blokje in de bibliotheek en gaat op de tijdlijn, waar het net als elk ander geluid uitgerekt en gedupliceerd kan worden. De sequencer staat voor iedereen aan en werkt binnen alle opdrachtvormen — je hoeft er niets voor in te stellen. | A grid in the studio where a pupil builds a looping rhythm from the sounds they collected. Each cell is one beat; each track holds one sound. The finished pattern appears as a block in the library and goes onto the timeline, where it can be stretched and duplicated like any other sound. The sequencer is on for everyone and works within every assignment type — there is nothing to switch on. |
 | `teacherLanding.privacyBand.title` | Privacy als uitgangspunt | Privacy by design |
 | `teacherLanding.privacyBand.point1` | Geen leerlingaccounts | No student accounts |
 | `teacherLanding.privacyBand.point2` | Geen tracking of advertenties | No tracking or ads |
@@ -1847,6 +1849,13 @@ _Stand: 1711 teksten in 46 secties._
 | `teacherLanding.videos.dutchSpoken` | Nederlands gesproken | Dutch spoken |
 | `teacherLanding.videos.presentation.title` | Zo klinkt het op het digibord | How it sounds on the whiteboard |
 | `teacherLanding.videos.presentation.description` | De composities van je klas achter elkaar, met beeld dat meebeweegt. | Your class's compositions one after another, with the visuals moving along. |
+| `teacherLanding.sequencer.eyebrow` | Nieuw in de studio | New in the studio |
+| `teacherLanding.sequencer.title` | De sequencer | The sequencer |
+| `teacherLanding.sequencer.subtitle` | Een raster waarin een leerling een ritme bouwt dat zichzelf herhaalt — met de geluiden die hij zelf verzameld heeft. | A grid where a pupil builds a rhythm that loops — using the sounds they collected themselves. |
+| `teacherLanding.sequencer.animationTitle` | Animatie: zo werkt de sequencer | Animation: how the sequencer works |
+| `teacherLanding.sequencer.body` | Elk vakje is één tel. De leerling koppelt per spoor één geluid en klikt vakjes aan; het patroon loopt rond. Zodra het klaar is verschijnt het als gekleurd blokje in de bibliotheek, dat hij net als elk ander geluid op de tijdlijn sleept. De sequencer is geen aparte opdrachtvorm maar gereedschap bínnen de studio: hij werkt bij vrij componeren, bij een afbeelding, bij een storyboard en bij een praatplaat. | Each cell is one beat. The pupil links one sound per track and clicks cells on; the pattern loops round. Once it is done it appears as a coloured block in the library, which they drag onto the timeline like any other sound. The sequencer is not a separate assignment type but a tool inside the studio: it works with free composing, with an image, with a storyboard and with a sound map. |
+| `teacherLanding.sequencer.didactic` | Voor jou als leerkracht is dit de plek waar maatstructuur zichtbaar wordt: leerlingen zien de vier tellen van een maat letterlijk als vakjes voor zich. Dat maakt puls en herhaling bespreekbaar zonder dat je één noot hoeft op te schrijven. | For you as a teacher this is where metre becomes visible: pupils literally see the four beats of a bar laid out as cells. That makes pulse and repetition discussable without writing down a single note. |
+| `teacherLanding.sequencer.guideLink` | Lees het hoofdstuk in de handleiding | Read the chapter in the guide |
 
 ## album
 

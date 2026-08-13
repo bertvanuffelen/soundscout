@@ -93,6 +93,7 @@ function AppContent() {
   const goToTeacher = useAppStore((s) => s.goToTeacher);
   const setPendingLessonCardKey = useAppStore((s) => s.setPendingLessonCardKey);
   const setPendingTeacherTab = useAppStore((s) => s.setPendingTeacherTab);
+  const goToTeacherGuide = useAppStore((s) => s.goToTeacherGuide);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
 
@@ -210,6 +211,23 @@ function AppContent() {
     url.searchParams.delete('tab');
     window.history.replaceState({}, '', url.pathname + url.search);
   }, [goToTeacher, setPendingLessonCardKey, setPendingTeacherTab]);
+
+  // Check for ?screen=teacher-guide (+ optioneel ?section=<id>) op mount.
+  // De publieke docentenpagina is een losse HTML-entry en kan de appStore niet
+  // rechtstreeks zetten; deze route is daar de brug voor. De handleiding is
+  // publiek leesbaar, dus dit werkt ook zonder inlog.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('screen') !== 'teacher-guide') return;
+
+    const section = params.get('section');
+    goToTeacherGuide(section ?? undefined);
+
+    const url = new URL(window.location.href);
+    url.searchParams.delete('screen');
+    url.searchParams.delete('section');
+    window.history.replaceState({}, '', url.pathname + url.search);
+  }, [goToTeacherGuide]);
 
   // Wachtwoord-reset: de e-maillink verwijst naar ?screen=reset-password en
   // Supabase plakt zijn recovery-token (of otp_expired-fout) als #fragment.

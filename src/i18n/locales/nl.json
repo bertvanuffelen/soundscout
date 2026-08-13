@@ -2150,6 +2150,10 @@
         "cost": {
           "q": "Wat kost SoundScout?",
           "a": "SoundScout is gratis te gebruiken. Je maakt als docent een gratis account aan en kunt direct met je klas aan de slag."
+        },
+        "sequencer": {
+          "q": "Wat is de sequencer?",
+          "a": "Een raster in de studio waarin een leerling een herhalend ritme bouwt met zijn eigen verzamelde geluiden. Elk vakje is één tel; per spoor koppel je één geluid. Het gemaakte patroon verschijnt als blokje in de bibliotheek en gaat op de tijdlijn, waar het net als elk ander geluid uitgerekt en gedupliceerd kan worden. De sequencer staat voor iedereen aan en werkt binnen alle opdrachtvormen — je hoeft er niets voor in te stellen."
         }
       }
     },
@@ -2184,6 +2188,15 @@
         "title": "Zo klinkt het op het digibord",
         "description": "De composities van je klas achter elkaar, met beeld dat meebeweegt."
       }
+    },
+    "sequencer": {
+      "eyebrow": "Nieuw in de studio",
+      "title": "De sequencer",
+      "subtitle": "Een raster waarin een leerling een ritme bouwt dat zichzelf herhaalt — met de geluiden die hij zelf verzameld heeft.",
+      "animationTitle": "Animatie: zo werkt de sequencer",
+      "body": "Elk vakje is één tel. De leerling koppelt per spoor één geluid en klikt vakjes aan; het patroon loopt rond. Zodra het klaar is verschijnt het als gekleurd blokje in de bibliotheek, dat hij net als elk ander geluid op de tijdlijn sleept. De sequencer is geen aparte opdrachtvorm maar gereedschap bínnen de studio: hij werkt bij vrij componeren, bij een afbeelding, bij een storyboard en bij een praatplaat.",
+      "didactic": "Voor jou als leerkracht is dit de plek waar maatstructuur zichtbaar wordt: leerlingen zien de vier tellen van een maat letterlijk als vakjes voor zich. Dat maakt puls en herhaling bespreekbaar zonder dat je één noot hoeft op te schrijven.",
+      "guideLink": "Lees het hoofdstuk in de handleiding"
     }
   },
   "album": {

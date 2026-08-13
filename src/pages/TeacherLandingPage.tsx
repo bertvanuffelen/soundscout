@@ -18,13 +18,14 @@ import { useTranslation } from 'react-i18next';
 import {
   FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft,
   Lock, GraduationCap, BadgeCheck, MonitorPlay, MessagesSquare, ClipboardList,
-  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, Rocket, type LucideIcon,
+  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, Rocket, Grid3x3,
+  type LucideIcon,
 } from 'lucide-react';
 import { Button, Card, LanguageSwitcher } from '../components/ui';
 import { SegmentedTabs } from '../components/teacher/common/SegmentedTabs';
 import { cn } from '../utils/cn';
 import { ComposePreview } from '../components/compose/ComposePreview';
-import { OnboardingAnimation } from '../components/common/OnboardingAnimation';
+import { OnboardingAnimation, SoundScoutAnimation } from '../components/common/OnboardingAnimation';
 import { LandingVideo } from '../components/teacher-landing/LandingVideo';
 import {
   COMPOSE_VARIANTS,
@@ -41,6 +42,14 @@ import { FeedbackModal } from '../components/feedback/FeedbackModal';
  * (`/?screen=teacher`). Met een leskaart-sleutel opent het dashboard straks de
  * Leskaarten-tab op die kaart (na login/registratie).
  */
+/** Deeplink naar een hoofdstuk van de docentenhandleiding (publiek leesbaar). */
+function navigateToTeacherGuide(section: string) {
+  const url = new URL(window.location.origin);
+  url.searchParams.set('screen', 'teacher-guide');
+  url.searchParams.set('section', section);
+  window.location.href = url.toString();
+}
+
 function navigateToTeacherApp(params?: { lesson?: string; tab?: string }) {
   const url = new URL(window.location.origin);
   url.searchParams.set('screen', 'teacher');
@@ -128,6 +137,7 @@ export default function TeacherLandingPage() {
         {landingTab === 'get-started' ? (
           <>
             <ComposeSection activeVariant={activeVariant} onSelect={setActiveVariant} />
+            <SequencerSection />
             <VideosSection />
             <ThemesSection />
             <StepsSection />
@@ -289,6 +299,61 @@ function UspSection() {
   );
 }
 
+// --- Sectie: De sequencer ---
+// Staat bewust direct ná ComposeSection: de sequencer is gereedschap BÍNNEN de
+// drie compositievormen, geen vierde vorm (besluit 30-7, docs/WOORDENLIJST.md).
+// Een vierde kaart in ComposeSection zou het tegenovergestelde beweren.
+//
+// Rolverdeling met de handleiding: hier staat DAT het er is en waarom het
+// ertoe doet; teacher.guide.sections.sequencer legt uit HOE het werkt. Die
+// tekst niet dupliceren — twee plekken die hetzelfde uitleggen lopen uit
+// elkaar. Vandaar de deeplink naar dat hoofdstuk.
+function SequencerSection() {
+  const { t } = useTranslation();
+  return (
+    <section className="flex flex-col gap-6 sm:gap-8">
+      <div className="text-center max-w-2xl mx-auto flex flex-col gap-2">
+        <span className="inline-flex items-center justify-center gap-1.5 text-sm font-bold text-accent-700 uppercase tracking-wide">
+          <Grid3x3 className="w-4 h-4" />
+          {t('teacherLanding.sequencer.eyebrow')}
+        </span>
+        <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+          {t('teacherLanding.sequencer.title')}
+        </h2>
+        <p className="text-text-muted text-base sm:text-lg">
+          {t('teacherLanding.sequencer.subtitle')}
+        </p>
+      </div>
+
+      <Card padding="lg" className="overflow-hidden">
+        <SoundScoutAnimation
+          name="sequencer-uitleg"
+          title={t('teacherLanding.sequencer.animationTitle')}
+          initialHeight={420}
+        />
+      </Card>
+
+      <div className="max-w-3xl mx-auto w-full flex flex-col gap-3 text-center">
+        <p className="text-sm sm:text-base text-text-muted leading-relaxed">
+          {t('teacherLanding.sequencer.body')}
+        </p>
+        <p className="text-sm sm:text-base text-text-muted leading-relaxed">
+          {t('teacherLanding.sequencer.didactic')}
+        </p>
+        <div>
+          <Button
+            variant="secondary"
+            onClick={() => navigateToTeacherGuide('sequencer')}
+            className="mt-1"
+          >
+            {t('teacherLanding.sequencer.guideLink')}
+          </Button>
+        </div>
+      </div>
+    </section>
+  );
+}
+
 // --- Sectie: De feedback-cirkel (slanke band — docent- + peer-feedback) ---
 const CYCLE_STEPS = [
   { key: 'assign', Icon: ClipboardList },
@@ -395,7 +460,7 @@ function ThemesSection() {
 // --- Sectie: Veelgestelde vragen (native details/summary — a11y gratis) ---
 const FAQ_KEYS = [
   'accounts', 'avg', 'devices', 'install', 'groups',
-  'knowledge', 'duration', 'submit', 'home', 'cost',
+  'knowledge', 'duration', 'sequencer', 'submit', 'home', 'cost',
 ] as const;
 
 function FaqSection() {
