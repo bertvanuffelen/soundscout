@@ -20,7 +20,7 @@ Automatische gates zijn groen: `npx tsc -b --noEmit` · `npm run test:run` (269 
 
 ## ⚠️ Eerst dit (acties voor Bert)
 
-- [ ] **Verse build uploaden** naar `soundscout.techindeles.nl`. Belangrijk: een
+- [x] **Verse build uploaden** naar `soundscout.techindeles.nl`. Belangrijk: een
       paar bevindingen van je vorige ronde (lege montagelijn na bewaarcode,
       Opslaan sluit de modal, aankondiging dimt niets, transportknoppen,
       uniforme prullenbak) zijn **al gefixt sinds 19-7**, maar zaten nog niet in
@@ -38,7 +38,7 @@ Automatische gates zijn groen: `npx tsc -b --noEmit` · `npm run test:run` (269 
 
 Twee dingen gevonden en gefixt, één actie voor jou op de server:
 
-- [ ] **R5-15. YouTube-thumbnails laden weer** (was: CSP blokkeerde
+- [x] **R5-15. YouTube-thumbnails laden weer** (was: CSP blokkeerde
       `img-src`) — de CSP-lijst miste `https://img.youtube.com`, waar de
       video-voorbeeldplaatjes op `/teacher`, de tutorial en de docentengids
       vandaan komen. Toegevoegd aan `.htaccess`. Check na de upload: die
@@ -47,18 +47,18 @@ Twee dingen gevonden en gefixt, één actie voor jou op de server:
 - ✅ **Defensieve fix**: als een animatie-frame (zoals de hero-animatie) om
       welke reden dan ook niet laadt, gooit de app daar nu geen onafgevangen
       fout meer over — de rest van de pagina blijft gewoon werken.
-- [ ] **Server-actie (kan ik niet vanuit de code oplossen)**: de browser
+- [x] **Server-actie (kan ik niet vanuit de code oplossen)**: de browser
       meldde `frame-src 'none'` én blokkeerde daardoor de hero-animatie
       (`Framing '…/animaties/onboarding-4-stappen.html' violates … "frame-src
       'none'"`). Onze `.htaccess` zegt zelf `frame-src 'self' …` — dus die
       `'none'` komt ergens anders vandaan. Check op de server (`ss-dev.techindeles.nl`):
       1. Is dit dezelfde upload/map als `soundscout.techindeles.nl`, of een
          losse dev-omgeving met een eigen, strenger beveiligingsprofiel
-         (sommige hosting-panelen zetten standaard een eigen CSP)?
+         (sommige hosting-panelen zetten standaard een eigen CSP)? ==> Test server is ss-dev.techindeles.nl, soundscout.techindeles.nl bestaat niet/
       2. Staat `mod_headers` aan voor die (sub)domein-configuratie? Zonder
          mod_headers wordt onze `Header set Content-Security-Policy`-regel
          in `.htaccess` genegeerd en kan een andere, strengere default
-         doorschemeren.
+         doorschemeren. ==> Weet niet wat je hiermee bedoelt.
       3. Simpele check: open de site, F12 → Network → klik het hoofddocument
          → tab "Headers" → zoek `content-security-policy` → vergelijk de
          `frame-src`-waarde met wat in `public/.htaccess` staat.
@@ -72,7 +72,7 @@ Twee dingen gevonden en gefixt, één actie voor jou op de server:
 
 Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 6".
 
-- [ ] **R6-1. Loop-knop met keuze ná klikken** (was verwarrend): studio → klik op
+- [x] **R6-1. Loop-knop met keuze ná klikken** (was verwarrend): studio → klik op
       de loop-knop terwijl er niet geloopt wordt → je krijgt een keuze **"Hele
       compositie"** of **"Deze sectie"**. "Deze sectie" loopt het stuk waar de
       afspeellijn op dat moment staat; als er nog geen sectie is, staat die optie

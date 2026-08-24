@@ -18,10 +18,26 @@ Upload de inhoud van `dist/` naar je Strato-server (FTP). Niet de map zelf, maar
 
 ### Controle na deployment
 
+Doe dit in een **incognitovenster** — browserextensies injecteren eigen
+fouten in de console en maken de meting onbetrouwbaar.
+
 1. Open de site in Chrome → F12 → Console: geen rode CSP-fouten
-2. Test de kernflow: Start → Kaart → Locatie → Studio → Podium
-3. Test klascode-invoer (als Supabase actief is)
-4. Check of audio afspeelt (autoplay unlock werkt)
+2. **Audiogaranties actief?** Speel één compositie af mét een gepitchte clip
+   en controleer de console:
+   - je ziet `Master-limiter actief (−1 dBFS, ...)` — zo niet, dan draait de
+     app zonder bescherming tegen digitaal clippen
+   - je ziet **geen** `Pitch-bake niet beschikbaar` — verschijnt die wel, dan
+     rendert de export via `Tone.PitchShift`, de bewezen bron van de
+     export-glitch, en werkt ook het realtime-opname-vangnet niet
+   - Beide wijzen vrijwel altijd op hetzelfde: een CSP zonder `blob:` in
+     `script-src`. Zie het commentaarblok in `public/.htaccess`.
+   - Let op: dit is **niet lokaal te testen**. De dev-server stuurt geen CSP
+     mee, dus deze klasse fouten verschijnt alleen op de server.
+3. Test de kernflow: Start → Kaart → Locatie → Studio → Podium
+4. Test klascode-invoer (als Supabase actief is)
+5. Check of audio afspeelt (autoplay unlock werkt)
+6. Open `/over` zonder `.html` — werkt de rewrite? (verborgen `.htaccess`
+   geüpload?)
 
 ---
 

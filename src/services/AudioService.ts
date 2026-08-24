@@ -633,7 +633,15 @@ export class AudioService {
       }
       logger.info('Master-limiter actief (−1 dBFS, 5ms lookahead, 150ms release)');
     } catch (err) {
-      logger.warn('Master-limiter-worklet niet beschikbaar — live zonder limiter (export limit wél)', err);
+      // Error-niveau: dit is geen randgeval maar het wegvallen van een
+      // garantie (geen bescherming tegen digitaal clippen bij harde mixen).
+      // Meest voorkomende oorzaak in productie: een CSP zonder blob: in
+      // script-src, waardoor de worklet-module niet mag laden.
+      logger.error(
+        'Master-limiter-worklet niet beschikbaar — live zonder limiter (export houdt zijn limiter); ' +
+          'controleer of de CSP blob: toestaat in script-src',
+        err
+      );
     }
   }
 

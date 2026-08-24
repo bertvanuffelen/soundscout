@@ -37,6 +37,20 @@ type StretchFactory = (
   options?: AudioWorkletNodeOptions
 ) => Promise<StretchNode>;
 
+/**
+ * De pitch-worklet kon niet registreren. Dat is een eigenschap van de
+ * omgeving (ontbrekende AudioWorklet-steun, of een CSP die `blob:` in
+ * script-src verbiedt), niet van deze ene clip — dus latchen we de service
+ * uit in plaats van hem per clip opnieuw te laten falen.
+ */
+class PitchEngineUnavailableError extends Error {
+  constructor(cause: unknown) {
+    super('pitch-worklet kon niet registreren');
+    this.name = 'PitchEngineUnavailableError';
+    this.cause = cause;
+  }
+}
+
 export class PitchBufferService {
   private static instance: PitchBufferService | null = null;
 
@@ -62,7 +76,10 @@ export class PitchBufferService {
       this.factoryPromise = import('signalsmith-stretch')
         .then((mod) => (mod.default ?? mod) as unknown as StretchFactory)
         .catch((err) => {
-          logger.warn('signalsmith-stretch kon niet laden — PitchShift-fallback actief', err);
+          // Structureel: zonder de bibliotheek is er geen pitch-bake mogelijk.
+          // Error-niveau, want dit betekent dat de export op de PitchShift-
+          // keten rendert — precies wat Audio Engine v2 moest uitbannen.
+          logger.error('signalsmith-stretch kon niet laden — PitchShift-fallback actief (exportkwaliteit gedegradeerd)', err);
           this.supported = false;
           return null;
         });
@@ -95,13 +112,28 @@ export class PitchBufferService {
         return rendered;
       })
       .catch((err) => {
-        // Structureel (geen worklet) of incidenteel — in beide gevallen is de
-        // PitchShift-fallback het juiste antwoord; bij ontbrekende
-        // AudioWorklet-steun schakelen we definitief uit.
-        if (typeof AudioWorkletNode === 'undefined') this.supported = false;
-        logger.warn('Pitch-bake mislukt — PitchShift-fallback voor deze clip', {
-          sampleId, semitones, err,
-        });
+        // Structureel vs. incidenteel. LET OP: `typeof AudioWorkletNode` is
+        // géén betrouwbare test — bij een CSP die blob: in script-src
+        // verbiedt bestaat AudioWorkletNode gewoon, alleen het láden van de
+        // module wordt geblokkeerd. Dan bleef `supported` op true staan en
+        // probeerde élke clip opnieuw een bake die altijd faalt (tien
+        // gepitchte clips = tien identieke waarschuwingen, en het echte
+        // signaal verdwijnt in de ruis). Daarom latchen we op het fouttype.
+        const structural =
+          err instanceof PitchEngineUnavailableError ||
+          typeof AudioWorkletNode === 'undefined';
+        if (structural) {
+          this.supported = false;
+          logger.error(
+            'Pitch-bake niet beschikbaar in deze omgeving — PitchShift-fallback voor de hele sessie ' +
+              '(exportkwaliteit gedegradeerd; controleer of de CSP blob: toestaat in script-src)',
+            { sampleId, semitones, err }
+          );
+        } else {
+          logger.warn('Pitch-bake mislukt — PitchShift-fallback voor deze clip', {
+            sampleId, semitones, err,
+          });
+        }
         return null;
       })
       .finally(() => {
@@ -118,11 +150,19 @@ export class PitchBufferService {
 
     const channels = Math.max(1, Math.min(2, source.numberOfChannels));
     const ctx = new OfflineAudioContext(channels, source.length, source.sampleRate);
-    const node = await factory(ctx, {
-      numberOfInputs: 0,
-      numberOfOutputs: 1,
-      outputChannelCount: [channels],
-    });
+    // Node-creatie apart: faalt dit, dan kan de worklet in GEEN enkele
+    // context registreren (omgeving/CSP) — zie PitchEngineUnavailableError.
+    // Faalt een latere stap, dan ligt het aan deze specifieke clip.
+    let node: StretchNode;
+    try {
+      node = await factory(ctx, {
+        numberOfInputs: 0,
+        numberOfOutputs: 1,
+        outputChannelCount: [channels],
+      });
+    } catch (err) {
+      throw new PitchEngineUnavailableError(err);
+    }
     const channelData: Float32Array[] = [];
     for (let c = 0; c < channels; c++) {
       channelData.push(source.getChannelData(c));
