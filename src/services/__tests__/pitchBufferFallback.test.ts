@@ -98,6 +98,28 @@ describe('PitchBufferService — structurele fout latcht uit', () => {
     expect(warnSpy).not.toHaveBeenCalled();
   });
 
+  it('blijft niet hangen als de bake nooit antwoordt', async () => {
+    vi.useFakeTimers();
+    const service = freshService();
+
+    // Bootst Emscripten na: de WASM-instantiatie mislukt, abort() wordt
+    // aangeroepen en de promise waar wij op wachten settelt NOOIT. Dit liet
+    // de MP3-export eeuwig op 30% hangen (13-8-2026).
+    const factory = vi.fn().mockReturnValue(new Promise(() => {}));
+    (service as unknown as { factoryPromise: Promise<unknown> }).factoryPromise =
+      Promise.resolve(factory);
+
+    const job = service.bake('sample-a', 4, fakeBuffer());
+    await vi.advanceTimersByTimeAsync(15_000);
+    expect(await job).toBeNull();
+
+    // En de service is uitgelatcht: de volgende clip wacht niet nóg eens.
+    const second = await service.bake('sample-b', 4, fakeBuffer());
+    expect(second).toBeNull();
+    expect(factory).toHaveBeenCalledTimes(1);
+    vi.useRealTimers();
+  });
+
   it('laat pitch 0 ongemoeid (geen bake, geen fout)', async () => {
     const service = freshService();
     const factory = vi.fn();

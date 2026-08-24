@@ -37,18 +37,27 @@
   # Strict policy to prevent XSS, injection, and unauthorized resource loading
   # Inline styles required for Tailwind CSS (@apply directives)
   #
-  # blob: in script-src en connect-src is nodig voor AudioWorklets. Onze eigen
-  # DSP-module (limiter + capture, AudioService.buildDspWorkletCode) en
-  # signalsmith-stretch (pitch-bake) registreren hun worklet vanaf een
-  # blob-URL. Chrome handhaaft worklet-modules onder script-src -- er is geen
-  # smallere directive. Zonder blob: valt de pitch-bake terug op
-  # Tone.PitchShift (de bewezen bron van de export-glitch, zie
-  # docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md §15), draait de app live
-  # zonder master-limiter en faalt ook het realtime-opname-vangnet.
+  # script-src heeft twee toevoegingen, allebei nodig voor de audio-engine:
+  #
+  # blob:              -- voor AudioWorklets. Onze eigen DSP-module (limiter +
+  #                       capture, AudioService.buildDspWorkletCode) en
+  #                       signalsmith-stretch registreren hun worklet vanaf een
+  #                       blob-URL. Chrome handhaaft worklet-modules onder
+  #                       script-src; er is geen smallere directive.
+  # 'wasm-unsafe-eval' -- signalsmith-stretch is WASM. Zonder deze sleutel
+  #                       weigert de browser WebAssembly.instantiate. BEWUST
+  #                       NIET 'unsafe-eval': die zou ook echte eval()
+  #                       toestaan. 'wasm-unsafe-eval' staat uitsluitend
+  #                       WebAssembly toe en is daarmee veel smaller.
+  #
+  # Ontbreekt een van beide, dan valt de pitch-bake terug op Tone.PitchShift
+  # (de bewezen bron van de export-glitch, zie
+  # docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md §15), draait de app live zonder
+  # master-limiter en faalt het realtime-opname-vangnet.
   # NIET weghalen zonder de worklets eerst statisch te hosten -- signalsmith
   # levert daar geen bestand voor.
   Header set Content-Security-Policy "default-src 'self'; \
-    script-src 'self' blob:; \
+    script-src 'self' blob: 'wasm-unsafe-eval'; \
     style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; \
     font-src 'self' https://fonts.gstatic.com; \
     connect-src 'self' blob: https://xpjutrzonnranyqyqfzj.supabase.co https://api.emailjs.com; \

@@ -43,6 +43,29 @@ type StretchFactory = (
  * script-src verbiedt), niet van deze ene clip — dus latchen we de service
  * uit in plaats van hem per clip opnieuw te laten falen.
  */
+/**
+ * Harde bovengrens per bake. Een bake duurt ~50-80 ms per 3 s sample, dus dit
+ * is ruim — het is geen prestatiegrens maar een deadlock-vangnet.
+ *
+ * Aanleiding (13-8-2026): toen de CSP WebAssembly weigerde, riep Emscripten
+ * intern `abort()` aan en settelde de promise waar wij op wachtten NOOIT.
+ * `ensurePitchBuffers` wacht op alle bakes, dus de MP3-export bleef eeuwig op
+ * 30% hangen — geen foutmelding, geen afbreekknop. Een derde partij die niet
+ * antwoordt mag de export nooit kunnen blokkeren.
+ */
+const BAKE_TIMEOUT_MS = 15_000;
+
+/** Verliest de race als `promise` niet binnen `ms` settelt. */
+function withTimeout<T>(promise: Promise<T>, ms: number, onTimeout: () => Error): Promise<T> {
+  return new Promise<T>((resolve, reject) => {
+    const timer = setTimeout(() => reject(onTimeout()), ms);
+    promise.then(
+      (value) => { clearTimeout(timer); resolve(value); },
+      (err) => { clearTimeout(timer); reject(err); }
+    );
+  });
+}
+
 class PitchEngineUnavailableError extends Error {
   constructor(cause: unknown) {
     super('pitch-worklet kon niet registreren');
@@ -105,7 +128,16 @@ export class PitchBufferService {
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
 
-    const job = this.renderPitched(source, semitones)
+    // Timeout treedt op als structurele fout naar buiten: dan latcht de
+    // service uit en slaan de resterende clips direct over, in plaats van
+    // elk hun eigen 15 seconden te verspillen.
+    const job = withTimeout(
+      this.renderPitched(source, semitones),
+      BAKE_TIMEOUT_MS,
+      () => new PitchEngineUnavailableError(
+        new Error(`pitch-bake gaf geen antwoord binnen ${BAKE_TIMEOUT_MS} ms`)
+      )
+    )
       .then((rendered) => {
         this.cache.set(key, rendered);
         logger.audio('pitch gebakken', { sampleId, semitones, ms: rendered.duration });

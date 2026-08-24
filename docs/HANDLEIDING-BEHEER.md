@@ -29,14 +29,21 @@ fouten in de console en maken de meting onbetrouwbaar.
    - je ziet **geen** `Pitch-bake niet beschikbaar` — verschijnt die wel, dan
      rendert de export via `Tone.PitchShift`, de bewezen bron van de
      export-glitch, en werkt ook het realtime-opname-vangnet niet
-   - Beide wijzen vrijwel altijd op hetzelfde: een CSP zonder `blob:` in
-     `script-src`. Zie het commentaarblok in `public/.htaccess`.
+   - Beide wijzen vrijwel altijd op de CSP. `script-src` heeft twee
+     toevoegingen nodig: `blob:` (worklets) én `'wasm-unsafe-eval'` (de
+     pitch-bake is WebAssembly). Ontbreekt de tweede, dan laadt de worklet
+     wél maar weigert de browser de WASM. Zie het commentaarblok in
+     `public/.htaccess`.
+3. **Exporteer één MP3 mét een gepitchte clip.** Hij moet voorbij 30% komen.
+   Blijft hij daar staan, dan antwoordt de pitch-bake niet — sinds 13-8 breekt
+   die na 15 seconden af en gaat de export door op de PitchShift-fallback,
+   maar de oorzaak hoort dan alsnog opgelost.
    - Let op: dit is **niet lokaal te testen**. De dev-server stuurt geen CSP
      mee, dus deze klasse fouten verschijnt alleen op de server.
-3. Test de kernflow: Start → Kaart → Locatie → Studio → Podium
-4. Test klascode-invoer (als Supabase actief is)
-5. Check of audio afspeelt (autoplay unlock werkt)
-6. Open `/over` zonder `.html` — werkt de rewrite? (verborgen `.htaccess`
+4. Test de kernflow: Start → Kaart → Locatie → Studio → Podium
+5. Test klascode-invoer (als Supabase actief is)
+6. Check of audio afspeelt (autoplay unlock werkt)
+7. Open `/over` zonder `.html` — werkt de rewrite? (verborgen `.htaccess`
    geüpload?)
 
 ---
