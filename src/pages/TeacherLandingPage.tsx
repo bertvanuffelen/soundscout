@@ -18,7 +18,7 @@ import { useTranslation } from 'react-i18next';
 import {
   FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft,
   Lock, GraduationCap, BadgeCheck, MonitorPlay, MessagesSquare, ClipboardList,
-  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, Rocket, Grid3x3,
+  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, Rocket, Grid3x3, LogIn,
   type LucideIcon,
 } from 'lucide-react';
 import { Button, Card, LanguageSwitcher } from '../components/ui';
@@ -37,11 +37,6 @@ import { getPublicThemes } from '../data/themes';
 import { PrivacyModal } from '../components/PrivacyModal';
 import { FeedbackModal } from '../components/feedback/FeedbackModal';
 
-/**
- * Navigeer van de losse landingsroute naar het docentgedeelte van de app
- * (`/?screen=teacher`). Met een leskaart-sleutel opent het dashboard straks de
- * Leskaarten-tab op die kaart (na login/registratie).
- */
 /** Deeplink naar een hoofdstuk van de docentenhandleiding (publiek leesbaar). */
 function navigateToTeacherGuide(section: string) {
   const url = new URL(window.location.origin);
@@ -50,6 +45,44 @@ function navigateToTeacherGuide(section: string) {
   window.location.href = url.toString();
 }
 
+/**
+ * Laatst bekende inlogstatus, puur als RENDER-HINT voor de eerste paint.
+ *
+ * De echte sessiecheck is een dynamische import van de Supabase-chunk en duurt
+ * dus even. Zonder hint start `isLoggedIn` altijd op false en ziet een
+ * ingelogde docent eerst de uitgelogde hero (één knop + "Al overtuigd?"-link +
+ * "Inloggen" rechtsboven) waarna alles omspringt. Vóór de CTA-herziening viel
+ * dat niet op, want beide toestanden toonden dezelfde twee knoppen met alleen
+ * een ander label; nu verschilt de hele opbouw.
+ *
+ * NADRUKKELIJK GEEN autorisatie: dit bepaalt alleen wat er als eerste op het
+ * scherm staat. De echte check draait altijd en overschrijft de hint, ook als
+ * die verouderd is.
+ */
+const AUTH_HINT_KEY = 'soundscout:teacher-auth-hint';
+
+function readAuthHint(): boolean {
+  try {
+    return localStorage.getItem(AUTH_HINT_KEY) === '1';
+  } catch {
+    return false; // private mode / storage geblokkeerd
+  }
+}
+
+function writeAuthHint(loggedIn: boolean): void {
+  try {
+    if (loggedIn) localStorage.setItem(AUTH_HINT_KEY, '1');
+    else localStorage.removeItem(AUTH_HINT_KEY);
+  } catch {
+    // storage niet beschikbaar — dan gewoon geen hint
+  }
+}
+
+/**
+ * Navigeer van de losse landingsroute naar het docentgedeelte van de app
+ * (`/?screen=teacher`). Met een leskaart-sleutel opent het dashboard straks de
+ * Leskaarten-tab op die kaart (na login/registratie).
+ */
 function navigateToTeacherApp(params?: { lesson?: string; tab?: string }) {
   const url = new URL(window.location.origin);
   url.searchParams.set('screen', 'teacher');
@@ -76,7 +109,7 @@ export default function TeacherLandingPage() {
   // CTA kent de inlogstatus (testronde 2, wens Bert): ingelogde docent ziet
   // "Ga naar dashboard", anders "Log in of maak een gratis account". Lichte
   // sessie-check; falen = behandelen als uitgelogd.
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(readAuthHint);
   useEffect(() => {
     let cancelled = false;
     (async () => {
@@ -84,7 +117,10 @@ export default function TeacherLandingPage() {
         const { getSupabase } = await import('../lib/supabase');
         const supabase = await getSupabase();
         const { data } = await supabase.auth.getSession();
-        if (!cancelled) setIsLoggedIn(!!data.session);
+        if (cancelled) return;
+        const loggedIn = !!data.session;
+        setIsLoggedIn(loggedIn);
+        writeAuthHint(loggedIn);
       } catch {
         // stil — zonder sessie-info tonen we het uitgelogde label
       }
@@ -99,12 +135,25 @@ export default function TeacherLandingPage() {
     requestAnimationFrame(() => tabsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' }));
   };
 
-  // Hero-knop "Bekijk de demo": de video's staan op het "Aan de slag"-tab —
-  // eerst (zo nodig) wisselen, daarna naar de sectie scrollen.
+  // Hero-knop "Bekijk de demo": de video's staan op het "Aan de slag"-tab, dus
+  // eerst (zo nodig) wisselen en dan pas scrollen.
+  //
+  // LET OP: dit liep via één requestAnimationFrame ná setLandingTab, en dat is
+  // te vroeg — React heeft de nieuwe tab dan nog niet gecommit, `#demo` bestaat
+  // nog niet en de optional chaining slikt het stil in. Vanaf de "Waarom
+  // SoundScout"-tab deed de knop dus niets. Dat viel niet op toen dit de
+  // tweede knop was; sinds de CTA-herziening is het de hoofdknop van elke
+  // uitgelogde bezoeker. Nu via een effect dat gegarandeerd ná de commit loopt.
+  const [pendingDemoScroll, setPendingDemoScroll] = useState(false);
   const handleShowDemo = () => {
     setLandingTab('get-started');
-    requestAnimationFrame(() => document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' }));
+    setPendingDemoScroll(true);
   };
+  useEffect(() => {
+    if (!pendingDemoScroll) return;
+    document.getElementById('demo')?.scrollIntoView({ behavior: 'smooth' });
+    setPendingDemoScroll(false);
+  }, [pendingDemoScroll, landingTab]);
 
   return (
     <div className="min-h-screen bg-bg-app text-text-main">
@@ -117,7 +166,21 @@ export default function TeacherLandingPage() {
           <ArrowLeft className="w-4 h-4" />
           {t('teacher.common.backToSoundScout')}
         </button>
-        <LanguageSwitcher variant="light" />
+        <div className="flex items-center gap-3">
+          {/* Inloggang rechtsboven: waar een terugkerende docent hem zoekt, en
+              licht genoeg om niet met de demo-knop in de hero te concurreren.
+              Ingelogd heeft die docent "Ga naar dashboard" al in de hero. */}
+          {!isLoggedIn && (
+            <button
+              onClick={() => navigateToTeacherApp()}
+              className="inline-flex items-center gap-1.5 min-h-[44px] px-2 text-sm text-text-muted hover:text-text-main transition-colors"
+            >
+              <LogIn className="w-4 h-4" />
+              {t('teacherLanding.header.login')}
+            </button>
+          )}
+          <LanguageSwitcher variant="light" />
+        </div>
       </div>
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 sm:py-16 flex flex-col gap-16 sm:gap-24">
         <HeroSection onShowDemo={handleShowDemo} isLoggedIn={isLoggedIn} />
@@ -140,7 +203,7 @@ export default function TeacherLandingPage() {
             <SequencerSection />
             <VideosSection />
             <ThemesSection />
-            <StepsSection />
+            <StepsSection isLoggedIn={isLoggedIn} />
             <LessonsSection />
           </>
         ) : (
@@ -209,25 +272,54 @@ function HeroSection({ onShowDemo, isLoggedIn }: { onShowDemo: () => void; isLog
         <p className="text-base sm:text-lg text-text-muted leading-relaxed">
           {t('teacherLanding.hero.subtitle')}
         </p>
+        {/* CTA-hiërarchie: het doel van de lancering is dat een docent SoundScout
+            hóórt werken, niet dat hij een account maakt. Uitgelogd is de demo
+            daarom de enige hoofdknop — twee knoppen van gelijk gewicht laten een
+            twijfelaar vaak géén van beide kiezen. De inloggang staat lichter
+            eronder en rechtsboven. Ingelogd valt er niets te overtuigen: die
+            docent krijgt gewoon zijn dashboard, met de demo ernaast. */}
         <div className="flex flex-col sm:flex-row gap-3 mt-1">
-          <Button
-            variant="primary"
-            size="lg"
-            className="rounded-full w-full sm:w-auto"
-            onClick={() => navigateToTeacherApp()}
-          >
-            {isLoggedIn ? t('teacherLanding.hero.ctaDashboard') : t('teacherLanding.hero.ctaLogin')}
-          </Button>
-          <Button
-            variant="secondary"
-            size="lg"
-            className="rounded-full w-full sm:w-auto"
-            onClick={onShowDemo}
-          >
-            <Play className="w-4 h-4 mr-2" />
-            {t('teacherLanding.hero.ctaSecondary')}
-          </Button>
+          {isLoggedIn ? (
+            <>
+              <Button
+                variant="primary"
+                size="lg"
+                className="rounded-full w-full sm:w-auto"
+                onClick={() => navigateToTeacherApp()}
+              >
+                {t('teacherLanding.hero.ctaDashboard')}
+              </Button>
+              <Button
+                variant="secondary"
+                size="lg"
+                className="rounded-full w-full sm:w-auto"
+                onClick={onShowDemo}
+              >
+                <Play className="w-4 h-4 mr-2" />
+                {t('teacherLanding.hero.ctaDemo')}
+              </Button>
+            </>
+          ) : (
+            <Button
+              variant="primary"
+              size="lg"
+              className="rounded-full w-full sm:w-auto"
+              onClick={onShowDemo}
+            >
+              <Play className="w-4 h-4 mr-2" />
+              {t('teacherLanding.hero.ctaDemo')}
+            </Button>
+          )}
         </div>
+
+        {!isLoggedIn && (
+          <button
+            onClick={() => navigateToTeacherApp()}
+            className="inline-flex items-center self-start min-h-[44px] text-sm text-text-muted hover:text-text-main underline underline-offset-2 transition-colors"
+          >
+            {t('teacherLanding.hero.loginLink')}
+          </button>
+        )}
 
         {/* Trust-strip: de drie redenen om door te lezen */}
         <div className="flex flex-wrap gap-x-5 gap-y-2 mt-2 pt-4 border-t border-border-subtle">
@@ -660,7 +752,7 @@ function VideosSection() {
 }
 
 // --- Sectie 4: Zo zet je een klas op (3 stappen + dashboard-knop) ---
-function StepsSection() {
+function StepsSection({ isLoggedIn }: { isLoggedIn: boolean }) {
   const { t } = useTranslation();
   const steps = ['step1', 'step2', 'step3'] as const;
   return (
@@ -690,7 +782,9 @@ function StepsSection() {
           className="rounded-full"
           onClick={() => navigateToTeacherApp()}
         >
-          {t('teacherLanding.steps.ctaDashboard')}
+          {isLoggedIn
+            ? t('teacherLanding.steps.ctaDashboard')
+            : t('teacherLanding.steps.ctaStart')}
         </Button>
       </div>
     </section>

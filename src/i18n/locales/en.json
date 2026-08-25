@@ -1988,6 +1988,9 @@
     "emptyDescription": "No compositions have been placed on this sound map yet."
   },
   "teacherLanding": {
+    "header": {
+      "login": "Log in"
+    },
     "tabs": {
       "getStarted": "Get started with SoundScout",
       "why": "Why SoundScout"
@@ -1998,8 +2001,9 @@
       "subtitle": "A classroom environment where pupils collect sounds and compose together. Pick the form that fits each assignment: free experimenting, with a sound map, with a storyboard, or with an assignment you build yourself. You share a class code, they start right away.",
       "ctaDashboard": "Go to dashboard",
       "ctaLogin": "Log in or create a free account",
-      "ctaSecondary": "Watch the demo",
-      "animationCaption": "How SoundScout works: collect sounds, compose in the studio, present on stage."
+      "ctaDemo": "Watch the demo",
+      "animationCaption": "How SoundScout works: collect sounds, compose in the studio, present on stage.",
+      "loginLink": "Already convinced? Log in or create a free account"
     },
     "compose": {
       "title": "Three ways to compose",
@@ -2041,7 +2045,8 @@
         "title": "Share the class code",
         "description": "Students type in the code and get in right away."
       },
-      "ctaDashboard": "Go to your dashboard"
+      "ctaDashboard": "Go to your dashboard",
+      "ctaStart": "Create a free account and start your class"
     },
     "lessons": {
       "title": "Ready-made lesson cards",
@@ -2106,7 +2111,7 @@
       "subtitle": "New worlds to collect sounds in, every season.",
       "seasonal": "Seasonal theme",
       "stats": "{{locations}} locations · {{sounds}} sounds",
-      "try": "Try this theme"
+      "try": "View this theme"
     },
     "faq": {
       "title": "Frequently asked questions",

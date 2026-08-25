@@ -79,23 +79,23 @@ Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 6".
       uit met de hint "Maak eerst een sectie". Bij een sectie-loop toont de knop
       een klein **"sectie"**-label. Loopt hij al → klikken zet uit. *(De
       sectie-popover "Loop deze sectie" werkt nog steeds als tweede ingang.)*
-- [ ] **R6-2. "Doorspelen" staat standaard uit**: presentatiescherm openen → de
+- [X] **R6-2. "Doorspelen" staat standaard uit**: presentatiescherm openen → de
       "Doorspelen"-knop is uit; pas als jij erop klikt speelt hij automatisch door
-      naar de volgende compositie.
-- [ ] **R6-3. "Open montage" ook in de deelweergave**: open een gedeeld album of
+      naar de volgende compositie. ==> OPMERKING: hij klikt automatisch door naar de volgende. Daar komt hij wel meteen weer in pauze-stand.
+- [-] **R6-3. "Open montage" ook in de deelweergave**: open een gedeeld album of
       een gedeelde opdracht (deelcode) met een beeld-vorm → in de onderste
-      knoppenrij staat nu ook **"Open montage"**.
-- [ ] **R6-4. Fullscreen toont alleen het beeld** (G5): presenteren met een
+      knoppenrij staat nu ook **"Open montage"**. ==> Ik had een shared code maar deze gaf bij openenen een 'The treasure hunt No submitted compositions yet.'
+- [-] **R6-4. Fullscreen toont alleen het beeld** (G5): presenteren met een
       beeld-vorm → fullscreen (knop of `F`) → alleen het beeld op de donkere
       achtergrond; de **montagelijn is dicht** en het **zijpaneel is ingeklapt**.
-      Jij kunt beide daarna weer openen (blijven dan open).
+      Jij kunt beide daarna weer openen (blijven dan open). ==> Zijpaneel en montagelijn zijn dicht, maar schermvenster waarin de praatplaat staat is wit. De achtergrond achter scherm met praatplaat is wel zwart.
 
 ### Nog open uit ronde 5 (deploy-afhankelijk)
 
-- [ ] **R5-7. Bewaarcode → volle tijdlijn** (was: lege montagelijn bij A3):
+- [?] **R5-7. Bewaarcode → volle tijdlijn** (was: lege montagelijn bij A3):
       bewaar online in thema **Piraten** → open de 6-tekens code in een ánder
       browserprofiel → de clips staan er gewoon (niet leeg). *(Gefixt in de code;
-      even op de verse upload bevestigen.)*
+      even op de verse upload bevestigen.)* ==> Ik open de gedeelde code en krijg dan de modal of ik het wil openen in de studio of op het podium. In de studio werkt het en laadt hij mooi de samples. In het podium krijg ik meteen het scherm met modal bewaren compositie en kan ik op de play-knop drukken waar ik de compositie wel kan horen. Je verwacht alleen bij podium meer enkel het presenteren van de compositie en niet meteen het opslaan weer. Dus we moetemn hier over nadenken hoe we dit misschien logischer kunnen maken.
 
 ---
 
@@ -135,18 +135,20 @@ Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 6".
 
 ## 🎛️ B. Studio — nog te testen
 
-- [ ] **Zoomknoppen op smal venster/iPad**: zoomknoppen zichtbaar in de werkbalk
+- [x] **Zoomknoppen op smal venster/iPad**: zoomknoppen zichtbaar in de werkbalk
       (de "fit"-knop alleen op desktop).
-- [-] **Effecten**: pitch/reverb/fade toepassen → hoorbaar bij afspelen én in de
+- [x] **Effecten**: pitch/reverb/fade toepassen → hoorbaar bij afspelen én in de
       MP3-export. ==> De effecten zijn hoorbaar maar met enorm veel gestotter en glitches. Geen mooie export. Dit is vooral op de samples waar ik dus de effetcen op heb toegepast.
       **→ APART ONDERZOEK.** Oorzaak in principe gevonden (offline-render bouwt de
       effectketen los van live; `Tone.PitchShift` in offline is hoofdverdachte).
       Verdient een gefocuste dieptesessie — volledig dossier: `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md`.
+OPMERKING 24-8-2026: lijkt nu te zijn opgelost
 
 ## 🎤 C. Podium, opslaan en delen — nog te testen
 
-- [-] **C4. MP3-export**: klinkt zoals in de app (tempo klopt), ook met effecten. ==> De effecten zijn hoorbaar maar met enorm veel gestotter en glitches. Geen mooie export. Dit is vooral op de samples waar ik dus de effetcen op heb toegepast.
-- [ ] **C5. Video-export** (storyboard): mp4 met beeldwissels en geluid.
+- [x] **C4. MP3-export**: klinkt zoals in de app (tempo klopt), ook met effecten. ==> De effecten zijn hoorbaar maar met enorm veel gestotter en glitches. Geen mooie export. Dit is vooral op de samples waar ik dus de effetcen op heb toegepast.
+OPMERKING 24-8-2026: lijkt nu te zijn opgelost
+- [x] **C5. Video-export** (storyboard): mp4 met beeldwissels en geluid.
 
 ## 🏫 D. Klascode en peer-feedback (leerling) — nog te testen
 
@@ -179,7 +181,7 @@ Gebouwd n.a.v. je testplan-annotaties en het Notion-blok "Test-ronde 6".
 - [x] **G3. Doorspelen** + pijltjestoetsen + aankondiging (~1,2s) + feedbackrij.
 - [x] **G4. Per vorm**: storyboard beweegt mee · praatplaat toont pulserende spot ·
       vrij/template toont de meebewegende tijdlijn.
-- [ ] **G5. Fullscreen**: knop, `F`, Escape verlaat eerst fullscreen; ook op iPad.
+- [x] **G5. Fullscreen**: knop, `F`, Escape verlaat eerst fullscreen; ook op iPad.
       → Jouw wens (bij fullscreen alleen het beeld op donker, montage dicht +
       zijpaneel ingeklapt tenzij je klikt) is gebouwd — **hertest via R6-4** bovenaan.
 - [x] **G6. Praatplaat-bord**: docent-viewer én publieke deelviewer (`?pp-share=`)

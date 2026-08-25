@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1720 teksten in 46 secties._
+_Stand: 1723 teksten in 46 secties._
 
 ## app
 
@@ -1734,6 +1734,7 @@ _Stand: 1720 teksten in 46 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
+| `teacherLanding.header.login` | Inloggen | Log in |
 | `teacherLanding.tabs.getStarted` | Aan de slag met SoundScout | Get started with SoundScout |
 | `teacherLanding.tabs.why` | Waarom SoundScout | Why SoundScout |
 | `teacherLanding.hero.eyebrow` | Compositietool voor het basisonderwijs | A composition tool for primary education |
@@ -1741,8 +1742,9 @@ _Stand: 1720 teksten in 46 secties._
 | `teacherLanding.hero.subtitle` | Een lesomgeving waarin leerlingen samen geluiden verzamelen en componeren. Kies per opdracht de vorm die past: vrij experimenteren, bij een praatplaat, bij een storyboard, of bij een opdracht die je zelf samenstelt. Jij deelt een klascode, zij beginnen meteen. | A classroom environment where pupils collect sounds and compose together. Pick the form that fits each assignment: free experimenting, with a sound map, with a storyboard, or with an assignment you build yourself. You share a class code, they start right away. |
 | `teacherLanding.hero.ctaDashboard` | Ga naar dashboard | Go to dashboard |
 | `teacherLanding.hero.ctaLogin` | Log in of maak een gratis account | Log in or create a free account |
-| `teacherLanding.hero.ctaSecondary` | Bekijk de demo | Watch the demo |
+| `teacherLanding.hero.ctaDemo` | Bekijk de demo | Watch the demo |
 | `teacherLanding.hero.animationCaption` | Zo werkt SoundScout: geluiden verzamelen, componeren in de studio, presenteren op het podium. | How SoundScout works: collect sounds, compose in the studio, present on stage. |
+| `teacherLanding.hero.loginLink` | Al overtuigd? Log in of maak een gratis account | Already convinced? Log in or create a free account |
 | `teacherLanding.compose.title` | Drie manieren om te componeren | Three ways to compose |
 | `teacherLanding.compose.subtitle` | Kies per opdracht de vorm die bij je les past — van samen op het digibord tot vrij experimenteren. | Pick the form that fits your lesson — from working together on the whiteboard to free experimentation. |
 | `teacherLanding.compose.variants.praatplaat.tag` | Samen · digibord | Together · whiteboard |
@@ -1765,6 +1767,7 @@ _Stand: 1720 teksten in 46 secties._
 | `teacherLanding.steps.step3.title` | Deel de klascode | Share the class code |
 | `teacherLanding.steps.step3.description` | Leerlingen typen de code in en komen er direct in. | Students type in the code and get in right away. |
 | `teacherLanding.steps.ctaDashboard` | Ga naar je dashboard | Go to your dashboard |
+| `teacherLanding.steps.ctaStart` | Maak een gratis account en start je klas | Create a free account and start your class |
 | `teacherLanding.lessons.title` | Kant-en-klare leskaarten | Ready-made lesson cards |
 | `teacherLanding.lessons.download` | Download pdf | Download pdf |
 | `teacherLanding.lessons.openForClass` | Open voor je klas | Open for your class |
@@ -1805,7 +1808,7 @@ _Stand: 1720 teksten in 46 secties._
 | `teacherLanding.themes.subtitle` | Elk seizoen nieuwe werelden om geluiden in te verzamelen. | New worlds to collect sounds in, every season. |
 | `teacherLanding.themes.seasonal` | Seizoensthema | Seasonal theme |
 | `teacherLanding.themes.stats` | {{locations}} locaties · {{sounds}} geluiden | {{locations}} locations · {{sounds}} sounds |
-| `teacherLanding.themes.try` | Probeer dit thema | Try this theme |
+| `teacherLanding.themes.try` | Bekijk dit thema | View this theme |
 | `teacherLanding.faq.title` | Veelgestelde vragen | Frequently asked questions |
 | `teacherLanding.faq.items.accounts.q` | Moeten leerlingen een account aanmaken? | Do students need to create an account? |
 | `teacherLanding.faq.items.accounts.a` | Nee. Leerlingen werken met de klascode van hun docent en krijgen bij het inleveren automatisch een persoonlijke bewaarcode. Er wordt geen account, e-mailadres of wachtwoord gevraagd. | No. Students use their teacher's class code and automatically receive a personal save code when they submit. No account, email address or password is required. |
