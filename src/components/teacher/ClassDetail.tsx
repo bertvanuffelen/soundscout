@@ -182,22 +182,16 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   // Delen: één target voor zowel de actieve opdracht als historie-rijen (M3)
   const [shareTarget, setShareTarget] = useState<{ praatplaatId: string; name: string } | null>(null);
   // Klas-album delen (R4): per opdracht, elk type
-  const [albumTarget, setAlbumTarget] = useState<{ assignmentId: string; name: string } | null>(null);
+  const [albumTarget, setAlbumTarget] = useState<
+    { assignmentId: string; name: string; submittedCount: number } | null
+  >(null);
   // Eén "Delen"-knop per rij (wens Bert 19-7). Bij een praatplaat kun je twee
   // dingen delen — het klikbare bord óf de composities als afspeellijst — dus
   // vraagt dit keuzemodaal eerst welke van de twee. Andere types: direct album.
   const [shareChoice, setShareChoice] = useState<
-    { assignmentId: string; name: string; praatplaatId: string } | null
+    { assignmentId: string; name: string; praatplaatId: string; submittedCount: number } | null
   >(null);
 
-  /** Deel-actie voor één opdrachtrij: keuze bij praatplaat, anders het album. */
-  const openShare = useCallback((row: { id: string; assignmentName: string; type: AssignmentType; praatplaatId: string | null }) => {
-    if (row.type === 'praatplaat' && row.praatplaatId) {
-      setShareChoice({ assignmentId: row.id, name: row.assignmentName, praatplaatId: row.praatplaatId });
-    } else {
-      setAlbumTarget({ assignmentId: row.id, name: row.assignmentName });
-    }
-  }, []);
   // Startkeuze (opdrachten-model 17-7): leskaart-picker of zelf samenstellen
   const [showLessonPicker, setShowLessonPicker] = useState(false);
   // Historie: praatplaat verwijderen (incl. inzendingen) met bevestiging
@@ -354,6 +348,18 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     () => (activeAssignment ? submitted.filter((s) => submissionMatchesAssignment(s, activeAssignment)) : []),
     [submitted, activeAssignment]
   );
+
+  /** Deel-actie voor één opdrachtrij: keuze bij praatplaat, anders het album.
+   *  Telt de formeel ingeleverde composities mee, zodat de deelmodal een leeg
+   *  album kan tegenhouden in plaats van er een code voor te minten (B1). */
+  const openShare = useCallback((row: ClassAssignmentRow) => {
+    const submittedCount = submitted.filter((s) => submissionMatchesAssignment(s, row)).length;
+    if (row.type === 'praatplaat' && row.praatplaatId) {
+      setShareChoice({ assignmentId: row.id, name: row.assignmentName, praatplaatId: row.praatplaatId, submittedCount });
+    } else {
+      setAlbumTarget({ assignmentId: row.id, name: row.assignmentName, submittedCount });
+    }
+  }, [submitted]);
 
   const handlePresentClick = useCallback(() => {
     // Zodra er een actieve opdracht is, vraagt hij wát je wilt presenteren
@@ -1002,7 +1008,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           <button
             onClick={() => {
               if (!shareChoice) return;
-              setAlbumTarget({ assignmentId: shareChoice.assignmentId, name: shareChoice.name });
+              setAlbumTarget({ assignmentId: shareChoice.assignmentId, name: shareChoice.name, submittedCount: shareChoice.submittedCount });
               setShareChoice(null);
             }}
             className="w-full text-left rounded-xl border-2 border-border-subtle bg-bg-surface hover:bg-neutral-50 px-4 py-3 transition-colors"
@@ -1152,6 +1158,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
           onClose={() => setAlbumTarget(null)}
           assignmentId={albumTarget.assignmentId}
           assignmentName={albumTarget.name}
+          submittedCount={albumTarget.submittedCount}
         />
       )}
 

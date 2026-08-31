@@ -2218,6 +2218,7 @@
     "byClass": "Album van {{className}}",
     "submissionCount": "{{count}} composities om te beluisteren",
     "noSubmissions": "Er zijn nog geen ingeleverde composities.",
+    "shareEmptyHint": "Deel het album zodra leerlingen hun compositie hebben ingeleverd — werk dat alleen is opgeslagen telt nog niet mee.",
     "startListening": "Open het album",
     "notFoundTitle": "Album niet gevonden",
     "notFoundDescription": "Controleer de code of vraag een nieuwe link aan de docent.",

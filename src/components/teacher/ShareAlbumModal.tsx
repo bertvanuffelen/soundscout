@@ -21,9 +21,12 @@ interface ShareAlbumModalProps {
   onClose: () => void;
   assignmentId: string;
   assignmentName: string;
+  /** Aantal formeel ingeleverde composities bij deze opdracht. Bij 0 wordt er
+   *  géén deelcode aangemaakt: een leeg album delen heeft geen zin (B1). */
+  submittedCount: number;
 }
 
-export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName }: ShareAlbumModalProps) {
+export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName, submittedCount }: ShareAlbumModalProps) {
   const { t } = useTranslation();
   const [shareCode, setShareCode] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -46,6 +49,8 @@ export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName 
         setQrDataUrl(null);
         return;
       }
+      // Leeg album: niets delen, alleen uitleggen waarom (B1)
+      if (submittedCount === 0) return;
       setLoading(true);
       shareClassAlbum(assignmentId)
         .then((code) => { if (!cancelled) setShareCode(code); })
@@ -56,7 +61,7 @@ export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName 
         .finally(() => { if (!cancelled) setLoading(false); });
     }, 0);
     return () => { cancelled = true; clearTimeout(timer); };
-  }, [isOpen, assignmentId, t]);
+  }, [isOpen, assignmentId, submittedCount, t]);
 
   const shareUrl = shareCode
     ? `${window.location.origin}/?album=${shareCode}`
@@ -79,57 +84,66 @@ export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName 
 
   return (
     <Modal isOpen={isOpen} onClose={onClose} title={t('album.shareTitle')} size="sm">
-      <p className="text-text-muted text-sm mb-4 leading-relaxed">
-        {t('album.shareDescription', { name: assignmentName })}
-      </p>
-
-      {loading && (
-        <div className="text-center py-6">
-          <Loader2 className="w-8 h-8 text-accent-500 animate-spin mx-auto" />
+      {submittedCount === 0 ? (
+        <div className="bg-warning-50 border border-warning-500 rounded-xl px-4 py-3 mb-2">
+          <p className="text-text-main text-sm font-bold mb-1">{t('album.noSubmissions')}</p>
+          <p className="text-text-muted text-sm leading-relaxed">{t('album.shareEmptyHint')}</p>
         </div>
-      )}
-
-      {error && (
-        <p role="alert" className="bg-error-50 border border-error-200 text-error-700 px-3 py-2 rounded-lg mb-4 text-sm">
-          {error}
-        </p>
-      )}
-
-      {shareUrl && shareCode && (
+      ) : (
         <>
-          {/* Code groot en prominent (I2, wens Bert 19-7) — zelfde stijl als de
-              klascode in ClassDetail; intypbaar via "Ik heb een code". */}
-          <div className="flex justify-center mb-3">
-            <span className="inline-flex items-center bg-accent-100 text-accent-800 px-5 py-2.5 rounded-xl font-mono font-extrabold text-2xl sm:text-3xl tracking-widest">
-              {shareCode}
-            </span>
-          </div>
-          <button
-            onClick={handleCopy}
-            className="w-full flex items-center justify-between gap-2 bg-accent-50 border border-accent-200 rounded-xl px-3 py-2.5 mb-2 hover:bg-accent-100 transition-colors"
-            title={t('album.copyLink')}
-          >
-            <span className="font-mono text-sm text-accent-800 truncate">{shareUrl}</span>
-            {copied ? <Check className="w-4 h-4 text-success-600 shrink-0" /> : <Copy className="w-4 h-4 text-accent-600 shrink-0" />}
-          </button>
-          <p className="text-text-muted text-xs mb-4 text-center">
-            {t('album.validity')}
-          </p>
+        <p className="text-text-muted text-sm mb-4 leading-relaxed">
+          {t('album.shareDescription', { name: assignmentName })}
+        </p>
 
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => setShowQr((v) => !v)}
-            className="w-full inline-flex items-center justify-center gap-1.5 mb-2"
-          >
-            <QrCode className="w-4 h-4" />
-            {showQr ? t('album.hideQr') : t('album.showQr')}
-          </Button>
-          {showQr && qrDataUrl && (
-            <div className="flex justify-center mb-2">
-              <img src={qrDataUrl} alt={t('album.qrAlt')} className="rounded-xl border border-border-subtle" />
+        {loading && (
+          <div className="text-center py-6">
+            <Loader2 className="w-8 h-8 text-accent-500 animate-spin mx-auto" />
+          </div>
+        )}
+
+        {error && (
+          <p role="alert" className="bg-error-50 border border-error-200 text-error-700 px-3 py-2 rounded-lg mb-4 text-sm">
+            {error}
+          </p>
+        )}
+
+        {shareUrl && shareCode && (
+          <>
+            {/* Code groot en prominent (I2, wens Bert 19-7) — zelfde stijl als de
+                klascode in ClassDetail; intypbaar via "Ik heb een code". */}
+            <div className="flex justify-center mb-3">
+              <span className="inline-flex items-center bg-accent-100 text-accent-800 px-5 py-2.5 rounded-xl font-mono font-extrabold text-2xl sm:text-3xl tracking-widest">
+                {shareCode}
+              </span>
             </div>
-          )}
+            <button
+              onClick={handleCopy}
+              className="w-full flex items-center justify-between gap-2 bg-accent-50 border border-accent-200 rounded-xl px-3 py-2.5 mb-2 hover:bg-accent-100 transition-colors"
+              title={t('album.copyLink')}
+            >
+              <span className="font-mono text-sm text-accent-800 truncate">{shareUrl}</span>
+              {copied ? <Check className="w-4 h-4 text-success-600 shrink-0" /> : <Copy className="w-4 h-4 text-accent-600 shrink-0" />}
+            </button>
+            <p className="text-text-muted text-xs mb-4 text-center">
+              {t('album.validity')}
+            </p>
+
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={() => setShowQr((v) => !v)}
+              className="w-full inline-flex items-center justify-center gap-1.5 mb-2"
+            >
+              <QrCode className="w-4 h-4" />
+              {showQr ? t('album.hideQr') : t('album.showQr')}
+            </Button>
+            {showQr && qrDataUrl && (
+              <div className="flex justify-center mb-2">
+                <img src={qrDataUrl} alt={t('album.qrAlt')} className="rounded-xl border border-border-subtle" />
+              </div>
+            )}
+          </>
+        )}
         </>
       )}
 

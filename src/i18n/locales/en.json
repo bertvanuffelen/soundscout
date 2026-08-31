@@ -2218,6 +2218,7 @@
     "byClass": "Album of {{className}}",
     "submissionCount": "{{count}} compositions to listen to",
     "noSubmissions": "No submitted compositions yet.",
+    "shareEmptyHint": "Share the album once students have handed in their composition — work that is only saved does not count yet.",
     "startListening": "Open the album",
     "notFoundTitle": "Album not found",
     "notFoundDescription": "Check the code or ask the teacher for a new link.",
