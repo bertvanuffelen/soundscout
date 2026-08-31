@@ -30,6 +30,8 @@
  *     (default open in teacher-review), `sidebarOpen` (default open), `announcing`
  *     (default aan in teacher-present).
  *   • fullscreen-effect: klapt montage + zijpaneel dicht bij het ingaan.
+ *   • `immersive` (fullscreen + beeld-vorm + montage dicht) — kaart, beeldzone
+ *     en titelregel donker, zodat alleen het beeld oplicht op het digibord.
  * Een echte centrale MODE_CONFIG-tabel is een latere verbetering (zie
  * HANDLEIDING-BEHEER §4b).
  */
@@ -241,6 +243,13 @@ export function PresentationSurface({
   const dialogRef = useModalBehavior(handleEscapeClose, { autoFocus: false });
   const { isFullscreen, isSupported: fullscreenSupported, toggle: toggleFullscreen } = useFullscreen(dialogRef);
 
+  // Fullscreen zonder montagelijn = "alleen het beeld": de lichte inhoudskaart en
+  // beeldzone worden donker, zodat er op een breed scherm geen witte balken naast
+  // het beeld staan (B2, testronde lancering: beeld 2082px in een kaart van 3416px).
+  // Klapt de docent de montagelijn alsnog open, dan is de tijdlijn een licht
+  // component en hoort de kaart weer licht te zijn — vandaar !showTimeline.
+  const immersive = isFullscreen && hasVisual && !showTimeline;
+
   // Fullscreen = "alleen het beeld" (wens Bert, testronde 6 / G5): bij het
   // ingaan van fullscreen klapt de montagelijn dicht en het zijpaneel in, zodat
   // op het digibord standaard alleen het beeld op de donkere achtergrond staat.
@@ -418,20 +427,23 @@ export function PresentationSurface({
           )}
 
           {/* Lichte inhoudskaart op het donkere podium */}
-          <div className="flex-1 min-h-0 flex flex-col bg-bg-surface mx-3 rounded-2xl shadow-2xl overflow-hidden">
+          <div className={cn(
+            'flex-1 min-h-0 flex flex-col mx-3 rounded-2xl shadow-2xl overflow-hidden',
+            immersive ? 'bg-brand-900' : 'bg-bg-surface'
+          )}>
             {/* Laden */}
             {isLoading && (
               <div className="flex-1 flex items-center justify-center p-6">
                 <div className="text-center max-w-xs w-full">
                   <Music className="w-16 h-16 text-accent-500 mx-auto mb-4 animate-pulse" aria-hidden="true" />
-                  <p className="text-text-main font-medium mb-3">{t('teacher.submissionPlayer.loading')}</p>
-                  <div className="w-full bg-neutral-200 rounded-full h-2">
+                  <p className={cn('font-medium mb-3', immersive ? 'text-white' : 'text-text-main')}>{t('teacher.submissionPlayer.loading')}</p>
+                  <div className={cn('w-full rounded-full h-2', immersive ? 'bg-brand-800' : 'bg-neutral-200')}>
                     <div
                       className="bg-accent-500 h-2 rounded-full transition-all duration-300"
                       style={{ width: `${loadingProgress}%` }}
                     />
                   </div>
-                  <p className="text-text-muted text-sm mt-2">{loadingProgress}%</p>
+                  <p className={cn('text-sm mt-2', immersive ? 'text-brand-300' : 'text-text-muted')}>{loadingProgress}%</p>
                 </div>
               </div>
             )}
@@ -441,10 +453,10 @@ export function PresentationSurface({
               <div className="flex-1 flex items-center justify-center p-6">
                 <div className="text-center max-w-xs">
                   <AlertCircle className="w-16 h-16 text-error-500 mx-auto mb-4" aria-hidden="true" />
-                  <p className="text-error-600 font-medium mb-2">
+                  <p className={cn('font-medium mb-2', immersive ? 'text-error-400' : 'text-error-600')}>
                     {noSamples ? t('teacher.submissionPlayer.noSamplesError') : errorMessage ?? t('teacher.submissionPlayer.audioLoadError')}
                   </p>
-                  <p className="text-text-muted text-sm">{t('teacher.submissionPlayer.errorHint')}</p>
+                  <p className={cn('text-sm', immersive ? 'text-brand-300' : 'text-text-muted')}>{t('teacher.submissionPlayer.errorHint')}</p>
                 </div>
               </div>
             )}
@@ -453,7 +465,7 @@ export function PresentationSurface({
               <>
                 {/* Praatplaat-bord (M5): vaste plaat + klikbare spots */}
                 {interactiveBoard && (
-                  <div className={cn('min-h-0 relative flex items-center justify-center p-3 bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
+                  <div className={cn('min-h-0 relative flex items-center justify-center p-3', immersive ? 'bg-brand-900' : 'bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
                     <div className="relative h-full">
                       <img
                         src={interactiveBoard.imageUrl}
@@ -501,7 +513,7 @@ export function PresentationSurface({
 
                 {/* Visual per opdrachtvorm */}
                 {storyboard && (
-                  <div className={cn('min-h-0 bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
+                  <div className={cn('min-h-0', immersive ? 'bg-brand-900' : 'bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
                     <StoryboardViewer
                       storyboard={storyboard}
                       currentBeat={currentBeat}
@@ -515,7 +527,7 @@ export function PresentationSurface({
                   </div>
                 )}
                 {!storyboard && praatplaatImage && (
-                  <div className={cn('min-h-0 relative flex items-center justify-center p-3 bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
+                  <div className={cn('min-h-0 relative flex items-center justify-center p-3', immersive ? 'bg-brand-900' : 'bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
                     {/* h-full op de img: schaalt óók op (digibord); de wrapper
                         krimpt om het beeld heen zodat de markers blijven kloppen */}
                     <div className="relative h-full">
@@ -532,15 +544,15 @@ export function PresentationSurface({
                 )}
 
                 {/* Titelregel */}
-                <div className="px-4 sm:px-6 py-3 border-t border-border-subtle shrink-0">
-                  <p className="text-text-main text-lg sm:text-xl font-extrabold tracking-tight truncate">
+                <div className={cn('px-4 sm:px-6 py-3 border-t shrink-0', immersive ? 'border-brand-800' : 'border-border-subtle')}>
+                  <p className={cn('text-lg sm:text-xl font-extrabold tracking-tight truncate', immersive ? 'text-white' : 'text-text-main')}>
                     {current.composition_name}
                     {showNames && current.student_name && (
-                      <span className="text-text-muted font-medium"> — {t('common.by').toLowerCase()} {current.student_name}</span>
+                      <span className={cn('font-medium', immersive ? 'text-brand-300' : 'text-text-muted')}> — {t('common.by').toLowerCase()} {current.student_name}</span>
                     )}
                   </p>
                   {reviewMeta && (
-                    <p className="text-text-muted text-sm mt-0.5">
+                    <p className={cn('text-sm mt-0.5', immersive ? 'text-brand-300' : 'text-text-muted')}>
                       {reviewMeta.formattedDate}
                       <span className="mx-2">·</span>
                       {reviewMeta.trackCount} {t('common.tracks').toLowerCase()}
