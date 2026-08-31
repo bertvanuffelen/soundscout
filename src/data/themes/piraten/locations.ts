@@ -86,7 +86,7 @@ export const locations: Location[] = [
       { id: 'voodoohut-ketel', x: 50.9, y: 55.9, sampleId: 'voodoohut-ketel', visualHint: 'pulse' },
       { id: 'voodoohut-botten', x: 38.7, y: 49.7, sampleId: 'voodoohut-botten', visualHint: 'pulse' },
       { id: 'voodoohut-gong', x: 73.4, y: 42.3, sampleId: 'voodoohut-gong', visualHint: 'pulse' },
-      { id: 'voodoohut-windgong', x: 3.2, y: 34.4, sampleId: 'voodoohut-windgong', visualHint: 'pulse' },
+      { id: 'voodoohut-windgong', x: 6, y: 34.4, sampleId: 'voodoohut-windgong', visualHint: 'pulse' },
       { id: 'voodoohut-fluister', x: 14, y: 44, sampleId: 'voodoohut-fluister', visualHint: 'pulse' },
       { id: 'voodoohut-druppel', x: 35.2, y: 14.1, sampleId: 'voodoohut-druppel', visualHint: 'pulse' },
       { id: 'voodoohut-raaf', x: 70.8, y: 16.7, sampleId: 'voodoohut-raaf', visualHint: 'pulse' },
