@@ -510,6 +510,8 @@ export function LocationEditor() {
                 hotspots={hotspots}
                 onDelete={handleDeleteHotspot}
                 onEdit={handleEditHotspot}
+                themeId={themeId}
+                locationId={locationId}
               />
             </section>
 
