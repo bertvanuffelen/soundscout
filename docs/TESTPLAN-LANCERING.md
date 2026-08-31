@@ -46,15 +46,46 @@ verwijzen naar de uitgewerkte punten verderop.
 - [ ] 8. **N6-rest.** De **uitgelogde** CTA's op `/teacher`, desktop én mobiel,
       plus de stappensectie-tekst
 
-**Apparaat en losse eindjes**
-- [ ] 9. **O3.** Bewaarcode → podium (bewaar online in Piraten, open de code in
-      een ander profiel, kies Podium)
-- [ ] 10. **O5.** Touch-targets op tablet/Chromebook, vooral de clip-resizegreep
-- [ ] 11. **O6.** Landscape-hint in portret
-- [ ] 12. **O4-rest.** Startscherm en podium op 375px
-- [ ] 13. **O2-rest.** Tabblad "In bewerking" bij een klas met écht WIP-werk
-- [ ] 14. **B1-rest.** Deel-album met inhoud openen — klaar om te proberen met
-      code **E4KXCNYQ** ("De Vriendelijke Kraken", 3 composities)
+**Apparaat en losse eindjes — 31-8 door Claude nagelopen**
+- [x] 9. **[C] O3. Bewaarcode → podium — reproduceert NIET.** Compositie gemaakt
+      in Piraten, online bewaard (code `7UMTPY`), code geopend in een apart
+      browserprofiel → "Gevonden! Waar wil je heen?" → **Podium**: het podium
+      opent schoon, de compositie is geladen (1 clip) en de naam
+      "Testcompositie O3" staat in het naamveld. **Geen enkele modal**
+      (`document.querySelectorAll('[role=dialog]')` leeg). De bewaar-modal die
+      je vorige keer zag, komt hier niet terug.
+- [~] 10. **[C] O5. Touch-targets — gemeten, één echte bevinding.** Op
+      tabletbreedte (768px) is **24 van de 30** klikbare elementen in de studio
+      kleiner dan 44px. Het spoor-volume is **23 × 16 px** (het kleinste), de
+      werkbalkknoppen boven de tijdlijn zijn **32 × 32**, de afspeelpositie-greep
+      **44 × 16**. De clip-resizegreep is **8 × 39 px**.
+      → **Echte bevinding:** die greep is `w-4 sm:w-2` — 16px onder de
+      `sm`-breakpoint (640px), 8px erboven. Een tablet of Chromebook is bréder
+      dan 640px en krijgt dus juist de **smalle** variant, terwijl dat de
+      apparaten zijn waar je met een vinger werkt. Beter zou zijn te schakelen
+      op `@media (pointer: coarse)` in plaats van op schermbreedte.
+      → **Rest [B]:** of het met een échte vinger werkt, blijft jouw oordeel.
+- [x] 11. **[C] O6. Landscape-hint — werkt volledig.** Verschijnt in portret op
+      map/locatie/studio/podium (`WIDE_SCREENS`), alleen op touch-apparaten;
+      verdwijnt liggend puur via CSS (`landscape:hidden`, gemeten
+      `display: none`); het kruisje zet `soundscout:first-run:landscape-hint` en
+      is daarmee voorgoed weg; komt niet op start of dashboard.
+- [x] 12. **[C] O4-rest. 375px — in orde.** Startscherm én podium: geen
+      horizontale scroll (`scrollWidth` = 375), knoppen op volle breedte, tekst
+      leesbaar. *Kleinigheid:* in de voettekst breekt "Gemaakt door Bert van
+      Uffelen" over vier regels naast de sociale icoontjes. Niet stuk, wel rommelig.
+- [x] 13. **[C] O2-rest. "In bewerking" — bestaat en werkt.** Klas-Test had
+      simpelweg geen WIP-werk. In **Test klas (8257)** staan beide tabs:
+      "Ingeleverd (1)" en "In bewerking (1)", met uitleg, blauwe badge en
+      "Laatst bewerkt: 22 apr, 21:08". Twee klassen hebben WIP-werk: Test klas
+      en Klas 3R.
+- [x] 14. **[C] B1-rest. Deel-album — werkt vanaf een vers profiel.** Code
+      **E4KXCNYQ** in een browser zonder login: "Album van Klas-Test — De
+      Vriendelijke Kraken — 3 composities", gesture-poort, afspelen start
+      (knop wordt "Pauzeren"), geen console-fouten. Dit album is een
+      **storyboard**, waarmee meteen de storyboard-variant van de
+      fullscreen-fix is bevestigd (`bg-brand-900`, witte titel, zijpaneel
+      klapt in).
 
 Punten O7 t/m O12 verderop staan bewust als "mag ná de lancering".
 
@@ -232,6 +263,11 @@ Punten O7 t/m O12 verderop staan bewust als "mag ná de lancering".
 3. ~~**B1 was geen bug** maar een lege opdracht~~ — **waarschuwing gebouwd 31-8**,
    `56aca76`: bij 0 ingeleverde composities mint de deelmodal geen code meer en
    legt hij het verschil tussen opgeslagen en ingeleverd werk uit.
+
+**Nieuw gevonden op 31-8 bij het nalopen van 9 t/m 14:** de clip-resizegreep
+schakelt op schermbreedte (`w-4 sm:w-2`) in plaats van op pointer-type, zodat
+tablets en Chromebooks de smalle 8px-variant krijgen — precies de apparaten waar
+je met een vinger sleept. Zie punt 10 hierboven.
 
 **Nieuw gevonden op 31-8, buiten deze fixronde:** drie paren piraten-geluiden
 zijn byte-identiek onder verschillende namen — `haven-kraan` == `jungle-slang`,
