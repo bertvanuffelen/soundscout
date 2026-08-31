@@ -1422,8 +1422,7 @@
               "type": "heading",
               "text": "Practical"
             },
-            "Sequences belong to the composition: they are included automatically when saving, in the save code, when sharing a listening link and when handing in with a class code. In the MP3 and video export the pattern sounds exactly as it does in the studio. There is nothing separate to store.",
-            "Note: the sequencer is still in development and is off by default. It only appears once the feature has been enabled for your environment."
+            "Sequences belong to the composition: they are included automatically when saving, in the save code, when sharing a listening link and when handing in with a class code. In the MP3 and video export the pattern sounds exactly as it does in the studio. There is nothing separate to store."
           ]
         }
       }
