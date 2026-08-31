@@ -53,8 +53,12 @@ export function LocationEditor() {
     if (!isInitialized) initTheme();
   }, [isInitialized, initTheme]);
 
-  // All locations across all themes
-  const allThemeLocations = getAllLocationsByTheme();
+  // All locations across all themes.
+  // MOET gememoized: dit gaf een verse array bij elke render, waardoor
+  // loadExistingLocation (useCallback) en daarmee de mount-useEffect telkens
+  // opnieuw draaide -> setState -> render -> oneindige lus. De themaregistry is
+  // statisch, dus lege deps kloppen.
+  const allThemeLocations = useMemo(() => getAllLocationsByTheme(), []);
 
   // --- Form state ---
   const [themeId, setThemeId] = useState('basis');
@@ -131,14 +135,24 @@ export function LocationEditor() {
     alert(`Locatie "${locId}" niet gevonden`);
   }, [allThemeLocations, translateKey]);
 
-  // Load location from URL param on mount
+  // Load location from URL param on mount — EXACT ÉÉN KEER.
+  // loadExistingLocation als dependency gebruiken gaf een oneindige lus: die
+  // callback hangt aan translateKey, en `t` uit useTranslation krijgt elke
+  // render een nieuwe identiteit -> effect draait opnieuw -> setState -> render.
+  // Daarom via een ref, met lege deps en een guard tegen StrictMode's dubbele mount.
+  const loadRef = useRef(loadExistingLocation);
+  loadRef.current = loadExistingLocation;
+  const heeftGeladen = useRef(false);
+
   useEffect(() => {
+    if (heeftGeladen.current) return;
     const params = new URLSearchParams(window.location.search);
     const locationParam = params.get('location');
     if (locationParam) {
-      loadExistingLocation(locationParam);
+      heeftGeladen.current = true;
+      loadRef.current(locationParam);
     }
-  }, [loadExistingLocation]);
+  }, []);
 
   // --- Handlers ---
 
