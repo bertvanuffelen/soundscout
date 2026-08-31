@@ -54,7 +54,8 @@ verwijzen naar de uitgewerkte punten verderop.
       "Testcompositie O3" staat in het naamveld. **Geen enkele modal**
       (`document.querySelectorAll('[role=dialog]')` leeg). De bewaar-modal die
       je vorige keer zag, komt hier niet terug.
-- [~] 10. **[C] O5. Touch-targets — gemeten, één echte bevinding.** Op
+- [ ] 10. **[B] O5. Touch-targets — Bert test zelf op een echt apparaat.**
+      Claude heeft alleen gemeten; het oordeel is aan de vinger. Metingen: op
       tabletbreedte (768px) is **24 van de 30** klikbare elementen in de studio
       kleiner dan 44px. Het spoor-volume is **23 × 16 px** (het kleinste), de
       werkbalkknoppen boven de tijdlijn zijn **32 × 32**, de afspeelpositie-greep
@@ -88,6 +89,63 @@ verwijzen naar de uitgewerkte punten verderop.
       klapt in).
 
 Punten O7 t/m O12 verderop staan bewust als "mag ná de lancering".
+
+### Doorloop voor Bert — stap voor stap
+
+Volgorde gekozen zodat je zo min mogelijk wisselt tussen apparaat en inlogstaat.
+
+**A. Server (punt 1, 2 en de helft van 7) — doe dit eerst, 10 min**
+1. Upload de **hele** inhoud van `dist/` naar `ss-dev.techindeles.nl`, inclusief
+   het verborgen bestand **`.htaccess`**. Controleer na afloop in je FTP-client
+   dat `.htaccess` er écht staat (3239 bytes).
+2. Open `https://ss-dev.techindeles.nl` met de console open (F12 → Console).
+   **Goed** = geen rode regels; specifiek géén melding over `script-src`,
+   `connect-src`, `blob:` of `WebAssembly`. Zie je die wél, dan is de
+   `.htaccess` niet meegekomen — dan is de rest van deze lijst zinloos.
+3. Ga naar `https://ss-dev.techindeles.nl/over` (zonder `.html`). De pagina moet
+   laden; wisselt de taalknop naar EN, dan hoort de tekst mee te veranderen.
+
+**B. Je oren (punt 3, 4 en 5) — koptelefoon op, ingelogd, desktop, 45 min**
+4. **Vrij componeren.** Nieuwe compositie → Vrij componeren → Piraten → een
+   locatie → 3 geluiden verzamelen → Naar Studio → sleep 3 clips op de tijdlijn.
+   Selecteer één clip → Effecten → **pitch +12** en **reverb ±60%** → sluiten.
+   Naar Podium → Opslaan & Delen → **Download MP3**. Luister het bestand af:
+   let op klikken, kraken of een vervormde inzet.
+5. **Sequencer erbij (punt 4 en 5).** Terug in diezelfde studio: klik de
+   gestippelde chip **"+ Sequence toevoegen"**, kies per spoor een geluid en
+   klik vakjes aan. Speel af — hoor je het patroon rondlopen? Sleep de gele chip
+   naar de tijdlijn, **dupliceer hem** zodat er twee kopieën staan. Bewerk nu het
+   patroon (vakje aan/uit) en controleer of **beide** kopieën mee veranderen.
+   Exporteer daarna opnieuw als MP3: er mag géén melding "geluid ontbreekt"
+   komen, en het patroon moet in het bestand te horen zijn.
+6. **Storyboard + video.** Nieuwe compositie → Bij een storyboard → kies er een →
+   maak per scène wat geluid → Podium → Opslaan & Delen → **Download MP3** én
+   **Download video**. Bekijk de video: beeldwissels op de juiste momenten, geluid
+   in sync, geen stilte aan het eind.
+7. **Praatplaat.** Via een klascode van een klas met een actieve praatplaat:
+   plek kiezen → componeren → Podium → **Download MP3**.
+8. **Template.** Activeer in een testklas een template-opdracht, open de klascode
+   als leerling, maak hem af → Podium → **Download MP3**.
+
+**C. Mail en uitgelogde staat (punt 6, 7-rest en 8) — 15 min**
+9. Zet in Supabase de **Site URL** op het domein dat je test. Vraag daarna een
+   verse wachtwoord-reset aan en klik de link **meteen**: je moet op hetzelfde
+   domein op het resetscherm landen.
+10. Stuur één testmail naar **hello@soundscout.nl** en controleer of hij aankomt.
+11. Log uit. Open `/teacher` op desktop én op 375px. Controleer de CTA's in
+    uitgelogde staat en lees de stappensectie na op fouten.
+
+**D. Tablet of Chromebook (punt 10) — 10 min**
+12. Open de studio met een compositie waar minstens één clip op staat.
+    Probeer met je **vinger**: (a) de knoppen in de werkbalk boven de tijdlijn
+    (32 × 32 px), (b) het **spoor-volume** links van elk spoor (23 × 16 px —
+    de kleinste), en (c) de **resizegreep** rechts op een geselecteerde clip
+    (8 × 39 px op een tablet). Noteer per onderdeel of het in één poging lukt.
+
+**E. Onderweg, gratis meegenomen**
+13. Zit je toch in een presentatie met een praatplaat of storyboard: druk één
+    keer op de **fullscreen-knop**. Verwacht: alleen het beeld op een donkere
+    achtergrond, geen witte balken links en rechts.
 
 ---
 
