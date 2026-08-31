@@ -20,6 +20,46 @@ niet). Twee browserprofielen: docent in de één, leerling in incognito.
 
 ---
 
+## Checklist: wat er nog te doen is (14 punten, 31-8)
+
+Alles wat Claude kon nakijken is afgevinkt. Dit is wat overblijft. De nummers
+verwijzen naar de uitgewerkte punten verderop.
+
+**Eerst op de server — zonder dit is de rest zinloos**
+- [ ] 1. Verse `dist/` geüpload, **inclusief de verborgen `.htaccess`** (blok 0)
+- [ ] 2. Console leeg bij openen: geen CSP-melding over `script-src`,
+      `connect-src` of `blob:`, geen WebAssembly-fout (blok 0)
+
+**Je oren — het grootste blok**
+- [ ] 3. **N3.** Alle exports, alle vier de vormen (vrij · template · storyboard ·
+      praatplaat), elk als MP3 én video; minstens één met pitch +12 en reverb
+- [ ] 4. **N2-rest.** Compositie mét sequence exporteren, MP3 én video: geen
+      "geluid ontbreekt"-melding, patroon hoorbaar in het bestand
+- [ ] 5. **N1-rest.** Hoor je het sequencer-patroon, en veranderen álle geplaatste
+      kopieën mee als je het patroon later bewerkt?
+
+**Mail en de uitgelogde staat**
+- [ ] 6. **O1.** Verse wachtwoord-reset aanvragen en meteen klikken; vooraf de
+      Site URL op het testdomein zetten
+- [ ] 7. **N4-rest.** `/over` op de server (rewrite werkt alleen mét `.htaccess`)
+      + één testmail naar hello@soundscout.nl
+- [ ] 8. **N6-rest.** De **uitgelogde** CTA's op `/teacher`, desktop én mobiel,
+      plus de stappensectie-tekst
+
+**Apparaat en losse eindjes**
+- [ ] 9. **O3.** Bewaarcode → podium (bewaar online in Piraten, open de code in
+      een ander profiel, kies Podium)
+- [ ] 10. **O5.** Touch-targets op tablet/Chromebook, vooral de clip-resizegreep
+- [ ] 11. **O6.** Landscape-hint in portret
+- [ ] 12. **O4-rest.** Startscherm en podium op 375px
+- [ ] 13. **O2-rest.** Tabblad "In bewerking" bij een klas met écht WIP-werk
+- [ ] 14. **B1-rest.** Deel-album met inhoud openen — klaar om te proberen met
+      code **E4KXCNYQ** ("De Vriendelijke Kraken", 3 composities)
+
+Punten O7 t/m O12 verderop staan bewust als "mag ná de lancering".
+
+---
+
 ## 0. Voorwaarden — zonder dit is de rest zinloos
 
 - [ ] **[B] Verse build vanaf `main`** en de **hele inhoud van `dist/`** geüpload,
