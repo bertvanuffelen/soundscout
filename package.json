@@ -13,7 +13,8 @@
     "test:run": "vitest run",
     "test:coverage": "vitest run --coverage",
     "teksten:export": "node scripts/export-teksten.mjs",
-    "teksten:import": "node scripts/import-teksten.mjs"
+    "teksten:import": "node scripts/import-teksten.mjs",
+    "handboek": "node scripts/generate-handboek.mjs"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",

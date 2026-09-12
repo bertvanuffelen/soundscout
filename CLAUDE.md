@@ -468,4 +468,5 @@ VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts
 | `docs/PLAN-SEQUENCER-FASE2-STUDIO.md` | **Sequencer** — ontwerpbesluiten fase 2 (studio-integratie), status GEBOUWD |
 | `docs/ANIMATIE-RICHTLIJNEN.md` | Regels voor looping uitleg-animaties (één rAF-klok, checklist) |
 | `docs/ANIMATIES-EN-PROMO.md` | Backlog van geplande animaties + promovideo-script |
+| `docs/HANDBOEK-THEMA-STUDIO.md` | **Gegenereerd** leesboek van de drie thema-skills (`npm run handboek`) — bron is `.claude/skills/`, nooit hier bewerken |
 | `soundscout-prd.md` | Product requirements document |
