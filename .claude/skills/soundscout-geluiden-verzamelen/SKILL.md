@@ -125,8 +125,11 @@ akkoorden. Leg per thema vast: één tempo (120 BPM, 4/4), één toonsoort + akk
 en per locatie één instrument-rol. Details in
 [audio-specificaties.md](reference/audio-specificaties.md).
 
-Jouw rol: de specificatie opschrijven in `zoektermen-checklist.md` en het aangeleverde
-bestand door `verwerk-geluid.py --duur-exact 8.0` halen.
+Jouw rol: het contract vastleggen, de Suno-prompts schrijven en het aangeleverde bestand
+verwerken. **Het volledige, thema-onafhankelijke recept staat in
+[reference/muziek-stems.md](reference/muziek-stems.md)** — contract, promptskelet, wat
+Suno wel/niet doet (akkoordenschema's negeert hij; upload-route werkt), wordless koor,
+tempo-correctie.
 
 > Higgsfield kán muziek genereren (`sonilo_music`, 0,5 credit per 8s) — bewust niet
 > ingebouwd. Noem het hooguit als Bert er zelf naar vraagt.

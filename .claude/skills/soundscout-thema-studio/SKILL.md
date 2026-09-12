@@ -130,6 +130,17 @@ mee terug naar fase E.
    Hotspots plaatst Bert daarna zelf in `/editor` en levert de JSON-export aan; jij merget
    alleen de x/y-waarden terug in `locations.ts`.
 
+**Hotspot-merge — hoe en waarom alleen x/y.** Bert opent per locatie
+`/editor?location={locationId}` (het thema wordt er automatisch bij gevonden), sleept,
+klikt **Kopieer JSON** en plakt. De editor heeft een ▶-knop per hotspot om te horen welk
+geluid waar hangt. Uit die export neem je **uitsluitend `hotspots[].x/y`** per `sampleId`
+(regex-vervanging in `locations.ts`, ook in een eventuele worktree-kopie). De rest van de
+export is onbetrouwbaar: `generateJson()` strípt de locatieprefix uit `audioUrl`
+(`haven/meeuwen.mp3` i.p.v. `haven/haven-meeuwen.mp3`), `backgroundImage` staat er als
+`.png` terwijl wij `.jpg` gebruiken, en de i18n-namen zijn kale ids. Controleer na de
+merge in de app of markers dicht bij een rand (x < 6 of > 94, y > 88) niet worden
+afgesneden — de marker is 48px en staat op zijn middelpunt.
+
 ## Bekende beperkingen (eerlijk benoemen)
 
 - Activiteiten tellen op een drukke plaat blijft een schatting — de Bert-gate ondervangt dit.

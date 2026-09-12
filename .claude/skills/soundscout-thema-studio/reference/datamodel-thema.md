@@ -55,8 +55,16 @@ Smile, SmilePlus, Swords, Target, Volume2, Zap`. · `color` (hex; gebruik het 40
 `#34D399` emerald, `#A78BFA` violet, `#38BDF8` sky — varieer binnen een locatie).
 
 **MapConfig**: `backgroundImage: '/images/themes/{themeId}/plattegrond.jpg'` ·
+`backgroundImageByLocale?: { en: '/images/themes/{themeId}/plattegrond-en.jpg' }` ·
 `locationPositions: [{ locationId, x, y, size? }]` (x/y 0-100; `size` `'sm'|'md'|'lg'`,
 default md).
+
+> **De plattegrond is het enige beeld mét tekst** (plaatsnamen), dus hij bestaat in NL én
+> EN. Lever altijd beide (`plattegrond.jpg` + `plattegrond-en.jpg`) en zet de EN-variant in
+> `backgroundImageByLocale`. De app kiest via `getMapBackgroundImage(map, i18n.language)`
+> in `src/data/themes/index.ts` (terugval op NL). Lees in UI-code **nooit**
+> `map.backgroundImage` rechtstreeks — dat gaf bij piraten een Engelse sessie met een
+> Nederlandse kaart, op zes plekken tegelijk.
 
 **PraatplaatImage** (`praatplaatImages.ts`): `id: 'pp-{naam}'` ·
 `nameKey: 'praatplaatImages.{naam}'` · `imageUrl: '/images/praatplaten/{naam}.jpg'` ·

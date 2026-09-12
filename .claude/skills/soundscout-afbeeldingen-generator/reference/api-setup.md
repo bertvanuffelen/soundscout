@@ -13,6 +13,15 @@ meteen bruikbaar — geen API-key, geen login. Alias: `higgs`.
   Check saldo: `higgsfield account status`. **150 credits ≈ 75 generaties ≈ ruwweg
   één compleet thema** (begroot ~50 generaties = 100 credits). Meld Bert bij ~2× budget
   of als het saldo onder ~30 zakt.
+- **Credits verdampen op de 10e van de maand.** Uit de transactiehistorie
+  (`higgsfield account transactions`): elke 10e rond 18:30 NL-tijd wordt het restant
+  afgeboekt ("Subscription Credits Reset") en komt er 150 nieuw. **Ze rollen niet door.**
+  Gevolg: vlak vóór de 10e is zuinig doen zinloos — gebruik wat er is. Vlak ná de 10e heb
+  je het volle budget voor een thema.
+- **Nano Banana Pro heeft exact vier parameters**: `prompt`, `image_references`,
+  `aspect_ratio`, `resolution`. **Geen seed, geen referentie-sterkte.** Consistentie komt
+  dus uitsluitend uit referentiebeelden + prompt; er is geen verborgen knop die we nog niet
+  gebruiken (nagekeken met `higgsfield model get nano_banana_pro`).
 - De skill roept dit aan via `scripts/genereer-afbeelding-higgsfield.py` (wrapper om de
   CLI: create → wait → download + manifest-log). Referenties en edit-bronnen zijn lokale
   paden; de CLI uploadt ze automatisch.
@@ -48,6 +57,20 @@ model (Nano Banana Pro), betaald per beeld i.p.v. per credit.
   de repo**). `scripts/_env.py` leest eerst omgevingsvariabelen, dan dat bestand.
 - Script: `scripts/genereer-afbeelding.py` (zelfde interface, `--style-ref` i.p.v.
   `--image-reference`).
+
+## Andere beeldmodellen in de CLI (opties, geen route)
+
+`higgsfield model list --image` toont meer dan Nano Banana. Nooit gebruikt, wel potentieel
+nuttig — inspecteer met `higgsfield model get <job_type>` vóór gebruik:
+
+| Model | Waarvoor het zou kunnen dienen |
+|---|---|
+| `image_background_remover` | cast-portretten op transparante achtergrond (promo, website, stickers) |
+| `bytedance_image_upscale` | een goedgekeurd beeld opschalen voor print |
+| `flux_kontext` | gerichte edits als Nano Banana een edit blijft verprutsen (tweede mening) |
+| `outpaint` / `flux_2_pro_outpaint` | een beeld verbreden als het kader te krap bleek |
+
+Blijf voor productie bij `nano_banana_pro`: één model per reeks (stijlconsistentie).
 
 ## Kosteninschatting
 
