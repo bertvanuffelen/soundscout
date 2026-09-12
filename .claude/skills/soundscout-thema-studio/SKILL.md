@@ -64,9 +64,27 @@ Sluit af met de intake-wizard (vragen één voor één, niet als formulier):
 4. **Kleurenpalet + belichting** — concreet hex-voorstel voor
    `colors.primary/accent/mapBackground`.
 5. **Omvang**: locaties (advies 4-5), praatplaten (1-2), storyboards (1, met 3-5 frames).
+6. **De cast in dit thema** — de 6 vaste mascotte-robots (Finn, Bolt, Pip, Nova, Ziggy,
+   Mossy; zie de beeld-skill) komen altijd terug. Vraag: welke **thema-flavor** krijgen ze
+   (hoed, sjaal, gereedschap) en welke **rol** speelt elk lid (bij piraten: Finn = held,
+   Ziggy = kapitein, Mossy = schepper). Stel een rolverdeling voor die bij hun karakter
+   past; Bert kiest.
+7. **Muziek** — komt er muziek per locatie? Zo ja: dat vraagt een contract vóór de eerste
+   Suno-prompt (120 BPM ligt vast; toonsoort + basisfeel kiezen; zie
+   `muziek-stems.md` in de geluiden-skill). Zo nee: alleen sfx en sfeerloops.
+8. **Titelbeeld en groepsposter** — wil Bert een titel-/hero-beeld (NL + EN) en een
+   groepsposter van de cast in dit thema? Beide zijn promo-materiaal, geen app-asset;
+   standaard: ja, aan het eind van fase C.
+9. **Seizoen** — is het thema seizoensgebonden (winter, koningsdag)? Dan kent de app een
+   seizoensregel (docent ziet het buiten seizoen met een badge, leerling niet). Vraag het;
+   het bepaalt `season` in het themaplan.
 
 Rode draad vanaf hier: **elk element moet sonificeerbaar zijn** — kan een kind hier een
 compositie bij maken met de samples van dit thema?
+
+**Wat je níét vraagt** (ligt vast, niet onderhandelbaar): álles is een robot · 1920×1080
+JPG · 120 BPM · plattegrond in NL én EN · geen tekst in beeld behalve op de plattegrond en
+een titelbeeld. Noem het hooguit als kader.
 
 ## Fase B — Themaplan
 
@@ -84,8 +102,13 @@ Eisen (details in [reference/datamodel-thema.md](reference/datamodel-thema.md)):
   sample uit het thema** + 3-5 verborgen zoekdetails + shot-keuze.
 - Storyboard: 3-5 frames met per frame de handeling + i18n-labels.
 - Map: lay-outbeschrijving + voorlopige `locationPositions`.
-- Muziek: als er meerdere muziekloops komen, leg tempo/toonsoort/akkoordenschema en de
-  instrument-rol per locatie vast (zie de geluiden-skill).
+- **Cast-rolverdeling**: per cast-lid de thema-flavor + rol (uit fase A, vraag 6). Dit
+  stuurt de praatplaat-, storyboard- en posterprompts.
+- **Muziekcontract** (als er muziek komt): 120 BPM · toonsoort · basisfeel · één
+  instrumentrol per locatie — zie `muziek-stems.md` in de geluiden-skill. Leg vast dat de
+  échte vamp pas bekend is nadat Bert de eerste Suno-groove heeft nagespeeld.
+- **Seizoen**: `season` invullen of expliciet "geen".
+- **Promo-lijst**: titelbeeld NL + EN, groepsposter — ja/nee per stuk.
 - Concept-prompts voor álle beelden — opbouw per beeldtype staat in de beeld-skill.
 
 → **Gate: Bert keurt het themaplan goed voordat er één beeld gegenereerd wordt.**
@@ -105,6 +128,11 @@ Wat jij hier bewaakt:
 - Elk goedgekeurd beeld → juiste `package/`-pad + prompt/job-id/akkoord in `LOGBOEK.md`.
 - **Locatiebeelden**: laat de x/y-schatting per geluidsbron vastleggen — dat wordt het
   hotspot-startadvies in `INTEGRATIE.md`.
+- **Volgorde die werkt**: ankerbeeld → locaties → plattegrond NL → plattegrond EN
+  (gerichte edit: alleen de labels) → praatplaat → storyboards → **titelbeeld NL → EN**
+  (gerichte edit: alleen het woord) → **groepsposter** (alle 6 cast-portretten als
+  referentie + het stijlanker; recept in `stijl-cast.md`). Promo-beelden als laatste,
+  zodat ze de gevestigde stijl van het thema erven.
 
 ## Fase D — Geluidsproductie → soundscout-geluiden-verzamelen
 

@@ -1,18 +1,49 @@
 # Themaplan: {{THEMA_NAAM_NL}} (`{{THEME_ID}}`)
 
 > Status: ☐ concept · ☐ goedgekeurd door Bert (datum: …)
-> Model voor finale beelden: `gemini-3-pro-image` · Begroot aantal generaties: {{N}}
+> Model voor finale beelden: `nano_banana_pro` (Higgsfield CLI) · Begroot aantal generaties: {{N}} (≈ 2,5× het aantal finale beelden; 2 credits per stuk)
 
 ## 1. Concept
 
 - **Onderwerp/wereld**: …
 - **Doelgroep**: groep … · **Drukte-niveau**: …
-- **Personage-conventie**: … (nooit fotorealistische mensen)
+- **Robot-flavor**: … (álles is een robot — vast; hier alleen de thema-flavor: roest,
+  zeewier, houten-been-bouten, wintermuts, …)
 - **Verhaal/rode draad**: …
 - **Naam NL/EN**: … / … · **Beschrijving NL/EN**: … / …
 - **isPublic**: true/false
 - **Kleuren**: primary `#……` · accent `#……` · mapBackground `#……`
-- **Belichting/seizoen**: …
+- **Belichting**: …
+- **Seizoen** (`season`): … / geen
+
+## 1b. Cast-rolverdeling
+
+De 6 vaste mascotte-robots komen in élk thema terug (spec + canonieke portretten in de
+beeld-skill, `stijl-cast.md`). Per lid: thema-flavor + rol in dit thema.
+
+| Lid | Karakter | Flavor in dit thema | Rol / verhaallijn |
+|---|---|---|---|
+| Finn | avontuurlijke leider | … | … |
+| Bolt | sterke enthousiasteling | … | … |
+| Pip | nieuwsgierige energiebom | … | … |
+| Nova | muzikale dromer | … | … |
+| Ziggy | uitvinder | … | … |
+| Mossy | rustige natuurliefhebber | … | … |
+
+## 1c. Muziekcontract (alleen als er muziek per locatie komt)
+
+Recept: `muziek-stems.md` in de geluiden-skill. Vul in vóór de eerste Suno-prompt.
+
+- **Tempo**: 120 BPM (vast) · **Looplengte**: 4 maten = 8,000 s
+- **Toonsoort**: … · **Vamp zoals Suno 'm werkelijk speelde**: … (pas invullen na de
+  eerste groove — Suno negeert opgegeven schema's)
+- **Basisfeel**: half-time / straight / double-time · **Later**: …
+- **Instrumentrol per locatie**: … = … · … = …
+
+## 1d. Promo (geen app-assets)
+
+- **Titelbeeld** NL: ☐ · EN: ☐ (titel exact: "…" / "…", letterstijl: …)
+- **Groepsposter** cast in dit thema: ☐
 
 ## 2. Locaties ({{AANTAL}} stuks)
 
