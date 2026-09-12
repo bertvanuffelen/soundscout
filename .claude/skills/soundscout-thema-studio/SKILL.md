@@ -32,6 +32,11 @@ de assets maken door de deelskills, en assembleert het pakket.
 De deelskills bevatten de stijlcontracten, checklists, scripts en valkuilen van hun domein —
 dupliceer die kennis hier niet, verwijs ernaar.
 
+**Uitgewerkt voorbeeld**: [reference/voorbeeld-piraten.md](reference/voorbeeld-piraten.md)
+laat zien hoe een compleet thema eruitzag, met per beslissing de reden en of die generiek
+of thema-specifiek was. **Leen de redenering, niet de keuzes** — een nieuw thema krijgt een
+eigen wereld, palet en muziek.
+
 ## Setup (elke sessie)
 
 - Werkmap per thema: `.thema-studio/{themeId}/` in de repo-root met `themaplan.md`,
