@@ -1,5 +1,6 @@
 /**
- * Piraten Theme (Monkey Island-sfeer) — visueel geïntegreerd; audio volgt.
+ * Piraten Theme (Monkey Island-sfeer) — visueel en hotspots af; 12 geluiden zijn
+ * nog dummy-tonen (9 sfx + 3 loops), zie BRONNEN.md.
  */
 
 import type { ThemeConfig } from '../types';
@@ -11,7 +12,10 @@ export const piratenTheme: ThemeConfig = {
   id: 'piraten',
   name: 'themes.piraten.name',
   description: 'themes.piraten.description',
-  isPublic: true, // besluit 18-7: thema is compleet (22 echte geluiden) en gaat publiek mee
+  // Besluit Bert 6-10: verborgen tot alle geluiden op orde zijn (12 dummy-tonen).
+  // Verbergt het thema én zijn storyboards/praatplaat uit alle kiezers; lopende
+  // opdrachten en ?theme=piraten blijven gewoon werken.
+  isPublic: false,
 
   locations,
   samples,

@@ -11,7 +11,7 @@
  */
 
 import { praatplaatImages, isAvailableForTeacher } from './praatplaatImages';
-import { getAllLocationsByTheme } from './themes';
+import { getAllLocationsByTheme, isThemeVisible } from './themes';
 
 export interface PraatplaatCatalogEntry {
   /** Stabiele referentie (voor React-keys). */
@@ -32,6 +32,8 @@ export function getPraatplaatCatalog(): PraatplaatCatalogEntry[] {
 
   // 1. Universele bibliotheek
   for (const img of praatplaatImages.filter(isAvailableForTeacher)) {
+    // Thema-loze afbeeldingen ('general') altijd; thema-gebonden alleen als dat thema zichtbaar is
+    if (img.themeId && img.themeId !== 'general' && !isThemeVisible(img.themeId)) continue;
     entries.push({
       ref: img.id,
       nameKey: img.nameKey,
@@ -43,6 +45,7 @@ export function getPraatplaatCatalog(): PraatplaatCatalogEntry[] {
 
   // 2. Thema-locatie-afbeeldingen
   for (const group of getAllLocationsByTheme()) {
+    if (!isThemeVisible(group.themeId)) continue;
     for (const loc of group.locations) {
       entries.push({
         ref: `${group.themeId}:${loc.id}`,

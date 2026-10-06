@@ -179,6 +179,15 @@ export interface StoryboardWithTheme {
 }
 
 /**
+ * Is dit thema zichtbaar in kiezers? Verborgen thema's (`isPublic: false`)
+ * vallen samen met hun storyboards en praatplaten uit alle kiezers; laden via
+ * een lopende opdracht, een bewaarcode of ?theme= blijft werken.
+ */
+export function isThemeVisible(themeId: string | null | undefined): boolean {
+  return !!themeId && !!themes[themeId]?.isPublic;
+}
+
+/**
  * Alle compositie-afbeeldingen (single-image storyboards) over alle thema's heen.
  * Gebruik in `ImagePickerModal` zodat de leerling direct een afbeelding kiest;
  * het thema (en dus de geluiden) volgt impliciet uit `storyboard.themeId`.
@@ -191,7 +200,7 @@ export function getAllCompositionImages(): StoryboardWithTheme[] {
 
   for (const img of praatplaatImages.filter(isAvailableForStudent)) {
     const themeId = img.themeId;
-    if (!themeId || !themes[themeId]) continue;
+    if (!themeId || !themes[themeId]?.isPublic) continue;
     const virtualStoryboard: Storyboard = {
       id: img.id,
       themeId,
@@ -220,7 +229,7 @@ export function getAllMultiImageStoryboards(): StoryboardWithTheme[] {
   for (const sb of allStoryboards) {
     if (sb.images.length <= 1) continue;
     const theme = themes[sb.themeId];
-    if (!theme) continue;
+    if (!theme?.isPublic) continue;
     result.push({ themeId: theme.id, themeName: theme.name, storyboard: sb });
   }
   return result;
