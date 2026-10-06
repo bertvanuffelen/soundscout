@@ -83,7 +83,7 @@ Login: [https://supabase.com/dashboard](https://supabase.com/dashboard)
 
 ### Migraties
 
-SQL-bestanden in `supabase/migrations/`, genummerd 002 t/m 012. Bij database-wijzigingen: nieuw bestand met volgend nummer. Altijd RLS policies toevoegen bij nieuwe tabellen.
+SQL-bestanden in `supabase/migrations/`, genummerd 002 t/m 035 (stand 06-10: alles toegepast, laatste = 035 op 25-07; pg_cron `soundscout-cleanup` draait dagelijks 03:00). Bij database-wijzigingen: nieuw bestand met volgend nummer. Altijd RLS policies toevoegen bij nieuwe tabellen.
 
 ### Auth-URL's (wachtwoord-reset + bevestigingsmails) — moet kloppen per domein
 

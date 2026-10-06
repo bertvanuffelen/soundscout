@@ -1,4 +1,58 @@
-# Testplan zachte lancering — 1 september 2026
+# Testplan zachte lancering — 1 september 2026 (verschoven naar 27 oktober)
+
+## Stand 06-10 — de kortste lijst vóór de lancering van 27-10
+
+> **Waarom deze sectie.** De lancering is vier à vijf keer verschoven omdat de
+> testronde te groot was om in één blok af te maken. Op 06-10 is alles hieronder
+> tegen de code, de testsuite (409 tests) en de database gelegd. Wat Claude al
+> heeft geverifieerd of wat door automatische tests gedekt is, staat niet meer in
+> Tier 1. **Lanceerdomein: soundscout.nl** (besluit Bert 06-10). Gecontroleerd op
+> 06-10: soundscout.nl draait al de build van `main` van 05-10 (dezelfde
+> bundelhashes als de lokale `dist/`), en de CSP uit `.htaccess` komt mee in de
+> response-header. Alleen het verbergen van piraten (06-10) vraagt nog één nieuwe
+> build en upload.
+> Het oude telpunt "21 punten" uit de takenlijst is nergens in dit plan terug te
+> vinden en vervalt.
+
+### Tier 1: lanceerblokker (±75 min, allemaal Bert, op soundscout.nl)
+
+| # | Test | Min | Wat breekt er als het faalt |
+|---|---|---|---|
+| 1 | Zodra de piraten-verberging op `main` staat: verse `npm run build` en `dist/` uploaden, **inclusief de verborgen `.htaccess`** (3239 bytes). *De build van 05-10 met CSP staat er al.* | 10 | Zonder `.htaccess` vallen pitch-bake, het export-vangnet en de limiter stil uit (de valkuil van 13-8). |
+| 2 | Incognito met de console open: geen CSP- of WebAssembly-meldingen. Speel een gepitchte clip: `Master-limiter actief`, géén `Pitch-bake niet beschikbaar` (`HANDLEIDING-BEHEER.md` §bovenaan). Open ook `/over`. | 5 | Exports met glitches, of een 404 op de contactpagina. Dit is alleen op de server te zien. |
+| 3 | **SSDEMO**: maak het eerst aan (database-check 06-10: het demo-account op hello@soundscout.nl en de code bestaan nog **niet**). Open daarna uitgelogd `soundscout.nl/?pp-share=SSDEMO` op een laptop en een telefoon; de spots spelen af. | 10 | Dit ís de uitnodiging. |
+| 4 | `/teacher` uitgelogd: de knoppen bovenaan op desktop en op 375 px, plus de tekst van de stappen-sectie (N6-rest). | 5 | Dit is de eerste pagina die elke uitgenodigde docent ziet. |
+| 5 | Eén gecombineerde export: vrije compositie met pitch +12, reverb en een sequence-clip. Dupliceer de clip, pas het patroon aan (alle kopieën moeten meeveranderen), **Download MP3** en luister. Dekt N1-rest, N2-rest en de kern van N3. | 15 | Kapotte export of een vals "geluid ontbreekt". |
+| 6 | Rookproef klascode: leerling in incognito, praatplaat-opdracht, inleveren, en terugzien in de klasweergave. | 10 | De allereerste klasproef van een docent mislukt. |
+| 7 | O1 resetmail: vraag een verse aan en klik hem meteen. **Laat de Site URL staan** (`soundscout.nl`): `auth.ts` stuurt zelf `redirectTo` met het huidige domein mee, en de redirect-lijst is al ingesteld (`HANDLEIDING-BEHEER.md` §Auth). | 5 | Docenten zitten buitengesloten. |
+| 8 | **Nieuw:** een vers docentaccount registreren, van begin tot eind, inclusief de bevestigingsmail. Aanmelden geeft géén `emailRedirectTo` mee (`src/lib/auth.ts:41-49`), dus de link gaat naar de Site URL. Die klopt pas ná stap 1. | 10 | Nieuwe docenten komen nooit binnen. Dit stond in geen enkel testplan (alleen USECASES D4 ⏳). |
+| 9 | Eén testmail naar hello@soundscout.nl. | 3 | Antwoorden van de eerste groep gaan verloren. |
+
+**Let bij SSDEMO op:**
+- 6 tekens wordt in "Ik heb een code" alleen als bewaarcode gezocht (`ShareCodeInput.tsx:82-105`). **Deel daarom altijd de link `?pp-share=SSDEMO`, nooit de losse code.**
+- `share_expires_at` moet op NULL, anders verloopt de code na 30 dagen en wist de nachtelijke opruiming hem.
+- Druk daarna nooit meer op "Deel link" bij die praatplaat: dat zet de vervaldatum terug op +30 dagen.
+- Er geldt een limiet van 30 keer openen per minuut **per code, voor alle bezoekers samen**. Stuur de uitnodiging dus niet in één keer naar een grote groep.
+
+### Tier 2: belangrijk, geen blokker (±60 min)
+
+- **Video-export van een storyboard (10 min).** De videocode is niet meer veranderd sinds de geslaagde luistertest van 24-7.
+- **MP3 van een template en van een praatplaat (10 min).** Dezelfde offline render als Tier 1 #5.
+- **O5 touch op een echte tablet (10 min).** De uitkomst is al bekend: `Clip.tsx:258` geeft `w-4 sm:w-2`, dus tablets krijgen de grijpzone van 8 px. De fix staat in `docs/TODO.md` (TOUCH-GRIP).
+- **Een echte school-Chromebook (10 min):** autoplay en clips slepen (TODO #16).
+- **iPhone/Android snelle check (10 min)** (TODO #MOBILE-AUDIT-BLOKKER).
+- **E13: fullscreen op het digibord (2 min).**
+
+### Tier 3: na de lancering, of vervalt
+
+- **Vervalt (al geverifieerd):** O3, O6, O4-rest, O2-rest, B1, B1-rest, B2 (`744281a`), N5, N7.
+- **Na de lancering:** O7–O12, blok 4 (SEO, de mobiele matrix, de thema-wizard), het restant van de export-audit (#9–#11, #16, M4a, C4) en de footer die op 375 px afbreekt.
+- **De volledige matrix "4 vormen × MP3 en video"** wordt vervangen door Tier 1 #5 plus Tier 2.
+- **Piraten:** sinds 06-10 verborgen (`isPublic: false`, plus de kiezers voor storyboards, afbeeldingen en praatplaten) tot de 12 dummy-tonen vervangen zijn. De "byte-identieke paren" hieronder zijn allemaal dummy's; er staat dus geen verkeerd echt geluid live.
+
+---
+
+## Het oorspronkelijke plan (31-8)
 
 Dit plan vervangt `TESTPLAN-MASTERPLAN.md` voor deze ronde. Dat document is niet
 fout, maar het is geschreven voor de worktree `masterplan-6-weken` (gemerged op
@@ -272,6 +326,7 @@ Volgorde gekozen zodat je zo min mogelijk wisselt tussen apparaat en inlogstaat.
 - [ ] **[B] O1. Verse reset-mail.** Vraag een nieuwe wachtwoord-reset aan en klik
       hem meteen. Je moet op hetzelfde domein op het resetscherm landen. Zet
       vooraf Site URL op het domein dat je test.
+      → *06-10: Site URL **niet** omzetten; `redirectTo` regelt het domein (zie Tier 1 #7).*
 - [x] **[C] O2. E3. Inzendingen in het klaslokaal** — teller **"4 nieuw"** naast
       "Inzendingen van leerlingen"; per inzending de juiste badges: **Nieuw**,
       **Beoordeeld** (met sticker + sterren) en **Beluisterd** (koptelefoon), plus
@@ -279,7 +334,7 @@ Volgorde gekozen zodat je zo min mogelijk wisselt tussen apparaat en inlogstaat.
       → **Restpunt [B]:** het tabblad **"In bewerking"** was in deze klas niet
       zichtbaar — vermoedelijk omdat er geen enkele WIP-inzending is (opgeslagen
       met klascode maar niet ingeleverd). Bevestig met een klas waar dat wél zo is.
-- [ ] **[B] O3. R5-7. Bewaarcode → podium.** Bewaar online in Piraten → open de
+- [x] **[B] O3. R5-7. Bewaarcode → podium.** *(06-10: afgedaan volgens checklist #9 van 31-8 — reproduceert niet.)* Bewaar online in Piraten → open de
       code in een ander profiel → kies Podium. Vorige keer kreeg je daar meteen
       de "bewaar compositie"-modal terwijl je alleen wilde presenteren. Kijk of
       dat nog zo is; zo ja, dan is dat een ontwerpkeuze die we moeten maken,
@@ -291,7 +346,7 @@ Volgorde gekozen zodat je zo min mogelijk wisselt tussen apparaat en inlogstaat.
       tijdlijn, spoor-volume en de clip-resizegreep zijn te raken met een vinger.
       *(De resizegreep is smal — met een muis al lastig te pakken; op touch
       expliciet checken.)*
-- [ ] **[B] O6. I3. Landscape-hint** in portret: banner met draai-icoon in de
+- [x] **[B] O6. I3. Landscape-hint** *(06-10: afgedaan volgens checklist #11 van 31-8.)* in portret: banner met draai-icoon in de
       studio, verdwijnt liggend, kruisje = voorgoed weg, niet op start of dashboard.
 
 ### Mag ná de zachte lancering
@@ -331,6 +386,8 @@ je met een vinger sleept. Zie punt 10 hierboven.
 zijn byte-identiek onder verschillende namen — `haven-kraan` == `jungle-slang`,
 `grogkroeg-lach` == `voodoohut-raaf`, `grogkroeg-kroezen` == `voodoohut-fluister`.
 In elk paar staat dus één verkeerd geluid. Piraten is publiek; besluit aan Bert.
+→ *06-10: alle zes zijn dummy-tonen (16-07, d6c85be), niet verkeerd gekoppelde
+echte geluiden. Piraten is sinds 06-10 verborgen tot de geluiden af zijn.*
 
 ---
 

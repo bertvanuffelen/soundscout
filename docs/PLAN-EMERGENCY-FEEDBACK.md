@@ -1,7 +1,7 @@
 # Emergency/Feedback Systeem - Implementatieplan
 
 **Datum:** 2026-02-05
-**Status:** PLAN - Wacht op goedkeuring
+**Status:** GEBOUWD 2026-02-05 (`6ec93a5`) — `src/components/feedback/` (FeedbackModal + FeedbackService via EmailJS), gekoppeld in ErrorBoundary, StartScreen en TeacherLandingPage. Zie TODO.md § Afgerond #15.
 **Prioriteit:** P2 (#15)
 
 ---

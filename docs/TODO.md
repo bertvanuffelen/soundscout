@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-07-30
+**Laatst bijgewerkt**: 2026-10-06 (takencheck tegen de code; zie § Lancering 27-10)
 
 ---
 
@@ -14,6 +14,30 @@
 - **[Idee] Conditionele/lineaire locatie-volgorde** — locaties in een bepaalde volgorde of onder voorwaarden ontgrendelen. *Prioritering-advies: goedkoopst en contained (kaart/locatie-state + unlock-regels); mooie scaffolding/differentiatie voor de docent, maar meer gamification dan muzikaal → secundair.*
 - **[Idee] Muzikale escape room in locaties** — per locatie een puzzel/uitdaging waarbij je geluiden vrijspeelt of verder mag. *Prioritering-advies: hoogste wow/engagement, maar grootste bouw en een héle nieuwe modus i.p.v. uitbreiding; ontwerp-eerst, niet vóór het kernproduct geland is.*
 - Volgorde-advies: eerst de sequencer (muzikale kern), locatie-unlock als goedkope engagement-win ernaast, escape room als grotere ontwerp-gedreven gok later. Ook in Notion To Do (P3, App - SoundScout).
+
+---
+
+## Lancering 27-10 op soundscout.nl — repo-werk (takencheck 06-10)
+
+> Gecontroleerd op 06-10 tegen `main` (cac69b0) en de database. Bert's eigen
+> handelingen (testen, mails, demo aanmaken) staan in zijn `taken.md`, niet hier;
+> de korte testlijst staat in `docs/TESTPLAN-LANCERING.md` § Stand 06-10.
+> **Live:** soundscout.nl draait de build van 05-10 (= `main` cac69b0) met actieve CSP.
+
+**Vóór 27-10 (klein, lanceer-polish):**
+- [x] **PIRATEN-VERBORGEN** — besluit Bert 06-10: `isPublic: false` + nieuwe helper `isThemeVisible()`; afbeeldingen-, storyboard- en praatplaatkiezers slaan verborgen thema's over (`themes/index.ts`, `praatplaatCatalog.ts`, test `themes/__tests__/visibility.test.ts`). Lopende opdrachten (1 actieve Schattenjacht), bewaarcodes en `?theme=piraten` blijven werken. **Nog nodig: build + upload.**
+- [ ] **WORKSHOPS-LINK** — `TeacherLandingPage.tsx:1045` `href` → `https://bertvanuffelen.nl/workshops` (staat sinds kort live, met leerlingenworkshop *Geluidenjagers*) en `teacherLanding.workshops.text` (NL+EN) aanvullen met leerlingen. ~10 min. *(Ook in Berts taken.md.)*
+- [ ] **AUTH-SIGNUP-REDIRECT** (P2) — `signUpTeacher` geeft geen `emailRedirectTo` mee (`src/lib/auth.ts:41-49`); de bevestigingslink valt terug op de Supabase Site URL. Op soundscout.nl klopt dat, maar voeg `emailRedirectTo: window.location.origin` toe zodat ss-dev en elk ander domein ook werken.
+
+**Na de lancering:**
+- [ ] **PIRATEN-AF** — 9 dummy-sfx (kroezen, lach, papegaai, kraan, kraaiennest, apen, slang, fluister, raaf) + 3 dummy-loops (accordeon, zeemanslied, jungletrommels) vervangen; daarna `isPublic: true`, `BRONNEN.md` + `src/data/credits.ts` bijwerken en de verouderde commentaarregels (`piraten/index.ts` kop, `samples.ts:3`, laatste regel `BRONNEN.md`) opschonen. Optioneel: de 11 extra kandidaten van de luisterpagina (vergt sample-entries, hotspots, NL/EN-teksten). Hotspots `schip-kraaiennest` (60,14) en `voodoohut-fluister` (14,44) nog even in de editor nalopen — ze hebben ronde startwaarden.
+- [ ] **TOUCH-GRIP** (P2, = UX-LOOP / testplan O5) — clip-resizegreep schakelt op schermbreedte (`Clip.tsx:258`, `w-4 sm:w-2`) i.p.v. op pointer-type; tablets en Chromebooks krijgen de smalle 8px-variant. Fix: `pointer: coarse`.
+- [ ] **CODE-6-TEKENS** (P3) — een 6-tekencode zoekt in `ShareCodeInput.tsx:82-105` alleen naar een bewaarcode. Terugvallen op `get_shared_praatplaat` maakt de handmatige demo-code SSDEMO ook typbaar (nu alleen via `?pp-share=SSDEMO`).
+- [ ] **EN-LANDING + HREFLANG** (P3) — geen `hreflang`, geen `/en`-route; `index.html`/`teacher.html`/`over.html` zijn `lang="nl"`, sitemap is NL-only. Engels bestaat alleen via browserdetectie. i18n is wél compleet (nl 1723 = en 1723 sleutels, 06-10). *(Ook in Berts taken.md.)*
+- [ ] **RETENTIE-MAIL** (P3) — e-mailwaarschuwing 30 d vóór verwijdering; nu alleen de banner op de klaspagina (`ClassDetail.tsx:331,871`). Vergt edge function + mailprovider. *(Ook in Berts taken.md.)*
+- [ ] **ONBOARDING-NATIVE** (P4) — onboarding-animatie (en inmiddels ook de sequencer-uitleg) draait als iframe (`OnboardingAnimation.tsx:76`); native React-versie is Berts lange-termijnvoorkeur. *(Ook in Berts taken.md.)*
+- [ ] **BRONVERMELDING-BASIS-WINTER** (P4) — alleen piraten heeft `BRONNEN.md` en `THEME_CREDITS` (`credits.ts:66-68`). *(Ook in Berts taken.md.)*
+- [ ] **LESKAART-PDF's** — alle vier ingebouwde leskaarten hebben `pdf: null` (`scripts/les-pages-data.json`); de kolom `pdf_url` bestaat. Bert maakt de PDF's; daarna hier koppelen.
 
 ---
 
@@ -158,7 +182,7 @@ Leerlingen bouwen een herhalend ritmepatroon met hun verzamelde geluiden (1 vakj
 **Nog open (bewust uitgesteld tot ná een klasproef):**
 - [ ] Ingebouwde **leskaart** + `/les/`-pagina (route: compositie bouwen → opslaan als opdracht → promoveren via migratie, net als "Drum beat")
 - [ ] **Tutorial-video** voor leerlingen (7e video) + hoofdstuk in `docs/VIDEO-DRAAIBOEK.md`
-- [ ] Plek op de **publieke docentenpagina** `/teacher` (USP en/of FAQ-vraag; bewust géén vierde compositievorm)
+- [x] Plek op de **publieke docentenpagina** `/teacher` — gebouwd 13-8 (`5c1ac71`: `SequencerSection` + FAQ-vraag)
 - [ ] **Undo/redo** binnen de sequencer-tab (togglen is nu zelf-herstellend)
 - [x] Besluit **dev-vlag weg** — uitgevoerd 9-8 bij de merge naar `main` (`docs/HANDLEIDING-BEHEER.md` §4b)
 - [ ] Optioneel later: **BPM-slider** in het lab (datamodel is er klaar voor), rijen `USECASES-QA.md` + `TESTPLAN-MASTERPLAN.md`, `npm run teksten:export` voor de nieuwe `sequencer.*`-teksten
@@ -313,7 +337,9 @@ Kleine nuisances en consistentie-items. Pak op wanneer in de buurt of bij klacht
 #### #AUDIT-LINT-RESIDUE — Restant lint-errors na pre-release audit
 **Complexiteit:** Medium · **Bron:** Pre-release audit (2026-05-22) · **Type:** Code-kwaliteit · **Status:** Open
 
-Na de pre-release fixes (commits 8a36097 t/m bdaed27) en de aansluitende categorie-1-poets staan er nog ~31 lint-errors. Twee duidelijke clusters; per cluster afzonderlijk te plannen.
+Na de pre-release fixes (commits 8a36097 t/m bdaed27) en de aansluitende categorie-1-poets staan er nog ~31 lint-errors.
+
+> **Gemeten 06-10 (ESLint 9.39):** 25 errors + 5 warnings, allemaal react-hooks — refs 14, set-state-in-effect 9, immutability 1, preserve-manual-memoization 1, exhaustive-deps 5 (warnings). `StorytellingDisplay` staat er niet meer tussen; cluster A betreft nu alleen `StorytellingPanel.tsx:69`. Twee duidelijke clusters; per cluster afzonderlijk te plannen.
 
 **Achtergrond:** ESLint draait nu schoon op `dist`, `.claude/**`, `node_modules/**`, `supabase/**` (Fix 1 van audit). Alle nieuw zichtbare errors zitten in échte `src/`-bestanden. tsc is groen, 227/227 tests groen — geen runtime-bugs, alleen linter-waarschuwingen die fundamenteel architectuur-keuzes raken.
 
