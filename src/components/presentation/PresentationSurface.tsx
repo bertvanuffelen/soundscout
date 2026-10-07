@@ -27,7 +27,8 @@
  *   • `hasVisual` (storyboard/praatplaat/afbeelding) — montagelijn-toggle-knop.
  *   • `showNames` (alles behalve peer) — leerlingnamen.
  *   • defaults in useState: `autoAdvance` (Doorspelen, default UIT), `montageOpen`
- *     (default open in teacher-review), `sidebarOpen` (default open), `announcing`
+ *     (default open in teacher-review), `sidebarOpen` (default open, behalve
+ *     op een smal scherm < 640px: dan dicht en als overlay), `announcing`
  *     (default aan in teacher-present).
  *   • fullscreen-effect: klapt montage + zijpaneel dicht bij het ingaan.
  *   • `immersive` (fullscreen + beeld-vorm + montage dicht) — kaart, beeldzone
@@ -50,6 +51,7 @@ import { Timeline } from '../studio/Timeline';
 import { StoryboardViewer } from '../ui/StoryboardViewer';
 import { PraatplaatMarker } from '../ui/PraatplaatMarker';
 import { PraatplaatSpot } from '../praatplaat/PraatplaatSpot';
+import FittedImage from './FittedImage';
 import { clusterSubmissions, type SpotCluster } from '../../utils/praatplaatClustering';
 import { FeedbackPanel } from '../teacher/FeedbackPanel';
 import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
@@ -93,6 +95,12 @@ interface PresentationSurfaceProps {
 // dat oogde als "grijs laden", wens Bert 18-7), lang genoeg voor concert-gevoel
 const ANNOUNCE_MS = 1200;
 
+/** Smal scherm (onder het sm-breekpunt, 640px): telefoon in portret. */
+function isNarrowViewport(): boolean {
+  return typeof window !== 'undefined' && typeof window.matchMedia === 'function'
+    && window.matchMedia('(max-width: 639px)').matches;
+}
+
 /** Spot-item op het praatplaat-bord: playlist-index + positie (M5) */
 interface BoardSpotItem {
   index: number;
@@ -134,7 +142,10 @@ export function PresentationSurface({
   // "Doorspelen" staat standaard UIT — alleen aan als de docent er bewust op
   // klikt (wens Bert, testronde 6).
   const [autoAdvance, setAutoAdvance] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  // Zijpaneel: standaard open, behalve op een smal scherm (< sm, telefoon) —
+  // daar schuift het als overlay over de kaart en start het dicht
+  // (PRAATPLAAT-MOBIEL, 6-10).
+  const [sidebarOpen, setSidebarOpen] = useState(() => !isNarrowViewport());
   const [showFeedbackRow, setShowFeedbackRow] = useState(false);
   const [feedbackStatusOn, setFeedbackStatusOn] = useState(false);
   // Montagelijn: docent-review start uitgeklapt (opbouw zien), rest ingeklapt
@@ -466,13 +477,7 @@ export function PresentationSurface({
                 {/* Praatplaat-bord (M5): vaste plaat + klikbare spots */}
                 {interactiveBoard && (
                   <div className={cn('min-h-0 relative flex items-center justify-center p-3', immersive ? 'bg-brand-900' : 'bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
-                    <div className="relative h-full">
-                      <img
-                        src={interactiveBoard.imageUrl}
-                        alt={interactiveBoard.name}
-                        className="h-full w-auto max-w-full rounded-xl object-contain"
-                        draggable={false}
-                      />
+                    <FittedImage src={interactiveBoard.imageUrl} alt={interactiveBoard.name} imageClassName="rounded-xl">
                       {boardClusters.map((cluster, i) => (
                         <PraatplaatSpot
                           key={i}
@@ -507,7 +512,7 @@ export function PresentationSurface({
                           </div>
                         </>
                       )}
-                    </div>
+                    </FittedImage>
                   </div>
                 )}
 
@@ -528,18 +533,13 @@ export function PresentationSurface({
                 )}
                 {!storyboard && praatplaatImage && (
                   <div className={cn('min-h-0 relative flex items-center justify-center p-3', immersive ? 'bg-brand-900' : 'bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
-                    {/* h-full op de img: schaalt óók op (digibord); de wrapper
-                        krimpt om het beeld heen zodat de markers blijven kloppen */}
-                    <div className="relative h-full">
-                      <img
-                        src={praatplaatImage}
-                        alt={current.composition_name}
-                        className="h-full w-auto max-w-full rounded-xl object-contain"
-                      />
+                    {/* FittedImage: schaalt óók op (digibord) en de overlay ligt
+                        precies over het beeld — ook op een staand telefoonscherm */}
+                    <FittedImage src={praatplaatImage} alt={current.composition_name} imageClassName="rounded-xl">
                       {praatplaatSpots.map(({ i, pos, id }) => (
                         <PraatplaatMarker key={id} position={pos} active={i === index} />
                       ))}
-                    </div>
+                    </FittedImage>
                   </div>
                 )}
 
@@ -685,7 +685,7 @@ export function PresentationSurface({
 
         {/* Playlist-zijpaneel (licht, mockup-stijl) */}
         {hasPlaylistUi && sidebarOpen && (
-          <aside className="w-64 sm:w-72 shrink-0 bg-bg-surface rounded-2xl my-3 mr-3 shadow-2xl flex flex-col overflow-hidden">
+          <aside className="w-64 sm:w-72 shrink-0 bg-bg-surface rounded-2xl my-3 mr-3 shadow-2xl flex flex-col overflow-hidden max-sm:absolute max-sm:inset-y-0 max-sm:right-0 max-sm:z-30 max-sm:w-[85%]">
             {/* Feedback-status-toggle (alleen docent) */}
             <div className="flex items-center justify-between px-4 pt-3 pb-2 border-b border-border-subtle shrink-0">
               <span className="text-text-main text-sm font-bold inline-flex items-center gap-2">
@@ -726,7 +726,11 @@ export function PresentationSurface({
                 return (
                   <li key={s.id}>
                     <button
-                      onClick={() => goTo(i, isPlaying)}
+                      onClick={() => {
+                        goTo(i, isPlaying);
+                        // Telefoon: paneel ligt óver de plaat — na een keuze dicht
+                        if (isNarrowViewport()) setSidebarOpen(false);
+                      }}
                       aria-current={i === index}
                       className={cn(
                         'w-full text-left px-2.5 py-2 rounded-xl transition-colors flex items-center gap-2.5 border-2',
