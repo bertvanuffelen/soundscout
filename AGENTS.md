@@ -369,3 +369,26 @@ Uitgangspunten voor design:
 Tailwind design tokens uit src/index.css (60-30-10 kleurregel, semantische kleuren).
 Touch-first met 44px minimum targets; sm: breakpoint voor desktop.
 Geen emoji's in UI of code tenzij expliciet gevraagd.
+
+## Kennisdossier — status voor Jarvis
+
+Status, besluiten en test- en uitrolmomenten van SoundScout staan in het
+kennisdossier, zodat Jarvis en andere AI's kunnen zien waar SoundScout staat:
+`/Users/bertvanuffelen/Library/CloudStorage/OneDrive-HogeschoolRotterdam/Kennis/1_ZZP/soundscout/werkdocument.md`
+
+Technische to-do's blijven in `docs/TODO.md` en komen **nooit** in het dossier.
+Berts eigen handelingen (testen, mailen, demo maken) staan in
+`Kennis/taken.md` (project `App Dev`, sub `App - SoundScout`).
+
+**Schrijf naar het dossier bij:**
+- een upload of deploy naar soundscout.nl
+- een testronde (wat getest, wat ging goed, wat faalde)
+- een besluit over scope, planning of lancering
+- een verandering in de stand (bijvoorbeeld: de lanceerdatum verschuift)
+
+**Hoe:** één regel onder `## Logboek` (`**dd-mm-jjjj** — wat — commit-hash`).
+Moet `## Waar het nu staat` of `## Lancering` mee veranderen: leg die wijziging
+eerst aan Bert voor. Een testronde krijgt ook een verslag in
+`bronnen/testverslag-<onderwerp>.md`. Gebruik hiervoor de skill `vastleggen`.
+Kun je de Kennis-map niet bereiken: zeg dat aan het eind van de sessie, en
+schrijf het niet ergens anders.

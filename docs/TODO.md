@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-10-06 (takencheck tegen de code; zie § Lancering 27-10)
+**Laatst bijgewerkt**: 2026-10-07 (stand na de uploads van 06-10 en 07-10; zie § Lancering 27-10)
 
 ---
 
@@ -21,12 +21,12 @@
 
 > Gecontroleerd op 06-10 tegen `main` (cac69b0) en de database. Bert's eigen
 > handelingen (testen, mails, demo aanmaken) staan in zijn `taken.md`, niet hier;
-> de korte testlijst staat in `docs/TESTPLAN-LANCERING.md` § Stand 06-10.
-> **Live:** soundscout.nl draait de build van 05-10 (= `main` cac69b0) met actieve CSP.
+> de korte testlijst staat in `docs/TESTPLAN-LANCERING.md` § Stand 07-10.
+> **Live (gecontroleerd 07-10):** soundscout.nl draait de build van 07-10 (= `main` 952da05) met actieve CSP.
 
 **Vóór 27-10 (klein, lanceer-polish):**
 - [x] **PRAATPLAAT-MOBIEL** — *opgelost 07-10:* nieuw `FittedImage` (contain-fit via ResizeObserver + `utils/fitContain.ts`) zodat spots en markers precies over het beeld liggen; zijpaneel start dicht onder 640 px, schuift er als overlay overheen en sluit na een keuze. Geverifieerd op 375×812, 812×375, 1280×800 (ook met montagelijn) en 3440×1440. Oorspronkelijke melding: gevonden 06-10 bij het testen van SSDEMO (`soundscout.nl/?pp-share=SSDEMO`) op 375 px: (1) het zijpaneel *Inzendingen* staat in de publieke weergave standaard open en knijpt de plaat samen tot een strookje; (2) óók met het paneel dicht staan de spots naast het plaatje — de `interactiveBoard`-weergave in `PresentationSurface` positioneert de spots over het hele (hoge) kader in plaats van over het plaatje zelf (wrapper niet shrink-wrapped op portret). Desktop is goed. Iedereen die de uitnodiging op de telefoon opent, ziet dit.
-- [x] **PIRATEN-VERBORGEN** — besluit Bert 06-10: `isPublic: false` + nieuwe helper `isThemeVisible()`; afbeeldingen-, storyboard- en praatplaatkiezers slaan verborgen thema's over (`themes/index.ts`, `praatplaatCatalog.ts`, test `themes/__tests__/visibility.test.ts`). Lopende opdrachten (1 actieve Schattenjacht), bewaarcodes en `?theme=piraten` blijven werken. **Nog nodig: build + upload.**
+- [x] **PIRATEN-VERBORGEN** — besluit Bert 06-10: `isPublic: false` + nieuwe helper `isThemeVisible()`; afbeeldingen-, storyboard- en praatplaatkiezers slaan verborgen thema's over (`themes/index.ts`, `praatplaatCatalog.ts`, test `themes/__tests__/visibility.test.ts`). Lopende opdrachten (1 actieve Schattenjacht), bewaarcodes en `?theme=piraten` blijven werken. **Live sinds 06-10** (upload Bert).
 - [ ] **WORKSHOPS-LINK** — `TeacherLandingPage.tsx:1045` `href` → `https://bertvanuffelen.nl/workshops` (staat sinds kort live, met leerlingenworkshop *Geluidenjagers*) en `teacherLanding.workshops.text` (NL+EN) aanvullen met leerlingen. ~10 min. *(Ook in Berts taken.md.)*
 - [ ] **AUTH-SIGNUP-REDIRECT** (P2) — `signUpTeacher` geeft geen `emailRedirectTo` mee (`src/lib/auth.ts:41-49`); de bevestigingslink valt terug op de Supabase Site URL. Op soundscout.nl klopt dat, maar voeg `emailRedirectTo: window.location.origin` toe zodat ss-dev en elk ander domein ook werken.
 

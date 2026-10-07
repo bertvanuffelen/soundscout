@@ -1,32 +1,34 @@
 # Testplan zachte lancering — 1 september 2026 (verschoven naar 27 oktober)
 
-## Stand 06-10 — de kortste lijst vóór de lancering van 27-10
+## Stand 07-10 — de kortste lijst vóór de lancering van 27-10
 
 > **Waarom deze sectie.** De lancering is vier à vijf keer verschoven omdat de
 > testronde te groot was om in één blok af te maken. Op 06-10 is alles hieronder
 > tegen de code, de testsuite (409 tests) en de database gelegd. Wat Claude al
 > heeft geverifieerd of wat door automatische tests gedekt is, staat niet meer in
-> Tier 1. **Lanceerdomein: soundscout.nl** (besluit Bert 06-10). Gecontroleerd op
-> 06-10: soundscout.nl draait al de build van `main` van 05-10 (dezelfde
-> bundelhashes als de lokale `dist/`), en de CSP uit `.htaccess` komt mee in de
-> response-header. Alleen het verbergen van piraten (06-10) vraagt nog één nieuwe
-> build en upload.
+> Tier 1. **Lanceerdomein: soundscout.nl** (besluit Bert 06-10).
+> **Live (gecontroleerd 07-10):** soundscout.nl draait de build van `main`
+> `952da05` (07-10): `main-BzBTSxxj.js`, byte-identiek aan de lokale `dist/`, en
+> de CSP uit `.htaccess` komt mee in de response-header. SSDEMO bestaat sinds
+> 06-10 (zie hieronder).
 > Het oude telpunt "21 punten" uit de takenlijst is nergens in dit plan terug te
-> vinden en vervalt.
+> vinden en vervalt. Het verslag per test (datum, wie, bewijs) staat in Berts
+> kennisdossier: `1_ZZP/soundscout/bronnen/testverslag-tier1.md`.
 
-### Tier 1: lanceerblokker (±75 min, allemaal Bert, op soundscout.nl)
+### Tier 1: lanceerblokker (allemaal Bert, op soundscout.nl)
 
-| # | Test | Min | Wat breekt er als het faalt |
-|---|---|---|---|
-| 1 | Zodra de piraten-verberging op `main` staat: verse `npm run build` en `dist/` uploaden, **inclusief de verborgen `.htaccess`** (3239 bytes). *De build van 05-10 met CSP staat er al.* | 10 | Zonder `.htaccess` vallen pitch-bake, het export-vangnet en de limiter stil uit (de valkuil van 13-8). |
-| 2 | Incognito met de console open: geen CSP- of WebAssembly-meldingen. Speel een gepitchte clip: `Master-limiter actief`, géén `Pitch-bake niet beschikbaar` (`HANDLEIDING-BEHEER.md` §bovenaan). Open ook `/over`. | 5 | Exports met glitches, of een 404 op de contactpagina. Dit is alleen op de server te zien. |
-| 3 | **SSDEMO**: maak het eerst aan (database-check 06-10: het demo-account op hello@soundscout.nl en de code bestaan nog **niet**). Open daarna uitgelogd `soundscout.nl/?pp-share=SSDEMO` op een laptop en een telefoon; de spots spelen af. | 10 | Dit ís de uitnodiging. |
-| 4 | `/teacher` uitgelogd: de knoppen bovenaan op desktop en op 375 px, plus de tekst van de stappen-sectie (N6-rest). | 5 | Dit is de eerste pagina die elke uitgenodigde docent ziet. |
-| 5 | Eén gecombineerde export: vrije compositie met pitch +12, reverb en een sequence-clip. Dupliceer de clip, pas het patroon aan (alle kopieën moeten meeveranderen), **Download MP3** en luister. Dekt N1-rest, N2-rest en de kern van N3. | 15 | Kapotte export of een vals "geluid ontbreekt". |
-| 6 | Rookproef klascode: leerling in incognito, praatplaat-opdracht, inleveren, en terugzien in de klasweergave. | 10 | De allereerste klasproef van een docent mislukt. |
-| 7 | O1 resetmail: vraag een verse aan en klik hem meteen. **Laat de Site URL staan** (`soundscout.nl`): `auth.ts` stuurt zelf `redirectTo` met het huidige domein mee, en de redirect-lijst is al ingesteld (`HANDLEIDING-BEHEER.md` §Auth). | 5 | Docenten zitten buitengesloten. |
-| 8 | **Nieuw:** een vers docentaccount registreren, van begin tot eind, inclusief de bevestigingsmail. Aanmelden geeft géén `emailRedirectTo` mee (`src/lib/auth.ts:41-49`), dus de link gaat naar de Site URL. Die klopt pas ná stap 1. | 10 | Nieuwe docenten komen nooit binnen. Dit stond in geen enkel testplan (alleen USECASES D4 ⏳). |
-| 9 | Eén testmail naar hello@soundscout.nl. | 3 | Antwoorden van de eerste groep gaan verloren. |
+| # | Test | Min | Wat breekt er als het faalt | Status (07-10) |
+|---|---|---|---|---|
+| 1 | Verse `npm run build` en `dist/` uploaden, **inclusief de verborgen `.htaccess`** (3239 bytes). | 10 | Zonder `.htaccess` vallen pitch-bake, het export-vangnet en de limiter stil uit (de valkuil van 13-8). | ✓ 06-10 (`ddf9462`) en 07-10 (`952da05`) |
+| 2 | Incognito met de console open: geen CSP- of WebAssembly-meldingen. Speel een gepitchte clip: `Master-limiter actief`, géén `Pitch-bake niet beschikbaar` (`HANDLEIDING-BEHEER.md` §bovenaan). Open ook `/over`. | 5 | Exports met glitches, of een 404 op de contactpagina. Dit is alleen op de server te zien. | ✓ 06-10 |
+| 3 | **SSDEMO** (aangemaakt 06-10: account hello@soundscout.nl, klas *Demo*, praatplaat *Robotfabriek (demo)*, 4 composities, `share_expires_at` NULL). Open uitgelogd `soundscout.nl/?pp-share=SSDEMO` op een laptop en een telefoon; de spots spelen af. | 10 | Dit ís de uitnodiging. | ✓ laptop 06-10 · ✓ 375 px 07-10 na PRAATPLAAT-MOBIEL (browser) · echte telefoon open |
+| 4 | `/teacher` uitgelogd: de knoppen bovenaan op desktop en op 375 px, plus de tekst van de stappen-sectie (N6-rest). | 5 | Dit is de eerste pagina die elke uitgenodigde docent ziet. | open |
+| 5 | Eén gecombineerde export: vrije compositie met pitch +12, reverb en een sequence-clip. Dupliceer de clip, pas het patroon aan (alle kopieën moeten meeveranderen), **Download MP3** en luister. Dekt N1-rest, N2-rest en de kern van N3. | 15 | Kapotte export of een vals "geluid ontbreekt". | open |
+| 6 | Rookproef klascode: leerling in incognito, praatplaat-opdracht, inleveren, en terugzien in de klasweergave. | 10 | De allereerste klasproef van een docent mislukt. | open |
+| 7 | O1 resetmail: vraag een verse aan en klik hem meteen. **Laat de Site URL staan** (`soundscout.nl`): `auth.ts` stuurt zelf `redirectTo` met het huidige domein mee, en de redirect-lijst is al ingesteld (`HANDLEIDING-BEHEER.md` §Auth). | 5 | Docenten zitten buitengesloten. | open — ná #10 |
+| 8 | Een vers docentaccount registreren, van begin tot eind, inclusief de bevestigingsmail. Aanmelden geeft géén `emailRedirectTo` mee (`src/lib/auth.ts:41-49`), dus de link gaat naar de Site URL. | 10 | Nieuwe docenten komen nooit binnen. Dit stond in geen enkel testplan (alleen USECASES D4 ⏳). | ✓ 06-10, afzender nog Supabase → opnieuw ná #10 |
+| 9 | Eén testmail naar hello@soundscout.nl. | 3 | Antwoorden van de eerste groep gaan verloren. | open |
+| 10 | **Nieuw (06-10):** eigen mailserver (SMTP) in het Supabase-dashboard: afzender hello@soundscout.nl, maillimiet omhoog, Nederlandse mailteksten (stappen in Berts taak). | 30 | De ingebouwde mailserver van Supabase verstuurt maar een handvol mails per uur voor het hele project: bij meerdere aanmeldingen of resets in hetzelfde uur komen mails niet aan. | open, gepland 08-10 |
 
 **Let bij SSDEMO op:**
 - 6 tekens wordt in "Ik heb een code" alleen als bewaarcode gezocht (`ShareCodeInput.tsx:82-105`). **Deel daarom altijd de link `?pp-share=SSDEMO`, nooit de losse code.**
