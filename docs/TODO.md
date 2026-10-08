@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-10-07 (stand na de uploads van 06-10 en 07-10; zie § Lancering 27-10)
+**Laatst bijgewerkt**: 2026-10-08 (twee observaties uit Tier 1 #4; zie § Lancering 27-10)
 
 ---
 
@@ -39,6 +39,8 @@
 - [ ] **ONBOARDING-NATIVE** (P4) — onboarding-animatie (en inmiddels ook de sequencer-uitleg) draait als iframe (`OnboardingAnimation.tsx:76`); native React-versie is Berts lange-termijnvoorkeur. *(Ook in Berts taken.md.)*
 - [ ] **BRONVERMELDING-BASIS-WINTER** (P4) — alleen piraten heeft `BRONNEN.md` en `THEME_CREDITS` (`credits.ts:66-68`). *(Ook in Berts taken.md.)*
 - [ ] **LESKAART-PDF's** — alle vier ingebouwde leskaarten hebben `pdf: null` (`scripts/les-pages-data.json`); de kolom `pdf_url` bestaat. Bert maakt de PDF's; daarna hier koppelen.
+- [ ] **TEACHER-HERO-MOBIEL** (P3, gevonden bij Tier 1 #4, 08-10) — op 375 × 812 staat *Bekijk de demo* nét onder de vouw (top 817 px): de onboarding-animatie staat op mobiel bóven de hero-tekst (`src/pages/TeacherLandingPage.tsx`). Overweeg op mobiel tekst + knop eerst, animatie eronder. Geen fout; de knop werkt.
+- [ ] **TEACHER-STAPPEN-TEKST** (P3, gevonden bij Tier 1 #4, 08-10) — "Zo zet je een klas op", stap 2: *Activeer een praatplaat, storyboard of template* noemt vrij componeren niet, terwijl dat een van de vier opdrachttypes is (NL + EN in `teacherLanding.*`).
 
 ---
 
