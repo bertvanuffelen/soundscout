@@ -390,5 +390,9 @@ Berts eigen handelingen (testen, mailen, demo maken) staan in
 Moet `## Waar het nu staat` of `## Lancering` mee veranderen: leg die wijziging
 eerst aan Bert voor. Een testronde krijgt ook een verslag in
 `bronnen/testverslag-<onderwerp>.md`. Gebruik hiervoor de skill `vastleggen`.
+De status per lanceertest staat **alleen** in de kolom *Status* van
+`docs/TESTPLAN-LANCERING.md` (leidend). Werk die bij na een testronde; in het
+dossier staat onder `## Lancering` alleen één telregel ("Tier 1: x van 10 ✓").
+Zet daar nooit weer een eigen statustabel neer.
 Kun je de Kennis-map niet bereiken: zeg dat aan het eind van de sessie, en
 schrijf het niet ergens anders.

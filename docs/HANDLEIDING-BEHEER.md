@@ -2,7 +2,7 @@
 
 Technisch referentiedocument voor de maker/beheerder van SoundScout.
 
-**Laatst bijgewerkt**: 2026-04-15
+**Laatst bijgewerkt**: 2026-10-08 (eigen mailserver, §Auth)
 
 ---
 
@@ -111,6 +111,29 @@ testronde 1 (reset-mail landde op de oude site).
 **Testen:** altijd een **verse** reset-mail aanvragen (oude links zijn eenmalig/
 verlopen) → klik → je moet op hetzelfde domein op het `?screen=reset-password`-
 scherm landen. Wijzigingen propageren ~1 minuut.
+
+### Eigen mailserver (SMTP) — sinds 08-10-2026
+
+Auth-mails (bevestigen, wachtwoord-reset) gaan niet meer via de ingebouwde
+mailserver van Supabase (alleen voor testen, een handvol mails per uur), maar via
+het postvak van `hello@soundscout.nl` bij Strato.
+
+**Supabase dashboard → Authentication → Emails → SMTP Settings:** Custom SMTP aan ·
+afzender `hello@soundscout.nl`, naam `SoundScout` · host `smtp.strato.de`, poort
+`465` · gebruikersnaam `hello@soundscout.nl`, wachtwoord in Berts wachtwoordmanager
+(verandert het wachtwoord van het postvak, pas het dan hier ook aan).
+
+**Authentication → Rate Limits:** *Rate limit for sending emails* = 30 per uur
+(hele project samen).
+
+**Authentication → Emails → Templates:** *Confirm signup* en *Reset Password* in
+het Nederlands, met `{{ .ConfirmationURL }}` en `{{ .Data.display_name }}`. De
+andere templates gebruikt de app niet.
+
+**DNS (Strato):** de mails worden met DKIM ondertekend (selectors
+`strato-dkim-0002`/`-0003`); DMARC staat op `p=reject` en slaagt via DKIM.
+soundscout.nl heeft **geen SPF-record** — geen probleem zolang DKIM klopt.
+Getest 08-10 (registratie + reset): afzender goed, DKIM en DMARC pass.
 
 ### Veelvoorkomende taken
 
