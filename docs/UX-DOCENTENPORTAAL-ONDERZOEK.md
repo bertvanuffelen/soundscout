@@ -3,6 +3,8 @@
 **Datum:** 13-10-2026 · **Branch:** `claude/teacher-portal-ux-research-389785` · **Status:** onderzoek en ontwerp; er is nog niets gebouwd
 **Mockup:** [`docs/mockups/docentenportaal.html`](mockups/docentenportaal.html). Dit is één bestand dat je zonder internet opent. Bij elk scherm staat een notitieveld en met "Exporteer feedback" haal je je notities eruit.
 
+> **Ronde 2 (varianten + screenshots van de huidige app):** zie [UX-DOCENTENPORTAAL-VARIANTEN.md](UX-DOCENTENPORTAAL-VARIANTEN.md) en [`mockups/docentenportaal-varianten.html`](mockups/docentenportaal-varianten.html).
+
 > **Het doel:** een drukke leerkracht zonder muziekachtergrond draait zonder uitleg binnen 2 minuten een les.
 > **Wat dit document is:** een onderzoek met een ontwerpvoorstel. Ik heb geen productiecode, migraties of database veranderd. Bouwen doen we pas na de lancering van 27-10 en na jouw akkoord.
 
