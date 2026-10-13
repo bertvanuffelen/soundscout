@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { submissionSortTime, sortSubmissionsNewestFirst, getSubmissionShape } from '../submissionDisplay';
+import { submissionSortTime, sortSubmissionsNewestFirst, getSubmissionShape, relativeAge } from '../submissionDisplay';
 
 describe('submissionDisplay — volgorde', () => {
   it('gebruikt inleveren > laatst bewerkt > eerste keer opslaan', () => {
@@ -40,5 +40,19 @@ describe('submissionDisplay — vorm', () => {
     expect(getSubmissionShape({ assignment_type: 'template', composition_data: {} })).toBe('template');
     expect(getSubmissionShape({ assignment_type: 'free', composition_data: null })).toBe('free');
     expect(getSubmissionShape({})).toBe('free');
+  });
+});
+
+
+describe('submissionDisplay — relatieve tijd', () => {
+  const now = Date.parse('2026-10-14T12:00:00Z');
+  it('net, minuten, uren, datum', () => {
+    expect(relativeAge(now - 20_000, now)).toEqual({ unit: 'justNow' });
+    expect(relativeAge(now - 8 * 60_000, now)).toEqual({ unit: 'minutes', count: 8 });
+    expect(relativeAge(now - 3 * 3_600_000, now)).toEqual({ unit: 'hours', count: 3 });
+    expect(relativeAge(now - 30 * 3_600_000, now).unit).toBe('date');
+  });
+  it('toekomst telt als net', () => {
+    expect(relativeAge(now + 60_000, now)).toEqual({ unit: 'justNow' });
   });
 });

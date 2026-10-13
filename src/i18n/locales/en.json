@@ -1625,7 +1625,7 @@
       "closeMontage": "Close timeline"
     },
     "peerOverview": {
-      "title": "Feedback overview",
+      "title": "What classmates thought",
       "openButton": "Feedback overview",
       "empty": "No peer reviews yet. Enable \"Peer feedback\" on the active assignment.",
       "loadError": "Could not load peer feedback. Check your connection and try again.",
@@ -1909,6 +1909,126 @@
     "liveSettings": {
       "saved": "Saved",
       "error": "Could not save the setting. Please try again."
+    },
+    "classPage": {
+      "tabs": {
+        "prepare": "1 · Set up",
+        "prepareSub": "choose an assignment",
+        "live": "2 · During the lesson",
+        "liveSub": "who is done?",
+        "review": "3 · Look back",
+        "reviewSub": "earlier work · share"
+      },
+      "activeSince": "Active · since {{date}}",
+      "noActiveTitle": "Nothing is set up for {{className}} yet",
+      "noActiveText": "Students who type code {{code}} can only compose freely right now. Choose an assignment and it will be ready for them.",
+      "chooseAssignment": "Choose an assignment",
+      "present": "Present",
+      "feedback": "Give feedback",
+      "newBadge": "{{count}} new",
+      "codeOnBoard": "On the board",
+      "backToOverview": "Overview",
+      "crumb": "My classes",
+      "prepare": {
+        "ready": "{{name}} is ready.",
+        "change": "Choose another assignment",
+        "studentView": "What students see",
+        "moreOptions": "More options",
+        "stop": "Stop assignment",
+        "stopHint": "students can then only compose freely",
+        "stopButton": "Stop…",
+        "classLabel": "Class",
+        "deleteClass": "Delete class…",
+        "deleteClassTitle": "Delete {{className}}?",
+        "deleteClassBody": "The class, its code and all submissions will be deleted. This cannot be undone."
+      },
+      "live": {
+        "title": "Who is done?",
+        "autoRefresh": "refreshes automatically",
+        "submitted": "handed in",
+        "wip": "still working",
+        "emptySubmitted": "Nothing handed in yet. Put the code on the board: students type {{code}}.",
+        "emptyWip": "Nobody is working yet.",
+        "sortNote": "Newest first, by the moment of handing in. Tap a name to listen and give feedback.",
+        "activeOnlyNote": "Only work for {{name}}. Older work is under Look back.",
+        "lastSaved": "last saved {{time}}"
+      },
+      "status": {
+        "new": "New",
+        "seen": "Listened",
+        "reviewed": "Feedback given",
+        "wip": "Working"
+      },
+      "review": {
+        "title": "(Earlier) assignments",
+        "activeBadge": "active",
+        "count_one": "{{count}} composition",
+        "count_other": "{{count}} compositions",
+        "view": "View",
+        "more": "More actions",
+        "share": "Share with parents (link)",
+        "reuse": "Use again",
+        "remove": "Remove from list",
+        "empty": "No assignments yet.",
+        "peerTitle": "What classmates thought",
+        "peerAll": "View all",
+        "peerEmpty": "No stars from classmates yet. Switch on 'Let classmates listen' under Set up → More options.",
+        "presentAll": "Present all compositions"
+      },
+      "time": {
+        "justNow": "just now",
+        "minutes": "{{count}} min",
+        "hours": "{{count}} h"
+      },
+      "stopTitle": "Stop this assignment?",
+      "stopConfirm": "Students who type code {{code}} can then only compose freely. Work that was already handed in is kept.",
+      "stopAction": "Stop"
+    },
+    "feedbackScreen": {
+      "title": "Give feedback",
+      "back": "Back to the class",
+      "filters": {
+        "todo": "To do",
+        "new": "New",
+        "all": "All"
+      },
+      "assignmentAll": "All assignments",
+      "assignmentLabel": "Assignment",
+      "by": "by {{name}}",
+      "submitted": "handed in · {{time}}",
+      "spot": "spot on the picture",
+      "scene": "Scene {{n}}",
+      "listenHint": "Tap play or drag across the timeline (works with your finger too).",
+      "play": "Play",
+      "pause": "Pause",
+      "loading": "Loading sounds…",
+      "step1": "1. Choose a compliment",
+      "step2": "2. How far along is it?",
+      "step3": "3. A tip",
+      "step3Hint": "(optional)",
+      "levels": {
+        "1": "getting there",
+        "2": "good",
+        "3": "great"
+      },
+      "levelNone": "not chosen yet",
+      "tips": [
+        "Try a moment of silence.",
+        "Let the sound ring out longer.",
+        "Start quietly and build up.",
+        "Repeat your favourite part.",
+        "Does the sound fit your spot?"
+      ],
+      "saveNext": "Save & next",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "needSomething": "Choose at least a compliment or stars.",
+      "studentSees": "The student sees this with their save code on the Stage.",
+      "emptyTitle": "Everything has feedback",
+      "emptyHint": "New submissions appear here automatically.",
+      "pick": "Choose a submission on the left.",
+      "delete": "Delete submission",
+      "noSamples": "This composition has no sounds to play."
     }
   },
   "praatplaatImages": {

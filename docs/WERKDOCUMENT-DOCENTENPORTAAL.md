@@ -36,8 +36,8 @@
 | 2 | Tijdlijn slepen met touch (`Playhead`) | ✅ |
 | 3 | Bouwstenen: vorm-meta met kleuren en iconen, bronnenlijst (platen, verhalen, templates, thema's) los van de oude modal | ✅ |
 | 4 | Wizard: 1 Kies → 2 Controleer & pas aan → 3 Code op het bord (met instellingenpaneel) | ✅ |
-| 5 | Klaspagina met tabs Klaarzetten · Tijdens de les · Terugkijken, plus *Meer opties* en automatisch verversen | ⏳ |
-| 6 | Feedback geven als werklijst (beeld boven de tijdlijn, uitklappen op de telefoon) | ⏳ |
+| 5 | Klaspagina met tabs Klaarzetten · Tijdens de les · Terugkijken, plus *Meer opties* en automatisch verversen | ✅ |
+| 6 | Feedback geven als werklijst (beeld boven de tijdlijn, uitklappen op de telefoon) | ✅ |
 | 7 | Dashboard *Vandaag*, nieuwe klas → wizard, Lesideeën → wizard stap 2 | ⏳ |
 | 8 | Teksten NL + EN, handleiding/woordenlijst, CLAUDE.md | ⏳ |
 | 9 | Eindcontrole: alle flows in de testopstelling, telefoon, digibord, screenshots | ⏳ |
@@ -106,3 +106,28 @@
 - **Testopstelling:** de nep-database activeert leskaarten nu per type en onthoudt de instelling voor klasgenoten. Nieuw script `shoot-custom.mjs` (stappen uit JSON, toont paginafouten).
 - **Visueel gecontroleerd:** stap 1, 2 en 3, het instellingenpaneel en de telefoon (stap 1 en 2, knoppenbalk onderaan). Geen paginafouten.
 - **Poort:** tsc 0 · 429/429 · lint 25/5.
+
+### 14-10-2026 · Stap 5 + 6 — klaspagina in tabs en feedback-werklijst ✅
+- **Klaspagina (`ClassDetail.tsx`, herschreven):**
+  - **Kop:** klascode + *Op het bord*, met daaronder de actieve opdracht met **Presenteren (n)** en **Feedback geven • x nieuw**.
+  - **Tabs:**
+    - *1 Klaarzetten* (`ClassPrepareTab`): de opdracht, *Andere opdracht kiezen* (de wizard), *Zoals leerlingen het zien* en *Meer opties* (uitleg, thema, duur, klasgenoten laten luisteren, opdracht stoppen, klas verwijderen).
+    - *2 Tijdens de les* (`ClassLiveTab`): tellers voor ingeleverd en bezig, tegels met de nieuwste bovenaan. Ververst elke 20 s, alleen als het tabblad zichtbaar is.
+    - *3 Terugkijken* (`ClassReviewTab`): "(Eerdere) opdrachten" met een gekleurd vorm-icoon, *Bekijk* en een ⋯-menu (*Delen met ouders*, *Opnieuw gebruiken*, *Uit de lijst halen*), plus "Wat klasgenoten ervan vonden" (top 3 met trofee/medaille/award-iconen).
+  - De pagina opent vanzelf op *Tijdens de les* als er een opdracht loopt, en anders op *Klaarzetten*. Na de wizard opent hij altijd op *Tijdens de les*.
+  - **Klas zonder opdracht:** één grote knop *Kies een opdracht* en een eerlijke uitleg over vrij componeren.
+  - **Code op het bord** vanuit de kop: `ClassCodeBoard` (zonder stappenbalk) als overlay. Zonder opdracht valt hij terug op de bestaande `ClassCodeOverlay`.
+  - **Zoals leerlingen het zien** (`StudentViewModal`) gebruikt **dezelfde RPC als de leerling** (`get_active_assignment`). Je ziet dus de echte uitleg, ook de ingesloten uitleg van een leskaart.
+  - **Presenteren is ongewijzigd** (keuzemodal, polling, bord). Delen, het praatplaat-bord, de bewaartermijnmelding, verwijderen en opnieuw gebruiken (met vervangbevestiging) zijn allemaal meegenomen.
+  - **Klas verwijderen** kan nu ook vanuit de klas. De gedeelde functie staat in `lib/classes.ts` (`deleteClassById`); `useClasses` gebruikt hem ook.
+  - **Teksten:** de bevestiging bij *Opdracht stoppen* klopt nu ("leerlingen kunnen daarna alleen vrij componeren"). Voorheen stond er dat leerlingen niet meer konden werken.
+- **Feedbackscherm (`FeedbackWorklist.tsx`, nieuw):**
+  - Filters *Nog doen* · *Nieuw* · *Alles* en een opdrachtkeuze, zodat je ook eerdere opdrachten kunt nabespreken.
+  - **Laptop:** lijst links, inzending rechts. **Telefoon:** het veld klapt open onder de kaart en scrolt naar de volgende.
+  - **Beeld boven de tijdlijn:** bij een praatplaat de plaat met een gele stip op de plek van de leerling; bij een storyboard de scènes, waarbij de scène die nu klinkt oplicht.
+  - **Echte audio** via `useCompositionPlayback`, met de alleen-lezen `Timeline` (sleepbaar, touch uit stap 2).
+  - Stickers mét tekst, sterren met betekenis (*op weg · goed · top*), 5 tipzinnen, *Opslaan & volgende* en *Inzending verwijderen* (met bevestiging). Openen telt als "Beluisterd".
+- **Verwijderd (vervangen door de wizard):** `ActivateAssignmentModal`, `LessonCardPickerModal` en `AssignmentTypeCards`. Er verdwijnt geen functie: alles kan nu in de wizard.
+- **Testopstelling:** nep-RPC `get_active_assignment`. Eén vals alarm opgelost: de dev-server had de classes van het nieuwe bestand niet ingelezen (twee kolommen ontbraken). Na een herstart klopte het; de productiebuild scant alle bestanden (controle in stap 9).
+- **Visueel gecontroleerd** (laptop + telefoon): alle tabs, *Meer opties*, het menu, *Zoals leerlingen het zien*, *Op het bord*, feedback bij praatplaat en storyboard, en het uitklappen op de telefoon.
+- **Poort:** tsc 0 · 431/431 · lint 25/5.

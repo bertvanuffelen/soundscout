@@ -9,6 +9,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { getSupabase } from '../lib/supabase';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
+import { deleteClassById } from '../lib/classes';
 
 // Types
 export interface TeacherClass {
@@ -186,20 +187,7 @@ export function useClasses(): UseClassesReturn {
   const deleteClass = async (id: string): Promise<void> => {
     try {
       setOperationError(null);
-      const supabase = await getSupabase();
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error(i18n.t('errors.notLoggedIn'));
-
-      const { error: deleteErr } = await supabase
-        .from('classes')
-        .delete()
-        .eq('id', id)
-        .eq('teacher_id', user.id);
-
-      if (deleteErr) {
-        throw new Error(i18n.t('errors.classes.delete') + ': ' + deleteErr.message);
-      }
+      await deleteClassById(id);
 
       // Verwijder uit lokale state
       setClasses(prev => prev.filter(c => c.id !== id));

@@ -1625,7 +1625,7 @@
       "closeMontage": "Sluit montage"
     },
     "peerOverview": {
-      "title": "Feedback-overzicht",
+      "title": "Wat klasgenoten ervan vonden",
       "openButton": "Feedback-overzicht",
       "empty": "Nog geen beoordelingen van klasgenoten. Zet \"Peer feedback\" aan bij de actieve opdracht.",
       "loadError": "Kon de peer-feedback niet laden. Controleer je verbinding en probeer het opnieuw.",
@@ -1909,6 +1909,126 @@
     "liveSettings": {
       "saved": "Opgeslagen",
       "error": "Kon de instelling niet opslaan. Probeer het opnieuw."
+    },
+    "classPage": {
+      "tabs": {
+        "prepare": "1 · Klaarzetten",
+        "prepareSub": "opdracht kiezen",
+        "live": "2 · Tijdens de les",
+        "liveSub": "wie is klaar?",
+        "review": "3 · Terugkijken",
+        "reviewSub": "eerder werk · delen"
+      },
+      "activeSince": "Nu actief · sinds {{date}}",
+      "noActiveTitle": "Er staat nog niets klaar voor {{className}}",
+      "noActiveText": "Leerlingen die code {{code}} intypen, kunnen nu alleen vrij componeren. Kies een opdracht, dan staat die voor ze klaar.",
+      "chooseAssignment": "Kies een opdracht",
+      "present": "Presenteren",
+      "feedback": "Feedback geven",
+      "newBadge": "{{count}} nieuw",
+      "codeOnBoard": "Op het bord",
+      "backToOverview": "Overzicht",
+      "crumb": "Mijn klassen",
+      "prepare": {
+        "ready": "{{name}} staat klaar.",
+        "change": "Andere opdracht kiezen",
+        "studentView": "Zoals leerlingen het zien",
+        "moreOptions": "Meer opties",
+        "stop": "Opdracht stoppen",
+        "stopHint": "leerlingen kunnen dan alleen vrij componeren",
+        "stopButton": "Stoppen…",
+        "classLabel": "Klas",
+        "deleteClass": "Klas verwijderen…",
+        "deleteClassTitle": "{{className}} verwijderen?",
+        "deleteClassBody": "De klas, de klascode en alle inzendingen worden verwijderd. Dit kun je niet ongedaan maken."
+      },
+      "live": {
+        "title": "Wie is klaar?",
+        "autoRefresh": "ververst vanzelf",
+        "submitted": "ingeleverd",
+        "wip": "nog bezig",
+        "emptySubmitted": "Nog niets ingeleverd. Zet de code op het bord: leerlingen typen {{code}} in.",
+        "emptyWip": "Niemand is nog bezig.",
+        "sortNote": "Nieuwste bovenaan, op het moment van inleveren. Tik op een naam om te luisteren en feedback te geven.",
+        "activeOnlyNote": "Alleen werk bij {{name}}. Ouder werk vind je onder Terugkijken.",
+        "lastSaved": "laatst opgeslagen {{time}}"
+      },
+      "status": {
+        "new": "Nieuw",
+        "seen": "Beluisterd",
+        "reviewed": "Feedback gegeven",
+        "wip": "Bezig"
+      },
+      "review": {
+        "title": "(Eerdere) opdrachten",
+        "activeBadge": "nu actief",
+        "count_one": "{{count}} compositie",
+        "count_other": "{{count}} composities",
+        "view": "Bekijk",
+        "more": "Meer acties",
+        "share": "Delen met ouders (link)",
+        "reuse": "Opnieuw gebruiken",
+        "remove": "Uit de lijst halen",
+        "empty": "Nog geen opdrachten.",
+        "peerTitle": "Wat klasgenoten ervan vonden",
+        "peerAll": "Bekijk alles",
+        "peerEmpty": "Nog geen sterren van klasgenoten. Zet 'Klasgenoten laten luisteren' aan onder Klaarzetten → Meer opties.",
+        "presentAll": "Alle composities presenteren"
+      },
+      "time": {
+        "justNow": "net",
+        "minutes": "{{count}} min",
+        "hours": "{{count}} uur"
+      },
+      "stopTitle": "Opdracht stoppen?",
+      "stopConfirm": "Leerlingen die code {{code}} intypen, kunnen daarna alleen vrij componeren. Het werk dat al is ingeleverd blijft bewaard.",
+      "stopAction": "Stoppen"
+    },
+    "feedbackScreen": {
+      "title": "Feedback geven",
+      "back": "Terug naar de klas",
+      "filters": {
+        "todo": "Nog doen",
+        "new": "Nieuw",
+        "all": "Alles"
+      },
+      "assignmentAll": "Alle opdrachten",
+      "assignmentLabel": "Opdracht",
+      "by": "door {{name}}",
+      "submitted": "ingeleverd · {{time}}",
+      "spot": "plek op de plaat",
+      "scene": "Scène {{n}}",
+      "listenHint": "Tik op afspelen of sleep over de tijdlijn (werkt ook met je vinger).",
+      "play": "Afspelen",
+      "pause": "Pauze",
+      "loading": "Geluiden laden…",
+      "step1": "1. Kies een compliment",
+      "step2": "2. Hoe ver is het?",
+      "step3": "3. Een tip",
+      "step3Hint": "(mag leeg blijven)",
+      "levels": {
+        "1": "op weg",
+        "2": "goed",
+        "3": "top"
+      },
+      "levelNone": "nog niet gekozen",
+      "tips": [
+        "Probeer eens een stil moment.",
+        "Laat het geluid langer doorklinken.",
+        "Begin rustig en bouw op.",
+        "Herhaal je mooiste stukje.",
+        "Past het geluid bij jouw plek?"
+      ],
+      "saveNext": "Opslaan & volgende",
+      "saving": "Opslaan…",
+      "saved": "Opgeslagen",
+      "needSomething": "Kies minstens een compliment of sterren.",
+      "studentSees": "De leerling ziet dit met de bewaarcode op het Podium.",
+      "emptyTitle": "Alles heeft feedback",
+      "emptyHint": "Nieuwe inzendingen verschijnen hier vanzelf.",
+      "pick": "Kies links een inzending.",
+      "delete": "Inzending verwijderen",
+      "noSamples": "Deze compositie heeft geen geluiden om af te spelen."
     }
   },
   "praatplaatImages": {

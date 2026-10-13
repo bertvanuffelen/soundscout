@@ -1,7 +1,7 @@
 /**
  * assignmentTypeMeta — gedeelde presentatie-metadata per opdrachtvorm
  * (icoon + badge-kleur + i18n-label). Gebruikt door LessonCardsTab,
- * LessonCardPickerModal en de opdracht-wizard; los bestand zodat
+ * de klaspagina en de opdracht-wizard; los bestand zodat
  * component-bestanden alleen componenten exporteren (react-refresh).
  *
  * Kleuren per vorm (ontwerp ronde 3b, wens Bert: "kleurnuance zodat ze

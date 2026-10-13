@@ -2,7 +2,7 @@
  * TemplateCard - Kaart voor een template in het docenten dashboard
  *
  * Resource-kaart: toont naam, template-code, beschrijving, lock badges en verwijderen.
- * Activering per klas gaat via ClassDetail → ActivateAssignmentModal.
+ * Activering per klas gaat via de opdracht-wizard (AssignmentWizard).
  */
 
 import { useState, useCallback } from 'react';

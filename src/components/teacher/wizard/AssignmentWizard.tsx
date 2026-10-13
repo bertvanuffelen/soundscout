@@ -7,7 +7,7 @@
  *   2 Controleer & pas aan — het overzicht uit A, vóór de code in beeld komt.
  *   3 Code op het bord  — ClassCodeBoard (B), met instellingen nog te wijzigen.
  *
- * Vervangt de typekaarten, ActivateAssignmentModal, LessonCardPickerModal en
+ * Vervangt de typekaarten, ActivateAssignmentModal en LessonCardPickerModal (verwijderd) en
  * de losse vervangbevestiging op de klaspagina. Activeren gebeurt via
  * wizardActivation (bestaande RPC's, geen migratie).
  */

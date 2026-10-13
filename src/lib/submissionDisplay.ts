@@ -50,3 +50,19 @@ export function getSubmissionShape(s: ShapedSubmission): SubmissionShape {
   if (s.assignment_type === 'template') return 'template';
   return 'free';
 }
+
+export type RelativeAge =
+  | { unit: 'justNow' }
+  | { unit: 'minutes'; count: number }
+  | { unit: 'hours'; count: number }
+  | { unit: 'date'; date: Date };
+
+/** "Hoe lang geleden" voor tegels en lijsten: net / x min / x uur / datum (≥ 24 uur). */
+export function relativeAge(fromMs: number, nowMs: number = Date.now()): RelativeAge {
+  const diffMin = Math.max(0, Math.floor((nowMs - fromMs) / 60_000));
+  if (diffMin < 1) return { unit: 'justNow' };
+  if (diffMin < 60) return { unit: 'minutes', count: diffMin };
+  const hours = Math.floor(diffMin / 60);
+  if (hours < 24) return { unit: 'hours', count: hours };
+  return { unit: 'date', date: new Date(fromMs) };
+}
