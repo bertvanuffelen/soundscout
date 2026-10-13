@@ -38,7 +38,7 @@
 | 4 | Wizard: 1 Kies → 2 Controleer & pas aan → 3 Code op het bord (met instellingenpaneel) | ✅ |
 | 5 | Klaspagina met tabs Klaarzetten · Tijdens de les · Terugkijken, plus *Meer opties* en automatisch verversen | ✅ |
 | 6 | Feedback geven als werklijst (beeld boven de tijdlijn, uitklappen op de telefoon) | ✅ |
-| 7 | Dashboard *Vandaag*, nieuwe klas → wizard, Lesideeën → wizard stap 2 | ⏳ |
+| 7 | Dashboard *Vandaag*, nieuwe klas → wizard, Lesideeën → wizard stap 2 | ✅ |
 | 8 | Teksten NL + EN, handleiding/woordenlijst, CLAUDE.md | ⏳ |
 | 9 | Eindcontrole: alle flows in de testopstelling, telefoon, digibord, screenshots | ⏳ |
 
@@ -131,3 +131,18 @@
 - **Testopstelling:** nep-RPC `get_active_assignment`. Eén vals alarm opgelost: de dev-server had de classes van het nieuwe bestand niet ingelezen (twee kolommen ontbraken). Na een herstart klopte het; de productiebuild scant alle bestanden (controle in stap 9).
 - **Visueel gecontroleerd** (laptop + telefoon): alle tabs, *Meer opties*, het menu, *Zoals leerlingen het zien*, *Op het bord*, feedback bij praatplaat en storyboard, en het uitklappen op de telefoon.
 - **Poort:** tsc 0 · 431/431 · lint 25/5.
+
+### 14-10-2026 · Stap 7 — dashboard *Vandaag* ✅
+- **Kop:** begroeting op het uur ("Goedemorgen, Bert") met de datum. Op de telefoon staan de knoppen nu op een eigen regel boven de titel; voorheen werd de titel afgekapt ("Goede…"). `TeacherPageHeader` wordt overal gedeeld; op de laptop verandert er niets.
+- **Tabs:** *Mijn klassen* · *Lesideeën* · *Eigen materiaal*. Op de telefoon staan ze nu met drie naast elkaar, met het icoon boven het label. Twee tabs (de docentenpagina `/teacher`) houden hun vorm; die pagina is niet aangeraakt.
+- **Mijn klassen (`dashboard/ClassesToday.tsx`):**
+  - Kaart **Nu** met de klas van nu: de laatst geopende klas, en anders de klas met de meeste recente activiteit. Toont de actieve opdracht, het aantal ingeleverd en het aantal nieuw. Drie even grote knoppen: **Open klas** (blauw), **Presenteren**, **Code op het bord**. Zonder opdracht staat er **Opdracht kiezen**.
+  - **Andere klassen** als rijen met code en opdracht (met vorm-icoon), plus *Opdracht kiezen* / *Open klas*.
+  - **Nieuwe klas** met de teller "x van 8 klassen gebruikt". Bij het maximum staat er uitleg in plaats van een knop die vastloopt. Na het aanmaken gaat de docent direct naar de wizard.
+  - **Eerste keer** (nog geen klassen): welkomstkaart, de drie stappen in de originele stijl en een link naar Lesideeën.
+- **Gegevens:** `lib/classOverview.ts` (puur, 6 tests) en `hooks/useClassOverview.ts`. Twee queries voor alle klassen samen (`fetchActiveAssignmentsForClasses` + inzendingen), zonder migratie.
+- **Lesideeën → wizard:** *Zet klaar voor een klas* vraagt alleen nog welke klas (of een nieuwe klas). Daarna opent de wizard op stap 2 *Controleer & pas aan*; er wordt niets meer met één klik blind geactiveerd. Kop en uitleg: "Lesideeën" en "kies er een, kies een klas en controleer wat je leerlingen zien".
+- **Presenteren vanaf het dashboard** opent de klas en direct de bestaande presentatiekeuze.
+- **Verwijderd:** `ClassCard` en `SubmissionCard` (vervangen door de rijen en tegels).
+- **Visueel gecontroleerd:** vandaag, eerste keer, maximum bereikt, telefoon, de klaskeuze bij een les, Lesideeën → stap 2, nieuwe klas → wizard en presenteren.
+- **Poort:** tsc 0 · 437/437 · lint 25/5 (onveranderd).

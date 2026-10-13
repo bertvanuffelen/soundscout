@@ -1,17 +1,18 @@
 /**
- * ActivateLessonCardModal - Activeer een leskaart voor een klas
+ * ActivateLessonCardModal — kies de klas voor een leskaart (vanuit Lesideeën).
  *
- * De docent kiest een bestaande klas óf maakt een nieuwe klas; daarna zet
- * `activateLessonCard` het volledige pakket (type + resource + opdrachtkaart) in
- * één keer klaar. Bij succes toont de modal de klascode.
+ * De docent kiest een bestaande klas óf maakt een nieuwe klas; daarna gaat
+ * het verder in de opdracht-wizard op stap 2 ("Controleer & pas aan") met
+ * deze les al ingevuld, en daarna de code op het bord (ontwerp ronde 3b).
+ * Activeren zelf gebeurt dus niet meer hier.
  */
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Check, Loader2, Plus } from 'lucide-react';
+import { ArrowRight, Loader2, Plus } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import type { LessonCard } from '../../lib/lessonCards';
-import { activateLessonCard, localizeLessonCard } from '../../lib/lessonCards';
+import { localizeLessonCard } from '../../lib/lessonCards';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { logger } from '../../utils/logger';
@@ -22,11 +23,9 @@ interface ActivateLessonCardModalProps {
   lessonCard: LessonCard | null;
   classes: TeacherClass[];
   onCreateClass: (name: string) => Promise<TeacherClass>;
-  /** Aangeroepen na een geslaagde activering (bv. om lijsten te verversen). */
-  onActivated?: () => void;
+  /** Verder naar de wizard (stap 2) voor deze klas */
+  onContinue: (classData: TeacherClass, lessonCard: LessonCard) => void;
 }
-
-type Success = { className: string; classCode: string };
 
 const NEW_CLASS = '__new__';
 
@@ -36,21 +35,19 @@ export function ActivateLessonCardModal({
   lessonCard,
   classes,
   onCreateClass,
-  onActivated,
+  onContinue,
 }: ActivateLessonCardModalProps) {
   const { t } = useTranslation();
   const [choice, setChoice] = useState<string>('');
   const [newName, setNewName] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<Success | null>(null);
 
   useEffect(() => {
     if (!isOpen) return;
     setChoice(classes.length > 0 ? classes[0].id : NEW_CLASS);
     setNewName('');
     setError(null);
-    setSuccess(null);
     setSaving(false);
   }, [isOpen, classes]);
 
@@ -80,11 +77,9 @@ export function ActivateLessonCardModal({
         setSaving(false);
         return;
       }
-      await activateLessonCard(lessonCard.id, target.id);
-      setSuccess({ className: target.name, classCode: target.code });
-      onActivated?.();
+      onContinue(target, lessonCard);
     } catch (err) {
-      logger.error('activateLessonCard failed:', err);
+      logger.error('Klas kiezen/maken voor leskaart mislukt:', err);
       setError(err instanceof Error ? err.message : t('lessonCards.activateModal.error'));
     } finally {
       setSaving(false);
@@ -95,30 +90,9 @@ export function ActivateLessonCardModal({
     <Modal
       isOpen={isOpen}
       onClose={onClose}
-      title={success ? t('lessonCards.activateModal.successTitle') : t('lessonCards.activateModal.title')}
+      title={t('lessonCards.activateModal.chooseClassTitle')}
       size="sm"
     >
-      {success ? (
-        <div className="text-center">
-          <div className="w-12 h-12 rounded-full bg-success-100 text-success-700 flex items-center justify-center mx-auto mb-3">
-            <Check className="w-6 h-6" />
-          </div>
-          <p className="text-text-main text-sm mb-4">
-            {t('lessonCards.activateModal.successBody', { title: lessonTitle, className: success.className })}
-          </p>
-          <div className="inline-flex flex-col items-center gap-1 bg-neutral-100 rounded-xl px-6 py-3 mb-6">
-            <span className="text-xs uppercase tracking-wide text-text-muted">
-              {t('lessonCards.activateModal.codeLabel')}
-            </span>
-            <span className="text-2xl font-mono font-bold tracking-widest text-text-main">
-              {success.classCode}
-            </span>
-          </div>
-          <Button variant="primary" onClick={onClose} className="w-full">
-            {t('common.close')}
-          </Button>
-        </div>
-      ) : (
         <>
           <p className="text-text-muted text-sm mb-4">
             {t('lessonCards.activateModal.description', { title: lessonTitle })}
@@ -193,12 +167,11 @@ export function ActivateLessonCardModal({
               disabled={saving}
               className="flex-1 inline-flex items-center justify-center gap-1"
             >
-              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Check className="w-4 h-4" />}
-              {t('lessonCards.activateModal.confirm')}
+              {t('lessonCards.activateModal.continue')}
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
             </Button>
           </div>
         </>
-      )}
     </Modal>
   );
 }

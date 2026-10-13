@@ -643,9 +643,9 @@
     "historyDeleteConfirm": "\"{{name}}\" disappears from Previous assignments.\n\nYour students' compositions are kept — you'll still find them with the submissions. Note: a shared album of this assignment will stop working."
   },
   "assignmentCards": {
-    "sectionTitle": "My assignment cards",
+    "sectionTitle": "Instructions & assignment cards for students",
     "sectionDescription": "Short explanation cards (title + points) students see before they start. Make one and reuse it across assignments.",
-    "newButton": "New card",
+    "newButton": "New assignment card",
     "empty": "No assignment cards yet. Create one to help students get started.",
     "moreBullets": "+{{count}} more",
     "noBullets": "No points",
@@ -702,7 +702,7 @@
     }
   },
   "lessonCards": {
-    "tabTitle": "Lesson cards",
+    "tabTitle": "Lesson ideas",
     "builtin": {
       "robotfabriek": {
         "title": "Robot factory",
@@ -797,7 +797,7 @@
         ]
       }
     },
-    "sectionSubtitle": "Ready-made packages: pick one and set it up for a class in a single click. Or create your own.",
+    "sectionSubtitle": "Ready-made lessons: pick one, choose a class and check what your students will see. Or create your own.",
     "newButton": "New lesson card",
     "builtinBadge": "Built-in",
     "goalLabel": "Goal.",
@@ -817,7 +817,9 @@
       "error": "Could not activate the lesson card. Please try again.",
       "successTitle": "Lesson card activated!",
       "successBody": "\"{{title}}\" is ready for {{className}}. Students enter the class code.",
-      "codeLabel": "Class code"
+      "codeLabel": "Class code",
+      "chooseClassTitle": "For which class?",
+      "continue": "Continue"
     },
     "editor": {
       "newTitle": "New lesson card",
@@ -886,7 +888,7 @@
     "storyboardFrames_one": "{{count}} image",
     "storyboardFrames_other": "{{count}} images",
     "templatesTitle": "My templates",
-    "templatesDescription": "A pre-built composition that students work with.",
+    "templatesDescription": "First make a starting point yourself; your students then build on it.",
     "templatesEmpty": "No templates yet. Create a composition in SoundScout and save it as an assignment from the stage.",
     "newTemplate": "New template",
     "newTemplateModalTitle": "Create a template",
@@ -1508,8 +1510,8 @@
       "guide": "Guide",
       "myClasses": "My Classes",
       "tabClasses": "My classes",
-      "tabAssignments": "My materials",
-      "tabLessons": "Lesson cards",
+      "tabAssignments": "Own materials",
+      "tabLessons": "Lesson ideas",
       "newClass": "New Class",
       "loading": "Loading classes...",
       "emptyTitle": "No classes yet",
@@ -1677,14 +1679,14 @@
       }
     },
     "createClassModal": {
-      "title": "Create New Class",
+      "title": "New class",
       "nameLabel": "Class name",
       "namePlaceholder": "E.g. Grade 5B or Music Class 2025",
       "nameRequired": "Please enter a class name",
       "nameMinLength": "Class name must be at least 2 characters",
-      "codeInfo": "After creating, you'll get a unique 4-digit code that you can share with your students.",
+      "codeInfo": "You immediately get a 4-digit code. Then you choose an assignment step by step.",
       "cancel": "Cancel",
-      "submit": "Create",
+      "submit": "Create class and choose an assignment",
       "submitLoading": "Creating..."
     },
     "submissionPlayer": {
@@ -2029,6 +2031,39 @@
       "pick": "Choose a submission on the left.",
       "delete": "Delete submission",
       "noSamples": "This composition has no sounds to play."
+    },
+    "today": {
+      "greeting": {
+        "morning": "Good morning, {{name}}",
+        "afternoon": "Good afternoon, {{name}}",
+        "evening": "Good evening, {{name}}"
+      },
+      "now": "Now",
+      "otherClasses": "Other classes",
+      "running": "{{name}} is running",
+      "submitted_one": "{{count}} handed in",
+      "submitted_other": "{{count}} handed in",
+      "noAssignment": "no assignment yet",
+      "nothingReady": "No assignment set up yet",
+      "openClass": "Open class",
+      "present": "Present",
+      "codeOnBoard": "Code on the board",
+      "chooseAssignment": "Choose assignment",
+      "newClass": "New class",
+      "classesUsed": "{{used}} of {{max}} classes used",
+      "maxReachedText": "Delete an old class (in the class under More options) or email us for more room.",
+      "welcomeTitle": "Welcome to SoundScout!",
+      "welcomeText": "Create a class. You get a 4-digit code that your students type in. Then you choose an assignment step by step.",
+      "createFirst": "Create your first class",
+      "lessonsHint": "Rather look around first?",
+      "lessonsLink": "Browse the lesson ideas",
+      "howTitle": "How to set up a class",
+      "how1Title": "Create a class",
+      "how1Desc": "You immediately get a four-digit class code.",
+      "how2Title": "Choose an assignment",
+      "how2Desc": "Build it yourself or use a ready-made lesson; you see right away what the student sees.",
+      "how3Title": "Put the code on the board",
+      "how3Desc": "Students type the code and you see their compositions come in."
     }
   },
   "praatplaatImages": {

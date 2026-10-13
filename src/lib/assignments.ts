@@ -415,6 +415,49 @@ export async function fetchClassAssignment(classId: string): Promise<ClassAssign
   return mapAssignmentRow(data as RawAssignmentRow);
 }
 
+/**
+ * Actieve opdrachten voor meerdere klassen in één query (dashboard "Vandaag").
+ * RLS beperkt de rijen tot de eigen klassen van de docent.
+ */
+export async function fetchActiveAssignmentsForClasses(classIds: string[]): Promise<Map<string, ClassAssignmentRow>> {
+  const result = new Map<string, ClassAssignmentRow>();
+  if (classIds.length === 0) return result;
+  const supabase = await getSupabase();
+  const { data, error } = await withTimeout(
+    supabase
+      .from('class_assignments')
+      .select(`
+        id,
+        class_id,
+        teacher_id,
+        assignment_type,
+        template_id,
+        praatplaat_id,
+        storyboard_ref,
+        free_theme_id,
+        is_active,
+        activated_at,
+        duration_label,
+        card_id,
+        templates:template_id ( name ),
+        praatplaten:praatplaat_id ( name, image_url, theme_id )
+      `)
+      .in('class_id', classIds)
+      .eq('is_active', true),
+    15_000,
+    'errors.networkTimeout'
+  );
+  if (error) {
+    logger.error('fetchActiveAssignmentsForClasses error:', sanitizeError(error));
+    return result;
+  }
+  for (const raw of (data ?? []) as RawAssignmentRow[]) {
+    const row = mapAssignmentRow(raw);
+    result.set(row.classId, row);
+  }
+  return result;
+}
+
 /** Raw shape of a class_assignments select (met FK-joins). */
 interface RawAssignmentRow {
   id: string;

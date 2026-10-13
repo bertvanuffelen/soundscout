@@ -643,9 +643,9 @@
     "historyDeleteConfirm": "\"{{name}}\" verdwijnt uit Eerdere opdrachten.\n\nDe composities van je leerlingen blijven gewoon bewaard — die vind je terug bij de inzendingen. Let op: een gedeeld album van déze opdracht werkt daarna niet meer."
   },
   "assignmentCards": {
-    "sectionTitle": "Mijn opdrachtkaarten",
+    "sectionTitle": "Uitleg & opdrachtkaarten voor leerlingen",
     "sectionDescription": "Korte uitlegkaarten (titel + punten) die leerlingen zien vóór ze beginnen. Maak er een en hergebruik hem bij elke opdracht.",
-    "newButton": "Nieuwe kaart",
+    "newButton": "Nieuwe opdrachtkaart",
     "empty": "Nog geen opdrachtkaarten. Maak er een om leerlingen op weg te helpen.",
     "moreBullets": "+{{count}} meer",
     "noBullets": "Geen punten",
@@ -702,7 +702,7 @@
     }
   },
   "lessonCards": {
-    "tabTitle": "Leskaarten",
+    "tabTitle": "Lesideeën",
     "builtin": {
       "robotfabriek": {
         "title": "Robotfabriek",
@@ -797,13 +797,13 @@
         ]
       }
     },
-    "sectionSubtitle": "Kant-en-klare pakketten: kies er een en zet 'm in één klik klaar voor een klas. Maak ook je eigen leskaarten.",
+    "sectionSubtitle": "Kant-en-klare lessen: kies er een, kies een klas en controleer wat je leerlingen zien. Maak ook je eigen leskaarten.",
     "newButton": "Nieuwe leskaart",
     "builtinBadge": "Ingebouwd",
     "goalLabel": "Lesdoel.",
     "phasesTitle": "Fasen",
     "download": "Download pdf",
-    "activate": "Activeer in klas",
+    "activate": "Zet klaar voor een klas",
     "empty": "Nog geen leskaarten.",
     "deleteTitle": "Leskaart verwijderen",
     "deleteConfirm": "Weet je zeker dat je deze leskaart wilt verwijderen?\nDit heeft geen invloed op al geactiveerde opdrachten.",
@@ -817,7 +817,9 @@
       "error": "Kon de leskaart niet activeren. Probeer het opnieuw.",
       "successTitle": "Leskaart geactiveerd!",
       "successBody": "\"{{title}}\" staat klaar voor {{className}}. Leerlingen typen de klascode in.",
-      "codeLabel": "Klascode"
+      "codeLabel": "Klascode",
+      "chooseClassTitle": "Voor welke klas?",
+      "continue": "Verder"
     },
     "editor": {
       "newTitle": "Nieuwe leskaart",
@@ -886,7 +888,7 @@
     "storyboardFrames_one": "{{count}} beeld",
     "storyboardFrames_other": "{{count}} beelden",
     "templatesTitle": "Mijn templates",
-    "templatesDescription": "Een voorgebouwde compositie waar leerlingen mee aan de slag gaan.",
+    "templatesDescription": "Maak zelf eerst een basis; je leerlingen gaan daar vervolgens mee aan de slag.",
     "templatesEmpty": "Nog geen templates. Maak een compositie in SoundScout en sla deze op als opdracht via het podium.",
     "newTemplate": "Nieuwe template",
     "newTemplateModalTitle": "Template maken",
@@ -1508,8 +1510,8 @@
       "guide": "Handleiding",
       "myClasses": "Mijn Klassen",
       "tabClasses": "Mijn klassen",
-      "tabAssignments": "Mijn materiaal",
-      "tabLessons": "Leskaarten",
+      "tabAssignments": "Eigen materiaal",
+      "tabLessons": "Lesideeën",
       "newClass": "Nieuwe Klas",
       "loading": "Klassen laden...",
       "emptyTitle": "Nog geen klassen",
@@ -1677,14 +1679,14 @@
       }
     },
     "createClassModal": {
-      "title": "Nieuwe Klas Aanmaken",
+      "title": "Nieuwe klas",
       "nameLabel": "Klasnaam",
       "namePlaceholder": "Bijv. Groep 5B of Muziekles 2025",
       "nameRequired": "Voer een klasnaam in",
       "nameMinLength": "Klasnaam moet minimaal 2 tekens zijn",
-      "codeInfo": "Na het aanmaken krijg je een unieke 4-cijferige code die je met je leerlingen kunt delen.",
+      "codeInfo": "Je krijgt meteen een code van 4 cijfers. Daarna kies je stap voor stap een opdracht.",
       "cancel": "Annuleren",
-      "submit": "Aanmaken",
+      "submit": "Maak klas en kies een opdracht",
       "submitLoading": "Aanmaken..."
     },
     "submissionPlayer": {
@@ -2029,6 +2031,39 @@
       "pick": "Kies links een inzending.",
       "delete": "Inzending verwijderen",
       "noSamples": "Deze compositie heeft geen geluiden om af te spelen."
+    },
+    "today": {
+      "greeting": {
+        "morning": "Goedemorgen, {{name}}",
+        "afternoon": "Goedemiddag, {{name}}",
+        "evening": "Goedenavond, {{name}}"
+      },
+      "now": "Nu",
+      "otherClasses": "Andere klassen",
+      "running": "{{name}} loopt",
+      "submitted_one": "{{count}} ingeleverd",
+      "submitted_other": "{{count}} ingeleverd",
+      "noAssignment": "nog geen opdracht",
+      "nothingReady": "Nog geen opdracht klaargezet",
+      "openClass": "Open klas",
+      "present": "Presenteren",
+      "codeOnBoard": "Code op het bord",
+      "chooseAssignment": "Opdracht kiezen",
+      "newClass": "Nieuwe klas",
+      "classesUsed": "{{used}} van {{max}} klassen gebruikt",
+      "maxReachedText": "Verwijder een oude klas (in de klas onder Meer opties) of mail ons voor meer ruimte.",
+      "welcomeTitle": "Welkom bij SoundScout!",
+      "welcomeText": "Maak een klas. Je krijgt een code van 4 cijfers die je leerlingen intypen. Daarna kies je stap voor stap een opdracht.",
+      "createFirst": "Maak je eerste klas",
+      "lessonsHint": "Liever eerst rondkijken?",
+      "lessonsLink": "Bekijk de lesideeën",
+      "howTitle": "Zo zet je een klas op",
+      "how1Title": "Maak een klas",
+      "how1Desc": "Je krijgt meteen een klascode van vier cijfers.",
+      "how2Title": "Kies een opdracht",
+      "how2Desc": "Zelf samenstellen of een kant-en-klare les; je ziet meteen wat de leerling ziet.",
+      "how3Title": "Zet de code op het bord",
+      "how3Desc": "Leerlingen typen de code in en je ziet hun composities binnenkomen."
     }
   },
   "praatplaatImages": {

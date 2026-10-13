@@ -13,6 +13,7 @@ import { useAuth } from '../contexts/useAuth';
 import { useAppStore } from '../stores/appStore';
 import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherResetPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
 import { AssignmentWizard } from '../components/teacher/wizard/AssignmentWizard';
+import { rememberLastClass } from '../hooks/useClassOverview';
 import { LanguageSwitcher } from '../components/ui/LanguageSwitcher';
 import type { TeacherClass } from '../hooks/useClasses';
 
@@ -51,8 +52,11 @@ export function TeacherPage() {
   const [wizard, setWizard] = useState<WizardState | null>(null);
   // Klaspagina openen op een bepaald tabblad (bijv. na de wizard: 'bezig')
   const [classTab, setClassTab] = useState<'klaar' | 'bezig' | 'terug' | null>(null);
+  // Vanaf het dashboard "Presenteren": klas openen en meteen de presentatiekeuze tonen
+  const [autoPresent, setAutoPresent] = useState(false);
 
   const openWizard = (classData: TeacherClass, returnTo: WizardState['returnTo'], lessonCardId: string | null = null) => {
+    rememberLastClass(classData.id);
     setSelectedClass(classData);
     setWizard({ returnTo, lessonCardId });
     setView('wizard');
@@ -154,10 +158,12 @@ export function TeacherPage() {
         key={selectedClass.id}
         classData={selectedClass}
         initialTab={classTab}
+        autoPresent={autoPresent}
         onOpenWizard={() => openWizard(selectedClass, 'class-detail')}
         onBack={() => {
           setSelectedClass(null);
           setClassTab(null);
+          setAutoPresent(false);
           setView('dashboard');
         }}
       />
@@ -167,9 +173,11 @@ export function TeacherPage() {
   // Dashboard view (default when logged in)
   return (
     <TeacherDashboard
-      onSelectClass={(classData, tab) => {
+      onSelectClass={(classData, tab, opts) => {
+        rememberLastClass(classData.id);
         setSelectedClass(classData);
         setClassTab(tab ?? null);
+        setAutoPresent(!!opts?.present);
         setView('class-detail');
       }}
       onOpenWizard={(classData, lessonCardId) => openWizard(classData, 'dashboard', lessonCardId ?? null)}

@@ -24,7 +24,7 @@ import { signOut } from '../../lib/auth';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { CreateClassModal } from './CreateClassModal';
-import { ClassCard } from './ClassCard';
+import { ClassesToday } from './dashboard/ClassesToday';
 import { TemplateCard } from './TemplateCard';
 import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
 import { LessonCardEditorModal } from './LessonCardEditorModal';
@@ -36,8 +36,8 @@ import type { TeacherTemplate } from '../../lib/templates';
 import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs, GuideLink } from './common';
 
 interface TeacherDashboardProps {
-  /** Klas openen, optioneel op een bepaald tabblad */
-  onSelectClass: (classData: TeacherClass, tab?: 'klaar' | 'bezig' | 'terug') => void;
+  /** Klas openen, optioneel op een tabblad en/of meteen presenteren */
+  onSelectClass: (classData: TeacherClass, tab?: 'klaar' | 'bezig' | 'terug', opts?: { present?: boolean }) => void;
   /** Opdracht-wizard openen voor een klas (optioneel met een les al gekozen) */
   onOpenWizard: (classData: TeacherClass, lessonCardId?: string | null) => void;
   onLogout: () => void;
@@ -48,7 +48,7 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
   const { t } = useTranslation();
   const { user } = useAuth();
   const goToTeacherGuide = useAppStore((s) => s.goToTeacherGuide);
-  const { classes, loading, error, createClass, deleteClass, refetch } = useClasses();
+  const { classes, loading, error, createClass, refetch, maxClasses, canCreateClass } = useClasses();
   const {
     templates, loading: templatesLoading, error: templatesError,
     remove: removeTemplate, refetch: refetchTemplates,
@@ -62,7 +62,6 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
   // Statistieken-dashboardje — alleen voor beheerders (VITE_ADMIN_EMAILS)
   const [showStats, setShowStats] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
-  const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
   const [deleteTemplateId, setDeleteTemplateId] = useState<string | null>(null);
   // Opdrachtkaart-editor: showCardEditor stuurt de modal; editCard = te bewerken kaart (null = nieuw)
   const [showCardEditor, setShowCardEditor] = useState(false);
@@ -87,6 +86,9 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
 
   // Haal display name op uit user metadata
   const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Docent';
+  const hour = new Date().getHours();
+  const greetingKey = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
+  const todayLabel = new Date().toLocaleDateString(t('common.dateLocale', { defaultValue: 'nl-NL' }), { weekday: 'long', day: 'numeric', month: 'long' });
 
   const handleLogout = async () => {
     try {
@@ -111,17 +113,6 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
     } catch (err) {
       throw err instanceof Error ? err : new Error(t('teacher.dashboard.createClassError'));
     }
-  };
-
-  const handleDeleteClassConfirm = async () => {
-    if (!deleteClassId) return;
-    try {
-      setActionError(null);
-      await deleteClass(deleteClassId);
-    } catch (err) {
-      setActionError(err instanceof Error ? err.message : t('teacher.dashboard.deleteClassError'));
-    }
-    setDeleteClassId(null);
   };
 
   const handleDeleteTemplateConfirm = async () => {
@@ -158,8 +149,8 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
     <div className="min-h-screen bg-bg-app">
       {/* Header - gedeelde brand-900 shell */}
       <TeacherPageHeader
-        title={t('teacher.dashboard.title')}
-        subtitle={t('teacher.dashboard.welcome', { name: displayName })}
+        title={t(`teacher.today.greeting.${greetingKey}`, { name: displayName })}
+        subtitle={todayLabel}
         onBack={onBack}
         backLabel={t('teacher.common.backToSoundScout')}
         actions={
@@ -207,15 +198,15 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
               icon: BookOpen,
             },
             {
+              id: 'lessons',
+              label: t('teacher.dashboard.tabLessons'),
+              icon: GraduationCap,
+            },
+            {
               id: 'assignments',
               label: t('teacher.dashboard.tabAssignments'),
               count: templates.length + cards.length,
               icon: ClipboardList,
-            },
-            {
-              id: 'lessons',
-              label: t('teacher.dashboard.tabLessons'),
-              icon: GraduationCap,
             },
           ]}
         />
@@ -223,7 +214,7 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
         {/* "Zo werkt het" — inklapbaar, per tab een eigen uitleg
             (testronde 3-wens: materiaal en leskaarten kregen eerst de
             klas-uitleg te zien) */}
-        {(() => {
+        {activeTab !== 'classes' && (() => {
           const setupKey = activeTab === 'assignments'
             ? 'setupMaterials'
             : activeTab === 'lessons'
@@ -235,7 +226,6 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
               className="mb-8"
               title={t(`teacher.dashboard.${setupKey}.title`)}
               storageKey={`ss-teacher-dashboard-${setupKey}`}
-              defaultOpen={setupKey === 'setup' && classes.length === 0}
               steps={[1, 2, 3].map((n) => ({
                 title: t(`teacher.dashboard.${setupKey}.step${n}.title`),
                 description: t(`teacher.dashboard.${setupKey}.step${n}.description`),
@@ -251,75 +241,27 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
           );
         })()}
 
-        {/* ===== Tab: Mijn klassen ===== */}
+        {/* ===== Tab: Mijn klassen → Vandaag (ontwerp ronde 3b) ===== */}
         {activeTab === 'classes' && (
           <>
-            {!loading && classes.length > 0 && (
-              <div className="flex justify-end mb-4">
-                <Button
-                  variant="primary"
-                  size="md"
-                  onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center gap-1 rounded-full"
-                >
-                  <Plus className="w-4 h-4" />
-                  {t('teacher.dashboard.newClass')}
-                </Button>
-              </div>
-            )}
-
             {(error || actionError) && (
               <div className="bg-error-50 border border-error-200 text-error-700 px-4 py-3 rounded-xl mb-4">
                 {error || actionError}
-                <button
-                  onClick={() => { setActionError(null); refetch(); }}
-                  className="ml-2 underline"
-                >
+                <button onClick={() => { setActionError(null); refetch(); }} className="ml-2 underline">
                   {t('common.retry')}
                 </button>
               </div>
             )}
-
-            {loading && (
-              <div className="text-center py-12">
-                <Loader2 className="w-10 h-10 text-accent-500 animate-spin mx-auto mb-4" />
-                <p className="text-text-muted">{t('teacher.dashboard.loading')}</p>
-              </div>
-            )}
-
-            {!loading && classes.length === 0 && (
-              <div className="bg-bg-surface rounded-2xl shadow-lg p-8 text-center">
-                <BookOpen className="w-16 h-16 text-accent-500 mx-auto mb-4" />
-                <h3 className="text-xl font-bold text-text-main mb-2">
-                  {t('teacher.dashboard.emptyTitle')}
-                </h3>
-                <p className="text-text-muted mb-6">
-                  {t('teacher.dashboard.emptyDescription')}
-                </p>
-                <Button
-                  variant="primary"
-                  size="lg"
-                  onClick={() => setShowCreateModal(true)}
-                  className="inline-flex items-center gap-1 rounded-full animate-cta-pulse"
-                >
-                  <Plus className="w-4 h-4" />
-                  {t('teacher.dashboard.createFirstClass')}
-                </Button>
-              </div>
-            )}
-
-            {!loading && classes.length > 0 && (
-              <div className="grid gap-4 sm:grid-cols-2">
-                {classes.map((classData) => (
-                  <ClassCard
-                    key={classData.id}
-                    classData={classData}
-                    onOpen={() => onSelectClass(classData)}
-                    onDelete={() => setDeleteClassId(classData.id)}
-                  />
-                ))}
-              </div>
-            )}
+            <ClassesToday
+              classes={classes}
+              loading={loading}
+              maxClasses={maxClasses}
+              canCreateClass={canCreateClass}
+              onOpenClass={(c, opts) => onSelectClass(c, opts?.present ? 'bezig' : undefined, opts)}
+              onWizard={(c) => onOpenWizard(c)}
+              onNewClass={() => setShowCreateModal(true)}
+              onLessons={() => setActiveTab('lessons')}
+            />
           </>
         )}
 
@@ -478,6 +420,7 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
             classes={classes}
             onCreateClass={createClass}
             initialSelectKey={initialLessonKey}
+            onContinueToWizard={(cls, lessonCardId) => onOpenWizard(cls, lessonCardId)}
           />
         )}
       </main>
@@ -522,34 +465,6 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
               {t('templates.newTemplateModalButton')}
             </Button>
           )}
-        </div>
-      </Modal>
-
-      {/* Verwijder klas bevestiging (UX-DEST-2) */}
-      <Modal
-        isOpen={!!deleteClassId}
-        onClose={() => setDeleteClassId(null)}
-        title={t('teacher.dashboard.deleteClassTitle')}
-        size="sm"
-      >
-        <p className="text-text-muted text-sm mb-6 leading-relaxed whitespace-pre-line">
-          {t('teacher.dashboard.deleteClassConfirm')}
-        </p>
-        <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setDeleteClassId(null)}
-            className="flex-1"
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleDeleteClassConfirm}
-            className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white"
-          >
-            {t('common.delete')}
-          </Button>
         </div>
       </Modal>
 

@@ -56,9 +56,11 @@ interface ClassDetailProps {
   onOpenWizard: () => void;
   /** Openen op een bepaald tabblad (null = automatisch) */
   initialTab?: ClassTab | null;
+  /** Meteen de presentatiekeuze openen (vanaf het dashboard "Presenteren") */
+  autoPresent?: boolean;
 }
 
-export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null }: ClassDetailProps) {
+export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null, autoPresent = false }: ClassDetailProps) {
   const { t, i18n } = useTranslation();
   const { submissions, loading, error, deleteSubmission, setFeedback, markSeen, refetch } = useSubmissions(classData.id);
   const {
@@ -181,6 +183,17 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
     }, 0);
     return () => clearTimeout(timer);
   }, [presentIds, presentMode, activeMatching, submitted]);
+
+  // Vanaf het dashboard: meteen presenteren zodra opdracht + inzendingen geladen zijn
+  const [autoPresentDone, setAutoPresentDone] = useState(!autoPresent);
+  useEffect(() => {
+    if (autoPresentDone || loading || assignmentLoading) return;
+    const timer = setTimeout(() => {
+      setAutoPresentDone(true);
+      if (submitted.length > 0) handlePresentClick();
+    }, 0);
+    return () => clearTimeout(timer);
+  }, [autoPresentDone, loading, assignmentLoading, submitted.length, handlePresentClick]);
 
   // --- Terugkijken ---
   const reviewRows: ReviewRow[] = useMemo(() => {
