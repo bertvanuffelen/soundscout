@@ -142,7 +142,7 @@ Ze staan niet in ronde 1, want ze bleken pas uit de echte schermen:
 | # | Bevinding | Waar | Ernst |
 |---|---|---|---|
 | N1 | **"28 28 compositie"** op de klaskaart en "22 compositie" in de kop van de klas: het getal staat er dubbel en het meervoud werkt niet. De vertaalsleutels gebruiken nog `_plural`, terwijl i18next v25 `_one`/`_other` verwacht. | `ClassCard.tsx:63`, `nl.json` → `teacher.classCard.compositionCount_plural`, `teacher.classDetail.compositionCount_plural` | 2 |
-| N2 | **Thema-keuzelijst toont het verkeerde thema** bij Robotfabriek. Het thema van de praatplaat is `basis`, maar `basis` staat niet in `getTeacherThemes()` (`isPublic: false`). De lijst toont daarom de eerste optie, "De Stad", terwijl leerlingen `basis`-geluiden krijgen. Raakt `ActivateAssignmentModal` en de actieve opdrachtkaart in `ClassDetail`. **Nog te verifiëren in de echte app.** | `ClassDetail.tsx:678`, `ActivateAssignmentModal.tsx:287` | 2 |
+| N2 | ~~Thema-keuzelijst toont het verkeerde thema~~ — **vervallen (ronde 3):** het thema `basis` heet in de app "De Stad", dus de keuzelijst klopt. Zie [UX-DOCENTENPORTAAL-ONTWERP.md §5](UX-DOCENTENPORTAAL-ONTWERP.md). | — | — |
 | N3 | **Max-klassen loopt zichtbaar vast:** *Annuleren* is grijs, de knop blijft op "Aanmaken…" staan en de foutmelding staat áchter de overlay (zie `oud-05`). Bevestigt de oorzaak uit ronde 1. | `TeacherDashboard.tsx:97` | 2 |
 | N4 | **Stickers in de feedbackrij** zijn icoontjes zonder tekst (ster, noot, luidspreker, mensen, lampje, doel). Zonder hover weet je niet wat "Lekker ritme!" is. | `FeedbackPanel.tsx:70` | 2 |
 | N5 | De **praatplaat-spots in de presentatie** zijn luidspreker-icoontjes zonder nummer. Op het bord kun je een spot niet aanwijzen ("nummer 7"), en ook niet koppelen aan de lijst. | `PraatplaatSpot.tsx` | 1 |
@@ -177,7 +177,7 @@ De bouwvolgorde uit ronde 1 (§9) blijft gelden. Stap 7 (opdrachtkiezer) wordt d
 4. **Vraaggestuurde wizard (C):** wil je die testen met een paar docenten voordat we beslissen?
 5. **Les-cockpit:** mag de app de fase zelf bepalen (nog geen opdracht → klaarzetten; opdracht maar geen inzendingen → starten; inzendingen → les bezig; laatste inzending > 1 uur geleden → na de les)?
 6. **Galerijwand:** is "de klas kiest mee welke we horen" didactisch wenselijk, of liever de docent in regie?
-7. **Bevinding N2 (thema-keuzelijst):** moet `basis` gewoon in de docentenlijst, of krijgt Robotfabriek een ander standaardthema?
+7. ~~Bevinding N2~~ — vervallen (zie ronde 3).
 
 ---
 
