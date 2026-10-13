@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1723 teksten in 46 secties._
+_Stand: 1921 teksten in 46 secties._
 
 ## app
 
@@ -673,9 +673,9 @@ _Stand: 1723 teksten in 46 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
-| `assignmentCards.sectionTitle` | Mijn opdrachtkaarten | My assignment cards |
+| `assignmentCards.sectionTitle` | Uitleg & opdrachtkaarten voor leerlingen | Instructions & assignment cards for students |
 | `assignmentCards.sectionDescription` | Korte uitlegkaarten (titel + punten) die leerlingen zien vóór ze beginnen. Maak er een en hergebruik hem bij elke opdracht. | Short explanation cards (title + points) students see before they start. Make one and reuse it across assignments. |
-| `assignmentCards.newButton` | Nieuwe kaart | New card |
+| `assignmentCards.newButton` | Nieuwe opdrachtkaart | New assignment card |
 | `assignmentCards.empty` | Nog geen opdrachtkaarten. Maak er een om leerlingen op weg te helpen. | No assignment cards yet. Create one to help students get started. |
 | `assignmentCards.moreBullets` | +{{count}} meer | +{{count}} more |
 | `assignmentCards.noBullets` | Geen punten | No points |
@@ -717,7 +717,7 @@ _Stand: 1723 teksten in 46 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
-| `lessonCards.tabTitle` | Leskaarten | Lesson cards |
+| `lessonCards.tabTitle` | Lesideeën | Lesson ideas |
 | `lessonCards.builtin.robotfabriek.title` | Robotfabriek | Robot factory |
 | `lessonCards.builtin.robotfabriek.level` | Groep 6–7 | Grade 6–7 |
 | `lessonCards.builtin.robotfabriek.goal` | Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken. | Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere. |
@@ -762,13 +762,13 @@ _Stand: 1723 teksten in 46 secties._
 | `lessonCards.builtin.drumbeat.phases.2.text` | inleveren en de variaties klassikaal vergelijken. | submit and compare the variations in class. |
 | `lessonCards.builtin.drumbeat.phases.3.name` | Evalueren | Evaluate |
 | `lessonCards.builtin.drumbeat.phases.3.text` | bespreek hoe elke variatie het ritme verandert. | discuss how each variation changes the rhythm. |
-| `lessonCards.sectionSubtitle` | Kant-en-klare pakketten: kies er een en zet 'm in één klik klaar voor een klas. Maak ook je eigen leskaarten. | Ready-made packages: pick one and set it up for a class in a single click. Or create your own. |
+| `lessonCards.sectionSubtitle` | Kant-en-klare lessen: kies er een, kies een klas en controleer wat je leerlingen zien. Maak ook je eigen leskaarten. | Ready-made lessons: pick one, choose a class and check what your students will see. Or create your own. |
 | `lessonCards.newButton` | Nieuwe leskaart | New lesson card |
 | `lessonCards.builtinBadge` | Ingebouwd | Built-in |
 | `lessonCards.goalLabel` | Lesdoel. | Goal. |
 | `lessonCards.phasesTitle` | Fasen | Phases |
 | `lessonCards.download` | Download pdf | Download pdf |
-| `lessonCards.activate` | Activeer in klas | Set up for a class |
+| `lessonCards.activate` | Zet klaar voor een klas | Set up for a class |
 | `lessonCards.empty` | Nog geen leskaarten. | No lesson cards yet. |
 | `lessonCards.deleteTitle` | Leskaart verwijderen | Delete lesson card |
 | `lessonCards.deleteConfirm` | Weet je zeker dat je deze leskaart wilt verwijderen?<br>Dit heeft geen invloed op al geactiveerde opdrachten. | Are you sure you want to delete this lesson card?<br>This does not affect assignments that are already active. |
@@ -782,6 +782,8 @@ _Stand: 1723 teksten in 46 secties._
 | `lessonCards.activateModal.successTitle` | Leskaart geactiveerd! | Lesson card activated! |
 | `lessonCards.activateModal.successBody` | "{{title}}" staat klaar voor {{className}}. Leerlingen typen de klascode in. | "{{title}}" is ready for {{className}}. Students enter the class code. |
 | `lessonCards.activateModal.codeLabel` | Klascode | Class code |
+| `lessonCards.activateModal.chooseClassTitle` | Voor welke klas? | For which class? |
+| `lessonCards.activateModal.continue` | Verder | Continue |
 | `lessonCards.editor.newTitle` | Nieuwe leskaart | New lesson card |
 | `lessonCards.editor.editTitle` | Leskaart bewerken | Edit lesson card |
 | `lessonCards.editor.typeLabel` | Type opdracht | Assignment type |
@@ -846,7 +848,7 @@ _Stand: 1723 teksten in 46 secties._
 | `templates.storyboardFrames_one` | {{count}} beeld | {{count}} image |
 | `templates.storyboardFrames_other` | {{count}} beelden | {{count}} images |
 | `templates.templatesTitle` | Mijn templates | My templates |
-| `templates.templatesDescription` | Een voorgebouwde compositie waar leerlingen mee aan de slag gaan. | A pre-built composition that students work with. |
+| `templates.templatesDescription` | Maak zelf eerst een basis; je leerlingen gaan daar vervolgens mee aan de slag. | First make a starting point yourself; your students then build on it. |
 | `templates.templatesEmpty` | Nog geen templates. Maak een compositie in SoundScout en sla deze op als opdracht via het podium. | No templates yet. Create a composition in SoundScout and save it as an assignment from the stage. |
 | `templates.newTemplate` | Nieuwe template | New template |
 | `templates.newTemplateModalTitle` | Template maken | Create a template |
@@ -856,7 +858,7 @@ _Stand: 1723 teksten in 46 secties._
 | `templates.newTemplateModalButton` | Ga naar SoundScout | Go to SoundScout |
 | `templates.typeTemplate` | Template | Template |
 | `templates.typePraatplaat` | Praatplaat | Sound map |
-| `templates.typeStoryboard` | Verhaal in beeld | Story in pictures |
+| `templates.typeStoryboard` | Storyboard | Storyboard |
 | `templates.typeFree` | Vrije compositie | Free composition |
 | `templates.copyCode` | Kopieer code | Copy code |
 | `templates.active` | Actief | Active |
@@ -1016,6 +1018,7 @@ _Stand: 1723 teksten in 46 secties._
 | `errors.classes.notLoggedIn` | Je moet ingelogd zijn om een klas aan te maken | You need to be signed in to create a class |
 | `errors.classes.create` | Kon klas niet aanmaken | Could not create the class |
 | `errors.classes.delete` | Kon klas niet verwijderen | Could not delete the class |
+| `errors.classes.maxReached` | Je hebt het maximum van {{max}} klassen bereikt. Verwijder een oude klas om een nieuwe te maken. | You have reached the maximum of {{max}} classes. Delete an old class to create a new one. |
 | `errors.praatplaten.load` | Kon praatplaten niet laden | Could not load praatplaten |
 | `errors.praatplaten.create` | Kon praatplaat niet aanmaken | Could not create the praatplaat |
 | `errors.praatplaten.activate` | Kon praatplaat niet activeren | Could not activate the praatplaat |
@@ -1046,27 +1049,27 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.getting-started.content.2` | Je hebt een docentenaccount nodig. Registreren gaat via de loginpagina — klik op 'Nog geen account?' en volg de stappen. Je ontvangt een bevestigingsmail; activeer je account via de link daarin. | You need a teacher account. Register via the login page — click 'No account yet?' and follow the steps. You'll receive a confirmation email; activate your account via the link. |
 | `teacher.guide.sections.getting-started.content.3.type` | heading | heading |
 | `teacher.guide.sections.getting-started.content.3.text` | Eerste klas aanmaken | Creating your first class |
-| `teacher.guide.sections.getting-started.content.4` | Na het inloggen maak je je eerste klas aan via de knop 'Nieuwe klas'. Elke klas krijgt automatisch een 4-cijferige klascode. Die klascode deel je met je leerlingen — zij vullen die in op het startscherm om gekoppeld te worden aan jouw klas. | After logging in, create your first class using the 'New class' button. Each class automatically gets a 4-digit class code. Share that code with your students — they enter it on the start screen to be linked to your class. |
+| `teacher.guide.sections.getting-started.content.4` | Na het inloggen maak je je eerste klas aan via de knop 'Maak je eerste klas' (later: 'Nieuwe klas'). Elke klas krijgt automatisch een 4-cijferige klascode. Daarna ga je meteen door naar het klaarzetten van een opdracht. De klascode deel je met je leerlingen — zij vullen die in op het startscherm om gekoppeld te worden aan jouw klas. | After logging in, create your first class with the 'Create your first class' button (later: 'New class'). Each class automatically gets a 4-digit class code. You then go straight on to setting up an assignment. Share the class code with your students — they enter it on the start screen to join your class. |
 | `teacher.guide.sections.getting-started.content.5` | Tip: schrijf de klascode op het digibord of print hem op een werkblad. Leerlingen kunnen ook via een link met ingebouwde klascode binnenkomen (handig als je met een Chromebook-trolley werkt). | Tip: write the class code on the whiteboard or print it on a worksheet. Students can also enter via a link with the class code embedded (handy when using a Chromebook cart). |
 | `teacher.guide.sections.classes.title` | Klassen beheren | Managing classes |
-| `teacher.guide.sections.classes.content.0` | Op je dashboard zie je alle klassen die je hebt aangemaakt. Je kunt maximaal 8 klassen tegelijk hebben (gratis account). Elke klas heeft een eigen klascode die niet verandert — leerlingen hoeven hem dus maar één keer te krijgen. | Your dashboard shows all classes you've created. You can have up to 8 classes simultaneously (free account). Each class has its own class code that doesn't change — students only need it once. |
-| `teacher.guide.sections.classes.content.1` | Een klas verwijderen doe je via het prullenbak-icoon op de klaskaart. Let op: als je een klas verwijdert, worden ook alle bijbehorende inzendingen, templates en praatplaten verwijderd. Deze actie kan niet ongedaan worden gemaakt. | To delete a class, use the trash icon on the class card. Note: deleting a class also removes all related submissions, templates, and praatplaten. This cannot be undone. |
-| `teacher.guide.sections.classes.content.2` | Klik op een klas om de detailweergave te openen. Daar zie je alle inzendingen van leerlingen, kun je opdrachten activeren (template of praatplaat), en zie je compositions die nog 'In bewerking' zijn. | Click a class to open the detail view. There you see all student submissions, can activate assignments (template or praatplaat), and see compositions still 'In progress'. |
+| `teacher.guide.sections.classes.content.0` | Op je dashboard staat bovenaan de klas waar je nu mee bezig bent (de klas die je het laatst opende), met de knoppen 'Open klas', 'Presenteren' en 'Code op het bord'. Daaronder staan je andere klassen. Je kunt maximaal 8 klassen tegelijk hebben (gratis account). Elke klas heeft een eigen klascode die niet verandert — leerlingen hoeven hem dus maar één keer te krijgen. | At the top of your dashboard is the class you are working with now (the one you opened last), with the buttons 'Open class', 'Present' and 'Code on the board'. Your other classes are listed below. You can have up to 8 classes at a time (free account). Each class has its own class code that never changes — students only need to get it once. |
+| `teacher.guide.sections.classes.content.1` | Een klas verwijderen doe je in de klas zelf: tabblad '1 · Klaarzetten' → 'Meer opties' → 'Klas verwijderen'. Let op: als je een klas verwijdert, worden ook alle bijbehorende inzendingen verwijderd. Deze actie kan niet ongedaan worden gemaakt. | To delete a class, open it: tab '1 · Set up' → 'More options' → 'Delete class'. Note: deleting a class also removes all related submissions. This cannot be undone. |
+| `teacher.guide.sections.classes.content.2` | Een klas is ingedeeld zoals een les verloopt, in drie tabbladen: '1 · Klaarzetten' (de opdracht kiezen en controleren), '2 · Tijdens de les' (wie is klaar, wie is nog bezig) en '3 · Terugkijken' (eerdere opdrachten, delen en wat klasgenoten ervan vonden). Bovenaan staan altijd 'Presenteren' en 'Feedback geven'. | A class is organised the way a lesson runs, in three tabs: '1 · Set up' (choose and check the assignment), '2 · During the lesson' (who is done, who is still working) and '3 · Look back' (earlier assignments, sharing and what classmates thought). 'Present' and 'Give feedback' are always at the top. |
 | `teacher.guide.sections.dashboard-tour.title` | Je dashboard in één oogopslag | Your dashboard at a glance |
-| `teacher.guide.sections.dashboard-tour.content.0` | Na het inloggen kom je op je dashboard. Bovenaan staan drie tabbladen die je hele docent-werk verdelen. | After logging in you land on your dashboard. At the top are three tabs that divide all of your teacher work. |
+| `teacher.guide.sections.dashboard-tour.content.0` | Na het inloggen kom je eerst op de docentenpagina; via 'Ga naar je dashboard' kom je op je dashboard. Bovenaan staan drie tabbladen die je hele docent-werk verdelen. | After logging in you first land on the teacher page; 'Go to your dashboard' takes you to your dashboard. At the top are three tabs that divide all of your teacher work. |
 | `teacher.guide.sections.dashboard-tour.content.1.type` | heading | heading |
 | `teacher.guide.sections.dashboard-tour.content.1.text` | De drie tabbladen | The three tabs |
-| `teacher.guide.sections.dashboard-tour.content.2` | Mijn klassen — al je klassen met hun klascodes. Klik op een klas om inzendingen te bekijken en een opdracht te activeren. | My classes — all your classes with their class codes. Click a class to view submissions and activate an assignment. |
-| `teacher.guide.sections.dashboard-tour.content.3` | Mijn opdrachten — je herbruikbare bouwstenen: opdrachtkaarten, praatplaten, storyboards en templates. Deze gebruik je over klassen heen. | My assignments — your reusable building blocks: assignment cards, sound maps, storyboards and templates. You use these across classes. |
-| `teacher.guide.sections.dashboard-tour.content.4` | Leskaarten — kant-en-klare lespakketten (ingebouwd of zelfgemaakt) die je met één klik voor een klas activeert. | Lesson cards — ready-made lesson packages (built-in or your own) that you activate for a class in one click. |
+| `teacher.guide.sections.dashboard-tour.content.2` | Mijn klassen — de klas van nu met grote knoppen (Open klas, Presenteren, Code op het bord) en daaronder je andere klassen. Hier maak je ook een nieuwe klas. | My classes — the current class with big buttons (Open class, Present, Code on the board) and your other classes below. This is also where you create a new class. |
+| `teacher.guide.sections.dashboard-tour.content.3` | Eigen materiaal — je eigen bouwstenen: uitleg & opdrachtkaarten voor leerlingen en templates. Deze gebruik je over klassen heen. | Own materials — your own building blocks: instructions & assignment cards for students, and templates. You use these across classes. |
+| `teacher.guide.sections.dashboard-tour.content.4` | Lesideeën — kant-en-klare lessen (ingebouwd of zelfgemaakt). Kies er een, kies een klas en controleer wat je leerlingen gaan zien. | Lesson ideas — ready-made lessons (built-in or your own). Pick one, choose a class and check what your students will see. |
 | `teacher.guide.sections.dashboard-tour.content.5.type` | heading | heading |
 | `teacher.guide.sections.dashboard-tour.content.5.text` | Hulp en uitloggen | Help and logout |
 | `teacher.guide.sections.dashboard-tour.content.6` | Rechtsboven vind je de knoppen 'Handleiding' (dit scherm) en 'Uitloggen'. Verspreid over het dashboard zie je kleine ?-knopjes; die brengen je meteen naar het juiste hoofdstuk van deze handleiding. | Top right you'll find the 'Guide' (this screen) and 'Log out' buttons. Throughout the dashboard you'll see small ? buttons; they take you straight to the right chapter of this guide. |
 | `teacher.guide.sections.dashboard-tour.content.7.type` | heading | heading |
 | `teacher.guide.sections.dashboard-tour.content.7.text` | Zo zet je een klas op | How to set up a class |
-| `teacher.guide.sections.dashboard-tour.content.8` | Onder de tabbladen staat een inklapbaar blok 'Zo zet je een klas op' met de drie basisstappen: maak een klas → kies een opdracht → leerlingen voeren de code in. Bij een nieuwe klas staat dit blok automatisch open. | Below the tabs is a collapsible block 'How to set up a class' with the three basic steps: create a class → choose an assignment → students enter the code. For a new class this block opens automatically. |
+| `teacher.guide.sections.dashboard-tour.content.8` | Heb je nog geen klassen, dan zie je een welkomstblok met de drie basisstappen: maak een klas → kies een opdracht → zet de code op het bord. | If you have no classes yet, you see a welcome block with the three basic steps: create a class → choose an assignment → put the code on the board. |
 | `teacher.guide.sections.assignments.title` | De vier opdracht-types | The four assignment types |
-| `teacher.guide.sections.assignments.content.0` | Je zet per klas één opdracht tegelijk klaar. Er zijn vier types; leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid. Je kiest en activeert het type in het klas-detailscherm via de vier type-kaarten. | You prepare one active assignment per class at a time. There are four types; students entering the class code are automatically routed to the right flow. You choose and activate the type in the class detail screen via the four type cards. |
+| `teacher.guide.sections.assignments.content.0` | Je zet per klas één opdracht tegelijk klaar. Dat gaat in drie stappen: 1 Kies (zelf samenstellen of een kant-en-klare les), 2 Controleer & pas aan (je ziet precies wat de leerling ziet), 3 Code op het bord. Je start dit vanuit de klas met 'Kies een opdracht' of 'Andere opdracht kiezen'. Er zijn vier types; leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid. | You prepare one active assignment per class at a time, in three steps: 1 Choose (build it yourself or a ready-made lesson), 2 Check & adjust (you see exactly what the student sees), 3 Code on the board. Start from the class with 'Choose an assignment' or 'Choose another assignment'. There are four types; students entering the class code are automatically routed to the right flow. |
 | `teacher.guide.sections.assignments.content.1.type` | heading | heading |
 | `teacher.guide.sections.assignments.content.1.text` | Vrij componeren | Free composition |
 | `teacher.guide.sections.assignments.content.2` | De leerling componeert vrij binnen een thema dat jij kiest (bijvoorbeeld De Stad of Winterspelen). Geen afbeelding of verhaal — puur ontdekken en bouwen. Ideaal voor open, zelfstandige opdrachten. | The student composes freely within a theme you choose (for example The City or Winter Games). No image or story — just exploring and building. Ideal for open, independent assignments. |
@@ -1087,18 +1090,18 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.assignment-cards.content.2` | Dezelfde opdrachtkaart werkt bij elk opdracht-type (vrij, praatplaat, storyboard of template) en je hergebruikt hem over klassen heen. De kaart hangt aan de opdracht, niet aan het type. | The same assignment card works with any assignment type (free, sound map, storyboard or template) and you reuse it across classes. The card is attached to the assignment, not the type. |
 | `teacher.guide.sections.assignment-cards.content.3.type` | heading | heading |
 | `teacher.guide.sections.assignment-cards.content.3.text` | Aanmaken en beheren | Creating and managing |
-| `teacher.guide.sections.assignment-cards.content.4` | Ga naar het tabblad 'Mijn opdrachten' → sectie 'Opdrachtkaarten'. Klik op 'Nieuwe opdrachtkaart', geef een titel en voeg bullets toe (bijvoorbeeld 'Gebruik minstens drie verschillende geluiden'). Kaarten kun je later bewerken en verwijderen. | Go to the 'My assignments' tab → 'Assignment cards' section. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later. |
+| `teacher.guide.sections.assignment-cards.content.4` | Ga naar het tabblad 'Eigen materiaal' → 'Uitleg & opdrachtkaarten voor leerlingen'. Klik op 'Nieuwe opdrachtkaart', geef een titel en voeg bullets toe (bijvoorbeeld 'Gebruik minstens drie verschillende geluiden'). Kaarten kun je later bewerken en verwijderen. | Go to the 'Own materials' tab → 'Instructions & assignment cards for students'. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later. |
 | `teacher.guide.sections.assignment-cards.content.5.type` | heading | heading |
 | `teacher.guide.sections.assignment-cards.content.5.text` | Koppelen aan een opdracht | Linking to an assignment |
-| `teacher.guide.sections.assignment-cards.content.6` | Bij het activeren van een opdracht kies je optioneel een opdrachtkaart. Kies je er geen, dan toont de app een standaard-uitleg die bij het opdracht-type past. | When activating an assignment you optionally choose an assignment card. If you pick none, the app shows a default explanation matching the assignment type. |
+| `teacher.guide.sections.assignment-cards.content.6` | In stap 2 van het klaarzetten (Controleer & pas aan) kies je optioneel een opdrachtkaart; rechts zie je meteen hoe de leerling hem ziet. Kies je er geen, dan toont de app een standaard-uitleg die bij het opdracht-type past. Later wijzigen kan via 'Meer opties' in de klas. | In step 2 of setting up (Check & adjust) you optionally choose an assignment card; on the right you immediately see how the student sees it. If you pick none, the app shows a default explanation matching the assignment type. You can change it later under 'More options' in the class. |
 | `teacher.guide.sections.lesson-cards.title` | Leskaarten gebruiken | Using lesson cards |
-| `teacher.guide.sections.lesson-cards.content.0` | Een leskaart is een kant-en-klaar lespakket: een opdracht-type + de gekozen bron (bijvoorbeeld een storyboard of praatplaat) + een opdrachtkaart + presentatie-info (titel, niveau, lesdoel, fasen). Met één klik activeer je zo'n compleet pakket voor een klas. | A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). In one click you activate this complete package for a class. |
+| `teacher.guide.sections.lesson-cards.content.0` | Een leskaart is een kant-en-klaar lespakket: een opdracht-type + de gekozen bron (bijvoorbeeld een storyboard of praatplaat) + een opdrachtkaart + presentatie-info (titel, niveau, lesdoel, fasen). Je vindt ze onder het tabblad 'Lesideeën'. | A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). You find them under the 'Lesson ideas' tab. |
 | `teacher.guide.sections.lesson-cards.content.1.type` | heading | heading |
 | `teacher.guide.sections.lesson-cards.content.1.text` | Ingebouwde en eigen leskaarten | Built-in and your own lesson cards |
 | `teacher.guide.sections.lesson-cards.content.2` | Er zijn ingebouwde leskaarten (bijvoorbeeld Robotfabriek, Verspringen, Vrij componeren en Drum beat) die voor elke docent klaarstaan. Daarnaast kun je zelf leskaarten samenstellen. | There are built-in lesson cards (for example Robot Factory, Long Jump, Free composition and Drum beat) ready for every teacher. You can also compose your own lesson cards. |
 | `teacher.guide.sections.lesson-cards.content.3.type` | heading | heading |
 | `teacher.guide.sections.lesson-cards.content.3.text` | Activeren | Activating |
-| `teacher.guide.sections.lesson-cards.content.4` | Ga naar het tabblad 'Leskaarten', kies een kaart in de lijst en bekijk rechts de details (lesdoel, fasen, eventueel een PDF). Klik op 'Activeer in klas' en kies een bestaande klas of maak er direct een aan. Je krijgt meteen de klascode. | Go to the 'Lesson cards' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Activate in class' and choose an existing class or create one on the spot. You get the class code right away. |
+| `teacher.guide.sections.lesson-cards.content.4` | Ga naar het tabblad 'Lesideeën', kies een kaart in de lijst en bekijk rechts de details (lesdoel, fasen, eventueel een PDF). Klik op 'Zet klaar voor een klas' en kies een bestaande klas of maak er direct een aan. Je komt dan in stap 2: controleer wat de leerling ziet, pas eventueel iets aan en zet de opdracht klaar. Daarna verschijnt de klascode groot op het scherm. | Go to the 'Lesson ideas' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Set up for a class' and choose an existing class or create one on the spot. You then land in step 2: check what the student sees, adjust if needed and set the assignment up. The class code then appears large on screen. |
 | `teacher.guide.sections.lesson-cards.content.5.type` | heading | heading |
 | `teacher.guide.sections.lesson-cards.content.5.text` | Zelf een leskaart maken | Creating your own lesson card |
 | `teacher.guide.sections.lesson-cards.content.6` | Klik op 'Nieuwe leskaart'. Kies het type, de bron uit de catalogus, optioneel een opdrachtkaart, en vul titel, niveau, lesdoel en fasen in. Een cover-afbeelding wordt automatisch afgeleid uit de gekozen bron. Je eigen leskaarten kun je bewerken en verwijderen; de ingebouwde niet. | Click 'New lesson card'. Choose the type, the resource from the catalogue, optionally an assignment card, and fill in title, level, learning goal and phases. A cover image is derived automatically from the chosen resource. You can edit and delete your own lesson cards; built-in ones you cannot. |
@@ -1126,7 +1129,7 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.templates.content.2` | Bouw een compositie op in de studio en kies vervolgens 'Opslaan als template' (in het Stage-scherm, onder 'Delen & Exporteren'). Je kunt een naam en beschrijving geven, en slotopties kiezen: wil je dat leerlingen de bestaande clips kunnen aanpassen? Mogen ze tracks toevoegen? Wordt de sample-bibliotheek vastgezet? | Build a composition in the studio, then choose 'Save as template' (in the Stage screen, under 'Share & Export'). You can give it a name and description, and choose lock options: can students modify existing clips? Can they add tracks? Is the sample library locked? |
 | `teacher.guide.sections.templates.content.3.type` | heading | heading |
 | `teacher.guide.sections.templates.content.3.text` | Template activeren | Activating a template |
-| `teacher.guide.sections.templates.content.4` | Na opslaan verschijnt de template in je dashboard. Activeer hem voor een specifieke klas via het klas-detailscherm. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt. | After saving, the template appears in your dashboard. Activate it for a specific class via the class detail screen. Note: a template is linked to a theme — students automatically get the same theme you used. |
+| `teacher.guide.sections.templates.content.4` | Na opslaan verschijnt de template onder 'Eigen materiaal'. Zet hem klaar voor een klas via 'Kies een opdracht' → 'Een begin afmaken'. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt. | After saving, the template appears under 'Own materials'. Set it up for a class via 'Choose an assignment' → 'Finish a beginning'. Note: a template is linked to a theme — students automatically get the same theme you used. |
 | `teacher.guide.sections.templates.content.5.type` | heading | heading |
 | `teacher.guide.sections.templates.content.5.text` | Slotopties | Lock options |
 | `teacher.guide.sections.templates.content.6` | Bij het opslaan bepaal je met vier slotopties hoeveel vrijheid de leerling krijgt: | When saving you decide with four lock options how much freedom the student gets: |
@@ -1139,27 +1142,27 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.praatplaat.content.0` | Een praatplaat is een gezamenlijke klankkaart: elke leerling maakt een kleine compositie en plaatst die op een positie op een afbeelding (bijvoorbeeld een bos, een stad, een markt). Als docent kun je de praatplaat daarna klassikaal presenteren — je klikt op een spot en hoort wat die leerling heeft gemaakt. | A praatplaat is a collaborative sound map: each student creates a small composition and places it on a position on an image (e.g. a forest, a city, a market). As teacher you can then present the praatplaat to the class — click a spot and hear what that student made. |
 | `teacher.guide.sections.praatplaat.content.1.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.1.text` | Praatplaat aanmaken | Creating a praatplaat |
-| `teacher.guide.sections.praatplaat.content.2` | Ga naar het klasdetailscherm en klik op 'Activeer een opdracht'. Kies 'Praatplaat', geef een naam op (bijvoorbeeld 'Geluiden op de markt — groep 5a') en kies een locatie-afbeelding uit het actieve thema. Per klas kan er maar één opdracht tegelijk actief zijn. | Go to the class detail screen and click 'Activate an assignment'. Choose 'Praatplaat', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time. |
+| `teacher.guide.sections.praatplaat.content.2` | Open de klas en kies 'Kies een opdracht' (of 'Andere opdracht kiezen'). Kies 'Samen één plaat verklanken' en daarna een plaat. In stap 2 kies je het geluidsthema; dat staat al ingesteld op het thema dat bij de plaat past. Per klas kan er maar één opdracht tegelijk actief zijn. | Open the class and choose 'Choose an assignment' (or 'Choose another assignment'). Pick 'Score one picture together' and then an image. In step 2 you choose the sound theme; it is already set to the theme that fits the image. Each class can only have one active assignment at a time. |
 | `teacher.guide.sections.praatplaat.content.3.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.3.text` | Wat leerlingen zien | What students see |
 | `teacher.guide.sections.praatplaat.content.4` | Leerlingen voeren de 4-cijferige klascode in op het startscherm. Ze zien dan een voorvertoning van de praatplaat. Na klikken op 'Starten' kiezen ze een plek op de afbeelding waar ze hun compositie willen plaatsen. Daarna maken ze hun compositie zoals gewoonlijk in de studio. Wanneer ze opslaan, wordt de compositie automatisch aan de gekozen plek gekoppeld. Via de knop 'Kies een nieuwe plek' kunnen ze daarna nog een compositie toevoegen op een andere plek. | Students enter the 4-digit class code on the start screen. They then see a preview of the praatplaat. After clicking 'Start' they choose a spot on the image where they want to place their composition. Then they build their composition as usual in the studio. When they save, the composition is automatically linked to the chosen spot. Using the 'Choose a new spot' button they can then add another composition at a different location. |
 | `teacher.guide.sections.praatplaat.content.5.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.5.text` | Presenteren op het digibord | Presenting on the whiteboard |
-| `teacher.guide.sections.praatplaat.content.6` | Open de praatplaat via 'Open praatplaat' bij de actieve opdracht. Je ziet de afbeelding fullscreen met luidspreker-iconen op de plekken waar leerlingen composities hebben geplaatst. Klik op een icoon om de compositie af te spelen. Als meerdere leerlingen dicht bij elkaar staan, worden de spots automatisch geclusterd — je kiest dan uit een lijst. Klik op het vernieuw-icoon rechtsboven om nieuwe composities op te halen. | Open the praatplaat via 'Open praatplaat' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions. |
+| `teacher.guide.sections.praatplaat.content.6` | Klik in de klas op 'Presenteren'. Bij een praatplaat zie je de afbeelding met luidspreker-iconen op de plekken waar leerlingen composities hebben geplaatst. Klik op een icoon om de compositie af te spelen. Als meerdere leerlingen dicht bij elkaar staan, worden de spots automatisch geclusterd — je kiest dan uit een lijst. Klik op het vernieuw-icoon rechtsboven om nieuwe composities op te halen. | Click 'Present' in the class. For a praatplaat you see the image with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions. |
 | `teacher.guide.sections.praatplaat.content.7.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.7.text` | Link delen met leerlingen | Sharing a link with students |
-| `teacher.guide.sections.praatplaat.content.8` | Klik op 'Deel link' bij de actieve praatplaat. Je krijgt een directe URL en een QR-code. Leerlingen die deze link openen of de QR-code scannen, komen direct in de praatplaat-flow zonder dat ze de klascode handmatig hoeven in te voeren. Ideaal om op het digibord te projecteren. | Click 'Share link' next to the active praatplaat. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the praatplaat flow without needing to enter the class code manually. Ideal for projecting on the whiteboard. |
+| `teacher.guide.sections.praatplaat.content.8` | Open in de klas het tabblad '3 · Terugkijken' en kies bij de praatplaat het ⋯-menu → 'Delen met ouders (link)'. Je krijgt een directe URL en een QR-code. Ideaal om op het digibord te projecteren of mee te sturen naar huis. | Open the '3 · Look back' tab in the class and choose the ⋯ menu next to the praatplaat → 'Share with parents (link)'. You get a direct URL and a QR code. Ideal for projecting on the whiteboard or sending home. |
 | `teacher.guide.sections.praatplaat.content.9.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.9.text` | Publieke luisterpagina | Public listening page |
 | `teacher.guide.sections.praatplaat.content.10` | In het deelvenster vind je onderaan de optie 'Luisterpagina'. Klik op 'Maak luisterpagina aan' om een publieke link te genereren. Iedereen met deze link — ook ouders, collega's of gasten — kan de praatplaat bekijken en alle composities beluisteren, zonder login. De link is 30 dagen geldig en kan verlengd worden door opnieuw op de knop te klikken. Er is ook een QR-code beschikbaar om af te drukken of te delen. | At the bottom of the share dialog you'll find the 'Listening page' option. Click 'Create listening page' to generate a public link. Anyone with this link — including parents, colleagues or guests — can view the praatplaat and listen to all compositions, without logging in. The link is valid for 30 days and can be extended by clicking the button again. A QR code is also available for printing or sharing. |
 | `teacher.guide.sections.submissions.title` | Inzendingen bekijken | Reviewing submissions |
-| `teacher.guide.sections.submissions.content.0` | In het klas-detailscherm zie je alle composities die leerlingen hebben gedeeld met jouw klas. Elke inzending toont de naam van de leerling, de datum, en een afspeelknop. | The class detail screen shows all compositions students have shared with your class. Each submission shows the student's name, date, and a play button. |
+| `teacher.guide.sections.submissions.content.0` | In de klas zie je onder '2 · Tijdens de les' alle composities die leerlingen bij jouw klas hebben opgeslagen of ingeleverd, de nieuwste bovenaan. Elke tegel toont de naam van de leerling en hoe lang geleden het werk binnenkwam. | In the class, '2 · During the lesson' shows all compositions students have saved or handed in for your class, newest first. Each tile shows the student's name and how long ago the work came in. |
 | `teacher.guide.sections.submissions.content.1.type` | heading | heading |
 | `teacher.guide.sections.submissions.content.1.text` | Tabbladen | Tabs |
-| `teacher.guide.sections.submissions.content.2` | 'Ingeleverd' toont composities die leerlingen formeel hebben ingediend. 'In bewerking' toont composities die ze lokaal hebben opgeslagen maar nog niet hebben ingeleverd (herkenbaar aan een badge en 'Laatst bewerkt'-tijd). | 'Submitted' shows formally submitted compositions. 'In progress' shows compositions students have saved locally but not yet submitted (marked with a badge and 'Last edited' timestamp). |
+| `teacher.guide.sections.submissions.content.2` | 'Ingeleverd' toont composities die leerlingen formeel hebben ingeleverd. 'Nog bezig' toont composities die ze wel hebben opgeslagen maar nog niet hebben ingeleverd, met de tijd van de laatste keer opslaan. | 'Handed in' shows compositions students have formally handed in. 'Still working' shows compositions they have saved but not handed in yet, with the time they last saved. |
 | `teacher.guide.sections.submissions.content.3.type` | heading | heading |
 | `teacher.guide.sections.submissions.content.3.text` | Wat kun je doen? | What can you do? |
-| `teacher.guide.sections.submissions.content.4` | Per inzending kun je de compositie beluisteren, bekijken in detail (timeline-weergave), en desgewenst exporteren naar MP3. Zo kun je werk van leerlingen beoordelen, feedback geven, of composities gebruiken in een klassenpresentatie. | Per submission you can listen, view details (timeline view), and export to MP3. This way you can review student work, provide feedback, or use compositions in a class presentation. |
+| `teacher.guide.sections.submissions.content.4` | Klik op 'Feedback geven' om de inzendingen één voor één te beluisteren. Je ziet het beeld (de plaat of de scènes) boven de tijdlijn, kiest een sticker, sterren en een korte tekst en klikt op 'Opslaan & volgende'. Met 'Presenteren' speel je inzendingen klassikaal af. | Click 'Give feedback' to listen to the submissions one by one. You see the visual (the image or the scenes) above the timeline, choose a sticker, stars and a short text, and click 'Save & next'. Use 'Present' to play submissions for the whole class. |
 | `teacher.guide.sections.save-codes.title` | Bewaarcodes voor leerlingen | Save codes for students |
 | `teacher.guide.sections.save-codes.content.0` | Leerlingen werken vaak op gedeelde apparaten. Met bewaarcodes kunnen ze verder werken op een ander apparaat — bijvoorbeeld thuis afmaken wat ze op school begonnen zijn. | Students often work on shared devices. Save codes let them continue on another device — for example, finish at home what they started at school. |
 | `teacher.guide.sections.save-codes.content.1.type` | heading | heading |
@@ -1189,13 +1192,13 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.classroom-tips.content.9` | Reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten. | Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block. |
 | `teacher.guide.sections.classroom-tips.content.10.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.10.text` | Klaarzetten vóór de les | Set up before the lesson |
-| `teacher.guide.sections.classroom-tips.content.11` | Activeer de opdracht alvast en schrijf de klascode groot op het bord (of laat hem via het digibord zien). Test één apparaat vooraf: code invoeren, geluid aan, koptelefoon erin. Wil je een tijdsduur meegeven? Vul die in bij de actieve opdracht — leerlingen zien hem op hun startscherm. | Activate the assignment in advance and write the class code large on the board (or show it via the digiboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen. |
+| `teacher.guide.sections.classroom-tips.content.11` | Zet de opdracht alvast klaar en zet de klascode op het bord met 'Code op het bord' (groot, ook schermvullend; je ziet de namen van leerlingen binnenkomen). Test één apparaat vooraf: code invoeren, geluid aan, koptelefoon erin. Wil je een tijdsduur meegeven? Vul die in bij stap 2 of onder 'Meer opties' — leerlingen zien hem op hun startscherm. | Set up the assignment in advance and put the class code on the board with 'Code on the board' (large, also fullscreen; you see students' names coming in). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in at step 2 or under 'More options' — pupils see it on their start screen. |
 | `teacher.guide.sections.classroom-tips.content.12.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.12.text` | Werkvormen | Ways of working |
 | `teacher.guide.sections.classroom-tips.content.13` | In tweetallen werkt SoundScout het prettigst: één bedient, één luistert mee en adviseert — halverwege wisselen. Klassikaal starten met de praatplaat op het digibord geeft focus: verken samen het beeld en verdeel de plekken voordat iedereen zelf begint. | SoundScout works best in pairs: one operates, one listens along and advises — swap halfway. Starting together with the praatplaat on the digiboard creates focus: explore the image as a class and divide the spots before everyone starts. |
 | `teacher.guide.sections.classroom-tips.content.14.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.14.text` | Afronden en presenteren | Wrapping up and presenting |
-| `teacher.guide.sections.classroom-tips.content.15` | Reserveer de laatste tien minuten voor het presenteren: open het presentatiescherm vanuit het klaslokaal en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen Peer feedback geven of hun compositie verfijnen met effecten. | Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects. |
+| `teacher.guide.sections.classroom-tips.content.15` | Reserveer de laatste tien minuten voor het presenteren: klik in de klas op 'Presenteren' en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen elkaars werk beluisteren (als je 'Klasgenoten laten luisteren' aanzette) of hun compositie verfijnen met effecten. | Reserve the last ten minutes for presenting: click 'Present' in the class and play a few submissions together. Pupils who finish early can listen to each other's work (if you turned on 'Let classmates listen') or refine their composition with effects. |
 | `teacher.guide.sections.classroom-tips.content.16` | Sequencer: laat leerlingen eerst één spoor vullen en pas daarna een tweede toevoegen. Het verschil tussen 'uitklinken' en 'afkappen' is een mooie luisteropdracht: hetzelfde patroon klinkt er heel anders door. | Sequencer: have students fill one track first and only then add a second. The difference between 'ring out' and 'cut off' makes a fine listening task: the same pattern sounds completely different. |
 | `teacher.guide.sections.feedback-tips.title` | Tips voor feedback geven | Tips for giving feedback |
 | `teacher.guide.sections.feedback-tips.content.0` | Feedback geven op muziek voelt voor veel docenten lastiger dan op een tekst of werkstuk — er is geen goed of fout. Deze aanpak maakt het concreet, ook zonder muzikale achtergrond. | Giving feedback on music feels harder than on a text or project for many teachers — there is no right or wrong. This approach makes it concrete, even without a musical background. |
@@ -1207,13 +1210,13 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.feedback-tips.content.4` | Vraag naar de bedoeling: "Waarom heb je hier dit geluid gekozen?" of benoem een keuze: "Je hebt de vogels zachter gezet dan de voetstappen — daardoor lijkt het alsof je door het park loopt." Zo wordt feedback een gesprek over compositiekeuzes in plaats van een cijfer. | Ask about intent: "Why did you pick this sound here?" or name a choice: "You made the birds quieter than the footsteps — it feels like walking through the park." Feedback becomes a conversation about composing choices instead of a grade. |
 | `teacher.guide.sections.feedback-tips.content.5.type` | heading | heading |
 | `teacher.guide.sections.feedback-tips.content.5.text` | Gebruik sticker, sterren en tekst samen | Use sticker, stars and text together |
-| `teacher.guide.sections.feedback-tips.content.6` | De sticker en sterren zijn snelle aanmoediging (ze slaan direct op zodra je klikt); het tekstvak is de plek voor één concrete observatie of vraag. Eén goede zin is genoeg — leerlingen lezen hem op hun eigen podium terug. | The sticker and stars are quick encouragement (they save the moment you click); the text field is for one concrete observation or question. One good sentence is enough — pupils read it back on their own stage. |
+| `teacher.guide.sections.feedback-tips.content.6` | De sticker en sterren zijn snelle aanmoediging; het tekstvak is de plek voor één concrete observatie of vraag. Eén goede zin is genoeg — kies desnoods een van de tipzinnen. Met 'Opslaan & volgende' ga je meteen door naar de volgende leerling; leerlingen lezen je reactie op hun eigen podium terug. | The sticker and stars are quick encouragement; the text box is the place for one concrete observation or question. One good sentence is enough — pick one of the tip sentences if you like. 'Save & next' takes you straight to the next student; students read your reaction on their own stage. |
 | `teacher.guide.sections.feedback-tips.content.7.type` | heading | heading |
 | `teacher.guide.sections.feedback-tips.content.7.text` | Voorbeeldzinnen | Example sentences |
 | `teacher.guide.sections.feedback-tips.content.8` | "Sterk begin — het eerste geluid zet meteen de sfeer." · "Ik hoor een duidelijke herhaling, dat maakt het echt muziek." · "Wat zou er gebeuren als je hier een stilte laat vallen?" · "Jouw einde is abrupt — expres, of wil je het laten uitdoven met een fade?" · "De twee lagen passen mooi bij elkaar; durf je er een derde bij te zoeken?" | "Strong opening — the first sound sets the mood right away." · "I hear a clear repetition, that makes it real music." · "What would happen if you left a silence here?" · "Your ending is abrupt — on purpose, or would a fade-out help?" · "The two layers fit nicely; would you dare to add a third?" |
 | `teacher.guide.sections.feedback-tips.content.9.type` | heading | heading |
 | `teacher.guide.sections.feedback-tips.content.9.text` | Peer feedback als opwarmer | Peer feedback as a warm-up |
-| `teacher.guide.sections.feedback-tips.content.10` | Zet Peer feedback aan zodat leerlingen elkaars werk eerst beoordelen op de criteria van jouw feedbackkaart. Dat traint hun luistertaal — en jouw feedback landt daarna beter, omdat de klas al in "luistermodus" staat. | Turn on Peer feedback so pupils review each other's work on the criteria of your feedback card first. It trains their listening vocabulary — and your feedback lands better once the class is in "listening mode". |
+| `teacher.guide.sections.feedback-tips.content.10` | Zet 'Klasgenoten laten luisteren' aan zodat leerlingen elkaars werk eerst beoordelen op de criteria van jouw feedbackkaart. Dat traint hun luistertaal — en jouw feedback landt daarna beter, omdat de klas al in "luistermodus" staat. | Turn on 'Let classmates listen' so students first rate each other's work on the criteria of your feedback card. That trains their listening vocabulary — and your feedback lands better afterwards, because the class is already in "listening mode". |
 | `teacher.guide.sections.sequencer.title` | De sequencer | The sequencer |
 | `teacher.guide.sections.sequencer.content.0` | De sequencer is een raster waarin een leerling een ritme bouwt dat zichzelf herhaalt. Het is geen aparte compositievorm, maar gereedschap bínnen de studio: je kunt hem gebruiken bij vrij componeren, bij een afbeelding, bij een storyboard en bij een praatplaat. | The sequencer is a grid in which a student builds a rhythm that repeats itself. It is not a separate way of composing but a tool inside the studio: it works with free composing, with an image, with a storyboard and with a sound map. |
 | `teacher.guide.sections.sequencer.content.1.type` | heading | heading |
@@ -1230,7 +1233,6 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.sequencer.content.9.type` | heading | heading |
 | `teacher.guide.sections.sequencer.content.9.text` | Praktisch | Practical |
 | `teacher.guide.sections.sequencer.content.10` | Sequences horen bij de compositie: ze gaan automatisch mee bij opslaan, bij de bewaarcode, bij het delen van een luisterlink en bij het inleveren via de klascode. Ook in de MP3- en video-export klinkt het patroon precies zoals in de studio. Je hoeft dus niets apart te bewaren. | Sequences belong to the composition: they are included automatically when saving, in the save code, when sharing a listening link and when handing in with a class code. In the MP3 and video export the pattern sounds exactly as it does in the studio. There is nothing separate to store. |
-| `teacher.guide.sections.sequencer.content.11` | Let op: de sequencer is nog in ontwikkeling en staat standaard uit. Hij verschijnt pas als de functie voor jouw omgeving is aangezet. | Note: the sequencer is still in development and is off by default. It only appears once the feature has been enabled for your environment. |
 | `teacher.validation.emailRequired` | Voer je e-mailadres in | Please enter your email address |
 | `teacher.validation.passwordRequired` | Voer je wachtwoord in | Please enter your password |
 | `teacher.validation.nameRequired` | Voer je naam in | Please enter your name |
@@ -1238,7 +1240,7 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.validation.educatorRequired` | Bevestig dat je docent of onderwijsprofessional bent. | Confirm that you are a teacher or education professional. |
 | `teacher.validation.passwordMismatch` | Wachtwoorden komen niet overeen | Passwords do not match |
 | `teacher.validation.genericError` | Er ging iets mis | Something went wrong |
-| `teacher.login.subtitle` | Docenten Login | Teacher Login |
+| `teacher.login.subtitle` | Inloggen voor docenten | Teacher login |
 | `teacher.login.emailLabel` | E-mailadres | Email address |
 | `teacher.login.emailPlaceholder` | docent@school.nl | teacher@school.com |
 | `teacher.login.passwordLabel` | Wachtwoord | Password |
@@ -1264,7 +1266,7 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.resetPassword.expiredMessage` | Deze reset-link is verlopen of al gebruikt. Vraag een nieuwe link aan om je wachtwoord te wijzigen. | This reset link has expired or was already used. Request a new link to change your password. |
 | `teacher.resetPassword.requestNew` | Nieuwe link aanvragen | Request new link |
 | `teacher.register.educatorDeclaration` | Ik ben docent of onderwijsprofessional en gebruik SoundScout voor mijn onderwijs. | I am a teacher or education professional and use SoundScout for my teaching. |
-| `teacher.register.subtitle` | Docent Account Aanmaken | Create Teacher Account |
+| `teacher.register.subtitle` | Maak een docentenaccount | Create a teacher account |
 | `teacher.register.nameLabel` | Naam | Name |
 | `teacher.register.namePlaceholder` | Juf Marieke | Ms. Smith |
 | `teacher.register.emailLabel` | E-mailadres | Email address |
@@ -1300,8 +1302,8 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.dashboard.guide` | Handleiding | Guide |
 | `teacher.dashboard.myClasses` | Mijn Klassen | My Classes |
 | `teacher.dashboard.tabClasses` | Mijn klassen | My classes |
-| `teacher.dashboard.tabAssignments` | Mijn materiaal | My materials |
-| `teacher.dashboard.tabLessons` | Leskaarten | Lesson cards |
+| `teacher.dashboard.tabAssignments` | Eigen materiaal | Own materials |
+| `teacher.dashboard.tabLessons` | Lesideeën | Lesson ideas |
 | `teacher.dashboard.newClass` | Nieuwe Klas | New Class |
 | `teacher.dashboard.loading` | Klassen laden... | Loading classes... |
 | `teacher.dashboard.emptyTitle` | Nog geen klassen | No classes yet |
@@ -1329,19 +1331,19 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.dashboard.setupMaterials.step2.title` | Bouw een template | Build a template |
 | `teacher.dashboard.setupMaterials.step2.description` | Componeer zelf in de studio en kies op het podium "Opslaan als opdracht" — leerlingen bouwen erop voort. | Compose in the studio yourself and choose "Save as assignment" on the stage — pupils build on it. |
 | `teacher.dashboard.setupMaterials.step3.title` | Maak er een leskaart van | Turn it into a lesson card |
-| `teacher.dashboard.setupMaterials.step3.description` | Bundel je materiaal met een lesdoel en fases tot een leskaart die je in één klik activeert. | Bundle your materials with a lesson goal and phases into a lesson card you can activate in one click. |
-| `teacher.dashboard.setupLessons.title` | Zo werk je met leskaarten | How lesson cards work |
-| `teacher.dashboard.setupLessons.step1.title` | Kies een leskaart | Pick a lesson card |
+| `teacher.dashboard.setupMaterials.step3.description` | Bundel je materiaal met een lesdoel en fases tot een leskaart; je vindt hem terug bij Lesideeën. | Bundle your materials with a learning goal and phases into a lesson card; you'll find it under Lesson ideas. |
+| `teacher.dashboard.setupLessons.title` | Zo werk je met lesideeën | How to work with lesson ideas |
+| `teacher.dashboard.setupLessons.step1.title` | Kies een les | Choose a lesson |
 | `teacher.dashboard.setupLessons.step1.description` | Standaard of zelfgemaakt — filter op thema en groep om snel de juiste les te vinden. | Built-in or your own — filter by theme and age group to find the right lesson quickly. |
-| `teacher.dashboard.setupLessons.step2.title` | Activeer voor een klas | Activate it for a class |
-| `teacher.dashboard.setupLessons.step2.description` | Eén klik en de opdracht staat klaar; je ziet meteen de klascode voor op het bord. | One click and the assignment is ready; you immediately get the class code for the board. |
+| `teacher.dashboard.setupLessons.step2.title` | Zet klaar voor een klas | Set up for a class |
+| `teacher.dashboard.setupLessons.step2.description` | Kies een klas, controleer wat leerlingen zien en zet de code op het bord. | Choose a class, check what students will see and put the code on the board. |
 | `teacher.dashboard.setupLessons.step3.title` | Presenteer en geef feedback | Present and give feedback |
-| `teacher.dashboard.setupLessons.step3.description` | Volg de inzendingen in het klaslokaal, presenteer op het digibord en geef feedback. | Follow submissions in the classroom, present on the digiboard and give feedback. |
+| `teacher.dashboard.setupLessons.step3.description` | Volg de inzendingen in de klas, presenteer op het digibord en geef feedback. | Follow the submissions in the class, present on the whiteboard and give feedback. |
 | `teacher.classCodeMeaning` | Leerlingen typen deze code in om mee te doen. | Students type this code to join. |
 | `teacher.classDetail.back` | Terug naar overzicht | Back to overview |
 | `teacher.classDetail.dashboardCrumb` | Dashboard | Dashboard |
-| `teacher.classDetail.compositionCount` | {{count}} compositie | {{count}} composition |
-| `teacher.classDetail.compositionCount_plural` | {{count}} composities | {{count}} compositions |
+| `teacher.classDetail.compositionCount_one` | {{count}} compositie | {{count}} composition |
+| `teacher.classDetail.compositionCount_other` | {{count}} composities | {{count}} compositions |
 | `teacher.classDetail.refreshTitle` | Ververs composities | Refresh compositions |
 | `teacher.classDetail.classCodeLabel` | Klascode | Class code |
 | `teacher.classDetail.loading` | Composities laden... | Loading compositions... |
@@ -1381,11 +1383,11 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.presentation.submissions` | Inzendingen ({{count}}) | Submissions ({{count}}) |
 | `teacher.presentation.starsHint` | {{count}} sterren van klasgenoten | {{count}} stars from classmates |
 | `teacher.presentation.status.new` | Nieuw | New |
-| `teacher.presentation.status.seen` | Gezien | Seen |
+| `teacher.presentation.status.seen` | Beluisterd | Listened |
 | `teacher.presentation.status.reviewed` | Beoordeeld | Reviewed |
 | `teacher.presentation.openMontage` | Open montage | Open timeline |
 | `teacher.presentation.closeMontage` | Sluit montage | Close timeline |
-| `teacher.peerOverview.title` | Feedback-overzicht | Feedback overview |
+| `teacher.peerOverview.title` | Wat klasgenoten ervan vonden | What classmates thought |
 | `teacher.peerOverview.openButton` | Feedback-overzicht | Feedback overview |
 | `teacher.peerOverview.empty` | Nog geen beoordelingen van klasgenoten. Zet "Peer feedback" aan bij de actieve opdracht. | No peer reviews yet. Enable "Peer feedback" on the active assignment. |
 | `teacher.peerOverview.loadError` | Kon de peer-feedback niet laden. Controleer je verbinding en probeer het opnieuw. | Could not load peer feedback. Check your connection and try again. |
@@ -1396,8 +1398,8 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.peerOverview.tabGiven` | Gegeven | Given |
 | `teacher.peerOverview.gaveCount` | {{count}} gegeven | {{count}} given |
 | `teacher.peerOverview.unknownGiver` | Onbekend | Unknown |
-| `teacher.peerReview.title` | Peer feedback | Peer feedback |
-| `teacher.peerReview.hint` | Leerlingen die ingeleverd hebben, beluisteren 3 anonieme klasgenoot-composities en geven complimenten. | Students who submitted listen to 3 anonymous classmates' compositions and give compliments. |
+| `teacher.peerReview.title` | Klasgenoten laten luisteren | Let classmates listen |
+| `teacher.peerReview.hint` | Klasgenoten geven feedback aan elkaar. Wie heeft ingeleverd, luistert naar 3 anonieme composities van klasgenoten en geeft sterren. | Classmates give each other feedback. Students who handed in listen to 3 anonymous classmate compositions and give stars. |
 | `teacher.peerReview.cardLabel` | Feedbackkaart | Feedback card |
 | `teacher.peerReview.ownCard` | eigen kaart | own card |
 | `teacher.peerReview.newCard` | Nieuwe kaart | New card |
@@ -1429,14 +1431,14 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.feedback.stickers.teamwork` | Goed samengewerkt! | Great teamwork! |
 | `teacher.feedback.stickers.surprise` | Verrassend geluid! | Surprising sound! |
 | `teacher.feedback.stickers.target` | Past bij de opdracht! | Fits the assignment! |
-| `teacher.createClassModal.title` | Nieuwe Klas Aanmaken | Create New Class |
+| `teacher.createClassModal.title` | Nieuwe klas | New class |
 | `teacher.createClassModal.nameLabel` | Klasnaam | Class name |
 | `teacher.createClassModal.namePlaceholder` | Bijv. Groep 5B of Muziekles 2025 | E.g. Grade 5B or Music Class 2025 |
 | `teacher.createClassModal.nameRequired` | Voer een klasnaam in | Please enter a class name |
 | `teacher.createClassModal.nameMinLength` | Klasnaam moet minimaal 2 tekens zijn | Class name must be at least 2 characters |
-| `teacher.createClassModal.codeInfo` | Na het aanmaken krijg je een unieke 4-cijferige code die je met je leerlingen kunt delen. | After creating, you'll get a unique 4-digit code that you can share with your students. |
+| `teacher.createClassModal.codeInfo` | Je krijgt meteen een code van 4 cijfers. Daarna kies je stap voor stap een opdracht. | You immediately get a 4-digit code. Then you choose an assignment step by step. |
 | `teacher.createClassModal.cancel` | Annuleren | Cancel |
-| `teacher.createClassModal.submit` | Aanmaken | Create |
+| `teacher.createClassModal.submit` | Maak klas en kies een opdracht | Create class and choose an assignment |
 | `teacher.createClassModal.submitLoading` | Aanmaken... | Creating... |
 | `teacher.submissionPlayer.by` | Door: | By: |
 | `teacher.submissionPlayer.loading` | Samples laden... | Loading samples... |
@@ -1446,8 +1448,8 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.submissionPlayer.errorHint` | Probeer de pagina te verversen. | Try refreshing the page. |
 | `teacher.submissionPlayer.withStoryboard` | Met storyboard | With storyboard |
 | `teacher.classCard.createdOn` | Aangemaakt op {{date}} | Created on {{date}} |
-| `teacher.classCard.compositionCount` | {{count}} compositie | {{count}} composition |
-| `teacher.classCard.compositionCount_plural` | {{count}} composities | {{count}} compositions |
+| `teacher.classCard.compositionCount_one` | {{count}} compositie | {{count}} composition |
+| `teacher.classCard.compositionCount_other` | {{count}} composities | {{count}} compositions |
 | `teacher.classCard.view` | Bekijken | View |
 | `teacher.classCard.showOnScreen` | Toon op scherm | Show on screen |
 | `teacher.classCodeOverlay.label` | Klascode | Class Code |
@@ -1458,11 +1460,12 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.submissionCard.withStoryboard` | Storyboard | Storyboard |
 | `teacher.submissionCard.wip` | In bewerking | In progress |
 | `teacher.submissionCard.lastEdited` | Laatst bewerkt: | Last edited: |
-| `teacher.submissionCard.fromTemplate` | Opdracht | Assignment |
+| `teacher.submissionCard.fromTemplate` | Template | Template |
 | `teacher.submissionCard.fromPraatplaat` | Praatplaat | Sound map |
 | `teacher.submissionCard.new` | Nieuw | New |
 | `teacher.submissionCard.seen` | Beluisterd | Listened |
 | `teacher.submissionCard.reviewed` | Beoordeeld | Reviewed |
+| `teacher.submissionCard.withImage` | Afbeelding | Image |
 | `teacher.praatplaat.sectionTitle` | Praatplaten | Sound Maps |
 | `teacher.praatplaat.create` | Nieuwe praatplaat | New sound map |
 | `teacher.praatplaat.createError` | Kon praatplaat niet aanmaken | Could not create sound map |
@@ -1549,6 +1552,200 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.share.chooseBoardHint` | De plaat met klikbare plekken — luisteraars klikken zelf rond | The image with clickable spots — listeners explore it themselves |
 | `teacher.share.chooseAlbum` | De composities | The compositions |
 | `teacher.share.chooseAlbumHint` | Alle ingeleverde composities als afspeellijst achter elkaar | All submitted compositions as one playlist |
+| `teacher.wizard.title` | Opdracht klaarzetten | Set up an assignment |
+| `teacher.wizard.steps.choose` | Kies | Choose |
+| `teacher.wizard.steps.check` | Controleer & pas aan | Check & adjust |
+| `teacher.wizard.steps.board` | Code op het bord | Code on the board |
+| `teacher.wizard.replaceWarning` | {{className}} werkt nu aan {{name}}. Kies je iets nieuws, dan vervang je die. De inzendingen blijven bewaard. | {{className}} is now working on {{name}}. Choosing something new replaces it. Submissions are kept. |
+| `teacher.wizard.replaceWarningShort` | Hiermee vervang je {{name}}. Inzendingen blijven bewaard onder Terugkijken. | This replaces {{name}}. Submissions are kept under Look back. |
+| `teacher.wizard.tabs.own` | Zelf samenstellen | Build it yourself |
+| `teacher.wizard.tabs.ownSub` | kies een vorm en een bron | choose a format and a source |
+| `teacher.wizard.tabs.lesson` | Kant-en-klare les | Ready-made lesson |
+| `teacher.wizard.tabs.lessonSub` | met lesdoel en fases | with learning goal and phases |
+| `teacher.wizard.whatDo` | Wat gaan je leerlingen doen? | What will your students do? |
+| `teacher.wizard.pick.praatplaat` | Kies een plaat | Choose a picture |
+| `teacher.wizard.pick.storyboard` | Kies een verhaal | Choose a story |
+| `teacher.wizard.pick.template` | Kies een template | Choose a template |
+| `teacher.wizard.pick.free` | Kies een thema | Choose a theme |
+| `teacher.wizard.noTemplates` | Je hebt nog geen templates. Maak een compositie in de studio en sla die op het podium op als template. | You don't have any templates yet. Make a composition in the studio and save it as a template on the stage. |
+| `teacher.wizard.noLessons` | Nog geen kant-en-klare lessen. | No ready-made lessons yet. |
+| `teacher.wizard.storyboardScenes_one` | {{count}} scène | {{count}} scene |
+| `teacher.wizard.storyboardScenes_other` | {{count}} scènes | {{count}} scenes |
+| `teacher.wizard.types.praatplaat.plain` | Samen één plaat verklanken | Score one picture together |
+| `teacher.wizard.types.praatplaat.desc` | Iedereen kiest een plek op dezelfde plaat. | Everyone picks a spot on the same picture. |
+| `teacher.wizard.types.storyboard.plain` | Een verhaal op muziek zetten | Set a story to music |
+| `teacher.wizard.types.storyboard.desc` | Een verhaal in scènes; muziek per scène. | A story in scenes; music for each scene. |
+| `teacher.wizard.types.template.plain` | Een begin afmaken | Finish a beginning |
+| `teacher.wizard.types.template.desc` | Jij zet de start klaar, zij maken het af. | You prepare the start, they finish it. |
+| `teacher.wizard.types.free.plain` | Vrij componeren | Free composing |
+| `teacher.wizard.types.free.desc` | Een eigen stuk met geluiden uit één thema. | Their own piece with sounds from one theme. |
+| `teacher.wizard.previewTitle` | Zo ziet de leerling het | What the student sees |
+| `teacher.wizard.previewEmpty` | Kies een opdracht om te zien wat de leerling krijgt. | Choose an assignment to see what the student gets. |
+| `teacher.wizard.previewStart` | Starten | Start |
+| `teacher.wizard.mobilePreview` | Leerlingen zien: {{name}} met {{count}} stapjes uitleg. | Students see: {{name}} with {{count}} short steps. |
+| `teacher.wizard.next` | Volgende | Next |
+| `teacher.wizard.back` | Terug | Back |
+| `teacher.wizard.activate` | Zet klaar | Set it up |
+| `teacher.wizard.activating` | Bezig met klaarzetten… | Setting up… |
+| `teacher.wizard.chosenFor` | Voor {{className}} | For {{className}} |
+| `teacher.wizard.change` | Wijzig | Change |
+| `teacher.wizard.settingsTitle` | Instellingen | Settings |
+| `teacher.wizard.settingsHint` | Staan al goed. Je kunt dit later nog wijzigen, ook als de les al loopt. | These are fine as they are. You can change them later, even during the lesson. |
+| `teacher.wizard.settings.card` | Uitleg voor leerlingen | Instructions for students |
+| `teacher.wizard.settings.cardDefault` | Standaarduitleg | Standard instructions |
+| `teacher.wizard.settings.cardFromLesson` | Uitleg van de les | Instructions from the lesson |
+| `teacher.wizard.settings.theme` | Geluiden uit thema | Sounds from theme |
+| `teacher.wizard.settings.duration` | Duur | Duration |
+| `teacher.wizard.settings.durationHint` | zien leerlingen | students see this |
+| `teacher.wizard.settings.durationPlaceholder` | bijv. 2 lessen | e.g. 2 lessons |
+| `teacher.wizard.settings.peer` | Klasgenoten laten luisteren | Let classmates listen |
+| `teacher.wizard.settings.peerHint` | Klasgenoten geven feedback aan elkaar. | Classmates give each other feedback. |
+| `teacher.wizard.settings.peerOn` | Aan · na het inleveren luistert elke leerling naar 3 klasgenoten en geeft sterren | On · after handing in, each student listens to 3 classmates and gives stars |
+| `teacher.wizard.settings.peerOff` | Uit · kun je later aanzetten | Off · you can switch it on later |
+| `teacher.wizard.seasonNotice` | Dit thema is nu buiten seizoen en staat niet in de kiezers van leerlingen. Klaarzetten kan gewoon. | This theme is out of season and hidden from the student pickers. You can still set it up. |
+| `teacher.wizard.activateError` | Kon de opdracht niet klaarzetten. Probeer het opnieuw. | Could not set up the assignment. Please try again. |
+| `teacher.wizard.settingsPartial` | De opdracht staat klaar, maar niet alle instellingen zijn opgeslagen. Controleer ze in de klas onder Meer opties. | The assignment is ready, but not all settings were saved. Check them in the class under More options. |
+| `teacher.codeBoard.ready` | {{className}} · {{name}} staat klaar | {{className}} · {{name}} is ready |
+| `teacher.codeBoard.goTo` | Ga naar | Go to |
+| `teacher.codeBoard.andType` | en typ: | and type: |
+| `teacher.codeBoard.active_one` | {{count}} leerling is bezig of klaar | {{count}} student is working or done |
+| `teacher.codeBoard.active_other` | {{count}} leerlingen zijn bezig of klaar | {{count}} students are working or done |
+| `teacher.codeBoard.activeNone` | Namen verschijnen hier zodra leerlingen hun werk voor het eerst opslaan. | Names appear here as soon as students save their work for the first time. |
+| `teacher.codeBoard.fullscreen` | Volledig scherm | Full screen |
+| `teacher.codeBoard.exitFullscreen` | Volledig scherm sluiten | Exit full screen |
+| `teacher.codeBoard.settings` | Instellingen | Settings |
+| `teacher.codeBoard.toClass` | Naar de klas | To the class |
+| `teacher.codeBoard.settingsLive` | Wijzigingen gelden meteen, ook voor leerlingen die al bezig zijn. | Changes apply immediately, also for students who are already working. |
+| `teacher.codeBoard.done` | Klaar | Done |
+| `teacher.liveSettings.saved` | Opgeslagen | Saved |
+| `teacher.liveSettings.error` | Kon de instelling niet opslaan. Probeer het opnieuw. | Could not save the setting. Please try again. |
+| `teacher.classPage.tabs.prepare` | 1 · Klaarzetten | 1 · Set up |
+| `teacher.classPage.tabs.prepareSub` | opdracht kiezen | choose an assignment |
+| `teacher.classPage.tabs.live` | 2 · Tijdens de les | 2 · During the lesson |
+| `teacher.classPage.tabs.liveSub` | wie is klaar? | who is done? |
+| `teacher.classPage.tabs.review` | 3 · Terugkijken | 3 · Look back |
+| `teacher.classPage.tabs.reviewSub` | eerder werk · delen | earlier work · share |
+| `teacher.classPage.activeSince` | Nu actief · sinds {{date}} | Active · since {{date}} |
+| `teacher.classPage.noActiveTitle` | Er staat nog niets klaar voor {{className}} | Nothing is set up for {{className}} yet |
+| `teacher.classPage.noActiveText` | Leerlingen die code {{code}} intypen, kunnen nu alleen vrij componeren. Kies een opdracht, dan staat die voor ze klaar. | Students who type code {{code}} can only compose freely right now. Choose an assignment and it will be ready for them. |
+| `teacher.classPage.chooseAssignment` | Kies een opdracht | Choose an assignment |
+| `teacher.classPage.present` | Presenteren | Present |
+| `teacher.classPage.feedback` | Feedback geven | Give feedback |
+| `teacher.classPage.newBadge` | {{count}} nieuw | {{count}} new |
+| `teacher.classPage.codeOnBoard` | Op het bord | On the board |
+| `teacher.classPage.backToOverview` | Overzicht | Overview |
+| `teacher.classPage.crumb` | Mijn klassen | My classes |
+| `teacher.classPage.prepare.ready` | {{name}} staat klaar. | {{name}} is ready. |
+| `teacher.classPage.prepare.change` | Andere opdracht kiezen | Choose another assignment |
+| `teacher.classPage.prepare.studentView` | Zoals leerlingen het zien | What students see |
+| `teacher.classPage.prepare.moreOptions` | Meer opties | More options |
+| `teacher.classPage.prepare.stop` | Opdracht stoppen | Stop assignment |
+| `teacher.classPage.prepare.stopHint` | leerlingen kunnen dan alleen vrij componeren | students can then only compose freely |
+| `teacher.classPage.prepare.stopButton` | Stoppen… | Stop… |
+| `teacher.classPage.prepare.classLabel` | Klas | Class |
+| `teacher.classPage.prepare.deleteClass` | Klas verwijderen… | Delete class… |
+| `teacher.classPage.prepare.deleteClassTitle` | {{className}} verwijderen? | Delete {{className}}? |
+| `teacher.classPage.prepare.deleteClassBody` | De klas, de klascode en alle inzendingen worden verwijderd. Dit kun je niet ongedaan maken. | The class, its code and all submissions will be deleted. This cannot be undone. |
+| `teacher.classPage.live.title` | Wie is klaar? | Who is done? |
+| `teacher.classPage.live.autoRefresh` | ververst vanzelf | refreshes automatically |
+| `teacher.classPage.live.submitted` | ingeleverd | handed in |
+| `teacher.classPage.live.wip` | nog bezig | still working |
+| `teacher.classPage.live.emptySubmitted` | Nog niets ingeleverd. Zet de code op het bord: leerlingen typen {{code}} in. | Nothing handed in yet. Put the code on the board: students type {{code}}. |
+| `teacher.classPage.live.emptyWip` | Niemand is nog bezig. | Nobody is working yet. |
+| `teacher.classPage.live.sortNote` | Nieuwste bovenaan, op het moment van inleveren. Tik op een naam om te luisteren en feedback te geven. | Newest first, by the moment of handing in. Tap a name to listen and give feedback. |
+| `teacher.classPage.live.activeOnlyNote` | Alleen werk bij {{name}}. Ouder werk vind je onder Terugkijken. | Only work for {{name}}. Older work is under Look back. |
+| `teacher.classPage.live.lastSaved` | laatst opgeslagen {{time}} | last saved {{time}} |
+| `teacher.classPage.status.new` | Nieuw | New |
+| `teacher.classPage.status.seen` | Beluisterd | Listened |
+| `teacher.classPage.status.reviewed` | Feedback gegeven | Feedback given |
+| `teacher.classPage.status.wip` | Bezig | Working |
+| `teacher.classPage.review.title` | (Eerdere) opdrachten | (Earlier) assignments |
+| `teacher.classPage.review.activeBadge` | nu actief | active |
+| `teacher.classPage.review.count_one` | {{count}} compositie | {{count}} composition |
+| `teacher.classPage.review.count_other` | {{count}} composities | {{count}} compositions |
+| `teacher.classPage.review.view` | Bekijk | View |
+| `teacher.classPage.review.more` | Meer acties | More actions |
+| `teacher.classPage.review.share` | Delen met ouders (link) | Share with parents (link) |
+| `teacher.classPage.review.reuse` | Opnieuw gebruiken | Use again |
+| `teacher.classPage.review.remove` | Uit de lijst halen | Remove from list |
+| `teacher.classPage.review.empty` | Nog geen opdrachten. | No assignments yet. |
+| `teacher.classPage.review.peerTitle` | Wat klasgenoten ervan vonden | What classmates thought |
+| `teacher.classPage.review.peerAll` | Bekijk alles | View all |
+| `teacher.classPage.review.peerEmpty` | Nog geen sterren van klasgenoten. Zet 'Klasgenoten laten luisteren' aan onder Klaarzetten → Meer opties. | No stars from classmates yet. Switch on 'Let classmates listen' under Set up → More options. |
+| `teacher.classPage.review.presentAll` | Alle composities presenteren | Present all compositions |
+| `teacher.classPage.time.justNow` | net | just now |
+| `teacher.classPage.time.minutes` | {{count}} min | {{count}} min |
+| `teacher.classPage.time.hours` | {{count}} uur | {{count}} h |
+| `teacher.classPage.stopTitle` | Opdracht stoppen? | Stop this assignment? |
+| `teacher.classPage.stopConfirm` | Leerlingen die code {{code}} intypen, kunnen daarna alleen vrij componeren. Het werk dat al is ingeleverd blijft bewaard. | Students who type code {{code}} can then only compose freely. Work that was already handed in is kept. |
+| `teacher.classPage.stopAction` | Stoppen | Stop |
+| `teacher.feedbackScreen.title` | Feedback geven | Give feedback |
+| `teacher.feedbackScreen.back` | Terug naar de klas | Back to the class |
+| `teacher.feedbackScreen.filters.todo` | Nog doen | To do |
+| `teacher.feedbackScreen.filters.new` | Nieuw | New |
+| `teacher.feedbackScreen.filters.all` | Alles | All |
+| `teacher.feedbackScreen.assignmentAll` | Alle opdrachten | All assignments |
+| `teacher.feedbackScreen.assignmentLabel` | Opdracht | Assignment |
+| `teacher.feedbackScreen.by` | door {{name}} | by {{name}} |
+| `teacher.feedbackScreen.submitted` | ingeleverd · {{time}} | handed in · {{time}} |
+| `teacher.feedbackScreen.spot` | plek op de plaat | spot on the picture |
+| `teacher.feedbackScreen.scene` | Scène {{n}} | Scene {{n}} |
+| `teacher.feedbackScreen.listenHint` | Tik op afspelen of sleep over de tijdlijn (werkt ook met je vinger). | Tap play or drag across the timeline (works with your finger too). |
+| `teacher.feedbackScreen.play` | Afspelen | Play |
+| `teacher.feedbackScreen.pause` | Pauze | Pause |
+| `teacher.feedbackScreen.loading` | Geluiden laden… | Loading sounds… |
+| `teacher.feedbackScreen.step1` | 1. Kies een compliment | 1. Choose a compliment |
+| `teacher.feedbackScreen.step2` | 2. Hoe ver is het? | 2. How far along is it? |
+| `teacher.feedbackScreen.step3` | 3. Een tip | 3. A tip |
+| `teacher.feedbackScreen.step3Hint` | (mag leeg blijven) | (optional) |
+| `teacher.feedbackScreen.levels.1` | op weg | getting there |
+| `teacher.feedbackScreen.levels.2` | goed | good |
+| `teacher.feedbackScreen.levels.3` | top | great |
+| `teacher.feedbackScreen.levelNone` | nog niet gekozen | not chosen yet |
+| `teacher.feedbackScreen.tips.0` | Probeer eens een stil moment. | Try a moment of silence. |
+| `teacher.feedbackScreen.tips.1` | Laat het geluid langer doorklinken. | Let the sound ring out longer. |
+| `teacher.feedbackScreen.tips.2` | Begin rustig en bouw op. | Start quietly and build up. |
+| `teacher.feedbackScreen.tips.3` | Herhaal je mooiste stukje. | Repeat your favourite part. |
+| `teacher.feedbackScreen.tips.4` | Past het geluid bij jouw plek? | Does the sound fit your spot? |
+| `teacher.feedbackScreen.saveNext` | Opslaan & volgende | Save & next |
+| `teacher.feedbackScreen.saving` | Opslaan… | Saving… |
+| `teacher.feedbackScreen.saved` | Opgeslagen | Saved |
+| `teacher.feedbackScreen.needSomething` | Kies minstens een compliment of sterren. | Choose at least a compliment or stars. |
+| `teacher.feedbackScreen.studentSees` | De leerling ziet dit met de bewaarcode op het Podium. | The student sees this with their save code on the Stage. |
+| `teacher.feedbackScreen.emptyTitle` | Alles heeft feedback | Everything has feedback |
+| `teacher.feedbackScreen.emptyHint` | Nieuwe inzendingen verschijnen hier vanzelf. | New submissions appear here automatically. |
+| `teacher.feedbackScreen.pick` | Kies links een inzending. | Choose a submission on the left. |
+| `teacher.feedbackScreen.delete` | Inzending verwijderen | Delete submission |
+| `teacher.feedbackScreen.noSamples` | Deze compositie heeft geen geluiden om af te spelen. | This composition has no sounds to play. |
+| `teacher.today.greeting.morning` | Goedemorgen, {{name}} | Good morning, {{name}} |
+| `teacher.today.greeting.afternoon` | Goedemiddag, {{name}} | Good afternoon, {{name}} |
+| `teacher.today.greeting.evening` | Goedenavond, {{name}} | Good evening, {{name}} |
+| `teacher.today.now` | Nu | Now |
+| `teacher.today.otherClasses` | Andere klassen | Other classes |
+| `teacher.today.running` | {{name}} loopt | {{name}} is running |
+| `teacher.today.submitted_one` | {{count}} ingeleverd | {{count}} handed in |
+| `teacher.today.submitted_other` | {{count}} ingeleverd | {{count}} handed in |
+| `teacher.today.noAssignment` | nog geen opdracht | no assignment yet |
+| `teacher.today.nothingReady` | Nog geen opdracht klaargezet | No assignment set up yet |
+| `teacher.today.openClass` | Open klas | Open class |
+| `teacher.today.present` | Presenteren | Present |
+| `teacher.today.codeOnBoard` | Code op het bord | Code on the board |
+| `teacher.today.chooseAssignment` | Opdracht kiezen | Choose assignment |
+| `teacher.today.newClass` | Nieuwe klas | New class |
+| `teacher.today.classesUsed` | {{used}} van {{max}} klassen gebruikt | {{used}} of {{max}} classes used |
+| `teacher.today.maxReachedText` | Verwijder een oude klas (in de klas onder Meer opties) of mail ons voor meer ruimte. | Delete an old class (in the class under More options) or email us for more room. |
+| `teacher.today.welcomeTitle` | Welkom bij SoundScout! | Welcome to SoundScout! |
+| `teacher.today.welcomeText` | Maak een klas. Je krijgt een code van 4 cijfers die je leerlingen intypen. Daarna kies je stap voor stap een opdracht. | Create a class. You get a 4-digit code that your students type in. Then you choose an assignment step by step. |
+| `teacher.today.createFirst` | Maak je eerste klas | Create your first class |
+| `teacher.today.lessonsHint` | Liever eerst rondkijken? | Rather look around first? |
+| `teacher.today.lessonsLink` | Bekijk de lesideeën | Browse the lesson ideas |
+| `teacher.today.howTitle` | Zo zet je een klas op | How to set up a class |
+| `teacher.today.how1Title` | Maak een klas | Create a class |
+| `teacher.today.how1Desc` | Je krijgt meteen een klascode van vier cijfers. | You immediately get a four-digit class code. |
+| `teacher.today.how2Title` | Kies een opdracht | Choose an assignment |
+| `teacher.today.how2Desc` | Zelf samenstellen of een kant-en-klare les; je ziet meteen wat de leerling ziet. | Build it yourself or use a ready-made lesson; you see right away what the student sees. |
+| `teacher.today.how3Title` | Zet de code op het bord | Put the code on the board |
+| `teacher.today.how3Desc` | Leerlingen typen de code in en je ziet hun composities binnenkomen. | Students type the code and you see their compositions come in. |
 
 ## praatplaatImages
 
@@ -1878,6 +2075,7 @@ _Stand: 1723 teksten in 46 secties._
 | `album.byClass` | Album van {{className}} | Album of {{className}} |
 | `album.submissionCount` | {{count}} composities om te beluisteren | {{count}} compositions to listen to |
 | `album.noSubmissions` | Er zijn nog geen ingeleverde composities. | No submitted compositions yet. |
+| `album.shareEmptyHint` | Deel het album zodra leerlingen hun compositie hebben ingeleverd — werk dat alleen is opgeslagen telt nog niet mee. | Share the album once students have handed in their composition — work that is only saved does not count yet. |
 | `album.startListening` | Open het album | Open the album |
 | `album.notFoundTitle` | Album niet gevonden | Album not found |
 | `album.notFoundDescription` | Controleer de code of vraag een nieuwe link aan de docent. | Check the code or ask the teacher for a new link. |

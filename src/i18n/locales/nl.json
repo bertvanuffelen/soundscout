@@ -1094,29 +1094,29 @@
               "type": "heading",
               "text": "Eerste klas aanmaken"
             },
-            "Na het inloggen maak je je eerste klas aan via de knop 'Nieuwe klas'. Elke klas krijgt automatisch een 4-cijferige klascode. Die klascode deel je met je leerlingen — zij vullen die in op het startscherm om gekoppeld te worden aan jouw klas.",
+            "Na het inloggen maak je je eerste klas aan via de knop 'Maak je eerste klas' (later: 'Nieuwe klas'). Elke klas krijgt automatisch een 4-cijferige klascode. Daarna ga je meteen door naar het klaarzetten van een opdracht. De klascode deel je met je leerlingen — zij vullen die in op het startscherm om gekoppeld te worden aan jouw klas.",
             "Tip: schrijf de klascode op het digibord of print hem op een werkblad. Leerlingen kunnen ook via een link met ingebouwde klascode binnenkomen (handig als je met een Chromebook-trolley werkt)."
           ]
         },
         "classes": {
           "title": "Klassen beheren",
           "content": [
-            "Op je dashboard zie je alle klassen die je hebt aangemaakt. Je kunt maximaal 8 klassen tegelijk hebben (gratis account). Elke klas heeft een eigen klascode die niet verandert — leerlingen hoeven hem dus maar één keer te krijgen.",
-            "Een klas verwijderen doe je via het prullenbak-icoon op de klaskaart. Let op: als je een klas verwijdert, worden ook alle bijbehorende inzendingen, templates en praatplaten verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
-            "Klik op een klas om de detailweergave te openen. Daar zie je alle inzendingen van leerlingen, kun je opdrachten activeren (template of praatplaat), en zie je compositions die nog 'In bewerking' zijn."
+            "Op je dashboard staat bovenaan de klas waar je nu mee bezig bent (de klas die je het laatst opende), met de knoppen 'Open klas', 'Presenteren' en 'Code op het bord'. Daaronder staan je andere klassen. Je kunt maximaal 8 klassen tegelijk hebben (gratis account). Elke klas heeft een eigen klascode die niet verandert — leerlingen hoeven hem dus maar één keer te krijgen.",
+            "Een klas verwijderen doe je in de klas zelf: tabblad '1 · Klaarzetten' → 'Meer opties' → 'Klas verwijderen'. Let op: als je een klas verwijdert, worden ook alle bijbehorende inzendingen verwijderd. Deze actie kan niet ongedaan worden gemaakt.",
+            "Een klas is ingedeeld zoals een les verloopt, in drie tabbladen: '1 · Klaarzetten' (de opdracht kiezen en controleren), '2 · Tijdens de les' (wie is klaar, wie is nog bezig) en '3 · Terugkijken' (eerdere opdrachten, delen en wat klasgenoten ervan vonden). Bovenaan staan altijd 'Presenteren' en 'Feedback geven'."
           ]
         },
         "dashboard-tour": {
           "title": "Je dashboard in één oogopslag",
           "content": [
-            "Na het inloggen kom je op je dashboard. Bovenaan staan drie tabbladen die je hele docent-werk verdelen.",
+            "Na het inloggen kom je eerst op de docentenpagina; via 'Ga naar je dashboard' kom je op je dashboard. Bovenaan staan drie tabbladen die je hele docent-werk verdelen.",
             {
               "type": "heading",
               "text": "De drie tabbladen"
             },
-            "Mijn klassen — al je klassen met hun klascodes. Klik op een klas om inzendingen te bekijken en een opdracht te activeren.",
-            "Mijn opdrachten — je herbruikbare bouwstenen: opdrachtkaarten, praatplaten, storyboards en templates. Deze gebruik je over klassen heen.",
-            "Leskaarten — kant-en-klare lespakketten (ingebouwd of zelfgemaakt) die je met één klik voor een klas activeert.",
+            "Mijn klassen — de klas van nu met grote knoppen (Open klas, Presenteren, Code op het bord) en daaronder je andere klassen. Hier maak je ook een nieuwe klas.",
+            "Eigen materiaal — je eigen bouwstenen: uitleg & opdrachtkaarten voor leerlingen en templates. Deze gebruik je over klassen heen.",
+            "Lesideeën — kant-en-klare lessen (ingebouwd of zelfgemaakt). Kies er een, kies een klas en controleer wat je leerlingen gaan zien.",
             {
               "type": "heading",
               "text": "Hulp en uitloggen"
@@ -1126,13 +1126,13 @@
               "type": "heading",
               "text": "Zo zet je een klas op"
             },
-            "Onder de tabbladen staat een inklapbaar blok 'Zo zet je een klas op' met de drie basisstappen: maak een klas → kies een opdracht → leerlingen voeren de code in. Bij een nieuwe klas staat dit blok automatisch open."
+            "Heb je nog geen klassen, dan zie je een welkomstblok met de drie basisstappen: maak een klas → kies een opdracht → zet de code op het bord."
           ]
         },
         "assignments": {
           "title": "De vier opdracht-types",
           "content": [
-            "Je zet per klas één opdracht tegelijk klaar. Er zijn vier types; leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid. Je kiest en activeert het type in het klas-detailscherm via de vier type-kaarten.",
+            "Je zet per klas één opdracht tegelijk klaar. Dat gaat in drie stappen: 1 Kies (zelf samenstellen of een kant-en-klare les), 2 Controleer & pas aan (je ziet precies wat de leerling ziet), 3 Code op het bord. Je start dit vanuit de klas met 'Kies een opdracht' of 'Andere opdracht kiezen'. Er zijn vier types; leerlingen die de klascode invoeren, worden automatisch naar de juiste flow geleid.",
             {
               "type": "heading",
               "text": "Vrij componeren"
@@ -1169,18 +1169,18 @@
               "type": "heading",
               "text": "Aanmaken en beheren"
             },
-            "Ga naar het tabblad 'Mijn opdrachten' → sectie 'Opdrachtkaarten'. Klik op 'Nieuwe opdrachtkaart', geef een titel en voeg bullets toe (bijvoorbeeld 'Gebruik minstens drie verschillende geluiden'). Kaarten kun je later bewerken en verwijderen.",
+            "Ga naar het tabblad 'Eigen materiaal' → 'Uitleg & opdrachtkaarten voor leerlingen'. Klik op 'Nieuwe opdrachtkaart', geef een titel en voeg bullets toe (bijvoorbeeld 'Gebruik minstens drie verschillende geluiden'). Kaarten kun je later bewerken en verwijderen.",
             {
               "type": "heading",
               "text": "Koppelen aan een opdracht"
             },
-            "Bij het activeren van een opdracht kies je optioneel een opdrachtkaart. Kies je er geen, dan toont de app een standaard-uitleg die bij het opdracht-type past."
+            "In stap 2 van het klaarzetten (Controleer & pas aan) kies je optioneel een opdrachtkaart; rechts zie je meteen hoe de leerling hem ziet. Kies je er geen, dan toont de app een standaard-uitleg die bij het opdracht-type past. Later wijzigen kan via 'Meer opties' in de klas."
           ]
         },
         "lesson-cards": {
           "title": "Leskaarten gebruiken",
           "content": [
-            "Een leskaart is een kant-en-klaar lespakket: een opdracht-type + de gekozen bron (bijvoorbeeld een storyboard of praatplaat) + een opdrachtkaart + presentatie-info (titel, niveau, lesdoel, fasen). Met één klik activeer je zo'n compleet pakket voor een klas.",
+            "Een leskaart is een kant-en-klaar lespakket: een opdracht-type + de gekozen bron (bijvoorbeeld een storyboard of praatplaat) + een opdrachtkaart + presentatie-info (titel, niveau, lesdoel, fasen). Je vindt ze onder het tabblad 'Lesideeën'.",
             {
               "type": "heading",
               "text": "Ingebouwde en eigen leskaarten"
@@ -1190,7 +1190,7 @@
               "type": "heading",
               "text": "Activeren"
             },
-            "Ga naar het tabblad 'Leskaarten', kies een kaart in de lijst en bekijk rechts de details (lesdoel, fasen, eventueel een PDF). Klik op 'Activeer in klas' en kies een bestaande klas of maak er direct een aan. Je krijgt meteen de klascode.",
+            "Ga naar het tabblad 'Lesideeën', kies een kaart in de lijst en bekijk rechts de details (lesdoel, fasen, eventueel een PDF). Klik op 'Zet klaar voor een klas' en kies een bestaande klas of maak er direct een aan. Je komt dan in stap 2: controleer wat de leerling ziet, pas eventueel iets aan en zet de opdracht klaar. Daarna verschijnt de klascode groot op het scherm.",
             {
               "type": "heading",
               "text": "Zelf een leskaart maken"
@@ -1242,7 +1242,7 @@
               "type": "heading",
               "text": "Template activeren"
             },
-            "Na opslaan verschijnt de template in je dashboard. Activeer hem voor een specifieke klas via het klas-detailscherm. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt.",
+            "Na opslaan verschijnt de template onder 'Eigen materiaal'. Zet hem klaar voor een klas via 'Kies een opdracht' → 'Een begin afmaken'. Let op: een template is gekoppeld aan een thema — leerlingen krijgen automatisch hetzelfde thema als jij gebruikt hebt.",
             {
               "type": "heading",
               "text": "Slotopties"
@@ -1263,7 +1263,7 @@
               "type": "heading",
               "text": "Praatplaat aanmaken"
             },
-            "Ga naar het klasdetailscherm en klik op 'Activeer een opdracht'. Kies 'Praatplaat', geef een naam op (bijvoorbeeld 'Geluiden op de markt — groep 5a') en kies een locatie-afbeelding uit het actieve thema. Per klas kan er maar één opdracht tegelijk actief zijn.",
+            "Open de klas en kies 'Kies een opdracht' (of 'Andere opdracht kiezen'). Kies 'Samen één plaat verklanken' en daarna een plaat. In stap 2 kies je het geluidsthema; dat staat al ingesteld op het thema dat bij de plaat past. Per klas kan er maar één opdracht tegelijk actief zijn.",
             {
               "type": "heading",
               "text": "Wat leerlingen zien"
@@ -1273,12 +1273,12 @@
               "type": "heading",
               "text": "Presenteren op het digibord"
             },
-            "Open de praatplaat via 'Open praatplaat' bij de actieve opdracht. Je ziet de afbeelding fullscreen met luidspreker-iconen op de plekken waar leerlingen composities hebben geplaatst. Klik op een icoon om de compositie af te spelen. Als meerdere leerlingen dicht bij elkaar staan, worden de spots automatisch geclusterd — je kiest dan uit een lijst. Klik op het vernieuw-icoon rechtsboven om nieuwe composities op te halen.",
+            "Klik in de klas op 'Presenteren'. Bij een praatplaat zie je de afbeelding met luidspreker-iconen op de plekken waar leerlingen composities hebben geplaatst. Klik op een icoon om de compositie af te spelen. Als meerdere leerlingen dicht bij elkaar staan, worden de spots automatisch geclusterd — je kiest dan uit een lijst. Klik op het vernieuw-icoon rechtsboven om nieuwe composities op te halen.",
             {
               "type": "heading",
               "text": "Link delen met leerlingen"
             },
-            "Klik op 'Deel link' bij de actieve praatplaat. Je krijgt een directe URL en een QR-code. Leerlingen die deze link openen of de QR-code scannen, komen direct in de praatplaat-flow zonder dat ze de klascode handmatig hoeven in te voeren. Ideaal om op het digibord te projecteren.",
+            "Open in de klas het tabblad '3 · Terugkijken' en kies bij de praatplaat het ⋯-menu → 'Delen met ouders (link)'. Je krijgt een directe URL en een QR-code. Ideaal om op het digibord te projecteren of mee te sturen naar huis.",
             {
               "type": "heading",
               "text": "Publieke luisterpagina"
@@ -1289,17 +1289,17 @@
         "submissions": {
           "title": "Inzendingen bekijken",
           "content": [
-            "In het klas-detailscherm zie je alle composities die leerlingen hebben gedeeld met jouw klas. Elke inzending toont de naam van de leerling, de datum, en een afspeelknop.",
+            "In de klas zie je onder '2 · Tijdens de les' alle composities die leerlingen bij jouw klas hebben opgeslagen of ingeleverd, de nieuwste bovenaan. Elke tegel toont de naam van de leerling en hoe lang geleden het werk binnenkwam.",
             {
               "type": "heading",
               "text": "Tabbladen"
             },
-            "'Ingeleverd' toont composities die leerlingen formeel hebben ingediend. 'In bewerking' toont composities die ze lokaal hebben opgeslagen maar nog niet hebben ingeleverd (herkenbaar aan een badge en 'Laatst bewerkt'-tijd).",
+            "'Ingeleverd' toont composities die leerlingen formeel hebben ingeleverd. 'Nog bezig' toont composities die ze wel hebben opgeslagen maar nog niet hebben ingeleverd, met de tijd van de laatste keer opslaan.",
             {
               "type": "heading",
               "text": "Wat kun je doen?"
             },
-            "Per inzending kun je de compositie beluisteren, bekijken in detail (timeline-weergave), en desgewenst exporteren naar MP3. Zo kun je werk van leerlingen beoordelen, feedback geven, of composities gebruiken in een klassenpresentatie."
+            "Klik op 'Feedback geven' om de inzendingen één voor één te beluisteren. Je ziet het beeld (de plaat of de scènes) boven de tijdlijn, kiest een sticker, sterren en een korte tekst en klikt op 'Opslaan & volgende'. Met 'Presenteren' speel je inzendingen klassikaal af."
           ]
         },
         "save-codes": {
@@ -1355,7 +1355,7 @@
               "type": "heading",
               "text": "Klaarzetten vóór de les"
             },
-            "Activeer de opdracht alvast en schrijf de klascode groot op het bord (of laat hem via het digibord zien). Test één apparaat vooraf: code invoeren, geluid aan, koptelefoon erin. Wil je een tijdsduur meegeven? Vul die in bij de actieve opdracht — leerlingen zien hem op hun startscherm.",
+            "Zet de opdracht alvast klaar en zet de klascode op het bord met 'Code op het bord' (groot, ook schermvullend; je ziet de namen van leerlingen binnenkomen). Test één apparaat vooraf: code invoeren, geluid aan, koptelefoon erin. Wil je een tijdsduur meegeven? Vul die in bij stap 2 of onder 'Meer opties' — leerlingen zien hem op hun startscherm.",
             {
               "type": "heading",
               "text": "Werkvormen"
@@ -1365,7 +1365,7 @@
               "type": "heading",
               "text": "Afronden en presenteren"
             },
-            "Reserveer de laatste tien minuten voor het presenteren: open het presentatiescherm vanuit het klaslokaal en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen Peer feedback geven of hun compositie verfijnen met effecten.",
+            "Reserveer de laatste tien minuten voor het presenteren: klik in de klas op 'Presenteren' en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen elkaars werk beluisteren (als je 'Klasgenoten laten luisteren' aanzette) of hun compositie verfijnen met effecten.",
             "Sequencer: laat leerlingen eerst één spoor vullen en pas daarna een tweede toevoegen. Het verschil tussen 'uitklinken' en 'afkappen' is een mooie luisteropdracht: hetzelfde patroon klinkt er heel anders door."
           ]
         },
@@ -1387,7 +1387,7 @@
               "type": "heading",
               "text": "Gebruik sticker, sterren en tekst samen"
             },
-            "De sticker en sterren zijn snelle aanmoediging (ze slaan direct op zodra je klikt); het tekstvak is de plek voor één concrete observatie of vraag. Eén goede zin is genoeg — leerlingen lezen hem op hun eigen podium terug.",
+            "De sticker en sterren zijn snelle aanmoediging; het tekstvak is de plek voor één concrete observatie of vraag. Eén goede zin is genoeg — kies desnoods een van de tipzinnen. Met 'Opslaan & volgende' ga je meteen door naar de volgende leerling; leerlingen lezen je reactie op hun eigen podium terug.",
             {
               "type": "heading",
               "text": "Voorbeeldzinnen"
@@ -1397,7 +1397,7 @@
               "type": "heading",
               "text": "Peer feedback als opwarmer"
             },
-            "Zet Peer feedback aan zodat leerlingen elkaars werk eerst beoordelen op de criteria van jouw feedbackkaart. Dat traint hun luistertaal — en jouw feedback landt daarna beter, omdat de klas al in \"luistermodus\" staat."
+            "Zet 'Klasgenoten laten luisteren' aan zodat leerlingen elkaars werk eerst beoordelen op de criteria van jouw feedbackkaart. Dat traint hun luistertaal — en jouw feedback landt daarna beter, omdat de klas al in \"luistermodus\" staat."
           ]
         },
         "sequencer": {
@@ -1440,7 +1440,7 @@
       "genericError": "Er ging iets mis"
     },
     "login": {
-      "subtitle": "Docenten Login",
+      "subtitle": "Inloggen voor docenten",
       "emailLabel": "E-mailadres",
       "emailPlaceholder": "docent@school.nl",
       "passwordLabel": "Wachtwoord",
@@ -1470,7 +1470,7 @@
     },
     "register": {
       "educatorDeclaration": "Ik ben docent of onderwijsprofessional en gebruik SoundScout voor mijn onderwijs.",
-      "subtitle": "Docent Account Aanmaken",
+      "subtitle": "Maak een docentenaccount",
       "nameLabel": "Naam",
       "namePlaceholder": "Juf Marieke",
       "emailLabel": "E-mailadres",
@@ -1553,22 +1553,22 @@
         },
         "step3": {
           "title": "Maak er een leskaart van",
-          "description": "Bundel je materiaal met een lesdoel en fases tot een leskaart die je in één klik activeert."
+          "description": "Bundel je materiaal met een lesdoel en fases tot een leskaart; je vindt hem terug bij Lesideeën."
         }
       },
       "setupLessons": {
-        "title": "Zo werk je met leskaarten",
+        "title": "Zo werk je met lesideeën",
         "step1": {
-          "title": "Kies een leskaart",
+          "title": "Kies een les",
           "description": "Standaard of zelfgemaakt — filter op thema en groep om snel de juiste les te vinden."
         },
         "step2": {
-          "title": "Activeer voor een klas",
-          "description": "Eén klik en de opdracht staat klaar; je ziet meteen de klascode voor op het bord."
+          "title": "Zet klaar voor een klas",
+          "description": "Kies een klas, controleer wat leerlingen zien en zet de code op het bord."
         },
         "step3": {
           "title": "Presenteer en geef feedback",
-          "description": "Volg de inzendingen in het klaslokaal, presenteer op het digibord en geef feedback."
+          "description": "Volg de inzendingen in de klas, presenteer op het digibord en geef feedback."
         }
       }
     },

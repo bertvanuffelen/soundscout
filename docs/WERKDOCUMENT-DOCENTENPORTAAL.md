@@ -39,7 +39,7 @@
 | 5 | Klaspagina met tabs Klaarzetten · Tijdens de les · Terugkijken, plus *Meer opties* en automatisch verversen | ✅ |
 | 6 | Feedback geven als werklijst (beeld boven de tijdlijn, uitklappen op de telefoon) | ✅ |
 | 7 | Dashboard *Vandaag*, nieuwe klas → wizard, Lesideeën → wizard stap 2 | ✅ |
-| 8 | Teksten NL + EN, handleiding/woordenlijst, CLAUDE.md | ⏳ |
+| 8 | Teksten NL + EN, handleiding/woordenlijst, CLAUDE.md | ✅ |
 | 9 | Eindcontrole: alle flows in de testopstelling, telefoon, digibord, screenshots | ⏳ |
 
 ## Bewust niet gebouwd (vraagt een migratie of een besluit van Bert)
@@ -146,3 +146,22 @@
 - **Verwijderd:** `ClassCard` en `SubmissionCard` (vervangen door de rijen en tegels).
 - **Visueel gecontroleerd:** vandaag, eerste keer, maximum bereikt, telefoon, de klaskeuze bij een les, Lesideeën → stap 2, nieuwe klas → wizard en presenteren.
 - **Poort:** tsc 0 · 437/437 · lint 25/5 (onveranderd).
+
+### 14-10-2026 · Stap 8 — teksten en documentatie ✅
+- **Handleiding** (`teacher.guide.sections`, NL + EN): 25 alinea's herschreven, zodat ze de nieuwe schermen beschrijven. Het gaat om *Aan de slag*, *Klassen beheren*, *Dashboard in één oogopslag*, *Opdracht-types*, *Opdrachtkaarten*, *Leskaarten*, *Templates*, *Praatplaat*, *Inzendingen*, *Tips voor de klas* en *Feedback-tips*. Nieuw daarin:
+  - de drie stappen van de wizard;
+  - de klaspagina met drie tabs;
+  - klas verwijderen via *Meer opties*;
+  - delen via het ⋯-menu;
+  - *Feedback geven* met *Opslaan & volgende* (de sticker slaat niet meer direct op).
+
+  Alle knopnamen in de teksten zijn gecontroleerd tegen de echte labels.
+- **Uitlegblokken op het dashboard** (*Zo bouw je eigen materiaal*, *Zo werk je met lesideeën*): "in één klik activeren" is vervangen door kiezen, controleren en de code op het bord.
+- **Titels van de inlogschermen** zonder Title Case: "Inloggen voor docenten" en "Maak een docentenaccount" (EN: "Teacher login", "Create a teacher account").
+- **Niet aangeraakt:** de teksten van de docentenpagina `/teacher` (`teacherLanding.*`). Daar staat nog steeds "Activeer een praatplaat…", maar die pagina mag niet veranderen.
+- **Woordenlijst:** lesideeën, eigen materiaal, uitleg voor leerlingen, klaarzetten, code op het bord, de vormnamen uit de wizard, "Klasgenoten laten luisteren", feedback geven en de betekenis van de sterren.
+- **CLAUDE.md:** de sectie *Teacher Dashboard* is herschreven voor dashboard, wizard, klaspagina, feedback-werklijst, `useScrub` en de verwijderde componenten. Verwijzingen naar `ActivateAssignmentModal`, `AssignmentTypeCards` en `SubmissionCard` zijn bijgewerkt.
+- **`docs/TEKSTEN.md`** is opnieuw gegenereerd (`npm run teksten:export`). NL/EN-pariteit: geen ontbrekende sleutels.
+- **Bewust niet opgeruimd:** i18n-sleutels die alleen de verwijderde componenten gebruikten (bijvoorbeeld `teacher.classDetail.startChoiceLesson`). Ze kunnen geen kwaad. Er bestaan ook dynamische sleutels, waardoor automatisch verwijderen riskant is. Dit is een kleine opruimklus voor later.
+- **Historische plandocumenten** (PLAN-*, LOGBOEK, TODO) noemen de oude componenten nog. Dat klopt: zij beschrijven toen.
+- **Poort:** tsc 0 · 437/437 · lint 25/5.

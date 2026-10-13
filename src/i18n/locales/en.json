@@ -1094,29 +1094,29 @@
               "type": "heading",
               "text": "Creating your first class"
             },
-            "After logging in, create your first class using the 'New class' button. Each class automatically gets a 4-digit class code. Share that code with your students — they enter it on the start screen to be linked to your class.",
+            "After logging in, create your first class with the 'Create your first class' button (later: 'New class'). Each class automatically gets a 4-digit class code. You then go straight on to setting up an assignment. Share the class code with your students — they enter it on the start screen to join your class.",
             "Tip: write the class code on the whiteboard or print it on a worksheet. Students can also enter via a link with the class code embedded (handy when using a Chromebook cart)."
           ]
         },
         "classes": {
           "title": "Managing classes",
           "content": [
-            "Your dashboard shows all classes you've created. You can have up to 8 classes simultaneously (free account). Each class has its own class code that doesn't change — students only need it once.",
-            "To delete a class, use the trash icon on the class card. Note: deleting a class also removes all related submissions, templates, and praatplaten. This cannot be undone.",
-            "Click a class to open the detail view. There you see all student submissions, can activate assignments (template or praatplaat), and see compositions still 'In progress'."
+            "At the top of your dashboard is the class you are working with now (the one you opened last), with the buttons 'Open class', 'Present' and 'Code on the board'. Your other classes are listed below. You can have up to 8 classes at a time (free account). Each class has its own class code that never changes — students only need to get it once.",
+            "To delete a class, open it: tab '1 · Set up' → 'More options' → 'Delete class'. Note: deleting a class also removes all related submissions. This cannot be undone.",
+            "A class is organised the way a lesson runs, in three tabs: '1 · Set up' (choose and check the assignment), '2 · During the lesson' (who is done, who is still working) and '3 · Look back' (earlier assignments, sharing and what classmates thought). 'Present' and 'Give feedback' are always at the top."
           ]
         },
         "dashboard-tour": {
           "title": "Your dashboard at a glance",
           "content": [
-            "After logging in you land on your dashboard. At the top are three tabs that divide all of your teacher work.",
+            "After logging in you first land on the teacher page; 'Go to your dashboard' takes you to your dashboard. At the top are three tabs that divide all of your teacher work.",
             {
               "type": "heading",
               "text": "The three tabs"
             },
-            "My classes — all your classes with their class codes. Click a class to view submissions and activate an assignment.",
-            "My assignments — your reusable building blocks: assignment cards, sound maps, storyboards and templates. You use these across classes.",
-            "Lesson cards — ready-made lesson packages (built-in or your own) that you activate for a class in one click.",
+            "My classes — the current class with big buttons (Open class, Present, Code on the board) and your other classes below. This is also where you create a new class.",
+            "Own materials — your own building blocks: instructions & assignment cards for students, and templates. You use these across classes.",
+            "Lesson ideas — ready-made lessons (built-in or your own). Pick one, choose a class and check what your students will see.",
             {
               "type": "heading",
               "text": "Help and logout"
@@ -1126,13 +1126,13 @@
               "type": "heading",
               "text": "How to set up a class"
             },
-            "Below the tabs is a collapsible block 'How to set up a class' with the three basic steps: create a class → choose an assignment → students enter the code. For a new class this block opens automatically."
+            "If you have no classes yet, you see a welcome block with the three basic steps: create a class → choose an assignment → put the code on the board."
           ]
         },
         "assignments": {
           "title": "The four assignment types",
           "content": [
-            "You prepare one active assignment per class at a time. There are four types; students entering the class code are automatically routed to the right flow. You choose and activate the type in the class detail screen via the four type cards.",
+            "You prepare one active assignment per class at a time, in three steps: 1 Choose (build it yourself or a ready-made lesson), 2 Check & adjust (you see exactly what the student sees), 3 Code on the board. Start from the class with 'Choose an assignment' or 'Choose another assignment'. There are four types; students entering the class code are automatically routed to the right flow.",
             {
               "type": "heading",
               "text": "Free composition"
@@ -1169,18 +1169,18 @@
               "type": "heading",
               "text": "Creating and managing"
             },
-            "Go to the 'My assignments' tab → 'Assignment cards' section. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later.",
+            "Go to the 'Own materials' tab → 'Instructions & assignment cards for students'. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later.",
             {
               "type": "heading",
               "text": "Linking to an assignment"
             },
-            "When activating an assignment you optionally choose an assignment card. If you pick none, the app shows a default explanation matching the assignment type."
+            "In step 2 of setting up (Check & adjust) you optionally choose an assignment card; on the right you immediately see how the student sees it. If you pick none, the app shows a default explanation matching the assignment type. You can change it later under 'More options' in the class."
           ]
         },
         "lesson-cards": {
           "title": "Using lesson cards",
           "content": [
-            "A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). In one click you activate this complete package for a class.",
+            "A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). You find them under the 'Lesson ideas' tab.",
             {
               "type": "heading",
               "text": "Built-in and your own lesson cards"
@@ -1190,7 +1190,7 @@
               "type": "heading",
               "text": "Activating"
             },
-            "Go to the 'Lesson cards' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Activate in class' and choose an existing class or create one on the spot. You get the class code right away.",
+            "Go to the 'Lesson ideas' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Set up for a class' and choose an existing class or create one on the spot. You then land in step 2: check what the student sees, adjust if needed and set the assignment up. The class code then appears large on screen.",
             {
               "type": "heading",
               "text": "Creating your own lesson card"
@@ -1242,7 +1242,7 @@
               "type": "heading",
               "text": "Activating a template"
             },
-            "After saving, the template appears in your dashboard. Activate it for a specific class via the class detail screen. Note: a template is linked to a theme — students automatically get the same theme you used.",
+            "After saving, the template appears under 'Own materials'. Set it up for a class via 'Choose an assignment' → 'Finish a beginning'. Note: a template is linked to a theme — students automatically get the same theme you used.",
             {
               "type": "heading",
               "text": "Lock options"
@@ -1263,7 +1263,7 @@
               "type": "heading",
               "text": "Creating a praatplaat"
             },
-            "Go to the class detail screen and click 'Activate an assignment'. Choose 'Praatplaat', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time.",
+            "Open the class and choose 'Choose an assignment' (or 'Choose another assignment'). Pick 'Score one picture together' and then an image. In step 2 you choose the sound theme; it is already set to the theme that fits the image. Each class can only have one active assignment at a time.",
             {
               "type": "heading",
               "text": "What students see"
@@ -1273,12 +1273,12 @@
               "type": "heading",
               "text": "Presenting on the whiteboard"
             },
-            "Open the praatplaat via 'Open praatplaat' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
+            "Click 'Present' in the class. For a praatplaat you see the image with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
             {
               "type": "heading",
               "text": "Sharing a link with students"
             },
-            "Click 'Share link' next to the active praatplaat. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the praatplaat flow without needing to enter the class code manually. Ideal for projecting on the whiteboard.",
+            "Open the '3 · Look back' tab in the class and choose the ⋯ menu next to the praatplaat → 'Share with parents (link)'. You get a direct URL and a QR code. Ideal for projecting on the whiteboard or sending home.",
             {
               "type": "heading",
               "text": "Public listening page"
@@ -1289,17 +1289,17 @@
         "submissions": {
           "title": "Reviewing submissions",
           "content": [
-            "The class detail screen shows all compositions students have shared with your class. Each submission shows the student's name, date, and a play button.",
+            "In the class, '2 · During the lesson' shows all compositions students have saved or handed in for your class, newest first. Each tile shows the student's name and how long ago the work came in.",
             {
               "type": "heading",
               "text": "Tabs"
             },
-            "'Submitted' shows formally submitted compositions. 'In progress' shows compositions students have saved locally but not yet submitted (marked with a badge and 'Last edited' timestamp).",
+            "'Handed in' shows compositions students have formally handed in. 'Still working' shows compositions they have saved but not handed in yet, with the time they last saved.",
             {
               "type": "heading",
               "text": "What can you do?"
             },
-            "Per submission you can listen, view details (timeline view), and export to MP3. This way you can review student work, provide feedback, or use compositions in a class presentation."
+            "Click 'Give feedback' to listen to the submissions one by one. You see the visual (the image or the scenes) above the timeline, choose a sticker, stars and a short text, and click 'Save & next'. Use 'Present' to play submissions for the whole class."
           ]
         },
         "save-codes": {
@@ -1355,7 +1355,7 @@
               "type": "heading",
               "text": "Set up before the lesson"
             },
-            "Activate the assignment in advance and write the class code large on the board (or show it via the digiboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen.",
+            "Set up the assignment in advance and put the class code on the board with 'Code on the board' (large, also fullscreen; you see students' names coming in). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in at step 2 or under 'More options' — pupils see it on their start screen.",
             {
               "type": "heading",
               "text": "Ways of working"
@@ -1365,7 +1365,7 @@
               "type": "heading",
               "text": "Wrapping up and presenting"
             },
-            "Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects.",
+            "Reserve the last ten minutes for presenting: click 'Present' in the class and play a few submissions together. Pupils who finish early can listen to each other's work (if you turned on 'Let classmates listen') or refine their composition with effects.",
             "Sequencer: have students fill one track first and only then add a second. The difference between 'ring out' and 'cut off' makes a fine listening task: the same pattern sounds completely different."
           ]
         },
@@ -1387,7 +1387,7 @@
               "type": "heading",
               "text": "Use sticker, stars and text together"
             },
-            "The sticker and stars are quick encouragement (they save the moment you click); the text field is for one concrete observation or question. One good sentence is enough — pupils read it back on their own stage.",
+            "The sticker and stars are quick encouragement; the text box is the place for one concrete observation or question. One good sentence is enough — pick one of the tip sentences if you like. 'Save & next' takes you straight to the next student; students read your reaction on their own stage.",
             {
               "type": "heading",
               "text": "Example sentences"
@@ -1397,7 +1397,7 @@
               "type": "heading",
               "text": "Peer feedback as a warm-up"
             },
-            "Turn on Peer feedback so pupils review each other's work on the criteria of your feedback card first. It trains their listening vocabulary — and your feedback lands better once the class is in \"listening mode\"."
+            "Turn on 'Let classmates listen' so students first rate each other's work on the criteria of your feedback card. That trains their listening vocabulary — and your feedback lands better afterwards, because the class is already in \"listening mode\"."
           ]
         },
         "sequencer": {
@@ -1440,7 +1440,7 @@
       "genericError": "Something went wrong"
     },
     "login": {
-      "subtitle": "Teacher Login",
+      "subtitle": "Teacher login",
       "emailLabel": "Email address",
       "emailPlaceholder": "teacher@school.com",
       "passwordLabel": "Password",
@@ -1470,7 +1470,7 @@
     },
     "register": {
       "educatorDeclaration": "I am a teacher or education professional and use SoundScout for my teaching.",
-      "subtitle": "Create Teacher Account",
+      "subtitle": "Create a teacher account",
       "nameLabel": "Name",
       "namePlaceholder": "Ms. Smith",
       "emailLabel": "Email address",
@@ -1553,22 +1553,22 @@
         },
         "step3": {
           "title": "Turn it into a lesson card",
-          "description": "Bundle your materials with a lesson goal and phases into a lesson card you can activate in one click."
+          "description": "Bundle your materials with a learning goal and phases into a lesson card; you'll find it under Lesson ideas."
         }
       },
       "setupLessons": {
-        "title": "How lesson cards work",
+        "title": "How to work with lesson ideas",
         "step1": {
-          "title": "Pick a lesson card",
+          "title": "Choose a lesson",
           "description": "Built-in or your own — filter by theme and age group to find the right lesson quickly."
         },
         "step2": {
-          "title": "Activate it for a class",
-          "description": "One click and the assignment is ready; you immediately get the class code for the board."
+          "title": "Set up for a class",
+          "description": "Choose a class, check what students will see and put the code on the board."
         },
         "step3": {
           "title": "Present and give feedback",
-          "description": "Follow submissions in the classroom, present on the digiboard and give feedback."
+          "description": "Follow the submissions in the class, present on the whiteboard and give feedback."
         }
       }
     },

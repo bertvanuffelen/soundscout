@@ -39,6 +39,13 @@ DAW-termen alleen waar ze ingeburgerd zijn.
 | **storyboard** | Verhaal van meerdere scènes dat de leerling verklankt ("Verhaal in beeld") |
 | **template** | Door de docent voorgebouwde compositie als startpunt |
 | **thema** | Werelden met locaties + geluiden (De Stad, Winterspelen, …) |
+| **lesideeën** | Dashboard-tabblad met alle leskaarten (ingebouwd + eigen); vervangt de tabnaam "Leskaarten" (ombouw 14-10) |
+| **eigen materiaal** | Dashboard-tabblad met de eigen bouwstenen van de docent: opdrachtkaarten + templates (was "Mijn materiaal") |
+| **uitleg voor leerlingen** | De docentvriendelijke noemer voor de opdrachtkaart ("Uitleg & opdrachtkaarten voor leerlingen") |
+| **klaarzetten** | Een opdracht voor een klas actief maken, in drie stappen: *Kies* → *Controleer & pas aan* → *Code op het bord* (vervangt "activeren" in teksten) |
+| **code op het bord** | Het grote klascodescherm voor het digibord, met binnenkomende namen |
+
+Vormnamen in de wizard (docentvriendelijk, met de vakterm als label erbij): *Samen één plaat verklanken* (praatplaat) · *Een verhaal op muziek zetten* (storyboard) · *Een begin afmaken* (template) · *Vrij componeren*.
 
 ## Muziek & studio
 
@@ -79,11 +86,13 @@ compositievormen (vrij / praatplaat / storyboard), geen vierde vorm.
 | Term | Betekenis |
 |---|---|
 | **feedback** | Reactie van de docent: sticker + 1–3 sterren + tekstje |
-| **peer feedback** | Leerlingen beoordelen elkaars werk anoniem (sterren per criterium) |
+| **peer feedback** | Leerlingen beoordelen elkaars werk anoniem (sterren per criterium). De docent zet dit aan met de instelling **"Klasgenoten laten luisteren"** |
 | **feedbackkaart** | Set criteria/complimenten die de docent instelt voor peer feedback |
 | **compliment** | Eén gekozen criterium-chip van een klasgenoot |
 | **inzending** | Compositie die via de klascode bij de docent is ingeleverd |
 | **presenteren** | Klassikaal afspelen op het digibord (presentatiemodus) |
+| **feedback geven** | Het werklijst-scherm waarin de docent inzendingen één voor één beluistert en beoordeelt (*Opslaan & volgende*) |
+| **sterren** | 1–3 sterren met betekenis: *op weg · goed · top* |
 
 ## Twijfelgevallen — voor Bert om te beslissen
 
