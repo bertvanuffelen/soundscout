@@ -102,17 +102,17 @@ export function ClassCodeBoard({ classData, assignment, onToClass, partialSettin
         <div className="min-h-[72px] max-w-2xl">
           {names.length > 0 ? (
             <>
-              <p className="text-sm font-bold text-success-500 mb-2" aria-live="polite">
+              <p className="text-sm lg:text-lg font-bold text-success-500 mb-2" aria-live="polite">
                 {t('teacher.codeBoard.active', { count: names.length })}
               </p>
               <ul className="flex flex-wrap justify-center gap-1.5">
                 {names.map((n) => (
-                  <li key={n} className="rounded-full bg-brand-800 px-3 py-1 text-sm font-bold">{n}</li>
+                  <li key={n} className="rounded-full bg-brand-800 px-3 py-1 lg:px-4 lg:py-1.5 text-sm lg:text-lg font-bold">{n}</li>
                 ))}
               </ul>
             </>
           ) : (
-            <p className="text-sm text-brand-300">{t('teacher.codeBoard.activeNone')}</p>
+            <p className="text-sm lg:text-lg text-brand-300">{t('teacher.codeBoard.activeNone')}</p>
           )}
         </div>
 

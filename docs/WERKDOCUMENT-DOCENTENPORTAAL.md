@@ -40,7 +40,7 @@
 | 6 | Feedback geven als werklijst (beeld boven de tijdlijn, uitklappen op de telefoon) | ✅ |
 | 7 | Dashboard *Vandaag*, nieuwe klas → wizard, Lesideeën → wizard stap 2 | ✅ |
 | 8 | Teksten NL + EN, handleiding/woordenlijst, CLAUDE.md | ✅ |
-| 9 | Eindcontrole: alle flows in de testopstelling, telefoon, digibord, screenshots | ⏳ |
+| 9 | Eindcontrole: alle flows in de testopstelling, telefoon, digibord, screenshots | ✅ |
 
 ## Bewust niet gebouwd (vraagt een migratie of een besluit van Bert)
 
@@ -165,3 +165,49 @@
 - **Bewust niet opgeruimd:** i18n-sleutels die alleen de verwijderde componenten gebruikten (bijvoorbeeld `teacher.classDetail.startChoiceLesson`). Ze kunnen geen kwaad. Er bestaan ook dynamische sleutels, waardoor automatisch verwijderen riskant is. Dit is een kleine opruimklus voor later.
 - **Historische plandocumenten** (PLAN-*, LOGBOEK, TODO) noemen de oude componenten nog. Dat klopt: zij beschrijven toen.
 - **Poort:** tsc 0 · 437/437 · lint 25/5.
+
+### 14-10-2026 · Stap 9 — eindcontrole ✅
+- **Productiebuild** (`npm run build`) slaagt.
+  - De waarschuwing over een grote `main`-chunk bestond al: 809 kB vóór de bouw, nu 830 kB door de extra teksten.
+  - Het docentendeel wordt apart geladen (`TeacherPage`: 143 → 179 kB).
+  - De Tailwind-scan pakt alle nieuwe klassen op (onder andere de grid van het feedbackscherm uit stap 5–6).
+- **Alle flows doorlopen tegen een productiebuild met de nep-database.**
+  - Telefoon is 390 px, digibord 1920×1080.
+  - De screenshots staan in [`mockups/gebouwd/`](mockups/gebouwd/).
+
+  | # | Scherm | Formaat |
+  |---|---|---|
+  | 01 | dashboard | laptop |
+  | 02–04 | klaspagina, alle drie de tabs, inclusief *Meer opties* | laptop |
+  | 05 | feedback geven | laptop |
+  | 06–07 | wizard stap 1 en 2 | laptop |
+  | 08 | stap 3 *Code op het bord* | digibord |
+  | 09 | presenteren met praatplaat (ongewijzigd) | digibord |
+  | 10 | klaspagina | telefoon |
+  | 11 | feedback met uitgeklapte kaart | telefoon |
+  | 12 | wizard | telefoon |
+  | 13 | code op het bord met binnengekomen namen | digibord |
+
+- **Laatste verbetering:** op het codescherm staan de namen en de hulpregel nu groter op grote schermen (`lg:`). Op 1920 px waren ze te klein om vanaf achter in de klas te lezen.
+- **Opgemerkt, geen fout:**
+  - *Nu* kiest een nieuwe klas zonder opdracht als die de meest recente activiteit heeft. Dat past bij de regel "laatst geopend, anders meest recente activiteit". Open je een andere klas, dan wordt die de klas van *Nu*.
+  - In de werklijst springt de eerste kaart naar "Beluisterd" zodra hij opent. Dat is bedoeld: openen telt als beluisterd.
+- **Poort:** tsc 0 · 437/437 tests (27 bestanden; beginstand 414 in 23) · lint 25/5 (onveranderd).
+
+---
+
+## Voor Bert — stand en vervolg
+
+**Alles uit het ontwerp (ronde 3b) is gebouwd.** De branch is `claude/docentenportaal-ombouw`, met één commit per stap. Er is niets naar `main` gepusht en er zijn geen migraties.
+
+**Zelf bekijken:** start in deze worktree `npm run dev`, log in met je eigen testaccount en kies het docentendashboard. De echte database werkt ongewijzigd, want er is alleen gebruikgemaakt van bestaande RPC's en kolommen.
+
+**Nog te doen of te besluiten:**
+1. **Test met een echt account.** Ik heb alleen met de nep-database getest. Let vooral op deze punten:
+   - de wizard per type (template, praatplaat, storyboard, vrij en een leskaart);
+   - *Opslaan & volgende* in de werklijst;
+   - *Opdracht stoppen*;
+   - *Klas verwijderen*.
+2. **Moment van mergen naar `main`.** De lancering is op 27-10. Volgens de oorspronkelijke afspraak bouwden we dit na de lancering. Kies zelf of dit vóór of na 27-10 live gaat.
+3. **Kleine opruimklus:** i18n-sleutels die alleen de verwijderde componenten gebruikten.
+4. **Docentenpagina `/teacher`:** daar staat nog "Activeer een praatplaat…" en "in één klik". Ik heb die pagina bewust niet aangeraakt.
