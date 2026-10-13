@@ -7,6 +7,7 @@ import { Play, Trash2, Image, PenLine, FileText, MapPin, Star, Headphones } from
 import type { Submission } from '../../hooks/useSubmissions';
 import { getReviewStatus } from '../../hooks/useSubmissions';
 import { StickerIcon } from '../../utils/stickerMap';
+import { getSubmissionShape } from '../../lib/submissionDisplay';
 
 interface SubmissionCardProps {
   submission: Submission;
@@ -17,8 +18,10 @@ interface SubmissionCardProps {
 
 export function SubmissionCard({ submission, onPlay, onDelete, isWip }: SubmissionCardProps) {
   const { t } = useTranslation();
-  const { student_name, composition_name, composition_data, created_at, last_updated_at } = submission;
-  const hasStoryboard = !!composition_data?.storyboardId;
+  const { student_name, composition_name, created_at, last_updated_at } = submission;
+  // Vorm bepaalt het label: een praatplaat draagt een virtueel pp-storyboard-id
+  // en kreeg daardoor vroeger óók het label "Storyboard".
+  const shape = getSubmissionShape(submission);
   const reviewStatus = getReviewStatus(submission);
 
   // Show last_updated_at for work-in-progress, created_at for submissions
@@ -82,19 +85,25 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
               {t('teacher.submissionCard.reviewed')}
             </span>
           )}
-          {hasStoryboard && (
+          {shape === 'storyboard' && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-purple-100 text-purple-700 text-xs font-medium shrink-0">
               <Image className="w-3 h-3" />
               {t('teacher.submissionCard.withStoryboard')}
             </span>
           )}
-          {submission.assignment_type === 'template' && (
+          {shape === 'image' && (
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-neutral-100 text-neutral-600 text-xs font-medium shrink-0">
+              <Image className="w-3 h-3" />
+              {t('teacher.submissionCard.withImage')}
+            </span>
+          )}
+          {shape === 'template' && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-accent-50 text-accent-700 text-xs font-medium shrink-0">
               <FileText className="w-3 h-3" />
               {t('teacher.submissionCard.fromTemplate')}
             </span>
           )}
-          {submission.assignment_type === 'praatplaat' && (
+          {shape === 'praatplaat' && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-teal-50 text-teal-700 text-xs font-medium shrink-0">
               <MapPin className="w-3 h-3" />
               {t('teacher.submissionCard.fromPraatplaat')}

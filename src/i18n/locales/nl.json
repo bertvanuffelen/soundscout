@@ -1046,7 +1046,8 @@
       "codeInvalid": "Ongeldige klas-code ontvangen van de server",
       "notLoggedIn": "Je moet ingelogd zijn om een klas aan te maken",
       "create": "Kon klas niet aanmaken",
-      "delete": "Kon klas niet verwijderen"
+      "delete": "Kon klas niet verwijderen",
+      "maxReached": "Je hebt het maximum van {{max}} klassen bereikt. Verwijder een oude klas om een nieuwe te maken."
     },
     "praatplaten": {
       "load": "Kon praatplaten niet laden",
@@ -1573,8 +1574,8 @@
     "classDetail": {
       "back": "Terug naar overzicht",
       "dashboardCrumb": "Dashboard",
-      "compositionCount": "{{count}} compositie",
-      "compositionCount_plural": "{{count}} composities",
+      "compositionCount_one": "{{count}} compositie",
+      "compositionCount_other": "{{count}} composities",
       "refreshTitle": "Ververs composities",
       "classCodeLabel": "Klascode",
       "loading": "Composities laden...",
@@ -1617,7 +1618,7 @@
       "starsHint": "{{count}} sterren van klasgenoten",
       "status": {
         "new": "Nieuw",
-        "seen": "Gezien",
+        "seen": "Beluisterd",
         "reviewed": "Beoordeeld"
       },
       "openMontage": "Open montage",
@@ -1697,8 +1698,8 @@
     },
     "classCard": {
       "createdOn": "Aangemaakt op {{date}}",
-      "compositionCount": "{{count}} compositie",
-      "compositionCount_plural": "{{count}} composities",
+      "compositionCount_one": "{{count}} compositie",
+      "compositionCount_other": "{{count}} composities",
       "view": "Bekijken",
       "showOnScreen": "Toon op scherm"
     },
@@ -1713,11 +1714,12 @@
       "withStoryboard": "Storyboard",
       "wip": "In bewerking",
       "lastEdited": "Laatst bewerkt:",
-      "fromTemplate": "Opdracht",
+      "fromTemplate": "Template",
       "fromPraatplaat": "Praatplaat",
       "new": "Nieuw",
       "seen": "Beluisterd",
-      "reviewed": "Beoordeeld"
+      "reviewed": "Beoordeeld",
+      "withImage": "Afbeelding"
     },
     "praatplaat": {
       "sectionTitle": "Praatplaten",

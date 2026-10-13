@@ -1046,7 +1046,8 @@
       "codeInvalid": "Received an invalid class code from the server",
       "notLoggedIn": "You need to be signed in to create a class",
       "create": "Could not create the class",
-      "delete": "Could not delete the class"
+      "delete": "Could not delete the class",
+      "maxReached": "You have reached the maximum of {{max}} classes. Delete an old class to create a new one."
     },
     "praatplaten": {
       "load": "Could not load praatplaten",
@@ -1573,8 +1574,8 @@
     "classDetail": {
       "back": "Back to overview",
       "dashboardCrumb": "Dashboard",
-      "compositionCount": "{{count}} composition",
-      "compositionCount_plural": "{{count}} compositions",
+      "compositionCount_one": "{{count}} composition",
+      "compositionCount_other": "{{count}} compositions",
       "refreshTitle": "Refresh compositions",
       "classCodeLabel": "Class code",
       "loading": "Loading compositions...",
@@ -1617,7 +1618,7 @@
       "starsHint": "{{count}} stars from classmates",
       "status": {
         "new": "New",
-        "seen": "Seen",
+        "seen": "Listened",
         "reviewed": "Reviewed"
       },
       "openMontage": "Open timeline",
@@ -1697,8 +1698,8 @@
     },
     "classCard": {
       "createdOn": "Created on {{date}}",
-      "compositionCount": "{{count}} composition",
-      "compositionCount_plural": "{{count}} compositions",
+      "compositionCount_one": "{{count}} composition",
+      "compositionCount_other": "{{count}} compositions",
       "view": "View",
       "showOnScreen": "Show on screen"
     },
@@ -1713,11 +1714,12 @@
       "withStoryboard": "Storyboard",
       "wip": "In progress",
       "lastEdited": "Last edited:",
-      "fromTemplate": "Assignment",
+      "fromTemplate": "Template",
       "fromPraatplaat": "Sound map",
       "new": "New",
       "seen": "Listened",
-      "reviewed": "Reviewed"
+      "reviewed": "Reviewed",
+      "withImage": "Image"
     },
     "praatplaat": {
       "sectionTitle": "Sound Maps",

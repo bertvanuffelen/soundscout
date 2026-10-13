@@ -32,7 +32,7 @@
 | # | Stap | Status |
 |---|---|---|
 | 0 | Onderzoek, beginstand, werkdocument, backup | ✅ |
-| 1 | Snelle reparaties: meervoud (`_plural` → `_one/_other`), dubbel getal op de klaskaart, label "Storyboard" bij praatplaat, label "Opdracht" → "Template", sorteren op inleveren, max-klassen (melding vast + teller) | ⏳ |
+| 1 | Snelle reparaties: meervoud (`_plural` → `_one/_other`), dubbel getal op de klaskaart, label "Storyboard" bij praatplaat, label "Opdracht" → "Template", sorteren op inleveren, max-klassen (melding vast + teller) | ✅ |
 | 2 | Tijdlijn slepen met touch (`Playhead`) | ⏳ |
 | 3 | Bouwstenen: vorm-meta met kleuren en iconen, bronnenlijst (platen, verhalen, templates, thema's) los van de oude modal | ⏳ |
 | 4 | Wizard: 1 Kies → 2 Controleer & pas aan → 3 Code op het bord (met instellingenpaneel) | ⏳ |
@@ -59,3 +59,11 @@
   - **Opdracht activeren:** `activateAssignment` en `activatePraatplaatFromCatalog` geven het id terug of herladen daarna. `activateLessonCard` regelt de opdrachtkaart zelf (via `card_inline`). Wizard stap 2 kan instellingen daarom **na** het activeren doorzetten met de bestaande functies `updateAssignmentCard`, `updateAssignmentDuration`, `updatePraatplaatTheme` en `setAssignmentPeerReview`. **Geen migratie nodig.**
   - **Klasgenoten laten luisteren:** `setAssignmentPeerReview(id, true, null)` kiest op de server zelf de standaardkaart (migratie 028).
   - **Tests:** er zijn geen tests voor docentcomponenten; nieuwe pure logica krijgt eigen unit-tests.
+
+### 14-10-2026 · Stap 1 — snelle reparaties ✅
+- **Meervoud:** `teacher.classCard.compositionCount` en `teacher.classDetail.compositionCount` gebruikten nog `_plural`, terwijl i18next v25 `_one/_other` verwacht. Omgezet in NL en EN. De klaskaart toonde het getal bovendien twee keer (`<strong>` + de vertaling); de `<strong>` is weg. Resultaat: "28 composities".
+- **Volgorde:** nieuw `src/lib/submissionDisplay.ts`. `sortSubmissionsNewestFirst` sorteert op inleveren > laatst bewerkt > eerste keer opslaan, en wordt toegepast in `useSubmissions`.
+- **Vorm-label:** `getSubmissionShape` maakt onderscheid tussen praatplaat, storyboard, losse afbeelding (`pp-`/`location-`), template en vrij. `SubmissionCard` geeft een praatplaat-inzending geen label "Storyboard" meer. Nieuw label "Afbeelding"; "Opdracht" heet nu "Template"; de presentatiestatus "Gezien" heet nu "Beluisterd", net als op de kaart.
+- **Max klassen (BUG-MAXCLASSES-MODAL):** de melding komt nu uit i18n (`errors.classes.maxReached`, NL+EN). `TeacherDashboard.handleCreateClass` gooit de fout door, zodat `CreateClassModal` hem **in de modal** toont en de laadstand loslaat. Visueel gecontroleerd: de melding staat in het venster en *Annuleren* werkt.
+- **Tests:** +6 (`submissionDisplay.test.ts`). Poort: tsc 0 · 420/420 · lint 25/5 (gelijk aan de beginstand).
+- **Teller "x van 8 klassen":** volgt in stap 7 (dashboard).

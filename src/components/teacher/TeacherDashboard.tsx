@@ -94,13 +94,17 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
     }
   };
 
+  // Fout doorgooien naar de modal: die toont de melding zelf en zet zijn
+  // laadstand terug. Voorheen werd de fout hier opgevangen, bleef de modal
+  // op "Aanmaken..." hangen (Annuleren uitgeschakeld) en stond de melding
+  // onzichtbaar áchter de overlay (BUG-MAXCLASSES-MODAL).
   const handleCreateClass = async (name: string) => {
+    setActionError(null);
     try {
-      setActionError(null);
       await createClass(name);
       setShowCreateModal(false);
     } catch (err) {
-      setActionError(err instanceof Error ? err.message : t('teacher.dashboard.createClassError'));
+      throw err instanceof Error ? err : new Error(t('teacher.dashboard.createClassError'));
     }
   };
 

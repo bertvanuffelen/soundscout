@@ -123,10 +123,7 @@ export function useClasses(): UseClassesReturn {
 
       // Check klassen limiet (null = onbeperkt)
       if (maxClasses !== null && classes.length >= maxClasses) {
-        throw new Error(
-          `Je hebt het maximum van ${maxClasses} klassen bereikt. ` +
-          `Verwijder een bestaande klas om een nieuwe aan te maken.`
-        );
+        throw new Error(i18n.t('errors.classes.maxReached', { max: maxClasses }));
       }
 
       // Genereer unieke code via database functie
