@@ -896,7 +896,7 @@
     "newTemplateModalButton": "Go to SoundScout",
     "typeTemplate": "Template",
     "typePraatplaat": "Sound map",
-    "typeStoryboard": "Story in pictures",
+    "typeStoryboard": "Storyboard",
     "typeFree": "Free composition",
     "copyCode": "Copy code",
     "active": "Active",
@@ -1638,8 +1638,8 @@
       "unknownGiver": "Unknown"
     },
     "peerReview": {
-      "title": "Peer feedback",
-      "hint": "Students who submitted listen to 3 anonymous classmates' compositions and give compliments.",
+      "title": "Let classmates listen",
+      "hint": "Classmates give each other feedback. Students who handed in listen to 3 anonymous classmate compositions and give stars.",
       "cardLabel": "Feedback card",
       "ownCard": "own card",
       "newCard": "New card",
@@ -1818,6 +1818,97 @@
       "chooseBoardHint": "The image with clickable spots — listeners explore it themselves",
       "chooseAlbum": "The compositions",
       "chooseAlbumHint": "All submitted compositions as one playlist"
+    },
+    "wizard": {
+      "title": "Set up an assignment",
+      "steps": {
+        "choose": "Choose",
+        "check": "Check & adjust",
+        "board": "Code on the board"
+      },
+      "replaceWarning": "{{className}} is now working on {{name}}. Choosing something new replaces it. Submissions are kept.",
+      "replaceWarningShort": "This replaces {{name}}. Submissions are kept under Look back.",
+      "tabs": {
+        "own": "Build it yourself",
+        "ownSub": "choose a format and a source",
+        "lesson": "Ready-made lesson",
+        "lessonSub": "with learning goal and phases"
+      },
+      "whatDo": "What will your students do?",
+      "pick": {
+        "praatplaat": "Choose a picture",
+        "storyboard": "Choose a story",
+        "template": "Choose a template",
+        "free": "Choose a theme"
+      },
+      "noTemplates": "You don't have any templates yet. Make a composition in the studio and save it as a template on the stage.",
+      "noLessons": "No ready-made lessons yet.",
+      "storyboardScenes_one": "{{count}} scene",
+      "storyboardScenes_other": "{{count}} scenes",
+      "types": {
+        "praatplaat": {
+          "plain": "Score one picture together",
+          "desc": "Everyone picks a spot on the same picture."
+        },
+        "storyboard": {
+          "plain": "Set a story to music",
+          "desc": "A story in scenes; music for each scene."
+        },
+        "template": {
+          "plain": "Finish a beginning",
+          "desc": "You prepare the start, they finish it."
+        },
+        "free": {
+          "plain": "Free composing",
+          "desc": "Their own piece with sounds from one theme."
+        }
+      },
+      "previewTitle": "What the student sees",
+      "previewEmpty": "Choose an assignment to see what the student gets.",
+      "previewStart": "Start",
+      "mobilePreview": "Students see: {{name}} with {{count}} short steps.",
+      "next": "Next",
+      "back": "Back",
+      "activate": "Set it up",
+      "activating": "Setting up…",
+      "chosenFor": "For {{className}}",
+      "change": "Change",
+      "settingsTitle": "Settings",
+      "settingsHint": "These are fine as they are. You can change them later, even during the lesson.",
+      "settings": {
+        "card": "Instructions for students",
+        "cardDefault": "Standard instructions",
+        "cardFromLesson": "Instructions from the lesson",
+        "theme": "Sounds from theme",
+        "duration": "Duration",
+        "durationHint": "students see this",
+        "durationPlaceholder": "e.g. 2 lessons",
+        "peer": "Let classmates listen",
+        "peerHint": "Classmates give each other feedback.",
+        "peerOn": "On · after handing in, each student listens to 3 classmates and gives stars",
+        "peerOff": "Off · you can switch it on later"
+      },
+      "seasonNotice": "This theme is out of season and hidden from the student pickers. You can still set it up.",
+      "activateError": "Could not set up the assignment. Please try again.",
+      "settingsPartial": "The assignment is ready, but not all settings were saved. Check them in the class under More options."
+    },
+    "codeBoard": {
+      "ready": "{{className}} · {{name}} is ready",
+      "goTo": "Go to",
+      "andType": "and type:",
+      "active_one": "{{count}} student is working or done",
+      "active_other": "{{count}} students are working or done",
+      "activeNone": "Names appear here as soon as students save their work for the first time.",
+      "fullscreen": "Full screen",
+      "exitFullscreen": "Exit full screen",
+      "settings": "Settings",
+      "toClass": "To the class",
+      "settingsLive": "Changes apply immediately, also for students who are already working.",
+      "done": "Done"
+    },
+    "liveSettings": {
+      "saved": "Saved",
+      "error": "Could not save the setting. Please try again."
     }
   },
   "praatplaatImages": {

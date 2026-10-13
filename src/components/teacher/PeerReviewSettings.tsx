@@ -18,9 +18,11 @@ import { cn } from '../../utils/cn';
 
 interface PeerReviewSettingsProps {
   assignmentId: string;
+  /** Zonder eigen bovenrand/marge (ingebed in een instellingenlijst) */
+  bare?: boolean;
 }
 
-export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
+export function PeerReviewSettings({ assignmentId, bare = false }: PeerReviewSettingsProps) {
   const { t } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [available, setAvailable] = useState(true); // false als migratie 027 nog niet draait
@@ -160,7 +162,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
   if (!available) return null;
   if (loading) {
     return (
-      <div className="mt-4 pt-4 border-t border-border-subtle flex items-center gap-2 text-text-muted text-sm">
+      <div className={cn(!bare && 'mt-4 pt-4 border-t border-border-subtle', 'flex items-center gap-2 text-text-muted text-sm')}>
         <Loader2 className="w-4 h-4 animate-spin" /> {t('common.loading')}
       </div>
     );
@@ -169,7 +171,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
   const selectedCard = cards.find((c) => c.id === cardId) ?? null;
 
   return (
-    <div className="mt-4 pt-4 border-t border-border-subtle">
+    <div className={cn(!bare && 'mt-4 pt-4 border-t border-border-subtle')}>
       {/* Toggle */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
@@ -182,6 +184,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
         <button
           role="switch"
           aria-checked={enabled}
+          aria-label={t('teacher.peerReview.title')}
           onClick={() => persist(!enabled, cardId)}
           className={cn(
             'relative w-11 h-6 rounded-full transition-colors shrink-0',

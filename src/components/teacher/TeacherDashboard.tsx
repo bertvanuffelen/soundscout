@@ -36,12 +36,15 @@ import type { TeacherTemplate } from '../../lib/templates';
 import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs, GuideLink } from './common';
 
 interface TeacherDashboardProps {
-  onSelectClass: (classData: TeacherClass) => void;
+  /** Klas openen, optioneel op een bepaald tabblad */
+  onSelectClass: (classData: TeacherClass, tab?: 'klaar' | 'bezig' | 'terug') => void;
+  /** Opdracht-wizard openen voor een klas (optioneel met een les al gekozen) */
+  onOpenWizard: (classData: TeacherClass, lessonCardId?: string | null) => void;
   onLogout: () => void;
   onBack?: () => void;
 }
 
-export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDashboardProps) {
+export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack }: TeacherDashboardProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
   const goToTeacherGuide = useAppStore((s) => s.goToTeacherGuide);
@@ -101,8 +104,10 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   const handleCreateClass = async (name: string) => {
     setActionError(null);
     try {
-      await createClass(name);
+      const newClass = await createClass(name);
       setShowCreateModal(false);
+      // Nieuwe klas → meteen de opdracht-wizard (ontwerp ronde 3b)
+      onOpenWizard(newClass);
     } catch (err) {
       throw err instanceof Error ? err : new Error(t('teacher.dashboard.createClassError'));
     }

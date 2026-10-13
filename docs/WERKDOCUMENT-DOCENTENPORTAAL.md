@@ -34,8 +34,8 @@
 | 0 | Onderzoek, beginstand, werkdocument, backup | ✅ |
 | 1 | Snelle reparaties: meervoud (`_plural` → `_one/_other`), dubbel getal op de klaskaart, label "Storyboard" bij praatplaat, label "Opdracht" → "Template", sorteren op inleveren, max-klassen (melding vast + teller) | ✅ |
 | 2 | Tijdlijn slepen met touch (`Playhead`) | ✅ |
-| 3 | Bouwstenen: vorm-meta met kleuren en iconen, bronnenlijst (platen, verhalen, templates, thema's) los van de oude modal | ⏳ |
-| 4 | Wizard: 1 Kies → 2 Controleer & pas aan → 3 Code op het bord (met instellingenpaneel) | ⏳ |
+| 3 | Bouwstenen: vorm-meta met kleuren en iconen, bronnenlijst (platen, verhalen, templates, thema's) los van de oude modal | ✅ |
+| 4 | Wizard: 1 Kies → 2 Controleer & pas aan → 3 Code op het bord (met instellingenpaneel) | ✅ |
 | 5 | Klaspagina met tabs Klaarzetten · Tijdens de les · Terugkijken, plus *Meer opties* en automatisch verversen | ⏳ |
 | 6 | Feedback geven als werklijst (beeld boven de tijdlijn, uitklappen op de telefoon) | ⏳ |
 | 7 | Dashboard *Vandaag*, nieuwe klas → wizard, Lesideeën → wizard stap 2 | ⏳ |
@@ -87,3 +87,22 @@
 
 - **Studio:** geen sleepvlak in de bewerkmodus, dus blokjes slepen werkt als voorheen.
 - **Tests en poort:** +3 tests (`useScrub.test.ts`). Poort: tsc 0 · 423/423 · lint 25/5 (de meldingen in `Timeline.tsx` bestonden al, alleen verschoven).
+
+### 14-10-2026 · Stap 3 + 4 — wizard en codescherm ✅
+- **Bouwstenen:**
+  - `assignmentTypeMeta.ts` heeft nu per vorm een kleur, een gewone-taal-titel en een uitleg (teal/paars/amber/roze, Lucide-iconen, geen emoji's).
+  - `lib/wizardActivation.ts` (6 tests) zet eerst klaar via de bestaande RPC's en daarna de instellingen door: duur, kaart, thema, klasgenoten. Een mislukte instelling blokkeert niets, maar wordt gemeld.
+- **Wizard** (`components/teacher/wizard/AssignmentWizard.tsx`):
+  - **Stap 1:** tabs *Zelf samenstellen* (eerst) en *Kant-en-klare les*. De vormkaarten hebben een kleur per vorm. Rechts staat "Zo ziet de leerling het" met de knoppen eronder, en die kolom schuift mee. Op de telefoon staat er een vaste knoppenbalk onderaan.
+  - **Stap 2:** controleren en aanpassen, met *Uitleg voor leerlingen*, *Geluiden uit thema* (alleen bij een praatplaat), *Duur* en *Klasgenoten laten luisteren* ("Klasgenoten geven feedback aan elkaar."). De vervangmelding en de seizoensmelding staan in de flow.
+  - **Stap 3:** `ClassCodeBoard`: code groot op het bord, de namen van leerlingen die bezig of klaar zijn (uit de inzendingsrijen, die sinds migratie 026 bij het eerste opslaan ontstaan, dus **zonder migratie**), volledig scherm, ⚙ Instellingen (paneel met `LiveAssignmentSettings`) en *Naar de klas*.
+- **Navigatie:**
+  - `TeacherPage` kent nu de weergave `wizard`.
+  - Een nieuwe klas opent direct de wizard.
+  - Op de klaspagina openen de typekaarten en de leskaartknop voorlopig de wizard; in stap 5 wordt de klaspagina helemaal omgebouwd.
+- **PeerReviewSettings** heet nu "Klasgenoten laten luisteren", met het nieuwe uitlegzinnetje en een `bare`-weergave.
+- **Gevonden bug in het design-systeem (gerepareerd):** 8 statuskleuren werden gebruikt maar bestonden niet als token. Die klassen deden niets, op dit moment in 40 plekken, bijvoorbeeld de oranje stip "Beluisterd" in de presentatie en `error-700` bij foutmeldingen. Aangevuld in `index.css`: success-700, warning-200/300/400/700/800, error-300/700.
+- **Naam:** "Storyboard" overal (was ook "Verhaal in beeld").
+- **Testopstelling:** de nep-database activeert leskaarten nu per type en onthoudt de instelling voor klasgenoten. Nieuw script `shoot-custom.mjs` (stappen uit JSON, toont paginafouten).
+- **Visueel gecontroleerd:** stap 1, 2 en 3, het instellingenpaneel en de telefoon (stap 1 en 2, knoppenbalk onderaan). Geen paginafouten.
+- **Poort:** tsc 0 · 429/429 · lint 25/5.

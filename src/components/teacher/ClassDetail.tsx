@@ -36,6 +36,10 @@ import { logger } from '../../utils/logger';
 interface ClassDetailProps {
   classData: TeacherClass;
   onBack: () => void;
+  /** Opdracht-wizard openen (klaarzetten in 3 stappen) */
+  onOpenWizard: () => void;
+  /** Openen op een bepaald tabblad (null = automatisch) */
+  initialTab?: 'klaar' | 'bezig' | 'terug' | null;
 }
 
 type AssignmentKind = 'template' | 'praatplaat' | 'storyboard' | 'free';
@@ -82,7 +86,7 @@ const ASSIGNMENT_ICON_WRAP_SM = {
   free: 'bg-rose-100 text-rose-600',
 } as const;
 
-export function ClassDetail({ classData, onBack }: ClassDetailProps) {
+export function ClassDetail({ classData, onBack, onOpenWizard }: ClassDetailProps) {
   const { t } = useTranslation();
   const { submissions, loading, error, deleteSubmission, setFeedback, markSeen, refetch } = useSubmissions(classData.id);
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
@@ -264,14 +268,10 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
 
   // Klik op een type-kaart. Staat er al een opdracht → eerst vervang-melding;
   // anders direct de type-gescoopte keuze-modal openen.
-  const handlePickType = useCallback((type: AssignmentType) => {
-    if (activeAssignment) {
-      setPendingAction({ kind: 'pick', type });
-    } else {
-      setActivateType(type);
-      setShowActivateModal(true);
-    }
-  }, [activeAssignment]);
+  // Type-kaarten openen de opdracht-wizard (de vervangmelding staat daar in de flow)
+  const handlePickType = useCallback(() => {
+    onOpenWizard();
+  }, [onOpenWizard]);
 
   // Klik op "Activeer" bij een eerdere opdracht. Bij een actieve opdracht eerst vervang-melding.
   const handleReactivate = useCallback((row: ClassAssignmentRow) => {
@@ -569,7 +569,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                     meteen open — de tussenklik "Stel zelf samen" verviel. Wie
                     liever een kant-en-klare leskaart pakt, klikt de knop eronder. */}
                 <AssignmentTypeCards onSelect={handlePickType} />
-                <LessonCardChoice onClick={() => setShowLessonPicker(true)} />
+                <LessonCardChoice onClick={onOpenWizard} />
               </div>
             )}
 
@@ -741,7 +741,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   {t('assignments.changeAssignment')}
                 </p>
                 <AssignmentTypeCards onSelect={handlePickType} />
-                <LessonCardChoice onClick={() => setShowLessonPicker(true)} />
+                <LessonCardChoice onClick={onOpenWizard} />
               </div>
             )}
           </div>

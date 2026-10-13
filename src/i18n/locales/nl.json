@@ -896,7 +896,7 @@
     "newTemplateModalButton": "Ga naar SoundScout",
     "typeTemplate": "Template",
     "typePraatplaat": "Praatplaat",
-    "typeStoryboard": "Verhaal in beeld",
+    "typeStoryboard": "Storyboard",
     "typeFree": "Vrije compositie",
     "copyCode": "Kopieer code",
     "active": "Actief",
@@ -1638,8 +1638,8 @@
       "unknownGiver": "Onbekend"
     },
     "peerReview": {
-      "title": "Peer feedback",
-      "hint": "Leerlingen die ingeleverd hebben, beluisteren 3 anonieme klasgenoot-composities en geven complimenten.",
+      "title": "Klasgenoten laten luisteren",
+      "hint": "Klasgenoten geven feedback aan elkaar. Wie heeft ingeleverd, luistert naar 3 anonieme composities van klasgenoten en geeft sterren.",
       "cardLabel": "Feedbackkaart",
       "ownCard": "eigen kaart",
       "newCard": "Nieuwe kaart",
@@ -1818,6 +1818,97 @@
       "chooseBoardHint": "De plaat met klikbare plekken — luisteraars klikken zelf rond",
       "chooseAlbum": "De composities",
       "chooseAlbumHint": "Alle ingeleverde composities als afspeellijst achter elkaar"
+    },
+    "wizard": {
+      "title": "Opdracht klaarzetten",
+      "steps": {
+        "choose": "Kies",
+        "check": "Controleer & pas aan",
+        "board": "Code op het bord"
+      },
+      "replaceWarning": "{{className}} werkt nu aan {{name}}. Kies je iets nieuws, dan vervang je die. De inzendingen blijven bewaard.",
+      "replaceWarningShort": "Hiermee vervang je {{name}}. Inzendingen blijven bewaard onder Terugkijken.",
+      "tabs": {
+        "own": "Zelf samenstellen",
+        "ownSub": "kies een vorm en een bron",
+        "lesson": "Kant-en-klare les",
+        "lessonSub": "met lesdoel en fases"
+      },
+      "whatDo": "Wat gaan je leerlingen doen?",
+      "pick": {
+        "praatplaat": "Kies een plaat",
+        "storyboard": "Kies een verhaal",
+        "template": "Kies een template",
+        "free": "Kies een thema"
+      },
+      "noTemplates": "Je hebt nog geen templates. Maak een compositie in de studio en sla die op het podium op als template.",
+      "noLessons": "Nog geen kant-en-klare lessen.",
+      "storyboardScenes_one": "{{count}} scène",
+      "storyboardScenes_other": "{{count}} scènes",
+      "types": {
+        "praatplaat": {
+          "plain": "Samen één plaat verklanken",
+          "desc": "Iedereen kiest een plek op dezelfde plaat."
+        },
+        "storyboard": {
+          "plain": "Een verhaal op muziek zetten",
+          "desc": "Een verhaal in scènes; muziek per scène."
+        },
+        "template": {
+          "plain": "Een begin afmaken",
+          "desc": "Jij zet de start klaar, zij maken het af."
+        },
+        "free": {
+          "plain": "Vrij componeren",
+          "desc": "Een eigen stuk met geluiden uit één thema."
+        }
+      },
+      "previewTitle": "Zo ziet de leerling het",
+      "previewEmpty": "Kies een opdracht om te zien wat de leerling krijgt.",
+      "previewStart": "Starten",
+      "mobilePreview": "Leerlingen zien: {{name}} met {{count}} stapjes uitleg.",
+      "next": "Volgende",
+      "back": "Terug",
+      "activate": "Zet klaar",
+      "activating": "Bezig met klaarzetten…",
+      "chosenFor": "Voor {{className}}",
+      "change": "Wijzig",
+      "settingsTitle": "Instellingen",
+      "settingsHint": "Staan al goed. Je kunt dit later nog wijzigen, ook als de les al loopt.",
+      "settings": {
+        "card": "Uitleg voor leerlingen",
+        "cardDefault": "Standaarduitleg",
+        "cardFromLesson": "Uitleg van de les",
+        "theme": "Geluiden uit thema",
+        "duration": "Duur",
+        "durationHint": "zien leerlingen",
+        "durationPlaceholder": "bijv. 2 lessen",
+        "peer": "Klasgenoten laten luisteren",
+        "peerHint": "Klasgenoten geven feedback aan elkaar.",
+        "peerOn": "Aan · na het inleveren luistert elke leerling naar 3 klasgenoten en geeft sterren",
+        "peerOff": "Uit · kun je later aanzetten"
+      },
+      "seasonNotice": "Dit thema is nu buiten seizoen en staat niet in de kiezers van leerlingen. Klaarzetten kan gewoon.",
+      "activateError": "Kon de opdracht niet klaarzetten. Probeer het opnieuw.",
+      "settingsPartial": "De opdracht staat klaar, maar niet alle instellingen zijn opgeslagen. Controleer ze in de klas onder Meer opties."
+    },
+    "codeBoard": {
+      "ready": "{{className}} · {{name}} staat klaar",
+      "goTo": "Ga naar",
+      "andType": "en typ:",
+      "active_one": "{{count}} leerling is bezig of klaar",
+      "active_other": "{{count}} leerlingen zijn bezig of klaar",
+      "activeNone": "Namen verschijnen hier zodra leerlingen hun werk voor het eerst opslaan.",
+      "fullscreen": "Volledig scherm",
+      "exitFullscreen": "Volledig scherm sluiten",
+      "settings": "Instellingen",
+      "toClass": "Naar de klas",
+      "settingsLive": "Wijzigingen gelden meteen, ook voor leerlingen die al bezig zijn.",
+      "done": "Klaar"
+    },
+    "liveSettings": {
+      "saved": "Opgeslagen",
+      "error": "Kon de instelling niet opslaan. Probeer het opnieuw."
     }
   },
   "praatplaatImages": {

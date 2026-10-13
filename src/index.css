@@ -76,6 +76,8 @@
   /* ============================================================
      SEMANTISCHE KLEUREN
      Voor feedback: success, warning, error
+     (700/800-tinten en warning-200..400 toegevoegd 14-10-2026: ze werden al
+     in de app gebruikt maar bestonden niet, waardoor die klassen niets deden)
      ============================================================ */
 
   --color-success-50: #f0fdf4;
@@ -84,18 +86,26 @@
   --color-success-400: #4ade80;
   --color-success-500: #22c55e;
   --color-success-600: #16a34a;
+  --color-success-700: #15803d;
 
   --color-warning-50: #fffbeb;
   --color-warning-100: #fef3c7;
+  --color-warning-200: #fde68a;
+  --color-warning-300: #fcd34d;
+  --color-warning-400: #fbbf24;
   --color-warning-500: #f59e0b;
   --color-warning-600: #d97706;
+  --color-warning-700: #b45309;
+  --color-warning-800: #92400e;
 
   --color-error-50: #fef2f2;
   --color-error-100: #fee2e2;
   --color-error-200: #fecaca;
+  --color-error-300: #fca5a5;
   --color-error-400: #f87171;
   --color-error-500: #ef4444;
   --color-error-600: #dc2626;
+  --color-error-700: #b91c1c;
 
   /* ============================================================
      LEGACY ALIASES (voor backwards compatibility)
