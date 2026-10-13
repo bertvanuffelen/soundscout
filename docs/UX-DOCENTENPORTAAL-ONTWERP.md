@@ -4,7 +4,7 @@
 
 **Volledige flow, klikbaar:** [`docs/mockups/docentenportaal-flow.html`](mockups/docentenportaal-flow.html)
 - Eén bestand, werkt zonder internet.
-- Met **Volgende stap →** loop je de les in 19 stappen door. Met **🗺️ Overzicht** spring je naar elk scherm.
+- Met **Volgende stap →** loop je de les in 20 stappen door. Met **🗺️ Overzicht** spring je naar elk scherm.
 - Met **Bekijk als** wissel je tussen laptop, digibord, tablet en telefoon. Het hele portaal past zich aan.
 - **Notities:** bij elk scherm staat rechts een notitieveld. Daarnaast hoort bij elk oranje nummer in het scherm een eigen veld. Tik op een nummer om erheen te springen.
 - **Exporteer notities** geeft alles als markdown, gegroepeerd per scherm.
@@ -24,12 +24,27 @@ Eerdere rondes: [onderzoek](UX-DOCENTENPORTAAL-ONDERZOEK.md) · [varianten](UX-D
 | Feedback geven | **A · Werklijst**, met een betere weergave op de telefoon ("feedbackveld onder de aangeklikte kaart") en **afbeeldingen boven de tijdlijn** | Laptop/tablet: lijst links, inzending rechts. Telefoon: het feedbackveld **klapt open onder de aangetikte kaart**. Bovenaan staat het beeld (de plaat met de plek van de leerling, of de scènes bij een storyboard), daaronder een **sleepbare tijdlijn** |
 | Dashboard | **B · Vandaag**, en "Open klas" mag een echte (blauwe) knop zijn | Grote kaart "Nu" met **Open klas** als donkerblauwe knop (brand-900), plus *Presenteren* en *Code op het bord*. Daaronder de andere klassen als rijen, elk met een blauwe knop *Open klas* |
 
+## 1b. Feedback van 14-10 verwerkt (ronde 3b)
+
+| Jouw opmerking | Aanpassing in de mockup |
+|---|---|
+| **Geen emoji's**, nergens | Alle emoji's zijn vervangen door **Lucide-iconen**, dezelfde set als de app. Een vorm heeft overal hetzelfde icoon als in de huidige code: praatplaat = *MapPin*, storyboard = *Clapperboard*, template = *FileText*, vrij = *Music*. Stickers gebruiken dezelfde iconen als `stickerMap.ts` (Star, Music, Volume2, Users, Lightbulb, Target), mét tekst. De top 3 van klasgenoten krijgt *Trophy / Medal / Award*, net als het huidige overzicht. Instellingen hebben geen icoon meer, alleen tekst |
+| Wizard stap 1: de vier kaarten **een kleurnuance per vorm** | Elke vormkaart heeft zijn eigen tint: praatplaat teal, storyboard paars, template amber, vrij roze. Dat zijn dezelfde kleuren als de bestaande typekaarten en badges. Een gekozen kaart krijgt een donkerdere rand in dezelfde kleur |
+| Wizard stap 1: **knoppen onder "Zo ziet de leerling het"**; schuiven ze anders niet weg bij veel platen of thema's? | Ja, dat zou gebeuren: met meer platen of thema's schuiven de knoppen onder de lijst steeds verder naar beneden. *Volgende* en *Annuleren* staan nu **onder het voorbeeld** in een rechterkolom die **meeschuift** (sticky). Ze blijven dus altijd in beeld, hoe lang de lijst ook wordt. Op de telefoon staan ze in een **vaste balk onderaan**. Stap 2 werkt hetzelfde (*Zet klaar* / *Terug*) |
+| Stap 2: geen emoji bij *Uitleg*, *Duur*, *Klasgenoten laten luisteren*; bij peer het zinnetje **"Klasgenoten geven feedback aan elkaar."** | Emoji's verwijderd en het zinnetje toegevoegd: in de wizard, in het instellingenpaneel op het codescherm en onder *Meer opties* in de klas |
+| Na het inloggen komt de docent op de **bestaande docentenpagina** (die blijft ongewijzigd), en pas via *Ga naar dashboard* hier | Nieuwe stap in de flow: **Docentenpagina na inloggen (ongewijzigd)**, een echte schermafbeelding van `/teacher` in ingelogde staat. Tik op *Ga naar dashboard* om verder te gaan. Ook de telefoonversie staat erin |
+| Eerste keer: de drie stappen waren in het origineel mooier | De drie stappen hebben weer de **stijl van nu** (`HowItWorksSteps`): een witte kaart met lampje en de titel "Zo zet je een klas op", met drie grijze vakken, elk met een donkerblauw nummerrondje, een titel en een uitleg |
+| Dashboard Vandaag: **knoppen even groot** | *Open klas*, *Presenteren* en *Code op het bord* zijn nu alle drie even breed en even hoog |
+| Terugkijken: titel **"(Eerdere) opdrachten"**, alleen het logo van de soort | Titel aangepast. Elke rij heeft een **gekleurd vormicoon** (zelfde kleur als in de wizard) |
+| Eigen materiaal: titel **"Uitleg & opdrachtkaarten voor leerlingen"** | Aangepast; de knop heet nu *Nieuwe opdrachtkaart* |
+| Templates: andere zin | "Maak zelf eerst een basis; je leerlingen gaan daar vervolgens mee aan de slag." |
+
 ---
 
 ## 2. De flow in één oogopslag
 
 ```
-Inloggen ─► Dashboard · Vandaag ─┬─► Open klas ─► Klas (tabs) ─┬─► Presenteren (zoals nu)
+Inloggen ─► Docentenpagina (ongewijzigd) ─► Dashboard · Vandaag ─┬─► Open klas ─► Klas (tabs) ─┬─► Presenteren (zoals nu)
                                  │                              ├─► Feedback geven (werklijst)
    (eerste keer: Maak je         ├─► Opdracht kiezen ─┐         └─► Terugkijken ─► Klasgenoten / Delen
     eerste klas) ─► wizard       │                    ▼
@@ -167,7 +182,7 @@ In het dashboard via *＋ Nieuwe klas*.
 `flow-17`, `flow-18`
 
 - **Lesideeën**: filters op groep, een lijst en details (lesdoel, fases). Eén knop: kies een klas en **"Zet klaar voor deze klas →"**. Die opent **wizard stap 2** met de les al ingevuld, dus de controle en de code op het bord komen er vanzelf achteraan.
-- **Eigen materiaal**: *Uitleg voor leerlingen* (dat zijn de opdrachtkaarten) en *Templates* met *Maak er een les van*. Inhoud als nu.
+- **Eigen materiaal**: *Uitleg & opdrachtkaarten voor leerlingen* en *Templates* ("Maak zelf eerst een basis; je leerlingen gaan daar vervolgens mee aan de slag.") met *Maak er een les van*. Inhoud als nu.
 
 ---
 
@@ -240,17 +255,18 @@ Elke stap is een losse, testbare PR zonder migratie, tenzij anders vermeld. De s
 |---|---|
 | `flow-00-overzicht` | Overzicht van alle schermen |
 | `flow-01-inloggen` | Inloggen |
-| `flow-02-dashboard-eerste-keer` | Dashboard bij 0 klassen |
-| `flow-03-dashboard-vandaag` · `flow-20-dashboard-telefoon` | Dashboard · Vandaag |
-| `flow-04-wizard1-kies` · `flow-05-wizard1-gekozen` · `flow-21-wizard-telefoon` | Wizard 1 · Kies |
-| `flow-06-wizard2-controleer` | Wizard 2 · Controleer & pas aan |
-| `flow-07-wizard3-code` · `flow-08-wizard3-instellingen` | Wizard 3 · Code op het bord (+ paneel) |
-| `flow-09-klas-tijdens-de-les` · `flow-19-klas-telefoon` | Klas · Tijdens de les |
-| `flow-10-klas-klaarzetten` | Klas · Klaarzetten |
-| `flow-15-klas-terugkijken` | Klas · Terugkijken |
-| `flow-11-presenteren-keuze` · `flow-12-presenteren` · `flow-22-presenteren-digibord` | Presenteren (zoals nu) |
-| `flow-13-feedback-werklijst` · `flow-14-feedback-telefoon` | Feedback geven |
-| `flow-16-klasgenoten` | Wat klasgenoten ervan vonden |
-| `flow-17-lesideeen` · `flow-18-eigen-materiaal` | Lesideeën · Eigen materiaal |
+| `flow-02-docentenpagina` | Docentenpagina na inloggen (ongewijzigd, echte schermafbeelding) |
+| `flow-03-dashboard-eerste-keer` | Dashboard bij 0 klassen |
+| `flow-04-dashboard-vandaag` · `flow-21-dashboard-telefoon` | Dashboard · Vandaag |
+| `flow-05-wizard1-kies` · `flow-06-wizard1-gekozen` · `flow-22-wizard-telefoon` | Wizard 1 · Kies |
+| `flow-07-wizard2-controleer` · `flow-24-wizard2-telefoon` | Wizard 2 · Controleer & pas aan |
+| `flow-08-wizard3-code` · `flow-09-wizard3-instellingen` | Wizard 3 · Code op het bord (+ paneel) |
+| `flow-10-klas-tijdens-de-les` · `flow-20-klas-telefoon` | Klas · Tijdens de les |
+| `flow-11-klas-klaarzetten` | Klas · Klaarzetten |
+| `flow-16-klas-terugkijken` | Klas · Terugkijken |
+| `flow-12-presenteren-keuze` · `flow-13-presenteren` · `flow-23-presenteren-digibord` | Presenteren (zoals nu) |
+| `flow-14-feedback-werklijst` · `flow-15-feedback-telefoon` | Feedback geven |
+| `flow-17-klasgenoten` | Wat klasgenoten ervan vonden |
+| `flow-18-lesideeen` · `flow-19-eigen-materiaal` | Lesideeën · Eigen materiaal |
 
-De screenshots zijn gemaakt met de testopstelling in `.ux-harness/` (niet gecommit); `shoot-flow.mjs` maakt ze opnieuw. De bron van de mockup (zonder ingesloten beelden) staat daar ook, in `flow.src.html`.
+De screenshots zijn gemaakt met de testopstelling in `.ux-harness/` (niet gecommit). `shoot-flow.mjs` maakt ze opnieuw; de bron van de mockup (zonder ingesloten beelden) staat daar in `flow.src.html`.
