@@ -17,6 +17,7 @@ import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
 import { useAppStore } from '../../stores/appStore';
+import { useScrub } from '../../hooks/useScrub';
 
 // --- Clip edit props (inline in header bar) ---
 interface ClipEditProps {
@@ -60,6 +61,8 @@ interface TimelineProps {
   externalScrollRef?: RefObject<HTMLDivElement | null>;
 }
 
+const NOOP_SEEK = () => {};
+
 export const Timeline = memo(function Timeline({
   tracks,
   bpm,
@@ -84,6 +87,8 @@ export const Timeline = memo(function Timeline({
   const internalScrollRef = useRef<HTMLDivElement>(null);
   // Deel de scroll-container met de studio-filmstrip als een externe ref is meegegeven.
   const scrollContainerRef = externalScrollRef ?? internalScrollRef;
+  // Sleepvlak over de sporen (alleen-lezen): zie de scrub-laag onderaan
+  const trackScrub = useScrub(onSeek ?? NOOP_SEEK, totalBeats);
   const clearSelection = useSelectionStore((s) => s.clearSelection);
   const hasNoClips = useTimelineStore((s) => s.selectHasNoClips());
   const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
@@ -792,6 +797,20 @@ export const Timeline = memo(function Timeline({
               <Plus size={12} aria-hidden="true" />
               {t('studio.addTrack')}
             </button>
+          )}
+
+          {/* Alleen-lezen (presentatie / beluisteren): het hele sporenvlak is
+              een sleepvlak om te zoeken — ook met een vinger. pan-y houdt
+              verticaal scrollen door de sporen mogelijk; zoeken start pas bij
+              een horizontale beweging of een tik (useScrub 'deferred'). De
+              smalle liniaal alleen was op touch nauwelijks te raken. */}
+          {readOnly && onSeek && (
+            <div
+              className="absolute top-4 inset-x-0 bottom-0 left-4 sm:left-6 z-[15] cursor-pointer"
+              style={{ touchAction: 'pan-y' }}
+              data-testid="timeline-scrub-surface"
+              {...trackScrub.handlers('self', 'deferred')}
+            />
           )}
 
           {/* Playhead-lijn door de sporen — op wrapper-niveau zodat hij met

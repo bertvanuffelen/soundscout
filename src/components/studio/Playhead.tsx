@@ -1,4 +1,5 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback } from 'react';
+import { useScrub } from '../../hooks/useScrub';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../utils/cn';
 
@@ -7,7 +8,8 @@ interface PlayheadProps {
   totalBeats: number;
   isPlaying: boolean;
   onSeek: (beat: number) => void;
-  containerRef: React.RefObject<HTMLDivElement | null>;
+  /** Niet meer nodig voor de berekening (die gebruikt de liniaal zelf); blijft voor compatibiliteit */
+  containerRef?: React.RefObject<HTMLDivElement | null>;
 }
 
 /**
@@ -15,92 +17,22 @@ interface PlayheadProps {
  *
  * - Clicking anywhere on the ruler seeks to that position
  * - Handle is draggable (also during playback)
+ * - The whole ruler is draggable too (scrubben), also with a finger
  * - 44px touch hitbox for accessibility
  * - Visual handle is 12px circle
+ *
+ * Touch: `touch-action: none` staat ALTIJD aan op liniaal en handvat. De
+ * browser beslist bij pointerdown of een aanraking een scroll wordt; stond
+ * dit alleen tíjdens het slepen aan, dan werd de eerste swipe een scroll en
+ * kwam er een pointercancel (bug: swipen over de tijdlijn werkte niet op
+ * tablet/digibord). Sleeplogica: useScrub (gedeeld met het sporenvlak van
+ * de alleen-lezen tijdlijn, zie Timeline.tsx).
  */
 export const Playhead = memo(function Playhead(props: PlayheadProps) {
-  const { currentBeat, totalBeats, onSeek, containerRef } = props;
+  const { currentBeat, totalBeats, onSeek } = props;
   const { t } = useTranslation();
-  const [isDragging, setIsDragging] = useState(false);
+  const { isDragging, handlers } = useScrub(onSeek, totalBeats);
   const playheadPercent = (currentBeat / totalBeats) * 100;
-
-  // Calculate beat from pointer position
-  const calculateBeatFromPointer = useCallback(
-    (clientX: number): number => {
-      if (!containerRef.current) return currentBeat;
-
-      const rect = containerRef.current.getBoundingClientRect();
-      const scrollLeft = containerRef.current.scrollLeft;
-      const contentWidth = containerRef.current.scrollWidth;
-
-      // Track label width (left-6 = 24px on sm+)
-      const trackLabelWidth = 24;
-
-      // Calculate position relative to content (accounting for scroll)
-      const relativeX = clientX - rect.left + scrollLeft - trackLabelWidth;
-      const clipAreaWidth = contentWidth - trackLabelWidth;
-
-      // Convert to beat
-      const beat = (relativeX / clipAreaWidth) * totalBeats;
-
-      // Clamp to valid range
-      return Math.max(0, Math.min(totalBeats, beat));
-    },
-    [containerRef, currentBeat, totalBeats]
-  );
-
-  // --- Ruler click: seek to clicked position ---
-  const handleRulerClick = useCallback(
-    (e: React.MouseEvent) => {
-      // Don't process if this was the end of a drag
-      if (isDragging) return;
-      // Only respond to clicks on the ruler background, not on the handle
-      if ((e.target as HTMLElement).closest('[role="slider"]')) return;
-
-      const beat = calculateBeatFromPointer(e.clientX);
-      onSeek(Math.round(beat));
-    },
-    [isDragging, calculateBeatFromPointer, onSeek]
-  );
-
-  // --- Handle drag: start ---
-  const handlePointerDown = useCallback(
-    (e: React.PointerEvent) => {
-      e.preventDefault();
-      e.stopPropagation(); // Prevent ruler click from firing
-      e.currentTarget.setPointerCapture(e.pointerId);
-      setIsDragging(true);
-
-      // Immediately seek to pointer position
-      const beat = calculateBeatFromPointer(e.clientX);
-      onSeek(beat);
-    },
-    [calculateBeatFromPointer, onSeek]
-  );
-
-  const handlePointerMove = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDragging) return;
-
-      const beat = calculateBeatFromPointer(e.clientX);
-      onSeek(beat);
-    },
-    [isDragging, calculateBeatFromPointer, onSeek]
-  );
-
-  const handlePointerUp = useCallback(
-    (e: React.PointerEvent) => {
-      if (!isDragging) return;
-
-      e.currentTarget.releasePointerCapture(e.pointerId);
-      setIsDragging(false);
-
-      // Final position — snap to nearest beat on release
-      const beat = calculateBeatFromPointer(e.clientX);
-      onSeek(Math.round(beat));
-    },
-    [isDragging, calculateBeatFromPointer, onSeek]
-  );
 
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
@@ -135,10 +67,11 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
 
   return (
     <>
-      {/* Ruler click zone — covers entire ruler, behind the handle */}
+      {/* Liniaal-zone — hele liniaal, achter het handvat: tikken = zoeken,
+          slepen = scrubben (ook met een vinger, dus altijd touch-none) */}
       <div
-        className="absolute inset-0 z-20 cursor-pointer"
-        onClick={handleRulerClick}
+        className="absolute inset-0 z-20 cursor-pointer touch-none"
+        {...handlers('self')}
       />
 
       {/* Handle in ruler strip - interactive, draggable */}
@@ -153,15 +86,11 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
           // Large touch hitbox (44px wide)
           'absolute top-0 h-4 w-11 -translate-x-1/2 z-30',
           'flex items-center justify-center',
-          'rounded-full cursor-ew-resize',
-          isDragging && 'touch-none',
+          'rounded-full cursor-ew-resize touch-none',
           'focus-visible:ring-2 focus-visible:ring-error-500 focus-visible:ring-offset-1'
         )}
         style={{ left: `${playheadPercent}%` }}
-        onPointerDown={handlePointerDown}
-        onPointerMove={handlePointerMove}
-        onPointerUp={handlePointerUp}
-        onPointerCancel={handlePointerUp}
+        {...handlers('parent')}
         onKeyDown={handleKeyDown}
       >
         {/* Visual handle - circle */}
