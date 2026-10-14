@@ -191,7 +191,7 @@ Thin wrappers: `ClassPresentationView` (teacher-present + fetches peer stars), `
 
 ### Uitleg-animaties (public/animaties/)
 
-Losse, herhalende uitleg-animaties in de huisstijl (Nunito, egale kleuren, Lucide-iconen, rode afspeellijn). Formaat: **standalone HTML + extern JS** (CSP-schoon: `script-src 'self'`, Nunito via Google Fonts, géén inline script/`data:`-fonts). Tweetalig via `?lang=nl|en`; alle zichtbare tekst staat in één `TEXTS`-object bovenin het JS-bestand. **Verplicht patroon: één `requestAnimationFrame`-klok** die elke frame de staat berekent uit `t = (now - start) % PERIOD` (geen setTimeout-ketens — die batchen op een achtergrond-tab), plus `prefers-reduced-motion` → statische eindstaat. Zie `docs/ANIMATIE-RICHTLIJNEN.md` en de skill `soundscout-animatie`.
+Losse, herhalende uitleg-animaties in de huisstijl (Nunito, egale kleuren, Lucide-iconen, rode afspeellijn). Formaat: **standalone HTML + extern JS** (CSP-schoon: `script-src 'self'`, Nunito zelf gehost via `<link rel="stylesheet" href="/fonts/nunito.css">` — **nooit Google Fonts** (IP van leerlingen naar Google, AUD-12), géén inline script/`data:`-fonts). Tweetalig via `?lang=nl|en`; alle zichtbare tekst staat in één `TEXTS`-object bovenin het JS-bestand. **Verplicht patroon: één `requestAnimationFrame`-klok** die elke frame de staat berekent uit `t = (now - start) % PERIOD` (geen setTimeout-ketens — die batchen op een achtergrond-tab), plus `prefers-reduced-motion` → statische eindstaat. Zie `docs/ANIMATIE-RICHTLIJNEN.md` en de skill `soundscout-animatie`.
 
 | Bestand | Waar gebruikt |
 |---|---|

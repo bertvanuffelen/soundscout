@@ -16,7 +16,7 @@ Persona: de **muziek-minnende leerkracht** — tussen vakdocent en pabo-student.
 
 ## Styling — VERPLICHT: exact de app-stijl
 
-- **Font: Nunito** (Google Fonts, al geladen in `index.html`; weights 400/600/700/800).
+- **Font: Nunito** (zelf gehost: `public/fonts/nunito.css`, variabel lettertype; sinds de audit van 14-10-2026 niet meer via Google Fonts).
 - **Design tokens uit `src/index.css` (@theme)** — gebruik de bestaande CSS-variabelen/Tailwind-tokens, verzin GEEN nieuwe kleuren:
   - Pagina-achtergrond: `bg-app` (#F4F6F8). Cards/surfaces: `bg-surface` (#FFFFFF). Borders: `border-subtle` (#E2E8F0).
   - Tekst: `text-main` (#1E293B), `text-muted` (#64748B).

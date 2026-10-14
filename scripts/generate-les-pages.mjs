@@ -99,6 +99,7 @@ for (const entry of config.keys) {
 ${entry.cover ? `  <meta property="og:image" content="${BASE}${entry.cover}">\n` : ''}  <meta name="twitter:card" content="summary_large_image">
   <link rel="icon" type="image/svg+xml" href="/images/overige/logo-soundscout.svg">
   <link rel="icon" type="image/png" href="/images/overige/logo-soundscout.png">
+  <link rel="stylesheet" href="/fonts/nunito.css">
   <link rel="stylesheet" href="/les/les.css">
   <script type="application/ld+json">${JSON.stringify(jsonLd)}</script>
 </head>
