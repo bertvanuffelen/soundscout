@@ -35,8 +35,9 @@ export function FeedbackBanner() {
             {feedback.level != null && (
               <span className="inline-flex items-center ml-2 align-text-bottom">
                 {Array.from({ length: feedback.level }, (_, i) => (
-                  <Star key={i} className="w-4 h-4 text-accent-500 fill-accent-500" />
+                  <Star key={i} className="w-4 h-4 text-accent-500 fill-accent-500" aria-hidden="true" />
                 ))}
+                <span className="ml-1 text-sm font-bold text-accent-800">{t(`common.starLevels.${feedback.level}`)}</span>
               </span>
             )}
           </p>

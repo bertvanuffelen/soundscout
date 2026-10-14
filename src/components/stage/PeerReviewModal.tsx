@@ -161,7 +161,8 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
                     role="radio"
                     aria-checked={value === n}
                     onClick={() => setStars(chip, n)}
-                    title={t('peerReview.starTitle', { stars: n })}
+                    title={t('peerReview.starTitle', { stars: n, word: t(`common.starLevels.${n}`) })}
+                    aria-label={t('peerReview.starTitle', { stars: n, word: t(`common.starLevels.${n}`) })}
                     className="p-1 transition-transform hover:scale-110"
                   >
                     <Star

@@ -68,7 +68,7 @@
 
 **Wacht op een besluit van Bert:**
 - [ ] **TEACHER-LANDING-TEKSTEN** (P3) — op `/teacher` (`teacherLanding.*`, NL+EN) staat nog "Activeer een praatplaat…" en "in één klik". De pagina is verder bevroren. Samen oppakken met TEACHER-STAPPEN-TEKST hierboven. *De tag "Verhaal in scènes" is op 15-10 met Berts akkoord vervangen door "Scène voor scène".*
-- [ ] **STERREN-WOORDEN** (P3) — de leerling ziet "goed geprobeerd · goed gedaan · heel sterk" (`peerReview.starsHint`), de docent "op weg · goed · top" (`teacher.feedbackScreen.levels`). Gelijktrekken via `docs/TEKSTEN.md` zodra Bert de woorden kiest.
+- ~~**STERREN-WOORDEN**~~ — *opgelost 15-10 (besluit Bert):* overal *op weg · goed · top* (EN *getting there · good · great*), via één gedeelde sleutel `common.starLevels.{1,2,3}`. Geldt voor het docentfeedbackscherm, de feedbackrij bij Presenteren, het klasgenotenscherm en de feedbackbanner van de leerling (Podium en startscherm, nu met het woord naast de sterren).
 - [ ] **EIGEN-TIPZINNEN** (P4, idee) — docenten eigen tipzinnen laten toevoegen. Nu staan er 5 vaste zinnen in `teacher.feedbackScreen.tips`.
 - ~~**LIVE-NAMEN-CODESCHERM**~~ — *besluit Bert 15-10: niet bouwen.* Het codescherm toont alleen namen van opgeslagen werk: de naam die de leerling zelf invulde, of de verzonnen systeemnaam (`utils/randomNames.ts`, bijvoorbeeld "Vrolijke Papegaai"). Dat doet het al. Er komt geen "begonnen"-signaal.
 - ~~**KLAS-ROOSTER**~~ — *besluit Bert 15-10: nu niet nodig.* De kaart "Nu" blijft de laatst geopende klas tonen.

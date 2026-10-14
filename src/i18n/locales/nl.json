@@ -30,7 +30,12 @@
     "location": "Locatie",
     "zoom": "Vergroten",
     "saved": "Opgeslagen",
-    "dateLocale": "nl-NL"
+    "dateLocale": "nl-NL",
+    "starLevels": {
+      "1": "op weg",
+      "2": "goed",
+      "3": "top"
+    }
   },
   "language": {
     "nl": "Nederlands",
@@ -985,8 +990,8 @@
     "anonymous": "Compositie van een klasgenoot",
     "anonymousHint": "Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt.",
     "starsLabel": "Geef sterren per onderdeel:",
-    "starsHint": "1 = goed geprobeerd · 2 = goed gedaan · 3 = heel sterk. Beoordeel minstens één onderdeel.",
-    "starTitle": "{{stars}} van 3 sterren",
+    "starsHint": "1 = op weg · 2 = goed · 3 = top. Beoordeel minstens één onderdeel.",
+    "starTitle": "{{stars}} van 3 sterren: {{word}}",
     "capReached": "Je hebt het maximum van 3 beoordelingen bereikt.",
     "windowClosed": "De feedbackronde is gesloten door je docent.",
     "chipsLabel": "Kies 1 tot 3 complimenten:",
@@ -1676,7 +1681,7 @@
     "feedback": {
       "stickerLabel": "Kies een sticker",
       "levelLabel": "Niveau (1-3 sterren)",
-      "levelTitle": "{{level}} van 3 sterren",
+      "levelTitle": "{{level}} van 3 sterren: {{word}}",
       "textPlaceholder": "Schrijf een persoonlijk berichtje (niet verplicht)...",
       "send": "Feedback versturen",
       "saved": "Verstuurd",
@@ -2019,11 +2024,6 @@
       "step2": "2. Hoe ver is het?",
       "step3": "3. Een tip",
       "step3Hint": "(mag leeg blijven)",
-      "levels": {
-        "1": "op weg",
-        "2": "goed",
-        "3": "top"
-      },
       "levelNone": "nog niet gekozen",
       "tips": [
         "Probeer eens een stil moment.",

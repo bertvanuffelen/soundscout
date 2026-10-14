@@ -64,6 +64,9 @@ _Stand: 1939 teksten in 46 secties._
 | `common.zoom` | Vergroten | Zoom in |
 | `common.saved` | Opgeslagen | Saved |
 | `common.dateLocale` | nl-NL | en-GB |
+| `common.starLevels.1` | op weg | getting there |
+| `common.starLevels.2` | goed | good |
+| `common.starLevels.3` | top | great |
 
 ## language
 
@@ -952,8 +955,8 @@ _Stand: 1939 teksten in 46 secties._
 | `peerReview.anonymous` | Compositie van een klasgenoot | A classmate's composition |
 | `peerReview.anonymousHint` | Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt. | You don't know whose this is — listen carefully and choose what you think of it. |
 | `peerReview.starsLabel` | Geef sterren per onderdeel: | Give stars per criterion: |
-| `peerReview.starsHint` | 1 = goed geprobeerd · 2 = goed gedaan · 3 = heel sterk. Beoordeel minstens één onderdeel. | 1 = good try · 2 = well done · 3 = very strong. Rate at least one criterion. |
-| `peerReview.starTitle` | {{stars}} van 3 sterren | {{stars}} of 3 stars |
+| `peerReview.starsHint` | 1 = op weg · 2 = goed · 3 = top. Beoordeel minstens één onderdeel. | 1 = getting there · 2 = good · 3 = great. Rate at least one criterion. |
+| `peerReview.starTitle` | {{stars}} van 3 sterren: {{word}} | {{stars}} of 3 stars: {{word}} |
 | `peerReview.capReached` | Je hebt het maximum van 3 beoordelingen bereikt. | You have reached the maximum of 3 reviews. |
 | `peerReview.windowClosed` | De feedbackronde is gesloten door je docent. | Your teacher has closed the feedback round. |
 | `peerReview.chipsLabel` | Kies 1 tot 3 complimenten: | Choose 1 to 3 compliments: |
@@ -1430,7 +1433,7 @@ _Stand: 1939 teksten in 46 secties._
 | `teacher.peerReview.deleteCardConfirmText` | Bij deze opdracht schakelt de app over op de standaardkaart. Gebruikt een andere klas deze kaart, dan stopt daar ‘Klasgenoten laten luisteren’ tot je een andere kaart kiest. | For this assignment the app switches to the standard card. If another class uses this card, ‘Let classmates listen’ stops there until you choose another card. |
 | `teacher.feedback.stickerLabel` | Kies een sticker | Choose a sticker |
 | `teacher.feedback.levelLabel` | Niveau (1-3 sterren) | Level (1-3 stars) |
-| `teacher.feedback.levelTitle` | {{level}} van 3 sterren | {{level}} of 3 stars |
+| `teacher.feedback.levelTitle` | {{level}} van 3 sterren: {{word}} | {{level}} of 3 stars: {{word}} |
 | `teacher.feedback.textPlaceholder` | Schrijf een persoonlijk berichtje (niet verplicht)... | Write a personal message (optional)... |
 | `teacher.feedback.send` | Feedback versturen | Send feedback |
 | `teacher.feedback.saved` | Verstuurd | Sent |
@@ -1707,9 +1710,6 @@ _Stand: 1939 teksten in 46 secties._
 | `teacher.feedbackScreen.step2` | 2. Hoe ver is het? | 2. How far along is it? |
 | `teacher.feedbackScreen.step3` | 3. Een tip | 3. A tip |
 | `teacher.feedbackScreen.step3Hint` | (mag leeg blijven) | (optional) |
-| `teacher.feedbackScreen.levels.1` | op weg | getting there |
-| `teacher.feedbackScreen.levels.2` | goed | good |
-| `teacher.feedbackScreen.levels.3` | top | great |
 | `teacher.feedbackScreen.levelNone` | nog niet gekozen | not chosen yet |
 | `teacher.feedbackScreen.tips.0` | Probeer eens een stil moment. | Try a moment of silence. |
 | `teacher.feedbackScreen.tips.1` | Laat het geluid langer doorklinken. | Let the sound ring out longer. |

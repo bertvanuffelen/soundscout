@@ -459,13 +459,13 @@ function FeedbackDetail({ submission, assignmentName, onSave, onDelete, nameById
             role="radio"
             aria-checked={level === n}
             onClick={() => { setLevel(level === n ? null : n); setState('idle'); }}
-            title={t(`teacher.feedbackScreen.levels.${n}`)}
+            title={t(`common.starLevels.${n}`)}
             className="p-1"
           >
             <Star className={cn('w-8 h-8', level != null && n <= level ? 'text-accent-400 fill-accent-400' : 'text-neutral-300')} aria-hidden="true" />
           </button>
         ))}
-        <span className="text-sm text-text-muted">{level ? t(`teacher.feedbackScreen.levels.${level}`) : t('teacher.feedbackScreen.levelNone')}</span>
+        <span className="text-sm text-text-muted">{level ? t(`common.starLevels.${level}`) : t('teacher.feedbackScreen.levelNone')}</span>
       </div>
 
       {/* 3. Tip */}

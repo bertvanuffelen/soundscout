@@ -535,10 +535,11 @@ export function StartScreen() {
               </p>
             )}
             {feedbackNotice.feedback.level != null && (
-              <div className="flex justify-center gap-0.5 mb-2" aria-label={t('teacher.feedback.levelTitle', { level: feedbackNotice.feedback.level })}>
+              <div className="flex justify-center gap-0.5 mb-2" aria-label={t('teacher.feedback.levelTitle', { level: feedbackNotice.feedback.level, word: t(`common.starLevels.${feedbackNotice.feedback.level}`) })}>
                 {Array.from({ length: feedbackNotice.feedback.level }, (_, i) => (
-                  <Star key={i} className="w-6 h-6 text-accent-500 fill-accent-500" />
+                  <Star key={i} className="w-6 h-6 text-accent-500 fill-accent-500" aria-hidden="true" />
                 ))}
+                <span className="ml-1.5 self-center text-sm font-bold text-accent-800">{t(`common.starLevels.${feedbackNotice.feedback.level}`)}</span>
               </div>
             )}
             {feedbackNotice.feedback.text && (

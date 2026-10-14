@@ -108,7 +108,7 @@ export function FeedbackPanel({ submission, onSave }: FeedbackPanelProps) {
                 setLevel(next);
                 autoSave({ sticker, level: next });
               }}
-              title={t('teacher.feedback.levelTitle', { level: n })}
+              title={t('teacher.feedback.levelTitle', { level: n, word: t(`common.starLevels.${n}`) })}
               className="p-1 transition-transform hover:scale-110"
             >
               <Star
