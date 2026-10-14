@@ -2,15 +2,15 @@
  * SaveOnlineModal - Modal voor het online bewaren van een compositie (#52)
  *
  * Flow:
- * 1. Invoer: naam (verplicht), e-mail (optioneel), klascode (optioneel)
+ * 1. Invoer: naam (verplicht), klascode (optioneel). Geen e-mailveld meer (AUD-11).
  * 2. Bezig met bewaren (loading)
- * 3. Succes → Toont 6-karakter bewaarcode + kopieerknop + mail-optie
+ * 3. Succes → Toont 6-karakter bewaarcode + kopieerknop + QR-code
  * 4. Error → Foutmelding + opnieuw proberen
  */
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Save, Copy, Check, Loader2, AlertCircle, Mail, QrCode } from 'lucide-react';
+import { X, Save, Copy, Check, Loader2, AlertCircle, QrCode } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { saveCompositionOnline } from '../../lib/submissions';
 import { copyToClipboard } from '../../utils/copyToClipboard';
@@ -39,12 +39,10 @@ export function SaveOnlineModal({
   const modalRef = useModalBehavior(onClose);
   const [state, setState] = useState<ModalState>('form');
   const [name, setName] = useState(initialStudentName || '');
-  const [email, setEmail] = useState('');
   const [classCode, setClassCode] = useState('');
   const [saveCode, setSaveCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
-  const [mailSent, setMailSent] = useState(false);
   const [showQr, setShowQr] = useState(false);
   const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
 
@@ -68,8 +66,6 @@ export function SaveOnlineModal({
         compositionName,
         compositionData,
         classCode: classCode.trim() || undefined,
-        // E-mailadres blijft op dit apparaat (alleen voor de mailto hieronder);
-        // het gaat niet meer naar de server (AUD-11)
       });
 
       setSaveCode(result.saveCode);
@@ -91,17 +87,6 @@ export function SaveOnlineModal({
     }
   }, [saveCode]);
 
-  const handleSendEmail = useCallback(async () => {
-    if (!email.trim() || !saveCode) return;
-    // Use EmailJS (same as feedback system) or mailto fallback
-    const subject = encodeURIComponent('SoundScout — ' + t('saveOnline.emailSubject'));
-    const body = encodeURIComponent(
-      t('saveOnline.emailBody', { code: saveCode, name: compositionName })
-    );
-    window.open(`mailto:${email.trim()}?subject=${subject}&body=${body}`, '_self');
-    setMailSent(true);
-    setTimeout(() => setMailSent(false), 3000);
-  }, [email, saveCode, compositionName, t]);
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
@@ -142,18 +127,6 @@ export function SaveOnlineModal({
               onChange={(e) => setName(e.target.value)}
               placeholder={t('saveOnline.namePlaceholder')}
               maxLength={50}
-              className="w-full px-3 py-2 bg-neutral-50 border border-border-subtle rounded-lg text-sm text-text-muted mb-3 focus:outline-none focus:border-accent-400"
-            />
-
-            {/* Email (optional) */}
-            <label className="block text-sm font-medium text-text-muted mb-1">
-              {t('saveOnline.emailLabel')}
-            </label>
-            <input
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t('saveOnline.emailPlaceholder')}
               className="w-full px-3 py-2 bg-neutral-50 border border-border-subtle rounded-lg text-sm text-text-muted mb-3 focus:outline-none focus:border-accent-400"
             />
 
@@ -227,20 +200,6 @@ export function SaveOnlineModal({
                   <><Copy className="w-4 h-4 mr-1" />{t('saveOnline.copyCode')}</>
                 )}
               </Button>
-              {email.trim() && (
-                <Button
-                  variant={mailSent ? 'primary' : 'secondary'}
-                  size="sm"
-                  onClick={handleSendEmail}
-                  className="flex-1"
-                >
-                  {mailSent ? (
-                    <><Check className="w-4 h-4 mr-1" />{t('saveOnline.mailSent')}</>
-                  ) : (
-                    <><Mail className="w-4 h-4 mr-1" />{t('saveOnline.sendToMail')}</>
-                  )}
-                </Button>
-              )}
               <Button
                 variant={showQr ? 'primary' : 'secondary'}
                 size="sm"

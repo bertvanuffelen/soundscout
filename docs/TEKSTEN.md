@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1723 teksten in 46 secties._
+_Stand: 1719 teksten in 46 secties._
 
 ## app
 
@@ -592,6 +592,8 @@ _Stand: 1723 teksten in 46 secties._
 | `share.noPraatplaat` | Er is geen actieve praatplaat voor deze klascode. Vraag je docent. | No active sound map for this class code. Ask your teacher. |
 | `share.noActiveAssignment` | Er is geen actieve opdracht voor deze klascode. Vraag je docent. | No active assignment for this class code. Ask your teacher. |
 | `share.lookupError` | Er ging iets mis bij het opzoeken. Probeer opnieuw. | Something went wrong. Please try again. |
+| `share.classCodeNotFound` | Deze klascode bestaat niet. Kijk nog eens goed naar de cijfers. | This class code doesn't exist. Check the numbers again. |
+| `share.classBusy` | Het is even heel druk. Wacht een paar tellen en probeer het opnieuw. | It's very busy right now. Wait a few seconds and try again. |
 | `share.loadFailed` | Laden is niet gelukt. Probeer het opnieuw. | Loading failed. Please try again. |
 | `share.destinationTitle` | Gevonden! Waar wil je heen? | Found it! Where do you want to go? |
 | `share.destStudio` | Studio | Studio |
@@ -1230,7 +1232,6 @@ _Stand: 1723 teksten in 46 secties._
 | `teacher.guide.sections.sequencer.content.9.type` | heading | heading |
 | `teacher.guide.sections.sequencer.content.9.text` | Praktisch | Practical |
 | `teacher.guide.sections.sequencer.content.10` | Sequences horen bij de compositie: ze gaan automatisch mee bij opslaan, bij de bewaarcode, bij het delen van een luisterlink en bij het inleveren via de klascode. Ook in de MP3- en video-export klinkt het patroon precies zoals in de studio. Je hoeft dus niets apart te bewaren. | Sequences belong to the composition: they are included automatically when saving, in the save code, when sharing a listening link and when handing in with a class code. In the MP3 and video export the pattern sounds exactly as it does in the studio. There is nothing separate to store. |
-| `teacher.guide.sections.sequencer.content.11` | Let op: de sequencer is nog in ontwikkeling en staat standaard uit. Hij verschijnt pas als de functie voor jouw omgeving is aangezet. | Note: the sequencer is still in development and is off by default. It only appears once the feature has been enabled for your environment. |
 | `teacher.validation.emailRequired` | Voer je e-mailadres in | Please enter your email address |
 | `teacher.validation.passwordRequired` | Voer je wachtwoord in | Please enter your password |
 | `teacher.validation.nameRequired` | Voer je naam in | Please enter your name |
@@ -1615,8 +1616,6 @@ _Stand: 1723 teksten in 46 secties._
 | `saveOnline.description` | Bewaar je compositie online en krijg een code. Met deze code kun je op elk apparaat verder werken. | Save your composition online and get a code. Use this code to continue working on any device. |
 | `saveOnline.nameLabel` | Jouw naam | Your name |
 | `saveOnline.namePlaceholder` | Bijv. Lisa of Groep 5 | E.g. Lisa or Class 5 |
-| `saveOnline.emailLabel` | E-mailadres (optioneel) | Email address (optional) |
-| `saveOnline.emailPlaceholder` | Om je code te ontvangen per mail | To receive your code by email |
 | `saveOnline.classCodeLabel` | Klascode (optioneel) | Class code (optional) |
 | `saveOnline.classCodePlaceholder` | 4 cijfers | 4 digits |
 | `saveOnline.saveButton` | Bewaar | Save |
@@ -1625,11 +1624,7 @@ _Stand: 1723 teksten in 46 secties._
 | `saveOnline.yourCode` | Jouw bewaarcode | Your save code |
 | `saveOnline.rememberCode` | Onthoud deze code goed! | Remember this code! |
 | `saveOnline.copyCode` | Kopieer code | Copy code |
-| `saveOnline.sendToMail` | Stuur naar mail | Send to email |
-| `saveOnline.mailSent` | Verstuurd! | Sent! |
 | `saveOnline.expiryNote` | Je compositie blijft 60 dagen beschikbaar na de laatste bewerking. | Your composition is available for 60 days after the last edit. |
-| `saveOnline.emailSubject` | Jouw bewaarcode | Your save code |
-| `saveOnline.emailBody` | Je bewaarcode voor "{{name}}" is: {{code}}<br><br>Voer deze code in op het startscherm van SoundScout om verder te werken. | Your save code for "{{name}}" is: {{code}}<br><br>Enter this code on the SoundScout start screen to continue working. |
 | `saveOnline.saveError` | Bewaren mislukt. Probeer het opnieuw. | Save failed. Please try again. |
 | `saveOnline.updateError` | Bijwerken mislukt. Probeer het opnieuw. | Update failed. Please try again. |
 | `saveOnline.invalidSecret` | Ongeldige bewaarcode of je hebt geen toegang meer. | Invalid save code or you no longer have access. |
@@ -1878,6 +1873,7 @@ _Stand: 1723 teksten in 46 secties._
 | `album.byClass` | Album van {{className}} | Album of {{className}} |
 | `album.submissionCount` | {{count}} composities om te beluisteren | {{count}} compositions to listen to |
 | `album.noSubmissions` | Er zijn nog geen ingeleverde composities. | No submitted compositions yet. |
+| `album.shareEmptyHint` | Deel het album zodra leerlingen hun compositie hebben ingeleverd — werk dat alleen is opgeslagen telt nog niet mee. | Share the album once students have handed in their composition — work that is only saved does not count yet. |
 | `album.startListening` | Open het album | Open the album |
 | `album.notFoundTitle` | Album niet gevonden | Album not found |
 | `album.notFoundDescription` | Controleer de code of vraag een nieuwe link aan de docent. | Check the code or ask the teacher for a new link. |
