@@ -55,8 +55,16 @@ export function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
           </p>
         </section>
 
-        {/* Sectie 4: Contact */}
-        <section className="pt-2 border-t border-neutral-200">
+        {/* Sectie 4: Contact + volledige verklaring (statische pagina /privacy/) */}
+        <section className="pt-2 border-t border-neutral-200 space-y-2">
+          <p>
+            <a
+              href="/privacy/"
+              className="text-brand-700 hover:text-brand-800 font-medium underline underline-offset-2"
+            >
+              {t('privacy.fullLink')}
+            </a>
+          </p>
           <p className="text-text-muted leading-relaxed">
             <Trans
               i18nKey="privacy.contact"

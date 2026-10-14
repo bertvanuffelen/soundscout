@@ -1926,12 +1926,13 @@
   "privacy": {
     "title": "Privacy & data",
     "button": "Privacy",
-    "dataTitle": "How SoundScout uses your data",
-    "dataText": "Compositions you make are stored on your own device (in the browser). No account is created and no personal data is collected. If you save a composition online with a save code, it's stored temporarily in the cloud and automatically and permanently deleted after 60 days of inactivity. Work you submit to a teacher is kept for at most one school year and then deleted automatically; your teacher can also delete it sooner. Shared links and class albums expire after 30 days.",
+    "dataTitle": "How SoundScout handles your data",
+    "dataText": "You don't need an account. Your music is stored on your own device (in the browser). If you save your music online with a save code, it is stored on our server in the EU, with the name you enter yourself. After 60 days without use it is deleted automatically. Anyone who has your save code or link can open and change your music, so only share it at home.",
     "classCodeTitle": "Class code & teacher",
-    "classCodeText": "When you use a class code, your composition is shared with the teacher of that class. The teacher can listen to and view your composition via the teacher dashboard. Your name is only visible if you entered it yourself. Submitted work is kept for at most one school year and then deleted automatically.",
-    "cookiesTitle": "Cookies & tracking",
-    "cookiesText": "SoundScout does not use tracking cookies or advertisements. We only count anonymously how often the app is used (daily totals, without personal data, without cookies and without third parties); your browser's 'Do Not Track' setting is respected. The only local storage is for your compositions, your language preference and — if you save or submit a composition online — your save code, so you can find your work again. No data is shared with third parties.",
+    "classCodeText": "With a class code you hand in your music to your teacher. You work anonymously: you get a random nickname, like 'Singing Seal'. Don't put your last name in the name of your music. Your teacher listens to your music and can give feedback. Classmates who give stars don't see whose music it is. If your teacher shares a class album, anyone with that link can listen to the music with nicknames. Submitted work is kept for at most one school year and then deleted automatically. The school is responsible for this data; SoundScout processes it on behalf of the school.",
+    "cookiesTitle": "Cookies, tracking and other parties",
+    "cookiesText": "SoundScout uses no cookies, no tracking and no ads. We only count anonymously how often the app is used (daily totals, without personal data); the 'Do Not Track' setting is respected. On your device we only store your music, your language choice and your save codes. Online storage runs on Supabase (servers in Ireland) and the website is hosted by Strato (Germany). If you open the explainer videos, they come from YouTube.",
+    "fullLink": "Read the full privacy statement",
     "contact": "Questions about privacy? Contact us at <mail>hello@soundscout.nl</mail>."
   },
   "shareCodeModal": {
@@ -2087,7 +2088,7 @@
       },
       "noAccounts": {
         "title": "No student accounts",
-        "description": "One class code is enough. We only store a first name and the composition — GDPR-proof without the hassle."
+        "description": "One class code is enough. Students work anonymously with a random nickname; we only store their composition."
       },
       "praatplaat": {
         "title": "Sound map on the smartboard",
@@ -2126,7 +2127,7 @@
         },
         "avg": {
           "q": "Is SoundScout GDPR-compliant?",
-          "a": "Yes. We only store a student's first name and the composition itself — no email addresses, no tracking, no ads. Saved work also expires automatically."
+          "a": "SoundScout is built to store as little as possible. Students work anonymously with a random nickname: no account, no email address, no password. No cookies, no tracking, no ads. Submitted work is deleted automatically after one school year. The school remains responsible for student data and SoundScout is the processor; a data processing agreement is available on request via hello@soundscout.nl. Everything is in the privacy statement at soundscout.nl/privacy."
         },
         "devices": {
           "q": "Does SoundScout work on Chromebooks, iPads and the smartboard?",
@@ -2170,7 +2171,8 @@
       "title": "Privacy by design",
       "point1": "No student accounts",
       "point2": "No tracking or ads",
-      "point3": "Only a first name and the composition",
+      "point3": "Students work anonymously",
+      "point4": "Data processing agreement on request",
       "link": "Read how we handle data"
     },
     "footer": {

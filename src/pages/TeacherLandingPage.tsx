@@ -588,7 +588,7 @@ function FaqSection() {
 // en FAQ.
 function PrivacyBand({ onOpenPrivacy }: { onOpenPrivacy: () => void }) {
   const { t } = useTranslation();
-  const points = ['point1', 'point2', 'point3'] as const;
+  const points = ['point1', 'point2', 'point3', 'point4'] as const;
   return (
     <section className="bg-accent-50 border border-accent-100 rounded-3xl">
       <div className="px-4 sm:px-6 py-10 sm:py-12 flex flex-col items-center text-center gap-5">

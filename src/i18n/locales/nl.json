@@ -1926,12 +1926,13 @@
   "privacy": {
     "title": "Privacy & gegevens",
     "button": "Privacy",
-    "dataTitle": "Hoe SoundScout je gegevens gebruikt",
-    "dataText": "Composities die je maakt worden opgeslagen op je eigen apparaat (in de browser). Er wordt geen account aangemaakt en er worden geen persoonlijke gegevens verzameld. Als je een compositie online bewaart met een bewaarcode, wordt deze tijdelijk in de cloud opgeslagen en na 60 dagen inactiviteit automatisch en definitief verwijderd. Werk dat je bij een docent inlevert, blijft maximaal één schooljaar bewaard en wordt daarna automatisch verwijderd; je docent kan het ook eerder verwijderen. Gedeelde links en klasalbums verlopen na 30 dagen.",
+    "dataTitle": "Hoe SoundScout met je gegevens omgaat",
+    "dataText": "Je hebt geen account nodig. Je muziek wordt bewaard op je eigen apparaat (in de browser). Bewaar je je muziek online met een bewaarcode, dan staat die op onze server in de EU, met de naam die je zelf invult. Na 60 dagen zonder gebruik wordt hij automatisch verwijderd. Wie je bewaarcode of link heeft, kan je muziek openen en veranderen: deel hem dus alleen thuis.",
     "classCodeTitle": "Klascode & docent",
-    "classCodeText": "Wanneer je een klascode gebruikt, wordt je compositie gedeeld met de docent van die klas. De docent kan je compositie beluisteren en bekijken via het docenten-dashboard. Je naam is alleen zichtbaar als je die zelf hebt ingevuld. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd.",
-    "cookiesTitle": "Cookies & tracking",
-    "cookiesText": "SoundScout gebruikt geen tracking cookies en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens, zonder cookies en zonder externe partijen); je browser-instelling 'Do Not Track' wordt gerespecteerd. De enige lokale opslag is voor je composities, je taalvoorkeur en — als je een compositie online bewaart of inlevert — je bewaarcode, zodat je je werk kunt terugvinden. Er worden geen gegevens gedeeld met derden.",
+    "classCodeText": "Met een klascode lever je je muziek in bij je docent. Je werkt dan anoniem: je krijgt een willekeurige schuilnaam, zoals 'Zingende Zeehond'. Zet je achternaam niet in de naam van je muziek. Je docent hoort je muziek en kan feedback geven. Klasgenoten die sterren geven, zien niet van wie het is. Deelt je docent een klasalbum, dan kan iedereen met die link de muziek met schuilnaam beluisteren. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd. De school is verantwoordelijk voor deze gegevens; SoundScout verwerkt ze in opdracht van de school.",
+    "cookiesTitle": "Cookies, tracking en andere partijen",
+    "cookiesText": "SoundScout gebruikt geen cookies, geen tracking en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens); de instelling 'Do Not Track' wordt gerespecteerd. Op je apparaat bewaren we alleen je muziek, je taalkeuze en je bewaarcodes. Online opslag loopt via Supabase (servers in Ierland) en de website staat bij Strato (Duitsland). Open je de uitlegvideo's, dan komen die van YouTube.",
+    "fullLink": "Lees de volledige privacyverklaring",
     "contact": "Vragen over privacy? Neem contact op via <mail>hello@soundscout.nl</mail>."
   },
   "shareCodeModal": {
@@ -2087,7 +2088,7 @@
       },
       "noAccounts": {
         "title": "Geen leerlingaccounts",
-        "description": "Eén klascode is genoeg. We bewaren alleen een voornaam en de compositie — AVG-proof zonder gedoe."
+        "description": "Eén klascode is genoeg. Leerlingen werken anoniem met een willekeurige schuilnaam; we bewaren alleen hun compositie."
       },
       "praatplaat": {
         "title": "Praatplaat op het digibord",
@@ -2126,7 +2127,7 @@
         },
         "avg": {
           "q": "Is SoundScout AVG-proof?",
-          "a": "Ja. We bewaren van leerlingen alleen een voornaam en de compositie zelf — geen e-mailadressen, geen tracking, geen advertenties. Opgeslagen werk verloopt bovendien automatisch."
+          "a": "SoundScout is gebouwd om zo weinig mogelijk te bewaren. Leerlingen werken anoniem met een willekeurige schuilnaam: geen account, geen e-mailadres, geen wachtwoord. Geen cookies, geen tracking, geen advertenties. Ingeleverd werk wordt na één schooljaar automatisch verwijderd. De school blijft verantwoordelijk voor de leerlinggegevens en SoundScout is verwerker; een verwerkersovereenkomst krijg je op aanvraag via hello@soundscout.nl. Alles staat in de privacyverklaring op soundscout.nl/privacy."
         },
         "devices": {
           "q": "Werkt SoundScout op Chromebooks, iPads en het digibord?",
@@ -2170,7 +2171,8 @@
       "title": "Privacy als uitgangspunt",
       "point1": "Geen leerlingaccounts",
       "point2": "Geen tracking of advertenties",
-      "point3": "Alleen een voornaam en de compositie",
+      "point3": "Leerlingen werken anoniem",
+      "point4": "Verwerkersovereenkomst op aanvraag",
       "link": "Lees hoe we met gegevens omgaan"
     },
     "footer": {

@@ -14,7 +14,7 @@
 
 | Manier van bewaren | Waar | Nodig om terug te vinden | Termijn |
 |---|---|---|---|
-| **Lokaal** ("Mijn composities") | In de browser (localStorage) van dát apparaat | Automatisch, op hetzelfde apparaat | Blijft, maar **max. 10** — de oudste verdwijnt; weg bij browser-opschoning |
+| **Lokaal** ("Mijn composities") | In de browser (localStorage) van dát apparaat | Automatisch, op hetzelfde apparaat | Blijft, maar **max. 10** — de oudste verdwijnt; weg bij browser-opschoning. Opslaan werkt dezelfde compositie bij (sinds 14-10 geen kopie per klik) |
 | **Online bewaarcode** | Onze database (Supabase) | De **6-tekens bewaarcode** | Werkt tot **60 dagen** ná de laatste wijziging |
 | **Klas-inzending** (klascode) | Onze database | De **klascode** (docent) · de bewaarcode (leerling) | **1 schooljaar** na de laatste activiteit, dan automatisch verwijderd (docent 30 d vooraf gewaarschuwd) |
 | **Praatplaat-inzending** | Onze database | Via de klas/praatplaat (docent) | Zoals klas-inzending |
@@ -24,7 +24,7 @@
 > **Belangrijke nuance (bijgewerkt 24-7):** "60 dagen" en "30 dagen" betekenen
 > eerst dat de **code/link stopt met werken**. Sinds migratie 035 wordt het werk
 > daarna óók echt **automatisch verwijderd**: losse bewaarcodes/deellinks na
-> 60 dagen inactiviteit, en klas-inzendingen (leerlingwerk met voornaam) na
+> 60 dagen inactiviteit, en klas-inzendingen (leerlingwerk met schuilnaam) na
 > **1 schooljaar** — alléén de inzending, de klas/opdracht/code blijven. De
 > opruiming draait dagelijks (pg_cron); de docent krijgt 30 dagen vooraf een
 > waarschuwing in het dashboard. Back-ups van Supabase rouleren daarna vanzelf uit.
@@ -52,7 +52,9 @@
 ## 2. Online bewaarcode (6 tekens)
 
 - **Wanneer:** podium → **Opslaan & Delen** → **Bewaar online**. De leerling
-  krijgt een **6-tekens code** (en een QR).
+  krijgt een **6-tekens code**, met "mee naar huis": code of link kopiëren,
+  mailen via het eigen mailprogramma, of een QR-code met de link (sinds 14-10).
+  Er wordt **geen e-mailadres** gevraagd of bewaard.
 - **Waar:** onze database.
 - **Hoe terug:** op **elk** apparaat de code invoeren via "Ik heb een code" →
   het werk laadt in de studio om verder te werken. Op een nieuw apparaat "claimt"
@@ -66,7 +68,10 @@
   (podium → **Lever in**). Elke klas-inzending krijgt **automatisch ook een
   bewaarcode** (sinds migratie 026), zodat de leerling zijn eigen werk kan
   terugvinden.
-- **Waar:** onze database, gekoppeld aan de klas.
+- **Waar:** onze database, gekoppeld aan de klas. De leerling werkt **anoniem**:
+  hij krijgt één vaste, willekeurige schuilnaam ("Zingende Zeehond") per inzending
+  (besluit 14-10). Op het podium staat de bewaarcode met dezelfde "mee naar
+  huis"-knoppen als hierboven.
 - **Hoe de docent het terugvindt:** in het **klaslokaal** bij de inzendingen. Er
   is een splitsing:
   - **Ingeleverd** = formeel ingeleverd (heeft een inlever-moment).
@@ -95,10 +100,13 @@
   gegevens gewist zijn): de leerling heeft zijn **bewaarcode** nodig. Die voert
   hij in via "Ik heb een code" en ziet dan zijn compositie + feedback op het
   podium.
-- **Zonder genoteerde bewaarcode, op een vreemd apparaat:** dan kan de leerling
-  het zelf niet terughalen — we bewaren bewust **geen leerling-mailadres**
-  (privacy). Tip voor de klas: laat leerlingen hun 6-tekens code noteren, of laat
-  de docent de feedback klassikaal via het digibord of een album-link teruggeven.
+- **Mee naar huis:** de link `soundscout.nl/#code=ABC123` (kopiëren, mailen of
+  als QR scannen) opent thuis direct het keuzescherm Studio/Podium. Let op: wie de
+  link heeft, kan het werk ook bewerken — daarom de tekst "deel alleen thuis".
+- **Zonder genoteerde bewaarcode of link, op een vreemd apparaat:** dan kan de
+  leerling het zelf niet terughalen — we bewaren bewust **geen leerling-mailadres**
+  (privacy). Tip voor de klas: laat leerlingen hun code noteren, of laat de docent
+  de feedback klassikaal via het digibord of een album-link teruggeven.
 
 ## 6. Wat verdwijnt wél — en wanneer
 
@@ -107,22 +115,18 @@
 - **Een praatplaat verwijderen** wist de inzendingen van díe praatplaat mee.
 - **Een opdracht uit "Eerdere opdrachten" halen** verwijdert **alleen die
   overzichtsregel** — het leerlingwerk blijft bij de inzendingen staan.
-- Er draait **geen automatische opschoning**: er is geen taak die na X dagen
-  oude rijen wist. "Verlopen" codes blijven dus als (onbereikbare) rijen bestaan.
+- **Automatische opschoning** (migratie 035, dagelijks 03:00 via pg_cron):
+  losse bewaarcodes/deellinks na 60 dagen inactiviteit, klas-inzendingen na
+  1 schooljaar, verlopen deel-/albumcodes worden gewist, en (sinds migratie 036)
+  de rate-limit-administratie na 1 dag.
 
 ## Wat betekent "verloopt" precies? (eerlijk over privacy)
 
-"Werkt tot 60 dagen" en "link 30 dagen" gaan over **de code/link die stopt met
-werken** — niet over verwijderen. Na die termijn:
-
-- is de compositie **niet meer op te halen via die code/link**, maar
-- **staat de rij nog gewoon in de database** (en in de back-ups van onze
-  hostingprovider).
-
-Er is dus op dit moment **geen echte bewaartermijn** die data na verloop van tijd
-verwijdert. Of we dat willen (bijvoorbeeld leerlingwerk met namen automatisch
-opruimen na een periode) is een open ontwerp-/AVG-vraag — vastgelegd als taak en
-in `HANDLEIDING-BEHEER.md §Bewaartermijnen`.
+"Werkt tot 60 dagen" en "link 30 dagen" gaan eerst over **de code/link die stopt
+met werken**. Sinds migratie 035 wordt het werk daarna ook **echt verwijderd** door
+de nachtelijke opruiming (zie §6 en de nuance bovenaan). Wat overblijft, zijn de
+back-ups van de hostingprovider; die rouleren vanzelf uit. De volledige uitleg
+voor scholen en ouders staat in de privacyverklaring op `soundscout.nl/privacy/`.
 
 ---
 
