@@ -78,6 +78,9 @@ export function CompositionsView() {
     (composition: SavedComposition) => {
       // Track which composition we're editing
       setCurrentCompositionId(composition.id);
+      // Een lokale compositie is niet de bewaarcode-compositie van daarnet:
+      // ontkoppelen, anders overschrijft de auto-sync die (AUD-09).
+      storageService.clearSaveOnlineInfo();
       // Restore klascode context if present
       restoreClassSession(composition);
       // Load timeline and library into stores
@@ -99,6 +102,9 @@ export function CompositionsView() {
     (composition: SavedComposition) => {
       // Track which composition we're editing
       setCurrentCompositionId(composition.id);
+      // Een lokale compositie is niet de bewaarcode-compositie van daarnet:
+      // ontkoppelen, anders overschrijft de auto-sync die (AUD-09).
+      storageService.clearSaveOnlineInfo();
       // Restore klascode context if present
       restoreClassSession(composition);
       // Load timeline and library into stores

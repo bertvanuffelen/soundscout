@@ -197,6 +197,9 @@ export async function initializeCompositionFromStoryboard(
   clearAllTracks();
   clearSections();
   useLibraryStore.getState().clearLibrary();
+  // Bewaarcode-context hoort bij de VORIGE compositie — anders overschrijft
+  // de auto-sync die online compositie met dit nieuwe werk (AUD-09).
+  storageService.clearSaveOnlineInfo();
 
   // 2b. Memory hygiene
   const activeSamples = useThemeStore.getState().getSamples();
@@ -244,6 +247,10 @@ export async function initializeCompositionFromStoryboard(
  */
 export async function initializeFromTemplate(template: Template): Promise<void> {
   const { compositionData } = template;
+
+  // Bewaarcode-context hoort bij de VORIGE compositie — anders overschrijft
+  // de auto-sync die online compositie met dit nieuwe werk (AUD-09).
+  storageService.clearSaveOnlineInfo();
 
   // Stap 1: Laad timeline met de pre-filled data uit het template
   // Markeer alle bestaande clips als fromTemplate zodat alleen deze vergrendeld worden

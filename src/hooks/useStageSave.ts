@@ -130,6 +130,9 @@ export function useStageSave() {
 
     // Success path
     if (result) {
+      // Volgende keer opslaan = deze compositie bijwerken, geen nieuwe kopie
+      // (AUD-08: elke klik maakte een kopie en de 11e wiste stil de oudste)
+      if (!currentCompositionId) useAppStore.getState().setCurrentCompositionId(result.id);
       setSaveError(null);
       setShowSaveWarning(false);
       setSaveSuccess(true);
