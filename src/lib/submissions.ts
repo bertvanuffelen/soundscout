@@ -389,7 +389,6 @@ interface SaveCompositionOnlineParams {
   compositionName: string;
   compositionData: CompositionData;
   classCode?: string;
-  email?: string;
 }
 
 export interface SaveCompositionOnlineResult {
@@ -417,12 +416,13 @@ export interface SavedOnlineComposition {
 
 /**
  * Bewaar een compositie online en krijg een 6-karakter bewaarcode.
- * Optioneel: koppel aan een klas en/of voeg e-mailadres toe.
+ * Optioneel: koppel aan een klas. Een e-mailadres gaat bewust niet naar de
+ * server (AUD-11); de leerling kan de code zelf naar zichzelf mailen.
  */
 export async function saveCompositionOnline(
   params: SaveCompositionOnlineParams
 ): Promise<SaveCompositionOnlineResult> {
-  const { studentName, compositionName, compositionData, classCode, email } = params;
+  const { studentName, compositionName, compositionData, classCode } = params;
   const supabase = await getSupabase();
 
   const { data, error } = await withTimeout(
@@ -431,7 +431,6 @@ export async function saveCompositionOnline(
       p_composition_name: compositionName,
       p_composition_data: compositionData,
       p_class_code: classCode?.trim() || null,
-      p_email: email?.trim() || null,
     }),
     20_000,
     'errors.networkTimeout'

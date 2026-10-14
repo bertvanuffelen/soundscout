@@ -68,7 +68,8 @@ export function SaveOnlineModal({
         compositionName,
         compositionData,
         classCode: classCode.trim() || undefined,
-        email: email.trim() || undefined,
+        // E-mailadres blijft op dit apparaat (alleen voor de mailto hieronder);
+        // het gaat niet meer naar de server (AUD-11)
       });
 
       setSaveCode(result.saveCode);
@@ -80,7 +81,7 @@ export function SaveOnlineModal({
       setError(err instanceof Error ? err.message : t('saveOnline.saveError'));
       setState('error');
     }
-  }, [name, compositionName, compositionData, classCode, email, t, onSaved]);
+  }, [name, compositionName, compositionData, classCode, t, onSaved]);
 
   const handleCopy = useCallback(async () => {
     if (!saveCode) return;
