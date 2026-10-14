@@ -30,6 +30,7 @@ import {
 // Current storage version for migrations (reserved for future use)
 // const STORAGE_VERSION = 1;
 const MAX_COMPOSITIONS = 10;
+const MAX_SUBMISSION_SECRETS = 20;
 
 /** Error types returned by save operations (TP5-11) */
 export type StorageSaveError = 'quota_exceeded' | 'serialization' | 'unknown';
@@ -402,6 +403,36 @@ class StorageServiceImpl {
 
   clearClassFeedbackCode(): void {
     localStorage.removeItem('soundscout:class-feedback-code');
+  }
+
+  // --- Geheim per klas-inzending (migratie 036) ---
+
+  /**
+   * Bewaar het geheim waarmee dit apparaat een klas-inzending mag bijwerken.
+   * Per inzending-id, zodat elk pad dat een bestaande inzending hergebruikt
+   * (podium, bewaarcode openen, "Mijn composities") het terugvindt. Alleen
+   * de laatste 20 blijven bewaard.
+   */
+  setSubmissionSecret(submissionId: string, secret: string): void {
+    const map = this.getSubmissionSecrets();
+    delete map[submissionId];
+    map[submissionId] = secret;
+    const entries = Object.entries(map).slice(-MAX_SUBMISSION_SECRETS);
+    this.set('soundscout:submission-secrets', Object.fromEntries(entries));
+  }
+
+  getSubmissionSecret(submissionId: string): string | null {
+    return this.getSubmissionSecrets()[submissionId] ?? null;
+  }
+
+  private getSubmissionSecrets(): Record<string, string> {
+    const raw = this.getRaw('soundscout:submission-secrets');
+    if (!raw || typeof raw !== 'object') return {};
+    return Object.fromEntries(
+      Object.entries(raw as Record<string, unknown>).filter(
+        (entry): entry is [string, string] => typeof entry[1] === 'string',
+      ),
+    );
   }
 
   // --- Private helpers ---

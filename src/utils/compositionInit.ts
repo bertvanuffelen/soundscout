@@ -561,6 +561,9 @@ export async function openSavedComposition(
 
   // Claim eerst (genereert nieuwe secret voor dit apparaat)
   const newSecret = await claimSavedComposition(saveCode, saved.student_name);
+  // Hetzelfde geheim geeft dit apparaat het recht de klas-inzending bij te
+  // werken (migratie 036): de server vergelijkt met save_secret van de rij.
+  storageService.setSubmissionSecret(saved.id, newSecret);
 
   // Klas-sessie herstellen (migratie 028) — VÓÓR de navigatie, zodat het
   // podium bij mount meteen de sessie, code-badge en feedback kan tonen.

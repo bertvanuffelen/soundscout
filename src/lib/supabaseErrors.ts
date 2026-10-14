@@ -24,6 +24,9 @@ export const ERR_NOT_ACTIVE = 'niet actief';
 /** Invalid save code (bewaarcode) */
 export const ERR_INVALID_SAVE_CODE = 'Ongeldige bewaarcode';
 
+/** Bijwerken van een bestaande inzending zonder geldig geheim (migratie 036) */
+export const ERR_SUBMISSION_FORBIDDEN = 'submission_forbidden';
+
 // --- Auth error patterns (from Supabase Auth) ---
 
 /** Email already registered */

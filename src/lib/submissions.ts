@@ -8,7 +8,7 @@
  */
 
 import { getSupabase } from './supabase';
-import { ERR_RATE_LIMIT, ERR_CLASS_NOT_FOUND, ERR_NOT_ACTIVE, ERR_INVALID_SAVE_CODE, matchesError } from './supabaseErrors';
+import { ERR_RATE_LIMIT, ERR_CLASS_NOT_FOUND, ERR_NOT_ACTIVE, ERR_INVALID_SAVE_CODE, ERR_SUBMISSION_FORBIDDEN, matchesError } from './supabaseErrors';
 import { withTimeout } from '../utils/withTimeout';
 import { generateRandomDutchName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
@@ -118,6 +118,8 @@ interface SubmitOrUpdateParams {
   compositionData: CompositionData;
   /** Client-generated UUID for idempotent UPSERT (reuse across retries) */
   clientId?: string;
+  /** Geheim uit de eerste inlevering; vereist om een bestaande inzending bij te werken (migratie 036) */
+  saveSecret?: string | null;
   /** Identifier of the assignment: template_id/praatplaat_id (UUID), storyboard-registry-id or theme-id (TEXT) */
   assignmentId?: string;
   /** Type of assignment */
@@ -129,29 +131,44 @@ interface SubmitOrUpdateParams {
 
 export interface SubmitOrUpdateResult {
   id: string;
-  /** Automatisch geminte bewaarcode (v2) — null als de v2-RPC nog niet bestaat */
+  /** Automatisch geminte bewaarcode (v2) */
   saveCode: string | null;
+  /** Geheim voor latere updates — alleen bij een nieuwe inzending, anders null */
+  saveSecret: string | null;
+}
+
+/**
+ * De server weigert een update van een bestaande inzending: geen of een fout
+ * geheim (bijv. een compositie van vóór migratie 036, of een bewaarcode die op
+ * een ander apparaat is geclaimd). De aanroeper kan dan een nieuwe inzending
+ * starten.
+ */
+export class SubmissionForbiddenError extends Error {
+  constructor() {
+    super(i18n.t('submissions.submitError'));
+    this.name = 'SubmissionForbiddenError';
+  }
 }
 
 /**
  * Submit or update a composition via klascode (idempotent UPSERT).
  *
- * First call (clientId = new UUID): creates a submission.
- * Subsequent calls (same clientId): updates the existing submission.
- * If the response is lost, retrying with the same clientId is safe.
+ * First call (clientId = new UUID): creates a submission and returns its
+ * secret. Subsequent calls (same clientId + that secret): update it.
  *
- * Gebruikt de v2-RPC (migratie 026) die automatisch een bewaarcode mint,
- * zodat de leerling later docent-feedback kan terugzien. Valt terug op de
- * oude RPC als v2 nog niet bestaat (migratie nog niet uitgevoerd).
+ * Gebruikt de v2-RPC (migratie 026/036) die automatisch een bewaarcode mint,
+ * zodat de leerling later docent-feedback kan terugzien. Sinds migratie 036
+ * mag een bestaande inzending alleen met het geheim worden bijgewerkt; zonder
+ * geldig geheim gooit deze functie SubmissionForbiddenError.
  *
- * @returns Submission-UUID + bewaarcode (of null bij v1-fallback)
+ * @returns Submission-UUID + bewaarcode + (bij een nieuwe inzending) het geheim
  */
 export async function submitOrUpdateComposition(
   params: SubmitOrUpdateParams
 ): Promise<SubmitOrUpdateResult> {
   const {
     classCode, studentName, compositionName, compositionData,
-    clientId, assignmentId, assignmentType,
+    clientId, saveSecret, assignmentId, assignmentType,
     praatplaatPositionX, praatplaatPositionY,
   } = params;
 
@@ -167,6 +184,7 @@ export async function submitOrUpdateComposition(
 
   // Only include optional params when they have a value (avoids PostgREST ambiguity)
   if (clientId) rpcParams.p_client_id = clientId;
+  if (saveSecret) rpcParams.p_save_secret = saveSecret;
   if (assignmentType) rpcParams.p_assignment_type = assignmentType;
   // Storyboard-ref (registry-id) en free (thema-id) zijn tekst, geen UUID → naar
   // p_assignment_ref; template/praatplaat leveren een UUID → naar p_assignment_id.
@@ -187,28 +205,19 @@ export async function submitOrUpdateComposition(
   );
 
   if (error) {
-    // v2 bestaat nog niet (migratie 026 niet uitgevoerd) → val terug op v1
-    if (error.code === 'PGRST202' || /submit_or_update_composition_v2/.test(error.message ?? '')) {
-      logger.warn('submit_or_update_composition_v2 niet gevonden — fallback naar v1 (geen bewaarcode)');
-      const { data: v1Data, error: v1Error } = await withTimeout(
-        supabase.rpc('submit_or_update_composition', rpcParams),
-        20_000,
-        'errors.networkTimeout'
-      );
-      if (v1Error) {
-        throw translateSubmitError(v1Error);
-      }
-      return { id: v1Data as string, saveCode: null };
+    if (matchesError(error, ERR_SUBMISSION_FORBIDDEN)) {
+      logger.warn('Bijwerken inzending geweigerd (geen geldig geheim)');
+      throw new SubmissionForbiddenError();
     }
-
     throw translateSubmitError(error);
   }
 
-  // v2 geeft één rij terug: { submission_id, save_code }
+  // v2 geeft één rij terug: { submission_id, save_code, save_secret }
   const row = Array.isArray(data) ? data[0] : data;
   return {
     id: row?.submission_id as string,
     saveCode: (row?.save_code as string | undefined) ?? null,
+    saveSecret: (row?.save_secret as string | undefined) ?? null,
   };
 }
 

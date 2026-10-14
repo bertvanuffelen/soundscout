@@ -505,7 +505,8 @@ export type StorageKey =
   | 'soundscout:preferences'
   | 'soundscout:version'
   | 'soundscout:save-online'
-  | 'soundscout:class-feedback-code';
+  | 'soundscout:class-feedback-code'
+  | 'soundscout:submission-secrets';
 
 // --- User Preferences ---
 

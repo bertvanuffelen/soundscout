@@ -13,7 +13,7 @@ import { useAppStore } from '../stores/appStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
-import { updateSavedComposition, submitOrUpdateComposition } from '../lib/submissions';
+import { updateSavedComposition, submitOrUpdateComposition, SubmissionForbiddenError } from '../lib/submissions';
 import { TimeoutError } from '../utils/withTimeout';
 import { submitPraatplaatComposition } from '../lib/praatplaat';
 import { logger } from '../utils/logger';
@@ -181,16 +181,28 @@ export function useStageSave() {
             clientIdRef.current = submissionId || crypto.randomUUID();
           }
 
-          submitOrUpdateComposition({
+          // Bijwerken vereist het geheim van de eerste inlevering (migratie 036)
+          const submit = (clientId: string) => submitOrUpdateComposition({
             classCode: classSession.classCode,
             compositionName: compositionName.trim(),
             compositionData,
-            clientId: clientIdRef.current,
+            clientId,
+            saveSecret: storageService.getSubmissionSecret(clientId),
             assignmentId: classSession.assignmentId,
             assignmentType: classSession.assignmentType,
             praatplaatPositionX: classSession.assignmentType === 'praatplaat' ? praatplaatPosition?.x : undefined,
             praatplaatPositionY: classSession.assignmentType === 'praatplaat' ? praatplaatPosition?.y : undefined,
-          }).then(({ id: returnedId, saveCode }) => {
+          });
+
+          submit(clientIdRef.current).catch((err) => {
+            // Geen geldig geheim voor deze inzending (gemaakt vóór migratie 036,
+            // of de bewaarcode is op een ander apparaat geclaimd): lever als
+            // nieuwe inzending in in plaats van te falen.
+            if (!(err instanceof SubmissionForbiddenError)) throw err;
+            clientIdRef.current = crypto.randomUUID();
+            return submit(clientIdRef.current);
+          }).then(({ id: returnedId, saveCode, saveSecret }) => {
+            if (saveSecret) storageService.setSubmissionSecret(returnedId, saveSecret);
             useAppStore.getState().setSubmissionId(returnedId);
             useAppStore.getState().setSubmissionSynced(true);
             // Update clientIdRef to the server-confirmed ID for subsequent updates
