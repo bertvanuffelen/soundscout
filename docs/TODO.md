@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-10-08 (twee observaties uit Tier 1 #4; zie § Lancering 27-10)
+**Laatst bijgewerkt**: 2026-10-15 (ombouw docentenportaal; zie § Docentenportaal-ombouw)
 
 ---
 
@@ -41,6 +41,39 @@
 - [ ] **LESKAART-PDF's** — alle vier ingebouwde leskaarten hebben `pdf: null` (`scripts/les-pages-data.json`); de kolom `pdf_url` bestaat. Bert maakt de PDF's; daarna hier koppelen.
 - [ ] **TEACHER-HERO-MOBIEL** (P3, gevonden bij Tier 1 #4, 08-10) — op 375 × 812 staat *Bekijk de demo* nét onder de vouw (top 817 px): de onboarding-animatie staat op mobiel bóven de hero-tekst (`src/pages/TeacherLandingPage.tsx`). Overweeg op mobiel tekst + knop eerst, animatie eronder. Geen fout; de knop werkt.
 - [ ] **TEACHER-STAPPEN-TEKST** (P3, gevonden bij Tier 1 #4, 08-10) — "Zo zet je een klas op", stap 2: *Activeer een praatplaat, storyboard of template* noemt vrij componeren niet, terwijl dat een van de vier opdrachttypes is (NL + EN in `teacherLanding.*`).
+
+---
+
+## Docentenportaal-ombouw (14/15-10) — vervolg
+
+> Gebouwd op branch `claude/docentenportaal-ombouw` (worktree
+> `praatplaat-leerling-visibility-f004ea`), **nog niet op `main`**, geen migraties.
+> Logboek: `docs/WERKDOCUMENT-DOCENTENPORTAAL.md`. Verslag voor Bert:
+> `Kennis/1_ZZP/soundscout/bronnen/2026-10-14-ombouw-docentenportaal.md`.
+> Berts eigen handelingen (testen met echt account, besluiten) staan daar, niet hier.
+
+**Na Berts test en akkoord:**
+- [ ] **PORTAAL-MERGE** — `claude/docentenportaal-ombouw` naar `main` mergen. Het moment kiest Bert: vóór of na 27-10. Daarna `npm run build`, `dist/` aanleveren (inclusief `dist/les/`) en een logboekregel in het dossier. Kopie van ervóór: tag `backup/voor-docentenportaal-ombouw-2026-10-14`.
+- [ ] **PORTAAL-BEVINDINGEN** — wat Bert vindt bij de test met een echt account. Let vooral op deze punten:
+  - de wizard per type (template, praatplaat, storyboard, vrij en leskaart), inclusief de vervangmelding;
+  - *Opslaan & volgende*;
+  - *Opdracht stoppen*;
+  - *Klas verwijderen*;
+  - het verwijderen van een feedbackkaart;
+  - "Wat klasgenoten zeiden" met echte peer-data.
+
+**Opruimen (klein, geen besluit nodig):**
+- [ ] **I18N-DODE-SLEUTELS** — sleutels die alleen de verwijderde componenten gebruikten (`ActivateAssignmentModal`, `LessonCardPickerModal`, `AssignmentTypeCards`, `ClassCard`, `SubmissionCard`). Voorbeelden: `teacher.classDetail.startChoice*`, `assignments.types.*.tag/pickTitle`, `assignments.chooseDescription`, `teacher.dashboard.newClass`, `teacher.dashboard.setup.*`, `classDetail.instruction`. Eerst per sleutel grep'en: er bestaan dynamische sleutels (`t(\`…${type}…\`)`). Daarna `npm run teksten:export`.
+- [ ] **WORKTREE-ENV** — in de worktree is `.env.local` een symlink naar die van de hoofdrepo (voor de dev-server). Na de merge de worktree opruimen.
+
+**Wacht op een besluit van Bert:**
+- [ ] **TEACHER-LANDING-TEKSTEN** (P3) — op `/teacher` (`teacherLanding.*`, NL+EN) staat nog "Activeer een praatplaat…", "in één klik" en de tag "Verhaal in scènes". Dat botst met het besluit van 15-10 dat het overal "storyboard" heet. De pagina is bewust niet aangeraakt (bevroren). Samen oppakken met TEACHER-STAPPEN-TEKST hierboven.
+- [ ] **STERREN-WOORDEN** (P3) — de leerling ziet "goed geprobeerd · goed gedaan · heel sterk" (`peerReview.starsHint`), de docent "op weg · goed · top" (`teacher.feedbackScreen.levels`). Gelijktrekken via `docs/TEKSTEN.md` zodra Bert de woorden kiest.
+- [ ] **LIVE-NAMEN-CODESCHERM** (P3, migratie + privacy-check) — "Yara is begonnen" op het codescherm. Nu toont het scherm namen pas na de eerste keer opslaan. Nodig: een "begonnen"-signaal met naam wanneer de leerling op *Starten* tikt (nieuwe tabel of RPC; AVG-afweging).
+- [ ] **KLAS-ROOSTER** (P4, idee) — een rooster per klas ("maandag 13:15") zodat de kaart "Nu" de klas van het lesuur kiest in plaats van de laatst geopende.
+- [ ] **EIGEN-TIPZINNEN** (P4, idee) — docenten eigen tipzinnen laten toevoegen. Nu staan er 5 vaste zinnen in `teacher.feedbackScreen.tips`.
+- [ ] **PRESENTEREN-NAMEN** (P4, alleen als Bert erom vraagt) — een schakelaar *Namen tonen* in `PresentationSurface`. Presenteren bleef op Berts verzoek ongewijzigd.
+- [ ] **PORTAAL-OPTIONEEL** (P4) — uit het UX-onderzoek: een QR-code op het codescherm, een eigen accountpagina (naam en wachtwoord) en een rondleiding voor de eerste keer.
 
 ---
 
