@@ -345,6 +345,7 @@
     "share": "Share",
     "nameComposition": "Name your composition",
     "namePlaceholder": "My composition",
+    "nameHint": "Tip: don't put your last name in the name of your music.",
     "newComposition": "New composition",
     "newCompositionConfirm": "Are you sure you want to start over? Your collected sounds and composition will be lost and cannot be recovered.",
     "nowPlaying": "Now playing...",

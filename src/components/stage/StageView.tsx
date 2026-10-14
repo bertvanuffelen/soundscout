@@ -275,8 +275,13 @@ export function StageView() {
               value={compositionName}
               onChange={(e) => setCompositionName(e.target.value)}
               placeholder={t('stage.namePlaceholder')}
+              aria-describedby="composition-name-hint"
               className="w-full px-4 py-3 bg-neutral-50 border-2 border-border-subtle rounded-xl text-center text-text-main text-lg font-semibold placeholder:text-text-muted/50 focus:outline-none focus:border-accent-400 transition-colors"
             />
+            {/* Klas werkt anoniem: kinderen zetten hun naam anders in de titel (PRIV-06) */}
+            <p id="composition-name-hint" className="text-xs text-text-muted text-center mt-1.5">
+              {t('stage.nameHint')}
+            </p>
           </div>
 
           {/* Storytelling image display (#41) */}

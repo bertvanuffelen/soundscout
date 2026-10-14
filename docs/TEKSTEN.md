@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1725 teksten in 47 secties._
+_Stand: 1726 teksten in 47 secties._
 
 ## app
 
@@ -385,6 +385,7 @@ _Stand: 1725 teksten in 47 secties._
 | `stage.share` | Delen | Share |
 | `stage.nameComposition` | Geef je compositie een naam | Name your composition |
 | `stage.namePlaceholder` | Mijn compositie | My composition |
+| `stage.nameHint` | Tip: zet je achternaam niet in de naam van je muziek. | Tip: don't put your last name in the name of your music. |
 | `stage.newComposition` | Nieuwe compositie | New composition |
 | `stage.newCompositionConfirm` | Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en compositie gaan verloren en kunnen niet worden teruggehaald. | Are you sure you want to start over? Your collected sounds and composition will be lost and cannot be recovered. |
 | `stage.nowPlaying` | Nu speelt... | Now playing... |

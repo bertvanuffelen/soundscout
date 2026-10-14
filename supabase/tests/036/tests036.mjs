@@ -125,6 +125,16 @@ test('T12', 'leerling-e-mail wordt niet opgeslagen of teruggegeven', async (db) 
   return ok(!s.error && stored == null && l.rows[0]?.student_email == null, `opgeslagen: ${stored ?? 'niets'}`);
 });
 
+test('T13', 'schuilnaam van een klas-inzending blijft vast bij bijwerken', async (db) => {
+  const id = 'aaaa0006-0000-4000-8000-000000000006';
+  const first = await as(db, 'anon', `select * from submit_or_update_composition_v2(p_class_code := '1111', p_student_name := 'Zingende Zeehond', p_composition_name := 'AUDIT', p_composition_data := '{"tracks":[]}'::jsonb, p_client_id := '${id}', p_assignment_type := 'free', p_assignment_ref := 'basis')`);
+  const secret = first.rows[0]?.save_secret ?? null;
+  const extra = secret ? `, p_save_secret := ${lit(secret)}` : '';
+  await as(db, 'anon', `select * from submit_or_update_composition_v2(p_class_code := '1111', p_student_name := 'Dansende Das', p_composition_name := 'AUDIT-2', p_composition_data := '{"tracks":[]}'::jsonb, p_client_id := '${id}', p_assignment_type := 'free', p_assignment_ref := 'basis'${extra})`);
+  const row = (await db.query(`select student_name n, composition_name c from submissions where id='${id}'`)).rows[0];
+  return ok(row?.n === 'Zingende Zeehond' && row?.c === 'AUDIT-2', `naam: ${row?.n}, titel: ${row?.c}`);
+});
+
 // ---- Regressie (moet altijd werken) ----
 test('R1', 'leerling: nieuwe inzending geeft id + bewaarcode (+ geheim na 036)', async (db) => {
   const r = await submitV2(db, '1111', 'aaaa0003-0000-4000-8000-000000000003', 'AUDIT-nieuw');

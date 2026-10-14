@@ -13,6 +13,7 @@
 --   AUD-07/30  rate limits voor een volle klas: opdracht ophalen 30→200/min, inleveren 60→240/min
 --   AUD-11  leerling-e-mail wordt niet meer opgeslagen of teruggegeven; bestaande gewist
 --   AUD-78  rate_limits wordt dagelijks opgeruimd
+--   AUD-27  schuilnaam van een klas-inzending blijft vast bij bijwerken
 --
 -- Vereist de bijbehorende app-versie (stuurt p_save_secret mee). Draai deze
 -- migratie en upload de nieuwe build kort na elkaar, buiten schooltijd.
@@ -148,7 +149,8 @@ BEGIN
     UPDATE public.submissions s SET
       composition_name = p_composition_name,
       composition_data = p_composition_data,
-      student_name = COALESCE(NULLIF(TRIM(p_student_name), ''), 'Anoniem'),
+      -- student_name bewust NIET bijwerken: de klas werkt anoniem met één
+      -- vaste schuilnaam per inzending (AUD-27, besluit Bert 14-10)
       position_x = COALESCE(p_praatplaat_position_x, s.position_x),
       position_y = COALESCE(p_praatplaat_position_y, s.position_y),
       -- Eerste formele inlevering telt; blijft daarna staan
