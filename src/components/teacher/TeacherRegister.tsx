@@ -212,6 +212,12 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
           >
             {loading ? t('teacher.register.submitLoading') : t('teacher.register.submit')}
           </Button>
+          <p className="text-xs text-text-muted text-center">
+            {t('teacher.register.privacyNote')}{' '}
+            <a href="/privacy/" className="underline underline-offset-2 hover:text-text-main">
+              {t('privacy.fullLink')}
+            </a>
+          </p>
         </form>
 
         {/* Switch to login */}

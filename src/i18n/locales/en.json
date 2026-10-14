@@ -1480,6 +1480,7 @@
       "confirmPasswordLabel": "Confirm password",
       "confirmPasswordPlaceholder": "Repeat your password",
       "submit": "Create account",
+      "privacyNote": "We only keep your email address and name for your account. Need a data processing agreement for your school? Email hello@soundscout.nl.",
       "submitLoading": "Creating account...",
       "hasAccount": "Already have an account?",
       "loginLink": "Log in here",

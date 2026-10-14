@@ -1,0 +1,16 @@
+/* Privacyverklaring — aanvulling op /les/les.css (zelfde huisstijl). */
+.inner p{margin-bottom:10px}
+.inner ul{padding-left:20px;margin-bottom:12px}
+.inner li{margin-bottom:4px}
+.summary{background:#fef3c7;border-radius:14px;padding:16px 20px;margin:4px 0 8px}
+.summary ul{margin-bottom:0}
+.meta{color:var(--muted);font-size:14px;margin-bottom:16px}
+.lang{font-size:14px;margin-bottom:12px}
+.lang a{color:var(--accent-dark)}
+.inner a{color:var(--accent-dark)}
+.table-wrap{overflow-x:auto;margin-bottom:12px}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--border)}
+th{font-weight:800;background:#f8fafc}
+footer{color:var(--muted);font-size:14px;text-align:center;padding-top:24px}
+@media (max-width:480px){.inner{padding:20px 18px 22px}h1{font-size:26px}table{font-size:14px}}
