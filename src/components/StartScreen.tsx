@@ -48,7 +48,9 @@ export function StartScreen() {
   // eerst soort compositie kiezen, dáárna pas thema. "Ik heb een code" opent
   // een aparte modal met dezelfde chrome.
   const [showComposeWizard, setShowComposeWizard] = useState(false);
-  const [showCodeModal, setShowCodeModal] = useState(false);
+  // Een "mee naar huis"-link (#code=…) opent de code-modal meteen
+  const pendingSaveCode = useAppStore((s) => s.pendingSaveCode);
+  const [showCodeModal, setShowCodeModal] = useState(() => !!pendingSaveCode);
   const [showNewConfirm, setShowNewConfirm] = useState(false);
 
   // Check if there are saved compositions
@@ -496,8 +498,12 @@ export function StartScreen() {
 
       {/* Code modal — "Ik heb een code" */}
       <ShareCodeModal
-        isOpen={showCodeModal}
-        onClose={() => setShowCodeModal(false)}
+        isOpen={showCodeModal || !!pendingSaveCode}
+        onClose={() => {
+          setShowCodeModal(false);
+          useAppStore.getState().setPendingSaveCode(null);
+        }}
+        initialCode={pendingSaveCode}
       />
 
       {/* First-run intro: eenmalige uitleg-animatie vóór de eerste compositie */}

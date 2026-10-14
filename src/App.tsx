@@ -8,6 +8,7 @@ import { lookupAndRouteAssignment } from './utils/compositionInit';
 import { logger } from './utils/logger';
 import { logUsageEvent } from './utils/usageStats';
 import { useLeaveGuard } from './hooks/useLeaveGuard';
+import { readSaveCodeFromHash } from './utils/saveCodeLink';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
@@ -283,6 +284,17 @@ function AppContent() {
       window.history.replaceState({}, '', url.pathname + url.search);
     }
   }, [goToSharedAlbum]);
+
+  // Check for #code=ABC123 ("mee naar huis"-link met een bewaarcode). De code
+  // staat bewust in de hash (niet naar de server, niet als Referer) en gaat
+  // meteen uit de adresbalk; het startscherm zoekt hem daarna op.
+  useEffect(() => {
+    const saveCode = readSaveCodeFromHash(window.location.hash);
+    if (!saveCode) return;
+    window.history.replaceState({}, '', window.location.pathname + window.location.search);
+    useAppStore.getState().setPendingSaveCode(saveCode);
+    goToStart();
+  }, [goToStart]);
 
   // Wait for theme to load
   if (!isThemeInitialized) {

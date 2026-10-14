@@ -9,7 +9,7 @@
  * - 8 karakters → probeer eerst als template, dan als share-code
  */
 
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Headphones, Loader2, X, SlidersHorizontal, Theater } from 'lucide-react';
 import { Button } from '../ui/Button';
@@ -26,13 +26,18 @@ type PendingSaved = {
   code: string;
 };
 
-export function ShareCodeInput() {
+interface ShareCodeInputProps {
+  /** Code uit een "mee naar huis"-link: wordt bij het openen direct opgezocht */
+  initialCode?: string | null;
+}
+
+export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {}) {
   const { t } = useTranslation();
   const goToShared = useAppStore((s) => s.goToShared);
   const goToSharedPraatplaat = useAppStore((s) => s.goToSharedPraatplaat);
   const goToSharedAlbum = useAppStore((s) => s.goToSharedAlbum);
 
-  const [code, setCode] = useState('');
+  const [code, setCode] = useState(initialCode ?? '');
   const [error, setError] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   // Keuzescherm na een gevonden bewaarcode (testronde 2): Studio of Podium
@@ -47,10 +52,8 @@ export function ShareCodeInput() {
     setError(null);
   }, []);
 
-  const handleSubmit = useCallback(
-    async (e: React.FormEvent) => {
-      e.preventDefault();
-
+  const runLookup = useCallback(
+    async (code: string) => {
       if (code.length < 4) {
         setError(t('share.invalidCode'));
         return;
@@ -166,8 +169,22 @@ export function ShareCodeInput() {
         if (!signal.aborted) setIsLoading(false);
       }
     },
-    [code, t, goToShared, goToSharedPraatplaat, goToSharedAlbum]
+    [t, goToShared, goToSharedPraatplaat, goToSharedAlbum]
   );
+
+  const handleSubmit = useCallback((e: React.FormEvent) => {
+    e.preventDefault();
+    void runLookup(code);
+  }, [code, runLookup]);
+
+  // Code uit een link: één keer direct opzoeken (ref-guard tegen dubbel
+  // uitvoeren in StrictMode)
+  const initialLookupDone = useRef(false);
+  useEffect(() => {
+    if (!initialCode || initialLookupDone.current) return;
+    initialLookupDone.current = true;
+    void runLookup(initialCode);
+  }, [initialCode, runLookup]);
 
   // Keuze gemaakt (Studio of Podium): claim, laad en navigeer via de
   // gedeelde helper (ook gebruikt door de reactie-melding op start).

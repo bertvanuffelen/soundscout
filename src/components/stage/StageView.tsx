@@ -38,6 +38,7 @@ import { StagePlayback, StageAudience } from './StagePlayback';
 import { StorytellingDisplay } from './StorytellingDisplay';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { FeedbackBanner } from '../common/FeedbackBanner';
+import { SaveCodeTakeHome } from '../share/SaveCodeTakeHome';
 import { logger } from '../../utils/logger';
 
 export function StageView() {
@@ -375,6 +376,10 @@ export function StageView() {
               <p className="text-xs text-text-muted mt-1">
                 {t('stage.yourCodeHint')}
               </p>
+              {/* Mee naar huis: thuis verder werken of laten horen */}
+              <div className="mt-3">
+                <SaveCodeTakeHome code={classSaveCode} compositionName={compositionName.trim()} />
+              </div>
             </div>
           )}
         </div>

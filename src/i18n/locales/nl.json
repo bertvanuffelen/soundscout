@@ -1885,9 +1885,17 @@
     "updateError": "Bijwerken mislukt. Probeer het opnieuw.",
     "invalidSecret": "Ongeldige bewaarcode of je hebt geen toegang meer.",
     "codeNotFound": "Bewaarcode niet gevonden of verlopen.",
-    "claimError": "Kon compositie niet ophalen. Probeer het opnieuw.",
-    "qrAlt": "QR-code met bewaarcode",
-    "qrHint": "Scan om de code over te nemen"
+    "claimError": "Kon compositie niet ophalen. Probeer het opnieuw."
+  },
+  "takeHome": {
+    "copyLink": "Kopieer link",
+    "mail": "Mail",
+    "qr": "QR-code",
+    "qrAlt": "QR-code met de link naar je muziek",
+    "qrHint": "Scan met een telefoon om je muziek thuis te openen.",
+    "privacyHint": "Deel de link of code alleen thuis, niet in de klas. Wie hem heeft, kan je muziek veranderen.",
+    "mailSubject": "Mijn muziek in SoundScout",
+    "mailBody": "Mijn muziek \"{{name}}\" staat in SoundScout.\n\nOpen deze link om te luisteren of verder te werken:\n{{link}}\n\nOf ga naar soundscout.nl, kies \"Ik heb een code\" en typ: {{code}}"
   },
   "storyboards": {
     "verspringen": {

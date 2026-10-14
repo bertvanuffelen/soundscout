@@ -18,9 +18,11 @@ import { useModalBehavior } from '../../hooks/useModalBehavior';
 interface ShareCodeModalProps {
   isOpen: boolean;
   onClose: () => void;
+  /** Code uit een "mee naar huis"-link (#code=…), direct opzoeken */
+  initialCode?: string | null;
 }
 
-export function ShareCodeModal({ isOpen, onClose }: ShareCodeModalProps) {
+export function ShareCodeModal({ isOpen, onClose, initialCode = null }: ShareCodeModalProps) {
   const { t } = useTranslation();
   const modalRef = useModalBehavior(onClose, { isOpen });
 
@@ -54,7 +56,7 @@ export function ShareCodeModal({ isOpen, onClose }: ShareCodeModalProps) {
           <p className="text-text-muted mb-5 text-sm">
             {t('shareCodeModal.subtitle')}
           </p>
-          <ShareCodeInput />
+          <ShareCodeInput initialCode={initialCode} />
         </div>
       </div>
     </div>

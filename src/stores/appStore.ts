@@ -122,6 +122,11 @@ interface AppStore {
   pendingLessonCardKey: string | null;
   setPendingLessonCardKey: (key: string | null) => void;
 
+  // Bewaarcode uit een "mee naar huis"-link (/#code=ABC123): het startscherm
+  // opent hiermee de code-modal en zoekt de code direct op.
+  pendingSaveCode: string | null;
+  setPendingSaveCode: (code: string | null) => void;
+
   // Dashboard-tab die na de login-hop geopend moet worden (bv. 'lessons' via de
   // "Bekijk alle leskaarten"-knop op de landingspagina).
   pendingTeacherTab: string | null;
@@ -154,6 +159,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   isSubmitting: false,
   pendingAssignment: null,
   pendingLessonCardKey: null,
+  pendingSaveCode: null,
   pendingTeacherTab: null,
   pendingGuideSection: null,
 
@@ -188,9 +194,10 @@ export const useAppStore = create<AppStore>()((set) => ({
   goToLocation: (locationId) =>
     set({ currentScreen: 'location', currentLocationId: locationId }),
 
-  goToStudio: () => set({ currentScreen: 'studio' }),
+  // pendingSaveCode wissen: een "mee naar huis"-link is na het openen verbruikt
+  goToStudio: () => set({ currentScreen: 'studio', pendingSaveCode: null }),
 
-  goToStage: () => set({ currentScreen: 'stage' }),
+  goToStage: () => set({ currentScreen: 'stage', pendingSaveCode: null }),
 
   goToCompositions: () => set({ currentScreen: 'compositions' }),
 
@@ -245,6 +252,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   clearPendingAssignment: () => set({ pendingAssignment: null }),
 
   setPendingLessonCardKey: (key) => set({ pendingLessonCardKey: key }),
+
+  setPendingSaveCode: (code) => set({ pendingSaveCode: code }),
 
   setPendingTeacherTab: (tab) => set({ pendingTeacherTab: tab }),
 

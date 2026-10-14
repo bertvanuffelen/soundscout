@@ -1885,9 +1885,17 @@
     "updateError": "Update failed. Please try again.",
     "invalidSecret": "Invalid save code or you no longer have access.",
     "codeNotFound": "Save code not found or expired.",
-    "claimError": "Could not load composition. Please try again.",
-    "qrAlt": "QR code with save code",
-    "qrHint": "Scan to copy the code"
+    "claimError": "Could not load composition. Please try again."
+  },
+  "takeHome": {
+    "copyLink": "Copy link",
+    "mail": "Email",
+    "qr": "QR code",
+    "qrAlt": "QR code with the link to your music",
+    "qrHint": "Scan with a phone to open your music at home.",
+    "privacyHint": "Only share the link or code at home, not in class. Anyone who has it can change your music.",
+    "mailSubject": "My music in SoundScout",
+    "mailBody": "My music \"{{name}}\" is in SoundScout.\n\nOpen this link to listen or keep working:\n{{link}}\n\nOr go to soundscout.nl, choose \"I have a code\" and type: {{code}}"
   },
   "storyboards": {
     "verspringen": {

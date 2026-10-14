@@ -4,19 +4,18 @@
  * Flow:
  * 1. Invoer: naam (verplicht), klascode (optioneel). Geen e-mailveld meer (AUD-11).
  * 2. Bezig met bewaren (loading)
- * 3. Succes → Toont 6-karakter bewaarcode + kopieerknop + QR-code
+ * 3. Succes → Toont 6-karakter bewaarcode + "mee naar huis" (code, link, mail, QR)
  * 4. Error → Foutmelding + opnieuw proberen
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Save, Copy, Check, Loader2, AlertCircle, QrCode } from 'lucide-react';
+import { X, Save, Loader2, AlertCircle } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { saveCompositionOnline } from '../../lib/submissions';
-import { copyToClipboard } from '../../utils/copyToClipboard';
 import type { CompositionData } from '../../types';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
-import QRCode from 'qrcode';
+import { SaveCodeTakeHome } from './SaveCodeTakeHome';
 
 interface SaveOnlineModalProps {
   compositionName: string;
@@ -42,17 +41,6 @@ export function SaveOnlineModal({
   const [classCode, setClassCode] = useState('');
   const [saveCode, setSaveCode] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [showQr, setShowQr] = useState(false);
-  const [qrDataUrl, setQrDataUrl] = useState<string | null>(null);
-
-  // Generate QR code when save code is available
-  useEffect(() => {
-    if (!saveCode) return;
-    QRCode.toDataURL(saveCode, { width: 200, margin: 2 })
-      .then(setQrDataUrl)
-      .catch(() => setQrDataUrl(null));
-  }, [saveCode]);
 
   const handleSave = useCallback(async () => {
     if (!name.trim()) return;
@@ -79,13 +67,6 @@ export function SaveOnlineModal({
     }
   }, [name, compositionName, compositionData, classCode, t, onSaved]);
 
-  const handleCopy = useCallback(async () => {
-    if (!saveCode) return;
-    if (await copyToClipboard(saveCode)) {
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  }, [saveCode]);
 
 
   return (
@@ -186,36 +167,10 @@ export function SaveOnlineModal({
               </p>
             </div>
 
-            {/* Action buttons */}
-            <div className="flex gap-2 mb-3">
-              <Button
-                variant={copied ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={handleCopy}
-                className="flex-1"
-              >
-                {copied ? (
-                  <><Check className="w-4 h-4 mr-1" />{t('share.copied')}</>
-                ) : (
-                  <><Copy className="w-4 h-4 mr-1" />{t('saveOnline.copyCode')}</>
-                )}
-              </Button>
-              <Button
-                variant={showQr ? 'primary' : 'secondary'}
-                size="sm"
-                onClick={() => setShowQr((v) => !v)}
-              >
-                <QrCode className="w-4 h-4" />
-              </Button>
+            {/* Mee naar huis: code/link kopiëren, mailen, QR met link */}
+            <div className="mb-4">
+              <SaveCodeTakeHome code={saveCode} compositionName={compositionName} />
             </div>
-
-            {/* QR code (toggle) */}
-            {showQr && qrDataUrl && (
-              <div className="flex flex-col items-center mb-3">
-                <img src={qrDataUrl} alt={t('saveOnline.qrAlt')} className="w-40 h-40" />
-                <p className="text-xs text-neutral-500 mt-1">{t('saveOnline.qrHint')}</p>
-              </div>
-            )}
 
             {/* Expiry note */}
             <p className="text-xs text-neutral-400 text-center mb-4">

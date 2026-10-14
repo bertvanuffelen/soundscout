@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1719 teksten in 46 secties._
+_Stand: 1725 teksten in 47 secties._
 
 ## app
 
@@ -1630,8 +1630,19 @@ _Stand: 1719 teksten in 46 secties._
 | `saveOnline.invalidSecret` | Ongeldige bewaarcode of je hebt geen toegang meer. | Invalid save code or you no longer have access. |
 | `saveOnline.codeNotFound` | Bewaarcode niet gevonden of verlopen. | Save code not found or expired. |
 | `saveOnline.claimError` | Kon compositie niet ophalen. Probeer het opnieuw. | Could not load composition. Please try again. |
-| `saveOnline.qrAlt` | QR-code met bewaarcode | QR code with save code |
-| `saveOnline.qrHint` | Scan om de code over te nemen | Scan to copy the code |
+
+## takeHome
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `takeHome.copyLink` | Kopieer link | Copy link |
+| `takeHome.mail` | Mail | Email |
+| `takeHome.qr` | QR-code | QR code |
+| `takeHome.qrAlt` | QR-code met de link naar je muziek | QR code with the link to your music |
+| `takeHome.qrHint` | Scan met een telefoon om je muziek thuis te openen. | Scan with a phone to open your music at home. |
+| `takeHome.privacyHint` | Deel de link of code alleen thuis, niet in de klas. Wie hem heeft, kan je muziek veranderen. | Only share the link or code at home, not in class. Anyone who has it can change your music. |
+| `takeHome.mailSubject` | Mijn muziek in SoundScout | My music in SoundScout |
+| `takeHome.mailBody` | Mijn muziek "{{name}}" staat in SoundScout.<br><br>Open deze link om te luisteren of verder te werken:<br>{{link}}<br><br>Of ga naar soundscout.nl, kies "Ik heb een code" en typ: {{code}} | My music "{{name}}" is in SoundScout.<br><br>Open this link to listen or keep working:<br>{{link}}<br><br>Or go to soundscout.nl, choose "I have a code" and type: {{code}} |
 
 ## storyboards
 
