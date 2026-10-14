@@ -10,7 +10,8 @@
  */
 
 import { getSupabase } from './supabase';
-import { withTimeout } from '../utils/withTimeout';
+import { withTimeout, TimeoutError } from '../utils/withTimeout';
+import { ERR_RATE_LIMIT, matchesError } from './supabaseErrors';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
@@ -195,8 +196,23 @@ function parseLockOptions(lockOptions: TemplateLockOptions | null | undefined): 
 // --- Public (leerling) ---
 
 /**
+ * Het ophalen van de opdracht is mislukt (te druk of geen verbinding) — iets
+ * anders dan "deze klas heeft geen opdracht" (AUD-07). `busy` = rate limit.
+ */
+export class AssignmentLookupError extends Error {
+  readonly kind: 'busy' | 'error';
+
+  constructor(kind: 'busy' | 'error') {
+    super(`Opdracht ophalen mislukt (${kind})`);
+    this.name = 'AssignmentLookupError';
+    this.kind = kind;
+  }
+}
+
+/**
  * Haal de actieve opdracht op voor een klascode.
- * Retourneert null als er geen actieve opdracht is.
+ * Retourneert null als er geen actieve opdracht is (of de klascode niet
+ * bestaat). Gooit AssignmentLookupError als het ophalen zelf mislukt.
  */
 export async function getActiveAssignment(classCode: string): Promise<ActiveAssignment | null> {
   try {
@@ -211,7 +227,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
 
     if (error) {
       logger.error('get_active_assignment error:', sanitizeError(error));
-      return null;
+      throw new AssignmentLookupError(matchesError(error, ERR_RATE_LIMIT) ? 'busy' : 'error');
     }
 
     if (!data || data.length === 0) return null;
@@ -317,6 +333,8 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
 
     return null;
   } catch (err) {
+    if (err instanceof AssignmentLookupError) throw err;
+    if (err instanceof TimeoutError) throw new AssignmentLookupError('error');
     logger.error('getActiveAssignment failed:', err);
     return null;
   }

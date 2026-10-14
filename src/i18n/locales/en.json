@@ -558,6 +558,8 @@
     "noPraatplaat": "No active sound map for this class code. Ask your teacher.",
     "noActiveAssignment": "No active assignment for this class code. Ask your teacher.",
     "lookupError": "Something went wrong. Please try again.",
+    "classCodeNotFound": "This class code doesn't exist. Check the numbers again.",
+    "classBusy": "It's very busy right now. Wait a few seconds and try again.",
     "loadFailed": "Loading failed. Please try again.",
     "destinationTitle": "Found it! Where do you want to go?",
     "destStudio": "Studio",

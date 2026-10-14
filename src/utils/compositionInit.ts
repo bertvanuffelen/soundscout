@@ -14,7 +14,7 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
 import { getThemeStoryboards, findStoryboardById, getTheme, DEFAULT_THEME_ID } from '../data/themes';
-import { getActiveAssignment, type ActiveAssignment } from '../lib/assignments';
+import { getActiveAssignment, AssignmentLookupError, type ActiveAssignment } from '../lib/assignments';
 import { MAX_SECTIONS } from '../constants/config';
 import { logger } from './logger';
 import { praatplaatToStoryboard } from './praatplaatStoryboard';
@@ -303,23 +303,33 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
  * met de pending assignment (template, praatplaat, of `null` = Route C).
  *
  * Wordt gebruikt door `ShareCodeInput` (handmatige invoer) en `App.tsx`
- * (?pp= URL param). Retourneert `true` als er succesvol naar de landing is
- * genavigeerd (ook bij Route C — de landing toont dan soft-recovery).
- * Retourneert `false` alleen bij technische fouten.
+ * (?pp= URL param). Retourneert `'ok'` als er naar de landing is genavigeerd
+ * (ook bij Route C — de landing toont dan soft-recovery). Zonder navigatie:
+ * `'notFound'` (klascode bestaat niet), `'busy'` (even te druk) of `'error'`
+ * (technisch) — zo krijgt een leerling bij een fout nooit ten onrechte
+ * "geen opdracht" te zien (AUD-07).
  *
  * Belangrijk: deze functie initialiseert GEEN template en zet geen
  * klascode-sessie. Dat gebeurt pas op de landing bij "Starten", via
  * `activatePendingAssignment`. Zo blijven de stappen reviewbaar voor de
  * leerling voordat ze echt in de studio/praatplaat-select landen.
  */
-export async function lookupAndRouteAssignment(classCode: string): Promise<boolean> {
+export type AssignmentLookupResult = 'ok' | 'notFound' | 'busy' | 'error';
+
+export async function lookupAndRouteAssignment(classCode: string): Promise<AssignmentLookupResult> {
   try {
     const assignment = await getActiveAssignment(classCode);
+    if (!assignment) {
+      // Geen opdracht: bestaat de klas wel? Een typfout is geen "lege klas".
+      const { validateClassCode } = await import('../lib/submissions');
+      const klass = await validateClassCode(classCode).catch(() => undefined);
+      if (klass === null) return 'notFound';
+    }
     useAppStore.getState().goToAssignmentLanding({ classCode, assignment });
-    return true;
+    return 'ok';
   } catch (err) {
     logger.error('lookupAndRouteAssignment failed:', err);
-    return false;
+    return err instanceof AssignmentLookupError && err.kind === 'busy' ? 'busy' : 'error';
   }
 }
 
@@ -488,7 +498,7 @@ export async function activatePendingAssignment(): Promise<void> {
  * nu ook via de landing-flow (#78).
  */
 export async function navigateToPraatplaat(classCode: string): Promise<boolean> {
-  return lookupAndRouteAssignment(classCode);
+  return (await lookupAndRouteAssignment(classCode)) === 'ok';
 }
 
 /**

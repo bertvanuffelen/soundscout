@@ -180,8 +180,8 @@ function AppContent() {
 
       // Route via AssignmentLandingScreen (#78) — ook voor praatplaat-deeplinks,
       // zodat de leerling eerst ziet welke opdracht ze binnengaan.
-      lookupAndRouteAssignment(ppCode).then((success) => {
-        if (!success) {
+      lookupAndRouteAssignment(ppCode).then((result) => {
+        if (result !== 'ok') {
           logger.warn(`[App] ?pp=${ppCode}: lookup mislukt`);
           goToStart();
         }

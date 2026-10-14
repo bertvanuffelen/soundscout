@@ -67,13 +67,17 @@ export function ShareCodeInput() {
         //    soft-recovery (Route C) zodat de leerling zelf op "Starten" drukt
         //    voordat we de studio/praatplaat-select in gaan (#78).
         if (code.length === 4 && /^\d{4}$/.test(code)) {
-          const routed = await lookupAndRouteAssignment(code);
+          const result = await lookupAndRouteAssignment(code);
           if (signal.aborted) return;
-          if (routed) {
+          if (result === 'ok') {
             setCode('');
             return;
           }
-          setError(t('share.lookupError'));
+          setError(t(
+            result === 'notFound' ? 'share.classCodeNotFound'
+              : result === 'busy' ? 'share.classBusy'
+                : 'share.lookupError',
+          ));
           setIsLoading(false);
           return;
         }

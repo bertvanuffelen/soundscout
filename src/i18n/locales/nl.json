@@ -558,6 +558,8 @@
     "noPraatplaat": "Er is geen actieve praatplaat voor deze klascode. Vraag je docent.",
     "noActiveAssignment": "Er is geen actieve opdracht voor deze klascode. Vraag je docent.",
     "lookupError": "Er ging iets mis bij het opzoeken. Probeer opnieuw.",
+    "classCodeNotFound": "Deze klascode bestaat niet. Kijk nog eens goed naar de cijfers.",
+    "classBusy": "Het is even heel druk. Wacht een paar tellen en probeer het opnieuw.",
     "loadFailed": "Laden is niet gelukt. Probeer het opnieuw.",
     "destinationTitle": "Gevonden! Waar wil je heen?",
     "destStudio": "Studio",
