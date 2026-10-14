@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-10-08 (twee observaties uit Tier 1 #4; zie § Lancering 27-10)
+**Laatst bijgewerkt**: 2026-10-15 (audit oktober 2026: blok B toegevoegd; zie § Audit oktober 2026)
 
 ---
 
@@ -41,6 +41,72 @@
 - [ ] **LESKAART-PDF's** — alle vier ingebouwde leskaarten hebben `pdf: null` (`scripts/les-pages-data.json`); de kolom `pdf_url` bestaat. Bert maakt de PDF's; daarna hier koppelen.
 - [ ] **TEACHER-HERO-MOBIEL** (P3, gevonden bij Tier 1 #4, 08-10) — op 375 × 812 staat *Bekijk de demo* nét onder de vouw (top 817 px): de onboarding-animatie staat op mobiel bóven de hero-tekst (`src/pages/TeacherLandingPage.tsx`). Overweeg op mobiel tekst + knop eerst, animatie eronder. Geen fout; de knop werkt.
 - [ ] **TEACHER-STAPPEN-TEKST** (P3, gevonden bij Tier 1 #4, 08-10) — "Zo zet je een klas op", stap 2: *Activeer een praatplaat, storyboard of template* noemt vrij componeren niet, terwijl dat een van de vier opdrachttypes is (NL + EN in `teacherLanding.*`).
+
+---
+
+## Audit oktober 2026 — blok B (eerste weken na 27-10)
+
+> Uit de volledige audit van 14-10-2026 (95 bevindingen, AUD-01 t/m AUD-95).
+> **Blok A** (de 13 lanceerblokkers) is gebouwd op branch `fix/audit-blok-a` en
+> gaat live met migratie 036 volgens `docs/DRAAIBOEK-LIVEGANG-036.md`. Dit is
+> **blok B**: de eerste weken na de lancering. Volledige uitwerking per AUD-nummer
+> (reproductie, bewijs, oplossing): `docs/audit-2026-10/AUDIT-RAPPORT.md` en
+> `FIXPLAN.md` (nog niet gecommit; kopie in het kennisdossier
+> `1_ZZP/soundscout/bronnen/audit-oktober-2026/`). Blok C (later) staat in dat
+> fixplan.
+>
+> 🔀 = waarschijnlijk al opgelost op branch `claude/docentenportaal-ombouw`
+> (niet tegen de code nagekeken). Eerst controleren na het mergen van die branch.
+> ❓ = besluit van Bert nodig (taak Z-0307 in `taken.md`).
+
+### B1 — Snelle winsten (±4 u; mogen eventueel nog vóór 27-10)
+- [ ] **AUD-14 gzip voor JavaScript** — `public/.htaccess`: `text/javascript` en `application/wasm` toevoegen aan `AddOutputFilterByType DEFLATE` (Apache stuurt `text/javascript`; nu 809 KB i.p.v. 247 KB, LCP mobiel 9 s). Na upload controleren met `curl -sI -H 'Accept-Encoding: gzip'`. 15 min
+- [ ] **AUD-70 Zod-CSP-melding** — `z.config({ jitless: true })` bij het opstarten; nu één `script-src eval`-violation per paginalading (raakt Tier 1 #2). 15 min
+- [ ] 🔀 **AUD-15 label "Storyboard" bij praatplaat/afbeelding** — één helper `submissionShape()` voor `SubmissionCard.tsx:21` en `PresentationSurface.tsx:114-119`. 1 u
+- [ ] **AUD-24 taaldetectie** — `src/i18n/index.ts`: alleen de eerste voorkeurstaal; nu krijgt een NL-browser met EN als tweede taal een Engelse app. 30 min
+- [ ] **AUD-23 intro-knop onder de vouw** — "Aan de slag" in de modal "Zo werkt SoundScout" sticky onderaan (1366×768, 1024×768). 30-60 min
+- [ ] **AUD-25 liggend-balk over de knoppen** — `LandscapeHint` niet `fixed` over de header; ✕ ≥44 px. 1 u
+- [ ] **AUD-44 security-headers** — `.htaccess`: HSTS, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'self'` in de CSP. 30 min
+- [ ] **AUD-46 wachtwoorden docenten** — Supabase Auth: *leaked password protection* aan + minimaal 10 tekens; client gelijktrekken (`TeacherRegister.tsx:42`, `TeacherResetPassword.tsx:38`, `supabaseErrors.ts`). 15 min (dashboard = Bert)
+- [ ] **AUD-41 cache audio/beelden** — `/audio/` en `/images/` niet `immutable` voor een jaar (bestandsnamen hebben geen hash); vóór het vervangen van de piraten-dummytonen. 15 min
+- [ ] 🔀 **AUD-28 venster "Klas aanmaken" hangt** bij een fout (oorzaak BUG-MAXCLASSES-MODAL: `TeacherDashboard.tsx:100-108` gooit de fout niet door). 30 min
+- [ ] **AUD-64 ontbrekende kleurtokens** — `warning-200…800`, `error-300/700`, `success-700` in `@theme`; de status "beluisterd" in het presentatie-zijpaneel is nu onzichtbaar. 1,5 u
+
+### B2 — Werk en inleveren robuust (week 1-2)
+- [ ] **AUD-03 autosave** — tijdlijn + bibliotheek gedebounced naar localStorage, "Ga verder met je muziek?" op het startscherm (de waarschuwing bij verlaten zit al in blok A). 4-6 u
+- [ ] **AUD-17 bevestiging vóór werk vervangen** bij klascode → Starten, bewaarcode laden, compositie openen (guard op clips óf verzamelde geluiden). 2-3 u
+- [ ] ❓ **AUD-29 Opslaan vs. Lever in in de klas** — nu is elke opslag formeel inleveren en blijft de tab "In bewerking" leeg. Besluit: echte tussenversie (`p_formal`) of de tab weghalen. 0,5-4 u
+- [ ] **AUD-31 context-reset** — `openSavedComposition` en `initializeFromTemplate` roepen `resetCompositionContext()` niet aan. 0,5 u
+- [ ] **AUD-32 resten van vorig werk** — `timelineStore.resetForNewComposition()` (ook sequences, secties, totalBeats) in elk startpad, ook de praatplaat-activatie. 1 u
+- [ ] **AUD-33 oud praatplaat-pad** maakt dubbele inzendingen zonder opdrachttype (`useStageSave` legacy-tak). 1 u
+- [ ] **AUD-34 mislukte lokale opslag blokkeert inleveren** — remote submit los van lokaal; terugvallen op `saveComposition`. 1 u
+- [ ] **AUD-30 inleveren opnieuw proberen** — automatische retry met backoff + eerlijke melding bij een rate limit (de limiet gaat in 036 al naar 240/min). 1 u
+- [ ] **AUD-38 album/deelcode** — één RPC per bezoek (nu 2 via ShareCodeInput + viewer) en een rate limit niet als "Code niet gevonden" tonen. 1-2 u
+- [ ] **AUD-37 / AUD-40 time-outs + chunk-fout** — `withTimeout` in docent-hooks en `getPeerCompliments`; `lazyWithRetry` + `vite:preloadError`. 2-3 u
+- [ ] **AUD-35 Play vóór de geluiden geladen zijn** — `bufferVersion` ophogen na `loadSamples`; laadfouten tonen in de studio. 1-2 u
+- [ ] **AUD-08 (rest) waarschuwing** vóór het wissen van de oudste compositie bij 10/10. 1-2 u
+- [ ] **AUD-93 tests** voor de opslaan- en inleverlaag (`useStageSave`, `compositionInit`, `ShareCodeInput`, `StorageService`). 1 dag
+
+### B3 — Kind-UX en toegankelijkheid (week 2-3)
+- [ ] **AUD-19 / AUD-56 / AUD-62 woordkeus** — `docs/WOORDENLIJST.md` doorvoeren in `nl.json` (Samples/Clips/Tracks, Fade in, "geluiden opnemen" op de kaart, deel/sectie) + foutmeldingen in kindertaal + docentjargon. Let op het besluit 15-10: **storyboard heet overal "storyboard"**. 5-6 u
+- [ ] **AUD-20 / AUD-21 / AUD-66 contrast** — wit op amber (Play, Verstuur) → `text-accent-900`; cliplabels donker op lichte kleuren; `--color-text-muted` één stap donkerder; focusring. 3-4 u
+- [ ] 🔀 **AUD-16 / AUD-26 tijdlijn swipen + drag-autoscroll** — `touch-none` op de spoorrij (`Track.tsx:127`), `PointerSensor` → `MouseSensor` + `TouchSensor`, dnd-kit `autoScroll` temmen. Daarna testen op een echte iPad/Chromebook (taak Z-0308). 3-5 u
+- [ ] **AUD-36 / AUD-57 geluid starten op iPad** — ontgrendelen op `pointerup/touchend/click`, `Tone.start()` synchroon in Play; banner "Hoor je niets? Tik hier". 2-3 u
+- [ ] **AUD-18 touch-maten** — één `@media (pointer: coarse)`-variant (min. 44 px raakvlak); begin met de sequencer-✕ (11×11) en het spoor-volume (23×16). 1 dag
+- [ ] **AUD-55 labels onder de studio-iconen** bij touch; de QA-2-hint van de vlagknop werkt niet door `disabled:pointer-events-none`. 3-4 u
+- [ ] 🔀 **AUD-60 / AUD-61 klaspagina** — inzendingen bovenaan; leskaart niet met één klik vervangen. 1-4 u
+- [ ] 🔀 **AUD-63 digibord** — kopbalk-iconen met tekst, pills `text-sm`/44 px, namen groter. 2-3 u
+
+### B4 — Privacy en security, tweede ronde (week 2-4)
+- [ ] **AUD-22 bewaarcode** — docentfeedback alleen met het geheim; globale limiet op mislukte lookups (migratie). 2-3 u
+- [ ] **Klascodes raadbaar** — na 036 nog 9.000 mogelijkheden zonder limiet per bezoeker: limiet per IP via `current_setting('request.headers')` in `get_class_by_code`/`get_active_assignment` (migratie). 2 u
+- [ ] ❓ **AUD-50 publieke albums** standaard zonder namen en klasnaam; docent kiest "namen tonen" (migratie + `ShareAlbumModal`, `SharePraatplaatModal`). 2-3 u
+- [ ] **AUD-51 / AUD-54 gedeeld apparaat** — knop "Klaar, volgende leerling"; feedbackmelding alleen dezelfde dag; docent-`select` met alleen de nodige kolommen (nu ook `save_secret`). 3 u
+- [ ] ❓ **AUD-52 feedbackformulier** — e-mailveld en querystring weg voor leerlingen; later via eigen SMTP i.p.v. EmailJS. 0,5 u / 3-4 u
+- [ ] **AUD-45 `@supabase/supabase-js` bijwerken** (kwetsbare `ws` in de productieboom). 1-2 u
+- [ ] **AUD-49 spamlimiet** bij online bewaren/delen niet meer op `md5(leerlingnaam)` (migratie). 1 u
+- [ ] **Audit-trail op `submissions`** (wie schreef het laatst), zodat misbruik voortaan zichtbaar is (migratie). 1-2 u
+- [ ] **Na mergen `claude/docentenportaal-ombouw`**: v1-terugval in `submissions.ts` en het e-mailveld mogen niet terugkomen (de versie van `fix/audit-blok-a` wint); daarna `npm run test:db` + de 🔀-punten hierboven nalopen.
 
 ---
 
