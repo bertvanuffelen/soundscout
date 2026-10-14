@@ -11,7 +11,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Play, Pause, Loader2, Check, Star, ArrowRight, CircleCheck, Trash2, AlertCircle } from 'lucide-react';
+import { Play, Pause, Loader2, Check, Star, ArrowRight, ArrowLeft, CircleCheck, Trash2, AlertCircle, Users } from 'lucide-react';
 import type { TeacherClass } from '../../hooks/useClasses';
 import type { Submission } from '../../hooks/useSubmissions';
 import { getReviewStatus } from '../../hooks/useSubmissions';
@@ -28,6 +28,8 @@ import { TeacherPageHeader } from './common';
 import { useAgeLabel } from './classPage/useAgeLabel';
 import { STATUS_CHIP } from './classPage/statusChip';
 import { cn } from '../../utils/cn';
+import { getPeerFeedbackForSubmission } from '../../lib/peerFeedback';
+import { summarizePeerFeedback, type PeerFeedbackRow } from '../../lib/peerSummary';
 
 type Filter = 'todo' | 'new' | 'all';
 type FeedbackValue = { sticker: FeedbackSticker | null; level: number | null; text: string | null };
@@ -85,6 +87,8 @@ export function FeedbackWorklist({
   const [currentId, setCurrentId] = useState<string | null>(initialSubmissionId);
   // Wat de docent in deze sessie opsloeg blijft in "Nog doen" staan tot een filterwissel
   const [doneThisSession, setDoneThisSession] = useState<Set<string>>(new Set());
+  // Namen van klasgenoten die feedback gaven (alleen de docent ziet ze)
+  const nameById = useMemo(() => new Map(submissions.map((s) => [s.id, s.student_name])), [submissions]);
 
   const inAssignment = useMemo(() => {
     if (assignmentId === 'all') return submissions;
@@ -170,6 +174,13 @@ export function FeedbackWorklist({
       <CircleCheck className="w-8 h-8 text-success-500 mx-auto" aria-hidden="true" />
       <p className="font-extrabold text-text-main mt-2">{t('teacher.feedbackScreen.emptyTitle')}</p>
       <p className="text-sm text-text-muted">{t('teacher.feedbackScreen.emptyHint')}</p>
+      <button
+        type="button"
+        onClick={onBack}
+        className="mt-4 inline-flex items-center gap-1.5 rounded-full bg-brand-900 hover:bg-brand-800 text-white px-5 min-h-[44px] text-sm font-extrabold"
+      >
+        <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t('teacher.feedbackScreen.back')}
+      </button>
     </div>
   );
 
@@ -214,6 +225,14 @@ export function FeedbackWorklist({
             {assignments.map((a) => <option key={a.id} value={a.id}>{a.assignmentName}</option>)}
             <option value="all">{t('teacher.feedbackScreen.assignmentAll')}</option>
           </select>
+          {/* Duidelijk zichtbaar terug, niet alleen het kleine linkje in de kop (feedback Bert 15-10) */}
+          <button
+            type="button"
+            onClick={onBack}
+            className="ml-auto inline-flex items-center gap-1.5 rounded-full border-2 border-brand-900 bg-bg-surface hover:bg-brand-900 hover:text-white text-brand-900 px-4 min-h-[40px] text-sm font-extrabold transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t('teacher.feedbackScreen.doneBack')}
+          </button>
         </div>
 
         {narrow ? (
@@ -230,6 +249,7 @@ export function FeedbackWorklist({
                       assignmentName={assignments.find((a) => submissionMatchesAssignment(s, a))?.assignmentName ?? null}
                       onSave={(v) => handleSave(s.id, v)}
                       onDelete={() => onDelete(s.id)}
+                      nameById={nameById}
                     />
                   </div>
                 )}
@@ -250,6 +270,7 @@ export function FeedbackWorklist({
                   assignmentName={assignments.find((a) => submissionMatchesAssignment(current, a))?.assignmentName ?? null}
                   onSave={(v) => handleSave(current.id, v)}
                   onDelete={() => onDelete(current.id)}
+                  nameById={nameById}
                 />
               ) : (
                 <p className="text-text-muted text-sm py-10 text-center">{t('teacher.feedbackScreen.pick')}</p>
@@ -271,9 +292,10 @@ interface FeedbackDetailProps {
   assignmentName: string | null;
   onSave: (value: FeedbackValue) => Promise<void>;
   onDelete: () => void;
+  nameById: Map<string, string>;
 }
 
-function FeedbackDetail({ submission, assignmentName, onSave, onDelete }: FeedbackDetailProps) {
+function FeedbackDetail({ submission, assignmentName, onSave, onDelete, nameById }: FeedbackDetailProps) {
   const { t } = useTranslation();
   const ageLabel = useAgeLabel();
   const data = submission.composition_data ?? null;
@@ -399,6 +421,9 @@ function FeedbackDetail({ submission, assignmentName, onSave, onDelete }: Feedba
         </div>
       )}
 
+      {/* Eerst lezen wat klasgenoten vonden, dan zelf reageren (feedback Bert 15-10) */}
+      <PeerFeedbackSummary submissionId={submission.id} nameById={nameById} />
+
       {/* 1. Compliment */}
       <h3 className="font-extrabold text-text-main mt-5 mb-2">{t('teacher.feedbackScreen.step1')}</h3>
       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2" role="radiogroup" aria-label={t('teacher.feedbackScreen.step1')}>
@@ -502,3 +527,73 @@ function FeedbackDetail({ submission, assignmentName, onSave, onDelete }: Feedba
 }
 
 export default FeedbackWorklist;
+
+// ---------------------------------------------------------------------------
+// Wat klasgenoten zeiden (peer feedback, alleen-lezen)
+// ---------------------------------------------------------------------------
+
+function PeerFeedbackSummary({ submissionId, nameById }: { submissionId: string; nameById: Map<string, string> }) {
+  const { t } = useTranslation();
+  const [state, setState] = useState<{ id: string; rows: PeerFeedbackRow[] | null; error: boolean } | null>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+    getPeerFeedbackForSubmission(submissionId)
+      .then((rows) => { if (!cancelled) setState({ id: submissionId, rows, error: false }); })
+      .catch(() => { if (!cancelled) setState({ id: submissionId, rows: null, error: true }); });
+    return () => { cancelled = true; };
+  }, [submissionId]);
+
+  const current = state?.id === submissionId ? state : null;
+  const summary = useMemo(() => (current?.rows ? summarizePeerFeedback(current.rows) : null), [current]);
+
+  // Nog aan het laden, of (nog) niemand reageerde: geen blok — rust in het scherm
+  if (!current) return null;
+  if (current.error) {
+    return (
+      <p className="mt-4 text-xs text-text-muted inline-flex items-center gap-1.5">
+        <AlertCircle className="w-3.5 h-3.5" aria-hidden="true" /> {t('teacher.feedbackScreen.peer.loadError')}
+      </p>
+    );
+  }
+  if (!summary || summary.raters === 0) return null;
+
+  const names = summary.fromIds.map((id) => nameById.get(id)).filter((n): n is string => !!n);
+
+  return (
+    <section className="mt-5 rounded-2xl border border-accent-200 bg-accent-50/60 p-3.5" aria-labelledby={`peer-${submissionId}`}>
+      <h3 id={`peer-${submissionId}`} className="font-extrabold text-text-main inline-flex items-center gap-2">
+        <Users className="w-4 h-4 text-accent-700" aria-hidden="true" />
+        {t('teacher.feedbackScreen.peer.title')}
+        <span className="text-xs font-bold text-text-muted">{t('teacher.feedbackScreen.peer.count', { count: summary.raters })}</span>
+      </h3>
+      <ul className="mt-2 grid sm:grid-cols-2 gap-x-6 gap-y-1.5">
+        {summary.criteria.map((c) => (
+          <li key={c.name} className="flex items-center justify-between gap-3 text-sm">
+            <span className="text-text-main truncate">{c.name}</span>
+            {c.avg !== null ? (
+              <span className="inline-flex items-center gap-0.5 shrink-0" aria-label={t('teacher.feedbackScreen.peer.avg', { avg: c.avg })}>
+                {[1, 2, 3].map((n) => (
+                  <Star
+                    key={n}
+                    className={cn('w-4 h-4', c.avg !== null && c.avg >= n - 0.25 ? 'fill-accent-400 text-accent-500' : 'text-neutral-300')}
+                    aria-hidden="true"
+                  />
+                ))}
+                <span className="ml-1 text-xs font-bold text-text-muted tabular-nums">{c.avg.toLocaleString()}</span>
+              </span>
+            ) : (
+              <span className="text-xs text-text-muted shrink-0">{t('teacher.feedbackScreen.peer.chosen', { count: c.count })}</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      {names.length > 0 && (
+        <p className="mt-2 text-xs text-text-muted">
+          {t('teacher.feedbackScreen.peer.from', { names: names.join(', ') })}
+        </p>
+      )}
+    </section>
+  );
+}
+

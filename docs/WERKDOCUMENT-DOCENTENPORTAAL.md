@@ -211,3 +211,18 @@
 2. **Moment van mergen naar `main`.** De lancering is op 27-10. Volgens de oorspronkelijke afspraak bouwden we dit na de lancering. Kies zelf of dit vóór of na 27-10 live gaat.
 3. **Kleine opruimklus:** i18n-sleutels die alleen de verwijderde componenten gebruikten.
 4. **Docentenpagina `/teacher`:** daar staat nog "Activeer een praatplaat…" en "in één klik". Ik heb die pagina bewust niet aangeraakt.
+
+---
+
+## Ronde 4 — feedback Bert na eigen test (15-10-2026)
+
+| # | Feedback | Wat ik deed |
+|---|---|---|
+| 1 | *Nieuwe leskaart* is formeel; bij "Bron" zie je alleen namen | De editor is omgebouwd: gekleurde vormkaarten zoals in de wizard en een **brontegel met afbeelding**. "Kies een bron" opent een **groot raster met alle bronnen en hun afbeelding**, in hetzelfde venster met *Terug naar de leskaart*. Een tweede venster eroverheen zou botsen met Escape en de focus. Het raster is hetzelfde onderdeel als in de wizard (`wizard/SourceGrid` + `wizard/useAssignmentSources`). |
+| 2 | Live voorbeeld zoals elders | Rechts staat een **live voorbeeld** met een schakelaar: *Leskaart* (zo staat hij in Lesideeën: beeld, vorm, niveau, titel, lesdoel, fasen) en *Leerling* (de telefoon uit de wizard met de gekozen uitleg). Tik je op uitleg, dan springt het voorbeeld naar *Leerling*; werk je aan titel, lesdoel of fasen, dan naar *Leskaart*. Op een smal scherm staat het voorbeeld onder het formulier. |
+| 3 | *Opdracht stoppen* uit *Meer opties* halen | Het staat nu direct onder *Andere opdracht kiezen* / *Zoals leerlingen het zien*, als rode omlijnde knop "Opdracht stoppen…" met de uitleg ernaast. *Klas verwijderen* blijft onder *Meer opties*: dat doe je zelden en het is onomkeerbaar. |
+| 4 | Terug naar de klas is onopvallend | Rechts in de filterbalk staat nu een duidelijke knop **"Klaar? Terug naar de klas"**. Als er niets meer te doen is, krijgt de lege staat ook een knop *Terug naar de klas*. |
+| 5 | Waar zie ik wat klasgenoten zeiden? | Mijn advies: **ja, ook in *Feedback geven***. Je wilt lezen wat klasgenoten vonden vóór je zelf reageert. Daarom staat er boven *1. Kies een compliment* een blok **"Wat klasgenoten zeiden"**: gemiddelde sterren per criterium, hoeveel klasgenoten reageerden en hun namen (alleen voor de docent zichtbaar). Het blok verschijnt alleen als er reacties zijn. Het overzicht met de top 3 blijft onder *Terugkijken*. Data via de bestaande RLS op `peer_feedback`, geen migratie (`getPeerFeedbackForSubmission` + pure `lib/peerSummary.ts`, 3 tests). |
+
+- **Poort:** tsc 0 · 440/440 · lint 25/5.
+- **Screenshots:** `mockups/gebouwd/14`–`18`.

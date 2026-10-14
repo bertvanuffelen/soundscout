@@ -14,6 +14,7 @@ import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
+import type { PeerFeedbackRow } from './peerSummary';
 
 // --- Leerling: batch beluisteren + complimenten geven ---
 
@@ -197,6 +198,24 @@ export async function getPeerStarsForClass(classId: string): Promise<Map<string,
     logger.warn('get_peer_stars_for_class mislukt:', sanitizeError(err));
     return new Map();
   }
+}
+
+/**
+ * Docent: alle beoordelingen van klasgenoten voor één inzending (RLS:
+ * alleen inzendingen uit eigen klassen, migratie 027). Gooit bij een fout,
+ * zodat het scherm "kon niet laden" kan tonen in plaats van "nog niets".
+ */
+export async function getPeerFeedbackForSubmission(submissionId: string): Promise<PeerFeedbackRow[]> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('peer_feedback')
+    .select('id, submission_id, from_submission_id, chips, ratings, created_at')
+    .eq('submission_id', submissionId);
+  if (error) {
+    logger.warn('peer_feedback per inzending laden mislukt:', sanitizeError(error));
+    throw error;
+  }
+  return (data ?? []) as PeerFeedbackRow[];
 }
 
 // --- Docent: feedbackkaarten + peer-review-instelling ---

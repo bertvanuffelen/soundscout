@@ -824,11 +824,11 @@
     "editor": {
       "newTitle": "Nieuwe leskaart",
       "editTitle": "Leskaart bewerken",
-      "typeLabel": "Type opdracht",
+      "typeLabel": "Wat gaan je leerlingen doen?",
       "resourceLabel": "Bron",
       "resourcePlaceholder": "Kies een bron…",
       "resourceRequired": "Kies een bron voor deze leskaart.",
-      "cardLabel": "Opdrachtkaart (optioneel)",
+      "cardLabel": "Uitleg voor leerlingen (optioneel)",
       "cardStudentHint": "Dit ziet de leerling na de klascode.",
       "cardMode": {
         "none": "Standaardtekst",
@@ -858,7 +858,17 @@
       "noPhases": "Nog geen fasen toegevoegd.",
       "phaseNamePlaceholder": "Naam",
       "phaseTextPlaceholder": "Omschrijving",
-      "saveError": "Kon de leskaart niet opslaan."
+      "saveError": "Kon de leskaart niet opslaan.",
+      "chooseSource": "Kies een bron",
+      "backToForm": "Terug naar de leskaart",
+      "forYouTitle": "Voor jezelf",
+      "preview": {
+        "card": "Leskaart",
+        "student": "Leerling",
+        "cardTitle": "Zo staat hij in Lesideeën",
+        "noTitle": "Nog geen titel"
+      },
+      "chooseSourceHint": "Je ziet ze allemaal met afbeelding."
     },
     "filterAll": "Alle",
     "filterGeneral": "Algemeen",
@@ -1936,13 +1946,12 @@
         "change": "Andere opdracht kiezen",
         "studentView": "Zoals leerlingen het zien",
         "moreOptions": "Meer opties",
-        "stop": "Opdracht stoppen",
         "stopHint": "leerlingen kunnen dan alleen vrij componeren",
-        "stopButton": "Stoppen…",
         "classLabel": "Klas",
         "deleteClass": "Klas verwijderen…",
         "deleteClassTitle": "{{className}} verwijderen?",
-        "deleteClassBody": "De klas, de klascode en alle inzendingen worden verwijderd. Dit kun je niet ongedaan maken."
+        "deleteClassBody": "De klas, de klascode en alle inzendingen worden verwijderd. Dit kun je niet ongedaan maken.",
+        "stopAssignment": "Opdracht stoppen…"
       },
       "live": {
         "title": "Wie is klaar?",
@@ -2030,7 +2039,18 @@
       "emptyHint": "Nieuwe inzendingen verschijnen hier vanzelf.",
       "pick": "Kies links een inzending.",
       "delete": "Inzending verwijderen",
-      "noSamples": "Deze compositie heeft geen geluiden om af te spelen."
+      "noSamples": "Deze compositie heeft geen geluiden om af te spelen.",
+      "doneBack": "Klaar? Terug naar de klas",
+      "peer": {
+        "title": "Wat klasgenoten zeiden",
+        "count_one": "{{count}} klasgenoot",
+        "count_other": "{{count}} klasgenoten",
+        "avg": "gemiddeld {{avg}} van 3 sterren",
+        "chosen_one": "{{count}}× gekozen",
+        "chosen_other": "{{count}}× gekozen",
+        "from": "Van: {{names}} (alleen jij ziet de namen)",
+        "loadError": "De reacties van klasgenoten konden niet geladen worden."
+      }
     },
     "today": {
       "greeting": {

@@ -9,7 +9,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Eye, ChevronDown } from 'lucide-react';
+import { Eye, ChevronDown, Square } from 'lucide-react';
 import type { ClassAssignmentRow } from '../../../lib/assignments';
 import { TYPE_META } from '../assignmentTypeMeta';
 import { LiveAssignmentSettings } from '../LiveAssignmentSettings';
@@ -61,6 +61,17 @@ export function ClassPrepareTab({ assignment, onChange, onStudentView, onStop, o
               <Eye className="w-4 h-4" aria-hidden="true" /> {t('teacher.classPage.prepare.studentView')}
             </button>
           </div>
+          {/* Stoppen staat bewust in het zicht, niet onder Meer opties (feedback Bert 15-10) */}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 mt-3">
+            <button
+              type="button"
+              onClick={onStop}
+              className="inline-flex items-center gap-1.5 rounded-full border-2 border-error-200 text-error-600 hover:bg-error-50 font-bold text-sm px-4 min-h-[40px]"
+            >
+              <Square className="w-3.5 h-3.5 fill-current" aria-hidden="true" /> {t('teacher.classPage.prepare.stopAssignment')}
+            </button>
+            <span className="text-xs text-text-muted">{t('teacher.classPage.prepare.stopHint')}</span>
+          </div>
         </div>
       </div>
 
@@ -78,19 +89,6 @@ export function ClassPrepareTab({ assignment, onChange, onStudentView, onStop, o
         {open && (
           <div className="px-4 pb-3">
             <LiveAssignmentSettings key={assignment.id} assignment={assignment} onChanged={onSettingsChanged} />
-            <div className="grid sm:grid-cols-[220px_1fr] gap-2 sm:gap-4 items-center py-3 border-t border-border-subtle">
-              <span className="text-sm font-semibold text-text-main">{t('teacher.classPage.prepare.stop')}</span>
-              <span className="flex items-center gap-3 flex-wrap">
-                <button
-                  type="button"
-                  onClick={onStop}
-                  className="rounded-full border-2 border-error-200 text-error-600 hover:bg-error-50 font-bold text-sm px-4 min-h-[40px]"
-                >
-                  {t('teacher.classPage.prepare.stopButton')}
-                </button>
-                <span className="text-xs text-text-muted">{t('teacher.classPage.prepare.stopHint')}</span>
-              </span>
-            </div>
             <div className="grid sm:grid-cols-[220px_1fr] gap-2 sm:gap-4 items-center py-3 border-t border-border-subtle">
               <span className="text-sm font-semibold text-text-main">{t('teacher.classPage.prepare.classLabel')}</span>
               <span>

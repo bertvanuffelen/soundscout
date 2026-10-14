@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1921 teksten in 46 secties._
+_Stand: 1937 teksten in 46 secties._
 
 ## app
 
@@ -786,11 +786,11 @@ _Stand: 1921 teksten in 46 secties._
 | `lessonCards.activateModal.continue` | Verder | Continue |
 | `lessonCards.editor.newTitle` | Nieuwe leskaart | New lesson card |
 | `lessonCards.editor.editTitle` | Leskaart bewerken | Edit lesson card |
-| `lessonCards.editor.typeLabel` | Type opdracht | Assignment type |
+| `lessonCards.editor.typeLabel` | Wat gaan je leerlingen doen? | What will your students do? |
 | `lessonCards.editor.resourceLabel` | Bron | Source |
 | `lessonCards.editor.resourcePlaceholder` | Kies een bron… | Choose a source… |
 | `lessonCards.editor.resourceRequired` | Kies een bron voor deze leskaart. | Choose a source for this lesson card. |
-| `lessonCards.editor.cardLabel` | Opdrachtkaart (optioneel) | Assignment card (optional) |
+| `lessonCards.editor.cardLabel` | Uitleg voor leerlingen (optioneel) | Instructions for students (optional) |
 | `lessonCards.editor.cardStudentHint` | Dit ziet de leerling na de klascode. | This is what the student sees after the class code. |
 | `lessonCards.editor.cardMode.none` | Standaardtekst | Default text |
 | `lessonCards.editor.cardMode.existing` | Kies bestaande | Pick existing |
@@ -819,6 +819,14 @@ _Stand: 1921 teksten in 46 secties._
 | `lessonCards.editor.phaseNamePlaceholder` | Naam | Name |
 | `lessonCards.editor.phaseTextPlaceholder` | Omschrijving | Description |
 | `lessonCards.editor.saveError` | Kon de leskaart niet opslaan. | Could not save the lesson card. |
+| `lessonCards.editor.chooseSource` | Kies een bron | Choose a resource |
+| `lessonCards.editor.backToForm` | Terug naar de leskaart | Back to the lesson card |
+| `lessonCards.editor.forYouTitle` | Voor jezelf | For you |
+| `lessonCards.editor.preview.card` | Leskaart | Lesson card |
+| `lessonCards.editor.preview.student` | Leerling | Student |
+| `lessonCards.editor.preview.cardTitle` | Zo staat hij in Lesideeën | How it appears in Lesson ideas |
+| `lessonCards.editor.preview.noTitle` | Nog geen titel | No title yet |
+| `lessonCards.editor.chooseSourceHint` | Je ziet ze allemaal met afbeelding. | You will see them all with a picture. |
 | `lessonCards.filterAll` | Alle | All |
 | `lessonCards.filterGeneral` | Algemeen | General |
 | `lessonCards.filterEmpty` | Geen leskaarten binnen dit filter. | No lesson cards match this filter. |
@@ -1639,13 +1647,12 @@ _Stand: 1921 teksten in 46 secties._
 | `teacher.classPage.prepare.change` | Andere opdracht kiezen | Choose another assignment |
 | `teacher.classPage.prepare.studentView` | Zoals leerlingen het zien | What students see |
 | `teacher.classPage.prepare.moreOptions` | Meer opties | More options |
-| `teacher.classPage.prepare.stop` | Opdracht stoppen | Stop assignment |
 | `teacher.classPage.prepare.stopHint` | leerlingen kunnen dan alleen vrij componeren | students can then only compose freely |
-| `teacher.classPage.prepare.stopButton` | Stoppen… | Stop… |
 | `teacher.classPage.prepare.classLabel` | Klas | Class |
 | `teacher.classPage.prepare.deleteClass` | Klas verwijderen… | Delete class… |
 | `teacher.classPage.prepare.deleteClassTitle` | {{className}} verwijderen? | Delete {{className}}? |
 | `teacher.classPage.prepare.deleteClassBody` | De klas, de klascode en alle inzendingen worden verwijderd. Dit kun je niet ongedaan maken. | The class, its code and all submissions will be deleted. This cannot be undone. |
+| `teacher.classPage.prepare.stopAssignment` | Opdracht stoppen… | Stop assignment… |
 | `teacher.classPage.live.title` | Wie is klaar? | Who is done? |
 | `teacher.classPage.live.autoRefresh` | ververst vanzelf | refreshes automatically |
 | `teacher.classPage.live.submitted` | ingeleverd | handed in |
@@ -1717,6 +1724,15 @@ _Stand: 1921 teksten in 46 secties._
 | `teacher.feedbackScreen.pick` | Kies links een inzending. | Choose a submission on the left. |
 | `teacher.feedbackScreen.delete` | Inzending verwijderen | Delete submission |
 | `teacher.feedbackScreen.noSamples` | Deze compositie heeft geen geluiden om af te spelen. | This composition has no sounds to play. |
+| `teacher.feedbackScreen.doneBack` | Klaar? Terug naar de klas | Done? Back to the class |
+| `teacher.feedbackScreen.peer.title` | Wat klasgenoten zeiden | What classmates said |
+| `teacher.feedbackScreen.peer.count_one` | {{count}} klasgenoot | {{count}} classmate |
+| `teacher.feedbackScreen.peer.count_other` | {{count}} klasgenoten | {{count}} classmates |
+| `teacher.feedbackScreen.peer.avg` | gemiddeld {{avg}} van 3 sterren | average {{avg}} out of 3 stars |
+| `teacher.feedbackScreen.peer.chosen_one` | {{count}}× gekozen | chosen {{count}}× |
+| `teacher.feedbackScreen.peer.chosen_other` | {{count}}× gekozen | chosen {{count}}× |
+| `teacher.feedbackScreen.peer.from` | Van: {{names}} (alleen jij ziet de namen) | From: {{names}} (only you can see the names) |
+| `teacher.feedbackScreen.peer.loadError` | De reacties van klasgenoten konden niet geladen worden. | Classmates' reactions could not be loaded. |
 | `teacher.today.greeting.morning` | Goedemorgen, {{name}} | Good morning, {{name}} |
 | `teacher.today.greeting.afternoon` | Goedemiddag, {{name}} | Good afternoon, {{name}} |
 | `teacher.today.greeting.evening` | Goedenavond, {{name}} | Good evening, {{name}} |

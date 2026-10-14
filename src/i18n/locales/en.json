@@ -824,11 +824,11 @@
     "editor": {
       "newTitle": "New lesson card",
       "editTitle": "Edit lesson card",
-      "typeLabel": "Assignment type",
+      "typeLabel": "What will your students do?",
       "resourceLabel": "Source",
       "resourcePlaceholder": "Choose a source…",
       "resourceRequired": "Choose a source for this lesson card.",
-      "cardLabel": "Assignment card (optional)",
+      "cardLabel": "Instructions for students (optional)",
       "cardStudentHint": "This is what the student sees after the class code.",
       "cardMode": {
         "none": "Default text",
@@ -858,7 +858,17 @@
       "noPhases": "No phases added yet.",
       "phaseNamePlaceholder": "Name",
       "phaseTextPlaceholder": "Description",
-      "saveError": "Could not save the lesson card."
+      "saveError": "Could not save the lesson card.",
+      "chooseSource": "Choose a resource",
+      "backToForm": "Back to the lesson card",
+      "forYouTitle": "For you",
+      "preview": {
+        "card": "Lesson card",
+        "student": "Student",
+        "cardTitle": "How it appears in Lesson ideas",
+        "noTitle": "No title yet"
+      },
+      "chooseSourceHint": "You will see them all with a picture."
     },
     "filterAll": "All",
     "filterGeneral": "General",
@@ -1936,13 +1946,12 @@
         "change": "Choose another assignment",
         "studentView": "What students see",
         "moreOptions": "More options",
-        "stop": "Stop assignment",
         "stopHint": "students can then only compose freely",
-        "stopButton": "Stop…",
         "classLabel": "Class",
         "deleteClass": "Delete class…",
         "deleteClassTitle": "Delete {{className}}?",
-        "deleteClassBody": "The class, its code and all submissions will be deleted. This cannot be undone."
+        "deleteClassBody": "The class, its code and all submissions will be deleted. This cannot be undone.",
+        "stopAssignment": "Stop assignment…"
       },
       "live": {
         "title": "Who is done?",
@@ -2030,7 +2039,18 @@
       "emptyHint": "New submissions appear here automatically.",
       "pick": "Choose a submission on the left.",
       "delete": "Delete submission",
-      "noSamples": "This composition has no sounds to play."
+      "noSamples": "This composition has no sounds to play.",
+      "doneBack": "Done? Back to the class",
+      "peer": {
+        "title": "What classmates said",
+        "count_one": "{{count}} classmate",
+        "count_other": "{{count}} classmates",
+        "avg": "average {{avg}} out of 3 stars",
+        "chosen_one": "chosen {{count}}×",
+        "chosen_other": "chosen {{count}}×",
+        "from": "From: {{names}} (only you can see the names)",
+        "loadError": "Classmates' reactions could not be loaded."
+      }
     },
     "today": {
       "greeting": {
