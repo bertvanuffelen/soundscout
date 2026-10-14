@@ -67,11 +67,11 @@
 - [ ] **WORKTREE-ENV** — in de worktree is `.env.local` een symlink naar die van de hoofdrepo (voor de dev-server). Na de merge de worktree opruimen.
 
 **Wacht op een besluit van Bert:**
-- [ ] **TEACHER-LANDING-TEKSTEN** (P3) — op `/teacher` (`teacherLanding.*`, NL+EN) staat nog "Activeer een praatplaat…", "in één klik" en de tag "Verhaal in scènes". Dat botst met het besluit van 15-10 dat het overal "storyboard" heet. De pagina is bewust niet aangeraakt (bevroren). Samen oppakken met TEACHER-STAPPEN-TEKST hierboven.
+- [ ] **TEACHER-LANDING-TEKSTEN** (P3) — op `/teacher` (`teacherLanding.*`, NL+EN) staat nog "Activeer een praatplaat…" en "in één klik". De pagina is verder bevroren. Samen oppakken met TEACHER-STAPPEN-TEKST hierboven. *De tag "Verhaal in scènes" is op 15-10 met Berts akkoord vervangen door "Scène voor scène".*
 - [ ] **STERREN-WOORDEN** (P3) — de leerling ziet "goed geprobeerd · goed gedaan · heel sterk" (`peerReview.starsHint`), de docent "op weg · goed · top" (`teacher.feedbackScreen.levels`). Gelijktrekken via `docs/TEKSTEN.md` zodra Bert de woorden kiest.
-- [ ] **LIVE-NAMEN-CODESCHERM** (P3, migratie + privacy-check) — "Yara is begonnen" op het codescherm. Nu toont het scherm namen pas na de eerste keer opslaan. Nodig: een "begonnen"-signaal met naam wanneer de leerling op *Starten* tikt (nieuwe tabel of RPC; AVG-afweging).
-- [ ] **KLAS-ROOSTER** (P4, idee) — een rooster per klas ("maandag 13:15") zodat de kaart "Nu" de klas van het lesuur kiest in plaats van de laatst geopende.
 - [ ] **EIGEN-TIPZINNEN** (P4, idee) — docenten eigen tipzinnen laten toevoegen. Nu staan er 5 vaste zinnen in `teacher.feedbackScreen.tips`.
+- ~~**LIVE-NAMEN-CODESCHERM**~~ — *besluit Bert 15-10: niet bouwen.* Het codescherm toont alleen namen van opgeslagen werk: de naam die de leerling zelf invulde, of de verzonnen systeemnaam (`utils/randomNames.ts`, bijvoorbeeld "Vrolijke Papegaai"). Dat doet het al. Er komt geen "begonnen"-signaal.
+- ~~**KLAS-ROOSTER**~~ — *besluit Bert 15-10: nu niet nodig.* De kaart "Nu" blijft de laatst geopende klas tonen.
 - [ ] **PRESENTEREN-NAMEN** (P4, alleen als Bert erom vraagt) — een schakelaar *Namen tonen* in `PresentationSurface`. Presenteren bleef op Berts verzoek ongewijzigd.
 - [ ] **PORTAAL-OPTIONEEL** (P4) — uit het UX-onderzoek: een QR-code op het codescherm, een eigen accountpagina (naam en wachtwoord) en een rondleiding voor de eerste keer.
 

@@ -616,7 +616,7 @@
         "pickTitle": "Kies een praatplaat"
       },
       "storyboard": {
-        "tag": "Storyboard · scènes",
+        "tag": "Scène voor scène",
         "title": "Storyboard",
         "description": "Drie tot vier beelden vormen een verhaal — soundtrack per scène.",
         "pickTitle": "Kies een storyboard"
@@ -730,7 +730,7 @@
       "verspringen": {
         "title": "Verspringen",
         "level": "Groep 5–8",
-        "goal": "Leerlingen maken een soundtrack per scène en ervaren hoe muziek een verhaal in beeld ondersteunt.",
+        "goal": "Leerlingen maken een soundtrack per scène en ervaren hoe muziek de beelden van een storyboard versterkt.",
         "phases": [
           {
             "name": "Oriënteren",
@@ -1866,7 +1866,7 @@
         },
         "storyboard": {
           "plain": "Een verhaal op muziek zetten",
-          "desc": "Een verhaal in scènes; muziek per scène."
+          "desc": "Meerdere scènes; muziek per scène."
         },
         "template": {
           "plain": "Een begin afmaken",
@@ -2284,7 +2284,7 @@
           "description": "De hele klas op één beeld. Elk tweetal verklankt een plek."
         },
         "storyboard": {
-          "tag": "Verhaal in scènes",
+          "tag": "Scène voor scène",
           "title": "Storyboard",
           "description": "Drie tot vier beelden vormen een verhaal — soundtrack per scène."
         },

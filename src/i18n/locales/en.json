@@ -616,7 +616,7 @@
         "pickTitle": "Choose a sound map"
       },
       "storyboard": {
-        "tag": "Storyboard · scenes",
+        "tag": "Scene by scene",
         "title": "Storyboard",
         "description": "Three to four images form a story — a soundtrack per scene.",
         "pickTitle": "Choose a storyboard"
@@ -730,7 +730,7 @@
       "verspringen": {
         "title": "Long jump",
         "level": "Grade 5–8",
-        "goal": "Students create a soundtrack for each scene and experience how music supports a visual story.",
+        "goal": "Students create a soundtrack for each scene and experience how music strengthens the images of a storyboard.",
         "phases": [
           {
             "name": "Orient",
@@ -1866,7 +1866,7 @@
         },
         "storyboard": {
           "plain": "Set a story to music",
-          "desc": "A story in scenes; music for each scene."
+          "desc": "Several scenes; music for each scene."
         },
         "template": {
           "plain": "Finish a beginning",
@@ -2284,7 +2284,7 @@
           "description": "The whole class on one image. Each pair gives voice to a spot."
         },
         "storyboard": {
-          "tag": "Story in scenes",
+          "tag": "Scene by scene",
           "title": "Storyboard",
           "description": "Three to four images form a story — a soundtrack per scene."
         },

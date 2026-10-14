@@ -649,7 +649,7 @@ _Stand: 1939 teksten in 46 secties._
 | `assignments.types.praatplaat.title` | Praatplaat | Sound map |
 | `assignments.types.praatplaat.description` | De hele klas op één beeld. Elk tweetal verklankt een plek. | The whole class on one image. Each pair gives voice to a spot. |
 | `assignments.types.praatplaat.pickTitle` | Kies een praatplaat | Choose a sound map |
-| `assignments.types.storyboard.tag` | Storyboard · scènes | Storyboard · scenes |
+| `assignments.types.storyboard.tag` | Scène voor scène | Scene by scene |
 | `assignments.types.storyboard.title` | Storyboard | Storyboard |
 | `assignments.types.storyboard.description` | Drie tot vier beelden vormen een verhaal — soundtrack per scène. | Three to four images form a story — a soundtrack per scene. |
 | `assignments.types.storyboard.pickTitle` | Kies een storyboard | Choose a storyboard |
@@ -731,7 +731,7 @@ _Stand: 1939 teksten in 46 secties._
 | `lessonCards.builtin.robotfabriek.phases.3.text` | samen nabespreken. | reflect together. |
 | `lessonCards.builtin.verspringen.title` | Verspringen | Long jump |
 | `lessonCards.builtin.verspringen.level` | Groep 5–8 | Grade 5–8 |
-| `lessonCards.builtin.verspringen.goal` | Leerlingen maken een soundtrack per scène en ervaren hoe muziek een verhaal in beeld ondersteunt. | Students create a soundtrack for each scene and experience how music supports a visual story. |
+| `lessonCards.builtin.verspringen.goal` | Leerlingen maken een soundtrack per scène en ervaren hoe muziek de beelden van een storyboard versterkt. | Students create a soundtrack for each scene and experience how music strengthens the images of a storyboard. |
 | `lessonCards.builtin.verspringen.phases.0.name` | Oriënteren | Orient |
 | `lessonCards.builtin.verspringen.phases.0.text` | bekijk samen de scènes van het verhaal; welk geluid hoort bij welke sprong? | look at the story scenes together; which sound fits which jump? |
 | `lessonCards.builtin.verspringen.phases.1.name` | Onderzoeken | Explore |
@@ -1584,7 +1584,7 @@ _Stand: 1939 teksten in 46 secties._
 | `teacher.wizard.types.praatplaat.plain` | Samen één plaat verklanken | Score one picture together |
 | `teacher.wizard.types.praatplaat.desc` | Iedereen kiest een plek op dezelfde plaat. | Everyone picks a spot on the same picture. |
 | `teacher.wizard.types.storyboard.plain` | Een verhaal op muziek zetten | Set a story to music |
-| `teacher.wizard.types.storyboard.desc` | Een verhaal in scènes; muziek per scène. | A story in scenes; music for each scene. |
+| `teacher.wizard.types.storyboard.desc` | Meerdere scènes; muziek per scène. | Several scenes; music for each scene. |
 | `teacher.wizard.types.template.plain` | Een begin afmaken | Finish a beginning |
 | `teacher.wizard.types.template.desc` | Jij zet de start klaar, zij maken het af. | You prepare the start, they finish it. |
 | `teacher.wizard.types.free.plain` | Vrij componeren | Free composing |
@@ -1965,7 +1965,7 @@ _Stand: 1939 teksten in 46 secties._
 | `teacherLanding.compose.variants.praatplaat.tag` | Samen · digibord | Together · whiteboard |
 | `teacherLanding.compose.variants.praatplaat.title` | Praatplaat | Sound map |
 | `teacherLanding.compose.variants.praatplaat.description` | De hele klas op één beeld. Elk tweetal verklankt een plek. | The whole class on one image. Each pair gives voice to a spot. |
-| `teacherLanding.compose.variants.storyboard.tag` | Verhaal in scènes | Story in scenes |
+| `teacherLanding.compose.variants.storyboard.tag` | Scène voor scène | Scene by scene |
 | `teacherLanding.compose.variants.storyboard.title` | Storyboard | Storyboard |
 | `teacherLanding.compose.variants.storyboard.description` | Drie tot vier beelden vormen een verhaal — soundtrack per scène. | Three to four images form a story — a soundtrack per scene. |
 | `teacherLanding.compose.variants.vrij.tag` | Open | Open |
