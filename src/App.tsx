@@ -7,6 +7,7 @@ import { useDevFlagsStore } from './stores/devFlagsStore';
 import { lookupAndRouteAssignment } from './utils/compositionInit';
 import { logger } from './utils/logger';
 import { logUsageEvent } from './utils/usageStats';
+import { useLeaveGuard } from './hooks/useLeaveGuard';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
@@ -96,6 +97,9 @@ function AppContent() {
   const goToTeacherGuide = useAppStore((s) => s.goToTeacherGuide);
   const initTheme = useThemeStore((s) => s.initTheme);
   const isThemeInitialized = useThemeStore((s) => s.isInitialized);
+
+  // Terugknop binnen de app + waarschuwing bij verlaten met werk (AUD-03)
+  useLeaveGuard();
 
   // Update document title based on current screen
   useEffect(() => {
