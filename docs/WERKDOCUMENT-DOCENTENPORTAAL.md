@@ -226,3 +226,32 @@
 
 - **Poort:** tsc 0 · 440/440 · lint 25/5.
 - **Screenshots:** `mockups/gebouwd/14`–`18`.
+
+### 15-10-2026 · Leerlingscherm "Luister naar klasgenoten" — Chromebook-fix ✅
+- **Gevonden:** op een Chromebook (1366×650 zichtbaar) viel *Versturen en volgende* onder de rand. Het sterrenpaneel was begrensd op 40% van de hoogte en scrolde ongemerkt.
+- **Eerste poging:** het paneel mocht hoger worden (60%), waarbij het beeld krimpt. De knop kwam in beeld, maar het beeld werd te klein: 215 px breed, en met 8 onderdelen 48–84 px.
+- **Oplossing** (in `PresentationSurface`, alleen voor de peer-modus):
+  - **Breed (vanaf 1024 px):** het sterrenpaneel staat als kolom van 380 px rechts naast het beeld, over de volle hoogte.
+  - **Smal:** het paneel staat onder het beeld, met maximaal 60% van de hoogte.
+  - De verstuurknop staat sticky onderaan het paneel en blijft dus altijd in beeld, ook bij 8 onderdelen.
+- **Gecontroleerd op 9 formaten.** Bij alle formaten staat de knop in beeld en is hij klikbaar.
+
+  | Formaat | Breedte beeld |
+  |---|---|
+  | Chromebook 1366×650, 3 onderdelen | 791 px |
+  | Chromebook 1366×650, 8 onderdelen | 791 px |
+  | Laptop 1280×720 | 848 px |
+  | Klein scherm 1280×600 | 702 px |
+  | iPad liggend 1024×700 | 592 px |
+  | iPad staand 768×1024 | 728 px |
+  | Telefoon 360×640 | 176 px |
+  | Telefoon 390×844, 8 onderdelen | 222 px |
+  | Groot scherm 1920×1080 | 1488 px |
+
+  Op de telefoon is het beeld klein. Dat is bewust: daar gaat de ruimte naar de sterren, en met de vergrootknop kan de leerling het beeld groot bekijken.
+- **Docentenscherm *Presenteren*:** visueel ongewijzigd (gecontroleerd op 1920×1080).
+- **Besluiten Bert:**
+  - Versturen zonder eerst te luisteren mag.
+  - De woorden bij de sterren ("goed geprobeerd / goed gedaan / heel sterk" voor de leerling, "op weg / goed / top" voor de docent) passen we later aan via `docs/TEKSTEN.md`.
+- **Poort:** tsc 0 · 440/440 · lint 25/5.
+- **Screenshots:** `mockups/gebouwd/19`–`21`.

@@ -437,6 +437,9 @@ export function PresentationSurface({
             </div>
           )}
 
+          {/* Kaart + (peer) sterrenpaneel: op brede schermen naast elkaar,
+              zodat het beeld zijn hoogte houdt; smal: onder elkaar. */}
+          <div className={cn('flex-1 min-h-0 flex flex-col', ratingSlot && 'lg:flex-row')}>
           {/* Lichte inhoudskaart op het donkere podium */}
           <div className={cn(
             'flex-1 min-h-0 flex flex-col mx-3 rounded-2xl shadow-2xl overflow-hidden',
@@ -585,12 +588,17 @@ export function PresentationSurface({
             )}
           </div>
 
-          {/* Peer: sterren-rij + versturen (aangeleverd door de modal) */}
+          {/* Peer: sterren-rij + versturen (aangeleverd door de modal).
+              Smal: onder het beeld (max 60% hoogte, beeld krimpt mee).
+              Breed (lg): kolom rechts over de volle hoogte, zodat het beeld
+              ook op een lage Chromebook (≈650px) groot blijft. De verstuurknop
+              staat sticky onderaan en blijft dus altijd in beeld. */}
           {ratingSlot && (
-            <div className="mx-3 mt-2 rounded-xl overflow-hidden bg-bg-surface shadow-xl max-h-[40dvh] overflow-y-auto p-4">
+            <div className="shrink-0 mx-3 mt-2 rounded-xl overflow-hidden bg-bg-surface shadow-xl max-h-[60dvh] overflow-y-auto p-4 lg:mt-0 lg:ml-0 lg:w-[380px] lg:max-h-none">
               {ratingSlot}
             </div>
           )}
+          </div>
 
           {/* Docent-feedbackrij (hergebruik FeedbackPanel) */}
           {showFeedbackRow && onSetFeedback && (
