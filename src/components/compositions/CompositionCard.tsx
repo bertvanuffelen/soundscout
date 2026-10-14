@@ -29,12 +29,12 @@ export function CompositionCard({
 
   const formatDate = useCallback((isoString: string) => {
     const date = new Date(isoString);
-    return date.toLocaleDateString('nl-NL', {
+    return date.toLocaleDateString(t('common.dateLocale'), {
       day: 'numeric',
       month: 'short',
       year: 'numeric',
     });
-  }, []);
+  }, [t]);
 
   const formatDuration = useCallback((seconds: number) => {
     const mins = Math.floor(seconds / 60);

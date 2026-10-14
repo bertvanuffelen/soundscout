@@ -331,7 +331,7 @@ export function PresentationSurface({
   const reviewMeta = useMemo(() => {
     if (mode !== 'teacher-review' || !current) return null;
     const tracks = data?.tracks ?? [];
-    const formattedDate = new Date(current.created_at).toLocaleDateString('nl-NL', {
+    const formattedDate = new Date(current.created_at).toLocaleDateString(t('common.dateLocale'), {
       day: 'numeric', month: 'long', year: 'numeric', hour: '2-digit', minute: '2-digit',
     });
     return {
@@ -340,7 +340,7 @@ export function PresentationSurface({
       clipCount: tracks.reduce((total, track) => total + (track.clips?.length || 0), 0),
       sampleCount: data?.samples?.length ?? 0,
     };
-  }, [mode, current, data]);
+  }, [mode, current, data, t]);
 
   if (!current) return null;
 

@@ -88,7 +88,7 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
   const displayName = user?.user_metadata?.display_name || user?.email?.split('@')[0] || 'Docent';
   const hour = new Date().getHours();
   const greetingKey = hour < 12 ? 'morning' : hour < 18 ? 'afternoon' : 'evening';
-  const todayLabel = new Date().toLocaleDateString(t('common.dateLocale', { defaultValue: 'nl-NL' }), { weekday: 'long', day: 'numeric', month: 'long' });
+  const todayLabel = new Date().toLocaleDateString(t('common.dateLocale'), { weekday: 'long', day: 'numeric', month: 'long' });
 
   const handleLogout = async () => {
     try {

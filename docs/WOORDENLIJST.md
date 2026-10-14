@@ -36,7 +36,7 @@ DAW-termen alleen waar ze ingeburgerd zijn.
 | **opdrachtkaart** | Korte instructiekaart (titel + bullets) die de leerling vóór het starten ziet |
 | **leskaart** | Kant-en-klaar lespakket: opdracht-type + bron + opdrachtkaart + lesinfo |
 | **praatplaat** | Gedeelde klas-afbeelding waarop elke leerling zijn compositie een plek geeft |
-| **storyboard** | Verhaal van meerdere scènes dat de leerling verklankt ("Verhaal in beeld") |
+| **storyboard** | Verhaal van meerdere scènes dat de leerling verklankt. Heet overal "storyboard", ook richting leerlingen; geen andere namen ("verhaal in beeld", "verhaal in scènes" e.d.) — besluit Bert 15-10 |
 | **template** | Door de docent voorgebouwde compositie als startpunt |
 | **thema** | Werelden met locaties + geluiden (De Stad, Winterspelen, …) |
 | **lesideeën** | Dashboard-tabblad met alle leskaarten (ingebouwd + eigen); vervangt de tabnaam "Leskaarten" (ombouw 14-10) |

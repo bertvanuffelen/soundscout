@@ -24,7 +24,7 @@ export function TemplateCard({ template, onDelete, onMakeLessonCard }: TemplateC
   const { name, code, description, lockOptions, createdAt } = template;
   const [copied, setCopied] = useState(false);
 
-  const formattedDate = new Date(createdAt).toLocaleDateString('nl-NL', {
+  const formattedDate = new Date(createdAt).toLocaleDateString(t('common.dateLocale'), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

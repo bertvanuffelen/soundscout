@@ -573,7 +573,7 @@
   },
   "assignments": {
     "chooseTitle": "Activate assignment",
-    "chooseDescription": "Choose a template, sound map or story in pictures to activate for this class.",
+    "chooseDescription": "Choose a template, sound map or storyboard to activate for this class.",
     "cardLabel": "Assignment card (optional)",
     "cardDefault": "Default explanation",
     "cardNone": "No custom card — show default explanation",
@@ -616,7 +616,7 @@
         "pickTitle": "Choose a sound map"
       },
       "storyboard": {
-        "tag": "Story in scenes",
+        "tag": "Storyboard · scenes",
         "title": "Storyboard",
         "description": "Three to four images form a story — a soundtrack per scene.",
         "pickTitle": "Choose a storyboard"
@@ -1669,7 +1669,9 @@
       "timerMinutes": "Close after {{minutes}} min",
       "closesIn": "closes in {{minutes}} min",
       "windowClosed": "Round closed.",
-      "reopen": "Reopen"
+      "reopen": "Reopen",
+      "deleteCardConfirmTitle": "Delete feedback card “{{title}}”?",
+      "deleteCardConfirmText": "For this assignment the app switches to the standard card. If another class uses this card, ‘Let classmates listen’ stops there until you choose another card."
     },
     "feedback": {
       "stickerLabel": "Choose a sticker",
@@ -1849,7 +1851,7 @@
       "whatDo": "What will your students do?",
       "pick": {
         "praatplaat": "Choose a picture",
-        "storyboard": "Choose a story",
+        "storyboard": "Choose a storyboard",
         "template": "Choose a template",
         "free": "Choose a theme"
       },
@@ -2222,7 +2224,7 @@
       "description": "You'll pick a spot on this image next. Your composition belongs there."
     },
     "storyboard": {
-      "kind": "Story in pictures",
+      "kind": "Storyboard",
       "description": "Make music that fits each scene of this story. First collect sounds on the map."
     },
     "free": {

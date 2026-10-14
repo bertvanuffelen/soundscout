@@ -48,7 +48,7 @@ const PODIUM = [
 export function ClassReviewTab({
   rows, onView, onShare, onReuse, onRemove, peerTop, onPeerAll, onPresentAll, canPresentAll,
 }: ClassReviewTabProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const [menuFor, setMenuFor] = useState<string | null>(null);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -62,7 +62,7 @@ export function ClassReviewTab({
     return () => { document.removeEventListener('mousedown', onDown); document.removeEventListener('keydown', onKey); };
   }, [menuFor]);
 
-  const dateFmt = (iso: string) => new Date(iso).toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'nl-NL', { day: 'numeric', month: 'short', year: 'numeric' });
+  const dateFmt = (iso: string) => new Date(iso).toLocaleDateString(t('common.dateLocale'), { day: 'numeric', month: 'short', year: 'numeric' });
 
   return (
     <div className="space-y-6">

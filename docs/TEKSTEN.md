@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1937 teksten in 46 secties._
+_Stand: 1939 teksten in 46 secties._
 
 ## app
 
@@ -610,7 +610,7 @@ _Stand: 1937 teksten in 46 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `assignments.chooseTitle` | Opdracht activeren | Activate assignment |
-| `assignments.chooseDescription` | Kies een template, praatplaat of verhaal in beeld om te activeren voor deze klas. | Choose a template, sound map or story in pictures to activate for this class. |
+| `assignments.chooseDescription` | Kies een template, praatplaat of storyboard om te activeren voor deze klas. | Choose a template, sound map or storyboard to activate for this class. |
 | `assignments.cardLabel` | Opdrachtkaart (optioneel) | Assignment card (optional) |
 | `assignments.cardDefault` | Standaard uitleg | Default explanation |
 | `assignments.cardNone` | Geen eigen kaart — toon standaard uitleg | No custom card — show default explanation |
@@ -649,7 +649,7 @@ _Stand: 1937 teksten in 46 secties._
 | `assignments.types.praatplaat.title` | Praatplaat | Sound map |
 | `assignments.types.praatplaat.description` | De hele klas op één beeld. Elk tweetal verklankt een plek. | The whole class on one image. Each pair gives voice to a spot. |
 | `assignments.types.praatplaat.pickTitle` | Kies een praatplaat | Choose a sound map |
-| `assignments.types.storyboard.tag` | Verhaal in scènes | Story in scenes |
+| `assignments.types.storyboard.tag` | Storyboard · scènes | Storyboard · scenes |
 | `assignments.types.storyboard.title` | Storyboard | Storyboard |
 | `assignments.types.storyboard.description` | Drie tot vier beelden vormen een verhaal — soundtrack per scène. | Three to four images form a story — a soundtrack per scene. |
 | `assignments.types.storyboard.pickTitle` | Kies een storyboard | Choose a storyboard |
@@ -1426,6 +1426,8 @@ _Stand: 1937 teksten in 46 secties._
 | `teacher.peerReview.closesIn` | sluit over {{minutes}} min | closes in {{minutes}} min |
 | `teacher.peerReview.windowClosed` | Ronde gesloten. | Round closed. |
 | `teacher.peerReview.reopen` | Opnieuw openen | Reopen |
+| `teacher.peerReview.deleteCardConfirmTitle` | Feedbackkaart “{{title}}” verwijderen? | Delete feedback card “{{title}}”? |
+| `teacher.peerReview.deleteCardConfirmText` | Bij deze opdracht schakelt de app over op de standaardkaart. Gebruikt een andere klas deze kaart, dan stopt daar ‘Klasgenoten laten luisteren’ tot je een andere kaart kiest. | For this assignment the app switches to the standard card. If another class uses this card, ‘Let classmates listen’ stops there until you choose another card. |
 | `teacher.feedback.stickerLabel` | Kies een sticker | Choose a sticker |
 | `teacher.feedback.levelLabel` | Niveau (1-3 sterren) | Level (1-3 stars) |
 | `teacher.feedback.levelTitle` | {{level}} van 3 sterren | {{level}} of 3 stars |
@@ -1572,7 +1574,7 @@ _Stand: 1937 teksten in 46 secties._
 | `teacher.wizard.tabs.lessonSub` | met lesdoel en fases | with learning goal and phases |
 | `teacher.wizard.whatDo` | Wat gaan je leerlingen doen? | What will your students do? |
 | `teacher.wizard.pick.praatplaat` | Kies een plaat | Choose a picture |
-| `teacher.wizard.pick.storyboard` | Kies een verhaal | Choose a story |
+| `teacher.wizard.pick.storyboard` | Kies een storyboard | Choose a storyboard |
 | `teacher.wizard.pick.template` | Kies een template | Choose a template |
 | `teacher.wizard.pick.free` | Kies een thema | Choose a theme |
 | `teacher.wizard.noTemplates` | Je hebt nog geen templates. Maak een compositie in de studio en sla die op het podium op als template. | You don't have any templates yet. Make a composition in the studio and save it as a template on the stage. |
@@ -1913,7 +1915,7 @@ _Stand: 1937 teksten in 46 secties._
 | `assignmentLanding.template.storyboardCount_other` | {{count}} afbeeldingen | {{count}} images |
 | `assignmentLanding.praatplaat.kind` | Praatplaat | Praatplaat |
 | `assignmentLanding.praatplaat.description` | Je kiest straks een plek op deze afbeelding. Daar hoort jouw compositie bij. | You'll pick a spot on this image next. Your composition belongs there. |
-| `assignmentLanding.storyboard.kind` | Verhaal in beeld | Story in pictures |
+| `assignmentLanding.storyboard.kind` | Storyboard | Storyboard |
 | `assignmentLanding.storyboard.description` | Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart. | Make music that fits each scene of this story. First collect sounds on the map. |
 | `assignmentLanding.free.kind` | Vrije compositie | Free composition |
 | `assignmentLanding.free.description` | Verzamel geluiden op de kaart en maak je eigen compositie. Laat je fantasie de vrije loop. | Collect sounds on the map and create your own composition. Let your imagination run free. |

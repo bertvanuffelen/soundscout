@@ -61,7 +61,7 @@ interface ClassDetailProps {
 }
 
 export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null, autoPresent = false }: ClassDetailProps) {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { submissions, loading, error, deleteSubmission, setFeedback, markSeen, refetch } = useSubmissions(classData.id);
   const {
     activeAssignment,
@@ -151,7 +151,7 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
 
   // --- AVG-bewaartermijn: 30 dagen vooraf waarschuwen (migratie 035) ---
   const deletionWarning = useMemo(() => getClassDeletionWarning(submissions), [submissions]);
-  const dateLocale = i18n.language === 'en' ? 'en-GB' : 'nl-NL';
+  const dateLocale = t('common.dateLocale');
   const formatDate = useCallback(
     (d: Date | string) => new Date(d).toLocaleDateString(dateLocale, { day: 'numeric', month: 'long', year: 'numeric' }),
     [dateLocale],

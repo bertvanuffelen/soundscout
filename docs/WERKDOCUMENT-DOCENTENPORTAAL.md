@@ -255,3 +255,17 @@
   - De woorden bij de sterren ("goed geprobeerd / goed gedaan / heel sterk" voor de leerling, "op weg / goed / top" voor de docent) passen we later aan via `docs/TEKSTEN.md`.
 - **Poort:** tsc 0 · 440/440 · lint 25/5.
 - **Screenshots:** `mockups/gebouwd/19`–`21`.
+
+### 15-10-2026 · Vier kleine bevindingen uit het onderzoek ✅
+1. **Feedbackkaart verwijderen vraagt nu om bevestiging.** De bevestiging staat in het paneel zelf (geen tweede venster), met een eerlijke uitleg. Bij deze opdracht schakelt de app over op de standaardkaart. Andere klassen die dezelfde kaart gebruiken, verliezen hun kaart door `ON DELETE SET NULL` (migratie 027). Daar stopt *Klasgenoten laten luisteren* dan, tot de docent een andere kaart kiest.
+2. **Het tijdslot komt terug na herladen.** De database kent alleen de sluittijd, niet de gekozen duur. Daarom onthoudt elk apparaat de duur per opdracht. Op een ander apparaat leidt de app hem af: de kleinste optie die nog past. `lib/peerTimer.ts` heeft 5 tests.
+3. **Datums volgen de taal van de app** (`common.dateLocale`). Dit is gerepareerd op drie plekken waar het vast op Nederlands stond: TemplateCard, CompositionCard (opgeslagen composities van de leerling) en de metaregel in de presentatie. Vier andere plekken gebruikten elk een eigen taalcheck; die gebruiken nu dezelfde sleutel.
+4. **"Storyboard" heet overal storyboard** (besluit Bert 15-10). Vervangen zijn "Verhaal in beeld" (leerlingscherm), "Kies een verhaal" (wizard), "Verhaal in scènes" en "verhaal in beeld" in een uitleg, in NL en EN. Ook WOORDENLIJST en HANDLEIDING-BEHEER zijn bijgewerkt.
+   - **Niet aangeraakt:** de docentenpagina `/teacher` (tag "Verhaal in scènes"). Die pagina mag niet veranderen; dit is een besluit voor Bert.
+   - **Bewust gelaten:**
+     - de activiteitszin in de wizard, "Een verhaal op muziek zetten", met het label *Storyboard*. Dat is een omschrijving, geen naam, en zo werkt de praatplaat-kaart ook;
+     - het lesdoel van Verspringen, waarin "verhaal in beeld" gewone taal is.
+- **Gecontroleerd in de testopstelling:**
+  - bevestiging bij verwijderen;
+  - tijdslot na het opnieuw openen van het paneel, met en zonder geheugen op het apparaat.
+- **Poort:** tsc 0 · 445/445 · lint 25/5.

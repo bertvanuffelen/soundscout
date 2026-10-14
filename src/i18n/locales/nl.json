@@ -573,7 +573,7 @@
   },
   "assignments": {
     "chooseTitle": "Opdracht activeren",
-    "chooseDescription": "Kies een template, praatplaat of verhaal in beeld om te activeren voor deze klas.",
+    "chooseDescription": "Kies een template, praatplaat of storyboard om te activeren voor deze klas.",
     "cardLabel": "Opdrachtkaart (optioneel)",
     "cardDefault": "Standaard uitleg",
     "cardNone": "Geen eigen kaart — toon standaard uitleg",
@@ -616,7 +616,7 @@
         "pickTitle": "Kies een praatplaat"
       },
       "storyboard": {
-        "tag": "Verhaal in scènes",
+        "tag": "Storyboard · scènes",
         "title": "Storyboard",
         "description": "Drie tot vier beelden vormen een verhaal — soundtrack per scène.",
         "pickTitle": "Kies een storyboard"
@@ -1669,7 +1669,9 @@
       "timerMinutes": "Sluit na {{minutes}} min",
       "closesIn": "sluit over {{minutes}} min",
       "windowClosed": "Ronde gesloten.",
-      "reopen": "Opnieuw openen"
+      "reopen": "Opnieuw openen",
+      "deleteCardConfirmTitle": "Feedbackkaart “{{title}}” verwijderen?",
+      "deleteCardConfirmText": "Bij deze opdracht schakelt de app over op de standaardkaart. Gebruikt een andere klas deze kaart, dan stopt daar ‘Klasgenoten laten luisteren’ tot je een andere kaart kiest."
     },
     "feedback": {
       "stickerLabel": "Kies een sticker",
@@ -1849,7 +1851,7 @@
       "whatDo": "Wat gaan je leerlingen doen?",
       "pick": {
         "praatplaat": "Kies een plaat",
-        "storyboard": "Kies een verhaal",
+        "storyboard": "Kies een storyboard",
         "template": "Kies een template",
         "free": "Kies een thema"
       },
@@ -2222,7 +2224,7 @@
       "description": "Je kiest straks een plek op deze afbeelding. Daar hoort jouw compositie bij."
     },
     "storyboard": {
-      "kind": "Verhaal in beeld",
+      "kind": "Storyboard",
       "description": "Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart."
     },
     "free": {
