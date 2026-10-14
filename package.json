@@ -14,7 +14,8 @@
     "test:coverage": "vitest run --coverage",
     "teksten:export": "node scripts/export-teksten.mjs",
     "teksten:import": "node scripts/import-teksten.mjs",
-    "handboek": "node scripts/generate-handboek.mjs"
+    "handboek": "node scripts/generate-handboek.mjs",
+    "test:db": "node supabase/tests/036/tests036.mjs"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",
@@ -39,6 +40,7 @@
     "zustand": "^5.0.10"
   },
   "devDependencies": {
+    "@electric-sql/pglite": "^0.3.16",
     "@eslint/js": "^9.39.1",
     "@tailwindcss/vite": "^4.1.18",
     "@testing-library/jest-dom": "^6.9.1",
