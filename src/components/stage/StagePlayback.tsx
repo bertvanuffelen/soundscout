@@ -53,6 +53,7 @@ export function StagePlayback() {
   const { t } = useTranslation();
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
+  const totalBeats = useTimelineStore((s) => s.totalBeats);
   const isPlaying = useAudioStore((s) => s.isPlaying);
 
   const {
@@ -60,6 +61,7 @@ export function StagePlayback() {
     scheduleTimeline,
     playTimeline,
     stopTimeline,
+    setTransportLoop,
   } = useAudioEngine();
 
   // AbortController to cancel pending sample loads on cleanup
@@ -76,10 +78,12 @@ export function StagePlayback() {
     return () => { abortRef.current?.abort(); };
   }, [librarySamples, loadSamples]);
 
+  // Op het podium nooit loopen (B23): de leerling hoort het geheel één keer
   const handlePlay = useCallback(() => {
     scheduleTimeline(tracks, librarySamples);
+    setTransportLoop(false, totalBeats);
     playTimeline();
-  }, [scheduleTimeline, playTimeline, librarySamples, tracks]);
+  }, [scheduleTimeline, setTransportLoop, playTimeline, librarySamples, tracks, totalBeats]);
 
   const handleStop = useCallback(() => {
     stopTimeline();
@@ -91,8 +95,9 @@ export function StagePlayback() {
     // synchronous and fully clears the audio state.
     stopTimeline();
     scheduleTimeline(tracks, librarySamples);
+    setTransportLoop(false, totalBeats);
     playTimeline();
-  }, [stopTimeline, scheduleTimeline, playTimeline, librarySamples, tracks]);
+  }, [stopTimeline, scheduleTimeline, setTransportLoop, playTimeline, librarySamples, tracks, totalBeats]);
 
   return (
     <>

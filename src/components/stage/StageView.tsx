@@ -30,6 +30,7 @@ import { useStageModals } from '../../hooks/useStageModals';
 import { Button, Modal } from '../ui';
 import { ShareWithTeacherModal, ShareLinkModal, SaveOnlineModal } from '../share';
 import { storageService } from '../../services/StorageService';
+import { audioService } from '../../services/AudioService';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { StageActionsModal } from './StageActionsModal';
 import { PresentationSurface } from '../presentation/PresentationSurface';
@@ -105,6 +106,16 @@ export function StageView() {
     syncFeedback,
     classSaveCode,
   } = useStageSave();
+
+  // Podium = altijd de volledige mix, één keer van begin tot eind (B22/B23).
+  // Solo en (sectie-)loop zijn studio-monitortools; ze mogen niet doorlekken,
+  // ongeacht de route hierheen (studio, Mijn composities, bewaarcode,
+  // feedbackmelding). De studio zet de loop bij elk afspelen zelf opnieuw.
+  useEffect(() => {
+    useTimelineStore.getState().setSoloTrack(null);
+    audioService.setSoloTrack(null);
+    audioService.setLoop(false, useTimelineStore.getState().totalBeats, null);
+  }, []);
 
   // Podium = feedback-thuis (testronde 2): bij het openen stil de laatste
   // docent-feedback + klasgenoot-beoordelingen ophalen zodra we een eigen
