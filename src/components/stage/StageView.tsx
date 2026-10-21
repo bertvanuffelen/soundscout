@@ -167,21 +167,23 @@ export function StageView() {
   // Praatplaat success modal
   const activePraatplaat = useAppStore((s) => s.activePraatplaat);
   const goToPraatplaatSelect = useAppStore((s) => s.goToPraatplaatSelect);
-  const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
   const [praatplaatSuccessDismissed, setPraatplaatSuccessDismissed] = useState(false);
   const [showNewSpotModal, setShowNewSpotModal] = useState(false);
   const showPraatplaatSuccess = praatplaatSubmitted && !!activePraatplaat && !praatplaatSuccessDismissed;
 
   const handleNewSpot = useCallback(() => {
     stopAll();
-    clearAllTracks();
+    // Nieuwe plek = nieuwe compositie: volledig lege tijdlijn (B24)
+    useTimelineStore.getState().resetTimeline();
     // Clear position + submissionId but keep activePraatplaat + classSession
-    // so student can pick a new spot and create a NEW submission
-    useAppStore.setState({ praatplaatPosition: null, submissionId: null, submissionSynced: false });
+    // so student can pick a new spot and create a NEW submission.
+    // currentCompositionId ook leeg: anders overschrijft "Opslaan" de vorige
+    // (al ingeleverde) compositie in Mijn composities.
+    useAppStore.setState({ praatplaatPosition: null, submissionId: null, submissionSynced: false, currentCompositionId: null });
     useLibraryStore.getState().clearLibrary();
     setPraatplaatSuccessDismissed(true);
     goToPraatplaatSelect();
-  }, [stopAll, clearAllTracks, goToPraatplaatSelect]);
+  }, [stopAll, goToPraatplaatSelect]);
 
   const handleBackToStudio = useCallback(() => {
     stopAll();

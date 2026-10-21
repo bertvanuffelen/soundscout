@@ -18,7 +18,6 @@
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Music, Image as ImageIcon, Film, ArrowRight, ArrowLeft, KeyRound, type LucideIcon } from 'lucide-react';
-import { useAppStore } from '../../stores/appStore';
 import { ComposePreview } from '../compose/ComposePreview';
 import type { ComposeVariant } from '../compose/composeVariants';
 import { ThemePicker } from './ThemePicker';
@@ -58,15 +57,16 @@ const MODES: ModeConfig[] = [
 
 export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, onHaveCode, isLoading = false }: NewCompositionWizardProps) {
   const { t } = useTranslation();
-  const setComposeMode = useAppStore((s) => s.setComposeMode);
 
   const [step, setStep] = useState<'mode' | 'pick'>('mode');
   const [mode, setMode] = useState<ComposeMode>('free');
 
   const activeMode = MODES.find((m) => m.mode === mode) ?? MODES[0];
 
+  // De modus blijft lokaal tot de leerling echt iets kiest (B25): de
+  // start-handlers zetten hem pas bij de definitieve keuze. Zo verandert
+  // "Volgende" + wizard sluiten niets aan de compositie in uitvoering.
   const handleNext = () => {
-    setComposeMode(mode);
     setStep('pick');
   };
 

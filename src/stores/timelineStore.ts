@@ -114,6 +114,13 @@ interface TimelineStore {
   // Track actions
   clearTrack: (trackIndex: number) => void;
   clearAllTracks: () => void;
+  /**
+   * Volledig lege tijdlijn voor een nieuwe compositie (B24): sporen, secties,
+   * sequences, lengte, tempo, loop en solo terug naar de standaard.
+   * `clearAllTracks` leegt alleen de clips (bedoeld voor "tijdlijn wissen"
+   * binnen dezelfde compositie).
+   */
+  resetTimeline: () => void;
 
   // Settings
   setLooping: (looping: boolean) => void;
@@ -704,6 +711,21 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   clearAllTracks: () => {
     set((prev) => ({
       tracks: createEmptyTracks(),
+      soloTrackIndex: null,
+      loopRegion: null,
+      savedLoopRegion: null,
+      audioVersion: prev.audioVersion + 1,
+    }));
+  },
+
+  resetTimeline: () => {
+    set((prev) => ({
+      tracks: createEmptyTracks(),
+      bpm: DEFAULT_BPM,
+      totalBeats: DEFAULT_TOTAL_BEATS,
+      isLooping: false,
+      sections: [],
+      sequences: [],
       soloTrackIndex: null,
       loopRegion: null,
       savedLoopRegion: null,

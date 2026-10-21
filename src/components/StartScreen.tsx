@@ -197,6 +197,9 @@ export function StartScreen() {
     try {
       // Bewuste nieuwe compositie: oude storyboard/praatplaat/klas-context weg
       useAppStore.getState().resetCompositionContext();
+      // Een thema kiezen = vrij componeren. De modus wordt pas hier gezet,
+      // niet al bij "Volgende" in de wizard (B25).
+      useAppStore.getState().setComposeMode('free');
       await initializeNewComposition({ themeId });
       setShowComposeWizard(false);
     } finally {

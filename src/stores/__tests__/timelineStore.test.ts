@@ -145,6 +145,27 @@ describe('timelineStore', () => {
       expect(useTimelineStore.getState().soloTrackIndex).toBeNull();
     });
 
+    it('resetTimeline wist ook secties, sequences, lengte en loop (B24)', () => {
+      useTimelineStore.setState({ totalBeats: 192, isLooping: true });
+      useTimelineStore.getState().addSection(32, undefined, 'Start', true);
+      useTimelineStore.getState().setSequences([{ id: 'seq-1' } as never]);
+      useTimelineStore.getState().setSoloTrack(1);
+      useTimelineStore.getState().setLoopRegion({ startBeat: 0, endBeat: 32 });
+      const before = useTimelineStore.getState().audioVersion;
+
+      useTimelineStore.getState().resetTimeline();
+
+      const s = useTimelineStore.getState();
+      expect(s.sections).toEqual([]);
+      expect(s.sequences).toEqual([]);
+      expect(s.totalBeats).toBe(128);
+      expect(s.isLooping).toBe(false);
+      expect(s.soloTrackIndex).toBeNull();
+      expect(s.loopRegion).toBeNull();
+      expect(s.tracks.every((t) => t.clips.length === 0)).toBe(true);
+      expect(s.audioVersion).toBeGreaterThan(before);
+    });
+
     it('solo staat niet in de opgeslagen TimelineState', () => {
       useTimelineStore.getState().setSoloTrack(3);
       const state = useTimelineStore.getState().getTimelineState();

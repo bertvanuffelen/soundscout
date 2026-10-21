@@ -129,8 +129,10 @@ export async function initializeNewComposition(
   // Stap 1: Stel thema in
   useThemeStore.getState().setTheme(themeId);
 
-  // Stap 2: Reset state (sync, kan niet falen)
-  useTimelineStore.getState().clearAllTracks();
+  // Stap 2: Reset state (sync, kan niet falen). Volledige reset (B24): ook
+  // secties/sequences/lengte, anders erft een vrije compositie bv. de
+  // onverwijderbare storyboard-secties van de vorige.
+  useTimelineStore.getState().resetTimeline();
   useLibraryStore.getState().clearLibrary();
   // Bewaarcode-context hoort bij de VORIGE compositie — zonder wissen zou
   // de auto-sync (#52-FASE2) de oude online compositie overschrijven met
@@ -192,10 +194,9 @@ export async function initializeCompositionFromStoryboard(
   // 1. Thema impliciet uit storyboard
   useThemeStore.getState().setTheme(storyboard.themeId);
 
-  // 2. Reset state
-  const { totalBeats, clearAllTracks, clearSections, addSection } = useTimelineStore.getState();
-  clearAllTracks();
-  clearSections();
+  // 2. Reset state (volledig, B24): na de reset is totalBeats de standaard
+  useTimelineStore.getState().resetTimeline();
+  const { totalBeats, addSection } = useTimelineStore.getState();
   useLibraryStore.getState().clearLibrary();
   // Bewaarcode-context hoort bij de VORIGE compositie — anders overschrijft
   // de auto-sync die online compositie met dit nieuwe werk (AUD-09).
@@ -427,6 +428,11 @@ export async function activatePendingAssignment(): Promise<void> {
       assignmentId: assignment.praatplaat.id,
       assignmentName: assignment.praatplaat.name,
     });
+
+    // Nieuwe praatplaat-sessie = nieuwe compositie: lege tijdlijn en
+    // bibliotheek (B24; voorheen bleef het werk van daarvoor staan)
+    useTimelineStore.getState().resetTimeline();
+    useLibraryStore.getState().clearLibrary();
 
     useAppStore.getState().setPraatplaat({
       id: assignment.praatplaat.id,

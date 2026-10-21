@@ -17,7 +17,7 @@ export function useStageModals() {
   const goToStart = useAppStore((s) => s.goToStart);
   const resetCompositionContext = useAppStore((s) => s.resetCompositionContext);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
-  const clearAllTracks = useTimelineStore((s) => s.clearAllTracks);
+  const resetTimeline = useTimelineStore((s) => s.resetTimeline);
   const { stopAll } = useAudioEngine();
 
   const [showNewModal, setShowNewModal] = useState(false);
@@ -27,7 +27,8 @@ export function useStageModals() {
 
   const handleNewComposition = useCallback(() => {
     stopAll();
-    clearAllTracks();
+    // Volledige reset (B24): ook secties/sequences/lengte
+    resetTimeline();
     clearLibrary();
     // Bewuste nieuwe start: wis ook storyboard/praatplaat/template/klas-
     // sessie (goToStart doet dat sinds testronde 3 niet meer)
@@ -35,7 +36,7 @@ export function useStageModals() {
     setShowNewModal(false);
     // Always go to start screen so the user can choose a theme
     goToStart();
-  }, [stopAll, clearAllTracks, clearLibrary, resetCompositionContext, goToStart]);
+  }, [stopAll, resetTimeline, clearLibrary, resetCompositionContext, goToStart]);
 
   return {
     showNewModal,
