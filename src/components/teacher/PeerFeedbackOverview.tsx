@@ -20,6 +20,7 @@ import { getSupabase } from '../../lib/supabase';
 import type { Submission } from '../../hooks/useSubmissions';
 import { logger } from '../../utils/logger';
 import { cn } from '../../utils/cn';
+import { peerChipLabel } from '../../utils/peerChipLabel';
 
 interface PeerFeedbackRow {
   id: string;
@@ -51,7 +52,7 @@ const PODIUM = [
 ] as const;
 
 export function PeerFeedbackOverview({ isOpen, onClose, submissions, onPresentTop3 }: PeerFeedbackOverviewProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [rows, setRows] = useState<PeerFeedbackRow[]>([]);
   const [loading, setLoading] = useState(true);
   // Fout en "echt leeg" gescheiden houden (testronde 2, bug 6d): een
@@ -273,7 +274,7 @@ export function PeerFeedbackOverview({ isOpen, onClose, submissions, onPresentTo
                         <div className="flex flex-wrap gap-2">
                           {[...agg.criteria.entries()].map(([chip, c]) => (
                             <span key={chip} className="inline-flex items-center gap-1 rounded-full bg-accent-50 border border-accent-200 text-accent-800 text-xs px-2.5 py-1">
-                              {chip}
+                              {peerChipLabel(chip, i18n.language)}
                               {c.total > 0 && (
                                 <span className="inline-flex items-center gap-0.5 font-semibold">
                                   <Star className="w-3 h-3 fill-current" aria-hidden="true" />
@@ -291,7 +292,7 @@ export function PeerFeedbackOverview({ isOpen, onClose, submissions, onPresentTo
                               <span className="font-semibold text-text-main">{nameById.get(row.from_submission_id)?.student ?? t('teacher.peerOverview.unknownGiver')}</span>
                               {': '}
                               {row.ratings
-                                ? Object.entries(row.ratings).map(([chip, stars]) => `${chip} ${'★'.repeat(Number(stars))}`).join(' · ')
+                                ? Object.entries(row.ratings).map(([chip, stars]) => `${peerChipLabel(chip, i18n.language)} ${'★'.repeat(Number(stars))}`).join(' · ')
                                 : (row.chips ?? []).join(' · ')}
                             </li>
                           ))}

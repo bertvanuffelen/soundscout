@@ -95,6 +95,35 @@ export function generateRandomDutchName(): string {
   return `${adjective} ${noun}`;
 }
 
+// Engelse schuilnamen (fase 3.3): leerlingen die de app in het Engels
+// gebruiken heetten anders "Zingende Zeehond" (en de privacytekst belooft
+// "Singing Seal")
+const adjectivesEn = [
+  'Happy', 'Dancing', 'Singing', 'Jumping', 'Whistling', 'Skipping', 'Funny',
+  'Shining', 'Cheerful', 'Playful', 'Speedy', 'Clever', 'Brave', 'Lively',
+  'Colourful', 'Sparkling', 'Galloping', 'Twirling', 'Swooshing', 'Glittering',
+  'Squeaky', 'Tiptoeing', 'Bouncing', 'Fluttering', 'Hopping', 'Spinning',
+  'Swinging', 'Rocking', 'Drumming', 'Strumming',
+];
+
+const nounsEn = [
+  'Parrot', 'Seal', 'Penguin', 'Owl', 'Rabbit', 'Dolphin', 'Monkey', 'Panda',
+  'Cat', 'Bird', 'Hedgehog', 'Fox', 'Dog', 'Polar Bear', 'Unicorn', 'Kangaroo',
+  'Flamingo', 'Raccoon', 'Otter', 'Koala', 'Robot', 'Trumpet', 'Piano', 'Drum',
+  'Flute', 'Xylophone', 'Guitar',
+];
+
+/**
+ * Schuilnaam in de taal van de app: Engels als de taal met "en" begint,
+ * anders Nederlands.
+ */
+export function generateRandomName(language?: string): string {
+  if (!language?.startsWith('en')) return generateRandomDutchName();
+  const adjective = adjectivesEn[Math.floor(Math.random() * adjectivesEn.length)];
+  const noun = nounsEn[Math.floor(Math.random() * nounsEn.length)];
+  return `${adjective} ${noun}`;
+}
+
 /**
  * Genereert meerdere unieke namen
  *

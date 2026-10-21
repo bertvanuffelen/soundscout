@@ -8,7 +8,7 @@
 import { getSupabase } from './supabase';
 import { ERR_RATE_LIMIT, matchesError } from './supabaseErrors';
 import { withTimeout } from '../utils/withTimeout';
-import { generateRandomDutchName } from '../utils/randomNames';
+import { generateRandomName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
 import { parseCompositionData } from '../utils/schemas';
 import { logger } from '../utils/logger';
@@ -338,7 +338,7 @@ export async function submitPraatplaatComposition(params: {
   } = params;
 
   const supabase = await getSupabase();
-  const finalStudentName = studentName?.trim() || generateRandomDutchName();
+  const finalStudentName = studentName?.trim() || generateRandomName(i18n.language);
 
   const { data, error } = await withTimeout(
     supabase.rpc('submit_praatplaat_composition', {

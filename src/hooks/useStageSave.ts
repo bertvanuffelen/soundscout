@@ -22,7 +22,7 @@ import { TimeoutError } from '../utils/withTimeout';
 import { submitPraatplaatComposition } from '../lib/praatplaat';
 import { compositionFingerprint, getVersion, recordVersion, type VersionInfo } from '../utils/handInVersions';
 import { randomTitle } from '../utils/randomTitles';
-import { generateRandomDutchName } from '../utils/randomNames';
+import { generateRandomName } from '../utils/randomNames';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
@@ -243,7 +243,7 @@ export function useStageSave() {
         const { saveCompositionOnline } = await import('../lib/submissions');
         // Bewaren zonder naam (v4): een schuilnaam is genoeg voor de server
         const { saveCode, saveSecret } = await saveCompositionOnline({
-          studentName: generateRandomDutchName(),
+          studentName: generateRandomName(i18n.language),
           compositionName: name,
           compositionData,
         });

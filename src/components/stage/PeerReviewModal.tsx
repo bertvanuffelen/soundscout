@@ -19,6 +19,7 @@ import { PresentationSurface } from '../presentation/PresentationSurface';
 import { getPeerReviewBatch, submitPeerFeedback, PeerFeedbackError, type PeerReviewItem } from '../../lib/peerFeedback';
 import { logger } from '../../utils/logger';
 import { cn } from '../../utils/cn';
+import { peerChipLabel } from '../../utils/peerChipLabel';
 import type { Submission } from '../../hooks/useSubmissions';
 
 interface PeerReviewModalProps {
@@ -36,7 +37,7 @@ interface PeerReviewModalProps {
 type Phase = 'loading' | 'empty' | 'reviewing' | 'done' | 'error' | 'blocked';
 
 export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, chips, onReviewed, onCapReached }: PeerReviewModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [phase, setPhase] = useState<Phase>('loading');
   const [items, setItems] = useState<PeerReviewItem[]>([]);
   const [index, setIndex] = useState(0);
@@ -157,9 +158,9 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
               )}
             >
               <span className={cn('text-sm font-semibold', value > 0 ? 'text-accent-800' : 'text-text-muted')}>
-                {chip}
+                {peerChipLabel(chip, i18n.language)}
               </span>
-              <div className="flex items-center gap-0.5" role="radiogroup" aria-label={chip}>
+              <div className="flex items-center gap-0.5" role="radiogroup" aria-label={peerChipLabel(chip, i18n.language)}>
                 {[1, 2, 3].map((n) => (
                   <button
                     key={n}
