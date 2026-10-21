@@ -80,6 +80,8 @@ export interface ClassSession {
   card?: OpdrachtkaartContent | null;
   /** Tijdsduur van de docent, bijv. "2 lessen" (migratie 033) */
   durationLabel?: string | null;
+  /** Mag de leerling zelf een titel typen? (migratie 037; ontbreekt = ja) */
+  studentsTypeTitle?: boolean;
 }
 
 // --- Opdrachtkaart (vorm-onafhankelijke instructiekaart) ---

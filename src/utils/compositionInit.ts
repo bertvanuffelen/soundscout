@@ -357,6 +357,7 @@ export function classSessionFromAssignment(
     peerReview: assignment.peerReview,
     card: assignment.card,
     durationLabel: assignment.durationLabel,
+    studentsTypeTitle: assignment.studentsTypeTitle,
   };
   if (assignment.type === 'template' && assignment.template) {
     return { ...base, assignmentType: 'template', assignmentId: assignment.template.id, assignmentName: assignment.template.name };
@@ -413,6 +414,7 @@ export async function activatePendingAssignment(): Promise<void> {
       peerReview: assignment.peerReview,
       card: assignment.card,
       durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
       assignmentType: 'template',
       assignmentId: assignment.template.id,
       assignmentName: assignment.template.name,
@@ -430,6 +432,7 @@ export async function activatePendingAssignment(): Promise<void> {
       peerReview: assignment.peerReview,
       card: assignment.card,
       durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
       assignmentType: 'praatplaat',
       assignmentId: assignment.praatplaat.id,
       assignmentName: assignment.praatplaat.name,
@@ -480,6 +483,7 @@ export async function activatePendingAssignment(): Promise<void> {
       peerReview: assignment.peerReview,
       card: assignment.card,
       durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
       assignmentType: 'storyboard',
       assignmentId: assignment.storyboard.ref,
       assignmentName: i18n.t(assignment.storyboard.nameKey),
@@ -499,6 +503,7 @@ export async function activatePendingAssignment(): Promise<void> {
       peerReview: assignment.peerReview,
       card: assignment.card,
       durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
       assignmentType: 'free',
       assignmentId: assignment.free.themeId,
       assignmentName: assignment.free.themeName,

@@ -60,6 +60,8 @@ export interface ActiveAssignment {
   peerReview: PeerReviewConfig | null;
   /** Optionele tijdsduur-vermelding van de docent (migratie 033), bijv. "2 lessen" */
   durationLabel: string | null;
+  /** Mogen leerlingen zelf een titel typen? (migratie 037, standaard ja) */
+  studentsTypeTitle: boolean;
   // Template fields (present when type = 'template')
   template?: Template;
   // Praatplaat fields (present when type = 'praatplaat')
@@ -247,6 +249,8 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
     const durationLabel = typeof payload.duration_label === 'string' && payload.duration_label.trim()
       ? payload.duration_label
       : null;
+    // Titelinstelling (migratie 037) — ontbreekt op oudere databases → aan
+    const studentsTypeTitle = payload.students_type_title !== false;
     // Peer-review (migratie 027/028) — kolom ontbreekt op oudere databases
     const peerReview: PeerReviewConfig | null =
       row.peer_review?.enabled && Array.isArray(row.peer_review.chips)
@@ -272,6 +276,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         card,
         peerReview,
         durationLabel,
+        studentsTypeTitle,
         template: {
           id: String(payload.template_id ?? ''),
           name: (payload.name as string) || '',
@@ -293,6 +298,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         card,
         peerReview,
         durationLabel,
+        studentsTypeTitle,
         praatplaat: {
           id: String(payload.praatplaat_id ?? ''),
           name: (payload.name as string) || '',
@@ -313,6 +319,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         card,
         peerReview,
         durationLabel,
+        studentsTypeTitle,
         storyboard,
       };
     }
@@ -327,6 +334,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         card,
         peerReview,
         durationLabel,
+        studentsTypeTitle,
         free: { themeId, themeName: themeDisplayName(themeId) },
       };
     }
@@ -507,6 +515,39 @@ export async function updateAssignmentDuration(
   if (error) {
     logger.error('updateAssignmentDuration error:', sanitizeError(error));
     throw new Error(i18n.t('errors.assignments.duration'));
+  }
+}
+
+/**
+ * Lees de titelinstelling van een opdracht (migratie 037). Geeft `null` als
+ * de kolom nog niet bestaat (migratie niet gedraaid): dan toont de app geen
+ * schakelaar en typen leerlingen gewoon zelf een titel.
+ */
+export async function fetchStudentsTypeTitle(assignmentId: string): Promise<boolean | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('class_assignments')
+    .select('students_type_title')
+    .eq('id', assignmentId)
+    .maybeSingle();
+  if (error || !data) return null;
+  const value = (data as { students_type_title?: unknown }).students_type_title;
+  return typeof value === 'boolean' ? value : null;
+}
+
+/**
+ * Zet de titelinstelling (migratie 037). Docent-eigendom via de UPDATE-RLS-
+ * policy (006), net als de tijdsduur.
+ */
+export async function updateStudentsTypeTitle(assignmentId: string, value: boolean): Promise<void> {
+  const supabase = await getSupabase();
+  const { error } = await supabase
+    .from('class_assignments')
+    .update({ students_type_title: value })
+    .eq('id', assignmentId);
+  if (error) {
+    logger.error('updateStudentsTypeTitle error:', sanitizeError(error));
+    throw new Error(i18n.t('errors.assignments.titleSetting'));
   }
 }
 

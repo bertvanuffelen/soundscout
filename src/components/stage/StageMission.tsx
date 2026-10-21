@@ -35,6 +35,8 @@ export interface StageMissionProps {
   // Titel
   title: string;
   onTitleChange: (value: string) => void;
+  /** Docent zette "zelf een titel typen" uit (migratie 037) */
+  titleLocked: boolean;
   // Plek
   zoomed: boolean;
   onToggleZoom: () => void;
@@ -146,6 +148,14 @@ export function StageMission(props: StageMissionProps) {
           </>
         );
       case 'title':
+        if (props.titleLocked) {
+          return (
+            <p className="flex items-start gap-2 rounded-xl bg-neutral-100 px-3 py-2 text-sm text-text-muted">
+              <Lock className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />
+              {t('podium.titleStep.auto')}
+            </p>
+          );
+        }
         return (
           <>
             <div className="flex gap-2">

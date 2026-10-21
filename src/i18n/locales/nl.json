@@ -457,7 +457,8 @@
       "placeholder": "Typ een titel…",
       "dice": "Kies een willekeurige titel",
       "confirm": "Dit is mijn titel",
-      "tip": "Tip: geen achternaam in je titel."
+      "tip": "Tip: geen achternaam in je titel.",
+      "auto": "Je docent kiest de titels automatisch."
     },
     "spot": {
       "title": "Je plek op de praatplaat",
@@ -796,7 +797,10 @@
     "durationLabel": "Tijdsduur (optioneel, zichtbaar voor leerlingen)",
     "durationPlaceholder": "bijv. 2 lessen",
     "historyDeleteTitle": "Opdracht uit je overzicht halen",
-    "historyDeleteConfirm": "\"{{name}}\" verdwijnt uit Eerdere opdrachten.\n\nDe composities van je leerlingen blijven gewoon bewaard — die vind je terug bij de inzendingen. Let op: een gedeeld album van déze opdracht werkt daarna niet meer."
+    "historyDeleteConfirm": "\"{{name}}\" verdwijnt uit Eerdere opdrachten.\n\nDe composities van je leerlingen blijven gewoon bewaard — die vind je terug bij de inzendingen. Let op: een gedeeld album van déze opdracht werkt daarna niet meer.",
+    "typeTitleLabel": "Leerlingen typen zelf een titel",
+    "typeTitleOn": "Aan: leerlingen kiezen hun titel.",
+    "typeTitleOff": "Uit: de app kiest een titel (geen namen in titels)."
   },
   "assignmentCards": {
     "sectionTitle": "Mijn opdrachtkaarten",
@@ -1195,7 +1199,8 @@
       "duration": "Kon tijdsduur niet opslaan",
       "card": "Kon de opdrachtkaart niet bijwerken",
       "praatplaatTheme": "Kon het thema van de praatplaat niet wijzigen",
-      "delete": "Deze opdracht kon niet uit je overzicht worden gehaald."
+      "delete": "Deze opdracht kon niet uit je overzicht worden gehaald.",
+      "titleSetting": "Kon de titelinstelling niet opslaan"
     },
     "classes": {
       "load": "Kon klassen niet laden",

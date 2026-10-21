@@ -13,7 +13,7 @@
 
 import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { ArrowLeft, Pencil, GraduationCap, Monitor, Flag, Check } from 'lucide-react';
+import { ArrowLeft, Pencil, GraduationCap, Monitor, Flag, Check, Lock } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -32,6 +32,7 @@ import { buildCompositionData } from '../../utils/buildCompositionData';
 import { compositionFingerprint } from '../../utils/handInVersions';
 import { deriveStageSteps } from '../../utils/stageSteps';
 import { getPeerDone, setPeerDone } from '../../utils/peerProgress';
+import { randomTitle } from '../../utils/randomTitles';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { PresentationSurface } from '../presentation/PresentationSurface';
 import { PeerReviewModal } from './PeerReviewModal';
@@ -45,7 +46,7 @@ import { logger } from '../../utils/logger';
 import type { ActiveAssignment } from '../../lib/assignments';
 
 export function StageView() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const setScreen = useAppStore((s) => s.setScreen);
   const goToMap = useAppStore((s) => s.goToMap);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
@@ -103,6 +104,14 @@ export function StageView() {
   const [peerDone, setPeerDoneState] = useState(() => getPeerDone(submissionId));
   const [feedbackSeenAt, setFeedbackSeenAt] = useState(() => storageService.getClassFeedbackCode()?.lastSeenFeedbackAt ?? null);
   useEffect(() => { setPeerDoneState(getPeerDone(submissionId)); }, [submissionId]);
+
+  // Docent zette "zelf een titel typen" uit (migratie 037): de app kiest
+  const titleLocked = !!classSession && classSession.studentsTypeTitle === false;
+  useEffect(() => {
+    if (titleLocked && !useAppStore.getState().compositionTitle.trim()) {
+      setCompositionName(randomTitle(i18n.language));
+    }
+  }, [titleLocked, setCompositionName, i18n.language]);
 
   // Podium = altijd de volledige mix, één keer van begin tot eind (B22/B23)
   useEffect(() => {
@@ -316,12 +325,15 @@ export function StageView() {
             type="text"
             value={compositionName}
             onChange={(e) => setCompositionName(e.target.value)}
+            readOnly={titleLocked}
             placeholder={t('podium.titlePlaceholder')}
             aria-label={t('podium.titleLabel')}
             maxLength={40}
             className="flex-1 min-w-0 bg-transparent text-lg sm:text-xl font-extrabold text-text-main placeholder:text-text-muted/60 focus:outline-none truncate"
           />
-          <Pencil className="w-4 h-4 text-text-muted shrink-0" aria-hidden="true" />
+          {titleLocked
+            ? <Lock className="w-4 h-4 text-text-muted shrink-0" aria-hidden="true" />
+            : <Pencil className="w-4 h-4 text-text-muted shrink-0" aria-hidden="true" />}
         </label>
         <div className="shrink-0">{statusChip}</div>
       </header>
@@ -341,6 +353,7 @@ export function StageView() {
             listened={listened}
             title={compositionName}
             onTitleChange={setCompositionName}
+            titleLocked={titleLocked}
             zoomed={zoomed}
             onToggleZoom={() => setZoomed((v) => !v)}
             onMoveSpot={handleMoveSpot}

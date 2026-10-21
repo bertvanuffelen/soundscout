@@ -457,7 +457,8 @@
       "placeholder": "Type a title…",
       "dice": "Pick a random title",
       "confirm": "This is my title",
-      "tip": "Tip: don't include your last name in the title."
+      "tip": "Tip: don't include your last name in the title.",
+      "auto": "Your teacher has titles chosen automatically."
     },
     "spot": {
       "title": "Your spot on the sound map",
@@ -797,7 +798,10 @@
     "durationLabel": "Duration (optional, shown to pupils)",
     "durationPlaceholder": "e.g. 2 lessons",
     "historyDeleteTitle": "Remove assignment from your overview",
-    "historyDeleteConfirm": "\"{{name}}\" disappears from Previous assignments.\n\nYour students' compositions are kept — you'll still find them with the submissions. Note: a shared album of this assignment will stop working."
+    "historyDeleteConfirm": "\"{{name}}\" disappears from Previous assignments.\n\nYour students' compositions are kept — you'll still find them with the submissions. Note: a shared album of this assignment will stop working.",
+    "typeTitleLabel": "Students type their own title",
+    "typeTitleOn": "On: students choose their title.",
+    "typeTitleOff": "Off: the app picks a title (no names in titles)."
   },
   "assignmentCards": {
     "sectionTitle": "My assignment cards",
@@ -1196,7 +1200,8 @@
       "duration": "Could not save the duration",
       "card": "Could not update the assignment card",
       "praatplaatTheme": "Could not change the sound map's theme",
-      "delete": "This assignment could not be removed from your overview."
+      "delete": "This assignment could not be removed from your overview.",
+      "titleSetting": "Could not save the title setting"
     },
     "classes": {
       "load": "Could not load your classes",

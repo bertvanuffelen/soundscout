@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1853 teksten in 49 secties._
+_Stand: 1858 teksten in 49 secties._
 
 ## app
 
@@ -497,6 +497,7 @@ _Stand: 1853 teksten in 49 secties._
 | `podium.titleStep.dice` | Kies een willekeurige titel | Pick a random title |
 | `podium.titleStep.confirm` | Dit is mijn titel | This is my title |
 | `podium.titleStep.tip` | Tip: geen achternaam in je titel. | Tip: don't include your last name in the title. |
+| `podium.titleStep.auto` | Je docent kiest de titels automatisch. | Your teacher has titles chosen automatically. |
 | `podium.spot.title` | Je plek op de praatplaat | Your spot on the sound map |
 | `podium.spot.text` | Je plek staat als pin op de plaat. | Your spot is marked with a pin. |
 | `podium.spot.move` | Kies een andere plek | Choose another spot |
@@ -798,6 +799,9 @@ _Stand: 1853 teksten in 49 secties._
 | `assignments.durationPlaceholder` | bijv. 2 lessen | e.g. 2 lessons |
 | `assignments.historyDeleteTitle` | Opdracht uit je overzicht halen | Remove assignment from your overview |
 | `assignments.historyDeleteConfirm` | "{{name}}" verdwijnt uit Eerdere opdrachten.<br><br>De composities van je leerlingen blijven gewoon bewaard — die vind je terug bij de inzendingen. Let op: een gedeeld album van déze opdracht werkt daarna niet meer. | "{{name}}" disappears from Previous assignments.<br><br>Your students' compositions are kept — you'll still find them with the submissions. Note: a shared album of this assignment will stop working. |
+| `assignments.typeTitleLabel` | Leerlingen typen zelf een titel | Students type their own title |
+| `assignments.typeTitleOn` | Aan: leerlingen kiezen hun titel. | On: students choose their title. |
+| `assignments.typeTitleOff` | Uit: de app kiest een titel (geen namen in titels). | Off: the app picks a title (no names in titles). |
 
 ## assignmentCards
 
@@ -1141,6 +1145,7 @@ _Stand: 1853 teksten in 49 secties._
 | `errors.assignments.card` | Kon de opdrachtkaart niet bijwerken | Could not update the assignment card |
 | `errors.assignments.praatplaatTheme` | Kon het thema van de praatplaat niet wijzigen | Could not change the sound map's theme |
 | `errors.assignments.delete` | Deze opdracht kon niet uit je overzicht worden gehaald. | This assignment could not be removed from your overview. |
+| `errors.assignments.titleSetting` | Kon de titelinstelling niet opslaan | Could not save the title setting |
 | `errors.classes.load` | Kon klassen niet laden | Could not load your classes |
 | `errors.classes.code` | Kon klas-code niet genereren | Could not generate a class code |
 | `errors.classes.codeInvalid` | Ongeldige klas-code ontvangen van de server | Received an invalid class code from the server |
