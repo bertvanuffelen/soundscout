@@ -55,8 +55,8 @@
 | 1.2 | Startscherm opgeschoond: "Ben je docent?" als link, tabtitel "SoundScout", wizard zonder dubbele code-ingang | `StartScreen.tsx`, `start/NewCompositionWizard.tsx`, `App.tsx` | ✅ | 0f12077 |
 | 1.3 | Codevenster: één kop "Typ je code" + uitleg per codesoort, "Open" met tekst op mobiel | `share/ShareCodeModal.tsx`, `share/ShareCodeInput.tsx`, i18n | ✅ | 0f12077 |
 | 1.4 | Klas zonder opdracht: "Andere code proberen" opent het codevenster, "Vrij componeren" opent de wizard (O7) | `assignment/AssignmentLandingScreen.tsx`, `stores/appStore.ts` (`goToStartWith`), `StartScreen.tsx` | ✅ | 0f12077 |
-| 1.7 | **A3** Uitleg één keer na "Starten" in de klasroute | `assignment/AssignmentLandingScreen.tsx` | ⬜ | |
-| 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | `StartScreen.tsx`, `stage/StageView.tsx`, nieuw keuzevenster | ⬜ | |
+| 1.7 | **A3** Uitleg één keer na "Starten" in de klasroute | `assignment/AssignmentLandingScreen.tsx` | ✅ | feecccb |
+| 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | `StartScreen.tsx`, `stage/StageView.tsx`, `common/NewWorkChoiceModal.tsx`, `compositionInit.ts` (`startAnotherForCurrentAssignment`) | ✅ | 7b49ca8 |
 | 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | nieuw `services/workInProgress.ts`, `StorageService.ts`, `App.tsx`, `StartScreen.tsx` | ⬜ | |
 | 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | i18n, `docs/TEKSTEN.md` | ⬜ | |
 | 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | i18n, `ClassCard.tsx`, `PrivacyModal.tsx`, … | ⬜ | |
@@ -106,3 +106,5 @@
 - Review van [PR #5](https://github.com/bertvanuffelen/soundscout/pull/5) (branch `claude/soundscout-podium-workflow-2268b6`) en merge naar `main`, dan de build uploaden vóór 27-10.
 - Korte eigen check op een echt apparaat: inleveren met klascode (Tier 1 #6), openen via bewaarcode, en "Kies een nieuwe plek" bij een praatplaat. Die routes raken de server, en die heb ik niet gebruikt.
 | 21-10-2026 | 1.2–1.4 startscherm, codevenster, klas zonder opdracht | 0f12077 | tsc ✓ · 440 tests ✓ · lint ✓ · browser 1366×768: tabtitel "SoundScout", docentlink klein, codevenster met drie regels, Route C → codevenster / uitleg + wizard |
+| 21-10-2026 | 1.7 A3 uitleg één keer in de klasroute | feecccb | tsc ✓ · tests ✓ · browser: eerste "Starten" toont de uitleg, tweede keer niet |
+| 21-10-2026 | 1.6 A2 klasbewuste nieuwe soundscape | 7b49ca8 | tsc ✓ · 442 tests ✓ (2 nieuw) · lint ✓ · browser 1366×768: podium praatplaat → "Nog één op een andere plek" houdt klas + praatplaat, gaat naar plekkiezer; "Zelf iets nieuws" wist klas en opent de wizard; startscherm vrije opdracht toont "nog niet ingeleverd". Niet getest: "Nog één voor deze opdracht" tegen de echte server (opdracht ophalen) |
