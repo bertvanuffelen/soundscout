@@ -100,5 +100,5 @@
 | 21-10-2026 | 0.7 eindcontrole fase 0 | — | `npm run build` ✓ · `npm run lint`: 30 meldingen, allemaal bestaande lintschuld (react-hooks-regels in o.a. Timeline, Track, CompositionsView, useStageSave), geen nieuwe · **browser** (1366×768 en 375×812): B22/B23 solo en loop uit na binnenkomst buiten de studio om (engine + Tone-transport gecontroleerd) · B2 Opslaan uit + melding bovenaan · B5 0 px verschuiving bij afspelen · B10 uitleg loopt over twee regels · B34 "Mijn Composities" donker op de witte kaart · B25 modus blijft na "Volgende" + sluiten · B24 vrije compositie na storyboard: 0 secties, 128 tellen · B21 Mijn composities → afspelen wist oude klas, feedback en compositie-id · B1 feedbackblok binnen 375 px · B3 "Opnieuw inleveren" na inzending |
 
 ### Nog te doen door Bert (fase 0)
-- Review van de branch `claude/soundscout-podium-workflow-2268b6` (8 commits, c50b00d…) en merge naar `main`, dan de build uploaden vóór 27-10.
+- Review van [PR #5](https://github.com/bertvanuffelen/soundscout/pull/5) (branch `claude/soundscout-podium-workflow-2268b6`) en merge naar `main`, dan de build uploaden vóór 27-10.
 - Korte eigen check op een echt apparaat: inleveren met klascode (Tier 1 #6), openen via bewaarcode, en "Kies een nieuwe plek" bij een praatplaat. Die routes raken de server, en die heb ik niet gebruikt.
