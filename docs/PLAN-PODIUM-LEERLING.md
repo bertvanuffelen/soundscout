@@ -124,6 +124,28 @@
 2. Privacyverklaring aanvullen met leerlingcodes (code + schuilnaam, geldig tot 31 juli, verwijderd met de klas). De tekst over online bewaren is al aangepast.
 3. Testen met een echte klas: inleveren, versie 2, feedback klasgenoten, "Heb je een klascode?", titelinstelling, leerlingcodes maken, printen en inloggen.
 
+## Fase 5: eindtest-fixes vóór 27-10 ✅ (bestanden) · ⏳ migraties 041 + 042
+
+> **Branch:** `claude/leerling-fase5` (gestapeld op fase 4). Bron: `Kennis/1_ZZP/soundscout/eindtest-leerling.md` (tweede AI, testklas 3597).
+
+| Stap | Wat | Rapport | Commit |
+|---|---|---|---|
+| 5.1 | Generatie-token bij inleveren; navigatie uit tijdens versturen | E2/H1 | 3c61a81 |
+| 5.2 | Client stelt geheim voor (migratie 041) → geen dubbele inzending na time-out; 200 geheimen per apparaat; generate_save_secret met pgcrypto | H2/H3 | 055bc7f |
+| 5.3 | Ongedaan maken neemt loop, effecten, label, spoorvolume mee | E3/H5 | (zie git log) |
+| 5.4 | Vraag vóór openen over onbewaard werk (eerst bewaren / niet bewaren / annuleren) | E5/H4 | 1bf45d4 |
+| 5.5 | "Klaar, ik stop", onthouden werk vervalt na 12 uur, "Toon code" bij klaswerk, tijd bij "Ga verder" | E1/K1 | d78554f |
+| 5.6 | Tijdlijn stopt bij verlaten podium en bij Nieuwe soundscape | E7 | (zie git log) |
+| 5.7 | Modal met vaste voetregel + ✕; uitleg en wizard passen op 1280×800 en 375×812 | E11 | 0ce4b36 |
+| 5.8 | Leerlingcodes dichtgezet (migratie 042): ABC-1234, rem op foute pogingen per IP, geen bewaarcode in login, verder zonder claim, geen omhangen, idempotent verlengen, opruimen | E4/K2, M1–M3, L1–L2 | 455e320 |
+| 5.9 | Teksten: sporen, Geluid inkorten, geen dubbele waarschuwing, geen meta-regel, "Lever je soundscape in", dobbelsteen kiest titel | E14, E16, E17, tekst | 2d0baaa |
+
+**Besluiten Bert (21-10):** omvang stap 1–9; "Klaar, ik stop" + 12 uur; leerlingcodes volgens het beste beveiligingsadvies (formaat wijkt af van ontwerp XX-0000 → ABC-1234).
+
+**Nog door Bert:** migraties **041** en **042** draaien (in die volgorde). Daarna controleer ik ze alleen-lezen, plus een rem-test vanuit de browser (klopt het netwerkadres uit `request.headers`?).
+
+**Na de lancering (uit het rapport):** E6, E8, E9, E10, E12, E13, M4–M6, M8, L3–L6, toegankelijkheid (knoppen ≥ 44 px, labels, contrast gele clips), "Muziek · MP3" (staat zo in de goedgekeurde mockup).
+
 ---
 
 ## Logboek
@@ -154,3 +176,4 @@
 | 21-10-2026 | Controle database na 037/038 + migratie 039 | HEAD | Supabase (alleen lezen): objecten van 002–038 aanwezig, RLS op class_members, pg_cron `soundscout-cleanup` 03:00. Gevonden: 5 docentfuncties uitvoerbaar door `anon` (PUBLIC-standaardrecht; geen misbruik mogelijk door assert_class_owner). Migratie 039 zet ze dicht, getest in PGlite (2× draaien) |
 | 21-10-2026 | Controle 039 + Supabase-adviezen → migratie 040 | HEAD | 039 ✓ (docentfuncties dicht voor anon, leerlingfuncties open). Adviezen: 2 nieuwe hulpfuncties zonder vast search_path, assert_class_owner direct aanroepbaar → 040. PGlite: als rol authenticated codes maken ✓, assert_class_owner direct geweigerd ✓. Oudere adviezen (38 functies zonder search_path, lekwachtwoord-bescherming uit) staan los van deze ronde |
 | 21-10-2026 | Controle 040 | — | Vast search_path op alle nieuwe functies, assert_class_owner niet meer direct aanroepbaar. Adviezen bij nieuwe functies: alleen nog de verwachte meldingen (leerlingfuncties open voor anon, docentfuncties voor authenticated, met eigen eigenaarscontrole) |
+| 21-10-2026 | Fase 5 eindtest-fixes | 3c61a81 … 455e320 | tsc ✓ · 481 tests ✓ (+16) · browser 1280×800 + 375×812: transport stopt, vraag bij onbewaard werk + "Eerst bewaren", "Klaar, ik stop" → schoon start, uitleg en wizard passen · PGlite: 041 (retry = update, verkeerd geheim geweigerd) en 042 (rem alleen op fouten, school met 40 logins ok, geen buit, verlengen 2× gelijk) |
