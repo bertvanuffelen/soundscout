@@ -57,7 +57,7 @@
 | 1.4 | Klas zonder opdracht: "Andere code proberen" opent het codevenster, "Vrij componeren" opent de wizard (O7) | `assignment/AssignmentLandingScreen.tsx`, `stores/appStore.ts` (`goToStartWith`), `StartScreen.tsx` | ✅ | 0f12077 |
 | 1.7 | **A3** Uitleg één keer na "Starten" in de klasroute | `assignment/AssignmentLandingScreen.tsx` | ✅ | feecccb |
 | 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | `StartScreen.tsx`, `stage/StageView.tsx`, `common/NewWorkChoiceModal.tsx`, `compositionInit.ts` (`startAnotherForCurrentAssignment`) | ✅ | 7b49ca8 |
-| 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | nieuw `services/workInProgress.ts`, `StorageService.ts`, `App.tsx`, `StartScreen.tsx` | ⬜ | |
+| 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | nieuw `services/workInProgress.ts`, `App.tsx`, `StartScreen.tsx` | ✅ | b74ef7c |
 | 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | i18n, `docs/TEKSTEN.md` | ⬜ | |
 | 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | i18n, `ClassCard.tsx`, `PrivacyModal.tsx`, … | ⬜ | |
 
@@ -108,3 +108,4 @@
 | 21-10-2026 | 1.2–1.4 startscherm, codevenster, klas zonder opdracht | 0f12077 | tsc ✓ · 440 tests ✓ · lint ✓ · browser 1366×768: tabtitel "SoundScout", docentlink klein, codevenster met drie regels, Route C → codevenster / uitleg + wizard |
 | 21-10-2026 | 1.7 A3 uitleg één keer in de klasroute | feecccb | tsc ✓ · tests ✓ · browser: eerste "Starten" toont de uitleg, tweede keer niet |
 | 21-10-2026 | 1.6 A2 klasbewuste nieuwe soundscape | 7b49ca8 | tsc ✓ · 442 tests ✓ (2 nieuw) · lint ✓ · browser 1366×768: podium praatplaat → "Nog één op een andere plek" houdt klas + praatplaat, gaat naar plekkiezer; "Zelf iets nieuws" wist klas en opent de wizard; startscherm vrije opdracht toont "nog niet ingeleverd". Niet getest: "Nog één voor deze opdracht" tegen de echte server (opdracht ophalen) |
+| 21-10-2026 | 1.5 A1 werk overleeft herladen | b74ef7c | tsc ✓ · 446 tests ✓ (4 nieuw) · lint ✓ · browser: clip + 2 geluiden + klas Groep 6b → echte herlaadbeurt → startscherm "Ga verder / Groep 6b" + "Naar het podium" → studio toont alles terug; resetten wist de snapshot. Let op: op een gedeeld apparaat ziet de volgende leerling het open werk van de vorige tot die opnieuw begint (zelfde als bij Mijn composities). Een template-sessie herstelt `activeTemplate`; een bewaarcode-koppeling blijft (die stond al in localStorage) |
