@@ -61,18 +61,32 @@
 | 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | i18n, `docs/TEKSTEN.md` | ✅ | b59c3e8 |
 | 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | i18n, `ClassCard.tsx`, `PrivacyModal.tsx`, `TeacherRegister.tsx`, `useClasses.ts`, `useSubmissions.ts`, `TeacherPage.tsx`, `App.tsx`, `LocationScene.tsx`, `SectionBar.tsx`, `ImageLightbox.tsx` | ✅ | fbbdb5d, ed8fe0a, 7e0e6f1 |
 
-## Fase 2: podium v4
+## Fase 2: podium v4 ✅
 
-| Stap | Wat | Status |
-|---|---|---|
-| 2.1 | Schermvullende layout: beeld links, kolom "Jouw soundscape" rechts (320 px); op mobiel onder elkaar | ⬜ |
-| 2.2 | Stappencomponent met statusafleiding (luisteren · titel · plek · inleveren/bewaren · feedback · klasgenoten · exporteren), in vrije volgorde | ⬜ |
-| 2.3 | Opdrachtkaart en tijdsduur meenemen in `ClassSession`, tonen als "Opdracht" | ⬜ |
-| 2.4 | Presentatiemodus voor "Luister" (PresentationSurface hergebruiken) | ⬜ |
-| 2.5 | Beeldvlak per situatie: storyboard met strip (springt in de muziek), afbeelding, praatplaat met pin + zoom, tijdlijn als beeld | ⬜ |
-| 2.6 | Feedback klasgenoten op het volle scherm (links compositie, rechts sterren) | ⬜ |
-| 2.7 | Muziekkaart (code + QR); één inleverpad (klascode zet de klassessie); "Bewaar" zonder naam | ⬜ |
-| 2.8 | Versies: "Lever versie N in" bij wijzigingen sinds het inleveren | ⬜ |
+> **Branch:** `claude/leerling-fase2` (gestapeld op fase 1).
+
+| Stap | Wat | Status | Commit |
+|---|---|---|---|
+| 2.1 | Schermvullende layout: beeld links, kolom "Jouw soundscape" rechts (360 px); op mobiel onder elkaar | ✅ | f9aabbb |
+| 2.2 | Stappencomponent met statusafleiding (luisteren · titel · plek · inleveren/bewaren · feedback · klasgenoten · exporteren), in vrije volgorde | ✅ | 9349416, f9aabbb |
+| 2.3 | Opdrachtkaart en tijdsduur meenemen in `ClassSession`, tonen als "Opdracht" | ✅ | 61e4317, f9aabbb |
+| 2.4 | Presentatiemodus voor "Luister" (PresentationSurface hergebruiken) | ✅ | f9aabbb |
+| 2.5 | Beeldvlak per situatie: storyboard met strip (springt in de muziek), afbeelding, praatplaat met pin + zoom, tijdlijn als beeld | ✅ | f9aabbb |
+| 2.6 | Feedback klasgenoten op het volle scherm (links compositie, rechts sterren) | ✅ | f9aabbb |
+| 2.7 | Muziekkaart (code + QR); één inleverpad (klascode zet de klassessie); "Bewaar" zonder naam | ✅ | f9aabbb |
+| 2.8 | Versies: "Lever versie N in" bij wijzigingen sinds het inleveren | ✅ | 9349416, f9aabbb |
+
+**Besluiten tijdens het bouwen**
+- De titel staat in de appStore (`compositionTitle`): hij blijft tussen studio en podium en gaat mee in het onthouden werk (A1).
+- Inleveren of bewaren zonder titel kiest automatisch een titel (`randomTitles`).
+- Online bewaren stuurt een schuilnaam mee (de server wil een naam); de leerling typt geen naam meer.
+- "Kies een andere plek" verzet de pin van dezelfde soundscape (`praatplaatReturnToStage`). Een nieuwe soundscape op een andere plek loopt via "Nieuwe soundscape → Nog één op een andere plek".
+- **Delen in de klas staat aan.** De mockup toonde "staat uit in de klas", maar zonder docentinstelling zou dat een functie weghalen. → Open vraag voor Bert (zie onder).
+- Weggehaald: het venster "Opslaan & Delen", het publiek onder het podium, de losse opslagwaarschuwing en de praatplaat-succesmodal (vervangen door de stappen).
+
+**Open vragen**
+- Moet "Delen" (luisterlink) in de klas uit kunnen? Zo ja: als docentinstelling in fase 3.
+- Een leerling die thuis begon en via "Heb je een klascode?" bij een **praatplaat**-klas wil inleveren, krijgt de melding dat dit via "Ik heb een code" moet (er hoort een plek bij).
 
 ## Fase 3: instellingen en data (migratie)
 
@@ -111,3 +125,4 @@
 | 21-10-2026 | 1.5 A1 werk overleeft herladen | b74ef7c | tsc ✓ · 446 tests ✓ (4 nieuw) · lint ✓ · browser: clip + 2 geluiden + klas Groep 6b → echte herlaadbeurt → startscherm "Ga verder / Groep 6b" + "Naar het podium" → studio toont alles terug; resetten wist de snapshot. Let op: op een gedeeld apparaat ziet de volgende leerling het open werk van de vorige tot die opnieuw begint (zelfde als bij Mijn composities). Een template-sessie herstelt `activeTemplate`; een bewaarcode-koppeling blijft (die stond al in localStorage) |
 | 21-10-2026 | 1.1 soundscape-termen | b59c3e8 | 67 sleutels NL+EN · tsc ✓ · 446 tests ✓ · browser: startscherm "Nieuwe soundscape". Bewust niet: docentteksten (teacher, lessonCards, templates, submissions, about, album-deeltekst), werkwoord "componeren". `sharedPraatplaat.submissionCount` ("compositie(s)") gaat mee in 1.8 (meervoud) |
 | 21-10-2026 | 1.8 Engelse teksten (a: harde teksten + privacylink, b: meervouden, c: termen/zinsletters/VK) | fbbdb5d, ed8fe0a, 7e0e6f1 | tsc ✓ · 446 tests ✓ · meervouden gecontroleerd (1 composition / 5 compositions, "Listened to once", NL "8 klassen") · browser EN: "New soundscape", privacylink /privacy/en/. Standaard-opdrachtkaart heet nu "Opdracht"/"Assignment". **Niet gedaan, verschoven naar fase 3:** Engelse schuilnamen en vertaalde peer-criteria (komen uit de database, migratie 027-data). Ook nog open (lage prioriteit): `public/les/*` en meta-titels van de statische pagina's alleen NL |
+| 21-10-2026 | 2.1–2.8 podium v4 | 9349416, 61e4317, f9aabbb, eefb4bf, HEAD | tsc ✓ · 457 tests ✓ (11 nieuw) · lint ✓ · browser 1024 + 375 px: vrij zonder klas (afspelen + voortgang, titel-suggestie, Luister → presentatie, Bewaar → echte bewaarcode Z7B4FC, wijziging → "bewaar opnieuw" → bijgewerkt, muziekkaart met QR), praatplaat in klas (opdrachtkaart, pin + zoom, plek verzetten → terug naar podium met zelfde werk), nagebootste inlevering (versie 1 → wijziging → "lever versie 2 in", peer ontgrendeld, docentfeedback-stap), storyboard met strip, klascode-venster (onbekende code → melding), Engels. **Niet getest tegen de server:** echt inleveren, feedback klasgenoten (batch ophalen + sterren rechts), "Heb je een klascode?" met een echte klas |
