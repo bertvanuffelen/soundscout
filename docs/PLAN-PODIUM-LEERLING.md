@@ -22,7 +22,7 @@
 | Fase | Doel | Wanneer | Migratie |
 |---|---|---|---|
 | **0** | Fouten eruit (context, audio, data, podium-UI, Engelse sleutels) | **vóór 27-10** | nee |
-| **1** | Openingsscherm opgeschoond + A1–A3, soundscape-termen, Engelse teksten | november | nee |
+| **1** ✅ | Openingsscherm opgeschoond + A1–A3, soundscape-termen, Engelse teksten | november (klaar 21-10, branch `claude/leerling-fase1`) | nee |
 | **2** | Podium v4 ("Jouw soundscape", schermvullend) | dec–jan | nee |
 | **3** | Titelinstelling van de docent + Engelse data (schuilnamen, feedbackkaarten) | daarna | **ja (klein)** |
 | **4** | Live meenemen van docentwijzigingen · leerlingcodes (bestaand ontwerp `ONTWERP-LEERLING-CODES.md`) | later | ja |
@@ -45,7 +45,7 @@
 - B30 (storyboardpijlen springen niet in de muziek) en B31 (de lichtbak slaat sequences over). Die vervallen of veranderen in fase 2, omdat de presentatiemodus de lichtbak vervangt.
 - B32 (persistentie bij herladen). Dat is A1 in fase 1.
 
-## Fase 1: openingsscherm (november)
+## Fase 1: openingsscherm (november) ✅
 
 > **Branch:** `claude/leerling-fase1` (gestapeld op fase 0 / PR #5).
 > **Volgorde:** eerst de structuur (1.2–1.4), dan A3, A2 en A1, en als laatste de tekstrondes (1.1 en 1.8). Zo krijgen nieuwe teksten meteen de goede woorden.
@@ -59,7 +59,7 @@
 | 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | `StartScreen.tsx`, `stage/StageView.tsx`, `common/NewWorkChoiceModal.tsx`, `compositionInit.ts` (`startAnotherForCurrentAssignment`) | ✅ | 7b49ca8 |
 | 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | nieuw `services/workInProgress.ts`, `App.tsx`, `StartScreen.tsx` | ✅ | b74ef7c |
 | 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | i18n, `docs/TEKSTEN.md` | ✅ | b59c3e8 |
-| 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | i18n, `ClassCard.tsx`, `PrivacyModal.tsx`, … | ⬜ | |
+| 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | i18n, `ClassCard.tsx`, `PrivacyModal.tsx`, `TeacherRegister.tsx`, `useClasses.ts`, `useSubmissions.ts`, `TeacherPage.tsx`, `App.tsx`, `LocationScene.tsx`, `SectionBar.tsx`, `ImageLightbox.tsx` | ✅ | fbbdb5d, ed8fe0a, 7e0e6f1 |
 
 ## Fase 2: podium v4
 
@@ -110,3 +110,4 @@
 | 21-10-2026 | 1.6 A2 klasbewuste nieuwe soundscape | 7b49ca8 | tsc ✓ · 442 tests ✓ (2 nieuw) · lint ✓ · browser 1366×768: podium praatplaat → "Nog één op een andere plek" houdt klas + praatplaat, gaat naar plekkiezer; "Zelf iets nieuws" wist klas en opent de wizard; startscherm vrije opdracht toont "nog niet ingeleverd". Niet getest: "Nog één voor deze opdracht" tegen de echte server (opdracht ophalen) |
 | 21-10-2026 | 1.5 A1 werk overleeft herladen | b74ef7c | tsc ✓ · 446 tests ✓ (4 nieuw) · lint ✓ · browser: clip + 2 geluiden + klas Groep 6b → echte herlaadbeurt → startscherm "Ga verder / Groep 6b" + "Naar het podium" → studio toont alles terug; resetten wist de snapshot. Let op: op een gedeeld apparaat ziet de volgende leerling het open werk van de vorige tot die opnieuw begint (zelfde als bij Mijn composities). Een template-sessie herstelt `activeTemplate`; een bewaarcode-koppeling blijft (die stond al in localStorage) |
 | 21-10-2026 | 1.1 soundscape-termen | b59c3e8 | 67 sleutels NL+EN · tsc ✓ · 446 tests ✓ · browser: startscherm "Nieuwe soundscape". Bewust niet: docentteksten (teacher, lessonCards, templates, submissions, about, album-deeltekst), werkwoord "componeren". `sharedPraatplaat.submissionCount` ("compositie(s)") gaat mee in 1.8 (meervoud) |
+| 21-10-2026 | 1.8 Engelse teksten (a: harde teksten + privacylink, b: meervouden, c: termen/zinsletters/VK) | fbbdb5d, ed8fe0a, 7e0e6f1 | tsc ✓ · 446 tests ✓ · meervouden gecontroleerd (1 composition / 5 compositions, "Listened to once", NL "8 klassen") · browser EN: "New soundscape", privacylink /privacy/en/. Standaard-opdrachtkaart heet nu "Opdracht"/"Assignment". **Niet gedaan, verschoven naar fase 3:** Engelse schuilnamen en vertaalde peer-criteria (komen uit de database, migratie 027-data). Ook nog open (lage prioriteit): `public/les/*` en meta-titels van de statische pagina's alleen NL |
