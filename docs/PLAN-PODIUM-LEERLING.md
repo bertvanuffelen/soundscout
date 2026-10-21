@@ -120,7 +120,7 @@
 - Groepjes en "wie heeft nog niet ingeleverd" blijven buiten v1 (zoals in het ontwerp).
 
 **Nog te doen door Bert (fase 3 en 4)**
-1. ~~Migraties **037** en **038** draaien~~ ✅ gedraaid en gecontroleerd 21-10 (alle objecten aanwezig, RLS aan, cron-opruimtaak 03:00 actief). Migratie 039 ✅ gedraaid en gecontroleerd. **Nog: migratie 040** draaien (search_path + interne controlefunctie dicht).
+1. ~~Migraties **037** en **038** draaien~~ ✅ gedraaid en gecontroleerd 21-10 (alle objecten aanwezig, RLS aan, cron-opruimtaak 03:00 actief). Migratie 039 ✅ gedraaid en gecontroleerd. Migratie 040 ✅ gedraaid en gecontroleerd: geen open adviezen meer bij de nieuwe functies, op de verwachte meldingen na.
 2. Privacyverklaring aanvullen met leerlingcodes (code + schuilnaam, geldig tot 31 juli, verwijderd met de klas). De tekst over online bewaren is al aangepast.
 3. Testen met een echte klas: inleveren, versie 2, feedback klasgenoten, "Heb je een klascode?", titelinstelling, leerlingcodes maken, printen en inloggen.
 
@@ -153,3 +153,4 @@
 | 21-10-2026 | 4.1–4.3 live, leerlingcodes, Mijn soundscapes | 2a93811, e72b0f1, 2abd024 | tsc ✓ · 470 tests ✓ (8 nieuw) · build ✓ (main 791 → 820 kB) · PGlite: 037 + 038 ✓ · browser: melding bij andere opdracht, codeveld LK-4827 valt zonder migratie terug op "Code niet gevonden", Mijn soundscapes per klas met code. **Niet getest tegen de server:** leerlingcodes (vraagt migratie 038 en een docentlogin) |
 | 21-10-2026 | Controle database na 037/038 + migratie 039 | HEAD | Supabase (alleen lezen): objecten van 002–038 aanwezig, RLS op class_members, pg_cron `soundscout-cleanup` 03:00. Gevonden: 5 docentfuncties uitvoerbaar door `anon` (PUBLIC-standaardrecht; geen misbruik mogelijk door assert_class_owner). Migratie 039 zet ze dicht, getest in PGlite (2× draaien) |
 | 21-10-2026 | Controle 039 + Supabase-adviezen → migratie 040 | HEAD | 039 ✓ (docentfuncties dicht voor anon, leerlingfuncties open). Adviezen: 2 nieuwe hulpfuncties zonder vast search_path, assert_class_owner direct aanroepbaar → 040. PGlite: als rol authenticated codes maken ✓, assert_class_owner direct geweigerd ✓. Oudere adviezen (38 functies zonder search_path, lekwachtwoord-bescherming uit) staan los van deze ronde |
+| 21-10-2026 | Controle 040 | — | Vast search_path op alle nieuwe functies, assert_class_owner niet meer direct aanroepbaar. Adviezen bij nieuwe functies: alleen nog de verwachte meldingen (leerlingfuncties open voor anon, docentfuncties voor authenticated, met eigen eigenaarscontrole) |
