@@ -191,7 +191,8 @@
     "feedbackHint": "Need help or found a bug?",
     "teacherLink": "Are you a teacher?",
     "createdBy": "Created by Bert van Uffelen",
-    "aboutButton": "About this app"
+    "aboutButton": "About this app",
+    "continueToday": "today {{time}}"
   },
   "newWork": {
     "title": "Make another soundscape?",
@@ -554,7 +555,13 @@
       "seek": "Jump to a point in your soundscape",
       "image": "Picture {{n}}"
     },
-    "assignmentChanged": "Your teacher has changed the assignment. Finish this soundscape, or choose \"New soundscape\" for the new assignment."
+    "assignmentChanged": "Your teacher has changed the assignment. Finish this soundscape, or choose \"New soundscape\" for the new assignment.",
+    "finish": {
+      "button": "I'm done",
+      "title": "Finished working?",
+      "text": "Your soundscape has been handed in. We'll remove your work from this computer, so the next student can't see it.",
+      "code": "Want to continue later? Your code:"
+    }
   },
   "editor": {
     "copyFailed": "Copy failed. Use the download button."
@@ -575,7 +582,8 @@
     "corruptLoadWarning_one": "{{count}} soundscape could not be loaded.",
     "corruptLoadWarning_other": "{{count}} soundscapes could not be loaded.",
     "code": "Code",
-    "noClass": "No class"
+    "noClass": "No class",
+    "showCode": "Show code"
   },
   "locations": {
     "boerderij": {

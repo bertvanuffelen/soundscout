@@ -11,7 +11,7 @@ import { useTranslation } from 'react-i18next';
 import {
   Check, ChevronDown, ChevronUp, Lock, Mail, MapPin, Maximize2, Dices, Send, CloudUpload,
   Headphones, Music, Film, QrCode, Link2, ArrowLeft, Map as MapIcon, Plus, Info, Award,
-  ZoomIn, ZoomOut, Pencil, Download, CheckCircle2,
+  ZoomIn, ZoomOut, Pencil, Download, CheckCircle2, LogOut,
 } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { FeedbackBanner } from '../common/FeedbackBanner';
@@ -71,6 +71,10 @@ export interface StageMissionProps {
   onBackToStudio: () => void;
   onMoreSounds: () => void;
   onNew: () => void;
+  /** Na inleveren: werk van dit apparaat halen (gedeelde computer, E1) */
+  onFinish: () => void;
+  /** Toon "Klaar, ik stop" in de voet (klas + ingeleverd) */
+  canFinish: boolean;
 }
 
 function formatClock(iso: string, locale: string): string {
@@ -234,6 +238,12 @@ export function StageMission(props: StageMissionProps) {
               {step.done ? t('podium.hand.done', { n: version, time: formatClock(props.versionInfo?.at ?? '', i18n.language) }) : label}
             </Button>
             <p className="text-xs text-text-muted">{t('podium.hand.sees')}</p>
+            {step.done && (
+              <Button variant="secondary" onClick={props.onFinish} className="w-full">
+                <LogOut className="w-4 h-4 mr-2" aria-hidden="true" />
+                {t('podium.finish.button')}
+              </Button>
+            )}
           </>
         );
       }
@@ -423,6 +433,12 @@ export function StageMission(props: StageMissionProps) {
             <MapIcon className="w-4 h-4" aria-hidden="true" />
             {t('podium.foot.moreSounds')}
           </button>
+          {props.canFinish && (
+            <button type="button" onClick={props.onFinish} disabled={props.isSubmitting} className="inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-text-muted hover:text-text-main disabled:opacity-40 disabled:cursor-not-allowed">
+              <LogOut className="w-4 h-4" aria-hidden="true" />
+              {t('podium.finish.button')}
+            </button>
+          )}
           <button type="button" onClick={props.onNew} disabled={props.isSubmitting} className="inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-text-muted hover:text-text-main disabled:opacity-40 disabled:cursor-not-allowed">
             <Plus className="w-4 h-4" aria-hidden="true" />
             {t('podium.foot.new')}

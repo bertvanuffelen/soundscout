@@ -191,7 +191,8 @@
     "feedbackHint": "Hulp nodig of bug melden?",
     "teacherLink": "Ben je docent?",
     "createdBy": "Gemaakt door Bert van Uffelen",
-    "aboutButton": "Over deze app"
+    "aboutButton": "Over deze app",
+    "continueToday": "vandaag {{time}}"
   },
   "newWork": {
     "title": "Nog een soundscape maken?",
@@ -554,7 +555,13 @@
       "seek": "Spring naar een plek in je soundscape",
       "image": "Afbeelding {{n}}"
     },
-    "assignmentChanged": "Je docent heeft de opdracht veranderd. Maak deze soundscape af, of kies \"Nieuwe soundscape\" voor de nieuwe opdracht."
+    "assignmentChanged": "Je docent heeft de opdracht veranderd. Maak deze soundscape af, of kies \"Nieuwe soundscape\" voor de nieuwe opdracht.",
+    "finish": {
+      "button": "Klaar, ik stop",
+      "title": "Klaar met werken?",
+      "text": "Je soundscape is ingeleverd. We halen je werk van deze computer, zodat de volgende leerling het niet ziet.",
+      "code": "Later verder? Je code:"
+    }
   },
   "editor": {
     "copyFailed": "Kopiëren mislukt. Gebruik de download knop."
@@ -575,7 +582,8 @@
     "corruptLoadWarning_one": "{{count}} soundscape kon niet worden geladen.",
     "corruptLoadWarning_other": "{{count}} soundscapes konden niet worden geladen.",
     "code": "Code",
-    "noClass": "Zonder klas"
+    "noClass": "Zonder klas",
+    "showCode": "Toon code"
   },
   "locations": {
     "boerderij": {

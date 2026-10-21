@@ -104,6 +104,7 @@ export function StageView() {
   const [showCard, setShowCard] = useState(false);
   const [showJoin, setShowJoin] = useState(false);
   const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [showFinish, setShowFinish] = useState(false);
   const [peerDone, setPeerDoneState] = useState(() => getPeerDone(submissionId));
   const [feedbackSeenAt, setFeedbackSeenAt] = useState(() => storageService.getClassFeedbackCode()?.lastSeenFeedbackAt ?? null);
   useEffect(() => { setPeerDoneState(getPeerDone(submissionId)); }, [submissionId]);
@@ -388,6 +389,8 @@ export function StageView() {
             onBackToStudio={handleBackToStudio}
             onMoreSounds={handleMoreSounds}
             onNew={() => { setNewWorkError(null); setShowNewModal(true); }}
+            onFinish={() => setShowFinish(true)}
+            canFinish={!!classSession && submissionSynced}
           />
         </aside>
       </main>
@@ -406,6 +409,32 @@ export function StageView() {
           error={newWorkError}
         />
       )}
+
+      {/* Klaar, ik stop (E1): werk van deze gedeelde computer halen */}
+      <Modal isOpen={showFinish} onClose={() => setShowFinish(false)} title={t('podium.finish.title')} size="sm">
+        <p className="text-text-muted text-sm mb-3 leading-relaxed text-center">{t('podium.finish.text')}</p>
+        {classSaveCode && (
+          <p className="text-center mb-5 text-sm text-text-main">
+            {t('podium.finish.code')}{' '}
+            <span className="font-mono text-lg font-extrabold tracking-widest">{classSaveCode}</span>
+          </p>
+        )}
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => setShowFinish(false)} className="flex-1">{t('common.cancel')}</Button>
+          <Button
+            variant="primary"
+            className="flex-1"
+            onClick={() => {
+              stopAll();
+              stopTimeline();
+              setShowFinish(false);
+              void import('../../utils/finishSession').then(({ finishSession }) => finishSession());
+            }}
+          >
+            {t('podium.finish.button')}
+          </Button>
+        </div>
+      </Modal>
 
       {/* Zonder klas: bevestiging opnieuw beginnen */}
       <Modal isOpen={showNewModal && !classSession} onClose={() => setShowNewModal(false)} title={t('stage.newComposition')} size="sm">

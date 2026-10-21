@@ -9,6 +9,7 @@ import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
 import { useLibraryStore } from '../stores/libraryStore';
+import { readWorkInProgress } from '../services/workInProgress';
 import {
   initializeNewComposition,
   initializeCompositionFromStoryboard,
@@ -35,7 +36,7 @@ import { NewWorkChoiceModal } from './common/NewWorkChoiceModal';
 import type { Storyboard } from '../types';
 
 export function StartScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const goToCompositions = useAppStore((s) => s.goToCompositions);
   const goToStudio = useAppStore((s) => s.goToStudio);
   const goToStage = useAppStore((s) => s.goToStage);
@@ -52,8 +53,19 @@ export function StartScreen() {
     if (!hasClipsInProgress) return '';
     const name = compositionTitle.trim()
       || (currentCompositionId ? storageService.getCompositionById(currentCompositionId)?.name : undefined);
-    return [name, classSession?.className].filter(Boolean).join(' · ');
-  }, [hasClipsInProgress, compositionTitle, currentCompositionId, classSession]);
+    // Tijd van het laatst onthouden werk (E1): zo ziet een kind op een
+    // gedeelde computer dat dit misschien niet zijn werk is
+    const savedAt = readWorkInProgress()?.savedAt;
+    let when: string | undefined;
+    if (savedAt) {
+      const d = new Date(savedAt);
+      const time = d.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+      when = d.toDateString() === new Date().toDateString()
+        ? t('start.continueToday', { time })
+        : d.toLocaleDateString(i18n.language, { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+    return [name, classSession?.className, when].filter(Boolean).join(' · ');
+  }, [hasClipsInProgress, compositionTitle, currentCompositionId, classSession, t, i18n.language]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);

@@ -24,6 +24,8 @@ import type { AppStore } from '../stores/appStore';
 const KEY = 'soundscout:wip';
 const VERSION = 1;
 const DEBOUNCE_MS = 600;
+/** Gedeelde schoolcomputers (E1): na een schooldag is het niet meer "jouw" werk */
+export const WIP_MAX_AGE_MS = 12 * 60 * 60 * 1000;
 
 /** De compositie-context uit appStore die bij het werk hoort */
 const CONTEXT_FIELDS = [
@@ -75,7 +77,13 @@ export function readWorkInProgress(): WorkInProgress | null {
       logger.warn('[workInProgress] ongeldige snapshot genegeerd');
       return null;
     }
-    return data as WorkInProgress;
+    const wip = data as WorkInProgress;
+    const age = Date.now() - new Date(wip.savedAt).getTime();
+    if (!(age >= 0 && age <= WIP_MAX_AGE_MS)) {
+      clearWorkInProgress();
+      return null;
+    }
+    return wip;
   } catch {
     return null;
   }

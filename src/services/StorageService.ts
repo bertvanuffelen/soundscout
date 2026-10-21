@@ -413,7 +413,7 @@ class StorageServiceImpl {
    * Bewaar het geheim waarmee dit apparaat een klas-inzending mag bijwerken.
    * Per inzending-id, zodat elk pad dat een bestaande inzending hergebruikt
    * (podium, bewaarcode openen, "Mijn composities") het terugvindt. Alleen
-   * de laatste 20 blijven bewaard.
+   * de laatste 200 blijven bewaard.
    */
   setSubmissionSecret(submissionId: string, secret: string): void {
     const map = this.getSubmissionSecrets();
@@ -421,6 +421,14 @@ class StorageServiceImpl {
     map[submissionId] = secret;
     const entries = Object.entries(map).slice(-MAX_SUBMISSION_SECRETS);
     this.set('soundscout:submission-secrets', Object.fromEntries(entries));
+  }
+
+  /** Geheim van één inzending vergeten ("Klaar, ik stop" op een gedeeld apparaat) */
+  removeSubmissionSecret(submissionId: string): void {
+    const map = this.getSubmissionSecrets();
+    if (!(submissionId in map)) return;
+    delete map[submissionId];
+    this.set('soundscout:submission-secrets', map);
   }
 
   getSubmissionSecret(submissionId: string): string | null {

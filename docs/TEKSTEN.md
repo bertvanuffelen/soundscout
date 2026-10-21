@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1892 teksten in 51 secties._
+_Stand: 1898 teksten in 51 secties._
 
 ## app
 
@@ -224,6 +224,7 @@ _Stand: 1892 teksten in 51 secties._
 | `start.teacherLink` | Ben je docent? | Are you a teacher? |
 | `start.createdBy` | Gemaakt door Bert van Uffelen | Created by Bert van Uffelen |
 | `start.aboutButton` | Over deze app | About this app |
+| `start.continueToday` | vandaag {{time}} | today {{time}} |
 
 ## newWork
 
@@ -571,6 +572,10 @@ _Stand: 1892 teksten in 51 secties._
 | `podium.controls.seek` | Spring naar een plek in je soundscape | Jump to a point in your soundscape |
 | `podium.controls.image` | Afbeelding {{n}} | Picture {{n}} |
 | `podium.assignmentChanged` | Je docent heeft de opdracht veranderd. Maak deze soundscape af, of kies "Nieuwe soundscape" voor de nieuwe opdracht. | Your teacher has changed the assignment. Finish this soundscape, or choose "New soundscape" for the new assignment. |
+| `podium.finish.button` | Klaar, ik stop | I'm done |
+| `podium.finish.title` | Klaar met werken? | Finished working? |
+| `podium.finish.text` | Je soundscape is ingeleverd. We halen je werk van deze computer, zodat de volgende leerling het niet ziet. | Your soundscape has been handed in. We'll remove your work from this computer, so the next student can't see it. |
+| `podium.finish.code` | Later verder? Je code: | Want to continue later? Your code: |
 
 ## editor
 
@@ -598,6 +603,7 @@ _Stand: 1892 teksten in 51 secties._
 | `compositions.corruptLoadWarning_other` | {{count}} soundscapes konden niet worden geladen. | {{count}} soundscapes could not be loaded. |
 | `compositions.code` | Code | Code |
 | `compositions.noClass` | Zonder klas | No class |
+| `compositions.showCode` | Toon code | Show code |
 
 ## locations
 
