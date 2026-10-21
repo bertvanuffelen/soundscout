@@ -43,7 +43,7 @@
     "loadingTheme": "Thema laden...",
     "studioShort": "Studio",
     "cityMapAlt": "Plattegrond van het thema",
-    "firstVisitHint": "Klik op een locatie om geluiden te verzamelen. Daarna maak je er muziek van in de studio."
+    "firstVisitHint": "Klik op een locatie om geluiden te verzamelen. Daarna maak je er in de studio een soundscape van."
   },
   "themeSelection": {
     "title": "Kies je wereld",
@@ -362,7 +362,7 @@
     "share": "Delen",
     "nameComposition": "Geef je soundscape een naam",
     "namePlaceholder": "Mijn soundscape",
-    "nameHint": "Tip: zet je achternaam niet in de naam van je muziek.",
+    "nameHint": "Tip: geen achternaam in je titel.",
     "newComposition": "Nieuwe soundscape",
     "newCompositionConfirm": "Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt.",
     "nowPlaying": "Nu speelt...",
@@ -822,7 +822,7 @@
       "template": {
         "title": "Opdracht",
         "bullets": [
-          "Je docent heeft alvast muziek klaargezet.",
+          "Je docent heeft alvast een begin klaargezet.",
           "Luister goed en maak het af.",
           "Sleep geluiden op de tijdlijn.",
           "Klaar? Sla je soundscape op."
@@ -833,7 +833,7 @@
         "bullets": [
           "Je kiest straks een plek op de afbeelding.",
           "Verzamel geluiden op de kaart.",
-          "Maak muziek die bij jouw plek past.",
+          "Maak een soundscape die bij jouw plek past.",
           "Klaar? Sla je soundscape op."
         ]
       },
@@ -842,7 +842,7 @@
         "bullets": [
           "Bekijk de scènes van het verhaal.",
           "Verzamel geluiden op de kaart.",
-          "Maak muziek die bij elke scène past.",
+          "Maak een soundscape die bij elke scène past.",
           "Klaar? Sla je soundscape op."
         ]
       },
@@ -1137,7 +1137,7 @@
     "sendAndNext": "Versturen en volgende",
     "sendAndFinish": "Versturen en afronden",
     "doneTitle": "Je hebt alle soundscapes beluisterd!",
-    "doneHint": "Je beoordelingen zijn anoniem verstuurd. Zo help je klasgenoten met hun muziek."
+    "doneHint": "Je beoordelingen zijn anoniem verstuurd. Zo help je je klasgenoten met hun soundscape."
   },
   "studentFeedback": {
     "bannerTitle": "Feedback van je docent:",
@@ -2052,11 +2052,11 @@
     "copyLink": "Kopieer link",
     "mail": "Mail",
     "qr": "QR-code",
-    "qrAlt": "QR-code met de link naar je muziek",
-    "qrHint": "Scan met een telefoon om je muziek thuis te openen.",
-    "privacyHint": "Deel de link of code alleen thuis, niet in de klas. Wie hem heeft, kan je muziek veranderen.",
-    "mailSubject": "Mijn muziek in SoundScout",
-    "mailBody": "Mijn muziek \"{{name}}\" staat in SoundScout.\n\nOpen deze link om te luisteren of verder te werken:\n{{link}}\n\nOf ga naar soundscout.nl, kies \"Ik heb een code\" en typ: {{code}}"
+    "qrAlt": "QR-code met de link naar je soundscape",
+    "qrHint": "Scan met een telefoon om je soundscape thuis te openen.",
+    "privacyHint": "Deel de link of code alleen thuis, niet in de klas. Wie hem heeft, kan je soundscape veranderen.",
+    "mailSubject": "Mijn soundscape in SoundScout",
+    "mailBody": "Mijn soundscape \"{{name}}\" staat in SoundScout.\n\nOpen deze link om te luisteren of verder te werken:\n{{link}}\n\nOf ga naar soundscout.nl, kies \"Ik heb een code\" en typ: {{code}}"
   },
   "storyboards": {
     "verspringen": {
@@ -2120,7 +2120,7 @@
     },
     "storyboard": {
       "kind": "Verhaal in beeld",
-      "description": "Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart."
+      "description": "Maak een soundscape die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart."
     },
     "free": {
       "kind": "Vrije soundscape",

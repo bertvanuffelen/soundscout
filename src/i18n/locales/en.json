@@ -43,7 +43,7 @@
     "loadingTheme": "Loading theme...",
     "studioShort": "Studio",
     "cityMapAlt": "Theme map",
-    "firstVisitHint": "Click a location to collect sounds. Then turn them into music in the studio."
+    "firstVisitHint": "Click a location to collect sounds. Then turn them into a soundscape in the studio."
   },
   "themeSelection": {
     "title": "Choose your world",
@@ -823,7 +823,7 @@
       "template": {
         "title": "Assignment",
         "bullets": [
-          "Your teacher has set up some music already.",
+          "Your teacher has already set up a start for you.",
           "Listen carefully and finish it.",
           "Drag sounds onto the timeline.",
           "Done? Save your soundscape."
@@ -834,7 +834,7 @@
         "bullets": [
           "You'll pick a spot on the image next.",
           "Collect sounds on the map.",
-          "Make music that fits your spot.",
+          "Make a soundscape that fits your spot.",
           "Done? Save your soundscape."
         ]
       },
@@ -843,7 +843,7 @@
         "bullets": [
           "Look at the scenes of the story.",
           "Collect sounds on the map.",
-          "Make music that fits each scene.",
+          "Make a soundscape that fits each scene.",
           "Done? Save your soundscape."
         ]
       },
@@ -1138,7 +1138,7 @@
     "sendAndNext": "Send & next",
     "sendAndFinish": "Send and finish",
     "doneTitle": "You've listened to all the soundscapes!",
-    "doneHint": "Your reviews were sent anonymously. This helps your classmates with their music."
+    "doneHint": "Your reviews were sent anonymously. This helps your classmates with their soundscapes."
   },
   "studentFeedback": {
     "bannerTitle": "Feedback from your teacher:",
@@ -2053,11 +2053,11 @@
     "copyLink": "Copy link",
     "mail": "Email",
     "qr": "QR code",
-    "qrAlt": "QR code with the link to your music",
-    "qrHint": "Scan with a phone to open your music at home.",
-    "privacyHint": "Only share the link or code at home, not in class. Anyone who has it can change your music.",
-    "mailSubject": "My music in SoundScout",
-    "mailBody": "My music \"{{name}}\" is in SoundScout.\n\nOpen this link to listen or keep working:\n{{link}}\n\nOr go to soundscout.nl, choose \"I have a code\" and type: {{code}}"
+    "qrAlt": "QR code with the link to your soundscape",
+    "qrHint": "Scan with a phone to open your soundscape at home.",
+    "privacyHint": "Only share the link or code at home, not in class. Anyone who has it can change your soundscape.",
+    "mailSubject": "My soundscape in SoundScout",
+    "mailBody": "My soundscape \"{{name}}\" is in SoundScout.\n\nOpen this link to listen or keep working:\n{{link}}\n\nOr go to soundscout.nl, choose \"I have a code\" and type: {{code}}"
   },
   "storyboards": {
     "verspringen": {
@@ -2121,7 +2121,7 @@
     },
     "storyboard": {
       "kind": "Story in pictures",
-      "description": "Make music that fits each scene of this story. First collect sounds on the map."
+      "description": "Make a soundscape that fits each scene of this story. First collect sounds on the map."
     },
     "free": {
       "kind": "Free soundscape",

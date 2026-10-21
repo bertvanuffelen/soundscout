@@ -82,7 +82,7 @@ _Stand: 1853 teksten in 49 secties._
 | `map.loadingTheme` | Thema laden... | Loading theme... |
 | `map.studioShort` | Studio | Studio |
 | `map.cityMapAlt` | Plattegrond van het thema | Theme map |
-| `map.firstVisitHint` | Klik op een locatie om geluiden te verzamelen. Daarna maak je er muziek van in de studio. | Click a location to collect sounds. Then turn them into music in the studio. |
+| `map.firstVisitHint` | Klik op een locatie om geluiden te verzamelen. Daarna maak je er in de studio een soundscape van. | Click a location to collect sounds. Then turn them into a soundscape in the studio. |
 
 ## themeSelection
 
@@ -405,7 +405,7 @@ _Stand: 1853 teksten in 49 secties._
 | `stage.share` | Delen | Share |
 | `stage.nameComposition` | Geef je soundscape een naam | Name your soundscape |
 | `stage.namePlaceholder` | Mijn soundscape | My soundscape |
-| `stage.nameHint` | Tip: zet je achternaam niet in de naam van je muziek. | Tip: don't include your last name in the title. |
+| `stage.nameHint` | Tip: geen achternaam in je titel. | Tip: don't include your last name in the title. |
 | `stage.newComposition` | Nieuwe soundscape | New soundscape |
 | `stage.newCompositionConfirm` | Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt. | Are you sure you want to start over? You will lose your collected sounds and your soundscape. |
 | `stage.nowPlaying` | Nu speelt... | Now playing... |
@@ -823,19 +823,19 @@ _Stand: 1853 teksten in 49 secties._
 | `assignmentCards.deleteConfirm` | Weet je zeker dat je deze opdrachtkaart wilt verwijderen? Opdrachten die deze kaart gebruiken vallen terug op de standaarduitleg. | Are you sure you want to delete this assignment card? Assignments using this card will fall back to the default explanation. |
 | `assignmentCards.deleteError` | Kon opdrachtkaart niet verwijderen | Could not delete assignment card |
 | `assignmentCards.defaults.template.title` | Opdracht | Assignment |
-| `assignmentCards.defaults.template.bullets.0` | Je docent heeft alvast muziek klaargezet. | Your teacher has set up some music already. |
+| `assignmentCards.defaults.template.bullets.0` | Je docent heeft alvast een begin klaargezet. | Your teacher has already set up a start for you. |
 | `assignmentCards.defaults.template.bullets.1` | Luister goed en maak het af. | Listen carefully and finish it. |
 | `assignmentCards.defaults.template.bullets.2` | Sleep geluiden op de tijdlijn. | Drag sounds onto the timeline. |
 | `assignmentCards.defaults.template.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
 | `assignmentCards.defaults.praatplaat.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.praatplaat.bullets.0` | Je kiest straks een plek op de afbeelding. | You'll pick a spot on the image next. |
 | `assignmentCards.defaults.praatplaat.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
-| `assignmentCards.defaults.praatplaat.bullets.2` | Maak muziek die bij jouw plek past. | Make music that fits your spot. |
+| `assignmentCards.defaults.praatplaat.bullets.2` | Maak een soundscape die bij jouw plek past. | Make a soundscape that fits your spot. |
 | `assignmentCards.defaults.praatplaat.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
 | `assignmentCards.defaults.storyboard.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.storyboard.bullets.0` | Bekijk de scènes van het verhaal. | Look at the scenes of the story. |
 | `assignmentCards.defaults.storyboard.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
-| `assignmentCards.defaults.storyboard.bullets.2` | Maak muziek die bij elke scène past. | Make music that fits each scene. |
+| `assignmentCards.defaults.storyboard.bullets.2` | Maak een soundscape die bij elke scène past. | Make a soundscape that fits each scene. |
 | `assignmentCards.defaults.storyboard.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
 | `assignmentCards.defaults.free.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.free.bullets.0` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
@@ -1080,7 +1080,7 @@ _Stand: 1853 teksten in 49 secties._
 | `peerReview.sendAndNext` | Versturen en volgende | Send & next |
 | `peerReview.sendAndFinish` | Versturen en afronden | Send and finish |
 | `peerReview.doneTitle` | Je hebt alle soundscapes beluisterd! | You've listened to all the soundscapes! |
-| `peerReview.doneHint` | Je beoordelingen zijn anoniem verstuurd. Zo help je klasgenoten met hun muziek. | Your reviews were sent anonymously. This helps your classmates with their music. |
+| `peerReview.doneHint` | Je beoordelingen zijn anoniem verstuurd. Zo help je je klasgenoten met hun soundscape. | Your reviews were sent anonymously. This helps your classmates with their soundscapes. |
 
 ## studentFeedback
 
@@ -1773,11 +1773,11 @@ _Stand: 1853 teksten in 49 secties._
 | `takeHome.copyLink` | Kopieer link | Copy link |
 | `takeHome.mail` | Mail | Email |
 | `takeHome.qr` | QR-code | QR code |
-| `takeHome.qrAlt` | QR-code met de link naar je muziek | QR code with the link to your music |
-| `takeHome.qrHint` | Scan met een telefoon om je muziek thuis te openen. | Scan with a phone to open your music at home. |
-| `takeHome.privacyHint` | Deel de link of code alleen thuis, niet in de klas. Wie hem heeft, kan je muziek veranderen. | Only share the link or code at home, not in class. Anyone who has it can change your music. |
-| `takeHome.mailSubject` | Mijn muziek in SoundScout | My music in SoundScout |
-| `takeHome.mailBody` | Mijn muziek "{{name}}" staat in SoundScout.<br><br>Open deze link om te luisteren of verder te werken:<br>{{link}}<br><br>Of ga naar soundscout.nl, kies "Ik heb een code" en typ: {{code}} | My music "{{name}}" is in SoundScout.<br><br>Open this link to listen or keep working:<br>{{link}}<br><br>Or go to soundscout.nl, choose "I have a code" and type: {{code}} |
+| `takeHome.qrAlt` | QR-code met de link naar je soundscape | QR code with the link to your soundscape |
+| `takeHome.qrHint` | Scan met een telefoon om je soundscape thuis te openen. | Scan with a phone to open your soundscape at home. |
+| `takeHome.privacyHint` | Deel de link of code alleen thuis, niet in de klas. Wie hem heeft, kan je soundscape veranderen. | Only share the link or code at home, not in class. Anyone who has it can change your soundscape. |
+| `takeHome.mailSubject` | Mijn soundscape in SoundScout | My soundscape in SoundScout |
+| `takeHome.mailBody` | Mijn soundscape "{{name}}" staat in SoundScout.<br><br>Open deze link om te luisteren of verder te werken:<br>{{link}}<br><br>Of ga naar soundscout.nl, kies "Ik heb een code" en typ: {{code}} | My soundscape "{{name}}" is in SoundScout.<br><br>Open this link to listen or keep working:<br>{{link}}<br><br>Or go to soundscout.nl, choose "I have a code" and type: {{code}} |
 
 ## storyboards
 
@@ -1842,7 +1842,7 @@ _Stand: 1853 teksten in 49 secties._
 | `assignmentLanding.praatplaat.kind` | Praatplaat | Sound map |
 | `assignmentLanding.praatplaat.description` | Je kiest straks een plek op deze afbeelding. Daar hoort jouw soundscape bij. | Next, you'll pick a spot on this picture. Your soundscape goes there. |
 | `assignmentLanding.storyboard.kind` | Verhaal in beeld | Story in pictures |
-| `assignmentLanding.storyboard.description` | Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart. | Make music that fits each scene of this story. First collect sounds on the map. |
+| `assignmentLanding.storyboard.description` | Maak een soundscape die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart. | Make a soundscape that fits each scene of this story. First collect sounds on the map. |
 | `assignmentLanding.free.kind` | Vrije soundscape | Free soundscape |
 | `assignmentLanding.free.description` | Verzamel geluiden op de kaart en maak je eigen soundscape. Laat je fantasie de vrije loop. | Collect sounds on the map and make your own soundscape. Let your imagination run wild. |
 | `assignmentLanding.none.heading` | Nog geen opdracht klaar | No assignment ready yet |
