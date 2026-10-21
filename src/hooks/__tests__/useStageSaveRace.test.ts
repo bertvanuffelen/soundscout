@@ -68,3 +68,29 @@ describe('inleveren tijdens wisselen van soundscape (E2)', () => {
     expect(useAppStore.getState().submissionSynced).toBe(true);
   });
 });
+
+describe('voorgesteld geheim (H2, migratie 041)', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    useAppStore.getState().resetCompositionContext();
+    useAppStore.getState().setClassSession(SESSION);
+    useAppStore.setState({ isSubmitting: false });
+  });
+
+  it('bewaart vóór het versturen een geheim van 32 tekens en stuurt het mee', async () => {
+    const { submitOrUpdateComposition } = await import('../../lib/submissions');
+    const mock = vi.mocked(submitOrUpdateComposition);
+    mock.mockClear();
+    const { result } = renderHook(() => useStageSave());
+    act(() => result.current.setCompositionName('Golf'));
+    act(() => result.current.handIn());
+    const params = mock.mock.calls[0][0];
+    expect(params.saveSecret).toMatch(/^[A-Za-z0-9]{32}$/);
+    // Al bewaard terwijl het antwoord nog onderweg is
+    expect(storageService.getSubmissionSecret(params.clientId!)).toBe(params.saveSecret);
+    await act(async () => {
+      resolveSubmit({ id: params.clientId!, saveCode: 'GOLF12', saveSecret: params.saveSecret ?? null });
+      await new Promise((r) => setTimeout(r, 0));
+    });
+  });
+});

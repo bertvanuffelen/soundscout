@@ -30,7 +30,9 @@ import {
 // Current storage version for migrations (reserved for future use)
 // const STORAGE_VERSION = 1;
 const MAX_COMPOSITIONS = 10;
-const MAX_SUBMISSION_SECRETS = 20;
+// H3 (eindtest): een computerlokaal levert op één apparaat veel meer dan 20
+// keer per week in; te weinig ruimte maakte van versie 2 een nieuwe inzending
+const MAX_SUBMISSION_SECRETS = 200;
 
 /** Error types returned by save operations (TP5-11) */
 export type StorageSaveError = 'quota_exceeded' | 'serialization' | 'unknown';

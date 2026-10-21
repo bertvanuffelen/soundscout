@@ -29,6 +29,15 @@ import type { CompositionData } from '../types';
 
 type Feedback = { type: 'success' | 'error'; message: string } | null;
 
+/** Nieuw geheim (32 tekens) voorstellen en meteen bewaren (migratie 041) */
+function proposeSubmissionSecret(clientId: string): string {
+  const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+  const bytes = crypto.getRandomValues(new Uint8Array(32));
+  const secret = Array.from(bytes, (b) => chars[b % chars.length]).join('');
+  storageService.setSubmissionSecret(clientId, secret);
+  return secret;
+}
+
 export function useStageSave() {
   const currentCompositionId = useAppStore((s) => s.currentCompositionId);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
@@ -179,7 +188,10 @@ export function useStageSave() {
       compositionName: name,
       compositionData,
       clientId,
-      saveSecret: storageService.getSubmissionSecret(clientId),
+      // H2 (eindtest): bij een nieuwe inzending stellen we zelf het geheim
+      // voor en bewaren het vóór het versturen (migratie 041). Valt het
+      // antwoord weg, dan wordt de volgende poging een update.
+      saveSecret: storageService.getSubmissionSecret(clientId) ?? proposeSubmissionSecret(clientId),
       assignmentId: session.assignmentId,
       assignmentType: session.assignmentType,
       praatplaatPositionX: session.assignmentType === 'praatplaat' ? position?.x : undefined,

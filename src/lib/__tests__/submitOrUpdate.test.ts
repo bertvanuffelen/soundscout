@@ -64,11 +64,11 @@ describe('storageService: geheim per inzending', () => {
     expect(storageService.getSubmissionSecret('c')).toBeNull();
   });
 
-  it('houdt alleen de laatste 20 bij', () => {
-    for (let i = 0; i < 25; i++) storageService.setSubmissionSecret(`id-${i}`, `s-${i}`);
+  it('houdt alleen de laatste 200 bij (H3: computerlokaal)', () => {
+    for (let i = 0; i < 205; i++) storageService.setSubmissionSecret(`id-${i}`, `s-${i}`);
     expect(storageService.getSubmissionSecret('id-4')).toBeNull();
     expect(storageService.getSubmissionSecret('id-5')).toBe('s-5');
-    expect(storageService.getSubmissionSecret('id-24')).toBe('s-24');
+    expect(storageService.getSubmissionSecret('id-204')).toBe('s-204');
   });
 
   it('negeert kapotte opslag', () => {
