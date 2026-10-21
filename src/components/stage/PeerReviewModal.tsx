@@ -27,11 +27,15 @@ interface PeerReviewModalProps {
   classCode: string;
   ownSubmissionId: string;
   chips: string[];
+  /** Na elke verstuurde beoordeling (podium-stap "Feedback klasgenoten") */
+  onReviewed?: () => void;
+  /** Server meldt: maximum bereikt — telt als klaar */
+  onCapReached?: () => void;
 }
 
 type Phase = 'loading' | 'empty' | 'reviewing' | 'done' | 'error' | 'blocked';
 
-export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, chips }: PeerReviewModalProps) {
+export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, chips, onReviewed, onCapReached }: PeerReviewModalProps) {
   const { t } = useTranslation();
   const [phase, setPhase] = useState<Phase>('loading');
   const [items, setItems] = useState<PeerReviewItem[]>([]);
@@ -98,6 +102,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
       if (err instanceof PeerFeedbackError && (err.reason === 'windowClosed' || err.reason === 'capReached')) {
         setBlockedMessage(err.message);
         setPhase('blocked');
+        if (err.reason === 'capReached') onCapReached?.();
         return;
       }
       // Tijdelijke fout: sterren blijven staan, leerling kan het opnieuw proberen
@@ -106,12 +111,13 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
     }
     setIsSending(false);
     setRatings({});
+    onReviewed?.();
     if (index + 1 < items.length) {
       setIndex(index + 1);
     } else {
       setPhase('done');
     }
-  }, [current, ratings, ratedCount, ownSubmissionId, index, items.length, t]);
+  }, [current, ratings, ratedCount, ownSubmissionId, index, items.length, t, onReviewed, onCapReached]);
 
   const handleClose = useCallback(() => {
     onClose();

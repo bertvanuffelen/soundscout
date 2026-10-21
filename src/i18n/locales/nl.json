@@ -427,6 +427,133 @@
     "videoNoContent": "Geen clips op de tijdlijn en geen afbeeldingen",
     "videoNoImages": "Geen afbeeldingen konden worden geladen"
   },
+  "podium": {
+    "yourSoundscape": "Jouw soundscape",
+    "studio": "Studio",
+    "noClass": "Zonder klas",
+    "saved": "Bewaard",
+    "titlePlaceholder": "Nog geen titel",
+    "titleLabel": "Titel van je soundscape",
+    "assignment": {
+      "title": "Opdracht",
+      "time": "Tijd: {{label}}",
+      "defaultNote": "Dit is de standaarduitleg. Je docent heeft geen eigen kaart gemaakt.",
+      "instructions": "Uitleg bij de opdracht:"
+    },
+    "state": {
+      "busy": "Nu bezig",
+      "todo": "Nog te doen",
+      "locked": "Nog niet"
+    },
+    "listen": {
+      "title": "Luister naar je soundscape",
+      "text": "Luister en kijk naar jouw soundscape op volledig scherm.",
+      "button": "Luister",
+      "again": "Nog een keer",
+      "done": "Geluisterd"
+    },
+    "titleStep": {
+      "title": "Geef je soundscape een titel",
+      "placeholder": "Typ een titel…",
+      "dice": "Kies een willekeurige titel",
+      "confirm": "Dit is mijn titel",
+      "tip": "Tip: geen achternaam in je titel."
+    },
+    "spot": {
+      "title": "Je plek op de praatplaat",
+      "text": "Je plek staat als pin op de plaat.",
+      "move": "Kies een andere plek",
+      "zoomIn": "Zoom in op mijn plek",
+      "zoomOut": "Hele plaat",
+      "done": "Gekozen"
+    },
+    "hand": {
+      "title": "Lever in bij {{className}}",
+      "titlePraatplaat": "Zet je soundscape op de praatplaat",
+      "button": "Lever in",
+      "buttonPraatplaat": "Zet op de praatplaat",
+      "version": "Lever versie {{n}} in",
+      "done": "Versie {{n}} · {{time}}",
+      "changed": "Iets veranderd: lever versie {{n}} in",
+      "changedSince": "Je hebt iets veranderd sinds versie {{n}}.",
+      "sending": "Versturen…",
+      "sees": "Je docent ziet je titel en je schuilnaam, niet je echte naam."
+    },
+    "save": {
+      "title": "Bewaar je soundscape",
+      "text": "Je krijgt een code. Daarmee kan je overal verder met jouw soundscape.",
+      "button": "Bewaar",
+      "update": "Bewaar je wijzigingen",
+      "changed": "Iets veranderd: bewaar opnieuw",
+      "updateText": "Je wijzigingen gaan naar dezelfde code.",
+      "saving": "Bewaren…",
+      "haveClass": "Heb je een klascode? Lever in bij je docent"
+    },
+    "post": {
+      "title": "Feedback van je docent",
+      "read": "Gelezen",
+      "improve": "Ga verbeteren",
+      "done": "Gelezen"
+    },
+    "peer": {
+      "title": "Feedback klasgenoten",
+      "text": "Luister naar 3 klasgenoten en geef sterren. Niemand weet dat jij het bent.",
+      "start": "Start feedback",
+      "more": "Verder met feedback",
+      "progress": "{{n}} van 3",
+      "locked": "Kan na het inleveren"
+    },
+    "export": {
+      "title": "Exporteer jouw soundscape",
+      "music": "Muziek",
+      "musicSub": "MP3",
+      "video": "Video",
+      "videoSub": "met beelden",
+      "videoNone": "geen beeld",
+      "card": "Muziekkaart",
+      "cardSub": "thuis verder",
+      "cardLockedClass": "na inleveren",
+      "cardLockedSave": "na bewaren",
+      "share": "Delen",
+      "shareSub": "luisterlink",
+      "done": "Geëxporteerd",
+      "makingMusic": "Muziek maken… {{pct}}%",
+      "makingVideo": "Video maken… {{pct}}%"
+    },
+    "doneAll": "Klaar! Je soundscape is ingeleverd.",
+    "doneAllSaved": "Klaar! Je soundscape is bewaard.",
+    "foot": {
+      "back": "Nog iets veranderen? Ga terug naar de Studio",
+      "moreSounds": "Meer geluiden zoeken",
+      "new": "Nieuwe soundscape"
+    },
+    "card": {
+      "title": "Je muziekkaart",
+      "label": "Mijn muziekkaart",
+      "hint": "Thuis verder? Scan of typ de code op soundscout.nl",
+      "text": "Maak er een foto van of schrijf de code op. Wie de code heeft, kan je soundscape veranderen."
+    },
+    "join": {
+      "title": "Lever in bij je docent",
+      "text": "Typ de klascode die op het bord staat.",
+      "checking": "Zoeken…",
+      "found": "{{className}} gevonden",
+      "notFound": "Deze klascode bestaat niet, of de klas heeft nu geen opdracht. Kijk de cijfers na of vraag het je docent.",
+      "praatplaat": "Deze klas werkt met een praatplaat. Ga naar het begin, kies 'Ik heb een code' en typ daar de klascode.",
+      "error": "Dat lukte niet. Controleer je internet en probeer het opnieuw.",
+      "button": "Lever in"
+    },
+    "teacher": {
+      "label": "Docent",
+      "present": "Presenteren op het digibord",
+      "template": "Opslaan als opdracht"
+    },
+    "controls": {
+      "restart": "Opnieuw vanaf het begin",
+      "seek": "Spring naar een plek in je soundscape",
+      "image": "Afbeelding {{n}}"
+    }
+  },
   "editor": {
     "copyFailed": "Kopiëren mislukt. Gebruik de download knop."
   },

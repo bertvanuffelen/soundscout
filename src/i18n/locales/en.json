@@ -427,6 +427,133 @@
     "videoNoContent": "No clips on the timeline and no images",
     "videoNoImages": "No images could be loaded"
   },
+  "podium": {
+    "yourSoundscape": "Your soundscape",
+    "studio": "Studio",
+    "noClass": "No class",
+    "saved": "Saved",
+    "titlePlaceholder": "No title yet",
+    "titleLabel": "Title of your soundscape",
+    "assignment": {
+      "title": "Assignment",
+      "time": "Time: {{label}}",
+      "defaultNote": "This is the standard explanation. Your teacher didn't make their own card.",
+      "instructions": "About this assignment:"
+    },
+    "state": {
+      "busy": "In progress",
+      "todo": "To do",
+      "locked": "Not yet"
+    },
+    "listen": {
+      "title": "Listen to your soundscape",
+      "text": "Listen to and watch your soundscape full screen.",
+      "button": "Listen",
+      "again": "Listen again",
+      "done": "Listened"
+    },
+    "titleStep": {
+      "title": "Give your soundscape a title",
+      "placeholder": "Type a title…",
+      "dice": "Pick a random title",
+      "confirm": "This is my title",
+      "tip": "Tip: don't include your last name in the title."
+    },
+    "spot": {
+      "title": "Your spot on the sound map",
+      "text": "Your spot is marked with a pin.",
+      "move": "Choose another spot",
+      "zoomIn": "Zoom in on my spot",
+      "zoomOut": "Whole picture",
+      "done": "Chosen"
+    },
+    "hand": {
+      "title": "Hand in to {{className}}",
+      "titlePraatplaat": "Put your soundscape on the sound map",
+      "button": "Hand in",
+      "buttonPraatplaat": "Put it on the sound map",
+      "version": "Hand in version {{n}}",
+      "done": "Version {{n}} · {{time}}",
+      "changed": "Changed: hand in version {{n}}",
+      "changedSince": "You've changed something since version {{n}}.",
+      "sending": "Sending…",
+      "sees": "Your teacher sees your title and your nickname, not your real name."
+    },
+    "save": {
+      "title": "Save your soundscape",
+      "text": "You get a code. Use it to keep working on your soundscape anywhere.",
+      "button": "Save",
+      "update": "Save your changes",
+      "changed": "Changed: save again",
+      "updateText": "Your changes go to the same code.",
+      "saving": "Saving…",
+      "haveClass": "Got a class code? Hand it in to your teacher"
+    },
+    "post": {
+      "title": "Feedback from your teacher",
+      "read": "Read",
+      "improve": "Improve it",
+      "done": "Read"
+    },
+    "peer": {
+      "title": "Feedback for classmates",
+      "text": "Listen to 3 classmates and give stars. Nobody knows it's you.",
+      "start": "Start feedback",
+      "more": "Continue feedback",
+      "progress": "{{n}} of 3",
+      "locked": "Available after handing in"
+    },
+    "export": {
+      "title": "Export your soundscape",
+      "music": "Music",
+      "musicSub": "MP3",
+      "video": "Video",
+      "videoSub": "with pictures",
+      "videoNone": "no picture",
+      "card": "Music card",
+      "cardSub": "continue at home",
+      "cardLockedClass": "after handing in",
+      "cardLockedSave": "after saving",
+      "share": "Share",
+      "shareSub": "listening link",
+      "done": "Exported",
+      "makingMusic": "Making music… {{pct}}%",
+      "makingVideo": "Making video… {{pct}}%"
+    },
+    "doneAll": "Done! Your soundscape has been handed in.",
+    "doneAllSaved": "Done! Your soundscape is saved.",
+    "foot": {
+      "back": "Want to change something? Go back to the studio",
+      "moreSounds": "Find more sounds",
+      "new": "New soundscape"
+    },
+    "card": {
+      "title": "Your music card",
+      "label": "My music card",
+      "hint": "Continue at home? Scan or type the code at soundscout.nl",
+      "text": "Take a photo or write the code down. Anyone with the code can change your soundscape."
+    },
+    "join": {
+      "title": "Hand it in to your teacher",
+      "text": "Type the class code on the board.",
+      "checking": "Looking…",
+      "found": "{{className}} found",
+      "notFound": "This class code doesn't exist, or the class has no assignment right now. Check the digits or ask your teacher.",
+      "praatplaat": "This class is working with a sound map. Go back to the start, choose 'I have a code' and type the class code there.",
+      "error": "That didn't work. Check your internet and try again.",
+      "button": "Hand in"
+    },
+    "teacher": {
+      "label": "Teacher",
+      "present": "Present on the whiteboard",
+      "template": "Save as assignment"
+    },
+    "controls": {
+      "restart": "Start again from the beginning",
+      "seek": "Jump to a point in your soundscape",
+      "image": "Picture {{n}}"
+    }
+  },
   "editor": {
     "copyFailed": "Copy failed. Use the download button."
   },

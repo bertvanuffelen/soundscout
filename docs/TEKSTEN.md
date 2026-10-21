@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1758 teksten in 48 secties._
+_Stand: 1853 teksten in 49 secties._
 
 ## app
 
@@ -469,6 +469,106 @@ _Stand: 1758 teksten in 48 secties._
 | `stage.videoMissingImages_other` | Let op: {{count}} afbeeldingen konden niet worden geladen (zwart beeld in de video). | Note: {{count}} images could not be loaded (black frames in the video). |
 | `stage.videoNoContent` | Geen clips op de tijdlijn en geen afbeeldingen | No clips on the timeline and no images |
 | `stage.videoNoImages` | Geen afbeeldingen konden worden geladen | No images could be loaded |
+
+## podium
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `podium.yourSoundscape` | Jouw soundscape | Your soundscape |
+| `podium.studio` | Studio | Studio |
+| `podium.noClass` | Zonder klas | No class |
+| `podium.saved` | Bewaard | Saved |
+| `podium.titlePlaceholder` | Nog geen titel | No title yet |
+| `podium.titleLabel` | Titel van je soundscape | Title of your soundscape |
+| `podium.assignment.title` | Opdracht | Assignment |
+| `podium.assignment.time` | Tijd: {{label}} | Time: {{label}} |
+| `podium.assignment.defaultNote` | Dit is de standaarduitleg. Je docent heeft geen eigen kaart gemaakt. | This is the standard explanation. Your teacher didn't make their own card. |
+| `podium.assignment.instructions` | Uitleg bij de opdracht: | About this assignment: |
+| `podium.state.busy` | Nu bezig | In progress |
+| `podium.state.todo` | Nog te doen | To do |
+| `podium.state.locked` | Nog niet | Not yet |
+| `podium.listen.title` | Luister naar je soundscape | Listen to your soundscape |
+| `podium.listen.text` | Luister en kijk naar jouw soundscape op volledig scherm. | Listen to and watch your soundscape full screen. |
+| `podium.listen.button` | Luister | Listen |
+| `podium.listen.again` | Nog een keer | Listen again |
+| `podium.listen.done` | Geluisterd | Listened |
+| `podium.titleStep.title` | Geef je soundscape een titel | Give your soundscape a title |
+| `podium.titleStep.placeholder` | Typ een titel… | Type a title… |
+| `podium.titleStep.dice` | Kies een willekeurige titel | Pick a random title |
+| `podium.titleStep.confirm` | Dit is mijn titel | This is my title |
+| `podium.titleStep.tip` | Tip: geen achternaam in je titel. | Tip: don't include your last name in the title. |
+| `podium.spot.title` | Je plek op de praatplaat | Your spot on the sound map |
+| `podium.spot.text` | Je plek staat als pin op de plaat. | Your spot is marked with a pin. |
+| `podium.spot.move` | Kies een andere plek | Choose another spot |
+| `podium.spot.zoomIn` | Zoom in op mijn plek | Zoom in on my spot |
+| `podium.spot.zoomOut` | Hele plaat | Whole picture |
+| `podium.spot.done` | Gekozen | Chosen |
+| `podium.hand.title` | Lever in bij {{className}} | Hand in to {{className}} |
+| `podium.hand.titlePraatplaat` | Zet je soundscape op de praatplaat | Put your soundscape on the sound map |
+| `podium.hand.button` | Lever in | Hand in |
+| `podium.hand.buttonPraatplaat` | Zet op de praatplaat | Put it on the sound map |
+| `podium.hand.version` | Lever versie {{n}} in | Hand in version {{n}} |
+| `podium.hand.done` | Versie {{n}} · {{time}} | Version {{n}} · {{time}} |
+| `podium.hand.changed` | Iets veranderd: lever versie {{n}} in | Changed: hand in version {{n}} |
+| `podium.hand.changedSince` | Je hebt iets veranderd sinds versie {{n}}. | You've changed something since version {{n}}. |
+| `podium.hand.sending` | Versturen… | Sending… |
+| `podium.hand.sees` | Je docent ziet je titel en je schuilnaam, niet je echte naam. | Your teacher sees your title and your nickname, not your real name. |
+| `podium.save.title` | Bewaar je soundscape | Save your soundscape |
+| `podium.save.text` | Je krijgt een code. Daarmee kan je overal verder met jouw soundscape. | You get a code. Use it to keep working on your soundscape anywhere. |
+| `podium.save.button` | Bewaar | Save |
+| `podium.save.update` | Bewaar je wijzigingen | Save your changes |
+| `podium.save.changed` | Iets veranderd: bewaar opnieuw | Changed: save again |
+| `podium.save.updateText` | Je wijzigingen gaan naar dezelfde code. | Your changes go to the same code. |
+| `podium.save.saving` | Bewaren… | Saving… |
+| `podium.save.haveClass` | Heb je een klascode? Lever in bij je docent | Got a class code? Hand it in to your teacher |
+| `podium.post.title` | Feedback van je docent | Feedback from your teacher |
+| `podium.post.read` | Gelezen | Read |
+| `podium.post.improve` | Ga verbeteren | Improve it |
+| `podium.post.done` | Gelezen | Read |
+| `podium.peer.title` | Feedback klasgenoten | Feedback for classmates |
+| `podium.peer.text` | Luister naar 3 klasgenoten en geef sterren. Niemand weet dat jij het bent. | Listen to 3 classmates and give stars. Nobody knows it's you. |
+| `podium.peer.start` | Start feedback | Start feedback |
+| `podium.peer.more` | Verder met feedback | Continue feedback |
+| `podium.peer.progress` | {{n}} van 3 | {{n}} of 3 |
+| `podium.peer.locked` | Kan na het inleveren | Available after handing in |
+| `podium.export.title` | Exporteer jouw soundscape | Export your soundscape |
+| `podium.export.music` | Muziek | Music |
+| `podium.export.musicSub` | MP3 | MP3 |
+| `podium.export.video` | Video | Video |
+| `podium.export.videoSub` | met beelden | with pictures |
+| `podium.export.videoNone` | geen beeld | no picture |
+| `podium.export.card` | Muziekkaart | Music card |
+| `podium.export.cardSub` | thuis verder | continue at home |
+| `podium.export.cardLockedClass` | na inleveren | after handing in |
+| `podium.export.cardLockedSave` | na bewaren | after saving |
+| `podium.export.share` | Delen | Share |
+| `podium.export.shareSub` | luisterlink | listening link |
+| `podium.export.done` | Geëxporteerd | Exported |
+| `podium.export.makingMusic` | Muziek maken… {{pct}}% | Making music… {{pct}}% |
+| `podium.export.makingVideo` | Video maken… {{pct}}% | Making video… {{pct}}% |
+| `podium.doneAll` | Klaar! Je soundscape is ingeleverd. | Done! Your soundscape has been handed in. |
+| `podium.doneAllSaved` | Klaar! Je soundscape is bewaard. | Done! Your soundscape is saved. |
+| `podium.foot.back` | Nog iets veranderen? Ga terug naar de Studio | Want to change something? Go back to the studio |
+| `podium.foot.moreSounds` | Meer geluiden zoeken | Find more sounds |
+| `podium.foot.new` | Nieuwe soundscape | New soundscape |
+| `podium.card.title` | Je muziekkaart | Your music card |
+| `podium.card.label` | Mijn muziekkaart | My music card |
+| `podium.card.hint` | Thuis verder? Scan of typ de code op soundscout.nl | Continue at home? Scan or type the code at soundscout.nl |
+| `podium.card.text` | Maak er een foto van of schrijf de code op. Wie de code heeft, kan je soundscape veranderen. | Take a photo or write the code down. Anyone with the code can change your soundscape. |
+| `podium.join.title` | Lever in bij je docent | Hand it in to your teacher |
+| `podium.join.text` | Typ de klascode die op het bord staat. | Type the class code on the board. |
+| `podium.join.checking` | Zoeken… | Looking… |
+| `podium.join.found` | {{className}} gevonden | {{className}} found |
+| `podium.join.notFound` | Deze klascode bestaat niet, of de klas heeft nu geen opdracht. Kijk de cijfers na of vraag het je docent. | This class code doesn't exist, or the class has no assignment right now. Check the digits or ask your teacher. |
+| `podium.join.praatplaat` | Deze klas werkt met een praatplaat. Ga naar het begin, kies 'Ik heb een code' en typ daar de klascode. | This class is working with a sound map. Go back to the start, choose 'I have a code' and type the class code there. |
+| `podium.join.error` | Dat lukte niet. Controleer je internet en probeer het opnieuw. | That didn't work. Check your internet and try again. |
+| `podium.join.button` | Lever in | Hand in |
+| `podium.teacher.label` | Docent | Teacher |
+| `podium.teacher.present` | Presenteren op het digibord | Present on the whiteboard |
+| `podium.teacher.template` | Opslaan als opdracht | Save as assignment |
+| `podium.controls.restart` | Opnieuw vanaf het begin | Start again from the beginning |
+| `podium.controls.seek` | Spring naar een plek in je soundscape | Jump to a point in your soundscape |
+| `podium.controls.image` | Afbeelding {{n}} | Picture {{n}} |
 
 ## editor
 

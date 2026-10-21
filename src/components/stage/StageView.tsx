@@ -1,22 +1,19 @@
 /**
- * StageView - Performance/playback screen (layout + orchestration)
+ * StageView — het podium v4 (fase 2)
  *
- * Delegates to:
- * - StagePlayback — playback controls + audience
- * - useStageSave — save/warning logic
- * - useStageModals — modal state management
- * - useAudioCleanup — audio cleanup on unmount
+ * Schermvullend, net als de studio:
+ * - kop: terug naar de studio · titel (meteen te bewerken) · klas/status
+ * - links het beeld van de soundscape met de afspeelbalk (StageVisual)
+ * - rechts "Jouw soundscape": opdrachtkaart en stappen (StageMission)
+ *
+ * De stappen komen uit `deriveStageSteps`; inleveren, bewaren en versies
+ * uit `useStageSave` + `handInVersions`. Op een telefoon staan beeld en
+ * stappen onder elkaar.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import {
-  Save,
-  Check,
-  ArrowLeft,
-  MapPin,
-  Headphones,
-} from 'lucide-react';
+import { ArrowLeft, Pencil, GraduationCap, Monitor, Flag, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useTimelineStore } from '../../stores/timelineStore';
@@ -28,97 +25,93 @@ import { useVideoExport } from '../../hooks/useVideoExport';
 import { useStageSave } from '../../hooks/useStageSave';
 import { useStageModals } from '../../hooks/useStageModals';
 import { Button, Modal } from '../ui';
-import { ShareWithTeacherModal, ShareLinkModal, SaveOnlineModal } from '../share';
+import { ShareLinkModal } from '../share';
 import { storageService } from '../../services/StorageService';
 import { audioService } from '../../services/AudioService';
 import { buildCompositionData } from '../../utils/buildCompositionData';
+import { compositionFingerprint } from '../../utils/handInVersions';
+import { deriveStageSteps } from '../../utils/stageSteps';
+import { getPeerDone, setPeerDone } from '../../utils/peerProgress';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
-import { StageActionsModal } from './StageActionsModal';
 import { PresentationSurface } from '../presentation/PresentationSurface';
 import { PeerReviewModal } from './PeerReviewModal';
-import { StagePlayback, StageAudience } from './StagePlayback';
-import { StorytellingDisplay } from './StorytellingDisplay';
+import { StageVisual } from './StageVisual';
+import { StageMission } from './StageMission';
+import { MusicCardModal } from './MusicCardModal';
+import { JoinClassModal } from './JoinClassModal';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
-import { FeedbackBanner } from '../common/FeedbackBanner';
-import { SaveCodeTakeHome } from '../share/SaveCodeTakeHome';
 import { NewWorkChoiceModal } from '../common/NewWorkChoiceModal';
 import { logger } from '../../utils/logger';
+import type { ActiveAssignment } from '../../lib/assignments';
 
 export function StageView() {
   const { t } = useTranslation();
   const setScreen = useAppStore((s) => s.setScreen);
+  const goToMap = useAppStore((s) => s.goToMap);
   const activeStoryboard = useAppStore((s) => s.activeStoryboard);
+  const activePraatplaat = useAppStore((s) => s.activePraatplaat);
+  const praatplaatPosition = useAppStore((s) => s.praatplaatPosition);
   const classSession = useAppStore((s) => s.classSession);
+  const submissionId = useAppStore((s) => s.submissionId);
+  const submissionSynced = useAppStore((s) => s.submissionSynced);
+  const isSubmitting = useAppStore((s) => s.isSubmitting);
+  const receivedFeedback = useAppStore((s) => s.receivedFeedback);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
   const totalBeats = useTimelineStore((s) => s.totalBeats);
   const sections = useTimelineStore((s) => s.sections);
-  const { stopAll } = useAudioEngine();
-
-  // Template feature: only for logged-in teachers
+  const sequences = useTimelineStore((s) => s.sequences);
+  const { stopAll, stopTimeline } = useAudioEngine();
   const { isTeacher } = useAuth();
-  const [showTemplateModal, setShowTemplateModal] = useState(false);
-  const [showActionsModal, setShowActionsModal] = useState(false);
 
-  // Presenteren op het digibord (fase 2): snapshot van de live compositie
-  // in het universele presentatiescherm — puur weergave, geen opslag
-  const [showPresentation, setShowPresentation] = useState(false);
-
-  // Peer-review "Luister naar klasgenoten" (migratie 027): beschikbaar zodra
-  // de eigen inzending gesynchroniseerd is en de docent het aan heeft staan
-  const submissionId = useAppStore((s) => s.submissionId);
-  const submissionSynced = useAppStore((s) => s.submissionSynced);
-  const [showPeerReview, setShowPeerReview] = useState(false);
-  const peerReviewAvailable = !!classSession?.peerReview?.chips?.length && !!submissionId && submissionSynced;
-
-  // Audio export hook
-  const { exportState, progress, error, warning: exportWarning, exportMp3 } = useAudioExport();
-
-  // Video export hook (storyboard/image mode only)
-  const {
-    videoExportState,
-    videoProgress,
-    videoError,
-    videoWarning,
-    exportVideo,
-  } = useVideoExport();
-
-  // Audio cleanup on unmount
   useAudioCleanup();
 
-  // Save logic (extracted hook)
+  const { exportState, progress, error, warning: exportWarning, exportMp3 } = useAudioExport();
+  const { videoExportState, videoProgress, videoError, videoWarning, exportVideo } = useVideoExport();
+
   const {
     compositionName,
     setCompositionName,
-    showSaveWarning,
-    setShowSaveWarning,
-    saveSuccess,
-    dontShowWarningAgain,
-    setDontShowWarningAgain,
-    handleSaveClick,
-    handleSaveConfirm,
-    praatplaatSubmitted,
     saveError,
     submitFeedback,
-    setSubmitFeedback,
     syncFeedback,
     classSaveCode,
+    onlineSaveCode,
+    isSavingOnline,
+    versionInfo,
+    handIn,
+    saveOnline,
   } = useStageSave();
 
-  // Podium = altijd de volledige mix, één keer van begin tot eind (B22/B23).
-  // Solo en (sectie-)loop zijn studio-monitortools; ze mogen niet doorlekken,
-  // ongeacht de route hierheen (studio, Mijn composities, bewaarcode,
-  // feedbackmelding). De studio zet de loop bij elk afspelen zelf opnieuw.
+  const {
+    showNewModal,
+    setShowNewModal,
+    showShareLinkModal,
+    setShowShareLinkModal,
+    handleNewComposition,
+  } = useStageModals();
+
+  // --- Lokale podium-staat ---
+  const [listened, setListened] = useState(false);
+  const [zoomed, setZoomed] = useState(false);
+  const [exported, setExported] = useState(false);
+  const [showPresentation, setShowPresentation] = useState(false);
+  const [showPeerReview, setShowPeerReview] = useState(false);
+  const [showCard, setShowCard] = useState(false);
+  const [showJoin, setShowJoin] = useState(false);
+  const [showTemplateModal, setShowTemplateModal] = useState(false);
+  const [peerDone, setPeerDoneState] = useState(() => getPeerDone(submissionId));
+  const [feedbackSeenAt, setFeedbackSeenAt] = useState(() => storageService.getClassFeedbackCode()?.lastSeenFeedbackAt ?? null);
+  useEffect(() => { setPeerDoneState(getPeerDone(submissionId)); }, [submissionId]);
+
+  // Podium = altijd de volledige mix, één keer van begin tot eind (B22/B23)
   useEffect(() => {
     useTimelineStore.getState().setSoloTrack(null);
     audioService.setSoloTrack(null);
     audioService.setLoop(false, useTimelineStore.getState().totalBeats, null);
   }, []);
 
-  // Podium = feedback-thuis (testronde 2): bij het openen stil de laatste
-  // docent-feedback + klasgenoot-beoordelingen ophalen zodra we een eigen
-  // bewaarcode kennen. Faalt geruisloos (nice-to-have); het feedbackblok
-  // verschijnt alleen als er echt iets te tonen is.
+  // Feedback-thuis (testronde 2): stil de laatste docent-feedback ophalen
   useEffect(() => {
     if (!classSession || !classSaveCode) return;
     let cancelled = false;
@@ -149,44 +142,111 @@ export function StageView() {
     return () => { cancelled = true; };
   }, [classSession, classSaveCode]);
 
-  // Modal state (extracted hook)
-  const {
-    showNewModal,
-    setShowNewModal,
-    showShareModal,
-    setShowShareModal,
-    showShareLinkModal,
-    setShowShareLinkModal,
-    showSaveOnlineModal,
-    setShowSaveOnlineModal,
-    handleNewComposition,
-  } = useStageModals();
+  // Exporteren telt als klaar zodra er één geslaagd is
+  useEffect(() => {
+    if (exportState === 'success' || videoExportState === 'success') setExported(true);
+  }, [exportState, videoExportState]);
 
-  // Praatplaat success modal
-  const activePraatplaat = useAppStore((s) => s.activePraatplaat);
-  const goToPraatplaatSelect = useAppStore((s) => s.goToPraatplaatSelect);
-  const [praatplaatSuccessDismissed, setPraatplaatSuccessDismissed] = useState(false);
-  const [showNewSpotModal, setShowNewSpotModal] = useState(false);
-  const showPraatplaatSuccess = praatplaatSubmitted && !!activePraatplaat && !praatplaatSuccessDismissed;
+  // --- Versies: is er iets veranderd sinds de laatste inlevering/bewaring? ---
+  const currentFingerprint = useMemo(
+    () => compositionFingerprint(buildCompositionData(), compositionName),
+    // buildCompositionData leest de stores; deze afhankelijkheden dekken alles
+    // wat in de vingerafdruk zit
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [tracks, totalBeats, sections, sequences, praatplaatPosition, compositionName],
+  );
+  const changed = !!versionInfo && versionInfo.fingerprint !== currentFingerprint;
 
-  const handleNewSpot = useCallback(() => {
+  const isPraatplaat = !!activePraatplaat && !!praatplaatPosition;
+  const hasTeacherFeedback = !!receivedFeedback?.at;
+  const steps = deriveStageSteps({
+    inClass: !!classSession,
+    isPraatplaat,
+    listened,
+    hasTitle: compositionName.trim().length > 0,
+    handedIn: submissionSynced,
+    changedSinceHandIn: !!classSession && changed,
+    saved: !!onlineSaveCode,
+    changedSinceSave: !classSession && changed,
+    hasTeacherFeedback,
+    feedbackRead: hasTeacherFeedback && !!feedbackSeenAt && feedbackSeenAt >= (receivedFeedback?.at ?? ''),
+    peerEnabled: !!classSession?.peerReview?.chips?.length,
+    peerDone,
+    exported,
+  });
+
+  // --- Handelingen ---
+  const handleBackToStudio = useCallback(() => {
     stopAll();
-    // Nieuwe plek = nieuwe compositie: volledig lege tijdlijn (B24)
-    useTimelineStore.getState().resetTimeline();
-    // Clear position + submissionId but keep activePraatplaat + classSession
-    // so student can pick a new spot and create a NEW submission.
-    // currentCompositionId ook leeg: anders overschrijft "Opslaan" de vorige
-    // (al ingeleverde) compositie in Mijn composities.
-    useAppStore.setState({ praatplaatPosition: null, submissionId: null, submissionSynced: false, currentCompositionId: null });
-    useLibraryStore.getState().clearLibrary();
-    setPraatplaatSuccessDismissed(true);
-    goToPraatplaatSelect();
-  }, [stopAll, goToPraatplaatSelect]);
+    stopTimeline();
+    setScreen('studio');
+  }, [stopAll, stopTimeline, setScreen]);
 
-  // Klasbewuste "Nieuwe soundscape" (A2): in een klas eerst kiezen
+  const handleListen = () => {
+    stopTimeline();
+    setListened(true);
+    setShowPresentation(true);
+  };
+
+  const handleMoveSpot = () => {
+    stopTimeline();
+    useAppStore.getState().goToPraatplaatMove();
+  };
+
+  const handleJoin = (classCode: string, assignment: ActiveAssignment) => {
+    void (async () => {
+      const { classSessionFromAssignment } = await import('../../utils/compositionInit');
+      const session = classSessionFromAssignment(classCode, assignment);
+      if (!session) return;
+      // Bewaarcode en klas sluiten elkaar uit: vanaf nu loopt alles via de klas
+      storageService.clearSaveOnlineInfo();
+      useAppStore.getState().setClassSession(session);
+      handIn();
+    })();
+  };
+
+  const handleFeedbackRead = () => {
+    const at = receivedFeedback?.at;
+    if (!at) return;
+    const info = storageService.getClassFeedbackCode();
+    if (info) storageService.setClassFeedbackCode({ ...info, lastSeenFeedbackAt: at });
+    setFeedbackSeenAt(at);
+  };
+
+  const handleStartPeer = () => {
+    stopTimeline();
+    setShowPeerReview(true);
+  };
+
+  const handleExport = () => {
+    exportMp3(tracks, librarySamples, compositionName.trim() || 'mijn-soundscape');
+  };
+
+  const handleVideoExport = () => {
+    if (!activeStoryboard) return;
+    exportVideo(activeStoryboard, tracks, librarySamples, totalBeats, sections, compositionName.trim() || 'mijn-soundscape');
+  };
+
+  const handleMoreSounds = () => {
+    stopAll();
+    stopTimeline();
+    goToMap();
+  };
+
+  // Klasbewuste "Nieuwe soundscape" (A2)
   const [newWorkLoading, setNewWorkLoading] = useState(false);
   const [newWorkError, setNewWorkError] = useState<string | null>(null);
   const isPraatplaatClass = classSession?.assignmentType === 'praatplaat' && !!activePraatplaat;
+
+  const handleNewSpot = useCallback(() => {
+    stopAll();
+    stopTimeline();
+    useTimelineStore.getState().resetTimeline();
+    // Nieuwe plek = nieuwe inzending; klas en praatplaat blijven
+    useAppStore.setState({ praatplaatPosition: null, submissionId: null, submissionSynced: false, currentCompositionId: null, compositionTitle: '' });
+    useLibraryStore.getState().clearLibrary();
+    useAppStore.getState().goToPraatplaatSelect();
+  }, [stopAll, stopTimeline]);
 
   const handleSameAssignment = useCallback(async () => {
     if (isPraatplaatClass) {
@@ -195,6 +255,7 @@ export function StageView() {
       return;
     }
     stopAll();
+    stopTimeline();
     setNewWorkLoading(true);
     setNewWorkError(null);
     const { startAnotherForCurrentAssignment } = await import('../../utils/compositionInit');
@@ -202,230 +263,116 @@ export function StageView() {
     setNewWorkLoading(false);
     if (result === 'ok') setShowNewModal(false);
     else setNewWorkError(t('newWork.error'));
-  }, [isPraatplaatClass, handleNewSpot, stopAll, setShowNewModal, t]);
+  }, [isPraatplaatClass, handleNewSpot, stopAll, stopTimeline, setShowNewModal, t]);
 
-  const handleBackToStudio = useCallback(() => {
-    stopAll();
-    setScreen('studio');
-  }, [stopAll, setScreen]);
+  // --- Meldingen in de rechterkolom ---
+  const toasts = [submitFeedback, syncFeedback, saveError ? { type: 'error' as const, message: saveError } : null]
+    .filter((x): x is { type: 'success' | 'error'; message: string } => !!x);
+  const exportMessages = [
+    error, videoError, exportWarning, videoWarning,
+    exportState === 'success' ? t('stage.exportSuccess') : null,
+    videoExportState === 'success' ? t('stage.videoExportSuccess') : null,
+  ].filter((m): m is string => !!m);
 
-  const handleExport = useCallback(() => {
-    const filename = compositionName.trim() || 'mijn-soundscape';
-    exportMp3(tracks, librarySamples, filename);
-  }, [exportMp3, tracks, librarySamples, compositionName]);
-
-  const handleVideoExport = useCallback(() => {
-    if (!activeStoryboard) return;
-    const filename = compositionName.trim() || 'mijn-soundscape';
-    exportVideo(activeStoryboard, tracks, librarySamples, totalBeats, sections, filename);
-  }, [exportVideo, activeStoryboard, tracks, librarySamples, totalBeats, sections, compositionName]);
+  const cardCode = classSession ? classSaveCode : onlineSaveCode;
+  const statusChip = classSession
+    ? <ClassSessionBadge />
+    : onlineSaveCode
+      ? (
+        <span className="inline-flex items-center gap-1 rounded-full bg-success-50 px-2.5 py-1 text-xs font-bold text-success-600">
+          <Check className="w-3.5 h-3.5" aria-hidden="true" />
+          <span className="hidden sm:inline">{t('podium.saved')}</span>
+        </span>
+      )
+      : <span className="rounded-full bg-neutral-100 px-2.5 py-1 text-xs font-bold text-text-muted whitespace-nowrap">{t('podium.noClass')}</span>;
 
   return (
-    <div className="min-h-screen flex flex-col bg-brand-900 overflow-hidden">
-      {/* Stage lights background effect */}
-      <div className="fixed inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute -top-32 left-1/4 w-96 h-[500px] bg-gradient-to-b from-stage-light-purple/20 via-stage-light-purple/5 to-transparent rotate-12 blur-3xl" />
-        <div className="absolute -top-32 right-1/4 w-96 h-[500px] bg-gradient-to-b from-stage-light-pink/20 via-stage-light-pink/5 to-transparent -rotate-12 blur-3xl" />
-        <div className="absolute -top-20 left-1/2 -translate-x-1/2 w-80 h-[400px] bg-gradient-to-b from-stage-light-amber/15 via-stage-light-amber/5 to-transparent blur-3xl" />
-        <div className="absolute top-1/3 -left-32 w-96 h-96 bg-gradient-to-r from-stage-light-blue/15 via-stage-light-blue/5 to-transparent blur-3xl" />
-        <div className="absolute top-1/3 -right-32 w-96 h-96 bg-gradient-to-l from-stage-light-cyan/15 via-stage-light-cyan/5 to-transparent blur-3xl" />
-        <div className="absolute -bottom-20 left-1/3 w-80 h-60 bg-gradient-to-t from-stage-light-emerald/10 via-stage-light-emerald/5 to-transparent blur-3xl" />
-        <div className="absolute -bottom-20 right-1/3 w-80 h-60 bg-gradient-to-t from-stage-light-pink/10 via-stage-light-pink/5 to-transparent blur-3xl" />
-      </div>
+    <div className="h-dvh flex flex-col bg-brand-900 overflow-hidden">
+      {/* Docentbalk: alleen voor een ingelogde docent */}
+      {isTeacher && (
+        <div className="shrink-0 flex flex-wrap items-center gap-2 px-3 sm:px-5 py-2 bg-brand-800 text-white">
+          <GraduationCap className="w-4 h-4 text-accent-400" aria-hidden="true" />
+          <b className="text-sm">{t('podium.teacher.label')}</b>
+          <span className="flex-1" />
+          <Button variant="secondary" size="sm" onClick={() => { stopTimeline(); setShowPresentation(true); }}>
+            <Monitor className="w-4 h-4 mr-1.5" aria-hidden="true" />
+            {t('podium.teacher.present')}
+          </Button>
+          <Button variant="secondary" size="sm" onClick={() => setShowTemplateModal(true)}>
+            <Flag className="w-4 h-4 mr-1.5" aria-hidden="true" />
+            {t('podium.teacher.template')}
+          </Button>
+        </div>
+      )}
 
-      {/* Header */}
-      <div className="relative z-10 bg-bg-surface border-b border-border-subtle px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleBackToStudio}
-        >
-          <ArrowLeft className="w-4 h-4 mr-1.5" />
-          <span className="hidden sm:inline">{t('stage.backToStudio')}</span>
-          <span className="sm:hidden">{t('common.back')}</span>
+      {/* Kop: studio · titel · status */}
+      <header className="shrink-0 flex items-center gap-2 sm:gap-3 bg-bg-surface border-b border-border-subtle px-3 sm:px-5 py-2.5">
+        <Button variant="secondary" size="sm" onClick={handleBackToStudio} aria-label={t('stage.backToStudio')}>
+          <ArrowLeft className="w-4 h-4 sm:mr-1.5" aria-hidden="true" />
+          <span className="hidden sm:inline">{t('podium.studio')}</span>
         </Button>
-        <div className="flex items-center gap-2">
-          <h1 className="text-lg sm:text-xl font-bold text-text-main">{t('stage.title')}</h1>
-          <ClassSessionBadge />
+        <label className="flex-1 min-w-0 flex items-center gap-2 rounded-xl px-2 py-1 hover:bg-neutral-50 focus-within:bg-neutral-50">
+          <input
+            type="text"
+            value={compositionName}
+            onChange={(e) => setCompositionName(e.target.value)}
+            placeholder={t('podium.titlePlaceholder')}
+            aria-label={t('podium.titleLabel')}
+            maxLength={40}
+            className="flex-1 min-w-0 bg-transparent text-lg sm:text-xl font-extrabold text-text-main placeholder:text-text-muted/60 focus:outline-none truncate"
+          />
+          <Pencil className="w-4 h-4 text-text-muted shrink-0" aria-hidden="true" />
+        </label>
+        <div className="shrink-0">{statusChip}</div>
+      </header>
+
+      {/* Beeld + stappen */}
+      <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
+        <div className="h-[46dvh] lg:h-auto lg:flex-1 min-w-0 flex shrink-0 lg:shrink">
+          <StageVisual zoomed={zoomed} onPlayed={() => setListened(true)} />
         </div>
-        <div className="w-16 sm:w-28" />
-      </div>
+        <aside className="lg:w-[360px] shrink-0 bg-bg-app lg:overflow-y-auto px-4 py-4">
+          <StageMission
+            steps={steps}
+            session={classSession}
+            isPraatplaat={isPraatplaat}
+            toasts={toasts}
+            onListen={handleListen}
+            listened={listened}
+            title={compositionName}
+            onTitleChange={setCompositionName}
+            zoomed={zoomed}
+            onToggleZoom={() => setZoomed((v) => !v)}
+            onMoveSpot={handleMoveSpot}
+            isSubmitting={isSubmitting}
+            versionInfo={versionInfo}
+            onHandIn={handIn}
+            onlineSaveCode={onlineSaveCode}
+            isSavingOnline={isSavingOnline}
+            onSave={() => void saveOnline()}
+            onJoinClass={() => setShowJoin(true)}
+            onFeedbackRead={handleFeedbackRead}
+            peerDone={peerDone}
+            onStartPeer={handleStartPeer}
+            hasVideo={!!activeStoryboard}
+            exportState={exportState}
+            exportProgress={progress}
+            videoExportState={videoExportState}
+            videoProgress={videoProgress}
+            exportMessages={exportMessages}
+            onExportMp3={handleExport}
+            onExportVideo={handleVideoExport}
+            cardCode={cardCode}
+            onOpenCard={() => setShowCard(true)}
+            onShare={() => setShowShareLinkModal(true)}
+            onBackToStudio={handleBackToStudio}
+            onMoreSounds={handleMoreSounds}
+            onNew={() => { setNewWorkError(null); setShowNewModal(true); }}
+          />
+        </aside>
+      </main>
 
-      {/* Submit feedback toast */}
-      {submitFeedback && (
-        <div
-          className={`relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm transition-all ${
-            submitFeedback.type === 'success'
-              ? 'bg-success-600/90 text-white'
-              : 'bg-error-600/90 text-white cursor-pointer'
-          }`}
-          onClick={submitFeedback.type === 'error' ? () => setSubmitFeedback(null) : undefined}
-          role={submitFeedback.type === 'error' ? 'alert' : 'status'}
-        >
-          {submitFeedback.message}
-        </div>
-      )}
-
-      {/* Save error toast (TP5-11) */}
-      {saveError && (
-        <div className="relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm bg-error-600/90 text-white" role="alert">
-          {saveError}
-        </div>
-      )}
-
-      {/* Bewaarcode sync feedback toast (TP5-12) */}
-      {syncFeedback && (
-        <div
-          className={`relative z-20 mx-auto mt-2 px-4 py-2 rounded-lg text-sm font-medium text-center max-w-sm ${
-            syncFeedback.type === 'success'
-              ? 'bg-success-600/90 text-white'
-              : 'bg-warning-600/90 text-white'
-          }`}
-          role={syncFeedback.type === 'error' ? 'alert' : 'status'}
-        >
-          {syncFeedback.message}
-        </div>
-      )}
-
-      {/* Main content */}
-      <div className="relative z-10 flex-1 flex items-center justify-center p-4 sm:p-6">
-        <div className="w-full max-w-lg bg-bg-surface rounded-2xl shadow-2xl p-6 sm:p-8 flex flex-col items-center gap-6 sm:gap-8">
-          {/* Title */}
-          <div className="text-center">
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-text-main tracking-tight">
-              {t('stage.subtitle')}
-            </h2>
-            <p className="text-sm sm:text-base text-text-muted mt-1">
-              {t('stage.nameComposition')}
-            </p>
-          </div>
-
-          {/* Composition name input */}
-          <div className="w-full max-w-sm">
-            <input
-              type="text"
-              value={compositionName}
-              onChange={(e) => setCompositionName(e.target.value)}
-              placeholder={t('stage.namePlaceholder')}
-              aria-describedby="composition-name-hint"
-              className="w-full px-4 py-3 bg-neutral-50 border-2 border-border-subtle rounded-xl text-center text-text-main text-lg font-semibold placeholder:text-text-muted/50 focus:outline-none focus:border-accent-400 transition-colors"
-            />
-            {/* Klas werkt anoniem: kinderen zetten hun naam anders in de titel (PRIV-06) */}
-            <p id="composition-name-hint" className="text-xs text-text-muted text-center mt-1.5">
-              {t('stage.nameHint')}
-            </p>
-          </div>
-
-          {/* Storytelling image display (#41) */}
-          {activeStoryboard && <StorytellingDisplay />}
-
-          {/* Playback controls (extracted component) */}
-          <StagePlayback />
-
-          {/* Feedbackblok (testronde 2): docent-feedback + klasgenoot-
-              beoordelingen — rendert alleen als er echt iets te tonen is */}
-          <FeedbackBanner />
-
-          {/* Action buttons — één ingang: "Opslaan & Delen" opent de
-              gecombineerde modal (testronde 3, ontwerp Bert) */}
-          <div className="flex flex-col gap-3 w-full max-w-xs">
-            <Button
-              variant="primary"
-              size="lg"
-              onClick={() => setShowActionsModal(true)}
-              className="w-full"
-            >
-              {saveSuccess ? (
-                <>
-                  <Check size={20} className="mr-2" />
-                  {t('stage.saved')}
-                </>
-              ) : (
-                <>
-                  <Save size={20} className="mr-2" />
-                  {t('stage.saveAndShare')}
-                </>
-              )}
-            </Button>
-
-            {/* Peer-review: luister naar klasgenoten (migratie 027) */}
-            {peerReviewAvailable && (
-              <Button
-                variant="secondary"
-                size="lg"
-                onClick={() => setShowPeerReview(true)}
-                className="w-full"
-              >
-                <Headphones size={20} className="mr-2" />
-                {t('peerReview.openButton')}
-              </Button>
-            )}
-
-            {/* "Nieuwe plek" button — visible after praatplaat submission */}
-            {praatplaatSubmitted && activePraatplaat && (
-              <Button
-                variant="ghost"
-                size="lg"
-                onClick={() => setShowNewSpotModal(true)}
-                className="w-full text-text-muted hover:text-text-main"
-              >
-                <MapPin size={20} className="mr-2" />
-                {t('stage.praatplaatNewSpot')}
-              </Button>
-            )}
-
-            <Button
-              variant="ghost"
-              size="lg"
-              onClick={() => { setNewWorkError(null); setShowNewModal(true); }}
-              className="w-full text-text-muted hover:text-text-main"
-            >
-              {t('stage.newComposition')}
-            </Button>
-          </div>
-
-          {/* Export error/success messages */}
-          {error && (
-            <p className="text-error-500 text-sm text-center">{error}</p>
-          )}
-          {exportState === 'success' && (
-            <p className="text-success-600 text-sm text-center">{t('stage.exportSuccess')}</p>
-          )}
-          {videoError && (
-            <p className="text-error-500 text-sm text-center">{videoError}</p>
-          )}
-          {videoExportState === 'success' && (
-            <p className="text-success-600 text-sm text-center">{t('stage.videoExportSuccess')}</p>
-          )}
-          {praatplaatSubmitted && !showPraatplaatSuccess && (
-            <p className="text-success-600 text-sm text-center font-medium">{t('stage.praatplaatSubmitted')}</p>
-          )}
-
-          {/* Persoonlijke bewaarcode na inleveren (feedback-terugweg, migratie 026) */}
-          {classSession && classSaveCode && (
-            <div className="w-full max-w-xs rounded-2xl border-2 border-accent-200 bg-accent-50 px-4 py-3 text-center">
-              <p className="text-sm font-bold text-text-main">
-                {t('stage.yourCodeTitle')}{' '}
-                <span className="font-mono text-lg font-extrabold tracking-widest text-accent-700">
-                  {classSaveCode}
-                </span>
-              </p>
-              <p className="text-xs text-text-muted mt-1">
-                {t('stage.yourCodeHint')}
-              </p>
-              {/* Mee naar huis: thuis verder werken of laten horen */}
-              <div className="mt-3">
-                <SaveCodeTakeHome code={classSaveCode} compositionName={compositionName.trim()} />
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Audience at bottom (extracted component) */}
-      <StageAudience />
-
-      {/* Klas: kiezen tussen nog één voor deze opdracht of zelf iets nieuws */}
+      {/* Klas: nog één voor deze opdracht of zelf iets nieuws (A2) */}
       {classSession && (
         <NewWorkChoiceModal
           isOpen={showNewModal}
@@ -440,171 +387,22 @@ export function StageView() {
         />
       )}
 
-      {/* New composition confirmation modal (zonder klas) */}
-      <Modal
-        isOpen={showNewModal && !classSession}
-        onClose={() => setShowNewModal(false)}
-        title={t('stage.newComposition')}
-        size="sm"
-      >
-        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">
-          {t('stage.newCompositionConfirm')}
-        </p>
+      {/* Zonder klas: bevestiging opnieuw beginnen */}
+      <Modal isOpen={showNewModal && !classSession} onClose={() => setShowNewModal(false)} title={t('stage.newComposition')} size="sm">
+        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">{t('stage.newCompositionConfirm')}</p>
         <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setShowNewModal(false)}
-            className="flex-1"
-          >
-            {t('stage.cancel')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleNewComposition}
-            className="flex-1"
-          >
-            {t('stage.newComposition')}
-          </Button>
+          <Button variant="secondary" onClick={() => setShowNewModal(false)} className="flex-1">{t('stage.cancel')}</Button>
+          <Button variant="primary" onClick={handleNewComposition} className="flex-1">{t('stage.newComposition')}</Button>
         </div>
       </Modal>
 
-      {/* Save warning modal */}
-      <Modal
-        isOpen={showSaveWarning}
-        onClose={() => setShowSaveWarning(false)}
-        title={t('stage.saveTitle')}
-        size="sm"
-      >
-        <p className="text-text-muted text-sm mb-4 leading-relaxed">
-          {t('stage.saveWarning')}
-        </p>
-        <label className="flex items-center gap-2 text-sm text-text-muted mb-6 cursor-pointer">
-          <input
-            type="checkbox"
-            checked={dontShowWarningAgain}
-            onChange={(e) => setDontShowWarningAgain(e.target.checked)}
-            className="rounded border-border-subtle"
-          />
-          {t('stage.dontShowAgain')}
-        </label>
-        <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setShowSaveWarning(false)}
-            className="flex-1"
-          >
-            {t('stage.cancel')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={handleSaveConfirm}
-            className="flex-1"
-          >
-            {t('stage.save')}
-          </Button>
-        </div>
-      </Modal>
-
-      {/* Praatplaat success modal (#72) */}
-      <Modal
-        isOpen={showPraatplaatSuccess}
-        onClose={() => setPraatplaatSuccessDismissed(true)}
-        title={t('stage.praatplaatSuccessTitle')}
-        size="sm"
-      >
-        <div className="text-center">
-          <div className="w-16 h-16 rounded-full bg-success-50 flex items-center justify-center mx-auto mb-4">
-            <MapPin className="w-8 h-8 text-success-600" />
-          </div>
-          <p className="text-text-muted text-sm mb-6 leading-relaxed">
-            {t('stage.praatplaatSuccessMessage')}
-          </p>
-          <div className="flex flex-col gap-3">
-            <Button
-              variant="primary"
-              onClick={() => setPraatplaatSuccessDismissed(true)}
-              className="w-full"
-            >
-              {t('stage.praatplaatContinue')}
-            </Button>
-            <Button
-              variant="secondary"
-              onClick={() => setShowNewSpotModal(true)}
-              className="w-full"
-            >
-              <MapPin className="w-4 h-4 mr-1.5" />
-              {t('stage.praatplaatNewSpot')}
-            </Button>
-          </div>
-        </div>
-      </Modal>
-
-      {/* New spot confirmation modal (UX-DEST-5) */}
-      <Modal
-        isOpen={showNewSpotModal}
-        onClose={() => setShowNewSpotModal(false)}
-        title={t('stage.praatplaatNewSpot')}
-        size="sm"
-      >
-        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">
-          {t('stage.newSpotConfirm')}
-        </p>
-        <div className="flex gap-3">
-          <Button
-            variant="secondary"
-            onClick={() => setShowNewSpotModal(false)}
-            className="flex-1"
-          >
-            {t('stage.cancel')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => { setShowNewSpotModal(false); handleNewSpot(); }}
-            className="flex-1"
-          >
-            {t('stage.praatplaatNewSpot')}
-          </Button>
-        </div>
-      </Modal>
-
-      {/* Opslaan & Delen — gecombineerde modal (testronde 3) */}
-      {showActionsModal && (
-        <StageActionsModal
-          compositionName={compositionName}
-          hasStoryboard={!!activeStoryboard}
-          isTeacher={isTeacher}
-          hasClassSession={!!classSession}
-          className={classSession?.className ?? null}
-          classSaveCode={classSaveCode}
-          submissionSynced={submissionSynced}
-          saveSuccess={saveSuccess}
-          exportState={exportState}
-          exportProgress={progress}
-          videoExportState={videoExportState}
-          videoProgress={videoProgress}
-          exportError={error}
-          videoError={videoError}
-          exportWarning={exportWarning}
-          videoWarning={videoWarning}
-          onSave={handleSaveClick}
-          onPresent={() => { stopAll(); setShowPresentation(true); }}
-          onExportMp3={handleExport}
-          onExportVideo={handleVideoExport}
-          onSaveOnline={() => setShowSaveOnlineModal(true)}
-          onShareLink={() => setShowShareLinkModal(true)}
-          onShareTeacher={() => setShowShareModal(true)}
-          onSaveTemplate={() => setShowTemplateModal(true)}
-          onClose={() => setShowActionsModal(false)}
-        />
-      )}
-
-      {/* Presenteren op het digibord — snapshot van de live compositie */}
+      {/* Luister: schermvullende presentatie van de live soundscape (2.4) */}
       {showPresentation && (
         <PresentationSurface
           playlist={[{
             id: 'stage-live',
             student_name: '',
-            composition_name: compositionName.trim() || t('stage.defaultName'),
+            composition_name: compositionName.trim() || t('podium.yourSoundscape'),
             composition_data: buildCompositionData(),
             created_at: new Date().toISOString(),
           }]}
@@ -614,30 +412,30 @@ export function StageView() {
         />
       )}
 
-      {/* Peer-review: luister naar klasgenoten (migratie 027) */}
-      {peerReviewAvailable && classSession?.peerReview && submissionId && (
+      {/* Feedback klasgenoten (2.6) */}
+      {classSession?.peerReview && submissionId && submissionSynced && (
         <PeerReviewModal
           isOpen={showPeerReview}
           onClose={() => setShowPeerReview(false)}
           classCode={classSession.classCode}
           ownSubmissionId={submissionId}
           chips={classSession.peerReview.chips}
+          onReviewed={() => setPeerDoneState(setPeerDone(submissionId, getPeerDone(submissionId) + 1))}
+          onCapReached={() => setPeerDoneState(setPeerDone(submissionId, 3))}
         />
       )}
 
-      {/* Save online modal (#52) */}
-      {showSaveOnlineModal && (
-        <SaveOnlineModal
-          compositionName={compositionName.trim() || t('stage.defaultName')}
-          compositionData={buildCompositionData()}
-          onClose={() => setShowSaveOnlineModal(false)}
-          onSaved={(saveCode, saveSecret) => {
-            storageService.setSaveOnlineInfo(saveCode, saveSecret, compositionName.trim());
-          }}
+      {cardCode && (
+        <MusicCardModal
+          isOpen={showCard}
+          onClose={() => setShowCard(false)}
+          code={cardCode}
+          title={compositionName.trim() || t('podium.yourSoundscape')}
         />
       )}
 
-      {/* Share link modal */}
+      <JoinClassModal isOpen={showJoin} onClose={() => setShowJoin(false)} onJoin={handleJoin} />
+
       {showShareLinkModal && (
         <ShareLinkModal
           compositionName={compositionName.trim() || t('stage.defaultName')}
@@ -646,22 +444,11 @@ export function StageView() {
         />
       )}
 
-      {/* Save as template modal */}
       {showTemplateModal && (
         <SaveAsTemplateModal
           compositionData={buildCompositionData({ includePraatplaat: false })}
           defaultName={compositionName.trim() || t('stage.defaultName')}
           onClose={() => setShowTemplateModal(false)}
-        />
-      )}
-
-      {/* Share with teacher modal */}
-      {showShareModal && (
-        <ShareWithTeacherModal
-          compositionName={compositionName.trim() || t('stage.defaultName')}
-          compositionData={buildCompositionData()}
-          onClose={() => setShowShareModal(false)}
-          onSuccess={() => setShowShareModal(false)}
         />
       )}
     </div>
