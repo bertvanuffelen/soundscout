@@ -953,7 +953,7 @@
   "auth": {
     "emailAlreadyRegistered": "Dit e-mailadres is al geregistreerd",
     "invalidEmail": "Voer een geldig e-mailadres in",
-    "passwordTooShort": "Wachtwoord moet minimaal 6 tekens zijn",
+    "passwordTooShort": "Wachtwoord moet minimaal 8 tekens zijn",
     "invalidCredentials": "Onjuist e-mailadres of wachtwoord",
     "emailNotConfirmed": "Bevestig eerst je e-mailadres",
     "logoutError": "Fout bij uitloggen",
@@ -1434,10 +1434,11 @@
       "emailRequired": "Voer je e-mailadres in",
       "passwordRequired": "Voer je wachtwoord in",
       "nameRequired": "Voer je naam in",
-      "passwordMinLength": "Wachtwoord moet minimaal 6 tekens zijn",
+      "passwordMinLength": "Wachtwoord moet minimaal 8 tekens zijn",
       "educatorRequired": "Bevestig dat je docent of onderwijsprofessional bent.",
       "passwordMismatch": "Wachtwoorden komen niet overeen",
-      "genericError": "Er ging iets mis"
+      "genericError": "Er ging iets mis",
+      "passwordLettersDigits": "Gebruik letters én cijfers in je wachtwoord"
     },
     "login": {
       "subtitle": "Docenten Login",

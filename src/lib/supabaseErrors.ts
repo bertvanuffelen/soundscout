@@ -35,8 +35,9 @@ export const ERR_AUTH_ALREADY_REGISTERED = 'already registered';
 /** Invalid email format */
 export const ERR_AUTH_INVALID_EMAIL = 'valid email';
 
-/** Password too short */
-export const ERR_AUTH_PASSWORD_TOO_SHORT = 'at least 6 characters';
+/** Password too short or too weak ("Password should be at least 8 characters",
+ *  "Password should contain at least one character of each: ...") */
+export const ERR_AUTH_PASSWORD_TOO_SHORT = 'Password should';
 
 /** Wrong email/password combination */
 export const ERR_AUTH_INVALID_CREDENTIALS = 'Invalid login credentials';

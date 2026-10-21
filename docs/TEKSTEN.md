@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1729 teksten in 47 secties._
+_Stand: 1730 teksten in 47 secties._
 
 ## app
 
@@ -919,7 +919,7 @@ _Stand: 1729 teksten in 47 secties._
 |---|---|---|
 | `auth.emailAlreadyRegistered` | Dit e-mailadres is al geregistreerd | This email address is already registered |
 | `auth.invalidEmail` | Voer een geldig e-mailadres in | Please enter a valid email address |
-| `auth.passwordTooShort` | Wachtwoord moet minimaal 6 tekens zijn | Password must be at least 6 characters |
+| `auth.passwordTooShort` | Wachtwoord moet minimaal 8 tekens zijn | Password must be at least 8 characters |
 | `auth.invalidCredentials` | Onjuist e-mailadres of wachtwoord | Incorrect email address or password |
 | `auth.emailNotConfirmed` | Bevestig eerst je e-mailadres | Please confirm your email address first |
 | `auth.logoutError` | Fout bij uitloggen | Error logging out |
@@ -1236,10 +1236,11 @@ _Stand: 1729 teksten in 47 secties._
 | `teacher.validation.emailRequired` | Voer je e-mailadres in | Please enter your email address |
 | `teacher.validation.passwordRequired` | Voer je wachtwoord in | Please enter your password |
 | `teacher.validation.nameRequired` | Voer je naam in | Please enter your name |
-| `teacher.validation.passwordMinLength` | Wachtwoord moet minimaal 6 tekens zijn | Password must be at least 6 characters |
+| `teacher.validation.passwordMinLength` | Wachtwoord moet minimaal 8 tekens zijn | Password must be at least 8 characters |
 | `teacher.validation.educatorRequired` | Bevestig dat je docent of onderwijsprofessional bent. | Confirm that you are a teacher or education professional. |
 | `teacher.validation.passwordMismatch` | Wachtwoorden komen niet overeen | Passwords do not match |
 | `teacher.validation.genericError` | Er ging iets mis | Something went wrong |
+| `teacher.validation.passwordLettersDigits` | Gebruik letters én cijfers in je wachtwoord | Use both letters and numbers in your password |
 | `teacher.login.subtitle` | Docenten Login | Teacher Login |
 | `teacher.login.emailLabel` | E-mailadres | Email address |
 | `teacher.login.emailPlaceholder` | docent@school.nl | teacher@school.com |

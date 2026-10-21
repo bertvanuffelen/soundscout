@@ -27,7 +27,7 @@ import i18n from '../i18n';
  * Registreer een nieuwe docent
  *
  * @param email - Email adres
- * @param password - Wachtwoord (min 6 tekens)
+ * @param password - Wachtwoord (min 8 tekens, letters en cijfers)
  * @param displayName - Weergavenaam van de docent
  * @returns User object of gooit error
  */
