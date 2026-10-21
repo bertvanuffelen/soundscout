@@ -103,10 +103,26 @@
 - De titelinstelling wordt in de app afgedwongen (geen invoerveld). De server overschrijft de titel niet; wie de app omzeilt, kan nog een titel sturen. Dat is voor nu voldoende.
 - **Privacytekst aangepast** (app, `/privacy/`, `/privacy/en/`): online bewaren gaat met een automatische schuilnaam, de leerling typt geen naam meer. → Bert even nalezen.
 
-## Fase 4: later
+## Fase 4: live meenemen en leerlingcodes ✅
 
-- Live meenemen: de opdracht opnieuw ophalen bij het openen van het podium (peer-feedback, kaart).
-- Leerlingcodes: zie het besloten ontwerp `ONTWERP-LEERLING-CODES.md` (R3).
+> **Branch:** `claude/leerling-fase4` (gestapeld op fase 3).
+
+| Stap | Wat | Status | Commit |
+|---|---|---|---|
+| 4.1 | Live meenemen: het podium haalt de opdracht bij openen en elke minuut opnieuw op (alleen als het tabblad zichtbaar is); kaart, tijdsduur, peer-feedback en titelinstelling komen mee; een andere opdracht geeft een melding | ✅ | 2a93811 |
+| 4.2 | Leerlingcodes volgens `ONTWERP-LEERLING-CODES.md` v2: migratie 038 (tabel, kolom, 7 RPC's, RLS), inloggen via het codeveld, vaste schuilnaam bij inleveren, "Verder met je laatste soundscape", docentblok met codes maken, lijst, nieuwe code, aan/uit, verlengen en printbare kaartjes | ✅ (bestand) · ⏳ Bert draait 038 | e72b0f1 |
+| 4.3 | Mijn soundscapes per klas gegroepeerd, met de code om verder te werken (besluit "lokaal sterker") | ✅ | 2abd024 |
+
+**Besluiten**
+- Migratie 038 is getest in PGlite (Postgres in WebAssembly) met een nagebootste `classes`/`submissions`: rechten per docent, inloggen (ook met streepje), koppelen alleen met het geheim van de inzending, laatste werk, verlengen, nieuwe code, uit en verlopen. Dubbel draaien gaat goed.
+- Schuilnamen voor leerlingcodes maakt de app van de docent, in diens taal. De server maakt de codes (2 letters zonder I/O + 4 cijfers) en checkt botsingen met bestaande bewaarcodes.
+- Een code als `LK4827` wordt eerst als leerlingcode geprobeerd, anders als bewaarcode. Zonder migratie valt alles stil terug op de bestaande routes.
+- Groepjes en "wie heeft nog niet ingeleverd" blijven buiten v1 (zoals in het ontwerp).
+
+**Nog te doen door Bert (fase 3 en 4)**
+1. Migraties **037** en **038** draaien in Supabase (in die volgorde).
+2. Privacyverklaring aanvullen met leerlingcodes (code + schuilnaam, geldig tot 31 juli, verwijderd met de klas). De tekst over online bewaren is al aangepast.
+3. Testen met een echte klas: inleveren, versie 2, feedback klasgenoten, "Heb je een klascode?", titelinstelling, leerlingcodes maken, printen en inloggen.
 
 ---
 
@@ -134,3 +150,4 @@
 | 21-10-2026 | 1.8 Engelse teksten (a: harde teksten + privacylink, b: meervouden, c: termen/zinsletters/VK) | fbbdb5d, ed8fe0a, 7e0e6f1 | tsc ✓ · 446 tests ✓ · meervouden gecontroleerd (1 composition / 5 compositions, "Listened to once", NL "8 klassen") · browser EN: "New soundscape", privacylink /privacy/en/. Standaard-opdrachtkaart heet nu "Opdracht"/"Assignment". **Niet gedaan, verschoven naar fase 3:** Engelse schuilnamen en vertaalde peer-criteria (komen uit de database, migratie 027-data). Ook nog open (lage prioriteit): `public/les/*` en meta-titels van de statische pagina's alleen NL |
 | 21-10-2026 | 2.1–2.8 podium v4 | 9349416, 61e4317, f9aabbb, eefb4bf, HEAD | tsc ✓ · 457 tests ✓ (11 nieuw) · lint ✓ · browser 1024 + 375 px: vrij zonder klas (afspelen + voortgang, titel-suggestie, Luister → presentatie, Bewaar → echte bewaarcode Z7B4FC, wijziging → "bewaar opnieuw" → bijgewerkt, muziekkaart met QR), praatplaat in klas (opdrachtkaart, pin + zoom, plek verzetten → terug naar podium met zelfde werk), nagebootste inlevering (versie 1 → wijziging → "lever versie 2 in", peer ontgrendeld, docentfeedback-stap), storyboard met strip, klascode-venster (onbekende code → melding), Engels. **Niet getest tegen de server:** echt inleveren, feedback klasgenoten (batch ophalen + sterren rechts), "Heb je een klascode?" met een echte klas |
 | 21-10-2026 | 3.1–3.3 titelinstelling, Engelse data | 99fb476, 2b0e129 | tsc ✓ · 462 tests ✓ (5 nieuw) · lint ✓ · browser: klas met instelling uit → titel automatisch, kop alleen-lezen met slot, stap "Je docent kiest de titels automatisch". **Niet getest:** de schakelaar in ClassDetail (vraagt een docentlogin en de migratie) |
+| 21-10-2026 | 4.1–4.3 live, leerlingcodes, Mijn soundscapes | 2a93811, e72b0f1, 2abd024 | tsc ✓ · 470 tests ✓ (8 nieuw) · build ✓ (main 791 → 820 kB) · PGlite: 037 + 038 ✓ · browser: melding bij andere opdracht, codeveld LK-4827 valt zonder migratie terug op "Code niet gevonden", Mijn soundscapes per klas met code. **Niet getest tegen de server:** leerlingcodes (vraagt migratie 038 en een docentlogin) |
