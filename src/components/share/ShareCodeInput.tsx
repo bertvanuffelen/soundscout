@@ -21,6 +21,7 @@ import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, openSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
 import { loginWithMemberCode, MEMBER_CODE_PATTERN } from '../../lib/members';
+import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
 
 type PendingSaved = {
   saved: NonNullable<Awaited<ReturnType<typeof loadSavedComposition>>>;
@@ -45,6 +46,8 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
   const [pendingSaved, setPendingSaved] = useState<PendingSaved | null>(null);
   const [destLoading, setDestLoading] = useState<'studio' | 'stage' | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  // Vraag over onbewaard werk vóór openen (E5)
+  const { guard, modal: unsavedModal } = useUnsavedWorkGuard();
 
   // Only allow alphanumeric characters, convert to uppercase
   const handleChange = useCallback((value: string) => {
@@ -141,11 +144,12 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
         const template = await getTemplateByCode(code);
         if (signal.aborted) return;
         if (template) {
-          // Schone lei (B21): geen klas-sessie, feedback of compositie-id
-          // van een eerder geopende compositie meenemen in dit template.
-          useAppStore.getState().resetCompositionContext();
-          await initializeFromTemplate(template);
-          setCode('');
+          // Eerst vragen over onbewaard werk (E5); daarna een schone lei (B21)
+          guard(async () => {
+            useAppStore.getState().resetCompositionContext();
+            await initializeFromTemplate(template);
+            setCode('');
+          });
           return;
         }
 
@@ -198,7 +202,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
         if (!signal.aborted) setIsLoading(false);
       }
     },
-    [t, goToShared, goToSharedPraatplaat, goToSharedAlbum]
+    [t, goToShared, goToSharedPraatplaat, goToSharedAlbum, guard]
   );
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
@@ -241,6 +245,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
   if (pendingSaved) {
     return (
       <div className="w-full max-w-sm mx-auto">
+        {unsavedModal}
         <p className="text-sm font-semibold text-text-main text-center mb-1">
           {t('share.destinationTitle')}
         </p>
@@ -249,7 +254,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
         </p>
         <div className="grid grid-cols-2 gap-3">
           <button
-            onClick={() => handleDestination('studio')}
+            onClick={() => guard(() => handleDestination('studio'))}
             disabled={destLoading !== null}
             className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-border-subtle bg-bg-surface hover:border-accent-400 hover:shadow-md active:scale-[0.98] transition-all p-4 disabled:opacity-60"
           >
@@ -260,7 +265,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
             <span className="text-xs text-text-muted text-center leading-snug">{t('share.destStudioHint')}</span>
           </button>
           <button
-            onClick={() => handleDestination('stage')}
+            onClick={() => guard(() => handleDestination('stage'))}
             disabled={destLoading !== null}
             className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-border-subtle bg-bg-surface hover:border-accent-400 hover:shadow-md active:scale-[0.98] transition-all p-4 disabled:opacity-60"
           >
@@ -289,6 +294,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
 
   return (
     <div className="w-full max-w-sm mx-auto">
+      {unsavedModal}
       <form onSubmit={handleSubmit} className="flex gap-2">
         <label htmlFor="share-code-input" className="sr-only">
           {t('share.listenPlaceholder')}

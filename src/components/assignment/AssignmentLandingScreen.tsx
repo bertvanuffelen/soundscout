@@ -23,6 +23,7 @@ import { getMapBackgroundImage } from '../../data/themes';
 import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment, openSavedComposition } from '../../utils/compositionInit';
+import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
 import { findStoryboardById, getTheme } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -82,13 +83,15 @@ export default function AssignmentLandingScreen() {
     }
   }, [pending, t]);
 
-  const handleStart = useCallback(() => {
+  // Eerst vragen over onbewaard werk (E5): starten vervangt de studio
+  const { guard, modal: unsavedModal } = useUnsavedWorkGuard();
+  const handleStart = () => guard(() => {
     if (!hasSeenFirstRun('onboarding-intro')) {
       setShowIntro(true);
       return;
     }
     void startAssignment();
-  }, [startAssignment]);
+  });
 
   const handleIntroDone = useCallback(() => {
     markFirstRunSeen('onboarding-intro');
@@ -194,7 +197,7 @@ export default function AssignmentLandingScreen() {
               {t('assignmentLanding.back')}
             </Button>
             {pending.member?.latestSaveCode && (
-              <Button variant="secondary" onClick={() => void handleContinueLatest()} disabled={isStarting || isContinuing} isLoading={isContinuing}>
+              <Button variant="secondary" onClick={() => guard(handleContinueLatest)} disabled={isStarting || isContinuing} isLoading={isContinuing}>
                 {t('members.continueLatest')}
               </Button>
             )}
@@ -215,6 +218,7 @@ export default function AssignmentLandingScreen() {
         )}
       </div>
 
+      {unsavedModal}
       <Modal isOpen={showIntro} onClose={handleIntroDone} title={t('start.introTitle')} size="xl">
         <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface mb-4">
           <OnboardingAnimation />

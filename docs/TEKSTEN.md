@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1888 teksten in 50 secties._
+_Stand: 1892 teksten in 51 secties._
 
 ## app
 
@@ -2157,3 +2157,12 @@ _Stand: 1888 teksten in 50 secties._
 | `members.teacher.printTitle` | Leerlingcodes {{className}} | Student codes {{className}} |
 | `members.teacher.printHow` | Ga naar soundscout.nl, kies "Ik heb een code" en typ je code. | Go to soundscout.nl, choose "I have a code" and type your code. |
 | `members.teacher.printName` | Naam: | Name: |
+
+## unsavedWork
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `unsavedWork.title` | Je soundscape is nog niet bewaard | Your soundscape isn't saved yet |
+| `unsavedWork.text` | Bewaar hem eerst in Mijn soundscapes, dan raak je niets kwijt. | Save it in My soundscapes first, so you don't lose anything. |
+| `unsavedWork.saveFirst` | Eerst bewaren | Save first |
+| `unsavedWork.discard` | Niet bewaren | Don't save |

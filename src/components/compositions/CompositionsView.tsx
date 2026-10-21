@@ -12,6 +12,7 @@ import { useCallback, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Music, AlertTriangle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
+import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
 import { storageService } from '../../services/StorageService';
 import { openLocalComposition } from '../../utils/compositionInit';
 import type { SavedComposition } from '../../types';
@@ -56,15 +57,12 @@ export function CompositionsView() {
   }, [goToStart]);
 
   // Openen en afspelen delen één pad met een schone lei (B21)
-  const handleOpenComposition = useCallback(
-    (composition: SavedComposition) => openLocalComposition(composition, 'studio'),
-    []
-  );
-
-  const handlePlayComposition = useCallback(
-    (composition: SavedComposition) => openLocalComposition(composition, 'stage'),
-    []
-  );
+  // Eerst vragen over onbewaard werk (E5): openen vervangt de studio
+  const { guard, modal: unsavedModal } = useUnsavedWorkGuard();
+  const handleOpenComposition = (composition: SavedComposition) =>
+    guard(() => openLocalComposition(composition, 'studio'));
+  const handlePlayComposition = (composition: SavedComposition) =>
+    guard(() => openLocalComposition(composition, 'stage'));
 
   const handleDeleteComposition = useCallback((id: string) => {
     const deleted = storageService.deleteComposition(id);
@@ -178,6 +176,7 @@ export function CompositionsView() {
           </p>
         </div>
       </main>
+      {unsavedModal}
     </div>
   );
 }

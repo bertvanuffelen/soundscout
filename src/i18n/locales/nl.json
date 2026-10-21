@@ -2548,5 +2548,11 @@
       "printHow": "Ga naar soundscout.nl, kies \"Ik heb een code\" en typ je code.",
       "printName": "Naam:"
     }
+  },
+  "unsavedWork": {
+    "title": "Je soundscape is nog niet bewaard",
+    "text": "Bewaar hem eerst in Mijn soundscapes, dan raak je niets kwijt.",
+    "saveFirst": "Eerst bewaren",
+    "discard": "Niet bewaren"
   }
 }
