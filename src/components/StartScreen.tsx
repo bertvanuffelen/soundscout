@@ -46,12 +46,14 @@ export function StartScreen() {
   const hasCollected = useLibraryStore((s) => s.librarySamples.length > 0);
   const hasClipsInProgress = hasClips || hasCollected;
   const currentCompositionId = useAppStore((s) => s.currentCompositionId);
-  // Onderregel van "Verder werken": naam (als bewaard) · klas
+  const compositionTitle = useAppStore((s) => s.compositionTitle);
+  // Onderregel van "Verder werken": titel · klas
   const continueDetail = useMemo(() => {
     if (!hasClipsInProgress) return '';
-    const name = currentCompositionId ? storageService.getCompositionById(currentCompositionId)?.name : undefined;
+    const name = compositionTitle.trim()
+      || (currentCompositionId ? storageService.getCompositionById(currentCompositionId)?.name : undefined);
     return [name, classSession?.className].filter(Boolean).join(' · ');
-  }, [hasClipsInProgress, currentCompositionId, classSession]);
+  }, [hasClipsInProgress, compositionTitle, currentCompositionId, classSession]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
