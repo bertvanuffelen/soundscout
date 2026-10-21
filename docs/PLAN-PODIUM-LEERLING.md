@@ -120,7 +120,7 @@
 - Groepjes en "wie heeft nog niet ingeleverd" blijven buiten v1 (zoals in het ontwerp).
 
 **Nog te doen door Bert (fase 3 en 4)**
-1. Migraties **037** en **038** draaien in Supabase (in die volgorde).
+1. ~~Migraties **037** en **038** draaien~~ ✅ gedraaid en gecontroleerd 21-10 (alle objecten aanwezig, RLS aan, cron-opruimtaak 03:00 actief). **Nog: migratie 039** draaien (rechten docentfuncties dicht voor anoniem).
 2. Privacyverklaring aanvullen met leerlingcodes (code + schuilnaam, geldig tot 31 juli, verwijderd met de klas). De tekst over online bewaren is al aangepast.
 3. Testen met een echte klas: inleveren, versie 2, feedback klasgenoten, "Heb je een klascode?", titelinstelling, leerlingcodes maken, printen en inloggen.
 
@@ -151,3 +151,4 @@
 | 21-10-2026 | 2.1–2.8 podium v4 | 9349416, 61e4317, f9aabbb, eefb4bf, HEAD | tsc ✓ · 457 tests ✓ (11 nieuw) · lint ✓ · browser 1024 + 375 px: vrij zonder klas (afspelen + voortgang, titel-suggestie, Luister → presentatie, Bewaar → echte bewaarcode Z7B4FC, wijziging → "bewaar opnieuw" → bijgewerkt, muziekkaart met QR), praatplaat in klas (opdrachtkaart, pin + zoom, plek verzetten → terug naar podium met zelfde werk), nagebootste inlevering (versie 1 → wijziging → "lever versie 2 in", peer ontgrendeld, docentfeedback-stap), storyboard met strip, klascode-venster (onbekende code → melding), Engels. **Niet getest tegen de server:** echt inleveren, feedback klasgenoten (batch ophalen + sterren rechts), "Heb je een klascode?" met een echte klas |
 | 21-10-2026 | 3.1–3.3 titelinstelling, Engelse data | 99fb476, 2b0e129 | tsc ✓ · 462 tests ✓ (5 nieuw) · lint ✓ · browser: klas met instelling uit → titel automatisch, kop alleen-lezen met slot, stap "Je docent kiest de titels automatisch". **Niet getest:** de schakelaar in ClassDetail (vraagt een docentlogin en de migratie) |
 | 21-10-2026 | 4.1–4.3 live, leerlingcodes, Mijn soundscapes | 2a93811, e72b0f1, 2abd024 | tsc ✓ · 470 tests ✓ (8 nieuw) · build ✓ (main 791 → 820 kB) · PGlite: 037 + 038 ✓ · browser: melding bij andere opdracht, codeveld LK-4827 valt zonder migratie terug op "Code niet gevonden", Mijn soundscapes per klas met code. **Niet getest tegen de server:** leerlingcodes (vraagt migratie 038 en een docentlogin) |
+| 21-10-2026 | Controle database na 037/038 + migratie 039 | HEAD | Supabase (alleen lezen): objecten van 002–038 aanwezig, RLS op class_members, pg_cron `soundscout-cleanup` 03:00. Gevonden: 5 docentfuncties uitvoerbaar door `anon` (PUBLIC-standaardrecht; geen misbruik mogelijk door assert_class_owner). Migratie 039 zet ze dicht, getest in PGlite (2× draaien) |
