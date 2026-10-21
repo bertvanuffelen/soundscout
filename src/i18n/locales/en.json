@@ -39,7 +39,7 @@
   },
   "map": {
     "title": "Choose a location to record sounds",
-    "selectLocation": "Click on a location to explore",
+    "selectLocation": "Click a location to explore it",
     "loadingTheme": "Loading theme...",
     "studioShort": "Studio",
     "cityMapAlt": "Theme map",
@@ -61,7 +61,7 @@
       "description": "Ski slope, bobsleigh and ice arena",
       "locations": {
         "winterdorp": "Winter Village",
-        "winterdorp_desc": "A cozy winter village",
+        "winterdorp_desc": "A cosy winter village",
         "bobslee": "Bobsleigh track",
         "bobslee_desc": "The fastest track",
         "skipiste": "Ski Slope",
@@ -105,7 +105,7 @@
       "locations": {
         "grogkroeg": "The Thirsty Parrot",
         "grogkroeg_desc": "A cosy pirate tavern",
-        "haven": "The Harbor",
+        "haven": "The Harbour",
         "haven_desc": "The harbour with docks",
         "schip": "The Ship",
         "schip_desc": "The pirate ship's deck",
@@ -268,17 +268,17 @@
     "timeline": "Timeline",
     "playhead": "Playback position",
     "backToLocation": "Back to map",
-    "toStage": "To Stage",
+    "toStage": "To the stage",
     "emptyLibrary": "Go collect some sounds first!",
     "emptyLibraryHint": "Visit locations on the map to collect sounds.",
     "dragHint": "Drag sounds to the timeline",
-    "addTrack": "add track",
+    "addTrack": "Add track",
     "addTrackTitle": "Add a track (currently {{count}} tracks, max 12)",
     "soloOn": "Hear only this track (solo)",
     "soloOff": "Turn solo off",
-    "extendTimelineTitle": "Make the timeline 8 measures longer (currently {{maten}} measures, max 64)",
-    "shrinkTimelineTitle": "Make the timeline 8 measures shorter (currently {{maten}} measures, min 16)",
-    "clipToolsHint": "Tip: click a block on the timeline to trim it, add effects or adjust the volume.",
+    "extendTimelineTitle": "Make the timeline 8 bars longer (currently {{maten}} bars, max 64)",
+    "shrinkTimelineTitle": "Make the timeline 8 bars shorter (currently {{maten}} bars, min 16)",
+    "clipToolsHint": "Tip: click a clip on the timeline to trim it, add effects or change the volume.",
     "addToTrack": "Add {{name}} to timeline",
     "dragToTimeline": "Drag to timeline",
     "trim": "Trim",
@@ -294,8 +294,8 @@
     "muted": "Muted",
     "clipLabel": "Label",
     "clipLabelPlaceholder": "e.g. wind, tapping",
-    "trackColor": "Color",
-    "noColor": "No color",
+    "trackColor": "Colour",
+    "noColor": "No colour",
     "clearTimeline": "Clear timeline",
     "clearConfirm": "Clear all?",
     "trimModal": {
@@ -332,10 +332,10 @@
       "loopOff": "Stop looping this section",
       "deleteSection": "Delete section",
       "lockedStoryboard": "Linked to storyboard",
-      "colorLabel": "Color",
+      "colorLabel": "Colour",
       "labelPlaceholder": "Label (e.g. Intro, A, B)",
       "maxReached": "Maximum number of sections reached",
-      "needsPlayhead": "First move the playhead to where the section should end (play or click the timeline)",
+      "needsPlayhead": "Move the playhead to where the section should end first (press play or click the timeline).",
       "barLabel": "Sections"
     },
     "startBeat": "Starts on beat {{beat}}"
@@ -349,20 +349,20 @@
     "loopChoose": "What do you want to loop?",
     "loopWhole": "Whole soundscape",
     "loopSection": "This section",
-    "loopSectionHint": "Make a section first",
+    "loopSectionHint": "Mark a section first",
     "loopSectionBadge": "section",
     "loopStop": "Click to stop looping",
-    "clearAll": "Clear All",
+    "clearAll": "Clear all",
     "confirmClear": "Are you sure?"
   },
   "stage": {
     "title": "The Stage",
-    "backToStudio": "Back to Studio",
-    "playAgain": "Play Again",
+    "backToStudio": "Back to the studio",
+    "playAgain": "Play again",
     "share": "Share",
     "nameComposition": "Name your soundscape",
     "namePlaceholder": "My soundscape",
-    "nameHint": "Tip: don't put your last name in the name of your music.",
+    "nameHint": "Tip: don't include your last name in the title.",
     "newComposition": "New soundscape",
     "newCompositionConfirm": "Are you sure you want to start over? You will lose your collected sounds and your soundscape.",
     "nowPlaying": "Now playing...",
@@ -376,33 +376,33 @@
     "exporting": "Exporting...",
     "exportSuccess": "Success! Your MP3 is downloading.",
     "exportError": "Export failed. Please try again.",
-    "downloadVideo": "Download Video",
+    "downloadVideo": "Download video",
     "exportingVideo": "Creating video...",
     "videoExportSuccess": "Video downloaded!",
     "praatplaatSubmitted": "Your soundscape is on the sound map!",
-    "yourCodeTitle": "Your code:",
+    "yourCodeTitle": "Your save code:",
     "yourCodeHint": "Keep this code safe! Use it later to see your teacher's feedback (Start screen → \"I have a code\").",
     "praatplaatSuccessTitle": "Success!",
     "praatplaatSuccessMessage": "Your soundscape is on the sound map. Your teacher can now play it on the whiteboard!",
     "praatplaatContinue": "Continue with this soundscape",
     "praatplaatNewSpot": "Choose a new spot",
     "newSpotConfirm": "Are you sure you want to choose a new spot? You will lose your current soundscape and collected sounds.",
-    "videoNotSupported": "Video export not available on this browser",
+    "videoNotSupported": "Video export isn't available in this browser",
     "subtitle": "Your soundscape",
     "shareWithTeacher": "Share with teacher",
     "defaultName": "My soundscape",
-    "saveAndShare": "Save & Share",
+    "saveAndShare": "Save & share",
     "actionsTitle": "Save and share",
     "actionsSubtitle": "What do you want to do with your soundscape?",
-    "colSelf": "For you",
+    "colSelf": "For yourself",
     "colClass": "For your class",
     "colShare": "Share with others",
     "actionsSaveHint": "On this device",
     "classNotYetSubmitted": "Click Hand in to send it to {{className}}.",
     "teacherOnly": "Visible to teachers only",
     "actionsOnlineHint": "Continue working on another device",
-    "actionsShareHint": "Create a listen link for anyone",
-    "actionsTeacherHint": "Send to your teacher via class code",
+    "actionsShareHint": "Create a listening link anyone can open",
+    "actionsTeacherHint": "Send it to your teacher with a class code",
     "actionsExportMp3Hint": "Download as audio file",
     "actionsExportVideoHint": "Download as video with images",
     "actionsTemplateHint": "Create an assignment for students",
@@ -449,7 +449,7 @@
   "locations": {
     "boerderij": {
       "name": "The Petting Zoo",
-      "description": "A cozy petting zoo full of animal sounds"
+      "description": "A cosy petting zoo full of animal sounds"
     },
     "speeltuin": {
       "name": "The Playground",
@@ -465,7 +465,7 @@
     },
     "muziekwinkel": {
       "name": "The Music Room",
-      "description": "A cozy music room full of instruments"
+      "description": "A cosy music room full of instruments"
     },
     "klaslokaal": {
       "name": "The Classroom",
@@ -483,7 +483,7 @@
     "speeltuin-skateboard": "Skateboard",
     "speeltuin-vissen": "Fishing",
     "speeltuin-voetbal": "Football",
-    "speeltuin-zandbak": "Sandbox",
+    "speeltuin-zandbak": "Sandpit",
     "speeltuin-robot": "Robot",
     "metro-train": "Train",
     "metro-announcement": "Announcement",
@@ -511,7 +511,7 @@
   "feedback": {
     "helpButton": "Need help?",
     "errorButton": "Report error",
-    "titleError": "Report Error",
+    "titleError": "Report an error",
     "titleFeedback": "Need help?",
     "errorIntro": "An error occurred. Would you like to report it so we can fix it?",
     "feedbackIntro": "What kind of problem do you have?",
@@ -520,7 +520,7 @@
     "whatHappenedPlaceholder": "E.g. I clicked the play button and then...",
     "descriptionLabel": "Describe your problem",
     "descriptionPlaceholder": "Tell us what's going wrong...",
-    "descriptionHint": "Minimum 10 characters",
+    "descriptionHint": "At least 10 characters",
     "emailLabel": "Email (optional)",
     "emailPlaceholder": "For follow-up questions",
     "submitError": "Report error",
@@ -532,7 +532,7 @@
     "rateLimitMessage": "You can send feedback again in {{seconds}} seconds.",
     "categories": {
       "bug": {
-        "label": "Something broken",
+        "label": "Something's broken",
         "desc": "Something isn't working"
       },
       "confusion": {
@@ -573,18 +573,18 @@
     "listenPlaceholder": "Enter code",
     "listen": "Open",
     "invalidCode": "Please enter a valid code",
-    "codeNotFound": "Code not found. Check the number of characters and if the code is correct.",
+    "codeNotFound": "Code not found. Check that it has the right number of characters and is typed correctly.",
     "noPraatplaat": "No active sound map for this class code. Ask your teacher.",
     "noActiveAssignment": "No active assignment for this class code. Ask your teacher.",
     "lookupError": "Something went wrong. Please try again.",
-    "classCodeNotFound": "This class code doesn't exist. Check the numbers again.",
+    "classCodeNotFound": "This class code doesn't exist. Check the digits again.",
     "classBusy": "It's very busy right now. Wait a few seconds and try again.",
     "loadFailed": "Loading failed. Please try again.",
     "destinationTitle": "Found it! Where do you want to go?",
     "destStudio": "Studio",
     "destStudioHint": "Keep working on your soundscape",
     "destStage": "Stage",
-    "destStageHint": "Presentation and feedback",
+    "destStageHint": "Listen and see your feedback",
     "backToStart": "Back to SoundScout",
     "viewCount_one": "Listened to once",
     "viewCount_other": "Listened to {{count}} times",
@@ -694,7 +694,7 @@
     "deleteError": "Could not delete assignment card",
     "defaults": {
       "template": {
-        "title": "How this assignment works",
+        "title": "Assignment",
         "bullets": [
           "Your teacher has set up some music already.",
           "Listen carefully and finish it.",
@@ -703,7 +703,7 @@
         ]
       },
       "praatplaat": {
-        "title": "How this assignment works",
+        "title": "Assignment",
         "bullets": [
           "You'll pick a spot on the image next.",
           "Collect sounds on the map.",
@@ -712,7 +712,7 @@
         ]
       },
       "storyboard": {
-        "title": "How this assignment works",
+        "title": "Assignment",
         "bullets": [
           "Look at the scenes of the story.",
           "Collect sounds on the map.",
@@ -721,7 +721,7 @@
         ]
       },
       "free": {
-        "title": "How this assignment works",
+        "title": "Assignment",
         "bullets": [
           "Collect sounds on the map.",
           "Experiment with the sounds.",
@@ -736,7 +736,7 @@
     "builtin": {
       "robotfabriek": {
         "title": "Robot factory",
-        "level": "Grade 6–7",
+        "level": "Ages 9–11",
         "goal": "Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere.",
         "phases": [
           {
@@ -759,7 +759,7 @@
       },
       "verspringen": {
         "title": "Long jump",
-        "level": "Grade 5–8",
+        "level": "Ages 8–12",
         "goal": "Students create a soundtrack for each scene and experience how music supports a visual story.",
         "phases": [
           {
@@ -876,7 +876,7 @@
       "titlePlaceholder": "E.g. Robot factory",
       "titleRequired": "Give the lesson card a title.",
       "levelLabel": "Level (optional)",
-      "levelPlaceholder": "E.g. Grade 4–5",
+      "levelPlaceholder": "e.g. Ages 7–9",
       "pdfLabel": "Pdf link (optional)",
       "pdfPlaceholder": "https://…",
       "goalLabel": "Goal (optional)",
@@ -975,7 +975,7 @@
     "sendReportButton": "Send error report",
     "technicalDetails": "Technical details",
     "featureError": "{{feature}} could not be loaded",
-    "featureDescription": "This section encountered an error. You can try again."
+    "featureDescription": "Something went wrong in this part of the app. You can try again."
   },
   "auth": {
     "emailAlreadyRegistered": "This email address is already registered",
@@ -994,32 +994,32 @@
     "openButton": "Listen to classmates",
     "loading": "Loading your classmates’ soundscapes...",
     "emptyTitle": "No soundscapes to listen to yet",
-    "emptyHint": "Maybe no one else has submitted yet, you already reviewed 3 classmates, or the feedback round has closed.",
+    "emptyHint": "Maybe no one else has handed in yet, you've already reviewed 3 classmates, or the feedback round has closed.",
     "loadError": "Could not load the soundscapes. Please try again later.",
-    "submitError": "Could not send your compliment.",
+    "submitError": "Could not send your review.",
     "retry": "Try again",
     "blockedTitle": "Your review was not saved",
     "progress": "Soundscape {{current}} of {{total}}",
     "anonymous": "A classmate’s soundscape",
-    "anonymousHint": "You don't know whose this is — listen carefully and choose what you think of it.",
-    "starsLabel": "Give stars per criterion:",
-    "starsHint": "1 = good try · 2 = well done · 3 = very strong. Rate at least one criterion.",
+    "anonymousHint": "You don't know who made this. Listen carefully and say what you think.",
+    "starsLabel": "Give stars for each part:",
+    "starsHint": "1 = good try · 2 = well done · 3 = really strong. Rate at least one part.",
     "starTitle": "{{stars}} of 3 stars",
     "capReached": "You have reached the maximum of 3 reviews.",
     "windowClosed": "Your teacher has closed the feedback round.",
     "chipsLabel": "Choose 1 to 3 compliments:",
-    "sendAndNext": "Send and next",
+    "sendAndNext": "Send & next",
     "sendAndFinish": "Send and finish",
-    "doneTitle": "You listened to all the soundscapes!",
+    "doneTitle": "You've listened to all the soundscapes!",
     "doneHint": "Your reviews were sent anonymously. This helps your classmates with their music."
   },
   "studentFeedback": {
     "bannerTitle": "Feedback from your teacher:",
     "complimentsTitle": "From your classmates:",
     "avgStars": "average {{stars}} stars",
-    "noticeButton": "You have a reaction to \"{{name}}\"!",
+    "noticeButton": "You’ve got feedback on \"{{name}}\"!",
     "modalTitle": "Feedback from your teacher",
-    "modalHint": "Want to keep working on your soundscape? Enter your code {{code}} at \"I have a code\".",
+    "modalHint": "Want to keep working on your soundscape? Enter your code {{code}} under \"I have a code\".",
     "modalClose": "OK"
   },
   "submissions": {
@@ -1029,11 +1029,11 @@
     "shareLinkError": "Could not create link. Please try again.",
     "loadError": "Could not load composition.",
     "dataInvalid": "This composition could not be loaded: the saved data is invalid. Please report this via the feedback form.",
-    "cooldown": "Please wait! {{seconds}} seconds before you can submit again.",
+    "cooldown": "Please wait {{seconds}} seconds before sending again.",
     "rateLimitError": "Too many requests. Please wait and try again.",
-    "autoSubmitSuccess": "Submitted to {{className}}",
-    "autoSubmitUpdated": "Updated at {{className}}",
-    "autoSubmitFailed": "Submission failed — will retry on next save",
+    "autoSubmitSuccess": "Handed in to {{className}}",
+    "autoSubmitUpdated": "Updated for {{className}}",
+    "autoSubmitFailed": "Couldn't hand in. We'll try again next time you save.",
     "praatplaatNoPosition": "Choose a spot on the sound map before you submit."
   },
   "errors": {
@@ -1082,11 +1082,11 @@
       "limitReached_other": "You have reached the maximum of {{count}} classes. Delete a class to create a new one."
     },
     "praatplaten": {
-      "load": "Could not load praatplaten",
-      "create": "Could not create the praatplaat",
-      "activate": "Could not activate the praatplaat",
-      "deactivate": "Could not deactivate the praatplaat",
-      "delete": "Could not delete the praatplaat"
+      "load": "Could not load sound maps",
+      "create": "Could not create the sound map",
+      "activate": "Could not activate the sound map",
+      "deactivate": "Could not deactivate the sound map",
+      "delete": "Could not delete the sound map"
     },
     "submissions": {
       "load": "Could not load compositions",
@@ -1132,8 +1132,8 @@
           "title": "Managing classes",
           "content": [
             "Your dashboard shows all classes you've created. You can have up to 8 classes simultaneously (free account). Each class has its own class code that doesn't change — students only need it once.",
-            "To delete a class, use the trash icon on the class card. Note: deleting a class also removes all related submissions, templates, and praatplaten. This cannot be undone.",
-            "Click a class to open the detail view. There you see all student submissions, can activate assignments (template or praatplaat), and see compositions still 'In progress'."
+            "To delete a class, use the trash icon on the class card. Note: deleting a class also removes all related submissions, templates, and sound maps. This cannot be undone.",
+            "Click a class to open the detail view. There you see all student submissions, can activate assignments (template or sound map), and see compositions still 'In progress'."
           ]
         },
         "dashboard-tour": {
@@ -1172,7 +1172,7 @@
               "type": "heading",
               "text": "With an image (sound map)"
             },
-            "The whole class works on one shared image: each student places their composition on a spot, and you present the result to the class on the smartboard. See the 'Using a sound map' chapter.",
+            "The whole class works on one shared image: each student places their composition on a spot, and you present the result to the class on the whiteboard. See the 'Using a sound map' chapter.",
             {
               "type": "heading",
               "text": "Storyboard"
@@ -1236,7 +1236,7 @@
         "compose-modes": {
           "title": "Composition modes",
           "content": [
-            "When a student clicks 'New Composition', they first choose a mode. Each mode suits a different learning objective.",
+            "When a student clicks 'New soundscape', they first choose a mode. Each mode suits a different learning objective.",
             {
               "type": "heading",
               "text": "Free composition"
@@ -1286,34 +1286,34 @@
           ]
         },
         "praatplaat": {
-          "title": "Using a praatplaat",
+          "title": "Using a sound map",
           "content": [
-            "A praatplaat is a collaborative sound map: each student creates a small composition and places it on a position on an image (e.g. a forest, a city, a market). As teacher you can then present the praatplaat to the class — click a spot and hear what that student made.",
+            "A sound map is a shared picture full of sounds: each student creates a small composition and places it on a position on an image (e.g. a forest, a city, a market). As teacher you can then present the sound map to the class — click a spot and hear what that student made.",
             {
               "type": "heading",
-              "text": "Creating a praatplaat"
+              "text": "Creating a sound map"
             },
-            "Go to the class detail screen and click 'Activate an assignment'. Choose 'Praatplaat', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time.",
+            "Go to the class detail screen and click 'Activate an assignment'. Choose 'Sound map', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time.",
             {
               "type": "heading",
               "text": "What students see"
             },
-            "Students enter the 4-digit class code on the start screen. They then see a preview of the praatplaat. After clicking 'Start' they choose a spot on the image where they want to place their composition. Then they build their composition as usual in the studio. When they save, the composition is automatically linked to the chosen spot. Using the 'Choose a new spot' button they can then add another composition at a different location.",
+            "Students enter the 4-digit class code on the start screen. They then see a preview of the sound map. After clicking 'Start' they choose a spot on the image where they want to place their composition. Then they build their composition as usual in the studio. When they save, the composition is automatically linked to the chosen spot. Using the 'Choose a new spot' button they can then add another composition at a different location.",
             {
               "type": "heading",
               "text": "Presenting on the whiteboard"
             },
-            "Open the praatplaat via 'Open praatplaat' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
+            "Open the sound map via 'Open sound map' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
             {
               "type": "heading",
               "text": "Sharing a link with students"
             },
-            "Click 'Share link' next to the active praatplaat. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the praatplaat flow without needing to enter the class code manually. Ideal for projecting on the whiteboard.",
+            "Click 'Share link' next to the active sound map. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the sound map flow without needing to enter the class code manually. Ideal for projecting on the whiteboard.",
             {
               "type": "heading",
               "text": "Public listening page"
             },
-            "At the bottom of the share dialog you'll find the 'Listening page' option. Click 'Create listening page' to generate a public link. Anyone with this link — including parents, colleagues or guests — can view the praatplaat and listen to all compositions, without logging in. The link is valid for 30 days and can be extended by clicking the button again. A QR code is also available for printing or sharing."
+            "At the bottom of the share dialog you'll find the 'Listening page' option. Click 'Create listening page' to generate a public link. Anyone with this link — including parents, colleagues or guests — can view the sound map and listen to all compositions, without logging in. The link is valid for 30 days and can be extended by clicking the button again. A QR code is also available for printing or sharing."
           ]
         },
         "submissions": {
@@ -1380,17 +1380,17 @@
               "type": "heading",
               "text": "Timing"
             },
-            "Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block.",
+            "Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or sound map usually fits in a 45-minute block.",
             {
               "type": "heading",
               "text": "Set up before the lesson"
             },
-            "Activate the assignment in advance and write the class code large on the board (or show it via the digiboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen.",
+            "Activate the assignment in advance and write the class code large on the board (or show it via the whiteboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen.",
             {
               "type": "heading",
               "text": "Ways of working"
             },
-            "SoundScout works best in pairs: one operates, one listens along and advises — swap halfway. Starting together with the praatplaat on the digiboard creates focus: explore the image as a class and divide the spots before everyone starts.",
+            "SoundScout works best in pairs: one operates, one listens along and advises — swap halfway. Starting together with the sound map on the whiteboard creates focus: explore the image as a class and divide the spots before everyone starts.",
             {
               "type": "heading",
               "text": "Wrapping up and presenting"
@@ -1502,7 +1502,7 @@
       "educatorDeclaration": "I am a teacher or education professional and use SoundScout for my teaching.",
       "subtitle": "Create Teacher Account",
       "nameLabel": "Name",
-      "namePlaceholder": "Ms. Smith",
+      "namePlaceholder": "Ms Smith",
       "emailLabel": "Email address",
       "emailPlaceholder": "teacher@school.com",
       "passwordLabel": "Password",
@@ -1599,7 +1599,7 @@
         },
         "step3": {
           "title": "Present and give feedback",
-          "description": "Follow submissions in the classroom, present on the digiboard and give feedback."
+          "description": "Follow submissions in the classroom, present on the whiteboard and give feedback."
         }
       }
     },
@@ -1713,7 +1713,7 @@
     "createClassModal": {
       "title": "Create New Class",
       "nameLabel": "Class name",
-      "namePlaceholder": "E.g. Grade 5B or Music Class 2025",
+      "namePlaceholder": "e.g. Class 5B or Music 2025",
       "nameRequired": "Please enter a class name",
       "nameMinLength": "Class name must be at least 2 characters",
       "codeInfo": "After creating, you'll get a unique 4-digit code that you can share with your students.",
@@ -1755,7 +1755,7 @@
       "reviewed": "Reviewed"
     },
     "praatplaat": {
-      "sectionTitle": "Sound Maps",
+      "sectionTitle": "Sound maps",
       "create": "New sound map",
       "createError": "Could not create sound map",
       "active": "Active",
@@ -1765,7 +1765,7 @@
       "activatedMessage": "Sound map is active! Students enter this class code:",
       "activateError": "Could not activate sound map",
       "deactivateError": "Could not deactivate sound map",
-      "deleteTitle": "Delete Sound Map",
+      "deleteTitle": "Delete sound map",
       "deleteConfirm": "Are you sure you want to delete this sound map?\n\nAll submitted compositions will also be deleted!",
       "deleteError": "Could not delete sound map",
       "view": "View",
@@ -1874,11 +1874,11 @@
     "title": "How do you want to compose?",
     "subtitle": "Choose how to make your soundscape",
     "next": "Next",
-    "free": "Free compose",
+    "free": "Compose freely",
     "freeDescription": "Make your own soundscape without images",
-    "image": "With an image",
+    "image": "To a picture",
     "imageDescription": "Create a soundscape for a single image",
-    "storyboard": "With a storyboard",
+    "storyboard": "To a storyboard",
     "storyboardDescription": "Create a soundscape for a series of images",
     "pickImage": "Choose an image",
     "pickStoryboard": "Choose a storyboard",
@@ -1906,7 +1906,7 @@
     "title": "Save online",
     "description": "Save your soundscape online and get a code. Use it to keep working on any device.",
     "nameLabel": "Your name",
-    "namePlaceholder": "E.g. Lisa or Class 5",
+    "namePlaceholder": "e.g. Lisa",
     "classCodeLabel": "Class code (optional)",
     "classCodePlaceholder": "4 digits",
     "saveButton": "Save",
@@ -1977,7 +1977,7 @@
     "classLabel": "Class:",
     "back": "Back",
     "start": "Start",
-    "starting": "Loading...",
+    "starting": "Starting...",
     "startError": "Could not start. Please try again.",
     "missingContext": "No assignment found. Return to the start screen.",
     "backToStart": "Back to start",
@@ -1990,7 +1990,7 @@
     },
     "praatplaat": {
       "kind": "Sound map",
-      "description": "Next, you pick a spot on this image. That is where your soundscape goes."
+      "description": "Next, you'll pick a spot on this picture. Your soundscape goes there."
     },
     "storyboard": {
       "kind": "Story in pictures",
@@ -1998,7 +1998,7 @@
     },
     "free": {
       "kind": "Free soundscape",
-      "description": "Collect sounds on the map and make your own soundscape. Let your imagination run free."
+      "description": "Collect sounds on the map and make your own soundscape. Let your imagination run wild."
     },
     "none": {
       "heading": "No assignment ready yet",
@@ -2125,7 +2125,7 @@
         "description": "One class code is enough. Students work anonymously with a random nickname; we only store their composition."
       },
       "praatplaat": {
-        "title": "Sound map on the smartboard",
+        "title": "Sound map on the whiteboard",
         "description": "The whole class places compositions on one shared picture. Listen, discuss and celebrate together."
       },
       "feedback": {
@@ -2164,8 +2164,8 @@
           "a": "SoundScout is built to store as little as possible. Students work anonymously with a random nickname: no account, no email address, no password. No cookies, no tracking, no ads. Submitted work is deleted automatically after one school year. The school remains responsible for student data and SoundScout is the processor; a data processing agreement is available on request via hello@soundscout.nl. Everything is in the privacy statement at soundscout.nl/privacy."
         },
         "devices": {
-          "q": "Does SoundScout work on Chromebooks, iPads and the smartboard?",
-          "a": "Yes. SoundScout runs entirely in the browser and is built for Chromebooks, iPads, laptops and the smartboard. The sound map view is designed for whole-class use on the smartboard."
+          "q": "Does SoundScout work on Chromebooks, iPads and the whiteboard?",
+          "a": "Yes. SoundScout runs entirely in the browser and is built for Chromebooks, iPads, laptops and the whiteboard. The sound map view is designed for whole-class use on the whiteboard."
         },
         "install": {
           "q": "Do I need to install anything?",

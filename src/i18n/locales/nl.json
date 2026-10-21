@@ -693,7 +693,7 @@
     "deleteError": "Kon opdrachtkaart niet verwijderen",
     "defaults": {
       "template": {
-        "title": "Zo werkt deze opdracht",
+        "title": "Opdracht",
         "bullets": [
           "Je docent heeft alvast muziek klaargezet.",
           "Luister goed en maak het af.",
@@ -702,7 +702,7 @@
         ]
       },
       "praatplaat": {
-        "title": "Zo werkt deze opdracht",
+        "title": "Opdracht",
         "bullets": [
           "Je kiest straks een plek op de afbeelding.",
           "Verzamel geluiden op de kaart.",
@@ -711,7 +711,7 @@
         ]
       },
       "storyboard": {
-        "title": "Zo werkt deze opdracht",
+        "title": "Opdracht",
         "bullets": [
           "Bekijk de scènes van het verhaal.",
           "Verzamel geluiden op de kaart.",
@@ -720,7 +720,7 @@
         ]
       },
       "free": {
-        "title": "Zo werkt deze opdracht",
+        "title": "Opdracht",
         "bullets": [
           "Verzamel geluiden op de kaart.",
           "Experimenteer met de klanken.",

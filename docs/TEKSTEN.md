@@ -78,7 +78,7 @@ _Stand: 1758 teksten in 48 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `map.title` | Kies een locatie om geluiden op te nemen | Choose a location to record sounds |
-| `map.selectLocation` | Klik op een locatie om te verkennen | Click on a location to explore |
+| `map.selectLocation` | Klik op een locatie om te verkennen | Click a location to explore it |
 | `map.loadingTheme` | Thema laden... | Loading theme... |
 | `map.studioShort` | Studio | Studio |
 | `map.cityMapAlt` | Plattegrond van het thema | Theme map |
@@ -102,7 +102,7 @@ _Stand: 1758 teksten in 48 secties._
 | `themes.winterspelen.name` | Winterspelen | Winter Games |
 | `themes.winterspelen.description` | Skipiste, bobslee en ijsarena | Ski slope, bobsleigh and ice arena |
 | `themes.winterspelen.locations.winterdorp` | Winterdorp | Winter Village |
-| `themes.winterspelen.locations.winterdorp_desc` | Een gezellig winterdorp | A cozy winter village |
+| `themes.winterspelen.locations.winterdorp_desc` | Een gezellig winterdorp | A cosy winter village |
 | `themes.winterspelen.locations.bobslee` | Bobslee baan | Bobsleigh track |
 | `themes.winterspelen.locations.bobslee_desc` | De snelste baan | The fastest track |
 | `themes.winterspelen.locations.skipiste` | Skipiste | Ski Slope |
@@ -140,7 +140,7 @@ _Stand: 1758 teksten in 48 secties._
 | `themes.piraten.description` | Grogkroeg, haven, schip, jungle en voodoo — vaar mee! | Tavern, harbour, ship, jungle and voodoo — set sail! |
 | `themes.piraten.locations.grogkroeg` | De Dorstige Papegaai | The Thirsty Parrot |
 | `themes.piraten.locations.grogkroeg_desc` | Een gezellige piratenkroeg | A cosy pirate tavern |
-| `themes.piraten.locations.haven` | De Kade | The Harbor |
+| `themes.piraten.locations.haven` | De Kade | The Harbour |
 | `themes.piraten.locations.haven_desc` | Het haventje met steigers | The harbour with docks |
 | `themes.piraten.locations.schip` | Het Schip | The Ship |
 | `themes.piraten.locations.schip_desc` | Het dek van het piratenschip | The pirate ship's deck |
@@ -311,17 +311,17 @@ _Stand: 1758 teksten in 48 secties._
 | `studio.timeline` | Tijdlijn | Timeline |
 | `studio.playhead` | Afspeelpositie | Playback position |
 | `studio.backToLocation` | Terug naar plattegrond | Back to map |
-| `studio.toStage` | Naar Podium | To Stage |
+| `studio.toStage` | Naar Podium | To the stage |
 | `studio.emptyLibrary` | Ga eerst geluiden verzamelen! | Go collect some sounds first! |
 | `studio.emptyLibraryHint` | Bezoek locaties op de kaart om geluiden te verzamelen. | Visit locations on the map to collect sounds. |
 | `studio.dragHint` | Sleep geluiden naar de tijdlijn | Drag sounds to the timeline |
-| `studio.addTrack` | spoor toevoegen | add track |
+| `studio.addTrack` | spoor toevoegen | Add track |
 | `studio.addTrackTitle` | Spoor toevoegen (nu {{count}} sporen, max 12) | Add a track (currently {{count}} tracks, max 12) |
 | `studio.soloOn` | Alleen dit spoor horen (solo) | Hear only this track (solo) |
 | `studio.soloOff` | Solo uitzetten | Turn solo off |
-| `studio.extendTimelineTitle` | Tijdlijn 8 maten langer maken (nu {{maten}} maten, max 64) | Make the timeline 8 measures longer (currently {{maten}} measures, max 64) |
-| `studio.shrinkTimelineTitle` | Tijdlijn 8 maten korter maken (nu {{maten}} maten, min 16) | Make the timeline 8 measures shorter (currently {{maten}} measures, min 16) |
-| `studio.clipToolsHint` | Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen. | Tip: click a block on the timeline to trim it, add effects or adjust the volume. |
+| `studio.extendTimelineTitle` | Tijdlijn 8 maten langer maken (nu {{maten}} maten, max 64) | Make the timeline 8 bars longer (currently {{maten}} bars, max 64) |
+| `studio.shrinkTimelineTitle` | Tijdlijn 8 maten korter maken (nu {{maten}} maten, min 16) | Make the timeline 8 bars shorter (currently {{maten}} bars, min 16) |
+| `studio.clipToolsHint` | Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen. | Tip: click a clip on the timeline to trim it, add effects or change the volume. |
 | `studio.addToTrack` | Voeg {{name}} toe aan tijdlijn | Add {{name}} to timeline |
 | `studio.dragToTimeline` | Sleep naar tijdlijn | Drag to timeline |
 | `studio.trim` | Inkorten | Trim |
@@ -337,8 +337,8 @@ _Stand: 1758 teksten in 48 secties._
 | `studio.muted` | Gedempt | Muted |
 | `studio.clipLabel` | Label | Label |
 | `studio.clipLabelPlaceholder` | bijv. wind, tikken | e.g. wind, tapping |
-| `studio.trackColor` | Kleur | Color |
-| `studio.noColor` | Geen kleur | No color |
+| `studio.trackColor` | Kleur | Colour |
+| `studio.noColor` | Geen kleur | No colour |
 | `studio.effects` | Effecten | Effects |
 | `studio.pitch` | Toonhoogte | Pitch |
 | `studio.pitchLow` | Laag | Low |
@@ -370,10 +370,10 @@ _Stand: 1758 teksten in 48 secties._
 | `studio.sections.loopOff` | Stop loop van deze sectie | Stop looping this section |
 | `studio.sections.deleteSection` | Deel verwijderen | Delete section |
 | `studio.sections.lockedStoryboard` | Gekoppeld aan storyboard | Linked to storyboard |
-| `studio.sections.colorLabel` | Kleur | Color |
+| `studio.sections.colorLabel` | Kleur | Colour |
 | `studio.sections.labelPlaceholder` | Label (bijv. Intro, A, B) | Label (e.g. Intro, A, B) |
 | `studio.sections.maxReached` | Maximum aantal delen bereikt | Maximum number of sections reached |
-| `studio.sections.needsPlayhead` | Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn) | First move the playhead to where the section should end (play or click the timeline) |
+| `studio.sections.needsPlayhead` | Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn) | Move the playhead to where the section should end first (press play or click the timeline). |
 | `studio.sections.barLabel` | Secties | Sections |
 | `studio.startBeat` | Begint op tel {{beat}} | Starts on beat {{beat}} |
 
@@ -389,10 +389,10 @@ _Stand: 1758 teksten in 48 secties._
 | `transport.loopChoose` | Wat wil je herhalen? | What do you want to loop? |
 | `transport.loopWhole` | Hele soundscape | Whole soundscape |
 | `transport.loopSection` | Deze sectie | This section |
-| `transport.loopSectionHint` | Maak eerst een sectie | Make a section first |
+| `transport.loopSectionHint` | Maak eerst een sectie | Mark a section first |
 | `transport.loopSectionBadge` | sectie | section |
 | `transport.loopStop` | Klik om te stoppen met herhalen | Click to stop looping |
-| `transport.clearAll` | Alles wissen | Clear All |
+| `transport.clearAll` | Alles wissen | Clear all |
 | `transport.confirmClear` | Weet je het zeker? | Are you sure? |
 
 ## stage
@@ -400,12 +400,12 @@ _Stand: 1758 teksten in 48 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `stage.title` | Het Podium | The Stage |
-| `stage.backToStudio` | Terug naar Studio | Back to Studio |
-| `stage.playAgain` | Opnieuw afspelen | Play Again |
+| `stage.backToStudio` | Terug naar Studio | Back to the studio |
+| `stage.playAgain` | Opnieuw afspelen | Play again |
 | `stage.share` | Delen | Share |
 | `stage.nameComposition` | Geef je soundscape een naam | Name your soundscape |
 | `stage.namePlaceholder` | Mijn soundscape | My soundscape |
-| `stage.nameHint` | Tip: zet je achternaam niet in de naam van je muziek. | Tip: don't put your last name in the name of your music. |
+| `stage.nameHint` | Tip: zet je achternaam niet in de naam van je muziek. | Tip: don't include your last name in the title. |
 | `stage.newComposition` | Nieuwe soundscape | New soundscape |
 | `stage.newCompositionConfirm` | Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt. | Are you sure you want to start over? You will lose your collected sounds and your soundscape. |
 | `stage.nowPlaying` | Nu speelt... | Now playing... |
@@ -419,33 +419,33 @@ _Stand: 1758 teksten in 48 secties._
 | `stage.exporting` | Exporteren... | Exporting... |
 | `stage.exportSuccess` | Gelukt! Je MP3 wordt gedownload. | Success! Your MP3 is downloading. |
 | `stage.exportError` | Export mislukt. Probeer opnieuw. | Export failed. Please try again. |
-| `stage.downloadVideo` | Download Video | Download Video |
+| `stage.downloadVideo` | Download Video | Download video |
 | `stage.exportingVideo` | Video maken... | Creating video... |
 | `stage.videoExportSuccess` | Video is gedownload! | Video downloaded! |
 | `stage.praatplaatSubmitted` | Je soundscape staat op de praatplaat! | Your soundscape is on the sound map! |
-| `stage.yourCodeTitle` | Jouw code: | Your code: |
+| `stage.yourCodeTitle` | Jouw code: | Your save code: |
 | `stage.yourCodeHint` | Bewaar deze code goed! Hiermee zie je later de feedback van je docent (Startscherm → "Ik heb een code"). | Keep this code safe! Use it later to see your teacher's feedback (Start screen → "I have a code"). |
 | `stage.praatplaatSuccessTitle` | Gelukt! | Success! |
 | `stage.praatplaatSuccessMessage` | Je soundscape staat op de praatplaat. Je docent kan hem nu laten horen op het digibord! | Your soundscape is on the sound map. Your teacher can now play it on the whiteboard! |
 | `stage.praatplaatContinue` | Ga verder met deze soundscape | Continue with this soundscape |
 | `stage.praatplaatNewSpot` | Kies een nieuwe plek | Choose a new spot |
 | `stage.newSpotConfirm` | Weet je zeker dat je een nieuwe plek wilt kiezen? Je huidige soundscape en verzamelde geluiden ben je dan kwijt. | Are you sure you want to choose a new spot? You will lose your current soundscape and collected sounds. |
-| `stage.videoNotSupported` | Video export niet beschikbaar op deze browser | Video export not available on this browser |
+| `stage.videoNotSupported` | Video export niet beschikbaar op deze browser | Video export isn't available in this browser |
 | `stage.subtitle` | Jouw soundscape | Your soundscape |
 | `stage.shareWithTeacher` | Deel met docent | Share with teacher |
 | `stage.defaultName` | Mijn soundscape | My soundscape |
-| `stage.saveAndShare` | Opslaan & Delen | Save & Share |
+| `stage.saveAndShare` | Opslaan & Delen | Save & share |
 | `stage.actionsTitle` | Opslaan en delen | Save and share |
 | `stage.actionsSubtitle` | Wat wil je met je soundscape doen? | What do you want to do with your soundscape? |
-| `stage.colSelf` | Voor jezelf | For you |
+| `stage.colSelf` | Voor jezelf | For yourself |
 | `stage.colClass` | Voor de klas | For your class |
 | `stage.colShare` | Delen met anderen | Share with others |
 | `stage.actionsSaveHint` | Op dit apparaat | On this device |
 | `stage.classNotYetSubmitted` | Klik op Lever in om in te leveren bij {{className}}. | Click Hand in to send it to {{className}}. |
 | `stage.teacherOnly` | Alleen zichtbaar voor docenten | Visible to teachers only |
 | `stage.actionsOnlineHint` | Verder werken op een ander apparaat | Continue working on another device |
-| `stage.actionsShareHint` | Maak een luisterlink voor iedereen | Create a listen link for anyone |
-| `stage.actionsTeacherHint` | Stuur naar je docent via klascode | Send to your teacher via class code |
+| `stage.actionsShareHint` | Maak een luisterlink voor iedereen | Create a listening link anyone can open |
+| `stage.actionsTeacherHint` | Stuur naar je docent via klascode | Send it to your teacher with a class code |
 | `stage.actionsExportMp3Hint` | Download als audiobestand | Download as audio file |
 | `stage.actionsExportVideoHint` | Download als video met afbeeldingen | Download as video with images |
 | `stage.actionsTemplateHint` | Maak een opdracht voor leerlingen | Create an assignment for students |
@@ -500,7 +500,7 @@ _Stand: 1758 teksten in 48 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `locations.boerderij.name` | De Kinderboerderij | The Petting Zoo |
-| `locations.boerderij.description` | Een gezellige kinderboerderij vol dierengeluiden | A cozy petting zoo full of animal sounds |
+| `locations.boerderij.description` | Een gezellige kinderboerderij vol dierengeluiden | A cosy petting zoo full of animal sounds |
 | `locations.speeltuin.name` | De Speeltuin | The Playground |
 | `locations.speeltuin.description` | Een vrolijke speeltuin vol kinderpret | A cheerful playground full of kids having fun |
 | `locations.metro.name` | Het Metrostation | The Metro Station |
@@ -508,7 +508,7 @@ _Stand: 1758 teksten in 48 secties._
 | `locations.gymzaal.name` | De Gymzaal | The Gym |
 | `locations.gymzaal.description` | Een sportieve gymzaal vol actieve geluiden | A sporty gym full of active sounds |
 | `locations.muziekwinkel.name` | Het Muzieklokaal | The Music Room |
-| `locations.muziekwinkel.description` | Een gezellig muzieklokaal vol instrumenten | A cozy music room full of instruments |
+| `locations.muziekwinkel.description` | Een gezellig muzieklokaal vol instrumenten | A cosy music room full of instruments |
 | `locations.klaslokaal.name` | Het Klaslokaal | The Classroom |
 | `locations.klaslokaal.description` | Een vrolijk klaslokaal vol met activiteiten | A cheerful classroom full of activities |
 
@@ -526,7 +526,7 @@ _Stand: 1758 teksten in 48 secties._
 | `samples.speeltuin-skateboard` | Skateboard | Skateboard |
 | `samples.speeltuin-vissen` | Vissen | Fishing |
 | `samples.speeltuin-voetbal` | Voetbal | Football |
-| `samples.speeltuin-zandbak` | Zandbak | Sandbox |
+| `samples.speeltuin-zandbak` | Zandbak | Sandpit |
 | `samples.speeltuin-robot` | Robot | Robot |
 | `samples.metro-train` | Metro | Train |
 | `samples.metro-announcement` | Omroep | Announcement |
@@ -557,7 +557,7 @@ _Stand: 1758 teksten in 48 secties._
 |---|---|---|
 | `feedback.helpButton` | Hulp nodig? | Need help? |
 | `feedback.errorButton` | Stuur foutmelding | Report error |
-| `feedback.titleError` | Foutmelding versturen | Report Error |
+| `feedback.titleError` | Foutmelding versturen | Report an error |
 | `feedback.titleFeedback` | Hulp nodig? | Need help? |
 | `feedback.errorIntro` | Er is een fout opgetreden. Wil je deze melden zodat we het kunnen oplossen? | An error occurred. Would you like to report it so we can fix it? |
 | `feedback.feedbackIntro` | Wat voor probleem heb je? | What kind of problem do you have? |
@@ -566,7 +566,7 @@ _Stand: 1758 teksten in 48 secties._
 | `feedback.whatHappenedPlaceholder` | Bijv. ik klikte op de play knop en toen... | E.g. I clicked the play button and then... |
 | `feedback.descriptionLabel` | Beschrijf je probleem | Describe your problem |
 | `feedback.descriptionPlaceholder` | Vertel wat er mis gaat... | Tell us what's going wrong... |
-| `feedback.descriptionHint` | Minimaal 10 karakters | Minimum 10 characters |
+| `feedback.descriptionHint` | Minimaal 10 karakters | At least 10 characters |
 | `feedback.emailLabel` | Email (optioneel) | Email (optional) |
 | `feedback.emailPlaceholder` | Voor eventuele follow-up vragen | For follow-up questions |
 | `feedback.submitError` | Stuur foutmelding | Report error |
@@ -576,7 +576,7 @@ _Stand: 1758 teksten in 48 secties._
 | `feedback.successMessage` | We hebben je bericht ontvangen en kijken er zo snel mogelijk naar. | We received your message and will look into it as soon as possible. |
 | `feedback.close` | Sluiten | Close |
 | `feedback.rateLimitMessage` | Je kunt over {{seconds}} seconden opnieuw feedback sturen. | You can send feedback again in {{seconds}} seconds. |
-| `feedback.categories.bug.label` | Iets werkt niet | Something broken |
+| `feedback.categories.bug.label` | Iets werkt niet | Something's broken |
 | `feedback.categories.bug.desc` | Er gaat iets fout | Something isn't working |
 | `feedback.categories.confusion.label` | Ik snap het niet | I don't understand |
 | `feedback.categories.confusion.desc` | Iets is onduidelijk | Something is unclear |
@@ -610,18 +610,18 @@ _Stand: 1758 teksten in 48 secties._
 | `share.listenPlaceholder` | Voer code in | Enter code |
 | `share.listen` | Open | Open |
 | `share.invalidCode` | Voer een geldige code in | Please enter a valid code |
-| `share.codeNotFound` | Code niet gevonden. Controleer het aantal tekens en of de code klopt. | Code not found. Check the number of characters and if the code is correct. |
+| `share.codeNotFound` | Code niet gevonden. Controleer het aantal tekens en of de code klopt. | Code not found. Check that it has the right number of characters and is typed correctly. |
 | `share.noPraatplaat` | Er is geen actieve praatplaat voor deze klascode. Vraag je docent. | No active sound map for this class code. Ask your teacher. |
 | `share.noActiveAssignment` | Er is geen actieve opdracht voor deze klascode. Vraag je docent. | No active assignment for this class code. Ask your teacher. |
 | `share.lookupError` | Er ging iets mis bij het opzoeken. Probeer opnieuw. | Something went wrong. Please try again. |
-| `share.classCodeNotFound` | Deze klascode bestaat niet. Kijk nog eens goed naar de cijfers. | This class code doesn't exist. Check the numbers again. |
+| `share.classCodeNotFound` | Deze klascode bestaat niet. Kijk nog eens goed naar de cijfers. | This class code doesn't exist. Check the digits again. |
 | `share.classBusy` | Het is even heel druk. Wacht een paar tellen en probeer het opnieuw. | It's very busy right now. Wait a few seconds and try again. |
 | `share.loadFailed` | Laden is niet gelukt. Probeer het opnieuw. | Loading failed. Please try again. |
 | `share.destinationTitle` | Gevonden! Waar wil je heen? | Found it! Where do you want to go? |
 | `share.destStudio` | Studio | Studio |
 | `share.destStudioHint` | Ga verder met je soundscape | Keep working on your soundscape |
 | `share.destStage` | Podium | Stage |
-| `share.destStageHint` | Presentatie en feedback | Presentation and feedback |
+| `share.destStageHint` | Presentatie en feedback | Listen and see your feedback |
 | `share.backToStart` | Terug naar SoundScout | Back to SoundScout |
 | `share.viewCount` | {{count}}x beluisterd |  |
 | `share.by` | Door | By |
@@ -722,22 +722,22 @@ _Stand: 1758 teksten in 48 secties._
 | `assignmentCards.deleteTitle` | Opdrachtkaart verwijderen | Delete assignment card |
 | `assignmentCards.deleteConfirm` | Weet je zeker dat je deze opdrachtkaart wilt verwijderen? Opdrachten die deze kaart gebruiken vallen terug op de standaarduitleg. | Are you sure you want to delete this assignment card? Assignments using this card will fall back to the default explanation. |
 | `assignmentCards.deleteError` | Kon opdrachtkaart niet verwijderen | Could not delete assignment card |
-| `assignmentCards.defaults.template.title` | Zo werkt deze opdracht | How this assignment works |
+| `assignmentCards.defaults.template.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.template.bullets.0` | Je docent heeft alvast muziek klaargezet. | Your teacher has set up some music already. |
 | `assignmentCards.defaults.template.bullets.1` | Luister goed en maak het af. | Listen carefully and finish it. |
 | `assignmentCards.defaults.template.bullets.2` | Sleep geluiden op de tijdlijn. | Drag sounds onto the timeline. |
 | `assignmentCards.defaults.template.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
-| `assignmentCards.defaults.praatplaat.title` | Zo werkt deze opdracht | How this assignment works |
+| `assignmentCards.defaults.praatplaat.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.praatplaat.bullets.0` | Je kiest straks een plek op de afbeelding. | You'll pick a spot on the image next. |
 | `assignmentCards.defaults.praatplaat.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.praatplaat.bullets.2` | Maak muziek die bij jouw plek past. | Make music that fits your spot. |
 | `assignmentCards.defaults.praatplaat.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
-| `assignmentCards.defaults.storyboard.title` | Zo werkt deze opdracht | How this assignment works |
+| `assignmentCards.defaults.storyboard.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.storyboard.bullets.0` | Bekijk de scènes van het verhaal. | Look at the scenes of the story. |
 | `assignmentCards.defaults.storyboard.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.storyboard.bullets.2` | Maak muziek die bij elke scène past. | Make music that fits each scene. |
 | `assignmentCards.defaults.storyboard.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
-| `assignmentCards.defaults.free.title` | Zo werkt deze opdracht | How this assignment works |
+| `assignmentCards.defaults.free.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.free.bullets.0` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.free.bullets.1` | Experimenteer met de klanken. | Experiment with the sounds. |
 | `assignmentCards.defaults.free.bullets.2` | Maak je eigen soundscape. | Make your own soundscape. |
@@ -749,7 +749,7 @@ _Stand: 1758 teksten in 48 secties._
 |---|---|---|
 | `lessonCards.tabTitle` | Leskaarten | Lesson cards |
 | `lessonCards.builtin.robotfabriek.title` | Robotfabriek | Robot factory |
-| `lessonCards.builtin.robotfabriek.level` | Groep 6–7 | Grade 6–7 |
+| `lessonCards.builtin.robotfabriek.level` | Groep 6–7 | Ages 9–11 |
 | `lessonCards.builtin.robotfabriek.goal` | Leerlingen verklanken samen een element uit één beeld en ervaren hoe herhaling, laagopbouw en vorm een sfeer maken. | Students give voice together to an element from a single image and experience how repetition, layering and form create an atmosphere. |
 | `lessonCards.builtin.robotfabriek.phases.0.name` | Oriënteren | Orient |
 | `lessonCards.builtin.robotfabriek.phases.0.text` | klassikaal gesprek; tweetallen kiezen een plek. | class discussion; pairs choose a spot. |
@@ -760,7 +760,7 @@ _Stand: 1758 teksten in 48 secties._
 | `lessonCards.builtin.robotfabriek.phases.3.name` | Evalueren | Evaluate |
 | `lessonCards.builtin.robotfabriek.phases.3.text` | samen nabespreken. | reflect together. |
 | `lessonCards.builtin.verspringen.title` | Verspringen | Long jump |
-| `lessonCards.builtin.verspringen.level` | Groep 5–8 | Grade 5–8 |
+| `lessonCards.builtin.verspringen.level` | Groep 5–8 | Ages 8–12 |
 | `lessonCards.builtin.verspringen.goal` | Leerlingen maken een soundtrack per scène en ervaren hoe muziek een verhaal in beeld ondersteunt. | Students create a soundtrack for each scene and experience how music supports a visual story. |
 | `lessonCards.builtin.verspringen.phases.0.name` | Oriënteren | Orient |
 | `lessonCards.builtin.verspringen.phases.0.text` | bekijk samen de scènes van het verhaal; welk geluid hoort bij welke sprong? | look at the story scenes together; which sound fits which jump? |
@@ -836,7 +836,7 @@ _Stand: 1758 teksten in 48 secties._
 | `lessonCards.editor.titlePlaceholder` | Bijv. Robotfabriek | E.g. Robot factory |
 | `lessonCards.editor.titleRequired` | Geef de leskaart een titel. | Give the lesson card a title. |
 | `lessonCards.editor.levelLabel` | Niveau (optioneel) | Level (optional) |
-| `lessonCards.editor.levelPlaceholder` | Bijv. Groep 6–7 | E.g. Grade 4–5 |
+| `lessonCards.editor.levelPlaceholder` | Bijv. Groep 6–7 | e.g. Ages 7–9 |
 | `lessonCards.editor.pdfLabel` | Pdf-link (optioneel) | Pdf link (optional) |
 | `lessonCards.editor.pdfPlaceholder` | https://… | https://… |
 | `lessonCards.editor.goalLabel` | Lesdoel (optioneel) | Goal (optional) |
@@ -938,7 +938,7 @@ _Stand: 1758 teksten in 48 secties._
 | `error.sendReportButton` | Stuur foutmelding | Send error report |
 | `error.technicalDetails` | Technische details | Technical details |
 | `error.featureError` | {{feature}} kon niet geladen worden | {{feature}} could not be loaded |
-| `error.featureDescription` | Dit onderdeel heeft een fout. Je kunt het opnieuw proberen. | This section encountered an error. You can try again. |
+| `error.featureDescription` | Dit onderdeel heeft een fout. Je kunt het opnieuw proberen. | Something went wrong in this part of the app. You can try again. |
 
 ## auth
 
@@ -963,23 +963,23 @@ _Stand: 1758 teksten in 48 secties._
 | `peerReview.openButton` | Luister naar klasgenoten | Listen to classmates |
 | `peerReview.loading` | Soundscapes van klasgenoten ophalen... | Loading your classmates’ soundscapes... |
 | `peerReview.emptyTitle` | Nog geen soundscapes om te beluisteren | No soundscapes to listen to yet |
-| `peerReview.emptyHint` | Misschien heeft nog niemand anders ingeleverd, heb je al 3 klasgenoten beoordeeld, of is de feedbackronde gesloten. | Maybe no one else has submitted yet, you already reviewed 3 classmates, or the feedback round has closed. |
+| `peerReview.emptyHint` | Misschien heeft nog niemand anders ingeleverd, heb je al 3 klasgenoten beoordeeld, of is de feedbackronde gesloten. | Maybe no one else has handed in yet, you've already reviewed 3 classmates, or the feedback round has closed. |
 | `peerReview.loadError` | De soundscapes konden niet worden opgehaald. Probeer het later opnieuw. | Could not load the soundscapes. Please try again later. |
-| `peerReview.submitError` | Kon je compliment niet versturen. | Could not send your compliment. |
+| `peerReview.submitError` | Kon je compliment niet versturen. | Could not send your review. |
 | `peerReview.retry` | Opnieuw proberen | Try again |
 | `peerReview.blockedTitle` | Je beoordeling is niet opgeslagen | Your review was not saved |
 | `peerReview.progress` | Soundscape {{current}} van {{total}} | Soundscape {{current}} of {{total}} |
 | `peerReview.anonymous` | Soundscape van een klasgenoot | A classmate’s soundscape |
-| `peerReview.anonymousHint` | Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt. | You don't know whose this is — listen carefully and choose what you think of it. |
-| `peerReview.starsLabel` | Geef sterren per onderdeel: | Give stars per criterion: |
-| `peerReview.starsHint` | 1 = goed geprobeerd · 2 = goed gedaan · 3 = heel sterk. Beoordeel minstens één onderdeel. | 1 = good try · 2 = well done · 3 = very strong. Rate at least one criterion. |
+| `peerReview.anonymousHint` | Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt. | You don't know who made this. Listen carefully and say what you think. |
+| `peerReview.starsLabel` | Geef sterren per onderdeel: | Give stars for each part: |
+| `peerReview.starsHint` | 1 = goed geprobeerd · 2 = goed gedaan · 3 = heel sterk. Beoordeel minstens één onderdeel. | 1 = good try · 2 = well done · 3 = really strong. Rate at least one part. |
 | `peerReview.starTitle` | {{stars}} van 3 sterren | {{stars}} of 3 stars |
 | `peerReview.capReached` | Je hebt het maximum van 3 beoordelingen bereikt. | You have reached the maximum of 3 reviews. |
 | `peerReview.windowClosed` | De feedbackronde is gesloten door je docent. | Your teacher has closed the feedback round. |
 | `peerReview.chipsLabel` | Kies 1 tot 3 complimenten: | Choose 1 to 3 compliments: |
-| `peerReview.sendAndNext` | Versturen en volgende | Send and next |
+| `peerReview.sendAndNext` | Versturen en volgende | Send & next |
 | `peerReview.sendAndFinish` | Versturen en afronden | Send and finish |
-| `peerReview.doneTitle` | Je hebt alle soundscapes beluisterd! | You listened to all the soundscapes! |
+| `peerReview.doneTitle` | Je hebt alle soundscapes beluisterd! | You've listened to all the soundscapes! |
 | `peerReview.doneHint` | Je beoordelingen zijn anoniem verstuurd. Zo help je klasgenoten met hun muziek. | Your reviews were sent anonymously. This helps your classmates with their music. |
 
 ## studentFeedback
@@ -989,9 +989,9 @@ _Stand: 1758 teksten in 48 secties._
 | `studentFeedback.bannerTitle` | Feedback van je docent: | Feedback from your teacher: |
 | `studentFeedback.complimentsTitle` | Van je klasgenoten: | From your classmates: |
 | `studentFeedback.avgStars` | gemiddeld {{stars}} sterren | average {{stars}} stars |
-| `studentFeedback.noticeButton` | Je hebt een reactie op "{{name}}"! | You have a reaction to "{{name}}"! |
+| `studentFeedback.noticeButton` | Je hebt een reactie op "{{name}}"! | You’ve got feedback on "{{name}}"! |
 | `studentFeedback.modalTitle` | Feedback van je docent | Feedback from your teacher |
-| `studentFeedback.modalHint` | Verder werken aan je soundscape? Typ je code {{code}} bij "Ik heb een code". | Want to keep working on your soundscape? Enter your code {{code}} at "I have a code". |
+| `studentFeedback.modalHint` | Verder werken aan je soundscape? Typ je code {{code}} bij "Ik heb een code". | Want to keep working on your soundscape? Enter your code {{code}} under "I have a code". |
 | `studentFeedback.modalClose` | Oké | OK |
 
 ## submissions
@@ -1004,11 +1004,11 @@ _Stand: 1758 teksten in 48 secties._
 | `submissions.shareLinkError` | Kon link niet aanmaken. Probeer opnieuw. | Could not create link. Please try again. |
 | `submissions.loadError` | Kon compositie niet laden. | Could not load composition. |
 | `submissions.dataInvalid` | Deze compositie kon niet worden geladen: de opgeslagen gegevens zijn ongeldig. Meld dit via het feedbackformulier. | This composition could not be loaded: the saved data is invalid. Please report this via the feedback form. |
-| `submissions.cooldown` | Even geduld! Wacht {{seconds}} seconden voordat je opnieuw kunt versturen. | Please wait! {{seconds}} seconds before you can submit again. |
+| `submissions.cooldown` | Even geduld! Wacht {{seconds}} seconden voordat je opnieuw kunt versturen. | Please wait {{seconds}} seconds before sending again. |
 | `submissions.rateLimitError` | Te veel verzoeken. Wacht even en probeer opnieuw. | Too many requests. Please wait and try again. |
-| `submissions.autoSubmitSuccess` | Ingeleverd bij {{className}} | Submitted to {{className}} |
-| `submissions.autoSubmitUpdated` | Bijgewerkt bij {{className}} | Updated at {{className}} |
-| `submissions.autoSubmitFailed` | Inleveren mislukt — wordt opnieuw geprobeerd bij volgende opslaan | Submission failed — will retry on next save |
+| `submissions.autoSubmitSuccess` | Ingeleverd bij {{className}} | Handed in to {{className}} |
+| `submissions.autoSubmitUpdated` | Bijgewerkt bij {{className}} | Updated for {{className}} |
+| `submissions.autoSubmitFailed` | Inleveren mislukt — wordt opnieuw geprobeerd bij volgende opslaan | Couldn't hand in. We'll try again next time you save. |
 | `submissions.praatplaatNoPosition` | Kies eerst een plek op de praatplaat voordat je inlevert. | Choose a spot on the sound map before you submit. |
 
 ## errors
@@ -1049,11 +1049,11 @@ _Stand: 1758 teksten in 48 secties._
 | `errors.classes.delete` | Kon klas niet verwijderen | Could not delete the class |
 | `errors.classes.limitReached_one` | Je hebt het maximum van {{count}} klas bereikt. Verwijder een klas om een nieuwe te maken. | You have reached the maximum of {{count}} class. Delete a class to create a new one. |
 | `errors.classes.limitReached_other` | Je hebt het maximum van {{count}} klassen bereikt. Verwijder een klas om een nieuwe te maken. | You have reached the maximum of {{count}} classes. Delete a class to create a new one. |
-| `errors.praatplaten.load` | Kon praatplaten niet laden | Could not load praatplaten |
-| `errors.praatplaten.create` | Kon praatplaat niet aanmaken | Could not create the praatplaat |
-| `errors.praatplaten.activate` | Kon praatplaat niet activeren | Could not activate the praatplaat |
-| `errors.praatplaten.deactivate` | Kon praatplaat niet deactiveren | Could not deactivate the praatplaat |
-| `errors.praatplaten.delete` | Kon praatplaat niet verwijderen | Could not delete the praatplaat |
+| `errors.praatplaten.load` | Kon praatplaten niet laden | Could not load sound maps |
+| `errors.praatplaten.create` | Kon praatplaat niet aanmaken | Could not create the sound map |
+| `errors.praatplaten.activate` | Kon praatplaat niet activeren | Could not activate the sound map |
+| `errors.praatplaten.deactivate` | Kon praatplaat niet deactiveren | Could not deactivate the sound map |
+| `errors.praatplaten.delete` | Kon praatplaat niet verwijderen | Could not delete the sound map |
 | `errors.submissions.load` | Kon composities niet laden | Could not load compositions |
 | `errors.submissions.delete` | Kon compositie niet verwijderen | Could not delete the composition |
 | `errors.export.mp3` | Export mislukt | Export failed |
@@ -1083,8 +1083,8 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.guide.sections.getting-started.content.5` | Tip: schrijf de klascode op het digibord of print hem op een werkblad. Leerlingen kunnen ook via een link met ingebouwde klascode binnenkomen (handig als je met een Chromebook-trolley werkt). | Tip: write the class code on the whiteboard or print it on a worksheet. Students can also enter via a link with the class code embedded (handy when using a Chromebook cart). |
 | `teacher.guide.sections.classes.title` | Klassen beheren | Managing classes |
 | `teacher.guide.sections.classes.content.0` | Op je dashboard zie je alle klassen die je hebt aangemaakt. Je kunt maximaal 8 klassen tegelijk hebben (gratis account). Elke klas heeft een eigen klascode die niet verandert — leerlingen hoeven hem dus maar één keer te krijgen. | Your dashboard shows all classes you've created. You can have up to 8 classes simultaneously (free account). Each class has its own class code that doesn't change — students only need it once. |
-| `teacher.guide.sections.classes.content.1` | Een klas verwijderen doe je via het prullenbak-icoon op de klaskaart. Let op: als je een klas verwijdert, worden ook alle bijbehorende inzendingen, templates en praatplaten verwijderd. Deze actie kan niet ongedaan worden gemaakt. | To delete a class, use the trash icon on the class card. Note: deleting a class also removes all related submissions, templates, and praatplaten. This cannot be undone. |
-| `teacher.guide.sections.classes.content.2` | Klik op een klas om de detailweergave te openen. Daar zie je alle inzendingen van leerlingen, kun je opdrachten activeren (template of praatplaat), en zie je compositions die nog 'In bewerking' zijn. | Click a class to open the detail view. There you see all student submissions, can activate assignments (template or praatplaat), and see compositions still 'In progress'. |
+| `teacher.guide.sections.classes.content.1` | Een klas verwijderen doe je via het prullenbak-icoon op de klaskaart. Let op: als je een klas verwijdert, worden ook alle bijbehorende inzendingen, templates en praatplaten verwijderd. Deze actie kan niet ongedaan worden gemaakt. | To delete a class, use the trash icon on the class card. Note: deleting a class also removes all related submissions, templates, and sound maps. This cannot be undone. |
+| `teacher.guide.sections.classes.content.2` | Klik op een klas om de detailweergave te openen. Daar zie je alle inzendingen van leerlingen, kun je opdrachten activeren (template of praatplaat), en zie je compositions die nog 'In bewerking' zijn. | Click a class to open the detail view. There you see all student submissions, can activate assignments (template or sound map), and see compositions still 'In progress'. |
 | `teacher.guide.sections.dashboard-tour.title` | Je dashboard in één oogopslag | Your dashboard at a glance |
 | `teacher.guide.sections.dashboard-tour.content.0` | Na het inloggen kom je op je dashboard. Bovenaan staan drie tabbladen die je hele docent-werk verdelen. | After logging in you land on your dashboard. At the top are three tabs that divide all of your teacher work. |
 | `teacher.guide.sections.dashboard-tour.content.1.type` | heading | heading |
@@ -1105,7 +1105,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.guide.sections.assignments.content.2` | De leerling componeert vrij binnen een thema dat jij kiest (bijvoorbeeld De Stad of Winterspelen). Geen afbeelding of verhaal — puur ontdekken en bouwen. Ideaal voor open, zelfstandige opdrachten. | The student composes freely within a theme you choose (for example The City or Winter Games). No image or story — just exploring and building. Ideal for open, independent assignments. |
 | `teacher.guide.sections.assignments.content.3.type` | heading | heading |
 | `teacher.guide.sections.assignments.content.3.text` | Bij een afbeelding (praatplaat) | With an image (sound map) |
-| `teacher.guide.sections.assignments.content.4` | De hele klas werkt op één gedeelde afbeelding: elke leerling plaatst zijn compositie op een plek, en jij presenteert het resultaat klassikaal op het digibord. Zie het hoofdstuk 'Praatplaat gebruiken'. | The whole class works on one shared image: each student places their composition on a spot, and you present the result to the class on the smartboard. See the 'Using a sound map' chapter. |
+| `teacher.guide.sections.assignments.content.4` | De hele klas werkt op één gedeelde afbeelding: elke leerling plaatst zijn compositie op een plek, en jij presenteert het resultaat klassikaal op het digibord. Zie het hoofdstuk 'Praatplaat gebruiken'. | The whole class works on one shared image: each student places their composition on a spot, and you present the result to the class on the whiteboard. See the 'Using a sound map' chapter. |
 | `teacher.guide.sections.assignments.content.5.type` | heading | heading |
 | `teacher.guide.sections.assignments.content.5.text` | Storyboard | Storyboard |
 | `teacher.guide.sections.assignments.content.6` | De leerling verklankt een verhaal van meerdere scènes; de tijdlijn wordt automatisch in secties verdeeld. Goed voor opbouw, contrast en vormschema. | The student sets a multi-scene story to sound; the timeline is automatically divided into sections. Good for structure, contrast and form. |
@@ -1139,7 +1139,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.guide.sections.lesson-cards.content.7.text` | PDF bij de les | PDF with the lesson |
 | `teacher.guide.sections.lesson-cards.content.8` | Hangt er een PDF aan de leskaart, dan open je die vanuit het detailpaneel — handig om te printen of te delen met collega's. | If a PDF is attached to the lesson card, you open it from the detail panel — handy to print or share with colleagues. |
 | `teacher.guide.sections.compose-modes.title` | Compositiemodi | Composition modes |
-| `teacher.guide.sections.compose-modes.content.0` | Wanneer een leerling op 'Nieuwe compositie' klikt, kiest hij of zij eerst een modus. Elke modus past bij een ander leerdoel. | When a student clicks 'New Composition', they first choose a mode. Each mode suits a different learning objective. |
+| `teacher.guide.sections.compose-modes.content.0` | Wanneer een leerling op 'Nieuwe compositie' klikt, kiest hij of zij eerst een modus. Elke modus past bij een ander leerdoel. | When a student clicks 'New soundscape', they first choose a mode. Each mode suits a different learning objective. |
 | `teacher.guide.sections.compose-modes.content.1.type` | heading | heading |
 | `teacher.guide.sections.compose-modes.content.1.text` | Vrij componeren | Free composition |
 | `teacher.guide.sections.compose-modes.content.2` | De leerling kiest een thema (bijv. De Stad of Winterspelen) en gaat zelf op ontdekkingstocht. Er zijn geen afbeeldingen of secties — de leerling bepaalt zelf de structuur. Dit past bij open opdrachten en zelfstandig verkennen. | The student picks a theme (e.g. The City or Winter Games) and explores freely. There are no images or sections — the student decides the structure. This suits open-ended assignments and independent exploration. |
@@ -1168,23 +1168,23 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.guide.sections.templates.content.9` | Bibliotheek vastzetten — de leerling kan geen nieuwe geluiden verzamelen; alleen de meegegeven samples zijn beschikbaar. | Lock library — the student cannot collect new sounds; only the provided samples are available. |
 | `teacher.guide.sections.templates.content.10` | Nieuwe clips toestaan — staat dit uit, dan kan de leerling niets aan de timeline toevoegen en alleen bestaande clips bewerken. | Allow new clips — if turned off, the student cannot add anything to the timeline and can only edit existing clips. |
 | `teacher.guide.sections.templates.content.11` | Combineer ze naar wens: van een volledig open startpunt tot een strak afgebakende oefening. | Combine them as you like: from a fully open starting point to a tightly bounded exercise. |
-| `teacher.guide.sections.praatplaat.title` | Praatplaat gebruiken | Using a praatplaat |
-| `teacher.guide.sections.praatplaat.content.0` | Een praatplaat is een gezamenlijke klankkaart: elke leerling maakt een kleine compositie en plaatst die op een positie op een afbeelding (bijvoorbeeld een bos, een stad, een markt). Als docent kun je de praatplaat daarna klassikaal presenteren — je klikt op een spot en hoort wat die leerling heeft gemaakt. | A praatplaat is a collaborative sound map: each student creates a small composition and places it on a position on an image (e.g. a forest, a city, a market). As teacher you can then present the praatplaat to the class — click a spot and hear what that student made. |
+| `teacher.guide.sections.praatplaat.title` | Praatplaat gebruiken | Using a sound map |
+| `teacher.guide.sections.praatplaat.content.0` | Een praatplaat is een gezamenlijke klankkaart: elke leerling maakt een kleine compositie en plaatst die op een positie op een afbeelding (bijvoorbeeld een bos, een stad, een markt). Als docent kun je de praatplaat daarna klassikaal presenteren — je klikt op een spot en hoort wat die leerling heeft gemaakt. | A sound map is a shared picture full of sounds: each student creates a small composition and places it on a position on an image (e.g. a forest, a city, a market). As teacher you can then present the sound map to the class — click a spot and hear what that student made. |
 | `teacher.guide.sections.praatplaat.content.1.type` | heading | heading |
-| `teacher.guide.sections.praatplaat.content.1.text` | Praatplaat aanmaken | Creating a praatplaat |
-| `teacher.guide.sections.praatplaat.content.2` | Ga naar het klasdetailscherm en klik op 'Activeer een opdracht'. Kies 'Praatplaat', geef een naam op (bijvoorbeeld 'Geluiden op de markt — groep 5a') en kies een locatie-afbeelding uit het actieve thema. Per klas kan er maar één opdracht tegelijk actief zijn. | Go to the class detail screen and click 'Activate an assignment'. Choose 'Praatplaat', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time. |
+| `teacher.guide.sections.praatplaat.content.1.text` | Praatplaat aanmaken | Creating a sound map |
+| `teacher.guide.sections.praatplaat.content.2` | Ga naar het klasdetailscherm en klik op 'Activeer een opdracht'. Kies 'Praatplaat', geef een naam op (bijvoorbeeld 'Geluiden op de markt — groep 5a') en kies een locatie-afbeelding uit het actieve thema. Per klas kan er maar één opdracht tegelijk actief zijn. | Go to the class detail screen and click 'Activate an assignment'. Choose 'Sound map', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time. |
 | `teacher.guide.sections.praatplaat.content.3.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.3.text` | Wat leerlingen zien | What students see |
-| `teacher.guide.sections.praatplaat.content.4` | Leerlingen voeren de 4-cijferige klascode in op het startscherm. Ze zien dan een voorvertoning van de praatplaat. Na klikken op 'Starten' kiezen ze een plek op de afbeelding waar ze hun compositie willen plaatsen. Daarna maken ze hun compositie zoals gewoonlijk in de studio. Wanneer ze opslaan, wordt de compositie automatisch aan de gekozen plek gekoppeld. Via de knop 'Kies een nieuwe plek' kunnen ze daarna nog een compositie toevoegen op een andere plek. | Students enter the 4-digit class code on the start screen. They then see a preview of the praatplaat. After clicking 'Start' they choose a spot on the image where they want to place their composition. Then they build their composition as usual in the studio. When they save, the composition is automatically linked to the chosen spot. Using the 'Choose a new spot' button they can then add another composition at a different location. |
+| `teacher.guide.sections.praatplaat.content.4` | Leerlingen voeren de 4-cijferige klascode in op het startscherm. Ze zien dan een voorvertoning van de praatplaat. Na klikken op 'Starten' kiezen ze een plek op de afbeelding waar ze hun compositie willen plaatsen. Daarna maken ze hun compositie zoals gewoonlijk in de studio. Wanneer ze opslaan, wordt de compositie automatisch aan de gekozen plek gekoppeld. Via de knop 'Kies een nieuwe plek' kunnen ze daarna nog een compositie toevoegen op een andere plek. | Students enter the 4-digit class code on the start screen. They then see a preview of the sound map. After clicking 'Start' they choose a spot on the image where they want to place their composition. Then they build their composition as usual in the studio. When they save, the composition is automatically linked to the chosen spot. Using the 'Choose a new spot' button they can then add another composition at a different location. |
 | `teacher.guide.sections.praatplaat.content.5.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.5.text` | Presenteren op het digibord | Presenting on the whiteboard |
-| `teacher.guide.sections.praatplaat.content.6` | Open de praatplaat via 'Open praatplaat' bij de actieve opdracht. Je ziet de afbeelding fullscreen met luidspreker-iconen op de plekken waar leerlingen composities hebben geplaatst. Klik op een icoon om de compositie af te spelen. Als meerdere leerlingen dicht bij elkaar staan, worden de spots automatisch geclusterd — je kiest dan uit een lijst. Klik op het vernieuw-icoon rechtsboven om nieuwe composities op te halen. | Open the praatplaat via 'Open praatplaat' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions. |
+| `teacher.guide.sections.praatplaat.content.6` | Open de praatplaat via 'Open praatplaat' bij de actieve opdracht. Je ziet de afbeelding fullscreen met luidspreker-iconen op de plekken waar leerlingen composities hebben geplaatst. Klik op een icoon om de compositie af te spelen. Als meerdere leerlingen dicht bij elkaar staan, worden de spots automatisch geclusterd — je kiest dan uit een lijst. Klik op het vernieuw-icoon rechtsboven om nieuwe composities op te halen. | Open the sound map via 'Open sound map' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions. |
 | `teacher.guide.sections.praatplaat.content.7.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.7.text` | Link delen met leerlingen | Sharing a link with students |
-| `teacher.guide.sections.praatplaat.content.8` | Klik op 'Deel link' bij de actieve praatplaat. Je krijgt een directe URL en een QR-code. Leerlingen die deze link openen of de QR-code scannen, komen direct in de praatplaat-flow zonder dat ze de klascode handmatig hoeven in te voeren. Ideaal om op het digibord te projecteren. | Click 'Share link' next to the active praatplaat. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the praatplaat flow without needing to enter the class code manually. Ideal for projecting on the whiteboard. |
+| `teacher.guide.sections.praatplaat.content.8` | Klik op 'Deel link' bij de actieve praatplaat. Je krijgt een directe URL en een QR-code. Leerlingen die deze link openen of de QR-code scannen, komen direct in de praatplaat-flow zonder dat ze de klascode handmatig hoeven in te voeren. Ideaal om op het digibord te projecteren. | Click 'Share link' next to the active sound map. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the sound map flow without needing to enter the class code manually. Ideal for projecting on the whiteboard. |
 | `teacher.guide.sections.praatplaat.content.9.type` | heading | heading |
 | `teacher.guide.sections.praatplaat.content.9.text` | Publieke luisterpagina | Public listening page |
-| `teacher.guide.sections.praatplaat.content.10` | In het deelvenster vind je onderaan de optie 'Luisterpagina'. Klik op 'Maak luisterpagina aan' om een publieke link te genereren. Iedereen met deze link — ook ouders, collega's of gasten — kan de praatplaat bekijken en alle composities beluisteren, zonder login. De link is 30 dagen geldig en kan verlengd worden door opnieuw op de knop te klikken. Er is ook een QR-code beschikbaar om af te drukken of te delen. | At the bottom of the share dialog you'll find the 'Listening page' option. Click 'Create listening page' to generate a public link. Anyone with this link — including parents, colleagues or guests — can view the praatplaat and listen to all compositions, without logging in. The link is valid for 30 days and can be extended by clicking the button again. A QR code is also available for printing or sharing. |
+| `teacher.guide.sections.praatplaat.content.10` | In het deelvenster vind je onderaan de optie 'Luisterpagina'. Klik op 'Maak luisterpagina aan' om een publieke link te genereren. Iedereen met deze link — ook ouders, collega's of gasten — kan de praatplaat bekijken en alle composities beluisteren, zonder login. De link is 30 dagen geldig en kan verlengd worden door opnieuw op de knop te klikken. Er is ook een QR-code beschikbaar om af te drukken of te delen. | At the bottom of the share dialog you'll find the 'Listening page' option. Click 'Create listening page' to generate a public link. Anyone with this link — including parents, colleagues or guests — can view the sound map and listen to all compositions, without logging in. The link is valid for 30 days and can be extended by clicking the button again. A QR code is also available for printing or sharing. |
 | `teacher.guide.sections.submissions.title` | Inzendingen bekijken | Reviewing submissions |
 | `teacher.guide.sections.submissions.content.0` | In het klas-detailscherm zie je alle composities die leerlingen hebben gedeeld met jouw klas. Elke inzending toont de naam van de leerling, de datum, en een afspeelknop. | The class detail screen shows all compositions students have shared with your class. Each submission shows the student's name, date, and a play button. |
 | `teacher.guide.sections.submissions.content.1.type` | heading | heading |
@@ -1219,13 +1219,13 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.guide.sections.classroom-tips.content.7` | In de studio kan een deel van de tijdlijn herhaald worden: tik op een sectie en zet 'Loop deze sectie' aan. Let op: dit werkt pas nadat er een sectie is gemaakt met de vlag-knop in de tijdlijnbalk (bij een storyboard staan de secties er automatisch). Zonder sectie-loop herhaalt de loop-knop de hele tijdlijn. | In the studio, part of the timeline can be repeated: tap a section and turn on 'Loop this section'. Note: this only works after a section has been created with the flag button in the timeline bar (with a storyboard, sections are added automatically). Without a section loop, the loop button repeats the entire timeline. |
 | `teacher.guide.sections.classroom-tips.content.8.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.8.text` | Tijdsplanning | Timing |
-| `teacher.guide.sections.classroom-tips.content.9` | Reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten. | Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or praatplaat usually fits in a 45-minute block. |
+| `teacher.guide.sections.classroom-tips.content.9` | Reken ongeveer 15-20 minuten voor de eerste kennismaking (verkennen, geluiden verzamelen), en 30-45 minuten voor het daadwerkelijk componeren. Een complete les met template of praatplaat past meestal in één blok van 45 minuten. | Plan about 15-20 minutes for first exploration (exploring, collecting sounds), and 30-45 minutes for actual composing. A complete lesson with template or sound map usually fits in a 45-minute block. |
 | `teacher.guide.sections.classroom-tips.content.10.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.10.text` | Klaarzetten vóór de les | Set up before the lesson |
-| `teacher.guide.sections.classroom-tips.content.11` | Activeer de opdracht alvast en schrijf de klascode groot op het bord (of laat hem via het digibord zien). Test één apparaat vooraf: code invoeren, geluid aan, koptelefoon erin. Wil je een tijdsduur meegeven? Vul die in bij de actieve opdracht — leerlingen zien hem op hun startscherm. | Activate the assignment in advance and write the class code large on the board (or show it via the digiboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen. |
+| `teacher.guide.sections.classroom-tips.content.11` | Activeer de opdracht alvast en schrijf de klascode groot op het bord (of laat hem via het digibord zien). Test één apparaat vooraf: code invoeren, geluid aan, koptelefoon erin. Wil je een tijdsduur meegeven? Vul die in bij de actieve opdracht — leerlingen zien hem op hun startscherm. | Activate the assignment in advance and write the class code large on the board (or show it via the whiteboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen. |
 | `teacher.guide.sections.classroom-tips.content.12.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.12.text` | Werkvormen | Ways of working |
-| `teacher.guide.sections.classroom-tips.content.13` | In tweetallen werkt SoundScout het prettigst: één bedient, één luistert mee en adviseert — halverwege wisselen. Klassikaal starten met de praatplaat op het digibord geeft focus: verken samen het beeld en verdeel de plekken voordat iedereen zelf begint. | SoundScout works best in pairs: one operates, one listens along and advises — swap halfway. Starting together with the praatplaat on the digiboard creates focus: explore the image as a class and divide the spots before everyone starts. |
+| `teacher.guide.sections.classroom-tips.content.13` | In tweetallen werkt SoundScout het prettigst: één bedient, één luistert mee en adviseert — halverwege wisselen. Klassikaal starten met de praatplaat op het digibord geeft focus: verken samen het beeld en verdeel de plekken voordat iedereen zelf begint. | SoundScout works best in pairs: one operates, one listens along and advises — swap halfway. Starting together with the sound map on the whiteboard creates focus: explore the image as a class and divide the spots before everyone starts. |
 | `teacher.guide.sections.classroom-tips.content.14.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.14.text` | Afronden en presenteren | Wrapping up and presenting |
 | `teacher.guide.sections.classroom-tips.content.15` | Reserveer de laatste tien minuten voor het presenteren: open het presentatiescherm vanuit het klaslokaal en speel een paar inzendingen klassikaal af. Leerlingen die klaar zijn kunnen ondertussen Peer feedback geven of hun compositie verfijnen met effecten. | Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects. |
@@ -1298,7 +1298,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.register.educatorDeclaration` | Ik ben docent of onderwijsprofessional en gebruik SoundScout voor mijn onderwijs. | I am a teacher or education professional and use SoundScout for my teaching. |
 | `teacher.register.subtitle` | Docent Account Aanmaken | Create Teacher Account |
 | `teacher.register.nameLabel` | Naam | Name |
-| `teacher.register.namePlaceholder` | Juf Marieke | Ms. Smith |
+| `teacher.register.namePlaceholder` | Juf Marieke | Ms Smith |
 | `teacher.register.emailLabel` | E-mailadres | Email address |
 | `teacher.register.emailPlaceholder` | docent@school.nl | teacher@school.com |
 | `teacher.register.passwordLabel` | Wachtwoord | Password |
@@ -1369,7 +1369,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.dashboard.setupLessons.step2.title` | Activeer voor een klas | Activate it for a class |
 | `teacher.dashboard.setupLessons.step2.description` | Eén klik en de opdracht staat klaar; je ziet meteen de klascode voor op het bord. | One click and the assignment is ready; you immediately get the class code for the board. |
 | `teacher.dashboard.setupLessons.step3.title` | Presenteer en geef feedback | Present and give feedback |
-| `teacher.dashboard.setupLessons.step3.description` | Volg de inzendingen in het klaslokaal, presenteer op het digibord en geef feedback. | Follow submissions in the classroom, present on the digiboard and give feedback. |
+| `teacher.dashboard.setupLessons.step3.description` | Volg de inzendingen in het klaslokaal, presenteer op het digibord en geef feedback. | Follow submissions in the classroom, present on the whiteboard and give feedback. |
 | `teacher.classCodeMeaning` | Leerlingen typen deze code in om mee te doen. | Students type this code to join. |
 | `teacher.classDetail.back` | Terug naar overzicht | Back to overview |
 | `teacher.classDetail.dashboardCrumb` | Dashboard | Dashboard |
@@ -1465,7 +1465,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.feedback.stickers.target` | Past bij de opdracht! | Fits the assignment! |
 | `teacher.createClassModal.title` | Nieuwe Klas Aanmaken | Create New Class |
 | `teacher.createClassModal.nameLabel` | Klasnaam | Class name |
-| `teacher.createClassModal.namePlaceholder` | Bijv. Groep 5B of Muziekles 2025 | E.g. Grade 5B or Music Class 2025 |
+| `teacher.createClassModal.namePlaceholder` | Bijv. Groep 5B of Muziekles 2025 | e.g. Class 5B or Music 2025 |
 | `teacher.createClassModal.nameRequired` | Voer een klasnaam in | Please enter a class name |
 | `teacher.createClassModal.nameMinLength` | Klasnaam moet minimaal 2 tekens zijn | Class name must be at least 2 characters |
 | `teacher.createClassModal.codeInfo` | Na het aanmaken krijg je een unieke 4-cijferige code die je met je leerlingen kunt delen. | After creating, you'll get a unique 4-digit code that you can share with your students. |
@@ -1497,7 +1497,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.submissionCard.new` | Nieuw | New |
 | `teacher.submissionCard.seen` | Beluisterd | Listened |
 | `teacher.submissionCard.reviewed` | Beoordeeld | Reviewed |
-| `teacher.praatplaat.sectionTitle` | Praatplaten | Sound Maps |
+| `teacher.praatplaat.sectionTitle` | Praatplaten | Sound maps |
 | `teacher.praatplaat.create` | Nieuwe praatplaat | New sound map |
 | `teacher.praatplaat.createError` | Kon praatplaat niet aanmaken | Could not create sound map |
 | `teacher.praatplaat.active` | Actief | Active |
@@ -1507,7 +1507,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacher.praatplaat.activatedMessage` | Praatplaat is actief! Leerlingen voeren deze klascode in: | Sound map is active! Students enter this class code: |
 | `teacher.praatplaat.activateError` | Kon praatplaat niet activeren | Could not activate sound map |
 | `teacher.praatplaat.deactivateError` | Kon praatplaat niet deactiveren | Could not deactivate sound map |
-| `teacher.praatplaat.deleteTitle` | Praatplaat verwijderen | Delete Sound Map |
+| `teacher.praatplaat.deleteTitle` | Praatplaat verwijderen | Delete sound map |
 | `teacher.praatplaat.deleteConfirm` | Weet je zeker dat je deze praatplaat wilt verwijderen?<br><br>Alle ingestuurde composities worden ook verwijderd! | Are you sure you want to delete this sound map?<br><br>All submitted compositions will also be deleted! |
 | `teacher.praatplaat.deleteError` | Kon praatplaat niet verwijderen | Could not delete sound map |
 | `teacher.praatplaat.view` | Bekijken | View |
@@ -1612,11 +1612,11 @@ _Stand: 1758 teksten in 48 secties._
 | `composeMode.title` | Hoe wil je componeren? | How do you want to compose? |
 | `composeMode.subtitle` | Kies hoe je je soundscape maakt | Choose how to make your soundscape |
 | `composeMode.next` | Volgende | Next |
-| `composeMode.free` | Vrij componeren | Free compose |
+| `composeMode.free` | Vrij componeren | Compose freely |
 | `composeMode.freeDescription` | Maak je eigen soundscape zonder afbeeldingen | Make your own soundscape without images |
-| `composeMode.image` | Bij een afbeelding | With an image |
+| `composeMode.image` | Bij een afbeelding | To a picture |
 | `composeMode.imageDescription` | Maak een soundscape bij één afbeelding | Create a soundscape for a single image |
-| `composeMode.storyboard` | Bij een storyboard | With a storyboard |
+| `composeMode.storyboard` | Bij een storyboard | To a storyboard |
 | `composeMode.storyboardDescription` | Maak een soundscape bij een reeks afbeeldingen | Create a soundscape for a series of images |
 | `composeMode.pickImage` | Kies een afbeelding | Choose an image |
 | `composeMode.pickStoryboard` | Kies een storyboard | Choose a storyboard |
@@ -1650,7 +1650,7 @@ _Stand: 1758 teksten in 48 secties._
 | `saveOnline.title` | Bewaar online | Save online |
 | `saveOnline.description` | Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder. | Save your soundscape online and get a code. Use it to keep working on any device. |
 | `saveOnline.nameLabel` | Jouw naam | Your name |
-| `saveOnline.namePlaceholder` | Bijv. Lisa of Groep 5 | E.g. Lisa or Class 5 |
+| `saveOnline.namePlaceholder` | Bijv. Lisa of Groep 5 | e.g. Lisa |
 | `saveOnline.classCodeLabel` | Klascode (optioneel) | Class code (optional) |
 | `saveOnline.classCodePlaceholder` | 4 cijfers | 4 digits |
 | `saveOnline.saveButton` | Bewaar | Save |
@@ -1730,7 +1730,7 @@ _Stand: 1758 teksten in 48 secties._
 | `assignmentLanding.classLabel` | Klas: | Class: |
 | `assignmentLanding.back` | Terug | Back |
 | `assignmentLanding.start` | Starten | Start |
-| `assignmentLanding.starting` | Bezig... | Loading... |
+| `assignmentLanding.starting` | Bezig... | Starting... |
 | `assignmentLanding.startError` | Starten is niet gelukt. Probeer het opnieuw. | Could not start. Please try again. |
 | `assignmentLanding.missingContext` | Geen opdracht gevonden. Ga terug naar het startscherm. | No assignment found. Return to the start screen. |
 | `assignmentLanding.backToStart` | Terug naar start | Back to start |
@@ -1740,11 +1740,11 @@ _Stand: 1758 teksten in 48 secties._
 | `assignmentLanding.template.storyboardCount_one` | {{count}} afbeelding | {{count}} image |
 | `assignmentLanding.template.storyboardCount_other` | {{count}} afbeeldingen | {{count}} images |
 | `assignmentLanding.praatplaat.kind` | Praatplaat | Sound map |
-| `assignmentLanding.praatplaat.description` | Je kiest straks een plek op deze afbeelding. Daar hoort jouw soundscape bij. | Next, you pick a spot on this image. That is where your soundscape goes. |
+| `assignmentLanding.praatplaat.description` | Je kiest straks een plek op deze afbeelding. Daar hoort jouw soundscape bij. | Next, you'll pick a spot on this picture. Your soundscape goes there. |
 | `assignmentLanding.storyboard.kind` | Verhaal in beeld | Story in pictures |
 | `assignmentLanding.storyboard.description` | Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart. | Make music that fits each scene of this story. First collect sounds on the map. |
 | `assignmentLanding.free.kind` | Vrije soundscape | Free soundscape |
-| `assignmentLanding.free.description` | Verzamel geluiden op de kaart en maak je eigen soundscape. Laat je fantasie de vrije loop. | Collect sounds on the map and make your own soundscape. Let your imagination run free. |
+| `assignmentLanding.free.description` | Verzamel geluiden op de kaart en maak je eigen soundscape. Laat je fantasie de vrije loop. | Collect sounds on the map and make your own soundscape. Let your imagination run wild. |
 | `assignmentLanding.none.heading` | Nog geen opdracht klaar | No assignment ready yet |
 | `assignmentLanding.none.message` | Deze klas heeft nog geen opdracht actief. Wacht even of vraag je docent. Je kunt ook vrij gaan componeren. | This class doesn't have an active assignment yet. Wait a moment or ask your teacher. You can also compose freely. |
 | `assignmentLanding.none.composeFree` | Vrij componeren | Compose freely |
@@ -1834,7 +1834,7 @@ _Stand: 1758 teksten in 48 secties._
 | `teacherLanding.usp.collect.description` | Leerlingen verkennen locaties en vangen geluiden — muziek maken begint met goed luisteren. | Students explore locations and catch sounds — making music starts with careful listening. |
 | `teacherLanding.usp.noAccounts.title` | Geen leerlingaccounts | No student accounts |
 | `teacherLanding.usp.noAccounts.description` | Eén klascode is genoeg. Leerlingen werken anoniem met een willekeurige schuilnaam; we bewaren alleen hun compositie. | One class code is enough. Students work anonymously with a random nickname; we only store their composition. |
-| `teacherLanding.usp.praatplaat.title` | Praatplaat op het digibord | Sound map on the smartboard |
+| `teacherLanding.usp.praatplaat.title` | Praatplaat op het digibord | Sound map on the whiteboard |
 | `teacherLanding.usp.praatplaat.description` | De hele klas plaatst composities op één kijkplaat. Samen luisteren, bespreken en vieren. | The whole class places compositions on one shared picture. Listen, discuss and celebrate together. |
 | `teacherLanding.usp.feedback.title` | Feedback die de cirkel rondmaakt | Feedback that closes the loop |
 | `teacherLanding.usp.feedback.description` | Jij geeft stickers, sterren en een bericht; klasgenoten geven elkaar anoniem complimenten via jouw feedbackkaart. | You give stickers, stars and a message; classmates give each other anonymous compliments using your feedback card. |
@@ -1856,8 +1856,8 @@ _Stand: 1758 teksten in 48 secties._
 | `teacherLanding.faq.items.accounts.a` | Nee. Leerlingen werken met de klascode van hun docent en krijgen bij het inleveren automatisch een persoonlijke bewaarcode. Er wordt geen account, e-mailadres of wachtwoord gevraagd. | No. Students use their teacher's class code and automatically receive a personal save code when they submit. No account, email address or password is required. |
 | `teacherLanding.faq.items.avg.q` | Is SoundScout AVG-proof? | Is SoundScout GDPR-compliant? |
 | `teacherLanding.faq.items.avg.a` | SoundScout is gebouwd om zo weinig mogelijk te bewaren. Leerlingen werken anoniem met een willekeurige schuilnaam: geen account, geen e-mailadres, geen wachtwoord. Geen cookies, geen tracking, geen advertenties. Ingeleverd werk wordt na één schooljaar automatisch verwijderd. De school blijft verantwoordelijk voor de leerlinggegevens en SoundScout is verwerker; een verwerkersovereenkomst krijg je op aanvraag via hello@soundscout.nl. Alles staat in de privacyverklaring op soundscout.nl/privacy. | SoundScout is built to store as little as possible. Students work anonymously with a random nickname: no account, no email address, no password. No cookies, no tracking, no ads. Submitted work is deleted automatically after one school year. The school remains responsible for student data and SoundScout is the processor; a data processing agreement is available on request via hello@soundscout.nl. Everything is in the privacy statement at soundscout.nl/privacy. |
-| `teacherLanding.faq.items.devices.q` | Werkt SoundScout op Chromebooks, iPads en het digibord? | Does SoundScout work on Chromebooks, iPads and the smartboard? |
-| `teacherLanding.faq.items.devices.a` | Ja. SoundScout draait volledig in de browser en is gebouwd voor Chromebooks, iPads, laptops en het digibord. De praatplaat-weergave is speciaal gemaakt voor klassikaal gebruik op het digibord. | Yes. SoundScout runs entirely in the browser and is built for Chromebooks, iPads, laptops and the smartboard. The sound map view is designed for whole-class use on the smartboard. |
+| `teacherLanding.faq.items.devices.q` | Werkt SoundScout op Chromebooks, iPads en het digibord? | Does SoundScout work on Chromebooks, iPads and the whiteboard? |
+| `teacherLanding.faq.items.devices.a` | Ja. SoundScout draait volledig in de browser en is gebouwd voor Chromebooks, iPads, laptops en het digibord. De praatplaat-weergave is speciaal gemaakt voor klassikaal gebruik op het digibord. | Yes. SoundScout runs entirely in the browser and is built for Chromebooks, iPads, laptops and the whiteboard. The sound map view is designed for whole-class use on the whiteboard. |
 | `teacherLanding.faq.items.install.q` | Moet ik iets installeren? | Do I need to install anything? |
 | `teacherLanding.faq.items.install.a` | Nee. SoundScout is een website — openen en beginnen. Geen installatie, geen updates, geen beheerdersrechten nodig. | No. SoundScout is a website — open it and start. No installation, no updates, no admin rights needed. |
 | `teacherLanding.faq.items.groups.q` | Voor welke groepen is SoundScout? | Which grades is SoundScout for? |
