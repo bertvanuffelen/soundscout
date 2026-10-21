@@ -355,6 +355,8 @@ export function classSessionFromAssignment(
     classId: assignment.classId,
     className: assignment.className,
     peerReview: assignment.peerReview,
+    card: assignment.card,
+    durationLabel: assignment.durationLabel,
   };
   if (assignment.type === 'template' && assignment.template) {
     return { ...base, assignmentType: 'template', assignmentId: assignment.template.id, assignmentName: assignment.template.name };
@@ -409,6 +411,8 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
       assignmentType: 'template',
       assignmentId: assignment.template.id,
       assignmentName: assignment.template.name,
@@ -424,6 +428,8 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
       assignmentType: 'praatplaat',
       assignmentId: assignment.praatplaat.id,
       assignmentName: assignment.praatplaat.name,
@@ -472,6 +478,8 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
       assignmentType: 'storyboard',
       assignmentId: assignment.storyboard.ref,
       assignmentName: i18n.t(assignment.storyboard.nameKey),
@@ -489,6 +497,8 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
       assignmentType: 'free',
       assignmentId: assignment.free.themeId,
       assignmentName: assignment.free.themeName,
@@ -527,6 +537,7 @@ export async function startAnotherForCurrentAssignment(): Promise<'ok' | 'error'
       submissionId: null,
       submissionSynced: false,
       currentCompositionId: null,
+      compositionTitle: '',
     });
     useAppStore.getState().goToPraatplaatSelect();
     return 'ok';

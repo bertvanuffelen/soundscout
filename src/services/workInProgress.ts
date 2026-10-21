@@ -28,6 +28,7 @@ const DEBOUNCE_MS = 600;
 /** De compositie-context uit appStore die bij het werk hoort */
 const CONTEXT_FIELDS = [
   'currentCompositionId',
+  'compositionTitle',
   'composeMode',
   'activeTemplate',
   'templateLockOptions',

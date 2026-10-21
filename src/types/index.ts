@@ -76,6 +76,10 @@ export interface ClassSession {
   assignmentId: string;
   /** Display name of the assignment */
   assignmentName: string;
+  /** Opdrachtkaart van de docent (null = standaardkaart per type) — podium v4 */
+  card?: OpdrachtkaartContent | null;
+  /** Tijdsduur van de docent, bijv. "2 lessen" (migratie 033) */
+  durationLabel?: string | null;
 }
 
 // --- Opdrachtkaart (vorm-onafhankelijke instructiekaart) ---
