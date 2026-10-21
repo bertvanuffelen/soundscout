@@ -8,6 +8,7 @@ import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, F
 import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
+import { useLibraryStore } from '../stores/libraryStore';
 import {
   initializeNewComposition,
   initializeCompositionFromStoryboard,
@@ -40,7 +41,17 @@ export function StartScreen() {
   const goToStage = useAppStore((s) => s.goToStage);
   const goToTutorial = useAppStore((s) => s.goToTutorial);
   const classSession = useAppStore((s) => s.classSession);
-  const hasClipsInProgress = useTimelineStore((s) => s.selectHasClips());
+  // Werk = clips óf verzamelde geluiden; overleeft herladen (A1)
+  const hasClips = useTimelineStore((s) => s.selectHasClips());
+  const hasCollected = useLibraryStore((s) => s.librarySamples.length > 0);
+  const hasClipsInProgress = hasClips || hasCollected;
+  const currentCompositionId = useAppStore((s) => s.currentCompositionId);
+  // Onderregel van "Verder werken": naam (als bewaard) · klas
+  const continueDetail = useMemo(() => {
+    if (!hasClipsInProgress) return '';
+    const name = currentCompositionId ? storageService.getCompositionById(currentCompositionId)?.name : undefined;
+    return [name, classSession?.className].filter(Boolean).join(' · ');
+  }, [hasClipsInProgress, currentCompositionId, classSession]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -330,8 +341,13 @@ export function StartScreen() {
               size="lg"
               className="w-full"
             >
-              <Play className="w-5 h-5 mr-1.5 sm:mr-2" />
-              {t('start.continueComposition')}
+              <Play className="w-5 h-5 mr-1.5 sm:mr-2 shrink-0" />
+              <span className="flex flex-col items-start leading-tight min-w-0">
+                <span>{t('start.continueComposition')}</span>
+                {continueDetail && (
+                  <span className="text-xs font-semibold opacity-75 truncate max-w-full">{continueDetail}</span>
+                )}
+              </span>
             </Button>
           )}
 

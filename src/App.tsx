@@ -9,6 +9,7 @@ import { logger } from './utils/logger';
 import { logUsageEvent } from './utils/usageStats';
 import { useLeaveGuard } from './hooks/useLeaveGuard';
 import { readSaveCodeFromHash } from './utils/saveCodeLink';
+import { startWorkInProgressPersistence } from './services/workInProgress';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
@@ -130,6 +131,10 @@ function AppContent() {
   useEffect(() => {
     initTheme();
   }, [initTheme]);
+
+  // Werk-in-uitvoering overleeft herladen (A1, B32): na initTheme, zodat het
+  // bewaarde thema het standaardthema overschrijft
+  useEffect(() => startWorkInProgressPersistence(), []);
 
   // Anonieme sessieteller (cookieloos, geen persoonsgegevens — zie usageStats)
   useEffect(() => {

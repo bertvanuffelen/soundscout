@@ -27,7 +27,7 @@ export interface PendingAssignment {
   assignment: ActiveAssignment | null;
 }
 
-interface AppStore {
+export interface AppStore {
   // Navigation state
   currentScreen: GameScreen;
   currentLocationId: string | null;
