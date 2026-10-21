@@ -1,6 +1,6 @@
 # Bouwplan: leerling-workflow (openingsscherm → podium)
 
-> **Status:** fase 0 ✅ afgerond 21-10-2026 (wacht op review en merge naar `main` vóór 27-10) · fase 1 ⬜ · gestart 21-10-2026 · branch `claude/soundscout-podium-workflow-2268b6`
+> **Status:** fase 0 ✅ afgerond 21-10-2026 (wacht op review en merge naar `main` vóór 27-10) · fase 1 🔄 (branch `claude/leerling-fase1`) · gestart 21-10-2026 · branch `claude/soundscout-podium-workflow-2268b6`
 >
 > **Bron (ontwerp en besluiten):** Kennis-map `soundscout/`
 > - `workflow-leerling.md`: hoofddocument; bevindingen B1–B38, besluitenlog
@@ -47,16 +47,19 @@
 
 ## Fase 1: openingsscherm (november)
 
-| Stap | Wat | Status |
-|---|---|---|
-| 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | ⬜ |
-| 1.2 | Startscherm opgeschoond: "Ben je docent?" als link, tagline, tabtitel "SoundScout", wizard zonder dubbele code-ingang | ⬜ |
-| 1.3 | Codevenster: één kop + uitleg per codesoort, "Open" met tekst op mobiel | ⬜ |
-| 1.4 | Klas zonder opdracht: "Andere code" opent het codevenster, "Zelf beginnen" opent de wizard (O7) | ⬜ |
-| 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | ⬜ |
-| 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | ⬜ |
-| 1.7 | **A3** Uitleg één keer na "Starten" in de klasroute | ⬜ |
-| 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | ⬜ |
+> **Branch:** `claude/leerling-fase1` (gestapeld op fase 0 / PR #5).
+> **Volgorde:** eerst de structuur (1.2–1.4), dan A3, A2 en A1, en als laatste de tekstrondes (1.1 en 1.8). Zo krijgen nieuwe teksten meteen de goede woorden.
+
+| Stap | Wat | Bestanden | Status | Commit |
+|---|---|---|---|---|
+| 1.2 | Startscherm opgeschoond: "Ben je docent?" als link, tabtitel "SoundScout", wizard zonder dubbele code-ingang | `StartScreen.tsx`, `start/NewCompositionWizard.tsx`, `App.tsx` | ✅ | 0f12077 |
+| 1.3 | Codevenster: één kop "Typ je code" + uitleg per codesoort, "Open" met tekst op mobiel | `share/ShareCodeModal.tsx`, `share/ShareCodeInput.tsx`, i18n | ✅ | 0f12077 |
+| 1.4 | Klas zonder opdracht: "Andere code proberen" opent het codevenster, "Vrij componeren" opent de wizard (O7) | `assignment/AssignmentLandingScreen.tsx`, `stores/appStore.ts` (`goToStartWith`), `StartScreen.tsx` | ✅ | 0f12077 |
+| 1.7 | **A3** Uitleg één keer na "Starten" in de klasroute | `assignment/AssignmentLandingScreen.tsx` | ⬜ | |
+| 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | `StartScreen.tsx`, `stage/StageView.tsx`, nieuw keuzevenster | ⬜ | |
+| 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | nieuw `services/workInProgress.ts`, `StorageService.ts`, `App.tsx`, `StartScreen.tsx` | ⬜ | |
+| 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | i18n, `docs/TEKSTEN.md` | ⬜ | |
+| 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | i18n, `ClassCard.tsx`, `PrivacyModal.tsx`, … | ⬜ | |
 
 ## Fase 2: podium v4
 
@@ -102,3 +105,4 @@
 ### Nog te doen door Bert (fase 0)
 - Review van [PR #5](https://github.com/bertvanuffelen/soundscout/pull/5) (branch `claude/soundscout-podium-workflow-2268b6`) en merge naar `main`, dan de build uploaden vóór 27-10.
 - Korte eigen check op een echt apparaat: inleveren met klascode (Tier 1 #6), openen via bewaarcode, en "Kies een nieuwe plek" bij een praatplaat. Die routes raken de server, en die heb ik niet gebruikt.
+| 21-10-2026 | 1.2–1.4 startscherm, codevenster, klas zonder opdracht | 0f12077 | tsc ✓ · 440 tests ✓ · lint ✓ · browser 1366×768: tabtitel "SoundScout", docentlink klein, codevenster met drie regels, Route C → codevenster / uitleg + wizard |

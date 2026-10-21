@@ -14,7 +14,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import { useAudioEngine } from './useAudioEngine';
 
 export function useStageModals() {
-  const goToStart = useAppStore((s) => s.goToStart);
+  const goToStartWith = useAppStore((s) => s.goToStartWith);
   const resetCompositionContext = useAppStore((s) => s.resetCompositionContext);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
   const resetTimeline = useTimelineStore((s) => s.resetTimeline);
@@ -34,9 +34,9 @@ export function useStageModals() {
     // sessie (goToStart doet dat sinds testronde 3 niet meer)
     resetCompositionContext();
     setShowNewModal(false);
-    // Always go to start screen so the user can choose a theme
-    goToStart();
-  }, [stopAll, resetTimeline, clearLibrary, resetCompositionContext, goToStart]);
+    // Terug naar start mét de nieuwe-soundscape-wizard direct open
+    goToStartWith('new');
+  }, [stopAll, resetTimeline, clearLibrary, resetCompositionContext, goToStartWith]);
 
   return {
     showNewModal,

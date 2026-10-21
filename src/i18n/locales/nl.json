@@ -193,6 +193,18 @@
     "createdBy": "Gemaakt door Bert van Uffelen",
     "aboutButton": "Over deze app"
   },
+  "newWork": {
+    "title": "Nog een soundscape maken?",
+    "inClass": "Je werkt in {{className}}.",
+    "safe": "Je huidige soundscape is ingeleverd en blijft bewaard.",
+    "notSafe": "Je huidige soundscape is nog niet ingeleverd. Lever hem eerst in, of begin toch opnieuw.",
+    "same": "Nog één voor deze opdracht",
+    "samePraatplaat": "Nog één op een andere plek",
+    "samePraatplaatNote": "Je eerste soundscape blijft op de praatplaat staan.",
+    "fresh": "Zelf iets nieuws",
+    "freshNote": "Dan werk je niet meer in {{className}}.",
+    "error": "Dat lukte niet. Controleer je internet en probeer het opnieuw."
+  },
   "tutorial": {
     "title": "Uitleg & video's",
     "back": "Terug",

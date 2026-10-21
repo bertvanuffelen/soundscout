@@ -41,6 +41,7 @@ import { StorytellingDisplay } from './StorytellingDisplay';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { FeedbackBanner } from '../common/FeedbackBanner';
 import { SaveCodeTakeHome } from '../share/SaveCodeTakeHome';
+import { NewWorkChoiceModal } from '../common/NewWorkChoiceModal';
 import { logger } from '../../utils/logger';
 
 export function StageView() {
@@ -181,6 +182,27 @@ export function StageView() {
     setPraatplaatSuccessDismissed(true);
     goToPraatplaatSelect();
   }, [stopAll, goToPraatplaatSelect]);
+
+  // Klasbewuste "Nieuwe soundscape" (A2): in een klas eerst kiezen
+  const [newWorkLoading, setNewWorkLoading] = useState(false);
+  const [newWorkError, setNewWorkError] = useState<string | null>(null);
+  const isPraatplaatClass = classSession?.assignmentType === 'praatplaat' && !!activePraatplaat;
+
+  const handleSameAssignment = useCallback(async () => {
+    if (isPraatplaatClass) {
+      setShowNewModal(false);
+      handleNewSpot();
+      return;
+    }
+    stopAll();
+    setNewWorkLoading(true);
+    setNewWorkError(null);
+    const { startAnotherForCurrentAssignment } = await import('../../utils/compositionInit');
+    const result = await startAnotherForCurrentAssignment();
+    setNewWorkLoading(false);
+    if (result === 'ok') setShowNewModal(false);
+    else setNewWorkError(t('newWork.error'));
+  }, [isPraatplaatClass, handleNewSpot, stopAll, setShowNewModal, t]);
 
   const handleBackToStudio = useCallback(() => {
     stopAll();
@@ -355,7 +377,7 @@ export function StageView() {
             <Button
               variant="ghost"
               size="lg"
-              onClick={() => setShowNewModal(true)}
+              onClick={() => { setNewWorkError(null); setShowNewModal(true); }}
               className="w-full text-text-muted hover:text-text-main"
             >
               {t('stage.newComposition')}
@@ -403,9 +425,24 @@ export function StageView() {
       {/* Audience at bottom (extracted component) */}
       <StageAudience />
 
-      {/* New composition confirmation modal */}
+      {/* Klas: kiezen tussen nog één voor deze opdracht of zelf iets nieuws */}
+      {classSession && (
+        <NewWorkChoiceModal
+          isOpen={showNewModal}
+          onClose={() => setShowNewModal(false)}
+          className={classSession.className}
+          isPraatplaat={isPraatplaatClass}
+          handedIn={submissionSynced}
+          onSameAssignment={handleSameAssignment}
+          onFresh={handleNewComposition}
+          isLoading={newWorkLoading}
+          error={newWorkError}
+        />
+      )}
+
+      {/* New composition confirmation modal (zonder klas) */}
       <Modal
-        isOpen={showNewModal}
+        isOpen={showNewModal && !classSession}
         onClose={() => setShowNewModal(false)}
         title={t('stage.newComposition')}
         size="sm"

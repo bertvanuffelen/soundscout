@@ -30,6 +30,7 @@ const FeedbackModal = lazy(() =>
 const NewCompositionWizard = lazy(() => import('./start/NewCompositionWizard'));
 import { ShareCodeModal } from './share';
 import { PrivacyModal } from './PrivacyModal';
+import { NewWorkChoiceModal } from './common/NewWorkChoiceModal';
 import type { Storyboard } from '../types';
 
 export function StartScreen() {
@@ -165,8 +166,37 @@ export function StartScreen() {
     setShowComposeWizard(true);
   };
 
+  // Klasbewuste "Nieuwe compositie" (A2): in een klas eerst kiezen tussen
+  // nog één voor deze opdracht of zelf iets nieuws (verlaat de klas)
+  const [showNewWorkChoice, setShowNewWorkChoice] = useState(false);
+  const [newWorkLoading, setNewWorkLoading] = useState(false);
+  const [newWorkError, setNewWorkError] = useState<string | null>(null);
+  const submissionSynced = useAppStore((s) => s.submissionSynced);
+
+  const handleSameAssignment = async () => {
+    setNewWorkLoading(true);
+    setNewWorkError(null);
+    const { startAnotherForCurrentAssignment } = await import('../utils/compositionInit');
+    const result = await startAnotherForCurrentAssignment();
+    setNewWorkLoading(false);
+    if (result === 'ok') setShowNewWorkChoice(false);
+    else setNewWorkError(t('newWork.error'));
+  };
+
+  const handleFreshWork = () => {
+    setShowNewWorkChoice(false);
+    // De keuze-modal waarschuwde al; de klas-context wordt gewist zodra er
+    // een thema/storyboard gekozen is (handleSelectTheme/-Storyboard)
+    openWizard();
+  };
+
   const handleNewComposition = () => {
     seasonalPendingRef.current = false;
+    if (classSession) {
+      setNewWorkError(null);
+      setShowNewWorkChoice(true);
+      return;
+    }
     if (hasClipsInProgress) {
       // Waarschuw dat de huidige compositie verloren gaat
       setShowNewConfirm(true);
@@ -468,6 +498,21 @@ export function StartScreen() {
             mode="feedback"
           />
         </Suspense>
+      )}
+
+      {/* Klasbewuste nieuwe soundscape (A2) */}
+      {classSession && (
+        <NewWorkChoiceModal
+          isOpen={showNewWorkChoice}
+          onClose={() => setShowNewWorkChoice(false)}
+          className={classSession.className}
+          isPraatplaat={classSession.assignmentType === 'praatplaat'}
+          handedIn={submissionSynced}
+          onSameAssignment={handleSameAssignment}
+          onFresh={handleFreshWork}
+          isLoading={newWorkLoading}
+          error={newWorkError}
+        />
       )}
 
       {/* Waarschuwing: actieve compositie wordt gewist */}

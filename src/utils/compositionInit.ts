@@ -506,6 +506,37 @@ export async function activatePendingAssignment(): Promise<void> {
 }
 
 /**
+ * "Nog één voor deze opdracht" (A2): een nieuwe soundscape binnen dezelfde
+ * klas-opdracht, zonder de klas te verlaten.
+ * - Praatplaat: lege tijdlijn + nieuwe plek kiezen; de vorige inzending
+ *   blijft op de plaat staan.
+ * - Overige types: de opdracht opnieuw ophalen en naar het opdrachtscherm.
+ *   "Starten" daar initialiseert alles schoon, en eventuele wijzigingen van
+ *   de docent komen zo ook mee.
+ * Navigeert zelf; geeft 'error' terug als dat niet lukte.
+ */
+export async function startAnotherForCurrentAssignment(): Promise<'ok' | 'error'> {
+  const { classSession, activePraatplaat } = useAppStore.getState();
+  if (!classSession) return 'error';
+
+  if (classSession.assignmentType === 'praatplaat' && activePraatplaat) {
+    useTimelineStore.getState().resetTimeline();
+    useLibraryStore.getState().clearLibrary();
+    useAppStore.setState({
+      praatplaatPosition: null,
+      submissionId: null,
+      submissionSynced: false,
+      currentCompositionId: null,
+    });
+    useAppStore.getState().goToPraatplaatSelect();
+    return 'ok';
+  }
+
+  const result = await lookupAndRouteAssignment(classSession.classCode);
+  return result === 'ok' ? 'ok' : 'error';
+}
+
+/**
  * @deprecated Gebruik `lookupAndRouteAssignment` — deze wrapper blijft bestaan
  * voor code die nog direct naar praatplaat-select wilde routeren, maar routeert
  * nu ook via de landing-flow (#78).

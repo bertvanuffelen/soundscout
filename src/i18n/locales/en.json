@@ -193,6 +193,18 @@
     "createdBy": "Created by Bert van Uffelen",
     "aboutButton": "About this app"
   },
+  "newWork": {
+    "title": "Make another soundscape?",
+    "inClass": "You're working in {{className}}.",
+    "safe": "Your current soundscape has been handed in and stays saved.",
+    "notSafe": "Your current soundscape hasn't been handed in yet. Hand it in first, or start over anyway.",
+    "same": "Another one for this assignment",
+    "samePraatplaat": "Another one on a different spot",
+    "samePraatplaatNote": "Your first soundscape stays on the sound map.",
+    "fresh": "Something new on my own",
+    "freshNote": "You'll no longer be working in {{className}}.",
+    "error": "That didn't work. Check your internet and try again."
+  },
   "tutorial": {
     "title": "Tutorials & videos",
     "back": "Back",

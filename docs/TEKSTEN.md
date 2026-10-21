@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1738 teksten in 47 secties._
+_Stand: 1748 teksten in 48 secties._
 
 ## app
 
@@ -224,6 +224,21 @@ _Stand: 1738 teksten in 47 secties._
 | `start.teacherLink` | Ben je docent? | Are you a teacher? |
 | `start.createdBy` | Gemaakt door Bert van Uffelen | Created by Bert van Uffelen |
 | `start.aboutButton` | Over deze app | About this app |
+
+## newWork
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `newWork.title` | Nog een soundscape maken? | Make another soundscape? |
+| `newWork.inClass` | Je werkt in {{className}}. | You're working in {{className}}. |
+| `newWork.safe` | Je huidige soundscape is ingeleverd en blijft bewaard. | Your current soundscape has been handed in and stays saved. |
+| `newWork.notSafe` | Je huidige soundscape is nog niet ingeleverd. Lever hem eerst in, of begin toch opnieuw. | Your current soundscape hasn't been handed in yet. Hand it in first, or start over anyway. |
+| `newWork.same` | Nog één voor deze opdracht | Another one for this assignment |
+| `newWork.samePraatplaat` | Nog één op een andere plek | Another one on a different spot |
+| `newWork.samePraatplaatNote` | Je eerste soundscape blijft op de praatplaat staan. | Your first soundscape stays on the sound map. |
+| `newWork.fresh` | Zelf iets nieuws | Something new on my own |
+| `newWork.freshNote` | Dan werk je niet meer in {{className}}. | You'll no longer be working in {{className}}. |
+| `newWork.error` | Dat lukte niet. Controleer je internet en probeer het opnieuw. | That didn't work. Check your internet and try again. |
 
 ## tutorial
 
