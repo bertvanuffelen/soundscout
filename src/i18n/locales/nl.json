@@ -244,7 +244,8 @@
     "stayHere": "Hier blijven",
     "explore": "Verkennen",
     "panHint": "Sleep om rond te kijken",
-    "loadingError": "{{count}} geluid(en) konden niet worden geladen",
+    "loadingError_one": "{{count}} geluid kon niet worden geladen",
+    "loadingError_other": "{{count}} geluiden konden niet worden geladen",
     "loadingErrorHint": "Controleer je internetverbinding en probeer opnieuw.",
     "notFound": "Locatie niet gevonden"
   },
@@ -418,9 +419,11 @@
     "exportKeepTabOpen": "Bezig met exporteren — houd dit tabblad zichtbaar, anders pauzeert de browser de export.",
     "exportReadyMp3": "MP3 gedownload!",
     "exportReadyVideo": "Video gedownload!",
-    "exportMissingSamples": "Let op: {{count}} geluid(en) konden niet worden geladen en ontbreken in de export.",
+    "exportMissingSamples_one": "Let op: {{count}} geluid kon niet worden geladen en ontbreekt in de export.",
+    "exportMissingSamples_other": "Let op: {{count}} geluiden konden niet worden geladen en ontbreken in de export.",
     "exportRealtimeFallback": "Let op: bij de snelle export ging iets mis. Je soundscape is daarom opnieuw opgenomen en klinkt precies zoals in de app.",
-    "videoMissingImages": "Let op: {{count}} afbeelding(en) konden niet worden geladen (zwart beeld in de video).",
+    "videoMissingImages_one": "Let op: {{count}} afbeelding kon niet worden geladen (zwart beeld in de video).",
+    "videoMissingImages_other": "Let op: {{count}} afbeeldingen konden niet worden geladen (zwart beeld in de video).",
     "videoNoContent": "Geen clips op de tijdlijn en geen afbeeldingen",
     "videoNoImages": "Geen afbeeldingen konden worden geladen"
   },
@@ -1603,8 +1606,8 @@
     "classDetail": {
       "back": "Terug naar overzicht",
       "dashboardCrumb": "Dashboard",
-      "compositionCount": "{{count}} compositie",
-      "compositionCount_plural": "{{count}} composities",
+      "compositionCount_one": "{{count}} compositie",
+      "compositionCount_other": "{{count}} composities",
       "refreshTitle": "Ververs composities",
       "classCodeLabel": "Klascode",
       "loading": "Composities laden...",
@@ -1620,7 +1623,8 @@
       "tabWip": "In bewerking ({{count}})",
       "wipDescription": "Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd.",
       "newCount": "{{count}} nieuw",
-      "retentionWarning": "Let op: {{count}} inzending(en) van deze klas worden vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren."
+      "retentionWarning_one": "Let op: {{count}} inzending van deze klas wordt vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren.",
+      "retentionWarning_other": "Let op: {{count}} inzendingen van deze klas worden vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren."
     },
     "presentation": {
       "title": "Presentatiemodus",
@@ -1727,10 +1731,10 @@
     },
     "classCard": {
       "createdOn": "Aangemaakt op {{date}}",
-      "compositionCount": "{{count}} compositie",
-      "compositionCount_plural": "{{count}} composities",
       "view": "Bekijken",
-      "showOnScreen": "Toon op scherm"
+      "showOnScreen": "Toon op scherm",
+      "compositionLabel_one": "compositie",
+      "compositionLabel_other": "composities"
     },
     "classCodeOverlay": {
       "label": "Klascode",
@@ -2013,7 +2017,8 @@
     "errorTitle": "Er ging iets mis",
     "errorDescription": "Probeer het later opnieuw.",
     "backToStart": "Terug naar SoundScout",
-    "submissionCount": "{{count}} compositie(s) op de praatplaat",
+    "submissionCount_one": "{{count}} soundscape op de praatplaat",
+    "submissionCount_other": "{{count}} soundscapes op de praatplaat",
     "noSubmissions": "Er staan nog geen soundscapes op deze praatplaat",
     "gestureHint": "Klik op de knop hieronder om de praatplaat te openen en de soundscapes te beluisteren.",
     "startListening": "Luister naar de praatplaat",
@@ -2251,7 +2256,8 @@
     "fetchError": "Album laden is niet gelukt.",
     "fallbackTitle": "Klas-album",
     "byClass": "Album van {{className}}",
-    "submissionCount": "{{count}} soundscapes om te beluisteren",
+    "submissionCount_one": "{{count}} soundscape om te beluisteren",
+    "submissionCount_other": "{{count}} soundscapes om te beluisteren",
     "noSubmissions": "Er zijn nog geen ingeleverde soundscapes.",
     "shareEmptyHint": "Deel het album zodra leerlingen hun compositie hebben ingeleverd — werk dat alleen is opgeslagen telt nog niet mee.",
     "startListening": "Open het album",

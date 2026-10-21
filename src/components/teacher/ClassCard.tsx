@@ -64,7 +64,7 @@ export function ClassCard({ classData, onOpen, onDelete }: ClassCardProps) {
       <div className="flex items-center gap-2 mb-4">
         <Music className="w-6 h-6 text-accent-500" />
         <span className="text-text-muted">
-          <strong>{submission_count}</strong> {t('teacher.classCard.compositionCount', { count: submission_count })}
+          <strong>{submission_count}</strong> {t('teacher.classCard.compositionLabel', { count: submission_count })}
         </span>
       </div>
 

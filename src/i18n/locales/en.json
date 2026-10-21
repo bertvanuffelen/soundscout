@@ -244,7 +244,8 @@
     "stayHere": "Stay here",
     "explore": "Explore",
     "panHint": "Drag to look around",
-    "loadingError": "{{count}} sound(s) could not be loaded",
+    "loadingError_one": "{{count}} sound could not be loaded",
+    "loadingError_other": "{{count}} sounds could not be loaded",
     "loadingErrorHint": "Check your internet connection and try again.",
     "notFound": "Location not found"
   },
@@ -418,9 +419,11 @@
     "exportKeepTabOpen": "Exporting — keep this tab visible, otherwise the browser pauses the export.",
     "exportReadyMp3": "MP3 downloaded!",
     "exportReadyVideo": "Video downloaded!",
-    "exportMissingSamples": "Note: {{count}} sound(s) could not be loaded and are missing from the export.",
+    "exportMissingSamples_one": "Note: {{count}} sound could not be loaded and is missing from the export.",
+    "exportMissingSamples_other": "Note: {{count}} sounds could not be loaded and are missing from the export.",
     "exportRealtimeFallback": "Note: something went wrong with the fast export, so your soundscape was recorded again. It sounds exactly like in the app.",
-    "videoMissingImages": "Note: {{count}} image(s) could not be loaded (black frame in the video).",
+    "videoMissingImages_one": "Note: {{count}} image could not be loaded (black frame in the video).",
+    "videoMissingImages_other": "Note: {{count}} images could not be loaded (black frames in the video).",
     "videoNoContent": "No clips on the timeline and no images",
     "videoNoImages": "No images could be loaded"
   },
@@ -583,7 +586,8 @@
     "destStage": "Stage",
     "destStageHint": "Presentation and feedback",
     "backToStart": "Back to SoundScout",
-    "viewCount": "Listened {{count}} times",
+    "viewCount_one": "Listened to once",
+    "viewCount_other": "Listened to {{count}} times",
     "by": "By",
     "errorGeneric": "Something went wrong. Please try again.",
     "loadingSamples": "Loading samples...",
@@ -1603,8 +1607,8 @@
     "classDetail": {
       "back": "Back to overview",
       "dashboardCrumb": "Dashboard",
-      "compositionCount": "{{count}} composition",
-      "compositionCount_plural": "{{count}} compositions",
+      "compositionCount_one": "{{count}} composition",
+      "compositionCount_other": "{{count}} compositions",
       "refreshTitle": "Refresh compositions",
       "classCodeLabel": "Class code",
       "loading": "Loading compositions...",
@@ -1620,7 +1624,8 @@
       "tabWip": "In progress ({{count}})",
       "wipDescription": "These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet.",
       "newCount": "{{count}} new",
-      "retentionWarning": "Note: {{count}} submission(s) from this class will be automatically deleted from {{date}} (retention: one school year after last activity). Export or share any work you want to keep."
+      "retentionWarning_one": "Note: {{count}} submission from this class will be deleted automatically from {{date}} (kept for one school year after the last activity). Export or share any work you want to keep.",
+      "retentionWarning_other": "Note: {{count}} submissions from this class will be deleted automatically from {{date}} (kept for one school year after the last activity). Export or share any work you want to keep."
     },
     "presentation": {
       "title": "Presentation mode",
@@ -1727,10 +1732,10 @@
     },
     "classCard": {
       "createdOn": "Created on {{date}}",
-      "compositionCount": "{{count}} composition",
-      "compositionCount_plural": "{{count}} compositions",
       "view": "View",
-      "showOnScreen": "Show on screen"
+      "showOnScreen": "Show on screen",
+      "compositionLabel_one": "composition",
+      "compositionLabel_other": "compositions"
     },
     "classCodeOverlay": {
       "label": "Class Code",
@@ -2013,7 +2018,8 @@
     "errorTitle": "Something went wrong",
     "errorDescription": "Please try again later.",
     "backToStart": "Back to SoundScout",
-    "submissionCount": "{{count}} composition(s) on the sound map",
+    "submissionCount_one": "{{count}} soundscape on the sound map",
+    "submissionCount_other": "{{count}} soundscapes on the sound map",
     "noSubmissions": "There are no soundscapes on this sound map yet",
     "gestureHint": "Click the button below to open the sound map and listen to the soundscapes.",
     "startListening": "Listen to the sound map",
@@ -2251,7 +2257,8 @@
     "fetchError": "Loading the album failed.",
     "fallbackTitle": "Class album",
     "byClass": "Album of {{className}}",
-    "submissionCount": "{{count}} soundscapes to listen to",
+    "submissionCount_one": "{{count}} soundscape to listen to",
+    "submissionCount_other": "{{count}} soundscapes to listen to",
     "noSubmissions": "No soundscapes have been handed in yet.",
     "shareEmptyHint": "Share the album once students have handed in their composition — work that is only saved does not count yet.",
     "startListening": "Open the album",

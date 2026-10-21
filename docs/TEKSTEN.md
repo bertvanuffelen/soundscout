@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1752 teksten in 48 secties._
+_Stand: 1758 teksten in 48 secties._
 
 ## app
 
@@ -281,7 +281,8 @@ _Stand: 1752 teksten in 48 secties._
 | `location.stayHere` | Hier blijven | Stay here |
 | `location.explore` | Verkennen | Explore |
 | `location.panHint` | Sleep om rond te kijken | Drag to look around |
-| `location.loadingError` | {{count}} geluid(en) konden niet worden geladen | {{count}} sound(s) could not be loaded |
+| `location.loadingError_one` | {{count}} geluid kon niet worden geladen | {{count}} sound could not be loaded |
+| `location.loadingError_other` | {{count}} geluiden konden niet worden geladen | {{count}} sounds could not be loaded |
 | `location.loadingErrorHint` | Controleer je internetverbinding en probeer opnieuw. | Check your internet connection and try again. |
 | `location.notFound` | Locatie niet gevonden | Location not found |
 
@@ -461,9 +462,11 @@ _Stand: 1752 teksten in 48 secties._
 | `stage.exportKeepTabOpen` | Bezig met exporteren — houd dit tabblad zichtbaar, anders pauzeert de browser de export. | Exporting — keep this tab visible, otherwise the browser pauses the export. |
 | `stage.exportReadyMp3` | MP3 gedownload! | MP3 downloaded! |
 | `stage.exportReadyVideo` | Video gedownload! | Video downloaded! |
-| `stage.exportMissingSamples` | Let op: {{count}} geluid(en) konden niet worden geladen en ontbreken in de export. | Note: {{count}} sound(s) could not be loaded and are missing from the export. |
+| `stage.exportMissingSamples_one` | Let op: {{count}} geluid kon niet worden geladen en ontbreekt in de export. | Note: {{count}} sound could not be loaded and is missing from the export. |
+| `stage.exportMissingSamples_other` | Let op: {{count}} geluiden konden niet worden geladen en ontbreken in de export. | Note: {{count}} sounds could not be loaded and are missing from the export. |
 | `stage.exportRealtimeFallback` | Let op: bij de snelle export ging iets mis. Je soundscape is daarom opnieuw opgenomen en klinkt precies zoals in de app. | Note: something went wrong with the fast export, so your soundscape was recorded again. It sounds exactly like in the app. |
-| `stage.videoMissingImages` | Let op: {{count}} afbeelding(en) konden niet worden geladen (zwart beeld in de video). | Note: {{count}} image(s) could not be loaded (black frame in the video). |
+| `stage.videoMissingImages_one` | Let op: {{count}} afbeelding kon niet worden geladen (zwart beeld in de video). | Note: {{count}} image could not be loaded (black frame in the video). |
+| `stage.videoMissingImages_other` | Let op: {{count}} afbeeldingen konden niet worden geladen (zwart beeld in de video). | Note: {{count}} images could not be loaded (black frames in the video). |
 | `stage.videoNoContent` | Geen clips op de tijdlijn en geen afbeeldingen | No clips on the timeline and no images |
 | `stage.videoNoImages` | Geen afbeeldingen konden worden geladen | No images could be loaded |
 
@@ -620,7 +623,7 @@ _Stand: 1752 teksten in 48 secties._
 | `share.destStage` | Podium | Stage |
 | `share.destStageHint` | Presentatie en feedback | Presentation and feedback |
 | `share.backToStart` | Terug naar SoundScout | Back to SoundScout |
-| `share.viewCount` | {{count}}x beluisterd | Listened {{count}} times |
+| `share.viewCount` | {{count}}x beluisterd |  |
 | `share.by` | Door | By |
 | `share.errorGeneric` | Er ging iets mis. Probeer opnieuw. | Something went wrong. Please try again. |
 | `share.loadingSamples` | Samples laden... | Loading samples... |
@@ -1370,8 +1373,8 @@ _Stand: 1752 teksten in 48 secties._
 | `teacher.classCodeMeaning` | Leerlingen typen deze code in om mee te doen. | Students type this code to join. |
 | `teacher.classDetail.back` | Terug naar overzicht | Back to overview |
 | `teacher.classDetail.dashboardCrumb` | Dashboard | Dashboard |
-| `teacher.classDetail.compositionCount` | {{count}} compositie | {{count}} composition |
-| `teacher.classDetail.compositionCount_plural` | {{count}} composities | {{count}} compositions |
+| `teacher.classDetail.compositionCount_one` | {{count}} compositie | {{count}} composition |
+| `teacher.classDetail.compositionCount_other` | {{count}} composities | {{count}} compositions |
 | `teacher.classDetail.refreshTitle` | Ververs composities | Refresh compositions |
 | `teacher.classDetail.classCodeLabel` | Klascode | Class code |
 | `teacher.classDetail.loading` | Composities laden... | Loading compositions... |
@@ -1387,7 +1390,8 @@ _Stand: 1752 teksten in 48 secties._
 | `teacher.classDetail.tabWip` | In bewerking ({{count}}) | In progress ({{count}}) |
 | `teacher.classDetail.wipDescription` | Deze leerlingen zijn bezig met een compositie en hebben jouw klascode ingevuld bij het online bewaren. Ze zijn nog niet officieel ingeleverd. | These students are working on a composition and entered your class code when saving online. They haven't officially submitted yet. |
 | `teacher.classDetail.newCount` | {{count}} nieuw | {{count}} new |
-| `teacher.classDetail.retentionWarning` | Let op: {{count}} inzending(en) van deze klas worden vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren. | Note: {{count}} submission(s) from this class will be automatically deleted from {{date}} (retention: one school year after last activity). Export or share any work you want to keep. |
+| `teacher.classDetail.retentionWarning_one` | Let op: {{count}} inzending van deze klas wordt vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren. | Note: {{count}} submission from this class will be deleted automatically from {{date}} (kept for one school year after the last activity). Export or share any work you want to keep. |
+| `teacher.classDetail.retentionWarning_other` | Let op: {{count}} inzendingen van deze klas worden vanaf {{date}} automatisch verwijderd (bewaartermijn: 1 schooljaar na de laatste activiteit). Exporteer of deel het werk dat je wilt bewaren. | Note: {{count}} submissions from this class will be deleted automatically from {{date}} (kept for one school year after the last activity). Export or share any work you want to keep. |
 | `teacher.presentation.title` | Presentatiemodus | Presentation mode |
 | `teacher.presentation.openButton` | Presenteren | Present |
 | `teacher.presentation.chooseTitle` | Wat wil je presenteren? | What do you want to present? |
@@ -1476,10 +1480,10 @@ _Stand: 1752 teksten in 48 secties._
 | `teacher.submissionPlayer.errorHint` | Probeer de pagina te verversen. | Try refreshing the page. |
 | `teacher.submissionPlayer.withStoryboard` | Met storyboard | With storyboard |
 | `teacher.classCard.createdOn` | Aangemaakt op {{date}} | Created on {{date}} |
-| `teacher.classCard.compositionCount` | {{count}} compositie | {{count}} composition |
-| `teacher.classCard.compositionCount_plural` | {{count}} composities | {{count}} compositions |
 | `teacher.classCard.view` | Bekijken | View |
 | `teacher.classCard.showOnScreen` | Toon op scherm | Show on screen |
+| `teacher.classCard.compositionLabel_one` | compositie | composition |
+| `teacher.classCard.compositionLabel_other` | composities | compositions |
 | `teacher.classCodeOverlay.label` | Klascode | Class Code |
 | `teacher.classCodeOverlay.escapeHint` | Druk op ESC om te sluiten | Press ESC to close |
 | `teacher.submissionCard.play` | Afspelen | Play |
@@ -1760,7 +1764,8 @@ _Stand: 1752 teksten in 48 secties._
 | `sharedPraatplaat.errorTitle` | Er ging iets mis | Something went wrong |
 | `sharedPraatplaat.errorDescription` | Probeer het later opnieuw. | Please try again later. |
 | `sharedPraatplaat.backToStart` | Terug naar SoundScout | Back to SoundScout |
-| `sharedPraatplaat.submissionCount` | {{count}} compositie(s) op de praatplaat | {{count}} composition(s) on the sound map |
+| `sharedPraatplaat.submissionCount_one` | {{count}} soundscape op de praatplaat | {{count}} soundscape on the sound map |
+| `sharedPraatplaat.submissionCount_other` | {{count}} soundscapes op de praatplaat | {{count}} soundscapes on the sound map |
 | `sharedPraatplaat.noSubmissions` | Er staan nog geen soundscapes op deze praatplaat | There are no soundscapes on this sound map yet |
 | `sharedPraatplaat.gestureHint` | Klik op de knop hieronder om de praatplaat te openen en de soundscapes te beluisteren. | Click the button below to open the sound map and listen to the soundscapes. |
 | `sharedPraatplaat.startListening` | Luister naar de praatplaat | Listen to the sound map |
@@ -1914,7 +1919,8 @@ _Stand: 1752 teksten in 48 secties._
 | `album.fetchError` | Album laden is niet gelukt. | Loading the album failed. |
 | `album.fallbackTitle` | Klas-album | Class album |
 | `album.byClass` | Album van {{className}} | Album of {{className}} |
-| `album.submissionCount` | {{count}} soundscapes om te beluisteren | {{count}} soundscapes to listen to |
+| `album.submissionCount_one` | {{count}} soundscape om te beluisteren | {{count}} soundscape to listen to |
+| `album.submissionCount_other` | {{count}} soundscapes om te beluisteren | {{count}} soundscapes to listen to |
 | `album.noSubmissions` | Er zijn nog geen ingeleverde soundscapes. | No soundscapes have been handed in yet. |
 | `album.shareEmptyHint` | Deel het album zodra leerlingen hun compositie hebben ingeleverd — werk dat alleen is opgeslagen telt nog niet mee. | Share the album once students have handed in their composition — work that is only saved does not count yet. |
 | `album.startListening` | Open het album | Open the album |
