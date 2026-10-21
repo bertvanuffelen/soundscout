@@ -11,7 +11,7 @@
 import { useThemeStore } from '../stores/themeStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
-import { useAppStore } from '../stores/appStore';
+import { useAppStore, type PendingAssignment } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
 import { getThemeStoryboards, findStoryboardById, getTheme, DEFAULT_THEME_ID } from '../data/themes';
 import { getActiveAssignment, AssignmentLookupError, type ActiveAssignment } from '../lib/assignments';
@@ -324,7 +324,10 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
  */
 export type AssignmentLookupResult = 'ok' | 'notFound' | 'busy' | 'error';
 
-export async function lookupAndRouteAssignment(classCode: string): Promise<AssignmentLookupResult> {
+export async function lookupAndRouteAssignment(
+  classCode: string,
+  member: PendingAssignment['member'] = null,
+): Promise<AssignmentLookupResult> {
   try {
     const assignment = await getActiveAssignment(classCode);
     if (!assignment) {
@@ -333,7 +336,7 @@ export async function lookupAndRouteAssignment(classCode: string): Promise<Assig
       const klass = await validateClassCode(classCode).catch(() => undefined);
       if (klass === null) return 'notFound';
     }
-    useAppStore.getState().goToAssignmentLanding({ classCode, assignment });
+    useAppStore.getState().goToAssignmentLanding({ classCode, assignment, member });
     return 'ok';
   } catch (err) {
     logger.error('lookupAndRouteAssignment failed:', err);
@@ -394,6 +397,10 @@ export async function activatePendingAssignment(): Promise<void> {
   }
 
   const { classCode, assignment } = pendingAssignment;
+  // Leerlingcode (fase 4.2): identiteit gaat mee in de sessie
+  const memberIdentity = pendingAssignment.member
+    ? { code: pendingAssignment.member.code, pseudonym: pendingAssignment.member.pseudonym }
+    : undefined;
 
   // Wis bewaarcode-context (exclusief met klascode-flow)
   storageService.clearSaveOnlineInfo();
@@ -415,6 +422,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'template',
       assignmentId: assignment.template.id,
       assignmentName: assignment.template.name,
@@ -433,6 +441,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'praatplaat',
       assignmentId: assignment.praatplaat.id,
       assignmentName: assignment.praatplaat.name,
@@ -484,6 +493,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'storyboard',
       assignmentId: assignment.storyboard.ref,
       assignmentName: i18n.t(assignment.storyboard.nameKey),
@@ -504,6 +514,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'free',
       assignmentId: assignment.free.themeId,
       assignmentName: assignment.free.themeName,
@@ -548,7 +559,10 @@ export async function startAnotherForCurrentAssignment(): Promise<'ok' | 'error'
     return 'ok';
   }
 
-  const result = await lookupAndRouteAssignment(classSession.classCode);
+  const result = await lookupAndRouteAssignment(
+    classSession.classCode,
+    classSession.member ? { ...classSession.member, latestSaveCode: null } : null,
+  );
   return result === 'ok' ? 'ok' : 'error';
 }
 

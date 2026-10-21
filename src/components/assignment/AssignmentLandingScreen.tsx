@@ -22,7 +22,7 @@ import { useTranslation } from 'react-i18next';
 import { getMapBackgroundImage } from '../../data/themes';
 import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
-import { activatePendingAssignment } from '../../utils/compositionInit';
+import { activatePendingAssignment, openSavedComposition } from '../../utils/compositionInit';
 import { findStoryboardById, getTheme } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
@@ -57,6 +57,28 @@ export default function AssignmentLandingScreen() {
       logger.error('[AssignmentLandingScreen] activate failed', err);
       setError(t('assignmentLanding.startError'));
       setIsStarting(false);
+    }
+  }, [pending, t]);
+
+  // Leerlingcode (fase 4.2): verder met het laatste werk van dit kind
+  const [isContinuing, setIsContinuing] = useState(false);
+  const handleContinueLatest = useCallback(async () => {
+    const member = pending?.member;
+    if (!member?.latestSaveCode) return;
+    setIsContinuing(true);
+    setError(null);
+    try {
+      const { loadSavedComposition } = await import('../../lib/submissions');
+      const saved = await loadSavedComposition(member.latestSaveCode);
+      if (!saved) throw new Error('not found');
+      await openSavedComposition(saved, member.latestSaveCode, 'studio');
+      // De herstelde klassessie krijgt de identiteit weer mee
+      const session = useAppStore.getState().classSession;
+      if (session) useAppStore.setState({ classSession: { ...session, member: { code: member.code, pseudonym: member.pseudonym } } });
+    } catch (err) {
+      logger.error('[AssignmentLandingScreen] verder met laatste werk mislukt', err);
+      setError(t('assignmentLanding.startError'));
+      setIsContinuing(false);
     }
   }, [pending, t]);
 
@@ -105,6 +127,13 @@ export default function AssignmentLandingScreen() {
 
         {/* Indeling (testronde 2, wens Bert): 1) header met titel/type-icoon
             2) grote afbeelding 3) labels klascode + klas 4) opdrachtkaart */}
+
+        {/* Leerlingcode: begroeting met de vaste schuilnaam */}
+        {pending.member && (
+          <p className="mb-4 text-xl font-extrabold text-white md:text-text-main">
+            {t('members.hello', { name: pending.member.pseudonym })}
+          </p>
+        )}
 
         {/* 1+2: Body per assignment-type (header + afbeelding + evt. uitleg) */}
         {assignment?.type === 'template' && assignment.template && (
@@ -164,7 +193,12 @@ export default function AssignmentLandingScreen() {
             <Button variant="ghost" onClick={goToStart} disabled={isStarting} className="md:text-text-main md:hover:bg-neutral-100">
               {t('assignmentLanding.back')}
             </Button>
-            <Button variant="primary" onClick={handleStart} disabled={isStarting}>
+            {pending.member?.latestSaveCode && (
+              <Button variant="secondary" onClick={() => void handleContinueLatest()} disabled={isStarting || isContinuing} isLoading={isContinuing}>
+                {t('members.continueLatest')}
+              </Button>
+            )}
+            <Button variant="primary" onClick={handleStart} disabled={isStarting || isContinuing}>
               {isStarting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />

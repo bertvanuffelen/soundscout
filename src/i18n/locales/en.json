@@ -725,7 +725,7 @@
       "classLabel": "4 digits",
       "classText": "class code from your teacher",
       "saveLabel": "6 characters",
-      "saveText": "save code: continue your soundscape",
+      "saveText": "save code or student code: keep working on your soundscape",
       "listenLabel": "8 characters",
       "listenText": "listening code: listen to a soundscape"
     }
@@ -2513,6 +2513,39 @@
     },
     "meta": {
       "title": "About SoundScout — who makes it, why it exists and how to get in touch"
+    }
+  },
+  "members": {
+    "notActive": "Your code is no longer active. Ask your teacher for a new one.",
+    "hello": "Hi {{name}}!",
+    "continueLatest": "Continue with your latest soundscape",
+    "errors": {
+      "generate": "Could not create the student codes",
+      "generic": "That didn't work. Please try again."
+    },
+    "teacher": {
+      "title": "Student codes",
+      "intro": "Each child gets their own code for this school year. With it they can keep working on any device, always with the same nickname. Write the real name only on the paper card.",
+      "count": "Number",
+      "make": "Create codes",
+      "print": "Print cards",
+      "extend": "Keep for next year",
+      "extended": "All codes have been extended by a year.",
+      "empty": "No student codes yet.",
+      "code": "Code",
+      "pseudonym": "Nickname",
+      "activity": "Last active",
+      "submissions": "Handed in",
+      "never": "not yet",
+      "replace": "New code",
+      "replaceConfirm": "This student gets a new code. The old one stops working; nickname and work stay.",
+      "deactivate": "Turn off",
+      "activate": "Turn on",
+      "inactive": "off",
+      "expires": "Valid until {{date}}",
+      "printTitle": "Student codes {{className}}",
+      "printHow": "Go to soundscout.nl, choose \"I have a code\" and type your code.",
+      "printName": "Name:"
     }
   }
 }

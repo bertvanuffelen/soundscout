@@ -82,6 +82,15 @@ export interface ClassSession {
   durationLabel?: string | null;
   /** Mag de leerling zelf een titel typen? (migratie 037; ontbreekt = ja) */
   studentsTypeTitle?: boolean;
+  /** Ingelogd met een leerlingcode (migratie 038): vaste schuilnaam */
+  member?: ClassMemberIdentity;
+}
+
+/** Leerlingcode + vaste schuilnaam (fase 4.2, ontwerp LEERLING-CODES) */
+export interface ClassMemberIdentity {
+  /** Code zonder streepje, bijv. "LK4827" */
+  code: string;
+  pseudonym: string;
 }
 
 // --- Opdrachtkaart (vorm-onafhankelijke instructiekaart) ---

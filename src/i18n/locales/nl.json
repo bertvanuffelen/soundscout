@@ -724,7 +724,7 @@
       "classLabel": "4 cijfers",
       "classText": "klascode van je docent",
       "saveLabel": "6 tekens",
-      "saveText": "bewaarcode: verder met je soundscape",
+      "saveText": "bewaarcode of leerlingcode: verder met je soundscape",
       "listenLabel": "8 tekens",
       "listenText": "luistercode: luister naar een soundscape"
     }
@@ -2512,6 +2512,39 @@
     },
     "meta": {
       "title": "Over SoundScout — wie het maakt, waarom het bestaat en hoe je contact opneemt"
+    }
+  },
+  "members": {
+    "notActive": "Jouw code is niet meer actief. Vraag je docent om een nieuwe.",
+    "hello": "Hoi {{name}}!",
+    "continueLatest": "Verder met je laatste soundscape",
+    "errors": {
+      "generate": "Kon de leerlingcodes niet maken",
+      "generic": "Dat lukte niet. Probeer het opnieuw."
+    },
+    "teacher": {
+      "title": "Leerlingcodes",
+      "intro": "Elk kind krijgt een eigen code voor dit schooljaar. Daarmee werkt het op elk apparaat verder, altijd met dezelfde schuilnaam. Schrijf de echte naam alleen op het papieren kaartje.",
+      "count": "Aantal",
+      "make": "Maak codes",
+      "print": "Print kaartjes",
+      "extend": "Bewaar voor volgend jaar",
+      "extended": "Alle codes zijn een jaar verlengd.",
+      "empty": "Nog geen leerlingcodes.",
+      "code": "Code",
+      "pseudonym": "Schuilnaam",
+      "activity": "Laatst actief",
+      "submissions": "Ingeleverd",
+      "never": "nog niet",
+      "replace": "Nieuwe code",
+      "replaceConfirm": "Deze leerling krijgt een nieuwe code. De oude werkt dan niet meer; schuilnaam en werk blijven.",
+      "deactivate": "Zet uit",
+      "activate": "Zet aan",
+      "inactive": "uit",
+      "expires": "Geldig tot {{date}}",
+      "printTitle": "Leerlingcodes {{className}}",
+      "printHow": "Ga naar soundscout.nl, kies \"Ik heb een code\" en typ je code.",
+      "printName": "Naam:"
     }
   }
 }

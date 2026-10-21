@@ -20,6 +20,7 @@ import { getSharedClassAlbum } from '../../lib/albums';
 import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, openSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
+import { loginWithMemberCode, MEMBER_CODE_PATTERN } from '../../lib/members';
 
 type PendingSaved = {
   saved: NonNullable<Awaited<ReturnType<typeof loadSavedComposition>>>;
@@ -83,6 +84,31 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
           ));
           setIsLoading(false);
           return;
+        }
+
+        // 1a. Twee letters + vier cijfers → eerst als leerlingcode (fase 4.2).
+        //     Niet gevonden (of migratie 038 nog niet gedraaid) → bewaarcode.
+        if (MEMBER_CODE_PATTERN.test(code)) {
+          const login = await loginWithMemberCode(code);
+          if (signal.aborted) return;
+          if (login && login.status !== 'ok') {
+            setError(t('members.notActive'));
+            return;
+          }
+          if (login && login.status === 'ok') {
+            const result = await lookupAndRouteAssignment(login.classCode, {
+              code,
+              pseudonym: login.pseudonym,
+              latestSaveCode: login.latestSaveCode,
+            });
+            if (signal.aborted) return;
+            if (result === 'ok') {
+              setCode('');
+              return;
+            }
+            setError(t(result === 'busy' ? 'share.classBusy' : 'share.lookupError'));
+            return;
+          }
         }
 
         // 1. Als 6 karakters → probeer als bewaarcode (#52)

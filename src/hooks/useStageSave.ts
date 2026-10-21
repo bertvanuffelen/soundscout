@@ -163,6 +163,8 @@ export function useStageSave() {
     // Bijwerken vereist het geheim van de eerste inlevering (migratie 036)
     const submit = (clientId: string) => submitOrUpdateComposition({
       classCode: session.classCode,
+      // Leerlingcode (fase 4.2): altijd dezelfde schuilnaam als afzender
+      studentName: session.member?.pseudonym,
       compositionName: name,
       compositionData,
       clientId,
@@ -180,6 +182,12 @@ export function useStageSave() {
       return submit(clientIdRef.current);
     }).then(({ id: returnedId, saveCode, saveSecret }) => {
       if (saveSecret) storageService.setSubmissionSecret(returnedId, saveSecret);
+      // Leerlingcode: inzending aan het kind koppelen (verder werken op elk apparaat)
+      const secret = saveSecret ?? storageService.getSubmissionSecret(returnedId);
+      if (session.member && secret) {
+        void import('../lib/members').then(({ linkSubmissionToMember }) =>
+          linkSubmissionToMember(returnedId, secret, session.member!.code));
+      }
       useAppStore.getState().setSubmissionId(returnedId);
       useAppStore.getState().setSubmissionSynced(true);
       clientIdRef.current = returnedId;

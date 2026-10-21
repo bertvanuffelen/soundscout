@@ -20,6 +20,7 @@ import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { PeerReviewSettings } from './PeerReviewSettings';
 import { PeerFeedbackOverview } from './PeerFeedbackOverview';
+import { ClassMembersPanel } from './ClassMembersPanel';
 import { ClassPresentationView } from './ClassPresentationView';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { AssignmentTypeCards } from './AssignmentTypeCards';
@@ -795,6 +796,9 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             )}
           </div>
         )}
+
+        {/* --- Leerlingcodes (fase 4.2, migratie 038) --- */}
+        <ClassMembersPanel classId={classData.id} className={classData.name} />
 
         {/* --- Eerdere opdrachten --- */}
         {!loading && !assignmentLoading && pastAssignments.length > 0 && (

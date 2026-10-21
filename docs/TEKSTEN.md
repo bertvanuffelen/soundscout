@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1859 teksten in 49 secties._
+_Stand: 1886 teksten in 50 secties._
 
 ## app
 
@@ -733,7 +733,7 @@ _Stand: 1859 teksten in 49 secties._
 | `share.codeKinds.classLabel` | 4 cijfers | 4 digits |
 | `share.codeKinds.classText` | klascode van je docent | class code from your teacher |
 | `share.codeKinds.saveLabel` | 6 tekens | 6 characters |
-| `share.codeKinds.saveText` | bewaarcode: verder met je soundscape | save code: continue your soundscape |
+| `share.codeKinds.saveText` | bewaarcode of leerlingcode: verder met je soundscape | save code or student code: keep working on your soundscape |
 | `share.codeKinds.listenLabel` | 8 tekens | 8 characters |
 | `share.codeKinds.listenText` | luistercode: luister naar een soundscape | listening code: listen to a soundscape |
 
@@ -2123,3 +2123,35 @@ _Stand: 1859 teksten in 49 secties._
 | `about.credits.themeToggle` | Thema {{theme}} — {{count}} geluiden | Theme {{theme}} — {{count}} sounds |
 | `about.footer.app` | Naar de app | Go to the app |
 | `about.meta.title` | Over SoundScout — wie het maakt, waarom het bestaat en hoe je contact opneemt | About SoundScout — who makes it, why it exists and how to get in touch |
+
+## members
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `members.notActive` | Jouw code is niet meer actief. Vraag je docent om een nieuwe. | Your code is no longer active. Ask your teacher for a new one. |
+| `members.hello` | Hoi {{name}}! | Hi {{name}}! |
+| `members.continueLatest` | Verder met je laatste soundscape | Continue with your latest soundscape |
+| `members.errors.generate` | Kon de leerlingcodes niet maken | Could not create the student codes |
+| `members.errors.generic` | Dat lukte niet. Probeer het opnieuw. | That didn't work. Please try again. |
+| `members.teacher.title` | Leerlingcodes | Student codes |
+| `members.teacher.intro` | Elk kind krijgt een eigen code voor dit schooljaar. Daarmee werkt het op elk apparaat verder, altijd met dezelfde schuilnaam. Schrijf de echte naam alleen op het papieren kaartje. | Each child gets their own code for this school year. With it they can keep working on any device, always with the same nickname. Write the real name only on the paper card. |
+| `members.teacher.count` | Aantal | Number |
+| `members.teacher.make` | Maak codes | Create codes |
+| `members.teacher.print` | Print kaartjes | Print cards |
+| `members.teacher.extend` | Bewaar voor volgend jaar | Keep for next year |
+| `members.teacher.extended` | Alle codes zijn een jaar verlengd. | All codes have been extended by a year. |
+| `members.teacher.empty` | Nog geen leerlingcodes. | No student codes yet. |
+| `members.teacher.code` | Code | Code |
+| `members.teacher.pseudonym` | Schuilnaam | Nickname |
+| `members.teacher.activity` | Laatst actief | Last active |
+| `members.teacher.submissions` | Ingeleverd | Handed in |
+| `members.teacher.never` | nog niet | not yet |
+| `members.teacher.replace` | Nieuwe code | New code |
+| `members.teacher.replaceConfirm` | Deze leerling krijgt een nieuwe code. De oude werkt dan niet meer; schuilnaam en werk blijven. | This student gets a new code. The old one stops working; nickname and work stay. |
+| `members.teacher.deactivate` | Zet uit | Turn off |
+| `members.teacher.activate` | Zet aan | Turn on |
+| `members.teacher.inactive` | uit | off |
+| `members.teacher.expires` | Geldig tot {{date}} | Valid until {{date}} |
+| `members.teacher.printTitle` | Leerlingcodes {{className}} | Student codes {{className}} |
+| `members.teacher.printHow` | Ga naar soundscout.nl, kies "Ik heb een code" en typ je code. | Go to soundscout.nl, choose "I have a code" and type your code. |
+| `members.teacher.printName` | Naam: | Name: |

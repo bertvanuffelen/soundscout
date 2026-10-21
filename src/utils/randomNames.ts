@@ -134,14 +134,14 @@ export function generateRandomName(language?: string): string {
  * const names = generateMultipleNames(5);
  * // => ["Vrolijke Papegaai", "Dansende Robot", ...]
  */
-export function generateMultipleNames(count: number): string[] {
+export function generateMultipleNames(count: number, language?: string): string[] {
   const used = new Set<string>();
   const names: string[] = [];
   const maxAttempts = count * 3;
   let attempts = 0;
 
   while (names.length < count && attempts < maxAttempts) {
-    const name = generateRandomDutchName();
+    const name = generateRandomName(language);
     if (!used.has(name)) {
       used.add(name);
       names.push(name);

@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition, ClassSession, ReceivedFeedback } from '../types';
+import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition, ClassSession, ReceivedFeedback, ClassMemberIdentity } from '../types';
 import type { ActiveAssignment } from '../lib/assignments';
 
 /**
@@ -25,6 +25,8 @@ import type { ActiveAssignment } from '../lib/assignments';
 export interface PendingAssignment {
   classCode: string;
   assignment: ActiveAssignment | null;
+  /** Ingelogd met een leerlingcode (fase 4.2): identiteit + laatste werk */
+  member?: (ClassMemberIdentity & { latestSaveCode: string | null }) | null;
 }
 
 export interface AppStore {
