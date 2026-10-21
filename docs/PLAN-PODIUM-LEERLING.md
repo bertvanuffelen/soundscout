@@ -124,7 +124,7 @@
 2. Privacyverklaring aanvullen met leerlingcodes (code + schuilnaam, geldig tot 31 juli, verwijderd met de klas). De tekst over online bewaren is al aangepast.
 3. Testen met een echte klas: inleveren, versie 2, feedback klasgenoten, "Heb je een klascode?", titelinstelling, leerlingcodes maken, printen en inloggen.
 
-## Fase 5: eindtest-fixes vóór 27-10 ✅ (bestanden) · ⏳ migraties 041 + 042
+## Fase 5: eindtest-fixes vóór 27-10 ✅
 
 > **Branch:** `claude/leerling-fase5` (gestapeld op fase 4). Bron: `Kennis/1_ZZP/soundscout/eindtest-leerling.md` (tweede AI, testklas 3597).
 
@@ -142,7 +142,7 @@
 
 **Besluiten Bert (21-10):** omvang stap 1–9; "Klaar, ik stop" + 12 uur; leerlingcodes volgens het beste beveiligingsadvies (formaat wijkt af van ontwerp XX-0000 → ABC-1234).
 
-**Nog door Bert:** migraties **041** en **042** draaien (in die volgorde). Daarna controleer ik ze alleen-lezen, plus een rem-test vanuit de browser (klopt het netwerkadres uit `request.headers`?).
+**Migraties 041 + 042** ✅ gedraaid en gecontroleerd 21-10: alle onderdelen aanwezig, opruimtaak `soundscout-members-cleanup` 03:15, `member_codes_version() = 2`, rechten zoals bedoeld. Rem-test vanuit de browser: het netwerkadres komt binnen via `request.headers` (geen `unknown`).
 
 **Na de lancering (uit het rapport):** E6, E8, E9, E10, E12, E13, M4–M6, M8, L3–L6, toegankelijkheid (knoppen ≥ 44 px, labels, contrast gele clips), "Muziek · MP3" (staat zo in de goedgekeurde mockup).
 
@@ -177,3 +177,4 @@
 | 21-10-2026 | Controle 039 + Supabase-adviezen → migratie 040 | HEAD | 039 ✓ (docentfuncties dicht voor anon, leerlingfuncties open). Adviezen: 2 nieuwe hulpfuncties zonder vast search_path, assert_class_owner direct aanroepbaar → 040. PGlite: als rol authenticated codes maken ✓, assert_class_owner direct geweigerd ✓. Oudere adviezen (38 functies zonder search_path, lekwachtwoord-bescherming uit) staan los van deze ronde |
 | 21-10-2026 | Controle 040 | — | Vast search_path op alle nieuwe functies, assert_class_owner niet meer direct aanroepbaar. Adviezen bij nieuwe functies: alleen nog de verwachte meldingen (leerlingfuncties open voor anon, docentfuncties voor authenticated, met eigen eigenaarscontrole) |
 | 21-10-2026 | Fase 5 eindtest-fixes | 3c61a81 … 455e320 | tsc ✓ · 481 tests ✓ (+16) · browser 1280×800 + 375×812: transport stopt, vraag bij onbewaard werk + "Eerst bewaren", "Klaar, ik stop" → schoon start, uitleg en wizard passen · PGlite: 041 (retry = update, verkeerd geheim geweigerd) en 042 (rem alleen op fouten, school met 40 logins ok, geen buit, verlengen 2× gelijk) |
+| 21-10-2026 | Controle 041 + 042 | — | Alleen-lezen: voorgesteld geheim + pgcrypto (041), formaat ABC1234, generator met gen_random_bytes, login zonder bewaarcode (`has_work`), open_member_latest_work, geen omhangen, verlengen idempotent, cron 03:15, versie 2; interne functies dicht voor anon. Eén foute login vanuit de browser: rem telt op het echte netwerkadres. Adviezen: alleen verwachte meldingen; search_path-meldingen 38 → 37 |
