@@ -105,7 +105,6 @@ function AppContent() {
   // Update document title based on current screen
   useEffect(() => {
     const screenTitles: Record<string, string> = {
-      start: t('start.startGame'),
       map: t('map.title'),
       location: t('common.location'),
       studio: t('studio.title'),
@@ -121,8 +120,10 @@ function AppContent() {
       'shared-praatplaat': 'SoundScout',
     };
 
-    const screenTitle = screenTitles[currentScreen] || 'SoundScout';
-    document.title = `${screenTitle} — SoundScout`;
+    // Startscherm en schermen zonder eigen titel: gewoon "SoundScout" (O11;
+    // was "Start Spel — SoundScout" en elders "SoundScout — SoundScout")
+    const screenTitle = screenTitles[currentScreen];
+    document.title = screenTitle && screenTitle !== 'SoundScout' ? `${screenTitle} — SoundScout` : 'SoundScout';
   }, [currentScreen, t]);
 
   // Initialize theme on mount (reads URL param)

@@ -17,7 +17,7 @@
 
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Music, Image as ImageIcon, Film, ArrowRight, ArrowLeft, KeyRound, type LucideIcon } from 'lucide-react';
+import { Music, Image as ImageIcon, Film, ArrowRight, ArrowLeft, type LucideIcon } from 'lucide-react';
 import { ComposePreview } from '../compose/ComposePreview';
 import type { ComposeVariant } from '../compose/composeVariants';
 import { ThemePicker } from './ThemePicker';
@@ -33,8 +33,6 @@ interface NewCompositionWizardProps {
   onStartFree: (themeId: string) => void;
   /** Bij afbeelding/storyboard: gekozen storyboard → start (StartScreen.handleSelectStoryboard). */
   onStartStoryboard: (storyboard: Storyboard) => void;
-  /** "Ik heb een code" — sluit de wizard en opent de klascode/deelcode-invoer. */
-  onHaveCode: () => void;
   isLoading?: boolean;
 }
 
@@ -55,7 +53,7 @@ const MODES: ModeConfig[] = [
   { mode: 'storyboard', variant: 'storyboard', Icon: Film, active: 'border-orange-400 bg-orange-50', icon: 'text-orange-500' },
 ];
 
-export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, onHaveCode, isLoading = false }: NewCompositionWizardProps) {
+export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, isLoading = false }: NewCompositionWizardProps) {
   const { t } = useTranslation();
 
   const [step, setStep] = useState<'mode' | 'pick'>('mode');
@@ -119,16 +117,9 @@ export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, 
             })}
           </div>
 
-          {/* Footer: "Ik heb een code" (secundair) + bevestigen */}
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-between gap-3 pt-1">
-            <button
-              type="button"
-              onClick={onHaveCode}
-              className="inline-flex items-center justify-center gap-1.5 text-sm font-semibold text-text-muted hover:text-text-main transition-colors"
-            >
-              <KeyRound className="w-4 h-4" />
-              {t('start.haveCode')}
-            </button>
+          {/* Footer: bevestigen. "Ik heb een code" staat alleen op het
+              startscherm (O8: één ingang per actie) */}
+          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-1">
             <Button variant="primary" size="lg" onClick={handleNext} className="inline-flex items-center justify-center gap-1.5">
               {t('composeMode.next')}
               <ArrowRight className="w-5 h-5" />

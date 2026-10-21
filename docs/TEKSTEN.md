@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1735 teksten in 47 secties._
+_Stand: 1738 teksten in 47 secties._
 
 ## app
 
@@ -587,12 +587,10 @@ _Stand: 1735 teksten in 47 secties._
 | `share.expired` | Deze link is verlopen | This link has expired |
 | `share.notFound` | Compositie niet gevonden | Composition not found |
 | `share.loading` | Compositie laden... | Loading composition... |
-| `share.listenTitle` | Heb je een compositie code? | Got a composition code? |
 | `share.listenPlaceholder` | Voer code in | Enter code |
-| `share.listen` | Open code | Open code |
+| `share.listen` | Open | Open |
 | `share.invalidCode` | Voer een geldige code in | Please enter a valid code |
 | `share.codeNotFound` | Code niet gevonden. Controleer het aantal tekens en of de code klopt. | Code not found. Check the number of characters and if the code is correct. |
-| `share.codeFormatHint` | 4 cijfers = klascode · 6 tekens = bewaarcode · 8 tekens = luistercode | 4 digits = class code · 6 characters = save code · 8 characters = listen code |
 | `share.noPraatplaat` | Er is geen actieve praatplaat voor deze klascode. Vraag je docent. | No active sound map for this class code. Ask your teacher. |
 | `share.noActiveAssignment` | Er is geen actieve opdracht voor deze klascode. Vraag je docent. | No active assignment for this class code. Ask your teacher. |
 | `share.lookupError` | Er ging iets mis bij het opzoeken. Probeer opnieuw. | Something went wrong. Please try again. |
@@ -610,6 +608,12 @@ _Stand: 1735 teksten in 47 secties._
 | `share.errorGeneric` | Er ging iets mis. Probeer opnieuw. | Something went wrong. Please try again. |
 | `share.loadingSamples` | Samples laden... | Loading samples... |
 | `share.openComposition` | Open compositie | Open composition |
+| `share.codeKinds.classLabel` | 4 cijfers | 4 digits |
+| `share.codeKinds.classText` | klascode van je docent | class code from your teacher |
+| `share.codeKinds.saveLabel` | 6 tekens | 6 characters |
+| `share.codeKinds.saveText` | bewaarcode: verder met je soundscape | save code: continue your soundscape |
+| `share.codeKinds.listenLabel` | 8 tekens | 8 characters |
+| `share.codeKinds.listenText` | luistercode: luister naar een soundscape | listening code: listen to a soundscape |
 
 ## assignments
 
@@ -1693,8 +1697,7 @@ _Stand: 1735 teksten in 47 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
-| `shareCodeModal.title` | Ik heb een code | I have a code |
-| `shareCodeModal.subtitle` | Voer een klascode, bewaarcode of luister-code in. | Enter a class code, save code, or listening code. |
+| `shareCodeModal.title` | Typ je code | Enter your code |
 
 ## assignmentLanding
 

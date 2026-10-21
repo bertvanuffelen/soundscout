@@ -164,14 +164,16 @@ export default function AssignmentLandingScreen() {
 
 function RouteCActions() {
   const { t } = useTranslation();
-  const goToStart = useAppStore((s) => s.goToStart);
+  const goToStartWith = useAppStore((s) => s.goToStartWith);
 
+  // De knoppen doen nu wat ze zeggen (O7): voorheen brachten beide alleen
+  // terug naar het startscherm.
   return (
     <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-end">
-      <Button variant="ghost" onClick={goToStart} className="md:text-text-main md:hover:bg-neutral-100">
+      <Button variant="ghost" onClick={() => goToStartWith('code')} className="md:text-text-main md:hover:bg-neutral-100">
         {t('assignmentLanding.none.otherCode')}
       </Button>
-      <Button variant="primary" onClick={goToStart}>
+      <Button variant="primary" onClick={() => goToStartWith('new')}>
         {t('assignmentLanding.none.composeFree')}
       </Button>
     </div>

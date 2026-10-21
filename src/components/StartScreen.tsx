@@ -59,6 +59,19 @@ export function StartScreen() {
     setHasCompositions(compositions.length > 0);
   }, []);
 
+  // Doorverwijzing vanaf een ander scherm (O7): bv. het opdrachtscherm zonder
+  // opdracht vraagt om het codevenster of de wizard meteen te openen.
+  const pendingStartAction = useAppStore((s) => s.pendingStartAction);
+  useEffect(() => {
+    if (!pendingStartAction) return;
+    useAppStore.getState().setPendingStartAction(null);
+    if (pendingStartAction === 'code') setShowCodeModal(true);
+    else handleNewComposition();
+    // handleNewComposition is een gewone functie in deze component; we willen
+    // alleen reageren op een nieuwe doorverwijzing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingStartAction]);
+
   // Stille check op nieuwe docent-feedback (migratie 026): als dit apparaat
   // een klas-inzending met bewaarcode heeft, kijk of de docent heeft
   // gereageerd sinds de vorige keer. Faalt geruisloos (offline, migratie
@@ -360,18 +373,16 @@ export function StartScreen() {
           </button>
         </div>
 
-        {/* Teacher link — als knop, gelijkgetrokken met de andere CTA's */}
-        <div className="mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
-          <Button
-            onClick={() => { window.location.href = '/teacher'; }}
-            variant="secondary"
-            size="lg"
-            className="w-full"
-          >
-            <GraduationCap className="w-5 h-5 mr-1.5 sm:mr-2" />
-            {t('start.teacherLink')}
-          </Button>
-        </div>
+        {/* Docentlink: klein en onderaan (O2). Als knop met dezelfde stijl als
+            "Ik heb een code" klikten leerlingen er per ongeluk op. */}
+        <button
+          type="button"
+          onClick={() => { window.location.href = '/teacher'; }}
+          className="mt-5 sm:mt-6 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-300 underline underline-offset-4 hover:text-white md:text-text-muted md:hover:text-text-main transition-colors"
+        >
+          <GraduationCap className="w-4 h-4" aria-hidden="true" />
+          {t('start.teacherLink')}
+        </button>
 
       </div>
 
@@ -495,7 +506,6 @@ export function StartScreen() {
             onClose={() => setShowComposeWizard(false)}
             onStartFree={handleSelectTheme}
             onStartStoryboard={handleSelectStoryboard}
-            onHaveCode={() => { setShowComposeWizard(false); setShowCodeModal(true); }}
             isLoading={isLoading}
           />
         </Suspense>

@@ -553,12 +553,10 @@
     "expired": "This link has expired",
     "notFound": "Composition not found",
     "loading": "Loading composition...",
-    "listenTitle": "Got a composition code?",
     "listenPlaceholder": "Enter code",
-    "listen": "Open code",
+    "listen": "Open",
     "invalidCode": "Please enter a valid code",
     "codeNotFound": "Code not found. Check the number of characters and if the code is correct.",
-    "codeFormatHint": "4 digits = class code · 6 characters = save code · 8 characters = listen code",
     "noPraatplaat": "No active sound map for this class code. Ask your teacher.",
     "noActiveAssignment": "No active assignment for this class code. Ask your teacher.",
     "lookupError": "Something went wrong. Please try again.",
@@ -575,7 +573,15 @@
     "by": "By",
     "errorGeneric": "Something went wrong. Please try again.",
     "loadingSamples": "Loading samples...",
-    "openComposition": "Open composition"
+    "openComposition": "Open composition",
+    "codeKinds": {
+      "classLabel": "4 digits",
+      "classText": "class code from your teacher",
+      "saveLabel": "6 characters",
+      "saveText": "save code: continue your soundscape",
+      "listenLabel": "8 characters",
+      "listenText": "listening code: listen to a soundscape"
+    }
   },
   "assignments": {
     "chooseTitle": "Activate assignment",
@@ -1943,8 +1949,7 @@
     "contact": "Questions about privacy? Contact us at <mail>hello@soundscout.nl</mail>."
   },
   "shareCodeModal": {
-    "title": "I have a code",
-    "subtitle": "Enter a class code, save code, or listening code."
+    "title": "Enter your code"
   },
   "assignmentLanding": {
     "classCodeLabel": "Class code",

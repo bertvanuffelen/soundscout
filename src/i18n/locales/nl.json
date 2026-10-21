@@ -553,12 +553,10 @@
     "expired": "Deze link is verlopen",
     "notFound": "Compositie niet gevonden",
     "loading": "Compositie laden...",
-    "listenTitle": "Heb je een compositie code?",
     "listenPlaceholder": "Voer code in",
-    "listen": "Open code",
+    "listen": "Open",
     "invalidCode": "Voer een geldige code in",
     "codeNotFound": "Code niet gevonden. Controleer het aantal tekens en of de code klopt.",
-    "codeFormatHint": "4 cijfers = klascode · 6 tekens = bewaarcode · 8 tekens = luistercode",
     "noPraatplaat": "Er is geen actieve praatplaat voor deze klascode. Vraag je docent.",
     "noActiveAssignment": "Er is geen actieve opdracht voor deze klascode. Vraag je docent.",
     "lookupError": "Er ging iets mis bij het opzoeken. Probeer opnieuw.",
@@ -575,7 +573,15 @@
     "by": "Door",
     "errorGeneric": "Er ging iets mis. Probeer opnieuw.",
     "loadingSamples": "Samples laden...",
-    "openComposition": "Open compositie"
+    "openComposition": "Open compositie",
+    "codeKinds": {
+      "classLabel": "4 cijfers",
+      "classText": "klascode van je docent",
+      "saveLabel": "6 tekens",
+      "saveText": "bewaarcode: verder met je soundscape",
+      "listenLabel": "8 tekens",
+      "listenText": "luistercode: luister naar een soundscape"
+    }
   },
   "assignments": {
     "chooseTitle": "Opdracht activeren",
@@ -1943,8 +1949,7 @@
     "contact": "Vragen over privacy? Neem contact op via <mail>hello@soundscout.nl</mail>."
   },
   "shareCodeModal": {
-    "title": "Ik heb een code",
-    "subtitle": "Voer een klascode, bewaarcode of luister-code in."
+    "title": "Typ je code"
   },
   "assignmentLanding": {
     "classCodeLabel": "Klascode",

@@ -11,7 +11,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Headphones, Loader2, X, SlidersHorizontal, Theater } from 'lucide-react';
+import { Headphones, Loader2, X, SlidersHorizontal, Theater, ArrowRight, Hash, CloudUpload } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition } from '../../lib/submissions';
@@ -263,9 +263,6 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <p className="text-sm text-text-muted text-center mb-2">
-        {t('share.listenTitle')}
-      </p>
       <form onSubmit={handleSubmit} className="flex gap-2">
         <label htmlFor="share-code-input" className="sr-only">
           {t('share.listenPlaceholder')}
@@ -296,22 +293,35 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
           variant="secondary"
           size="sm"
           disabled={code.length < 4 || isLoading}
-          aria-label={t('share.listen')}
           className="shrink-0"
         >
           {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-4 h-4 animate-spin" aria-label={t('common.loading')} />
           ) : (
             <>
-              <Headphones className="w-4 h-4 sm:mr-1.5" />
-              <span className="hidden sm:inline">{t('share.listen')}</span>
+              {/* Tekst ook op mobiel (O6): een knop met alleen een icoon was onduidelijk */}
+              {t('share.listen')}
+              <ArrowRight className="w-4 h-4 ml-1.5" aria-hidden="true" />
             </>
           )}
         </Button>
       </form>
-      <p className="text-text-muted text-[10px] sm:text-xs text-center mt-1.5">
-        {t('share.codeFormatHint')}
-      </p>
+      {/* Welke code is wat (O6): drie korte regels in plaats van één
+          piepkleine hint */}
+      <ul className="mt-3 grid gap-1.5 text-xs sm:text-sm text-text-muted">
+        <li className="flex items-center gap-2">
+          <Hash className="w-4 h-4 shrink-0 text-accent-600" aria-hidden="true" />
+          <span><strong className="text-text-main">{t('share.codeKinds.classLabel')}</strong> · {t('share.codeKinds.classText')}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <CloudUpload className="w-4 h-4 shrink-0 text-accent-600" aria-hidden="true" />
+          <span><strong className="text-text-main">{t('share.codeKinds.saveLabel')}</strong> · {t('share.codeKinds.saveText')}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <Headphones className="w-4 h-4 shrink-0 text-accent-600" aria-hidden="true" />
+          <span><strong className="text-text-main">{t('share.codeKinds.listenLabel')}</strong> · {t('share.codeKinds.listenText')}</span>
+        </li>
+      </ul>
       {error && (
         <p role="alert" aria-live="polite" className="text-error-400 text-xs text-center mt-1">
           {error}

@@ -127,6 +127,12 @@ interface AppStore {
   pendingSaveCode: string | null;
   setPendingSaveCode: (code: string | null) => void;
 
+  // Startscherm openen met een actie (O7): 'code' = codevenster, 'new' =
+  // "Nieuwe compositie" (wizard). Eenmalig gelezen door StartScreen.
+  pendingStartAction: 'code' | 'new' | null;
+  setPendingStartAction: (action: 'code' | 'new' | null) => void;
+  goToStartWith: (action: 'code' | 'new') => void;
+
   // Dashboard-tab die na de login-hop geopend moet worden (bv. 'lessons' via de
   // "Bekijk alle leskaarten"-knop op de landingspagina).
   pendingTeacherTab: string | null;
@@ -160,6 +166,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   pendingAssignment: null,
   pendingLessonCardKey: null,
   pendingSaveCode: null,
+  pendingStartAction: null,
   pendingTeacherTab: null,
   pendingGuideSection: null,
 
@@ -254,6 +261,9 @@ export const useAppStore = create<AppStore>()((set) => ({
   setPendingLessonCardKey: (key) => set({ pendingLessonCardKey: key }),
 
   setPendingSaveCode: (code) => set({ pendingSaveCode: code }),
+
+  setPendingStartAction: (action) => set({ pendingStartAction: action }),
+  goToStartWith: (action) => set({ currentScreen: 'start', currentLocationId: null, isSubmitting: false, pendingAssignment: null, pendingStartAction: action }),
 
   setPendingTeacherTab: (tab) => set({ pendingTeacherTab: tab }),
 
