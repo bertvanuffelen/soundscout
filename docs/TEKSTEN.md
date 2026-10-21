@@ -194,23 +194,23 @@ _Stand: 1748 teksten in 48 secties._
 | `start.startGame` | Start Spel | Start Game |
 | `start.toStage` | Naar het podium | To the stage |
 | `start.continueComposition` | Ga verder | Continue |
-| `start.newComposition` | Nieuwe Compositie | New Composition |
+| `start.newComposition` | Nieuwe soundscape | New soundscape |
 | `start.introTitle` | Zo werkt SoundScout | How SoundScout works |
 | `start.introStart` | Aan de slag | Get started |
 | `start.newTheme` | Nieuw thema: {{name}} | New theme: {{name}} |
-| `start.newCompositionConfirm` | Je hebt al een compositie waar je aan werkt. Als je een nieuwe start, gaan je verzamelde geluiden en je huidige compositie verloren en kunnen niet worden teruggehaald. | You already have a composition in progress. Starting a new one will permanently discard your collected sounds and current composition. |
+| `start.newCompositionConfirm` | Je werkt al aan een soundscape. Als je een nieuwe begint, ben je je verzamelde geluiden en je huidige soundscape kwijt. | You already have a soundscape in progress. If you start a new one, you will lose your collected sounds and your current soundscape. |
 | `start.newCompositionStart` | Opnieuw beginnen | Start over |
 | `start.haveCode` | Ik heb een code | I have a code |
 | `start.backToChoices` | Terug | Back |
 | `start.howItWorks` | Hoe werkt het? | How does it work? |
-| `start.myCompositions` | Mijn Composities | My Compositions |
+| `start.myCompositions` | Mijn soundscapes | My soundscapes |
 | `start.tagline` | Ontdek geluiden, maak muziek! | Discover sounds, make music! |
 | `start.loading` | Audio laden... | Loading audio... |
 | `start.tutorialTitle` | Zo werkt SoundScout | How SoundScout works |
 | `start.tutorialSteps.0` | Verken een locatie en klik op de geluiden die je hoort | Explore a location and click on the sounds you hear |
 | `start.tutorialSteps.1` | Verzamel geluiden in je recorder | Collect sounds in your recorder |
 | `start.tutorialSteps.2` | Ga naar de studio en sleep je geluiden op de tijdlijn | Go to the studio and drag your sounds onto the timeline |
-| `start.tutorialSteps.3` | Combineer geluiden tot je eigen compositie! | Combine sounds into your own composition! |
+| `start.tutorialSteps.3` | Combineer geluiden tot je eigen soundscape! | Combine sounds into your own soundscape! |
 | `start.closeTutorial` | Begrepen! | Got it! |
 | `start.videoTutorials` | Video uitleg | Video tutorials |
 | `start.videoSoundScout` | SoundScout tutorial | SoundScout tutorial |
@@ -250,12 +250,12 @@ _Stand: 1748 teksten in 48 secties._
 | `tutorial.steps.0` | Verken een locatie en klik op geluiden | Explore a location and click on sounds |
 | `tutorial.steps.1` | Verzamel geluiden in je recorder | Collect sounds in your recorder |
 | `tutorial.steps.2` | Sleep je geluiden op de tijdlijn in de studio | Drag your sounds onto the timeline in the studio |
-| `tutorial.steps.3` | Combineer, bewerk en maak je eigen compositie! | Combine, edit and create your own composition! |
+| `tutorial.steps.3` | Combineer, bewerk en maak je eigen soundscape! | Combine, edit and create your own soundscape! |
 | `tutorial.forStudents` | Voor de componisten | For composers |
 | `tutorial.forTeachers` | Voor de docenten | For teachers |
 | `tutorial.backToOverview` | Alle video's | All videos |
 | `tutorial.videos.soundscout` | SoundScout uitleg | SoundScout tutorial |
-| `tutorial.videos.soundscout-desc` | Van locatie tot compositie — de basisflow | From location to composition — the basic flow |
+| `tutorial.videos.soundscout-desc` | Van locatie tot soundscape: zo werkt het | From location to soundscape: how it works |
 | `tutorial.videos.clip-edit` | Knippen, loopen en dupliceren | Trim, loop and duplicate |
 | `tutorial.videos.clip-edit-desc` | Bewerk je samples op de tijdlijn | Edit your samples on the timeline |
 | `tutorial.videos.save-share` | Bewaren, delen en exporteren | Save, share and export |
@@ -265,7 +265,7 @@ _Stand: 1748 teksten in 48 secties._
 | `tutorial.videos.effects` | Effecten toevoegen | Add effects |
 | `tutorial.videos.effects-desc` | Pitch en reverb op je samples | Pitch and reverb on your samples |
 | `tutorial.videos.sections` | Secties en vormschema | Sections and form structure |
-| `tutorial.videos.sections-desc` | Geef structuur aan je compositie | Give structure to your composition |
+| `tutorial.videos.sections-desc` | Geef structuur aan je soundscape | Give your soundscape structure |
 | `tutorial.videos.dashboard` | Docent dashboard | Teacher dashboard |
 | `tutorial.videos.dashboard-desc` | Klassen beheren en werk van leerlingen bekijken | Manage classes and review student work |
 
@@ -384,7 +384,7 @@ _Stand: 1748 teksten in 48 secties._
 | `transport.rewind` | Terug | Rewind |
 | `transport.loop` | Herhalen | Loop |
 | `transport.loopChoose` | Wat wil je herhalen? | What do you want to loop? |
-| `transport.loopWhole` | Hele compositie | Whole composition |
+| `transport.loopWhole` | Hele soundscape | Whole soundscape |
 | `transport.loopSection` | Deze sectie | This section |
 | `transport.loopSectionHint` | Maak eerst een sectie | Make a section first |
 | `transport.loopSectionBadge` | sectie | section |
@@ -400,17 +400,17 @@ _Stand: 1748 teksten in 48 secties._
 | `stage.backToStudio` | Terug naar Studio | Back to Studio |
 | `stage.playAgain` | Opnieuw afspelen | Play Again |
 | `stage.share` | Delen | Share |
-| `stage.nameComposition` | Geef je compositie een naam | Name your composition |
-| `stage.namePlaceholder` | Mijn compositie | My composition |
+| `stage.nameComposition` | Geef je soundscape een naam | Name your soundscape |
+| `stage.namePlaceholder` | Mijn soundscape | My soundscape |
 | `stage.nameHint` | Tip: zet je achternaam niet in de naam van je muziek. | Tip: don't put your last name in the name of your music. |
-| `stage.newComposition` | Nieuwe compositie | New composition |
-| `stage.newCompositionConfirm` | Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en compositie gaan verloren en kunnen niet worden teruggehaald. | Are you sure you want to start over? Your collected sounds and composition will be lost and cannot be recovered. |
+| `stage.newComposition` | Nieuwe soundscape | New soundscape |
+| `stage.newCompositionConfirm` | Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt. | Are you sure you want to start over? You will lose your collected sounds and your soundscape. |
 | `stage.nowPlaying` | Nu speelt... | Now playing... |
 | `stage.cancel` | Annuleer | Cancel |
 | `stage.save` | Opslaan | Save |
 | `stage.saved` | Opgeslagen! | Saved! |
-| `stage.saveTitle` | Compositie opslaan | Save composition |
-| `stage.saveWarning` | Je compositie wordt lokaal opgeslagen in je browser. Let op: als je browsergegevens wist, gaat je compositie verloren. | Your composition is saved locally in your browser. Note: if you clear your browser data, your composition will be lost. |
+| `stage.saveTitle` | Soundscape opslaan | Save soundscape |
+| `stage.saveWarning` | Je soundscape wordt opgeslagen in deze browser. Wis je je browsergegevens, dan ben je hem kwijt. | Your soundscape is saved in this browser. If you clear your browser data, it will be lost. |
 | `stage.dontShowAgain` | Niet meer tonen | Don't show again |
 | `stage.download` | Download MP3 | Download MP3 |
 | `stage.exporting` | Exporteren... | Exporting... |
@@ -419,21 +419,21 @@ _Stand: 1748 teksten in 48 secties._
 | `stage.downloadVideo` | Download Video | Download Video |
 | `stage.exportingVideo` | Video maken... | Creating video... |
 | `stage.videoExportSuccess` | Video is gedownload! | Video downloaded! |
-| `stage.praatplaatSubmitted` | Je compositie staat op de praatplaat! | Your composition is on the sound map! |
+| `stage.praatplaatSubmitted` | Je soundscape staat op de praatplaat! | Your soundscape is on the sound map! |
 | `stage.yourCodeTitle` | Jouw code: | Your code: |
 | `stage.yourCodeHint` | Bewaar deze code goed! Hiermee zie je later de feedback van je docent (Startscherm → "Ik heb een code"). | Keep this code safe! Use it later to see your teacher's feedback (Start screen → "I have a code"). |
 | `stage.praatplaatSuccessTitle` | Gelukt! | Success! |
-| `stage.praatplaatSuccessMessage` | Je compositie is op de praatplaat geplaatst. De docent kan deze nu afspelen op het digibord! | Your composition has been placed on the sound map. The teacher can now play it on the smartboard! |
-| `stage.praatplaatContinue` | Ga verder met deze compositie | Continue with this composition |
+| `stage.praatplaatSuccessMessage` | Je soundscape staat op de praatplaat. Je docent kan hem nu laten horen op het digibord! | Your soundscape is on the sound map. Your teacher can now play it on the whiteboard! |
+| `stage.praatplaatContinue` | Ga verder met deze soundscape | Continue with this soundscape |
 | `stage.praatplaatNewSpot` | Kies een nieuwe plek | Choose a new spot |
-| `stage.newSpotConfirm` | Weet je zeker dat je een nieuwe plek wilt kiezen? Je huidige compositie en verzamelde geluiden gaan verloren. | Are you sure you want to choose a new spot? Your current composition and collected sounds will be lost. |
+| `stage.newSpotConfirm` | Weet je zeker dat je een nieuwe plek wilt kiezen? Je huidige soundscape en verzamelde geluiden ben je dan kwijt. | Are you sure you want to choose a new spot? You will lose your current soundscape and collected sounds. |
 | `stage.videoNotSupported` | Video export niet beschikbaar op deze browser | Video export not available on this browser |
-| `stage.subtitle` | Jouw SoundScout compositie | Your SoundScout composition |
+| `stage.subtitle` | Jouw soundscape | Your soundscape |
 | `stage.shareWithTeacher` | Deel met docent | Share with teacher |
-| `stage.defaultName` | Mijn compositie | My composition |
+| `stage.defaultName` | Mijn soundscape | My soundscape |
 | `stage.saveAndShare` | Opslaan & Delen | Save & Share |
 | `stage.actionsTitle` | Opslaan en delen | Save and share |
-| `stage.actionsSubtitle` | Wat wil je met je compositie doen? | What do you want to do with your composition? |
+| `stage.actionsSubtitle` | Wat wil je met je soundscape doen? | What do you want to do with your soundscape? |
 | `stage.colSelf` | Voor jezelf | For you |
 | `stage.colClass` | Voor de klas | For your class |
 | `stage.colShare` | Delen met anderen | Share with others |
@@ -446,13 +446,13 @@ _Stand: 1748 teksten in 48 secties._
 | `stage.actionsExportMp3Hint` | Download als audiobestand | Download as audio file |
 | `stage.actionsExportVideoHint` | Download als video met afbeeldingen | Download as video with images |
 | `stage.actionsTemplateHint` | Maak een opdracht voor leerlingen | Create an assignment for students |
-| `stage.actionsNameRequired` | Geef je compositie eerst een naam (bovenaan het podium). Daarna kun je opslaan en delen. | Give your composition a name first (at the top of the stage). Then you can save and share. |
-| `stage.saveQuotaError` | Opslagruimte vol — verwijder een oude compositie om ruimte te maken. | Storage full — delete an old composition to free up space. |
+| `stage.actionsNameRequired` | Geef je soundscape eerst een naam (bovenaan het podium). Daarna kun je opslaan en delen. | Give your soundscape a name first (at the top of the stage). Then you can save and share it. |
+| `stage.saveQuotaError` | Opslag vol. Verwijder een oude soundscape om ruimte te maken. | Storage full. Delete an old soundscape to make space. |
 | `stage.saveGenericError` | Opslaan mislukt. Probeer het opnieuw. | Save failed. Please try again. |
 | `stage.syncSuccess` | Online kopie bijgewerkt | Online copy updated |
 | `stage.syncFailed` | Online kopie niet bijgewerkt — controleer je internetverbinding | Online copy not updated — check your internet connection |
 | `stage.presentButton` | Presenteren op het digibord | Present on the whiteboard |
-| `stage.actionsPresentHint` | Laat je compositie groot zien en horen | Show and play your composition full screen |
+| `stage.actionsPresentHint` | Laat je soundscape groot zien en horen | Show and play your soundscape full screen |
 | `stage.submitToClass` | Lever in | Hand in |
 | `stage.resubmitToClass` | Opnieuw inleveren | Hand in again |
 | `stage.submitToClassHint` | Sla op en stuur naar {{className}} | Save and send to {{className}} |
@@ -460,7 +460,7 @@ _Stand: 1748 teksten in 48 secties._
 | `stage.exportReadyMp3` | MP3 gedownload! | MP3 downloaded! |
 | `stage.exportReadyVideo` | Video gedownload! | Video downloaded! |
 | `stage.exportMissingSamples` | Let op: {{count}} geluid(en) konden niet worden geladen en ontbreken in de export. | Note: {{count}} sound(s) could not be loaded and are missing from the export. |
-| `stage.exportRealtimeFallback` | Let op: de snelle export gaf een kwaliteitsprobleem; je compositie is daarom in realtime opnieuw opgenomen. Het resultaat klinkt precies zoals in de app. | Note: the fast export had a quality issue, so your composition was re-recorded in real time. The result sounds exactly like in the app. |
+| `stage.exportRealtimeFallback` | Let op: bij de snelle export ging iets mis. Je soundscape is daarom opnieuw opgenomen en klinkt precies zoals in de app. | Note: something went wrong with the fast export, so your soundscape was recorded again. It sounds exactly like in the app. |
 | `stage.videoMissingImages` | Let op: {{count}} afbeelding(en) konden niet worden geladen (zwart beeld in de video). | Note: {{count}} image(s) could not be loaded (black frame in the video). |
 | `stage.videoNoContent` | Geen clips op de tijdlijn en geen afbeeldingen | No clips on the timeline and no images |
 | `stage.videoNoImages` | Geen afbeeldingen konden worden geladen | No images could be loaded |
@@ -475,20 +475,20 @@ _Stand: 1748 teksten in 48 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
-| `compositions.title` | Mijn Composities | My Compositions |
+| `compositions.title` | Mijn soundscapes | My soundscapes |
 | `compositions.back` | Terug | Back |
 | `compositions.tracks` | tracks | tracks |
 | `compositions.play` | Afspelen | Play |
 | `compositions.delete` | Verwijderen | Delete |
 | `compositions.cancel` | Annuleren | Cancel |
-| `compositions.deleteTitle` | Compositie verwijderen | Delete composition |
+| `compositions.deleteTitle` | Soundscape verwijderen | Delete soundscape |
 | `compositions.deleteConfirm` | Weet je zeker dat je "{{name}}" wilt verwijderen? Dit kan niet ongedaan worden. | Are you sure you want to delete "{{name}}"? This cannot be undone. |
-| `compositions.emptyTitle` | Nog geen composities | No compositions yet |
-| `compositions.emptyDescription` | Je opgeslagen composities verschijnen hier. | Your saved compositions will appear here. |
-| `compositions.startNew` | Nieuwe compositie maken | Create new composition |
-| `compositions.storageWarning` | Composities worden lokaal opgeslagen in je browser. Als je browsergegevens wist, gaan je composities verloren. | Compositions are saved locally in your browser. If you clear your browser data, your compositions will be lost. |
-| `compositions.corruptLoadWarning_one` | {{count}} compositie kon niet geladen worden. | {{count}} composition could not be loaded. |
-| `compositions.corruptLoadWarning_other` | {{count}} composities konden niet geladen worden. | {{count}} compositions could not be loaded. |
+| `compositions.emptyTitle` | Nog geen soundscapes | No soundscapes yet |
+| `compositions.emptyDescription` | Je opgeslagen soundscapes verschijnen hier. | Your saved soundscapes will appear here. |
+| `compositions.startNew` | Nieuwe soundscape maken | Make a new soundscape |
+| `compositions.storageWarning` | Soundscapes worden opgeslagen in deze browser. Wis je je browsergegevens, dan ben je ze kwijt. | Soundscapes are saved in this browser. If you clear your browser data, they will be lost. |
+| `compositions.corruptLoadWarning_one` | {{count}} soundscape kon niet worden geladen. | {{count}} soundscape could not be loaded. |
+| `compositions.corruptLoadWarning_other` | {{count}} soundscapes konden niet worden geladen. | {{count}} soundscapes could not be loaded. |
 
 ## locations
 
@@ -590,7 +590,7 @@ _Stand: 1748 teksten in 48 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `share.shareLink` | Deel link | Share link |
-| `share.confirmDescription` | Er wordt een publieke luisterlink aangemaakt die 30 dagen geldig is. Iedereen met de link of code kan je compositie beluisteren. | A public listening link will be created that is valid for 30 days. Anyone with the link or code can listen to your composition. |
+| `share.confirmDescription` | Je krijgt een luisterlink die 30 dagen geldig is. Iedereen met de link of code kan je soundscape beluisteren. | You will get a listening link that works for 30 days. Anyone with the link or code can listen to your soundscape. |
 | `share.generateLink` | Link aanmaken | Create link |
 | `share.generating` | Link wordt aangemaakt... | Creating link... |
 | `share.linkReady` | Je link is klaar! | Your link is ready! |
@@ -600,8 +600,8 @@ _Stand: 1748 teksten in 48 secties._
 | `share.code` | Code | Code |
 | `share.codeDescription` | Of deel deze code — de ontvanger kan deze invoeren op het startscherm | Or share this code — the recipient can enter it on the start screen |
 | `share.expired` | Deze link is verlopen | This link has expired |
-| `share.notFound` | Compositie niet gevonden | Composition not found |
-| `share.loading` | Compositie laden... | Loading composition... |
+| `share.notFound` | Soundscape niet gevonden | Soundscape not found |
+| `share.loading` | Soundscape laden... | Loading soundscape... |
 | `share.listenPlaceholder` | Voer code in | Enter code |
 | `share.listen` | Open | Open |
 | `share.invalidCode` | Voer een geldige code in | Please enter a valid code |
@@ -614,7 +614,7 @@ _Stand: 1748 teksten in 48 secties._
 | `share.loadFailed` | Laden is niet gelukt. Probeer het opnieuw. | Loading failed. Please try again. |
 | `share.destinationTitle` | Gevonden! Waar wil je heen? | Found it! Where do you want to go? |
 | `share.destStudio` | Studio | Studio |
-| `share.destStudioHint` | Ga verder met je compositie | Continue working on your composition |
+| `share.destStudioHint` | Ga verder met je soundscape | Keep working on your soundscape |
 | `share.destStage` | Podium | Stage |
 | `share.destStageHint` | Presentatie en feedback | Presentation and feedback |
 | `share.backToStart` | Terug naar SoundScout | Back to SoundScout |
@@ -622,7 +622,7 @@ _Stand: 1748 teksten in 48 secties._
 | `share.by` | Door | By |
 | `share.errorGeneric` | Er ging iets mis. Probeer opnieuw. | Something went wrong. Please try again. |
 | `share.loadingSamples` | Samples laden... | Loading samples... |
-| `share.openComposition` | Open compositie | Open composition |
+| `share.openComposition` | Open soundscape | Open soundscape |
 | `share.codeKinds.classLabel` | 4 cijfers | 4 digits |
 | `share.codeKinds.classText` | klascode van je docent | class code from your teacher |
 | `share.codeKinds.saveLabel` | 6 tekens | 6 characters |
@@ -721,22 +721,22 @@ _Stand: 1748 teksten in 48 secties._
 | `assignmentCards.defaults.template.bullets.0` | Je docent heeft alvast muziek klaargezet. | Your teacher has set up some music already. |
 | `assignmentCards.defaults.template.bullets.1` | Luister goed en maak het af. | Listen carefully and finish it. |
 | `assignmentCards.defaults.template.bullets.2` | Sleep geluiden op de tijdlijn. | Drag sounds onto the timeline. |
-| `assignmentCards.defaults.template.bullets.3` | Klaar? Sla je compositie op. | Done? Save your composition. |
+| `assignmentCards.defaults.template.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
 | `assignmentCards.defaults.praatplaat.title` | Zo werkt deze opdracht | How this assignment works |
 | `assignmentCards.defaults.praatplaat.bullets.0` | Je kiest straks een plek op de afbeelding. | You'll pick a spot on the image next. |
 | `assignmentCards.defaults.praatplaat.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.praatplaat.bullets.2` | Maak muziek die bij jouw plek past. | Make music that fits your spot. |
-| `assignmentCards.defaults.praatplaat.bullets.3` | Klaar? Sla je compositie op. | Done? Save your composition. |
+| `assignmentCards.defaults.praatplaat.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
 | `assignmentCards.defaults.storyboard.title` | Zo werkt deze opdracht | How this assignment works |
 | `assignmentCards.defaults.storyboard.bullets.0` | Bekijk de scènes van het verhaal. | Look at the scenes of the story. |
 | `assignmentCards.defaults.storyboard.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.storyboard.bullets.2` | Maak muziek die bij elke scène past. | Make music that fits each scene. |
-| `assignmentCards.defaults.storyboard.bullets.3` | Klaar? Sla je compositie op. | Done? Save your composition. |
+| `assignmentCards.defaults.storyboard.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
 | `assignmentCards.defaults.free.title` | Zo werkt deze opdracht | How this assignment works |
 | `assignmentCards.defaults.free.bullets.0` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.free.bullets.1` | Experimenteer met de klanken. | Experiment with the sounds. |
-| `assignmentCards.defaults.free.bullets.2` | Maak je eigen compositie. | Create your own composition. |
-| `assignmentCards.defaults.free.bullets.3` | Klaar? Sla je compositie op. | Done? Save your composition. |
+| `assignmentCards.defaults.free.bullets.2` | Maak je eigen soundscape. | Make your own soundscape. |
+| `assignmentCards.defaults.free.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
 
 ## lessonCards
 
@@ -956,15 +956,15 @@ _Stand: 1748 teksten in 48 secties._
 |---|---|---|
 | `peerReview.title` | Luister naar klasgenoten | Listen to classmates |
 | `peerReview.openButton` | Luister naar klasgenoten | Listen to classmates |
-| `peerReview.loading` | Composities van klasgenoten ophalen... | Loading classmates' compositions... |
-| `peerReview.emptyTitle` | Nog geen composities om te beluisteren | No compositions to listen to yet |
+| `peerReview.loading` | Soundscapes van klasgenoten ophalen... | Loading your classmates’ soundscapes... |
+| `peerReview.emptyTitle` | Nog geen soundscapes om te beluisteren | No soundscapes to listen to yet |
 | `peerReview.emptyHint` | Misschien heeft nog niemand anders ingeleverd, heb je al 3 klasgenoten beoordeeld, of is de feedbackronde gesloten. | Maybe no one else has submitted yet, you already reviewed 3 classmates, or the feedback round has closed. |
-| `peerReview.loadError` | Kon geen composities ophalen. Probeer het later opnieuw. | Could not load compositions. Please try again later. |
+| `peerReview.loadError` | De soundscapes konden niet worden opgehaald. Probeer het later opnieuw. | Could not load the soundscapes. Please try again later. |
 | `peerReview.submitError` | Kon je compliment niet versturen. | Could not send your compliment. |
 | `peerReview.retry` | Opnieuw proberen | Try again |
 | `peerReview.blockedTitle` | Je beoordeling is niet opgeslagen | Your review was not saved |
-| `peerReview.progress` | Compositie {{current}} van {{total}} | Composition {{current}} of {{total}} |
-| `peerReview.anonymous` | Compositie van een klasgenoot | A classmate's composition |
+| `peerReview.progress` | Soundscape {{current}} van {{total}} | Soundscape {{current}} of {{total}} |
+| `peerReview.anonymous` | Soundscape van een klasgenoot | A classmate’s soundscape |
 | `peerReview.anonymousHint` | Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt. | You don't know whose this is — listen carefully and choose what you think of it. |
 | `peerReview.starsLabel` | Geef sterren per onderdeel: | Give stars per criterion: |
 | `peerReview.starsHint` | 1 = goed geprobeerd · 2 = goed gedaan · 3 = heel sterk. Beoordeel minstens één onderdeel. | 1 = good try · 2 = well done · 3 = very strong. Rate at least one criterion. |
@@ -974,7 +974,7 @@ _Stand: 1748 teksten in 48 secties._
 | `peerReview.chipsLabel` | Kies 1 tot 3 complimenten: | Choose 1 to 3 compliments: |
 | `peerReview.sendAndNext` | Versturen en volgende | Send and next |
 | `peerReview.sendAndFinish` | Versturen en afronden | Send and finish |
-| `peerReview.doneTitle` | Je hebt alle composities beluisterd! | You listened to all compositions! |
+| `peerReview.doneTitle` | Je hebt alle soundscapes beluisterd! | You listened to all the soundscapes! |
 | `peerReview.doneHint` | Je beoordelingen zijn anoniem verstuurd. Zo help je klasgenoten met hun muziek. | Your reviews were sent anonymously. This helps your classmates with their music. |
 
 ## studentFeedback
@@ -986,7 +986,7 @@ _Stand: 1748 teksten in 48 secties._
 | `studentFeedback.avgStars` | gemiddeld {{stars}} sterren | average {{stars}} stars |
 | `studentFeedback.noticeButton` | Je hebt een reactie op "{{name}}"! | You have a reaction to "{{name}}"! |
 | `studentFeedback.modalTitle` | Feedback van je docent | Feedback from your teacher |
-| `studentFeedback.modalHint` | Verder werken aan je compositie? Voer je code {{code}} in bij "Ik heb een code". | Want to keep working on your composition? Enter your code {{code}} at "I have a code". |
+| `studentFeedback.modalHint` | Verder werken aan je soundscape? Typ je code {{code}} bij "Ik heb een code". | Want to keep working on your soundscape? Enter your code {{code}} at "I have a code". |
 | `studentFeedback.modalClose` | Oké | OK |
 
 ## submissions
@@ -1595,17 +1595,17 @@ _Stand: 1748 teksten in 48 secties._
 | `praatplaat.select.tapHint` | Tik op de afbeelding om je plek te kiezen | Tap the image to choose your spot |
 | `praatplaat.select.imageAria` | Praatplaat — kies een positie | Sound map — choose a position |
 | `praatplaat.fetchError` | Kon praatplaat niet laden | Could not load sound map |
-| `praatplaat.submitError` | Kon compositie niet insturen | Could not submit composition |
+| `praatplaat.submitError` | Je soundscape kon niet worden ingeleverd | Could not hand in your soundscape |
 
 ## composeMode
 
 | Sleutel | NL | EN |
 |---|---|---|
 | `composeMode.title` | Hoe wil je componeren? | How do you want to compose? |
-| `composeMode.subtitle` | Kies een manier om je compositie te maken | Choose a way to create your composition |
+| `composeMode.subtitle` | Kies hoe je je soundscape maakt | Choose how to make your soundscape |
 | `composeMode.next` | Volgende | Next |
 | `composeMode.free` | Vrij componeren | Free compose |
-| `composeMode.freeDescription` | Maak je eigen compositie zonder afbeeldingen | Create your own composition without images |
+| `composeMode.freeDescription` | Maak je eigen soundscape zonder afbeeldingen | Make your own soundscape without images |
 | `composeMode.image` | Bij een afbeelding | With an image |
 | `composeMode.imageDescription` | Maak een soundscape bij één afbeelding | Create a soundscape for a single image |
 | `composeMode.storyboard` | Bij een storyboard | With a storyboard |
@@ -1640,23 +1640,23 @@ _Stand: 1748 teksten in 48 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `saveOnline.title` | Bewaar online | Save online |
-| `saveOnline.description` | Bewaar je compositie online en krijg een code. Met deze code kun je op elk apparaat verder werken. | Save your composition online and get a code. Use this code to continue working on any device. |
+| `saveOnline.description` | Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder. | Save your soundscape online and get a code. Use it to keep working on any device. |
 | `saveOnline.nameLabel` | Jouw naam | Your name |
 | `saveOnline.namePlaceholder` | Bijv. Lisa of Groep 5 | E.g. Lisa or Class 5 |
 | `saveOnline.classCodeLabel` | Klascode (optioneel) | Class code (optional) |
 | `saveOnline.classCodePlaceholder` | 4 cijfers | 4 digits |
 | `saveOnline.saveButton` | Bewaar | Save |
 | `saveOnline.saving` | Bezig met bewaren... | Saving... |
-| `saveOnline.successDescription` | Je compositie is online bewaard! | Your composition has been saved online! |
+| `saveOnline.successDescription` | Je soundscape is online bewaard! | Your soundscape has been saved online! |
 | `saveOnline.yourCode` | Jouw bewaarcode | Your save code |
 | `saveOnline.rememberCode` | Onthoud deze code goed! | Remember this code! |
 | `saveOnline.copyCode` | Kopieer code | Copy code |
-| `saveOnline.expiryNote` | Je compositie blijft 60 dagen beschikbaar na de laatste bewerking. | Your composition is available for 60 days after the last edit. |
+| `saveOnline.expiryNote` | Je soundscape blijft 60 dagen na de laatste wijziging bewaard. | Your soundscape is kept for 60 days after your last change. |
 | `saveOnline.saveError` | Bewaren mislukt. Probeer het opnieuw. | Save failed. Please try again. |
 | `saveOnline.updateError` | Bijwerken mislukt. Probeer het opnieuw. | Update failed. Please try again. |
 | `saveOnline.invalidSecret` | Ongeldige bewaarcode of je hebt geen toegang meer. | Invalid save code or you no longer have access. |
 | `saveOnline.codeNotFound` | Bewaarcode niet gevonden of verlopen. | Save code not found or expired. |
-| `saveOnline.claimError` | Kon compositie niet ophalen. Probeer het opnieuw. | Could not load composition. Please try again. |
+| `saveOnline.claimError` | De soundscape kon niet worden opgehaald. Probeer het opnieuw. | Could not load the soundscape. Please try again. |
 
 ## takeHome
 
@@ -1732,11 +1732,11 @@ _Stand: 1748 teksten in 48 secties._
 | `assignmentLanding.template.storyboardCount_one` | {{count}} afbeelding | {{count}} image |
 | `assignmentLanding.template.storyboardCount_other` | {{count}} afbeeldingen | {{count}} images |
 | `assignmentLanding.praatplaat.kind` | Praatplaat | Praatplaat |
-| `assignmentLanding.praatplaat.description` | Je kiest straks een plek op deze afbeelding. Daar hoort jouw compositie bij. | You'll pick a spot on this image next. Your composition belongs there. |
+| `assignmentLanding.praatplaat.description` | Je kiest straks een plek op deze afbeelding. Daar hoort jouw soundscape bij. | Next, you pick a spot on this image. That is where your soundscape goes. |
 | `assignmentLanding.storyboard.kind` | Verhaal in beeld | Story in pictures |
 | `assignmentLanding.storyboard.description` | Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart. | Make music that fits each scene of this story. First collect sounds on the map. |
-| `assignmentLanding.free.kind` | Vrije compositie | Free composition |
-| `assignmentLanding.free.description` | Verzamel geluiden op de kaart en maak je eigen compositie. Laat je fantasie de vrije loop. | Collect sounds on the map and create your own composition. Let your imagination run free. |
+| `assignmentLanding.free.kind` | Vrije soundscape | Free soundscape |
+| `assignmentLanding.free.description` | Verzamel geluiden op de kaart en maak je eigen soundscape. Laat je fantasie de vrije loop. | Collect sounds on the map and make your own soundscape. Let your imagination run free. |
 | `assignmentLanding.none.heading` | Nog geen opdracht klaar | No assignment ready yet |
 | `assignmentLanding.none.message` | Deze klas heeft nog geen opdracht actief. Wacht even of vraag je docent. Je kunt ook vrij gaan componeren. | This class doesn't have an active assignment yet. Wait a moment or ask your teacher. You can also compose freely. |
 | `assignmentLanding.none.composeFree` | Vrij componeren | Compose freely |
@@ -1757,11 +1757,11 @@ _Stand: 1748 teksten in 48 secties._
 | `sharedPraatplaat.errorDescription` | Probeer het later opnieuw. | Please try again later. |
 | `sharedPraatplaat.backToStart` | Terug naar SoundScout | Back to SoundScout |
 | `sharedPraatplaat.submissionCount` | {{count}} compositie(s) op de praatplaat | {{count}} composition(s) on the sound map |
-| `sharedPraatplaat.noSubmissions` | Er zijn nog geen composities op deze praatplaat | There are no compositions on this sound map yet |
-| `sharedPraatplaat.gestureHint` | Klik op de knop hieronder om de praatplaat te openen en composities te beluisteren. | Click the button below to open the sound map and listen to compositions. |
+| `sharedPraatplaat.noSubmissions` | Er staan nog geen soundscapes op deze praatplaat | There are no soundscapes on this sound map yet |
+| `sharedPraatplaat.gestureHint` | Klik op de knop hieronder om de praatplaat te openen en de soundscapes te beluisteren. | Click the button below to open the sound map and listen to the soundscapes. |
 | `sharedPraatplaat.startListening` | Luister naar de praatplaat | Listen to the sound map |
-| `sharedPraatplaat.emptyTitle` | Nog geen composities | No compositions yet |
-| `sharedPraatplaat.emptyDescription` | Er zijn nog geen composities op deze praatplaat geplaatst. | No compositions have been placed on this sound map yet. |
+| `sharedPraatplaat.emptyTitle` | Nog geen soundscapes | No soundscapes yet |
+| `sharedPraatplaat.emptyDescription` | Er staan nog geen soundscapes op deze praatplaat. | There are no soundscapes on this sound map yet. |
 
 ## teacherLanding
 
@@ -1910,15 +1910,15 @@ _Stand: 1748 teksten in 48 secties._
 | `album.fetchError` | Album laden is niet gelukt. | Loading the album failed. |
 | `album.fallbackTitle` | Klas-album | Class album |
 | `album.byClass` | Album van {{className}} | Album of {{className}} |
-| `album.submissionCount` | {{count}} composities om te beluisteren | {{count}} compositions to listen to |
-| `album.noSubmissions` | Er zijn nog geen ingeleverde composities. | No submitted compositions yet. |
+| `album.submissionCount` | {{count}} soundscapes om te beluisteren | {{count}} soundscapes to listen to |
+| `album.noSubmissions` | Er zijn nog geen ingeleverde soundscapes. | No soundscapes have been handed in yet. |
 | `album.shareEmptyHint` | Deel het album zodra leerlingen hun compositie hebben ingeleverd — werk dat alleen is opgeslagen telt nog niet mee. | Share the album once students have handed in their composition — work that is only saved does not count yet. |
 | `album.startListening` | Open het album | Open the album |
 | `album.notFoundTitle` | Album niet gevonden | Album not found |
 | `album.notFoundDescription` | Controleer de code of vraag een nieuwe link aan de docent. | Check the code or ask the teacher for a new link. |
 | `album.expiredTitle` | Link verlopen | Link expired |
 | `album.expiredDescription` | Deze albumlink is verlopen. De docent kan een nieuwe maken. | This album link has expired. The teacher can create a new one. |
-| `album.gestureHint` | Klik op de knop hieronder om het album te openen en composities te beluisteren. | Click the button below to open the album and listen to the compositions. |
+| `album.gestureHint` | Klik op de knop hieronder om het album te openen en de soundscapes te beluisteren. | Click the button below to open the album and listen to the soundscapes. |
 
 ## sequencer
 

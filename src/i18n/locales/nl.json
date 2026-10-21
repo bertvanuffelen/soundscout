@@ -160,16 +160,16 @@
     "startGame": "Start Spel",
     "toStage": "Naar het podium",
     "continueComposition": "Ga verder",
-    "newComposition": "Nieuwe Compositie",
+    "newComposition": "Nieuwe soundscape",
     "introTitle": "Zo werkt SoundScout",
     "introStart": "Aan de slag",
     "newTheme": "Nieuw thema: {{name}}",
-    "newCompositionConfirm": "Je hebt al een compositie waar je aan werkt. Als je een nieuwe start, gaan je verzamelde geluiden en je huidige compositie verloren en kunnen niet worden teruggehaald.",
+    "newCompositionConfirm": "Je werkt al aan een soundscape. Als je een nieuwe begint, ben je je verzamelde geluiden en je huidige soundscape kwijt.",
     "newCompositionStart": "Opnieuw beginnen",
     "haveCode": "Ik heb een code",
     "backToChoices": "Terug",
     "howItWorks": "Hoe werkt het?",
-    "myCompositions": "Mijn Composities",
+    "myCompositions": "Mijn soundscapes",
     "tagline": "Ontdek geluiden, maak muziek!",
     "loading": "Audio laden...",
     "tutorialTitle": "Zo werkt SoundScout",
@@ -177,7 +177,7 @@
       "Verken een locatie en klik op de geluiden die je hoort",
       "Verzamel geluiden in je recorder",
       "Ga naar de studio en sleep je geluiden op de tijdlijn",
-      "Combineer geluiden tot je eigen compositie!"
+      "Combineer geluiden tot je eigen soundscape!"
     ],
     "closeTutorial": "Begrepen!",
     "videoTutorials": "Video uitleg",
@@ -213,14 +213,14 @@
       "Verken een locatie en klik op geluiden",
       "Verzamel geluiden in je recorder",
       "Sleep je geluiden op de tijdlijn in de studio",
-      "Combineer, bewerk en maak je eigen compositie!"
+      "Combineer, bewerk en maak je eigen soundscape!"
     ],
     "forStudents": "Voor de componisten",
     "forTeachers": "Voor de docenten",
     "backToOverview": "Alle video's",
     "videos": {
       "soundscout": "SoundScout uitleg",
-      "soundscout-desc": "Van locatie tot compositie — de basisflow",
+      "soundscout-desc": "Van locatie tot soundscape: zo werkt het",
       "clip-edit": "Knippen, loopen en dupliceren",
       "clip-edit-desc": "Bewerk je samples op de tijdlijn",
       "save-share": "Bewaren, delen en exporteren",
@@ -230,7 +230,7 @@
       "effects": "Effecten toevoegen",
       "effects-desc": "Pitch en reverb op je samples",
       "sections": "Secties en vormschema",
-      "sections-desc": "Geef structuur aan je compositie",
+      "sections-desc": "Geef structuur aan je soundscape",
       "dashboard": "Docent dashboard",
       "dashboard-desc": "Klassen beheren en werk van leerlingen bekijken"
     }
@@ -344,7 +344,7 @@
     "rewind": "Terug",
     "loop": "Herhalen",
     "loopChoose": "Wat wil je herhalen?",
-    "loopWhole": "Hele compositie",
+    "loopWhole": "Hele soundscape",
     "loopSection": "Deze sectie",
     "loopSectionHint": "Maak eerst een sectie",
     "loopSectionBadge": "sectie",
@@ -357,17 +357,17 @@
     "backToStudio": "Terug naar Studio",
     "playAgain": "Opnieuw afspelen",
     "share": "Delen",
-    "nameComposition": "Geef je compositie een naam",
-    "namePlaceholder": "Mijn compositie",
+    "nameComposition": "Geef je soundscape een naam",
+    "namePlaceholder": "Mijn soundscape",
     "nameHint": "Tip: zet je achternaam niet in de naam van je muziek.",
-    "newComposition": "Nieuwe compositie",
-    "newCompositionConfirm": "Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en compositie gaan verloren en kunnen niet worden teruggehaald.",
+    "newComposition": "Nieuwe soundscape",
+    "newCompositionConfirm": "Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt.",
     "nowPlaying": "Nu speelt...",
     "cancel": "Annuleer",
     "save": "Opslaan",
     "saved": "Opgeslagen!",
-    "saveTitle": "Compositie opslaan",
-    "saveWarning": "Je compositie wordt lokaal opgeslagen in je browser. Let op: als je browsergegevens wist, gaat je compositie verloren.",
+    "saveTitle": "Soundscape opslaan",
+    "saveWarning": "Je soundscape wordt opgeslagen in deze browser. Wis je je browsergegevens, dan ben je hem kwijt.",
     "dontShowAgain": "Niet meer tonen",
     "download": "Download MP3",
     "exporting": "Exporteren...",
@@ -376,21 +376,21 @@
     "downloadVideo": "Download Video",
     "exportingVideo": "Video maken...",
     "videoExportSuccess": "Video is gedownload!",
-    "praatplaatSubmitted": "Je compositie staat op de praatplaat!",
+    "praatplaatSubmitted": "Je soundscape staat op de praatplaat!",
     "yourCodeTitle": "Jouw code:",
     "yourCodeHint": "Bewaar deze code goed! Hiermee zie je later de feedback van je docent (Startscherm → \"Ik heb een code\").",
     "praatplaatSuccessTitle": "Gelukt!",
-    "praatplaatSuccessMessage": "Je compositie is op de praatplaat geplaatst. De docent kan deze nu afspelen op het digibord!",
-    "praatplaatContinue": "Ga verder met deze compositie",
+    "praatplaatSuccessMessage": "Je soundscape staat op de praatplaat. Je docent kan hem nu laten horen op het digibord!",
+    "praatplaatContinue": "Ga verder met deze soundscape",
     "praatplaatNewSpot": "Kies een nieuwe plek",
-    "newSpotConfirm": "Weet je zeker dat je een nieuwe plek wilt kiezen? Je huidige compositie en verzamelde geluiden gaan verloren.",
+    "newSpotConfirm": "Weet je zeker dat je een nieuwe plek wilt kiezen? Je huidige soundscape en verzamelde geluiden ben je dan kwijt.",
     "videoNotSupported": "Video export niet beschikbaar op deze browser",
-    "subtitle": "Jouw SoundScout compositie",
+    "subtitle": "Jouw soundscape",
     "shareWithTeacher": "Deel met docent",
-    "defaultName": "Mijn compositie",
+    "defaultName": "Mijn soundscape",
     "saveAndShare": "Opslaan & Delen",
     "actionsTitle": "Opslaan en delen",
-    "actionsSubtitle": "Wat wil je met je compositie doen?",
+    "actionsSubtitle": "Wat wil je met je soundscape doen?",
     "colSelf": "Voor jezelf",
     "colClass": "Voor de klas",
     "colShare": "Delen met anderen",
@@ -403,13 +403,13 @@
     "actionsExportMp3Hint": "Download als audiobestand",
     "actionsExportVideoHint": "Download als video met afbeeldingen",
     "actionsTemplateHint": "Maak een opdracht voor leerlingen",
-    "actionsNameRequired": "Geef je compositie eerst een naam (bovenaan het podium). Daarna kun je opslaan en delen.",
-    "saveQuotaError": "Opslagruimte vol — verwijder een oude compositie om ruimte te maken.",
+    "actionsNameRequired": "Geef je soundscape eerst een naam (bovenaan het podium). Daarna kun je opslaan en delen.",
+    "saveQuotaError": "Opslag vol. Verwijder een oude soundscape om ruimte te maken.",
     "saveGenericError": "Opslaan mislukt. Probeer het opnieuw.",
     "syncSuccess": "Online kopie bijgewerkt",
     "syncFailed": "Online kopie niet bijgewerkt — controleer je internetverbinding",
     "presentButton": "Presenteren op het digibord",
-    "actionsPresentHint": "Laat je compositie groot zien en horen",
+    "actionsPresentHint": "Laat je soundscape groot zien en horen",
     "submitToClass": "Lever in",
     "resubmitToClass": "Opnieuw inleveren",
     "submitToClassHint": "Sla op en stuur naar {{className}}",
@@ -417,7 +417,7 @@
     "exportReadyMp3": "MP3 gedownload!",
     "exportReadyVideo": "Video gedownload!",
     "exportMissingSamples": "Let op: {{count}} geluid(en) konden niet worden geladen en ontbreken in de export.",
-    "exportRealtimeFallback": "Let op: de snelle export gaf een kwaliteitsprobleem; je compositie is daarom in realtime opnieuw opgenomen. Het resultaat klinkt precies zoals in de app.",
+    "exportRealtimeFallback": "Let op: bij de snelle export ging iets mis. Je soundscape is daarom opnieuw opgenomen en klinkt precies zoals in de app.",
     "videoMissingImages": "Let op: {{count}} afbeelding(en) konden niet worden geladen (zwart beeld in de video).",
     "videoNoContent": "Geen clips op de tijdlijn en geen afbeeldingen",
     "videoNoImages": "Geen afbeeldingen konden worden geladen"
@@ -426,20 +426,20 @@
     "copyFailed": "Kopiëren mislukt. Gebruik de download knop."
   },
   "compositions": {
-    "title": "Mijn Composities",
+    "title": "Mijn soundscapes",
     "back": "Terug",
     "tracks": "tracks",
     "play": "Afspelen",
     "delete": "Verwijderen",
     "cancel": "Annuleren",
-    "deleteTitle": "Compositie verwijderen",
+    "deleteTitle": "Soundscape verwijderen",
     "deleteConfirm": "Weet je zeker dat je \"{{name}}\" wilt verwijderen? Dit kan niet ongedaan worden.",
-    "emptyTitle": "Nog geen composities",
-    "emptyDescription": "Je opgeslagen composities verschijnen hier.",
-    "startNew": "Nieuwe compositie maken",
-    "storageWarning": "Composities worden lokaal opgeslagen in je browser. Als je browsergegevens wist, gaan je composities verloren.",
-    "corruptLoadWarning_one": "{{count}} compositie kon niet geladen worden.",
-    "corruptLoadWarning_other": "{{count}} composities konden niet geladen worden."
+    "emptyTitle": "Nog geen soundscapes",
+    "emptyDescription": "Je opgeslagen soundscapes verschijnen hier.",
+    "startNew": "Nieuwe soundscape maken",
+    "storageWarning": "Soundscapes worden opgeslagen in deze browser. Wis je je browsergegevens, dan ben je ze kwijt.",
+    "corruptLoadWarning_one": "{{count}} soundscape kon niet worden geladen.",
+    "corruptLoadWarning_other": "{{count}} soundscapes konden niet worden geladen."
   },
   "locations": {
     "boerderij": {
@@ -553,7 +553,7 @@
   },
   "share": {
     "shareLink": "Deel link",
-    "confirmDescription": "Er wordt een publieke luisterlink aangemaakt die 30 dagen geldig is. Iedereen met de link of code kan je compositie beluisteren.",
+    "confirmDescription": "Je krijgt een luisterlink die 30 dagen geldig is. Iedereen met de link of code kan je soundscape beluisteren.",
     "generateLink": "Link aanmaken",
     "generating": "Link wordt aangemaakt...",
     "linkReady": "Je link is klaar!",
@@ -563,8 +563,8 @@
     "code": "Code",
     "codeDescription": "Of deel deze code — de ontvanger kan deze invoeren op het startscherm",
     "expired": "Deze link is verlopen",
-    "notFound": "Compositie niet gevonden",
-    "loading": "Compositie laden...",
+    "notFound": "Soundscape niet gevonden",
+    "loading": "Soundscape laden...",
     "listenPlaceholder": "Voer code in",
     "listen": "Open",
     "invalidCode": "Voer een geldige code in",
@@ -577,7 +577,7 @@
     "loadFailed": "Laden is niet gelukt. Probeer het opnieuw.",
     "destinationTitle": "Gevonden! Waar wil je heen?",
     "destStudio": "Studio",
-    "destStudioHint": "Ga verder met je compositie",
+    "destStudioHint": "Ga verder met je soundscape",
     "destStage": "Podium",
     "destStageHint": "Presentatie en feedback",
     "backToStart": "Terug naar SoundScout",
@@ -585,7 +585,7 @@
     "by": "Door",
     "errorGeneric": "Er ging iets mis. Probeer opnieuw.",
     "loadingSamples": "Samples laden...",
-    "openComposition": "Open compositie",
+    "openComposition": "Open soundscape",
     "codeKinds": {
       "classLabel": "4 cijfers",
       "classText": "klascode van je docent",
@@ -693,7 +693,7 @@
           "Je docent heeft alvast muziek klaargezet.",
           "Luister goed en maak het af.",
           "Sleep geluiden op de tijdlijn.",
-          "Klaar? Sla je compositie op."
+          "Klaar? Sla je soundscape op."
         ]
       },
       "praatplaat": {
@@ -702,7 +702,7 @@
           "Je kiest straks een plek op de afbeelding.",
           "Verzamel geluiden op de kaart.",
           "Maak muziek die bij jouw plek past.",
-          "Klaar? Sla je compositie op."
+          "Klaar? Sla je soundscape op."
         ]
       },
       "storyboard": {
@@ -711,7 +711,7 @@
           "Bekijk de scènes van het verhaal.",
           "Verzamel geluiden op de kaart.",
           "Maak muziek die bij elke scène past.",
-          "Klaar? Sla je compositie op."
+          "Klaar? Sla je soundscape op."
         ]
       },
       "free": {
@@ -719,8 +719,8 @@
         "bullets": [
           "Verzamel geluiden op de kaart.",
           "Experimenteer met de klanken.",
-          "Maak je eigen compositie.",
-          "Klaar? Sla je compositie op."
+          "Maak je eigen soundscape.",
+          "Klaar? Sla je soundscape op."
         ]
       }
     }
@@ -986,15 +986,15 @@
   "peerReview": {
     "title": "Luister naar klasgenoten",
     "openButton": "Luister naar klasgenoten",
-    "loading": "Composities van klasgenoten ophalen...",
-    "emptyTitle": "Nog geen composities om te beluisteren",
+    "loading": "Soundscapes van klasgenoten ophalen...",
+    "emptyTitle": "Nog geen soundscapes om te beluisteren",
     "emptyHint": "Misschien heeft nog niemand anders ingeleverd, heb je al 3 klasgenoten beoordeeld, of is de feedbackronde gesloten.",
-    "loadError": "Kon geen composities ophalen. Probeer het later opnieuw.",
+    "loadError": "De soundscapes konden niet worden opgehaald. Probeer het later opnieuw.",
     "submitError": "Kon je compliment niet versturen.",
     "retry": "Opnieuw proberen",
     "blockedTitle": "Je beoordeling is niet opgeslagen",
-    "progress": "Compositie {{current}} van {{total}}",
-    "anonymous": "Compositie van een klasgenoot",
+    "progress": "Soundscape {{current}} van {{total}}",
+    "anonymous": "Soundscape van een klasgenoot",
     "anonymousHint": "Je weet niet van wie deze is — luister goed en kies wat jij ervan vindt.",
     "starsLabel": "Geef sterren per onderdeel:",
     "starsHint": "1 = goed geprobeerd · 2 = goed gedaan · 3 = heel sterk. Beoordeel minstens één onderdeel.",
@@ -1004,7 +1004,7 @@
     "chipsLabel": "Kies 1 tot 3 complimenten:",
     "sendAndNext": "Versturen en volgende",
     "sendAndFinish": "Versturen en afronden",
-    "doneTitle": "Je hebt alle composities beluisterd!",
+    "doneTitle": "Je hebt alle soundscapes beluisterd!",
     "doneHint": "Je beoordelingen zijn anoniem verstuurd. Zo help je klasgenoten met hun muziek."
   },
   "studentFeedback": {
@@ -1013,7 +1013,7 @@
     "avgStars": "gemiddeld {{stars}} sterren",
     "noticeButton": "Je hebt een reactie op \"{{name}}\"!",
     "modalTitle": "Feedback van je docent",
-    "modalHint": "Verder werken aan je compositie? Voer je code {{code}} in bij \"Ik heb een code\".",
+    "modalHint": "Verder werken aan je soundscape? Typ je code {{code}} bij \"Ik heb een code\".",
     "modalClose": "Oké"
   },
   "submissions": {
@@ -1859,14 +1859,14 @@
       "imageAria": "Praatplaat — kies een positie"
     },
     "fetchError": "Kon praatplaat niet laden",
-    "submitError": "Kon compositie niet insturen"
+    "submitError": "Je soundscape kon niet worden ingeleverd"
   },
   "composeMode": {
     "title": "Hoe wil je componeren?",
-    "subtitle": "Kies een manier om je compositie te maken",
+    "subtitle": "Kies hoe je je soundscape maakt",
     "next": "Volgende",
     "free": "Vrij componeren",
-    "freeDescription": "Maak je eigen compositie zonder afbeeldingen",
+    "freeDescription": "Maak je eigen soundscape zonder afbeeldingen",
     "image": "Bij een afbeelding",
     "imageDescription": "Maak een soundscape bij één afbeelding",
     "storyboard": "Bij een storyboard",
@@ -1895,23 +1895,23 @@
   },
   "saveOnline": {
     "title": "Bewaar online",
-    "description": "Bewaar je compositie online en krijg een code. Met deze code kun je op elk apparaat verder werken.",
+    "description": "Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder.",
     "nameLabel": "Jouw naam",
     "namePlaceholder": "Bijv. Lisa of Groep 5",
     "classCodeLabel": "Klascode (optioneel)",
     "classCodePlaceholder": "4 cijfers",
     "saveButton": "Bewaar",
     "saving": "Bezig met bewaren...",
-    "successDescription": "Je compositie is online bewaard!",
+    "successDescription": "Je soundscape is online bewaard!",
     "yourCode": "Jouw bewaarcode",
     "rememberCode": "Onthoud deze code goed!",
     "copyCode": "Kopieer code",
-    "expiryNote": "Je compositie blijft 60 dagen beschikbaar na de laatste bewerking.",
+    "expiryNote": "Je soundscape blijft 60 dagen na de laatste wijziging bewaard.",
     "saveError": "Bewaren mislukt. Probeer het opnieuw.",
     "updateError": "Bijwerken mislukt. Probeer het opnieuw.",
     "invalidSecret": "Ongeldige bewaarcode of je hebt geen toegang meer.",
     "codeNotFound": "Bewaarcode niet gevonden of verlopen.",
-    "claimError": "Kon compositie niet ophalen. Probeer het opnieuw."
+    "claimError": "De soundscape kon niet worden opgehaald. Probeer het opnieuw."
   },
   "takeHome": {
     "copyLink": "Kopieer link",
@@ -1981,15 +1981,15 @@
     },
     "praatplaat": {
       "kind": "Praatplaat",
-      "description": "Je kiest straks een plek op deze afbeelding. Daar hoort jouw compositie bij."
+      "description": "Je kiest straks een plek op deze afbeelding. Daar hoort jouw soundscape bij."
     },
     "storyboard": {
       "kind": "Verhaal in beeld",
       "description": "Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart."
     },
     "free": {
-      "kind": "Vrije compositie",
-      "description": "Verzamel geluiden op de kaart en maak je eigen compositie. Laat je fantasie de vrije loop."
+      "kind": "Vrije soundscape",
+      "description": "Verzamel geluiden op de kaart en maak je eigen soundscape. Laat je fantasie de vrije loop."
     },
     "none": {
       "heading": "Nog geen opdracht klaar",
@@ -2010,11 +2010,11 @@
     "errorDescription": "Probeer het later opnieuw.",
     "backToStart": "Terug naar SoundScout",
     "submissionCount": "{{count}} compositie(s) op de praatplaat",
-    "noSubmissions": "Er zijn nog geen composities op deze praatplaat",
-    "gestureHint": "Klik op de knop hieronder om de praatplaat te openen en composities te beluisteren.",
+    "noSubmissions": "Er staan nog geen soundscapes op deze praatplaat",
+    "gestureHint": "Klik op de knop hieronder om de praatplaat te openen en de soundscapes te beluisteren.",
     "startListening": "Luister naar de praatplaat",
-    "emptyTitle": "Nog geen composities",
-    "emptyDescription": "Er zijn nog geen composities op deze praatplaat geplaatst."
+    "emptyTitle": "Nog geen soundscapes",
+    "emptyDescription": "Er staan nog geen soundscapes op deze praatplaat."
   },
   "teacherLanding": {
     "header": {
@@ -2247,15 +2247,15 @@
     "fetchError": "Album laden is niet gelukt.",
     "fallbackTitle": "Klas-album",
     "byClass": "Album van {{className}}",
-    "submissionCount": "{{count}} composities om te beluisteren",
-    "noSubmissions": "Er zijn nog geen ingeleverde composities.",
+    "submissionCount": "{{count}} soundscapes om te beluisteren",
+    "noSubmissions": "Er zijn nog geen ingeleverde soundscapes.",
     "shareEmptyHint": "Deel het album zodra leerlingen hun compositie hebben ingeleverd — werk dat alleen is opgeslagen telt nog niet mee.",
     "startListening": "Open het album",
     "notFoundTitle": "Album niet gevonden",
     "notFoundDescription": "Controleer de code of vraag een nieuwe link aan de docent.",
     "expiredTitle": "Link verlopen",
     "expiredDescription": "Deze albumlink is verlopen. De docent kan een nieuwe maken.",
-    "gestureHint": "Klik op de knop hieronder om het album te openen en composities te beluisteren."
+    "gestureHint": "Klik op de knop hieronder om het album te openen en de soundscapes te beluisteren."
   },
   "sequencer": {
     "title": "Sequencer Lab",

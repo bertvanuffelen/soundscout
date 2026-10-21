@@ -210,13 +210,13 @@ export function StageView() {
   }, [stopAll, setScreen]);
 
   const handleExport = useCallback(() => {
-    const filename = compositionName.trim() || 'mijn-compositie';
+    const filename = compositionName.trim() || 'mijn-soundscape';
     exportMp3(tracks, librarySamples, filename);
   }, [exportMp3, tracks, librarySamples, compositionName]);
 
   const handleVideoExport = useCallback(() => {
     if (!activeStoryboard) return;
-    const filename = compositionName.trim() || 'mijn-compositie';
+    const filename = compositionName.trim() || 'mijn-soundscape';
     exportVideo(activeStoryboard, tracks, librarySamples, totalBeats, sections, filename);
   }, [exportVideo, activeStoryboard, tracks, librarySamples, totalBeats, sections, compositionName]);
 
