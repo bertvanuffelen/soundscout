@@ -114,7 +114,7 @@ function AppContent() {
       tutorial: t('tutorial.title'),
       'teacher-guide': t('teacher.guide.title'),
       compositions: t('compositions.title'),
-      teacher: 'Teacher Dashboard',
+      teacher: t('teacher.dashboard.title'),
       shared: 'SoundScout',
       'praatplaat-select': 'SoundScout',
       'assignment-landing': 'SoundScout',

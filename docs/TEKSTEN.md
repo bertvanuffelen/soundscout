@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1748 teksten in 48 secties._
+_Stand: 1752 teksten in 48 secties._
 
 ## app
 
@@ -283,6 +283,7 @@ _Stand: 1748 teksten in 48 secties._
 | `location.panHint` | Sleep om rond te kijken | Drag to look around |
 | `location.loadingError` | {{count}} geluid(en) konden niet worden geladen | {{count}} sound(s) could not be loaded |
 | `location.loadingErrorHint` | Controleer je internetverbinding en probeer opnieuw. | Check your internet connection and try again. |
+| `location.notFound` | Locatie niet gevonden | Location not found |
 
 ## recorder
 
@@ -372,6 +373,7 @@ _Stand: 1748 teksten in 48 secties._
 | `studio.sections.labelPlaceholder` | Label (bijv. Intro, A, B) | Label (e.g. Intro, A, B) |
 | `studio.sections.maxReached` | Maximum aantal delen bereikt | Maximum number of sections reached |
 | `studio.sections.needsPlayhead` | Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn) | First move the playhead to where the section should end (play or click the timeline) |
+| `studio.sections.barLabel` | Secties | Sections |
 | `studio.startBeat` | Begint op tel {{beat}} | Starts on beat {{beat}} |
 
 ## transport
@@ -1042,6 +1044,8 @@ _Stand: 1748 teksten in 48 secties._
 | `errors.classes.notLoggedIn` | Je moet ingelogd zijn om een klas aan te maken | You need to be signed in to create a class |
 | `errors.classes.create` | Kon klas niet aanmaken | Could not create the class |
 | `errors.classes.delete` | Kon klas niet verwijderen | Could not delete the class |
+| `errors.classes.limitReached_one` | Je hebt het maximum van {{count}} klas bereikt. Verwijder een klas om een nieuwe te maken. | You have reached the maximum of {{count}} class. Delete a class to create a new one. |
+| `errors.classes.limitReached_other` | Je hebt het maximum van {{count}} klassen bereikt. Verwijder een klas om een nieuwe te maken. | You have reached the maximum of {{count}} classes. Delete a class to create a new one. |
 | `errors.praatplaten.load` | Kon praatplaten niet laden | Could not load praatplaten |
 | `errors.praatplaten.create` | Kon praatplaat niet aanmaken | Could not create the praatplaat |
 | `errors.praatplaten.activate` | Kon praatplaat niet activeren | Could not activate the praatplaat |
@@ -1731,7 +1735,7 @@ _Stand: 1748 teksten in 48 secties._
 | `assignmentLanding.template.instructions` | Instructies | Instructions |
 | `assignmentLanding.template.storyboardCount_one` | {{count}} afbeelding | {{count}} image |
 | `assignmentLanding.template.storyboardCount_other` | {{count}} afbeeldingen | {{count}} images |
-| `assignmentLanding.praatplaat.kind` | Praatplaat | Praatplaat |
+| `assignmentLanding.praatplaat.kind` | Praatplaat | Sound map |
 | `assignmentLanding.praatplaat.description` | Je kiest straks een plek op deze afbeelding. Daar hoort jouw soundscape bij. | Next, you pick a spot on this image. That is where your soundscape goes. |
 | `assignmentLanding.storyboard.kind` | Verhaal in beeld | Story in pictures |
 | `assignmentLanding.storyboard.description` | Maak muziek die bij elke scène van dit verhaal past. Je verzamelt eerst geluiden op de kaart. | Make music that fits each scene of this story. First collect sounds on the map. |

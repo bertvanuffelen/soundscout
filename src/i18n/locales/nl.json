@@ -245,7 +245,8 @@
     "explore": "Verkennen",
     "panHint": "Sleep om rond te kijken",
     "loadingError": "{{count}} geluid(en) konden niet worden geladen",
-    "loadingErrorHint": "Controleer je internetverbinding en probeer opnieuw."
+    "loadingErrorHint": "Controleer je internetverbinding en probeer opnieuw.",
+    "notFound": "Locatie niet gevonden"
   },
   "recorder": {
     "title": "Recorder",
@@ -333,7 +334,8 @@
       "colorLabel": "Kleur",
       "labelPlaceholder": "Label (bijv. Intro, A, B)",
       "maxReached": "Maximum aantal delen bereikt",
-      "needsPlayhead": "Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn)"
+      "needsPlayhead": "Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn)",
+      "barLabel": "Secties"
     },
     "startBeat": "Begint op tel {{beat}}"
   },
@@ -1071,7 +1073,9 @@
       "codeInvalid": "Ongeldige klas-code ontvangen van de server",
       "notLoggedIn": "Je moet ingelogd zijn om een klas aan te maken",
       "create": "Kon klas niet aanmaken",
-      "delete": "Kon klas niet verwijderen"
+      "delete": "Kon klas niet verwijderen",
+      "limitReached_one": "Je hebt het maximum van {{count}} klas bereikt. Verwijder een klas om een nieuwe te maken.",
+      "limitReached_other": "Je hebt het maximum van {{count}} klassen bereikt. Verwijder een klas om een nieuwe te maken."
     },
     "praatplaten": {
       "load": "Kon praatplaten niet laden",
