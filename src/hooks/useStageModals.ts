@@ -18,7 +18,7 @@ export function useStageModals() {
   const resetCompositionContext = useAppStore((s) => s.resetCompositionContext);
   const clearLibrary = useLibraryStore((s) => s.clearLibrary);
   const resetTimeline = useTimelineStore((s) => s.resetTimeline);
-  const { stopAll } = useAudioEngine();
+  const { stopAll, stopTimeline } = useAudioEngine();
 
   const [showNewModal, setShowNewModal] = useState(false);
   const [showShareModal, setShowShareModal] = useState(false);
@@ -27,6 +27,8 @@ export function useStageModals() {
 
   const handleNewComposition = useCallback(() => {
     stopAll();
+    // Ook de tijdlijn (E7): stopAll stopt alleen voorbeeldspelers
+    stopTimeline();
     // Volledige reset (B24): ook secties/sequences/lengte
     resetTimeline();
     clearLibrary();
@@ -36,7 +38,7 @@ export function useStageModals() {
     setShowNewModal(false);
     // Terug naar start mét de nieuwe-soundscape-wizard direct open
     goToStartWith('new');
-  }, [stopAll, resetTimeline, clearLibrary, resetCompositionContext, goToStartWith]);
+  }, [stopAll, stopTimeline, resetTimeline, clearLibrary, resetCompositionContext, goToStartWith]);
 
   return {
     showNewModal,
