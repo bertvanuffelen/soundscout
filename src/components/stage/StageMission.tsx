@@ -28,7 +28,7 @@ export interface StageMissionProps {
   steps: StageStep[];
   session: ClassSession | null;
   isPraatplaat: boolean;
-  toasts: { type: 'success' | 'error'; message: string }[];
+  toasts: { type: 'success' | 'error' | 'info'; message: string }[];
   // Luisteren
   onListen: () => void;
   listened: boolean;
@@ -353,7 +353,9 @@ export function StageMission(props: StageMissionProps) {
           role={toast.type === 'error' ? 'alert' : 'status'}
           className={cn(
             'flex items-start gap-2 rounded-xl px-3 py-2 text-sm font-semibold',
-            toast.type === 'success' ? 'bg-success-50 text-success-600' : 'bg-error-50 text-error-600',
+            toast.type === 'success' ? 'bg-success-50 text-success-600'
+              : toast.type === 'info' ? 'bg-warning-50 text-warning-600'
+              : 'bg-error-50 text-error-600',
           )}
         >
           {toast.type === 'success' ? <CheckCircle2 className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" /> : <Info className="w-4 h-4 mt-0.5 shrink-0" aria-hidden="true" />}

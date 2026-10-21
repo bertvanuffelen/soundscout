@@ -553,7 +553,8 @@
       "restart": "Opnieuw vanaf het begin",
       "seek": "Spring naar een plek in je soundscape",
       "image": "Afbeelding {{n}}"
-    }
+    },
+    "assignmentChanged": "Je docent heeft de opdracht veranderd. Maak deze soundscape af, of kies \"Nieuwe soundscape\" voor de nieuwe opdracht."
   },
   "editor": {
     "copyFailed": "Kopiëren mislukt. Gebruik de download knop."

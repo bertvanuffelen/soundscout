@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1858 teksten in 49 secties._
+_Stand: 1859 teksten in 49 secties._
 
 ## app
 
@@ -570,6 +570,7 @@ _Stand: 1858 teksten in 49 secties._
 | `podium.controls.restart` | Opnieuw vanaf het begin | Start again from the beginning |
 | `podium.controls.seek` | Spring naar een plek in je soundscape | Jump to a point in your soundscape |
 | `podium.controls.image` | Afbeelding {{n}} | Picture {{n}} |
+| `podium.assignmentChanged` | Je docent heeft de opdracht veranderd. Maak deze soundscape af, of kies "Nieuwe soundscape" voor de nieuwe opdracht. | Your teacher has changed the assignment. Finish this soundscape, or choose "New soundscape" for the new assignment. |
 
 ## editor
 

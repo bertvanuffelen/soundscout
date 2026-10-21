@@ -24,6 +24,7 @@ import { useAudioExport } from '../../hooks/useAudioExport';
 import { useVideoExport } from '../../hooks/useVideoExport';
 import { useStageSave } from '../../hooks/useStageSave';
 import { useStageModals } from '../../hooks/useStageModals';
+import { useLiveAssignment } from '../../hooks/useLiveAssignment';
 import { Button, Modal } from '../ui';
 import { ShareLinkModal } from '../share';
 import { storageService } from '../../services/StorageService';
@@ -66,6 +67,8 @@ export function StageView() {
   const { isTeacher } = useAuth();
 
   useAudioCleanup();
+  // Docentwijzigingen live meenemen (fase 4.1)
+  const assignmentChanged = useLiveAssignment();
 
   const { exportState, progress, error, warning: exportWarning, exportMp3 } = useAudioExport();
   const { videoExportState, videoProgress, videoError, videoWarning, exportVideo } = useVideoExport();
@@ -275,8 +278,12 @@ export function StageView() {
   }, [isPraatplaatClass, handleNewSpot, stopAll, stopTimeline, setShowNewModal, t]);
 
   // --- Meldingen in de rechterkolom ---
-  const toasts = [submitFeedback, syncFeedback, saveError ? { type: 'error' as const, message: saveError } : null]
-    .filter((x): x is { type: 'success' | 'error'; message: string } => !!x);
+  const toasts = [
+    assignmentChanged ? { type: 'info' as const, message: t('podium.assignmentChanged') } : null,
+    submitFeedback,
+    syncFeedback,
+    saveError ? { type: 'error' as const, message: saveError } : null,
+  ].filter((x): x is { type: 'success' | 'error' | 'info'; message: string } => !!x);
   const exportMessages = [
     error, videoError, exportWarning, videoWarning,
     exportState === 'success' ? t('stage.exportSuccess') : null,

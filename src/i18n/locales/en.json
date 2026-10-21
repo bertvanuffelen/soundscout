@@ -553,7 +553,8 @@
       "restart": "Start again from the beginning",
       "seek": "Jump to a point in your soundscape",
       "image": "Picture {{n}}"
-    }
+    },
+    "assignmentChanged": "Your teacher has changed the assignment. Finish this soundscape, or choose \"New soundscape\" for the new assignment."
   },
   "editor": {
     "copyFailed": "Copy failed. Use the download button."
