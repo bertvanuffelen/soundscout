@@ -174,10 +174,8 @@ export const Clip = memo(function Clip({
 
   // Build aria-label with clip information
   const ariaLabel = `${t(sample.name)}, ${t('common.clips')}, ${t('studio.startBeat', {
-    defaultValue: 'Start beat {{beat}}',
     beat: Math.round(clip.startBeat)
   })}, ${t('common.duration', {
-    defaultValue: 'Duration {{duration}}s',
     duration: durationSeconds.toFixed(1)
   })}`;
 

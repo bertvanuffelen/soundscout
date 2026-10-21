@@ -30,7 +30,8 @@
     "location": "Locatie",
     "zoom": "Vergroten",
     "saved": "Opgeslagen",
-    "dateLocale": "nl-NL"
+    "dateLocale": "nl-NL",
+    "duration": "Duur {{duration}} s"
   },
   "language": {
     "nl": "Nederlands",
@@ -321,7 +322,8 @@
       "labelPlaceholder": "Label (bijv. Intro, A, B)",
       "maxReached": "Maximum aantal delen bereikt",
       "needsPlayhead": "Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn)"
-    }
+    },
+    "startBeat": "Begint op tel {{beat}}"
   },
   "transport": {
     "play": "Afspelen",
@@ -1012,6 +1014,7 @@
   },
   "errors": {
     "notLoggedIn": "Je moet ingelogd zijn",
+    "networkTimeout": "De verbinding is te traag. Bij de volgende keer opslaan proberen we het opnieuw.",
     "templates": {
       "load": "Kon templates niet laden",
       "code": "Kon template-code niet genereren",
@@ -1852,6 +1855,8 @@
     "storyboardDescription": "Maak een soundscape bij een reeks afbeeldingen",
     "pickImage": "Kies een afbeelding",
     "pickStoryboard": "Kies een storyboard",
+    "noImages": "Er zijn nog geen afbeeldingen beschikbaar.",
+    "noStoryboards": "Er zijn nog geen storyboards beschikbaar.",
     "images_one": "{{count}} afbeelding",
     "images_other": "{{count}} afbeeldingen",
     "back": "Terug",

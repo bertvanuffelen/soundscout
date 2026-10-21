@@ -332,7 +332,9 @@ export function StartScreen() {
               onClick={goToCompositions}
               variant="ghost"
               size="lg"
-              className="w-full"
+              /* Ghost = witte tekst; op de witte desktopkaart dus onzichtbaar
+                 zonder deze md-kleuren (B34) */
+              className="w-full md:text-text-main md:hover:bg-neutral-100"
             >
               <FolderOpen className="w-5 h-5 mr-1.5 sm:mr-2" />
               {t('start.myCompositions')}

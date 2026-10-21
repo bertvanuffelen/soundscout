@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1730 teksten in 47 secties._
+_Stand: 1735 teksten in 47 secties._
 
 ## app
 
@@ -64,6 +64,7 @@ _Stand: 1730 teksten in 47 secties._
 | `common.zoom` | Vergroten | Zoom in |
 | `common.saved` | Opgeslagen | Saved |
 | `common.dateLocale` | nl-NL | en-GB |
+| `common.duration` | Duur {{duration}} s | Duration {{duration}} s |
 
 ## language
 
@@ -356,6 +357,7 @@ _Stand: 1730 teksten in 47 secties._
 | `studio.sections.labelPlaceholder` | Label (bijv. Intro, A, B) | Label (e.g. Intro, A, B) |
 | `studio.sections.maxReached` | Maximum aantal delen bereikt | Maximum number of sections reached |
 | `studio.sections.needsPlayhead` | Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn) | First move the playhead to where the section should end (play or click the timeline) |
+| `studio.startBeat` | Begint op tel {{beat}} | Starts on beat {{beat}} |
 
 ## transport
 
@@ -990,6 +992,7 @@ _Stand: 1730 teksten in 47 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `errors.notLoggedIn` | Je moet ingelogd zijn | You need to be signed in |
+| `errors.networkTimeout` | De verbinding is te traag. Bij de volgende keer opslaan proberen we het opnieuw. | The connection is too slow. We'll try again next time you save. |
 | `errors.templates.load` | Kon templates niet laden | Could not load templates |
 | `errors.templates.code` | Kon template-code niet genereren | Could not generate a template code |
 | `errors.templates.create` | Kon template niet aanmaken | Could not create the template |
@@ -1590,6 +1593,8 @@ _Stand: 1730 teksten in 47 secties._
 | `composeMode.storyboardDescription` | Maak een soundscape bij een reeks afbeeldingen | Create a soundscape for a series of images |
 | `composeMode.pickImage` | Kies een afbeelding | Choose an image |
 | `composeMode.pickStoryboard` | Kies een storyboard | Choose a storyboard |
+| `composeMode.noImages` | Er zijn nog geen afbeeldingen beschikbaar. | No pictures available yet. |
+| `composeMode.noStoryboards` | Er zijn nog geen storyboards beschikbaar. | No storyboards available yet. |
 | `composeMode.images_one` | {{count}} afbeelding | {{count}} image |
 | `composeMode.images_other` | {{count}} afbeeldingen | {{count}} images |
 | `composeMode.back` | Terug | Back |

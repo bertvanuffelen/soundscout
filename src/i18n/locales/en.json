@@ -30,7 +30,8 @@
     "location": "Location",
     "zoom": "Zoom in",
     "saved": "Saved",
-    "dateLocale": "en-GB"
+    "dateLocale": "en-GB",
+    "duration": "Duration {{duration}} s"
   },
   "language": {
     "nl": "Nederlands",
@@ -321,7 +322,8 @@
       "labelPlaceholder": "Label (e.g. Intro, A, B)",
       "maxReached": "Maximum number of sections reached",
       "needsPlayhead": "First move the playhead to where the section should end (play or click the timeline)"
-    }
+    },
+    "startBeat": "Starts on beat {{beat}}"
   },
   "transport": {
     "play": "Play",
@@ -1012,6 +1014,7 @@
   },
   "errors": {
     "notLoggedIn": "You need to be signed in",
+    "networkTimeout": "The connection is too slow. We'll try again next time you save.",
     "templates": {
       "load": "Could not load templates",
       "code": "Could not generate a template code",
@@ -1852,6 +1855,8 @@
     "storyboardDescription": "Create a soundscape for a series of images",
     "pickImage": "Choose an image",
     "pickStoryboard": "Choose a storyboard",
+    "noImages": "No pictures available yet.",
+    "noStoryboards": "No storyboards available yet.",
     "images_one": "{{count}} image",
     "images_other": "{{count}} images",
     "back": "Back",
