@@ -204,7 +204,7 @@ export function StageMission(props: StageMissionProps) {
           <>
             <p className="text-sm text-text-muted">{t('podium.spot.text')}</p>
             <div className="flex flex-wrap gap-2">
-              <Button variant="secondary" size="sm" onClick={props.onMoveSpot}>
+              <Button variant="secondary" size="sm" onClick={props.onMoveSpot} disabled={props.isSubmitting}>
                 <MapPin className="w-4 h-4 mr-1.5" aria-hidden="true" />
                 {t('podium.spot.move')}
               </Button>
@@ -414,16 +414,16 @@ export function StageMission(props: StageMissionProps) {
       )}
 
       <div className="mt-2 pt-3 border-t border-border-subtle flex flex-col gap-2">
-        <Button variant="secondary" onClick={props.onBackToStudio} className="w-full">
+        <Button variant="secondary" onClick={props.onBackToStudio} disabled={props.isSubmitting} className="w-full">
           <ArrowLeft className="w-4 h-4 mr-2" aria-hidden="true" />
           {t('podium.foot.back')}
         </Button>
         <div className="flex flex-wrap justify-center gap-x-4 gap-y-1">
-          <button type="button" onClick={props.onMoreSounds} className="inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-text-muted hover:text-text-main">
+          <button type="button" onClick={props.onMoreSounds} disabled={props.isSubmitting} className="inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-text-muted hover:text-text-main disabled:opacity-40 disabled:cursor-not-allowed">
             <MapIcon className="w-4 h-4" aria-hidden="true" />
             {t('podium.foot.moreSounds')}
           </button>
-          <button type="button" onClick={props.onNew} className="inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-text-muted hover:text-text-main">
+          <button type="button" onClick={props.onNew} disabled={props.isSubmitting} className="inline-flex items-center gap-1.5 py-1 text-sm font-semibold text-text-muted hover:text-text-main disabled:opacity-40 disabled:cursor-not-allowed">
             <Plus className="w-4 h-4" aria-hidden="true" />
             {t('podium.foot.new')}
           </button>

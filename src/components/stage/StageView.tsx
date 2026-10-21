@@ -323,7 +323,7 @@ export function StageView() {
 
       {/* Kop: studio · titel · status */}
       <header className="shrink-0 flex items-center gap-2 sm:gap-3 bg-bg-surface border-b border-border-subtle px-3 sm:px-5 py-2.5">
-        <Button variant="secondary" size="sm" onClick={handleBackToStudio} aria-label={t('stage.backToStudio')}>
+        <Button variant="secondary" size="sm" onClick={handleBackToStudio} disabled={isSubmitting} aria-label={t('stage.backToStudio')}>
           <ArrowLeft className="w-4 h-4 sm:mr-1.5" aria-hidden="true" />
           <span className="hidden sm:inline">{t('podium.studio')}</span>
         </Button>

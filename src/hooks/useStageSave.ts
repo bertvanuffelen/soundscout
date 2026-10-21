@@ -157,6 +157,17 @@ export function useStageSave() {
     if (useAppStore.getState().isSubmitting) return;
     useAppStore.getState().setIsSubmitting(true);
 
+    // Generatie-token (E2): tijdens het versturen kan de leerling een nieuwe
+    // soundscape beginnen. Het antwoord mag dan niet in de nieuwe sessie
+    // landen; het hoort bij déze compositie en déze opdracht.
+    const compositionId = useAppStore.getState().currentCompositionId;
+    const isStillCurrent = () => {
+      const s = useAppStore.getState();
+      return s.currentCompositionId === compositionId
+        && s.classSession?.classCode === session.classCode
+        && s.classSession?.assignmentId === session.assignmentId;
+    };
+
     const { submissionId: existingId } = useAppStore.getState();
     if (!clientIdRef.current) clientIdRef.current = existingId || crypto.randomUUID();
 
@@ -188,12 +199,16 @@ export function useStageSave() {
         void import('../lib/members').then(({ linkSubmissionToMember }) =>
           linkSubmissionToMember(returnedId, secret, session.member!.code));
       }
+      // Lokale kopie krijgt de inzending mee (heropenen = zelfde inzending),
+      // ook als de leerling intussen verder is gegaan
+      if (compositionId) storageService.updateComposition(compositionId, { submissionId: returnedId, classSession: session, ...(saveCode ? { saveCode } : {}) });
+      if (!isStillCurrent()) {
+        logger.info('Inleveren klaar na wisselen van soundscape — sessie niet aangepast', { submissionId: returnedId });
+        return;
+      }
       useAppStore.getState().setSubmissionId(returnedId);
       useAppStore.getState().setSubmissionSynced(true);
       clientIdRef.current = returnedId;
-      // Lokale kopie krijgt de inzending mee (heropenen = zelfde inzending)
-      const compId = useAppStore.getState().currentCompositionId;
-      if (compId) storageService.updateComposition(compId, { submissionId: returnedId, classSession: session, ...(saveCode ? { saveCode } : {}) });
       if (saveCode) {
         setClassSaveCode(saveCode);
         const existing = storageService.getClassFeedbackCode();
@@ -214,12 +229,13 @@ export function useStageSave() {
       }, 3000);
       logger.info('Inleveren geslaagd', { classCode: session.classCode, submissionId: returnedId });
     }).catch((err) => {
+      logger.warn('Inleveren mislukt', err);
+      if (!isStillCurrent()) return;
       useAppStore.getState().setSubmissionSynced(false);
       setSubmitFeedback({
         type: 'error',
         message: err instanceof TimeoutError ? i18n.t('errors.networkTimeout') : i18n.t('submissions.autoSubmitFailed'),
       });
-      logger.warn('Inleveren mislukt', err);
     }).finally(() => {
       useAppStore.getState().setIsSubmitting(false);
     });
