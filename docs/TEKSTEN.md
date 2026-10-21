@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1898 teksten in 51 secties._
+_Stand: 1899 teksten in 51 secties._
 
 ## app
 
@@ -329,7 +329,7 @@ _Stand: 1898 teksten in 51 secties._
 | `studio.duplicate` | Dupliceren | Duplicate |
 | `studio.delete` | Verwijderen | Delete |
 | `studio.volume` | Volume | Volume |
-| `studio.trackVolume` | Volume track {{track}} | Track {{track}} volume |
+| `studio.trackVolume` | Volume spoor {{track}} | Volume track {{track}} |
 | `studio.clipVolume` | Clip volume | Clip volume |
 | `studio.volumeFor` | Volume voor {{name}} | Volume for {{name}} |
 | `studio.volumeSliderHint` | Dubbelklik om te resetten | Double-click to reset |
@@ -359,7 +359,7 @@ _Stand: 1898 teksten in 51 secties._
 | `studio.effectsModal.reset` | Reset | Reset |
 | `studio.clearTimeline` | Wis tijdlijn | Clear timeline |
 | `studio.clearConfirm` | Alles wissen? | Clear all? |
-| `studio.trimModal.title` | Sample inkorten | Trim sample |
+| `studio.trimModal.title` | Geluid inkorten | Trim sound |
 | `studio.trimModal.preview` | Voorbeeld | Preview |
 | `studio.trimModal.apply` | Toepassen | Apply |
 | `studio.trimModal.cancel` | Annuleren | Cancel |
@@ -556,7 +556,7 @@ _Stand: 1898 teksten in 51 secties._
 | `podium.card.title` | Je muziekkaart | Your music card |
 | `podium.card.label` | Mijn muziekkaart | My music card |
 | `podium.card.hint` | Thuis verder? Scan of typ de code op soundscout.nl | Continue at home? Scan or type the code at soundscout.nl |
-| `podium.card.text` | Maak er een foto van of schrijf de code op. Wie de code heeft, kan je soundscape veranderen. | Take a photo or write the code down. Anyone with the code can change your soundscape. |
+| `podium.card.text` | Maak er een foto van of schrijf de code op. | Take a photo or write the code down. |
 | `podium.join.title` | Lever in bij je docent | Hand it in to your teacher |
 | `podium.join.text` | Typ de klascode die op het bord staat. | Type the class code on the board. |
 | `podium.join.checking` | Zoeken… | Looking… |
@@ -589,7 +589,6 @@ _Stand: 1898 teksten in 51 secties._
 |---|---|---|
 | `compositions.title` | Mijn soundscapes | My soundscapes |
 | `compositions.back` | Terug | Back |
-| `compositions.tracks` | tracks | tracks |
 | `compositions.play` | Afspelen | Play |
 | `compositions.delete` | Verwijderen | Delete |
 | `compositions.cancel` | Annuleren | Cancel |
@@ -604,6 +603,8 @@ _Stand: 1898 teksten in 51 secties._
 | `compositions.code` | Code | Code |
 | `compositions.noClass` | Zonder klas | No class |
 | `compositions.showCode` | Toon code | Show code |
+| `compositions.trackCount_one` | {{count}} spoor | {{count}} track |
+| `compositions.trackCount_other` | {{count}} sporen | {{count}} tracks |
 
 ## locations
 
@@ -839,22 +840,22 @@ _Stand: 1898 teksten in 51 secties._
 | `assignmentCards.defaults.template.bullets.0` | Je docent heeft alvast een begin klaargezet. | Your teacher has already set up a start for you. |
 | `assignmentCards.defaults.template.bullets.1` | Luister goed en maak het af. | Listen carefully and finish it. |
 | `assignmentCards.defaults.template.bullets.2` | Sleep geluiden op de tijdlijn. | Drag sounds onto the timeline. |
-| `assignmentCards.defaults.template.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
+| `assignmentCards.defaults.template.bullets.3` | Klaar? Lever je soundscape in. | Done? Hand in your soundscape. |
 | `assignmentCards.defaults.praatplaat.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.praatplaat.bullets.0` | Je kiest straks een plek op de afbeelding. | You'll pick a spot on the image next. |
 | `assignmentCards.defaults.praatplaat.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.praatplaat.bullets.2` | Maak een soundscape die bij jouw plek past. | Make a soundscape that fits your spot. |
-| `assignmentCards.defaults.praatplaat.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
+| `assignmentCards.defaults.praatplaat.bullets.3` | Klaar? Lever je soundscape in. | Done? Hand in your soundscape. |
 | `assignmentCards.defaults.storyboard.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.storyboard.bullets.0` | Bekijk de scènes van het verhaal. | Look at the scenes of the story. |
 | `assignmentCards.defaults.storyboard.bullets.1` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.storyboard.bullets.2` | Maak een soundscape die bij elke scène past. | Make a soundscape that fits each scene. |
-| `assignmentCards.defaults.storyboard.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
+| `assignmentCards.defaults.storyboard.bullets.3` | Klaar? Lever je soundscape in. | Done? Hand in your soundscape. |
 | `assignmentCards.defaults.free.title` | Opdracht | Assignment |
 | `assignmentCards.defaults.free.bullets.0` | Verzamel geluiden op de kaart. | Collect sounds on the map. |
 | `assignmentCards.defaults.free.bullets.1` | Experimenteer met de klanken. | Experiment with the sounds. |
 | `assignmentCards.defaults.free.bullets.2` | Maak je eigen soundscape. | Make your own soundscape. |
-| `assignmentCards.defaults.free.bullets.3` | Klaar? Sla je soundscape op. | Done? Save your soundscape. |
+| `assignmentCards.defaults.free.bullets.3` | Klaar? Lever je soundscape in. | Done? Hand in your soundscape. |
 
 ## lessonCards
 

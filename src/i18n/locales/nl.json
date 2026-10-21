@@ -286,7 +286,7 @@
     "duplicate": "Dupliceren",
     "delete": "Verwijderen",
     "volume": "Volume",
-    "trackVolume": "Volume track {{track}}",
+    "trackVolume": "Volume spoor {{track}}",
     "clipVolume": "Clip volume",
     "volumeFor": "Volume voor {{name}}",
     "volumeSliderHint": "Dubbelklik om te resetten",
@@ -319,7 +319,7 @@
     "clearTimeline": "Wis tijdlijn",
     "clearConfirm": "Alles wissen?",
     "trimModal": {
-      "title": "Sample inkorten",
+      "title": "Geluid inkorten",
       "preview": "Voorbeeld",
       "apply": "Toepassen",
       "cancel": "Annuleren",
@@ -533,7 +533,7 @@
       "title": "Je muziekkaart",
       "label": "Mijn muziekkaart",
       "hint": "Thuis verder? Scan of typ de code op soundscout.nl",
-      "text": "Maak er een foto van of schrijf de code op. Wie de code heeft, kan je soundscape veranderen."
+      "text": "Maak er een foto van of schrijf de code op."
     },
     "join": {
       "title": "Lever in bij je docent",
@@ -569,7 +569,6 @@
   "compositions": {
     "title": "Mijn soundscapes",
     "back": "Terug",
-    "tracks": "tracks",
     "play": "Afspelen",
     "delete": "Verwijderen",
     "cancel": "Annuleren",
@@ -583,7 +582,9 @@
     "corruptLoadWarning_other": "{{count}} soundscapes konden niet worden geladen.",
     "code": "Code",
     "noClass": "Zonder klas",
-    "showCode": "Toon code"
+    "showCode": "Toon code",
+    "trackCount_one": "{{count}} spoor",
+    "trackCount_other": "{{count}} sporen"
   },
   "locations": {
     "boerderij": {
@@ -840,7 +841,7 @@
           "Je docent heeft alvast een begin klaargezet.",
           "Luister goed en maak het af.",
           "Sleep geluiden op de tijdlijn.",
-          "Klaar? Sla je soundscape op."
+          "Klaar? Lever je soundscape in."
         ]
       },
       "praatplaat": {
@@ -849,7 +850,7 @@
           "Je kiest straks een plek op de afbeelding.",
           "Verzamel geluiden op de kaart.",
           "Maak een soundscape die bij jouw plek past.",
-          "Klaar? Sla je soundscape op."
+          "Klaar? Lever je soundscape in."
         ]
       },
       "storyboard": {
@@ -858,7 +859,7 @@
           "Bekijk de scènes van het verhaal.",
           "Verzamel geluiden op de kaart.",
           "Maak een soundscape die bij elke scène past.",
-          "Klaar? Sla je soundscape op."
+          "Klaar? Lever je soundscape in."
         ]
       },
       "free": {
@@ -867,7 +868,7 @@
           "Verzamel geluiden op de kaart.",
           "Experimenteer met de klanken.",
           "Maak je eigen soundscape.",
-          "Klaar? Sla je soundscape op."
+          "Klaar? Lever je soundscape in."
         ]
       }
     }

@@ -286,7 +286,7 @@
     "duplicate": "Duplicate",
     "delete": "Delete",
     "volume": "Volume",
-    "trackVolume": "Track {{track}} volume",
+    "trackVolume": "Volume track {{track}}",
     "clipVolume": "Clip volume",
     "volumeFor": "Volume for {{name}}",
     "volumeSliderHint": "Double-click to reset",
@@ -300,7 +300,7 @@
     "clearTimeline": "Clear timeline",
     "clearConfirm": "Clear all?",
     "trimModal": {
-      "title": "Trim sample",
+      "title": "Trim sound",
       "preview": "Preview",
       "apply": "Apply",
       "cancel": "Cancel",
@@ -533,7 +533,7 @@
       "title": "Your music card",
       "label": "My music card",
       "hint": "Continue at home? Scan or type the code at soundscout.nl",
-      "text": "Take a photo or write the code down. Anyone with the code can change your soundscape."
+      "text": "Take a photo or write the code down."
     },
     "join": {
       "title": "Hand it in to your teacher",
@@ -569,7 +569,6 @@
   "compositions": {
     "title": "My soundscapes",
     "back": "Back",
-    "tracks": "tracks",
     "play": "Play",
     "delete": "Delete",
     "cancel": "Cancel",
@@ -583,7 +582,9 @@
     "corruptLoadWarning_other": "{{count}} soundscapes could not be loaded.",
     "code": "Code",
     "noClass": "No class",
-    "showCode": "Show code"
+    "showCode": "Show code",
+    "trackCount_one": "{{count}} track",
+    "trackCount_other": "{{count}} tracks"
   },
   "locations": {
     "boerderij": {
@@ -841,7 +842,7 @@
           "Your teacher has already set up a start for you.",
           "Listen carefully and finish it.",
           "Drag sounds onto the timeline.",
-          "Done? Save your soundscape."
+          "Done? Hand in your soundscape."
         ]
       },
       "praatplaat": {
@@ -850,7 +851,7 @@
           "You'll pick a spot on the image next.",
           "Collect sounds on the map.",
           "Make a soundscape that fits your spot.",
-          "Done? Save your soundscape."
+          "Done? Hand in your soundscape."
         ]
       },
       "storyboard": {
@@ -859,7 +860,7 @@
           "Look at the scenes of the story.",
           "Collect sounds on the map.",
           "Make a soundscape that fits each scene.",
-          "Done? Save your soundscape."
+          "Done? Hand in your soundscape."
         ]
       },
       "free": {
@@ -868,7 +869,7 @@
           "Collect sounds on the map.",
           "Experiment with the sounds.",
           "Make your own soundscape.",
-          "Done? Save your soundscape."
+          "Done? Hand in your soundscape."
         ]
       }
     }

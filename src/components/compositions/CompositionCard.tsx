@@ -86,7 +86,7 @@ export function CompositionCard({
             <p className="text-sm text-text-muted mt-0.5">
               {formatDate(composition.updatedAt)} •{' '}
               {formatDuration(composition.metadata.duration)} •{' '}
-              {composition.metadata.trackCount} {t('compositions.tracks')}
+              {t('compositions.trackCount', { count: composition.metadata.trackCount })}
             </p>
             {composition.saveCode && (
               <p className="text-xs text-text-muted mt-0.5">

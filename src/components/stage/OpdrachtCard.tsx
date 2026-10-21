@@ -68,7 +68,6 @@ export function OpdrachtCard({ session }: OpdrachtCardProps) {
               {t('podium.assignment.time', { label: session.durationLabel })}
             </span>
           )}
-          {!own && <p className="text-xs text-text-muted mt-1">{t('podium.assignment.defaultNote')}</p>}
         </div>
       )}
     </div>

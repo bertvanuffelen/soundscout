@@ -174,7 +174,12 @@ export function StageMission(props: StageMissionProps) {
               />
               <Button
                 variant="secondary"
-                onClick={() => setSuggestions(titleSuggestions(3, i18n.language))}
+                onClick={() => {
+                  // Dobbelsteen kiest meteen een titel (E14) en geeft nieuwe ideeën
+                  const next = titleSuggestions(3, i18n.language);
+                  setSuggestions(next);
+                  props.onTitleChange(next[0]);
+                }}
                 aria-label={t('podium.titleStep.dice')}
                 title={t('podium.titleStep.dice')}
               >
