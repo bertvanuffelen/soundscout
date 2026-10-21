@@ -25,6 +25,9 @@ import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment } from '../../utils/compositionInit';
 import { findStoryboardById, getTheme } from '../../data/themes';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
+import { OnboardingAnimation } from '../common/OnboardingAnimation';
+import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { OpdrachtkaartCard } from './OpdrachtkaartCard';
 import { logger } from '../../utils/logger';
 import type { TFunction } from 'i18next';
@@ -39,7 +42,12 @@ export default function AssignmentLandingScreen() {
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleStart = useCallback(async () => {
+  // Eenmalige uitleg (A3): de klasroute is in het onderwijs de hoofdroute,
+  // maar zag de "Zo werkt SoundScout"-animatie nooit (die hing alleen aan
+  // "Nieuwe compositie"). Zelfde first-run-vlag, dus één keer per apparaat.
+  const [showIntro, setShowIntro] = useState(false);
+
+  const startAssignment = useCallback(async () => {
     if (!pending?.assignment) return;
     setIsStarting(true);
     setError(null);
@@ -51,6 +59,20 @@ export default function AssignmentLandingScreen() {
       setIsStarting(false);
     }
   }, [pending, t]);
+
+  const handleStart = useCallback(() => {
+    if (!hasSeenFirstRun('onboarding-intro')) {
+      setShowIntro(true);
+      return;
+    }
+    void startAssignment();
+  }, [startAssignment]);
+
+  const handleIntroDone = useCallback(() => {
+    markFirstRunSeen('onboarding-intro');
+    setShowIntro(false);
+    void startAssignment();
+  }, [startAssignment]);
 
   // Safety: als pending ontbreekt (bv. direct geopend), terug naar start
   if (!pending) {
@@ -158,6 +180,17 @@ export default function AssignmentLandingScreen() {
           <RouteCActions />
         )}
       </div>
+
+      <Modal isOpen={showIntro} onClose={handleIntroDone} title={t('start.introTitle')} size="xl">
+        <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface mb-4">
+          <OnboardingAnimation />
+        </div>
+        <div className="flex justify-center">
+          <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
+            {t('start.introStart')}
+          </Button>
+        </div>
+      </Modal>
     </div>
   );
 }
