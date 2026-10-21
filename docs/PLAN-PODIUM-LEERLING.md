@@ -88,13 +88,20 @@
 - Moet "Delen" (luisterlink) in de klas uit kunnen? Zo ja: als docentinstelling in fase 3.
 - Een leerling die thuis begon en via "Heb je een klascode?" bij een **praatplaat**-klas wil inleveren, krijgt de melding dat dit via "Ik heb een code" moet (er hoort een plek bij).
 
-## Fase 3: instellingen en data (migratie)
+## Fase 3: instellingen en data (migratie) ✅
 
-| Stap | Wat | Status |
-|---|---|---|
-| 3.1 | Migratie: `class_assignments.students_type_title BOOLEAN DEFAULT true` + doorgeven in `get_active_assignment` | ⬜ |
-| 3.2 | Docent-UI: schakelaar in ClassDetail; leerling: automatische titel, geen invoer, geen dobbelsteen | ⬜ |
-| 3.3 | Engelse schuilnamen (`randomNames.ts`) + vertaalde ingebouwde feedbackkaarten | ⬜ |
+> **Branch:** `claude/leerling-fase3` (gestapeld op fase 2).
+
+| Stap | Wat | Status | Commit |
+|---|---|---|---|
+| 3.1 | Migratie 037: `class_assignments.students_type_title BOOLEAN NOT NULL DEFAULT TRUE` + mee in de payload van `get_active_assignment` | ✅ (bestand) · ⏳ Bert draait hem | 99fb476 |
+| 3.2 | Docent-UI: schakelaar op de actieve opdracht in ClassDetail (verschijnt pas na de migratie); leerling: automatische titel, invoerveld alleen-lezen, geen dobbelsteen | ✅ | 99fb476 |
+| 3.3 | Engelse schuilnamen (`generateRandomName`) + vertaalde ingebouwde feedbackkaarten (`peerChipLabel`, alleen weergave) | ✅ | 2b0e129 |
+
+**Besluiten**
+- Feedbackkaarten vertalen we in de weergave, niet in de database: sterren worden per criterium-tekst opgeslagen. Zo tellen NL- en EN-beoordelingen samen. Geen migratie nodig.
+- De titelinstelling wordt in de app afgedwongen (geen invoerveld). De server overschrijft de titel niet; wie de app omzeilt, kan nog een titel sturen. Dat is voor nu voldoende.
+- **Privacytekst aangepast** (app, `/privacy/`, `/privacy/en/`): online bewaren gaat met een automatische schuilnaam, de leerling typt geen naam meer. → Bert even nalezen.
 
 ## Fase 4: later
 
@@ -126,3 +133,4 @@
 | 21-10-2026 | 1.1 soundscape-termen | b59c3e8 | 67 sleutels NL+EN · tsc ✓ · 446 tests ✓ · browser: startscherm "Nieuwe soundscape". Bewust niet: docentteksten (teacher, lessonCards, templates, submissions, about, album-deeltekst), werkwoord "componeren". `sharedPraatplaat.submissionCount` ("compositie(s)") gaat mee in 1.8 (meervoud) |
 | 21-10-2026 | 1.8 Engelse teksten (a: harde teksten + privacylink, b: meervouden, c: termen/zinsletters/VK) | fbbdb5d, ed8fe0a, 7e0e6f1 | tsc ✓ · 446 tests ✓ · meervouden gecontroleerd (1 composition / 5 compositions, "Listened to once", NL "8 klassen") · browser EN: "New soundscape", privacylink /privacy/en/. Standaard-opdrachtkaart heet nu "Opdracht"/"Assignment". **Niet gedaan, verschoven naar fase 3:** Engelse schuilnamen en vertaalde peer-criteria (komen uit de database, migratie 027-data). Ook nog open (lage prioriteit): `public/les/*` en meta-titels van de statische pagina's alleen NL |
 | 21-10-2026 | 2.1–2.8 podium v4 | 9349416, 61e4317, f9aabbb, eefb4bf, HEAD | tsc ✓ · 457 tests ✓ (11 nieuw) · lint ✓ · browser 1024 + 375 px: vrij zonder klas (afspelen + voortgang, titel-suggestie, Luister → presentatie, Bewaar → echte bewaarcode Z7B4FC, wijziging → "bewaar opnieuw" → bijgewerkt, muziekkaart met QR), praatplaat in klas (opdrachtkaart, pin + zoom, plek verzetten → terug naar podium met zelfde werk), nagebootste inlevering (versie 1 → wijziging → "lever versie 2 in", peer ontgrendeld, docentfeedback-stap), storyboard met strip, klascode-venster (onbekende code → melding), Engels. **Niet getest tegen de server:** echt inleveren, feedback klasgenoten (batch ophalen + sterren rechts), "Heb je een klascode?" met een echte klas |
+| 21-10-2026 | 3.1–3.3 titelinstelling, Engelse data | 99fb476, 2b0e129 | tsc ✓ · 462 tests ✓ (5 nieuw) · lint ✓ · browser: klas met instelling uit → titel automatisch, kop alleen-lezen met slot, stap "Je docent kiest de titels automatisch". **Niet getest:** de schakelaar in ClassDetail (vraagt een docentlogin en de migratie) |
