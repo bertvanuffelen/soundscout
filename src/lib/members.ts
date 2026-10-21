@@ -12,28 +12,33 @@
 import { getSupabase } from './supabase';
 import { logger } from '../utils/logger';
 import { sanitizeError } from '../utils/errorSanitize';
+import { matchesError, ERR_RATE_LIMIT } from './supabaseErrors';
 import { generateMultipleNames } from '../utils/randomNames';
 import i18n from '../i18n';
 
-export const MEMBER_CODE_PATTERN = /^[A-Z]{2}\d{4}$/;
+/** Formaat ABC1234 (migratie 042): 7 tekens, botst nooit met andere codes */
+export const MEMBER_CODE_PATTERN = /^[A-Z]{3}\d{4}$/;
 
-/** "LK4827" → "LK-4827" (zo staat hij op het kaartje) */
+/** "ABC1234" → "ABC-1234" (zo staat hij op het kaartje) */
 export function formatMemberCode(code: string): string {
-  return MEMBER_CODE_PATTERN.test(code) ? `${code.slice(0, 2)}-${code.slice(2)}` : code;
+  return MEMBER_CODE_PATTERN.test(code) ? `${code.slice(0, 3)}-${code.slice(3)}` : code;
 }
 
 export type MemberLoginResult =
-  | { status: 'ok'; memberId: string; pseudonym: string; classId: string; className: string; classCode: string; expiresAt: string; latestSaveCode: string | null }
-  | { status: 'expired' | 'inactive' };
+  | { status: 'ok'; memberId: string; pseudonym: string; classId: string; className: string; classCode: string; expiresAt: string; hasWork: boolean }
+  | { status: 'expired' | 'inactive' }
+  /** Te veel pogingen (rem van de server) — "even druk", niet "niet gevonden" (M1) */
+  | { status: 'busy' }
+  | { status: 'error' };
 
-/** Leerling logt in. `null` = geen leerlingcode (probeer dan de bewaarcode). */
+/** Leerling logt in. `null` = deze code bestaat niet. */
 export async function loginWithMemberCode(code: string): Promise<MemberLoginResult | null> {
   const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('login_with_member_code', { p_code: code });
   if (error) {
-    // Migratie nog niet gedraaid, of tijdelijke fout: val terug op de bewaarcode
     logger.warn('login_with_member_code mislukt:', sanitizeError(error));
-    return null;
+    if (matchesError(error, ERR_RATE_LIMIT)) return { status: 'busy' };
+    return { status: 'error' };
   }
   const row = Array.isArray(data) ? data[0] : null;
   if (!row) return null;
@@ -46,8 +51,35 @@ export async function loginWithMemberCode(code: string): Promise<MemberLoginResu
     className: row.class_name,
     classCode: String(row.class_code).trim(),
     expiresAt: row.expires_at,
-    latestSaveCode: row.latest_save_code ?? null,
+    hasWork: row.has_work === true,
   };
+}
+
+/**
+ * Laatste werk van dit kind: bewaarcode + bestaand geheim (migratie 042).
+ * Zonder claim, zodat het eerste apparaat zijn schrijfrecht houdt.
+ */
+export async function openMemberLatestWork(code: string): Promise<{ submissionId: string; saveCode: string; saveSecret: string } | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase.rpc('open_member_latest_work', { p_code: code });
+  if (error) {
+    logger.warn('open_member_latest_work mislukt:', sanitizeError(error));
+    throw new Error(i18n.t(matchesError(error, ERR_RATE_LIMIT) ? 'share.classBusy' : 'share.lookupError'));
+  }
+  const row = Array.isArray(data) ? data[0] : null;
+  if (!row?.save_code || !row.save_secret) return null;
+  return { submissionId: row.submission_id, saveCode: row.save_code, saveSecret: row.save_secret };
+}
+
+/** Staat migratie 042 erin? Zonder die versie blijft het docentblok verborgen. */
+export async function memberCodesReady(): Promise<boolean> {
+  try {
+    const supabase = await getSupabase();
+    const { data, error } = await supabase.rpc('member_codes_version');
+    return !error && typeof data === 'number' && data >= 2;
+  } catch {
+    return false;
+  }
 }
 
 /** Koppel een ingeleverde inzending aan de leerlingcode (stil, best effort) */
@@ -109,6 +141,8 @@ function mapMember(row: RawMember): ClassMember {
  * 038 niet gedraaid): dan toont de docent-UI het blok niet.
  */
 export async function getClassMembers(classId: string): Promise<ClassMember[] | null> {
+  // Zwakke codes (vóór 042) mogen nooit ontstaan: zonder versie 2 geen blok
+  if (!(await memberCodesReady())) return null;
   const supabase = await getSupabase();
   const { data, error } = await supabase.rpc('get_class_members', { p_class_id: classId });
   if (error) {

@@ -65,14 +65,19 @@ export default function AssignmentLandingScreen() {
   const [isContinuing, setIsContinuing] = useState(false);
   const handleContinueLatest = useCallback(async () => {
     const member = pending?.member;
-    if (!member?.latestSaveCode) return;
+    if (!member?.hasWork) return;
     setIsContinuing(true);
     setError(null);
     try {
-      const { loadSavedComposition } = await import('../../lib/submissions');
-      const saved = await loadSavedComposition(member.latestSaveCode);
+      const [{ loadSavedComposition }, { openMemberLatestWork }] = await Promise.all([
+        import('../../lib/submissions'),
+        import('../../lib/members'),
+      ]);
+      const work = await openMemberLatestWork(member.code);
+      if (!work) throw new Error('not found');
+      const saved = await loadSavedComposition(work.saveCode);
       if (!saved) throw new Error('not found');
-      await openSavedComposition(saved, member.latestSaveCode, 'studio');
+      await openSavedComposition(saved, work.saveCode, 'studio', { existingSecret: work.saveSecret });
       // De herstelde klassessie krijgt de identiteit weer mee
       const session = useAppStore.getState().classSession;
       if (session) useAppStore.setState({ classSession: { ...session, member: { code: member.code, pseudonym: member.pseudonym } } });
@@ -196,7 +201,7 @@ export default function AssignmentLandingScreen() {
             <Button variant="ghost" onClick={goToStart} disabled={isStarting} className="md:text-text-main md:hover:bg-neutral-100">
               {t('assignmentLanding.back')}
             </Button>
-            {pending.member?.latestSaveCode && (
+            {pending.member?.hasWork && (
               <Button variant="secondary" onClick={() => guard(handleContinueLatest)} disabled={isStarting || isContinuing} isLoading={isContinuing}>
                 {t('members.continueLatest')}
               </Button>

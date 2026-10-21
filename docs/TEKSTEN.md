@@ -742,7 +742,7 @@ _Stand: 1899 teksten in 51 secties._
 | `share.codeKinds.classLabel` | 4 cijfers | 4 digits |
 | `share.codeKinds.classText` | klascode van je docent | class code from your teacher |
 | `share.codeKinds.saveLabel` | 6 tekens | 6 characters |
-| `share.codeKinds.saveText` | bewaarcode of leerlingcode: verder met je soundscape | save code or student code: keep working on your soundscape |
+| `share.codeKinds.saveText` | bewaarcode: verder met je soundscape | save code: keep working on your soundscape |
 | `share.codeKinds.listenLabel` | 8 tekens | 8 characters |
 | `share.codeKinds.listenText` | luistercode: luister naar een soundscape | listening code: listen to a soundscape |
 

@@ -561,7 +561,7 @@ export async function startAnotherForCurrentAssignment(): Promise<'ok' | 'error'
 
   const result = await lookupAndRouteAssignment(
     classSession.classCode,
-    classSession.member ? { ...classSession.member, latestSaveCode: null } : null,
+    classSession.member ? { ...classSession.member, hasWork: false } : null,
   );
   return result === 'ok' ? 'ok' : 'error';
 }
@@ -680,14 +680,19 @@ export async function openSavedComposition(
   saved: SavedOnlineComposition,
   saveCode: string,
   destination: 'studio' | 'stage',
+  options: { existingSecret?: string } = {},
 ): Promise<void> {
-  const { claimSavedComposition } = await import('../lib/submissions');
-
-  // Claim eerst (genereert nieuwe secret voor dit apparaat)
-  const newSecret = await claimSavedComposition(saveCode, saved.student_name);
+  // Met een leerlingcode (042) krijgen we het bestaande geheim: niet claimen,
+  // dan houdt het eerste apparaat zijn schrijfrecht. Anders: claim (nieuw
+  // geheim voor dit apparaat).
+  let secret = options.existingSecret;
+  if (!secret) {
+    const { claimSavedComposition } = await import('../lib/submissions');
+    secret = await claimSavedComposition(saveCode, saved.student_name);
+  }
   // Hetzelfde geheim geeft dit apparaat het recht de klas-inzending bij te
   // werken (migratie 036): de server vergelijkt met save_secret van de rij.
-  storageService.setSubmissionSecret(saved.id, newSecret);
+  storageService.setSubmissionSecret(saved.id, secret);
 
   // Schone lei (B21): context van een eerder geopende compositie mag niet
   // doorlekken. Anders overschrijft "Opslaan" die andere lokale compositie
@@ -753,7 +758,7 @@ export async function openSavedComposition(
     saved.composition_data,
     saved.composition_name,
     saveCode,
-    newSecret,
+    secret,
     destination,
   );
 }

@@ -26,7 +26,7 @@ export interface PendingAssignment {
   classCode: string;
   assignment: ActiveAssignment | null;
   /** Ingelogd met een leerlingcode (fase 4.2): identiteit + laatste werk */
-  member?: (ClassMemberIdentity & { latestSaveCode: string | null }) | null;
+  member?: (ClassMemberIdentity & { hasWork: boolean }) | null;
 }
 
 export interface AppStore {

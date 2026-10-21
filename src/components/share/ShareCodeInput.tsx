@@ -89,29 +89,35 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
           return;
         }
 
-        // 1a. Twee letters + vier cijfers → eerst als leerlingcode (fase 4.2).
-        //     Niet gevonden (of migratie 038 nog niet gedraaid) → bewaarcode.
+        // 1a. Leerlingcode ABC-1234 (7 tekens, migratie 042)
         if (MEMBER_CODE_PATTERN.test(code)) {
           const login = await loginWithMemberCode(code);
           if (signal.aborted) return;
-          if (login && login.status !== 'ok') {
+          if (!login) {
+            setError(t('share.codeNotFound'));
+            return;
+          }
+          if (login.status === 'busy' || login.status === 'error') {
+            // Rem of netwerk (M1): eerlijk zeggen, niet "niet gevonden"
+            setError(t(login.status === 'busy' ? 'share.classBusy' : 'share.lookupError'));
+            return;
+          }
+          if (login.status !== 'ok') {
             setError(t('members.notActive'));
             return;
           }
-          if (login && login.status === 'ok') {
-            const result = await lookupAndRouteAssignment(login.classCode, {
-              code,
-              pseudonym: login.pseudonym,
-              latestSaveCode: login.latestSaveCode,
-            });
-            if (signal.aborted) return;
-            if (result === 'ok') {
-              setCode('');
-              return;
-            }
-            setError(t(result === 'busy' ? 'share.classBusy' : 'share.lookupError'));
+          const result = await lookupAndRouteAssignment(login.classCode, {
+            code,
+            pseudonym: login.pseudonym,
+            hasWork: login.hasWork,
+          });
+          if (signal.aborted) return;
+          if (result === 'ok') {
+            setCode('');
             return;
           }
+          setError(t(result === 'busy' ? 'share.classBusy' : 'share.lookupError'));
+          return;
         }
 
         // 1. Als 6 karakters → probeer als bewaarcode (#52)

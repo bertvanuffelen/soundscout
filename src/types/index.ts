@@ -88,7 +88,7 @@ export interface ClassSession {
 
 /** Leerlingcode + vaste schuilnaam (fase 4.2, ontwerp LEERLING-CODES) */
 export interface ClassMemberIdentity {
-  /** Code zonder streepje, bijv. "LK4827" */
+  /** Code zonder streepje, bijv. "ABC1234" */
   code: string;
   pseudonym: string;
 }
