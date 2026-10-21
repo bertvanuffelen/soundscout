@@ -104,7 +104,9 @@ export function StagePlayback() {
       {/* Playback controls */}
       <div className="flex items-center gap-4">
         <button
+          type="button"
           onClick={isPlaying ? handleStop : handlePlay}
+          aria-label={isPlaying ? t('transport.stop') : t('transport.play')}
           className={cn(
             'w-16 h-16 sm:w-20 sm:h-20 flex items-center justify-center rounded-full transition-all cursor-pointer',
             'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 text-white',
@@ -115,7 +117,9 @@ export function StagePlayback() {
           {isPlaying ? <Square className="w-6 h-6 sm:w-8 sm:h-8" /> : <Play className="w-6 h-6 sm:w-8 sm:h-8 ml-1" />}
         </button>
         <button
+          type="button"
           onClick={handlePlayAgain}
+          aria-label={t('stage.playAgain')}
           className={cn(
             'w-12 h-12 sm:w-14 sm:h-14 flex items-center justify-center rounded-full transition-all cursor-pointer',
             'bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 text-neutral-700',
@@ -128,12 +132,18 @@ export function StagePlayback() {
         </button>
       </div>
 
-      {/* Now playing indicator */}
-      {isPlaying && (
-        <p className="text-accent-600 text-sm font-semibold animate-pulse">
-          {t('stage.nowPlaying')}
-        </p>
-      )}
+      {/* Now playing indicator. Altijd een vaste regel (B5): voorheen
+          verschoof alles eronder 30 px zodra de tekst verscheen, waardoor
+          leerlingen naast "Opslaan & Delen" klikten. */}
+      <p
+        aria-live="polite"
+        className={cn(
+          'h-5 text-accent-600 text-sm font-semibold',
+          isPlaying ? 'animate-pulse' : 'invisible',
+        )}
+      >
+        {isPlaying ? t('stage.nowPlaying') : ''}
+      </p>
     </>
   );
 }

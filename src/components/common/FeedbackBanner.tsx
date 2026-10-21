@@ -20,7 +20,9 @@ export function FeedbackBanner() {
   return (
     <div
       role="status"
-      className="mx-2 sm:mx-4 mt-2 flex items-center gap-3 rounded-2xl border-2 border-accent-200 bg-accent-50 px-4 py-3 shadow-sm"
+      /* w-full + min-w-0 (B1): in de gecentreerde podiumkaart groeide de
+         banner anders mee met zijn tekst en liep hij op mobiel buiten beeld */
+      className="w-full min-w-0 mt-2 flex items-start gap-3 rounded-2xl border-2 border-accent-200 bg-accent-50 px-4 py-3 shadow-sm"
     >
       <StickerIcon sticker={feedback.sticker} fallback size={28} className="shrink-0" />
       <div className="flex-1 min-w-0">
@@ -42,7 +44,7 @@ export function FeedbackBanner() {
           </p>
         )}
         {feedback.text && (
-          <p className="text-text-muted text-sm truncate sm:whitespace-normal">
+          <p className="text-text-muted text-sm whitespace-normal break-words">
             &ldquo;{feedback.text}&rdquo;
           </p>
         )}

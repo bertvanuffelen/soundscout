@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1729 teksten in 47 secties._
+_Stand: 1730 teksten in 47 secties._
 
 ## app
 
@@ -421,7 +421,7 @@ _Stand: 1729 teksten in 47 secties._
 | `stage.colClass` | Voor de klas | For your class |
 | `stage.colShare` | Delen met anderen | Share with others |
 | `stage.actionsSaveHint` | Op dit apparaat | On this device |
-| `stage.classNotYetSubmitted` | Klik op Opslaan om in te leveren bij {{className}}. | Click Save to submit to {{className}}. |
+| `stage.classNotYetSubmitted` | Klik op Lever in om in te leveren bij {{className}}. | Click Hand in to send it to {{className}}. |
 | `stage.teacherOnly` | Alleen zichtbaar voor docenten | Visible to teachers only |
 | `stage.actionsOnlineHint` | Verder werken op een ander apparaat | Continue working on another device |
 | `stage.actionsShareHint` | Maak een luisterlink voor iedereen | Create a listen link for anyone |
@@ -429,7 +429,7 @@ _Stand: 1729 teksten in 47 secties._
 | `stage.actionsExportMp3Hint` | Download als audiobestand | Download as audio file |
 | `stage.actionsExportVideoHint` | Download als video met afbeeldingen | Download as video with images |
 | `stage.actionsTemplateHint` | Maak een opdracht voor leerlingen | Create an assignment for students |
-| `stage.actionsNameRequired` | Geef je compositie eerst een naam | Give your composition a name first |
+| `stage.actionsNameRequired` | Geef je compositie eerst een naam (bovenaan het podium). Daarna kun je opslaan en delen. | Give your composition a name first (at the top of the stage). Then you can save and share. |
 | `stage.saveQuotaError` | Opslagruimte vol — verwijder een oude compositie om ruimte te maken. | Storage full — delete an old composition to free up space. |
 | `stage.saveGenericError` | Opslaan mislukt. Probeer het opnieuw. | Save failed. Please try again. |
 | `stage.syncSuccess` | Online kopie bijgewerkt | Online copy updated |
@@ -437,6 +437,7 @@ _Stand: 1729 teksten in 47 secties._
 | `stage.presentButton` | Presenteren op het digibord | Present on the whiteboard |
 | `stage.actionsPresentHint` | Laat je compositie groot zien en horen | Show and play your composition full screen |
 | `stage.submitToClass` | Lever in | Hand in |
+| `stage.resubmitToClass` | Opnieuw inleveren | Hand in again |
 | `stage.submitToClassHint` | Sla op en stuur naar {{className}} | Save and send to {{className}} |
 | `stage.exportKeepTabOpen` | Bezig met exporteren — houd dit tabblad zichtbaar, anders pauzeert de browser de export. | Exporting — keep this tab visible, otherwise the browser pauses the export. |
 | `stage.exportReadyMp3` | MP3 gedownload! | MP3 downloaded! |
