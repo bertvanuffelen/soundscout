@@ -31,6 +31,7 @@ import { Button, Modal } from '../ui';
 import { ShareWithTeacherModal, ShareLinkModal, SaveOnlineModal } from '../share';
 import { storageService } from '../../services/StorageService';
 import { audioService } from '../../services/AudioService';
+import { buildCompositionData } from '../../utils/buildCompositionData';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { StageActionsModal } from './StageActionsModal';
 import { PresentationSurface } from '../presentation/PresentationSurface';
@@ -49,9 +50,7 @@ export function StageView() {
   const classSession = useAppStore((s) => s.classSession);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
-  const bpm = useTimelineStore((s) => s.bpm);
   const totalBeats = useTimelineStore((s) => s.totalBeats);
-  const isLooping = useTimelineStore((s) => s.isLooping);
   const sections = useTimelineStore((s) => s.sections);
   const { stopAll } = useAudioEngine();
 
@@ -62,8 +61,6 @@ export function StageView() {
 
   // Presenteren op het digibord (fase 2): snapshot van de live compositie
   // in het universele presentatiescherm — puur weergave, geen opslag
-  // (activePraatplaat wordt verderop al gelezen voor de succes-modal)
-  const praatplaatPosition = useAppStore((s) => s.praatplaatPosition);
   const [showPresentation, setShowPresentation] = useState(false);
 
   // Peer-review "Luister naar klasgenoten" (migratie 027): beschikbaar zodra
@@ -571,17 +568,7 @@ export function StageView() {
             id: 'stage-live',
             student_name: '',
             composition_name: compositionName.trim() || t('stage.defaultName'),
-            composition_data: {
-              tracks,
-              bpm,
-              totalBeats,
-              isLooping,
-              samples: librarySamples,
-              sections: sections.length > 0 ? sections : undefined,
-              storyboardId: activeStoryboard?.id,
-              praatplaat: activePraatplaat ?? undefined,
-              praatplaatPosition: praatplaatPosition ?? undefined,
-            },
+            composition_data: buildCompositionData(),
             created_at: new Date().toISOString(),
           }]}
           mode="public"
@@ -605,15 +592,7 @@ export function StageView() {
       {showSaveOnlineModal && (
         <SaveOnlineModal
           compositionName={compositionName.trim() || t('stage.defaultName')}
-          compositionData={{
-            tracks,
-            bpm,
-            totalBeats,
-            isLooping,
-            samples: librarySamples,
-            sections: sections.length > 0 ? sections : undefined,
-            storyboardId: activeStoryboard?.id,
-          }}
+          compositionData={buildCompositionData()}
           onClose={() => setShowSaveOnlineModal(false)}
           onSaved={(saveCode, saveSecret) => {
             storageService.setSaveOnlineInfo(saveCode, saveSecret, compositionName.trim());
@@ -625,15 +604,7 @@ export function StageView() {
       {showShareLinkModal && (
         <ShareLinkModal
           compositionName={compositionName.trim() || t('stage.defaultName')}
-          compositionData={{
-            tracks,
-            bpm,
-            totalBeats,
-            isLooping,
-            samples: librarySamples,
-            sections: sections.length > 0 ? sections : undefined,
-            storyboardId: activeStoryboard?.id,
-          }}
+          compositionData={buildCompositionData()}
           onClose={() => setShowShareLinkModal(false)}
         />
       )}
@@ -641,15 +612,7 @@ export function StageView() {
       {/* Save as template modal */}
       {showTemplateModal && (
         <SaveAsTemplateModal
-          compositionData={{
-            tracks,
-            bpm,
-            totalBeats,
-            isLooping,
-            samples: librarySamples,
-            sections: sections.length > 0 ? sections : undefined,
-            storyboardId: activeStoryboard?.id,
-          }}
+          compositionData={buildCompositionData({ includePraatplaat: false })}
           defaultName={compositionName.trim() || t('stage.defaultName')}
           onClose={() => setShowTemplateModal(false)}
         />
@@ -659,15 +622,7 @@ export function StageView() {
       {showShareModal && (
         <ShareWithTeacherModal
           compositionName={compositionName.trim() || t('stage.defaultName')}
-          compositionData={{
-            tracks,
-            bpm,
-            totalBeats,
-            isLooping,
-            samples: librarySamples,
-            sections: sections.length > 0 ? sections : undefined,
-            storyboardId: activeStoryboard?.id,
-          }}
+          compositionData={buildCompositionData()}
           onClose={() => setShowShareModal(false)}
           onSuccess={() => setShowShareModal(false)}
         />
