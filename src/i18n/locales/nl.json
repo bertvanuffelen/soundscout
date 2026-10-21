@@ -1326,7 +1326,13 @@
               "text": "Template van docent"
             },
             "De leerling bouwt verder op een compositie die jij hebt gemaakt, met optionele slotopties. Zie het hoofdstuk 'Templates maken'.",
-            "Aan elke opdracht kun je een opdrachtkaart met instructies koppelen die de leerling vóór het starten ziet — zie 'Opdrachtkaarten maken'."
+            "Aan elke opdracht kun je een opdrachtkaart met instructies koppelen die de leerling vóór het starten ziet — zie 'Opdrachtkaarten maken'.",
+            {
+              "type": "heading",
+              "text": "Titels en live wijzigingen"
+            },
+            "Bij de actieve opdracht kun je 'Leerlingen typen zelf een titel' uitzetten. De app kiest dan zelf een titel, zonder invoerveld; handig om te voorkomen dat kinderen hun naam in de titel zetten.",
+            "Wijzig je tijdens de les de opdrachtkaart, de tijdsduur, de peer-feedback of de titelinstelling, dan nemen de leerlingen die al bezig zijn dat binnen ongeveer een minuut over. Activeer je een andere opdracht, dan zien ze een melding en kunnen ze hun soundscape afmaken of een nieuwe beginnen."
           ]
         },
         "assignment-cards": {
@@ -1410,7 +1416,7 @@
               "type": "heading",
               "text": "Template aanmaken"
             },
-            "Bouw een compositie op in de studio en kies vervolgens 'Opslaan als template' (in het Stage-scherm, onder 'Delen & Exporteren'). Je kunt een naam en beschrijving geven, en slotopties kiezen: wil je dat leerlingen de bestaande clips kunnen aanpassen? Mogen ze tracks toevoegen? Wordt de sample-bibliotheek vastgezet?",
+            "Bouw een compositie op in de studio en ga naar het podium. Ben je ingelogd, dan zie je bovenaan een docentbalk met 'Opslaan als opdracht'. Je kunt een naam en beschrijving geven, en slotopties kiezen: wil je dat leerlingen de bestaande clips kunnen aanpassen? Mogen ze tracks toevoegen? Wordt de sample-bibliotheek vastgezet?",
             {
               "type": "heading",
               "text": "Template activeren"
@@ -1472,28 +1478,46 @@
               "type": "heading",
               "text": "Wat kun je doen?"
             },
-            "Per inzending kun je de compositie beluisteren, bekijken in detail (timeline-weergave), en desgewenst exporteren naar MP3. Zo kun je werk van leerlingen beoordelen, feedback geven, of composities gebruiken in een klassenpresentatie."
+            "Per inzending kun je de compositie beluisteren, bekijken in detail (timeline-weergave), en desgewenst exporteren naar MP3. Zo kun je werk van leerlingen beoordelen, feedback geven, of composities gebruiken in een klassenpresentatie.",
+            {
+              "type": "heading",
+              "text": "Versies en opnieuw inleveren"
+            },
+            "Een leerling kan na feedback verder werken en opnieuw inleveren ('Lever versie 2 in'). Je ziet altijd de nieuwste versie; de schuilnaam blijft hetzelfde. Een leerling kan ook 'Nog één voor deze opdracht' maken: dat wordt een aparte inzending."
           ]
         },
         "save-codes": {
-          "title": "Bewaarcodes voor leerlingen",
+          "title": "Codes voor leerlingen",
           "content": [
             "Leerlingen werken vaak op gedeelde apparaten. Met bewaarcodes kunnen ze verder werken op een ander apparaat — bijvoorbeeld thuis afmaken wat ze op school begonnen zijn.",
             {
               "type": "heading",
               "text": "Soorten codes"
             },
-            "Drie soorten codes die leerlingen kunnen tegenkomen: een 4-cijferige klascode (om aan jouw klas te koppelen), een 6-tekens bewaarcode (om een eigen compositie op te slaan en later verder te werken), en een 8-tekens share- of template-code (om alleen te luisteren of een template te openen).",
+            "Vier soorten codes die leerlingen kunnen tegenkomen: een 4-cijferige klascode (om aan jouw klas te koppelen), een leerlingcode zoals ABC-1234 (optioneel; die zet jij klaar, zie hieronder), een 6-tekens bewaarcode (om een eigen soundscape op te slaan en later verder te werken), en een 8-tekens share- of template-code (om alleen te luisteren of een template te openen).",
             {
               "type": "heading",
               "text": "Hoe werkt het?"
             },
-            "Een bewaarcode maakt een leerling in de studio of op het podium via 'Online opslaan'. De app toont een 6-tekens code en een QR-code; die schrijft de leerling op of scant hij op het andere apparaat. Op dat andere apparaat voert de leerling de code in op het startscherm om verder te werken.",
+            "Een bewaarcode maakt een leerling op het podium in de stap 'Bewaar je soundscape' met de knop 'Bewaar'. Dat gaat zonder naam in te vullen. De app toont een muziekkaart met de 6-tekens code en een QR-code; die schrijft de leerling op of scant hij op het andere apparaat. Op dat andere apparaat voert de leerling de code in op het startscherm om verder te werken.",
             {
               "type": "heading",
               "text": "Verlopen"
             },
-            "Composities met een bewaarcode verlopen automatisch na 60 dagen inactiviteit. Als een leerling tussendoor verder werkt, wordt die teller gereset."
+            "Soundscapes met een bewaarcode buiten de klas verlopen automatisch na 60 dagen inactiviteit. Als een leerling tussendoor verder werkt, wordt die teller gereset. Werk dat in de klas is ingeleverd, volgt de bewaartermijn van een schooljaar.",
+            {
+              "type": "heading",
+              "text": "Leerlingcodes (optioneel)"
+            },
+            "Met leerlingcodes krijgt elk kind een eigen code voor dit schooljaar, bijvoorbeeld ABC-1234. Het kind heeft dan altijd dezelfde schuilnaam, hoeft de klascode niet meer in te voeren en kan op elk apparaat verder werken met 'Verder met je laatste soundscape'. De klascode blijft gewoon werken, bijvoorbeeld voor een invaller of een kind zonder kaartje.",
+            "Je maakt de codes in het klas-detailscherm, in het blok 'Leerlingcodes': kies het aantal en klik op 'Maak codes'. Met 'Print kaartjes' krijg je per code een kaartje met de code, de schuilnaam en een regel waar je de echte naam op schrijft. Die naam staat alleen op papier bij jou; SoundScout slaat geen echte namen op.",
+            "Is een kaartje kwijt of wordt een code misbruikt? Kies 'Nieuwe code': het kind krijgt een nieuwe code, met dezelfde schuilnaam en hetzelfde werk. Met 'Zet uit' schakel je een code tijdelijk uit. Codes gelden tot 31 juli; met 'Bewaar voor volgend jaar' verleng je ze met een jaar. Verlopen codes worden na een jaar automatisch verwijderd, en een klas verwijderen wist ook de codes.",
+            "Een leerlingcode is net zo persoonlijk als een wachtwoord: vraag leerlingen het kaartje goed te bewaren en niet te delen. Na te veel foute pogingen vanaf één netwerk wordt dat netwerk tijdelijk geblokkeerd; een hele school achter één netwerk kan gewoon inloggen.",
+            {
+              "type": "heading",
+              "text": "Gedeelde computers"
+            },
+            "Op een gedeelde computer zie je soms het werk van de vorige leerling. Na het inleveren staat op het podium de knop 'Klaar, ik stop': die haalt het werk, de code en de feedback van dit apparaat. Het ingeleverde werk blijft veilig bij jou staan. Werk dat nog niet is afgerond, vergeet de app na 12 uur. Vraag leerlingen op een computerlokaal om altijd 'Klaar, ik stop' te kiezen als ze weggaan."
           ]
         },
         "classroom-tips": {
@@ -1760,7 +1784,7 @@
       "deleteTitle": "Compositie verwijderen",
       "deleteConfirm": "Weet je zeker dat je deze compositie wilt verwijderen?",
       "deleteError": "Kon niet verwijderen",
-      "instruction": "Leerlingen kunnen hun compositie delen via Podium → Opslaan → Deel met docent en de code {{code}} invoeren.",
+      "instruction": "Leerlingen voeren de klascode {{code}} in op het startscherm ('Ik heb een code') en leveren in vanaf het podium met 'Lever in'.",
       "submissionsTitle": "Inzendingen van leerlingen",
       "submissionsDescription": "Composities die leerlingen hebben ingeleverd via de klascode.",
       "tabSubmitted": "Ingeleverd ({{count}})",
