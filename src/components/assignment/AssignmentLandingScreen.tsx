@@ -219,14 +219,22 @@ export default function AssignmentLandingScreen() {
       </div>
 
       {unsavedModal}
-      <Modal isOpen={showIntro} onClose={handleIntroDone} title={t('start.introTitle')} size="xl">
-        <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface mb-4">
+      <Modal
+        isOpen={showIntro}
+        onClose={handleIntroDone}
+        title={t('start.introTitle')}
+        size="xl"
+        showClose
+        footer={(
+          <div className="flex justify-center">
+            <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
+              {t('start.introStart')}
+            </Button>
+          </div>
+        )}
+      >
+        <div className="mx-auto rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface" style={{ maxWidth: 'min(100%, calc((100dvh - 330px) * 1.78))' }}>
           <OnboardingAnimation />
-        </div>
-        <div className="flex justify-center">
-          <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
-            {t('start.introStart')}
-          </Button>
         </div>
       </Modal>
     </div>

@@ -602,14 +602,18 @@ export function StartScreen() {
         onClose={handleIntroDone}
         title={t('start.introTitle')}
         size="xl"
+        showClose
+        footer={(
+          <div className="flex justify-center">
+            <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
+              {t('start.introStart')}
+            </Button>
+          </div>
+        )}
       >
-        <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface mb-4">
+        {/* Lager scherm = smallere animatie, zodat alles in beeld past (E11) */}
+        <div className="mx-auto rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface" style={{ maxWidth: 'min(100%, calc((100dvh - 330px) * 1.78))' }}>
           <OnboardingAnimation />
-        </div>
-        <div className="flex justify-center">
-          <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
-            {t('start.introStart')}
-          </Button>
         </div>
       </Modal>
 

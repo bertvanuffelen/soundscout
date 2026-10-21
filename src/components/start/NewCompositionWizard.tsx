@@ -77,6 +77,16 @@ export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, 
       onClose={onClose}
       title={step === 'mode' ? t('composeMode.title') : t(step2TitleKey)}
       size="xl"
+      showClose
+      footer={step === 'mode' ? (
+        // Vast onderaan (E11): "Volgende" viel op een telefoon onder de rand
+        <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3">
+          <Button variant="primary" size="lg" onClick={handleNext} className="inline-flex items-center justify-center gap-1.5">
+            {t('composeMode.next')}
+            <ArrowRight className="w-5 h-5" />
+          </Button>
+        </div>
+      ) : undefined}
     >
       {step === 'mode' ? (
         <div className="flex flex-col gap-5">
@@ -117,14 +127,8 @@ export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, 
             })}
           </div>
 
-          {/* Footer: bevestigen. "Ik heb een code" staat alleen op het
-              startscherm (O8: één ingang per actie) */}
-          <div className="flex flex-col-reverse sm:flex-row sm:items-center sm:justify-end gap-3 pt-1">
-            <Button variant="primary" size="lg" onClick={handleNext} className="inline-flex items-center justify-center gap-1.5">
-              {t('composeMode.next')}
-              <ArrowRight className="w-5 h-5" />
-            </Button>
-          </div>
+          {/* "Volgende" staat in de vaste voetregel van de modal. "Ik heb een
+              code" staat alleen op het startscherm (O8: één ingang per actie) */}
         </div>
       ) : (
         <div className="flex flex-col gap-4">
