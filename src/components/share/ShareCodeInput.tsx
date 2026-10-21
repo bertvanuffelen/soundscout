@@ -115,6 +115,9 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
         const template = await getTemplateByCode(code);
         if (signal.aborted) return;
         if (template) {
+          // Schone lei (B21): geen klas-sessie, feedback of compositie-id
+          // van een eerder geopende compositie meenemen in dit template.
+          useAppStore.getState().resetCompositionContext();
           await initializeFromTemplate(template);
           setCode('');
           return;
