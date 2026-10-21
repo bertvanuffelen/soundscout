@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1886 teksten in 50 secties._
+_Stand: 1888 teksten in 50 secties._
 
 ## app
 
@@ -596,6 +596,8 @@ _Stand: 1886 teksten in 50 secties._
 | `compositions.storageWarning` | Soundscapes worden opgeslagen in deze browser. Wis je je browsergegevens, dan ben je ze kwijt. | Soundscapes are saved in this browser. If you clear your browser data, they will be lost. |
 | `compositions.corruptLoadWarning_one` | {{count}} soundscape kon niet worden geladen. | {{count}} soundscape could not be loaded. |
 | `compositions.corruptLoadWarning_other` | {{count}} soundscapes konden niet worden geladen. | {{count}} soundscapes could not be loaded. |
+| `compositions.code` | Code | Code |
+| `compositions.noClass` | Zonder klas | No class |
 
 ## locations
 

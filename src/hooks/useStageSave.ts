@@ -193,7 +193,7 @@ export function useStageSave() {
       clientIdRef.current = returnedId;
       // Lokale kopie krijgt de inzending mee (heropenen = zelfde inzending)
       const compId = useAppStore.getState().currentCompositionId;
-      if (compId) storageService.updateComposition(compId, { submissionId: returnedId, classSession: session });
+      if (compId) storageService.updateComposition(compId, { submissionId: returnedId, classSession: session, ...(saveCode ? { saveCode } : {}) });
       if (saveCode) {
         setClassSaveCode(saveCode);
         const existing = storageService.getClassFeedbackCode();
@@ -257,6 +257,8 @@ export function useStageSave() {
         });
         storageService.setSaveOnlineInfo(saveCode, saveSecret, name);
         setOnlineSaveCode(saveCode);
+        const compId = useAppStore.getState().currentCompositionId;
+        if (compId) storageService.updateComposition(compId, { saveCode });
         setVersionInfo(recordVersion(saveCode, fingerprint));
       }
     } catch (err) {

@@ -145,7 +145,7 @@ class StorageServiceImpl {
    */
   updateComposition(
     id: string,
-    updates: Partial<Pick<SavedComposition, 'name' | 'timeline' | 'samples' | 'classSession' | 'submissionId' | 'praatplaat' | 'praatplaatPosition' | 'storyboardId'>>
+    updates: Partial<Pick<SavedComposition, 'name' | 'timeline' | 'samples' | 'classSession' | 'submissionId' | 'praatplaat' | 'praatplaatPosition' | 'storyboardId' | 'saveCode'>>
   ): SavedComposition | null {
     const compositions = this.getCompositions();
     const index = compositions.findIndex((c) => c.id === id);

@@ -86,6 +86,11 @@ export function CompositionCard({
               {formatDuration(composition.metadata.duration)} •{' '}
               {composition.metadata.trackCount} {t('compositions.tracks')}
             </p>
+            {composition.saveCode && (
+              <p className="text-xs text-text-muted mt-0.5">
+                {t('compositions.code')} <span className="font-mono font-bold tracking-wider text-text-main">{composition.saveCode}</span>
+              </p>
+            )}
           </div>
 
           {/* Actions - always visible on touch, hover on desktop */}

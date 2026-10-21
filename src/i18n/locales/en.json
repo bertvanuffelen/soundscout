@@ -573,7 +573,9 @@
     "startNew": "Make a new soundscape",
     "storageWarning": "Soundscapes are saved in this browser. If you clear your browser data, they will be lost.",
     "corruptLoadWarning_one": "{{count}} soundscape could not be loaded.",
-    "corruptLoadWarning_other": "{{count}} soundscapes could not be loaded."
+    "corruptLoadWarning_other": "{{count}} soundscapes could not be loaded.",
+    "code": "Code",
+    "noClass": "No class"
   },
   "locations": {
     "boerderij": {

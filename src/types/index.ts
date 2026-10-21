@@ -394,6 +394,8 @@ export interface SavedComposition {
   praatplaat?: ActivePraatplaat;
   /** Position on the praatplaat (0-1 normalized), if applicable */
   praatplaatPosition?: PraatplaatPosition;
+  /** Bewaarcode waarmee je op een ander apparaat verder kunt (podium v4) */
+  saveCode?: string;
 }
 
 // --- Composition Data Transfer Object ---
