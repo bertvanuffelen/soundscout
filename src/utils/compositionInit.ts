@@ -11,7 +11,7 @@
 import { useThemeStore } from '../stores/themeStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
-import { useAppStore } from '../stores/appStore';
+import { useAppStore, type PendingAssignment } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
 import { getThemeStoryboards, findStoryboardById, getTheme, DEFAULT_THEME_ID } from '../data/themes';
 import { getActiveAssignment, AssignmentLookupError, type ActiveAssignment } from '../lib/assignments';
@@ -324,7 +324,10 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
  */
 export type AssignmentLookupResult = 'ok' | 'notFound' | 'busy' | 'error';
 
-export async function lookupAndRouteAssignment(classCode: string): Promise<AssignmentLookupResult> {
+export async function lookupAndRouteAssignment(
+  classCode: string,
+  member: PendingAssignment['member'] = null,
+): Promise<AssignmentLookupResult> {
   try {
     const assignment = await getActiveAssignment(classCode);
     if (!assignment) {
@@ -333,7 +336,7 @@ export async function lookupAndRouteAssignment(classCode: string): Promise<Assig
       const klass = await validateClassCode(classCode).catch(() => undefined);
       if (klass === null) return 'notFound';
     }
-    useAppStore.getState().goToAssignmentLanding({ classCode, assignment });
+    useAppStore.getState().goToAssignmentLanding({ classCode, assignment, member });
     return 'ok';
   } catch (err) {
     logger.error('lookupAndRouteAssignment failed:', err);
@@ -355,6 +358,9 @@ export function classSessionFromAssignment(
     classId: assignment.classId,
     className: assignment.className,
     peerReview: assignment.peerReview,
+    card: assignment.card,
+    durationLabel: assignment.durationLabel,
+    studentsTypeTitle: assignment.studentsTypeTitle,
   };
   if (assignment.type === 'template' && assignment.template) {
     return { ...base, assignmentType: 'template', assignmentId: assignment.template.id, assignmentName: assignment.template.name };
@@ -391,6 +397,10 @@ export async function activatePendingAssignment(): Promise<void> {
   }
 
   const { classCode, assignment } = pendingAssignment;
+  // Leerlingcode (fase 4.2): identiteit gaat mee in de sessie
+  const memberIdentity = pendingAssignment.member
+    ? { code: pendingAssignment.member.code, pseudonym: pendingAssignment.member.pseudonym }
+    : undefined;
 
   // Wis bewaarcode-context (exclusief met klascode-flow)
   storageService.clearSaveOnlineInfo();
@@ -409,6 +419,10 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'template',
       assignmentId: assignment.template.id,
       assignmentName: assignment.template.name,
@@ -424,6 +438,10 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'praatplaat',
       assignmentId: assignment.praatplaat.id,
       assignmentName: assignment.praatplaat.name,
@@ -472,6 +490,10 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'storyboard',
       assignmentId: assignment.storyboard.ref,
       assignmentName: i18n.t(assignment.storyboard.nameKey),
@@ -489,6 +511,10 @@ export async function activatePendingAssignment(): Promise<void> {
       classId: assignment.classId,
       className: assignment.className,
       peerReview: assignment.peerReview,
+      card: assignment.card,
+      durationLabel: assignment.durationLabel,
+      studentsTypeTitle: assignment.studentsTypeTitle,
+      member: memberIdentity,
       assignmentType: 'free',
       assignmentId: assignment.free.themeId,
       assignmentName: assignment.free.themeName,
@@ -503,6 +529,41 @@ export async function activatePendingAssignment(): Promise<void> {
   }
 
   logger.warn('[activatePendingAssignment] Onbekend assignment-type', { type: assignment.type });
+}
+
+/**
+ * "Nog één voor deze opdracht" (A2): een nieuwe soundscape binnen dezelfde
+ * klas-opdracht, zonder de klas te verlaten.
+ * - Praatplaat: lege tijdlijn + nieuwe plek kiezen; de vorige inzending
+ *   blijft op de plaat staan.
+ * - Overige types: de opdracht opnieuw ophalen en naar het opdrachtscherm.
+ *   "Starten" daar initialiseert alles schoon, en eventuele wijzigingen van
+ *   de docent komen zo ook mee.
+ * Navigeert zelf; geeft 'error' terug als dat niet lukte.
+ */
+export async function startAnotherForCurrentAssignment(): Promise<'ok' | 'error'> {
+  const { classSession, activePraatplaat } = useAppStore.getState();
+  if (!classSession) return 'error';
+
+  if (classSession.assignmentType === 'praatplaat' && activePraatplaat) {
+    useTimelineStore.getState().resetTimeline();
+    useLibraryStore.getState().clearLibrary();
+    useAppStore.setState({
+      praatplaatPosition: null,
+      submissionId: null,
+      submissionSynced: false,
+      currentCompositionId: null,
+      compositionTitle: '',
+    });
+    useAppStore.getState().goToPraatplaatSelect();
+    return 'ok';
+  }
+
+  const result = await lookupAndRouteAssignment(
+    classSession.classCode,
+    classSession.member ? { ...classSession.member, hasWork: false } : null,
+  );
+  return result === 'ok' ? 'ok' : 'error';
 }
 
 /**
@@ -619,14 +680,19 @@ export async function openSavedComposition(
   saved: SavedOnlineComposition,
   saveCode: string,
   destination: 'studio' | 'stage',
+  options: { existingSecret?: string } = {},
 ): Promise<void> {
-  const { claimSavedComposition } = await import('../lib/submissions');
-
-  // Claim eerst (genereert nieuwe secret voor dit apparaat)
-  const newSecret = await claimSavedComposition(saveCode, saved.student_name);
+  // Met een leerlingcode (042) krijgen we het bestaande geheim: niet claimen,
+  // dan houdt het eerste apparaat zijn schrijfrecht. Anders: claim (nieuw
+  // geheim voor dit apparaat).
+  let secret = options.existingSecret;
+  if (!secret) {
+    const { claimSavedComposition } = await import('../lib/submissions');
+    secret = await claimSavedComposition(saveCode, saved.student_name);
+  }
   // Hetzelfde geheim geeft dit apparaat het recht de klas-inzending bij te
   // werken (migratie 036): de server vergelijkt met save_secret van de rij.
-  storageService.setSubmissionSecret(saved.id, newSecret);
+  storageService.setSubmissionSecret(saved.id, secret);
 
   // Schone lei (B21): context van een eerder geopende compositie mag niet
   // doorlekken. Anders overschrijft "Opslaan" die andere lokale compositie
@@ -692,7 +758,7 @@ export async function openSavedComposition(
     saved.composition_data,
     saved.composition_name,
     saveCode,
-    newSecret,
+    secret,
     destination,
   );
 }

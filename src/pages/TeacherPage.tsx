@@ -9,6 +9,7 @@
  */
 
 import { useState, type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/useAuth';
 import { useAppStore } from '../stores/appStore';
 import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherResetPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
@@ -35,6 +36,7 @@ function withLanguageSwitcher(node: ReactNode): ReactNode {
 }
 
 export function TeacherPage() {
+  const { t } = useTranslation();
   const { user, loading, passwordRecovery, clearPasswordRecovery } = useAuth();
   const goToStart = useAppStore((s) => s.goToStart);
 
@@ -54,7 +56,7 @@ export function TeacherPage() {
   if (loading) {
     return (
       <div className="min-h-screen bg-bg-app flex items-center justify-center">
-        <div className="text-text-muted text-lg">Laden...</div>
+        <div className="text-text-muted text-lg">{t('common.loading')}</div>
       </div>
     );
   }

@@ -9,6 +9,7 @@ import { logger } from './utils/logger';
 import { logUsageEvent } from './utils/usageStats';
 import { useLeaveGuard } from './hooks/useLeaveGuard';
 import { readSaveCodeFromHash } from './utils/saveCodeLink';
+import { startWorkInProgressPersistence } from './services/workInProgress';
 import { AuthProvider } from './contexts/AuthContext';
 import { ErrorBoundary } from './components/common/ErrorBoundary';
 import { FeatureErrorBoundary } from './components/common/FeatureErrorBoundary';
@@ -105,7 +106,6 @@ function AppContent() {
   // Update document title based on current screen
   useEffect(() => {
     const screenTitles: Record<string, string> = {
-      start: t('start.startGame'),
       map: t('map.title'),
       location: t('common.location'),
       studio: t('studio.title'),
@@ -114,21 +114,27 @@ function AppContent() {
       tutorial: t('tutorial.title'),
       'teacher-guide': t('teacher.guide.title'),
       compositions: t('compositions.title'),
-      teacher: 'Teacher Dashboard',
+      teacher: t('teacher.dashboard.title'),
       shared: 'SoundScout',
       'praatplaat-select': 'SoundScout',
       'assignment-landing': 'SoundScout',
       'shared-praatplaat': 'SoundScout',
     };
 
-    const screenTitle = screenTitles[currentScreen] || 'SoundScout';
-    document.title = `${screenTitle} — SoundScout`;
+    // Startscherm en schermen zonder eigen titel: gewoon "SoundScout" (O11;
+    // was "Start Spel — SoundScout" en elders "SoundScout — SoundScout")
+    const screenTitle = screenTitles[currentScreen];
+    document.title = screenTitle && screenTitle !== 'SoundScout' ? `${screenTitle} — SoundScout` : 'SoundScout';
   }, [currentScreen, t]);
 
   // Initialize theme on mount (reads URL param)
   useEffect(() => {
     initTheme();
   }, [initTheme]);
+
+  // Werk-in-uitvoering overleeft herladen (A1, B32): na initTheme, zodat het
+  // bewaarde thema het standaardthema overschrijft
+  useEffect(() => startWorkInProgressPersistence(), []);
 
   // Anonieme sessieteller (cookieloos, geen persoonsgegevens — zie usageStats)
   useEffect(() => {

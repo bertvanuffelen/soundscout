@@ -7,6 +7,7 @@
  */
 
 import { useEffect, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { X, Play, Pause, SkipBack } from 'lucide-react';
 
 interface ImageLightboxProps {
@@ -27,6 +28,7 @@ export function ImageLightbox({
   onPlayPause,
   onStop,
 }: ImageLightboxProps) {
+  const { t } = useTranslation();
   const hasTransport = onPlayPause !== undefined;
 
   const handleKeyDown = useCallback(
@@ -58,7 +60,7 @@ export function ImageLightbox({
       <button
         onClick={onClose}
         className="absolute top-3 right-3 sm:top-5 sm:right-5 z-10 w-10 h-10 flex items-center justify-center rounded-full bg-black/50 text-white/80 hover:text-white hover:bg-black/70 backdrop-blur-sm transition-colors"
-        aria-label="Close"
+        aria-label={t('common.close')}
       >
         <X className="w-5 h-5" />
       </button>

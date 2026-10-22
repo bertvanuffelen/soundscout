@@ -9,9 +9,10 @@ import { useTranslation } from 'react-i18next';
 import { X, Star } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { StickerIcon } from '../../utils/stickerMap';
+import { peerChipLabel } from '../../utils/peerChipLabel';
 
 export function FeedbackBanner() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const feedback = useAppStore((s) => s.receivedFeedback);
   const setReceivedFeedback = useAppStore((s) => s.setReceivedFeedback);
 
@@ -55,7 +56,7 @@ export function FeedbackBanner() {
             <span className="font-semibold text-text-main">{t('studentFeedback.complimentsTitle')}</span>
             {feedback.compliments.map((c) => (
               <span key={c.chip} className="inline-flex items-center gap-1">
-                {c.chip}
+                {peerChipLabel(c.chip, i18n.language)}
                 {c.avgStars != null && (
                   <span className="inline-flex items-center" aria-label={t('studentFeedback.avgStars', { stars: c.avgStars })}>
                     {Array.from({ length: Math.max(1, Math.round(c.avgStars)) }, (_, i) => (

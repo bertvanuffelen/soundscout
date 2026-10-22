@@ -52,10 +52,9 @@ export function ShareCodeModal({ isOpen, onClose, initialCode = null }: ShareCod
           </button>
         </div>
 
+        {/* Eén kop (O6): de titel zegt wat je doet, de uitleg per codesoort
+            staat onder het veld in ShareCodeInput */}
         <div className="p-4 sm:p-6">
-          <p className="text-text-muted mb-5 text-sm">
-            {t('shareCodeModal.subtitle')}
-          </p>
           <ShareCodeInput initialCode={initialCode} />
         </div>
       </div>

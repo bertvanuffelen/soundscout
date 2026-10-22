@@ -10,7 +10,7 @@
 import { getSupabase } from './supabase';
 import { ERR_RATE_LIMIT, ERR_CLASS_NOT_FOUND, ERR_NOT_ACTIVE, ERR_INVALID_SAVE_CODE, ERR_SUBMISSION_FORBIDDEN, matchesError } from './supabaseErrors';
 import { withTimeout } from '../utils/withTimeout';
-import { generateRandomDutchName } from '../utils/randomNames';
+import { generateRandomName } from '../utils/randomNames';
 import { sanitizeError } from '../utils/errorSanitize';
 import { parseCompositionData, CompositionDataSchema } from '../utils/schemas';
 import { logger } from '../utils/logger';
@@ -76,7 +76,7 @@ export async function submitComposition(
   const supabase = await getSupabase();
 
   // Gebruik grappige naam als geen naam opgegeven
-  const finalStudentName = studentName?.trim() || generateRandomDutchName();
+  const finalStudentName = studentName?.trim() || generateRandomName(i18n.language);
 
   const { data, error } = await withTimeout(
     supabase.rpc('submit_composition', {
@@ -173,7 +173,7 @@ export async function submitOrUpdateComposition(
   } = params;
 
   const supabase = await getSupabase();
-  const finalStudentName = studentName?.trim() || generateRandomDutchName();
+  const finalStudentName = studentName?.trim() || generateRandomName(i18n.language);
 
   const rpcParams: Record<string, unknown> = {
     p_class_code: classCode.trim(),
@@ -317,7 +317,7 @@ export async function shareComposition(
   const { studentName, compositionName, compositionData } = params;
   const supabase = await getSupabase();
 
-  const finalStudentName = studentName?.trim() || generateRandomDutchName();
+  const finalStudentName = studentName?.trim() || generateRandomName(i18n.language);
 
   const { data, error } = await withTimeout(
     supabase.rpc('share_composition', {

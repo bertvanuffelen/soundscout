@@ -36,7 +36,7 @@ interface UseAudioExportReturn {
 export function useAudioExport(
   options: UseAudioExportOptions = {}
 ): UseAudioExportReturn {
-  const { defaultFilename = 'mijn-compositie' } = options;
+  const { defaultFilename = 'mijn-soundscape' } = options;
 
   const [exportState, setExportState] = useState<ExportState>('idle');
   const [progress, setProgress] = useState(0);

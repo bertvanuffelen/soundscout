@@ -1,6 +1,6 @@
 # Bouwplan: leerling-workflow (openingsscherm → podium)
 
-> **Status:** fase 0 ✅ afgerond 21-10-2026 (wacht op review en merge naar `main` vóór 27-10) · fase 1 ⬜ · gestart 21-10-2026 · branch `claude/soundscout-podium-workflow-2268b6`
+> **Status:** fase 0 ✅ afgerond 21-10-2026 (wacht op review en merge naar `main` vóór 27-10) · fase 1 🔄 (branch `claude/leerling-fase1`) · gestart 21-10-2026 · branch `claude/soundscout-podium-workflow-2268b6`
 >
 > **Bron (ontwerp en besluiten):** Kennis-map `soundscout/`
 > - `workflow-leerling.md`: hoofddocument; bevindingen B1–B38, besluitenlog
@@ -22,7 +22,7 @@
 | Fase | Doel | Wanneer | Migratie |
 |---|---|---|---|
 | **0** | Fouten eruit (context, audio, data, podium-UI, Engelse sleutels) | **vóór 27-10** | nee |
-| **1** | Openingsscherm opgeschoond + A1–A3, soundscape-termen, Engelse teksten | november | nee |
+| **1** ✅ | Openingsscherm opgeschoond + A1–A3, soundscape-termen, Engelse teksten | november (klaar 21-10, branch `claude/leerling-fase1`) | nee |
 | **2** | Podium v4 ("Jouw soundscape", schermvullend) | dec–jan | nee |
 | **3** | Titelinstelling van de docent + Engelse data (schuilnamen, feedbackkaarten) | daarna | **ja (klein)** |
 | **4** | Live meenemen van docentwijzigingen · leerlingcodes (bestaand ontwerp `ONTWERP-LEERLING-CODES.md`) | later | ja |
@@ -45,44 +45,106 @@
 - B30 (storyboardpijlen springen niet in de muziek) en B31 (de lichtbak slaat sequences over). Die vervallen of veranderen in fase 2, omdat de presentatiemodus de lichtbak vervangt.
 - B32 (persistentie bij herladen). Dat is A1 in fase 1.
 
-## Fase 1: openingsscherm (november)
+## Fase 1: openingsscherm (november) ✅
 
-| Stap | Wat | Status |
-|---|---|---|
-| 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | ⬜ |
-| 1.2 | Startscherm opgeschoond: "Ben je docent?" als link, tagline, tabtitel "SoundScout", wizard zonder dubbele code-ingang | ⬜ |
-| 1.3 | Codevenster: één kop + uitleg per codesoort, "Open" met tekst op mobiel | ⬜ |
-| 1.4 | Klas zonder opdracht: "Andere code" opent het codevenster, "Zelf beginnen" opent de wizard (O7) | ⬜ |
-| 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | ⬜ |
-| 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | ⬜ |
-| 1.7 | **A3** Uitleg één keer na "Starten" in de klasroute | ⬜ |
-| 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | ⬜ |
+> **Branch:** `claude/leerling-fase1` (gestapeld op fase 0 / PR #5).
+> **Volgorde:** eerst de structuur (1.2–1.4), dan A3, A2 en A1, en als laatste de tekstrondes (1.1 en 1.8). Zo krijgen nieuwe teksten meteen de goede woorden.
 
-## Fase 2: podium v4
+| Stap | Wat | Bestanden | Status | Commit |
+|---|---|---|---|---|
+| 1.2 | Startscherm opgeschoond: "Ben je docent?" als link, tabtitel "SoundScout", wizard zonder dubbele code-ingang | `StartScreen.tsx`, `start/NewCompositionWizard.tsx`, `App.tsx` | ✅ | 0f12077 |
+| 1.3 | Codevenster: één kop "Typ je code" + uitleg per codesoort, "Open" met tekst op mobiel | `share/ShareCodeModal.tsx`, `share/ShareCodeInput.tsx`, i18n | ✅ | 0f12077 |
+| 1.4 | Klas zonder opdracht: "Andere code proberen" opent het codevenster, "Vrij componeren" opent de wizard (O7) | `assignment/AssignmentLandingScreen.tsx`, `stores/appStore.ts` (`goToStartWith`), `StartScreen.tsx` | ✅ | 0f12077 |
+| 1.7 | **A3** Uitleg één keer na "Starten" in de klasroute | `assignment/AssignmentLandingScreen.tsx` | ✅ | feecccb |
+| 1.6 | **A2** Klasbewuste "Nieuwe soundscape" (startscherm + podium): "Nog één voor deze opdracht" / "Zelf iets nieuws" | `StartScreen.tsx`, `stage/StageView.tsx`, `common/NewWorkChoiceModal.tsx`, `compositionInit.ts` (`startAnotherForCurrentAssignment`) | ✅ | 7b49ca8 |
+| 1.5 | **A1** Verder-kaart: werk + `classSession` lokaal bewaren, zodat ze herladen overleven (B32) | nieuw `services/workInProgress.ts`, `App.tsx`, `StartScreen.tsx` | ✅ | b74ef7c |
+| 1.1 | Soundscape-termen in alle leerlingteksten (NL + EN) volgens de woordenlijst in ronde 4 §7; geen verkleinwoorden | i18n, `docs/TEKSTEN.md` | ✅ | b59c3e8 |
+| 1.8 | Engelse teksten volgens de audit (ronde 4 §6): termen, zinsletters, VK-spelling, meervouden `_one/_other` + ClassCard-dubbeltelling, Engelse privacylink, harde teksten via i18n | i18n, `ClassCard.tsx`, `PrivacyModal.tsx`, `TeacherRegister.tsx`, `useClasses.ts`, `useSubmissions.ts`, `TeacherPage.tsx`, `App.tsx`, `LocationScene.tsx`, `SectionBar.tsx`, `ImageLightbox.tsx` | ✅ | fbbdb5d, ed8fe0a, 7e0e6f1 |
 
-| Stap | Wat | Status |
-|---|---|---|
-| 2.1 | Schermvullende layout: beeld links, kolom "Jouw soundscape" rechts (320 px); op mobiel onder elkaar | ⬜ |
-| 2.2 | Stappencomponent met statusafleiding (luisteren · titel · plek · inleveren/bewaren · feedback · klasgenoten · exporteren), in vrije volgorde | ⬜ |
-| 2.3 | Opdrachtkaart en tijdsduur meenemen in `ClassSession`, tonen als "Opdracht" | ⬜ |
-| 2.4 | Presentatiemodus voor "Luister" (PresentationSurface hergebruiken) | ⬜ |
-| 2.5 | Beeldvlak per situatie: storyboard met strip (springt in de muziek), afbeelding, praatplaat met pin + zoom, tijdlijn als beeld | ⬜ |
-| 2.6 | Feedback klasgenoten op het volle scherm (links compositie, rechts sterren) | ⬜ |
-| 2.7 | Muziekkaart (code + QR); één inleverpad (klascode zet de klassessie); "Bewaar" zonder naam | ⬜ |
-| 2.8 | Versies: "Lever versie N in" bij wijzigingen sinds het inleveren | ⬜ |
+## Fase 2: podium v4 ✅
 
-## Fase 3: instellingen en data (migratie)
+> **Branch:** `claude/leerling-fase2` (gestapeld op fase 1).
 
-| Stap | Wat | Status |
-|---|---|---|
-| 3.1 | Migratie: `class_assignments.students_type_title BOOLEAN DEFAULT true` + doorgeven in `get_active_assignment` | ⬜ |
-| 3.2 | Docent-UI: schakelaar in ClassDetail; leerling: automatische titel, geen invoer, geen dobbelsteen | ⬜ |
-| 3.3 | Engelse schuilnamen (`randomNames.ts`) + vertaalde ingebouwde feedbackkaarten | ⬜ |
+| Stap | Wat | Status | Commit |
+|---|---|---|---|
+| 2.1 | Schermvullende layout: beeld links, kolom "Jouw soundscape" rechts (360 px); op mobiel onder elkaar | ✅ | f9aabbb |
+| 2.2 | Stappencomponent met statusafleiding (luisteren · titel · plek · inleveren/bewaren · feedback · klasgenoten · exporteren), in vrije volgorde | ✅ | 9349416, f9aabbb |
+| 2.3 | Opdrachtkaart en tijdsduur meenemen in `ClassSession`, tonen als "Opdracht" | ✅ | 61e4317, f9aabbb |
+| 2.4 | Presentatiemodus voor "Luister" (PresentationSurface hergebruiken) | ✅ | f9aabbb |
+| 2.5 | Beeldvlak per situatie: storyboard met strip (springt in de muziek), afbeelding, praatplaat met pin + zoom, tijdlijn als beeld | ✅ | f9aabbb |
+| 2.6 | Feedback klasgenoten op het volle scherm (links compositie, rechts sterren) | ✅ | f9aabbb |
+| 2.7 | Muziekkaart (code + QR); één inleverpad (klascode zet de klassessie); "Bewaar" zonder naam | ✅ | f9aabbb |
+| 2.8 | Versies: "Lever versie N in" bij wijzigingen sinds het inleveren | ✅ | 9349416, f9aabbb |
 
-## Fase 4: later
+**Besluiten tijdens het bouwen**
+- De titel staat in de appStore (`compositionTitle`): hij blijft tussen studio en podium en gaat mee in het onthouden werk (A1).
+- Inleveren of bewaren zonder titel kiest automatisch een titel (`randomTitles`).
+- Online bewaren stuurt een schuilnaam mee (de server wil een naam); de leerling typt geen naam meer.
+- "Kies een andere plek" verzet de pin van dezelfde soundscape (`praatplaatReturnToStage`). Een nieuwe soundscape op een andere plek loopt via "Nieuwe soundscape → Nog één op een andere plek".
+- **Delen in de klas staat aan.** De mockup toonde "staat uit in de klas", maar zonder docentinstelling zou dat een functie weghalen. → Open vraag voor Bert (zie onder).
+- Weggehaald: het venster "Opslaan & Delen", het publiek onder het podium, de losse opslagwaarschuwing en de praatplaat-succesmodal (vervangen door de stappen).
 
-- Live meenemen: de opdracht opnieuw ophalen bij het openen van het podium (peer-feedback, kaart).
-- Leerlingcodes: zie het besloten ontwerp `ONTWERP-LEERLING-CODES.md` (R3).
+**Open vragen**
+- Moet "Delen" (luisterlink) in de klas uit kunnen? Zo ja: als docentinstelling in fase 3.
+- Een leerling die thuis begon en via "Heb je een klascode?" bij een **praatplaat**-klas wil inleveren, krijgt de melding dat dit via "Ik heb een code" moet (er hoort een plek bij).
+
+## Fase 3: instellingen en data (migratie) ✅
+
+> **Branch:** `claude/leerling-fase3` (gestapeld op fase 2).
+
+| Stap | Wat | Status | Commit |
+|---|---|---|---|
+| 3.1 | Migratie 037: `class_assignments.students_type_title BOOLEAN NOT NULL DEFAULT TRUE` + mee in de payload van `get_active_assignment` | ✅ (bestand) · ⏳ Bert draait hem | 99fb476 |
+| 3.2 | Docent-UI: schakelaar op de actieve opdracht in ClassDetail (verschijnt pas na de migratie); leerling: automatische titel, invoerveld alleen-lezen, geen dobbelsteen | ✅ | 99fb476 |
+| 3.3 | Engelse schuilnamen (`generateRandomName`) + vertaalde ingebouwde feedbackkaarten (`peerChipLabel`, alleen weergave) | ✅ | 2b0e129 |
+
+**Besluiten**
+- Feedbackkaarten vertalen we in de weergave, niet in de database: sterren worden per criterium-tekst opgeslagen. Zo tellen NL- en EN-beoordelingen samen. Geen migratie nodig.
+- De titelinstelling wordt in de app afgedwongen (geen invoerveld). De server overschrijft de titel niet; wie de app omzeilt, kan nog een titel sturen. Dat is voor nu voldoende.
+- **Privacytekst aangepast** (app, `/privacy/`, `/privacy/en/`): online bewaren gaat met een automatische schuilnaam, de leerling typt geen naam meer. → Bert even nalezen.
+
+## Fase 4: live meenemen en leerlingcodes ✅
+
+> **Branch:** `claude/leerling-fase4` (gestapeld op fase 3).
+
+| Stap | Wat | Status | Commit |
+|---|---|---|---|
+| 4.1 | Live meenemen: het podium haalt de opdracht bij openen en elke minuut opnieuw op (alleen als het tabblad zichtbaar is); kaart, tijdsduur, peer-feedback en titelinstelling komen mee; een andere opdracht geeft een melding | ✅ | 2a93811 |
+| 4.2 | Leerlingcodes volgens `ONTWERP-LEERLING-CODES.md` v2: migratie 038 (tabel, kolom, 7 RPC's, RLS), inloggen via het codeveld, vaste schuilnaam bij inleveren, "Verder met je laatste soundscape", docentblok met codes maken, lijst, nieuwe code, aan/uit, verlengen en printbare kaartjes | ✅ (bestand) · ⏳ Bert draait 038 | e72b0f1 |
+| 4.3 | Mijn soundscapes per klas gegroepeerd, met de code om verder te werken (besluit "lokaal sterker") | ✅ | 2abd024 |
+
+**Besluiten**
+- Migratie 038 is getest in PGlite (Postgres in WebAssembly) met een nagebootste `classes`/`submissions`: rechten per docent, inloggen (ook met streepje), koppelen alleen met het geheim van de inzending, laatste werk, verlengen, nieuwe code, uit en verlopen. Dubbel draaien gaat goed.
+- Schuilnamen voor leerlingcodes maakt de app van de docent, in diens taal. De server maakt de codes (2 letters zonder I/O + 4 cijfers) en checkt botsingen met bestaande bewaarcodes.
+- Een code als `LK4827` wordt eerst als leerlingcode geprobeerd, anders als bewaarcode. Zonder migratie valt alles stil terug op de bestaande routes.
+- Groepjes en "wie heeft nog niet ingeleverd" blijven buiten v1 (zoals in het ontwerp).
+
+**Nog te doen door Bert (fase 3 en 4)**
+1. ~~Migraties **037** en **038** draaien~~ ✅ gedraaid en gecontroleerd 21-10 (alle objecten aanwezig, RLS aan, cron-opruimtaak 03:00 actief). Migratie 039 ✅ gedraaid en gecontroleerd. Migratie 040 ✅ gedraaid en gecontroleerd: geen open adviezen meer bij de nieuwe functies, op de verwachte meldingen na.
+2. Privacyverklaring aanvullen met leerlingcodes (code + schuilnaam, geldig tot 31 juli, verwijderd met de klas). De tekst over online bewaren is al aangepast.
+3. Testen met een echte klas: inleveren, versie 2, feedback klasgenoten, "Heb je een klascode?", titelinstelling, leerlingcodes maken, printen en inloggen.
+
+## Fase 5: eindtest-fixes vóór 27-10 ✅
+
+> **Branch:** `claude/leerling-fase5` (gestapeld op fase 4). Bron: `Kennis/1_ZZP/soundscout/eindtest-leerling.md` (tweede AI, testklas 3597).
+
+| Stap | Wat | Rapport | Commit |
+|---|---|---|---|
+| 5.1 | Generatie-token bij inleveren; navigatie uit tijdens versturen | E2/H1 | 3c61a81 |
+| 5.2 | Client stelt geheim voor (migratie 041) → geen dubbele inzending na time-out; 200 geheimen per apparaat; generate_save_secret met pgcrypto | H2/H3 | 055bc7f |
+| 5.3 | Ongedaan maken neemt loop, effecten, label, spoorvolume mee | E3/H5 | (zie git log) |
+| 5.4 | Vraag vóór openen over onbewaard werk (eerst bewaren / niet bewaren / annuleren) | E5/H4 | 1bf45d4 |
+| 5.5 | "Klaar, ik stop", onthouden werk vervalt na 12 uur, "Toon code" bij klaswerk, tijd bij "Ga verder" | E1/K1 | d78554f |
+| 5.6 | Tijdlijn stopt bij verlaten podium en bij Nieuwe soundscape | E7 | (zie git log) |
+| 5.7 | Modal met vaste voetregel + ✕; uitleg en wizard passen op 1280×800 en 375×812 | E11 | 0ce4b36 |
+| 5.8 | Leerlingcodes dichtgezet (migratie 042): ABC-1234, rem op foute pogingen per IP, geen bewaarcode in login, verder zonder claim, geen omhangen, idempotent verlengen, opruimen | E4/K2, M1–M3, L1–L2 | 455e320 |
+| 5.9 | Teksten: sporen, Geluid inkorten, geen dubbele waarschuwing, geen meta-regel, "Lever je soundscape in", dobbelsteen kiest titel | E14, E16, E17, tekst | 2d0baaa |
+
+**Besluiten Bert (21-10):** omvang stap 1–9; "Klaar, ik stop" + 12 uur; leerlingcodes volgens het beste beveiligingsadvies (formaat wijkt af van ontwerp XX-0000 → ABC-1234).
+
+**Migraties 041 + 042** ✅ gedraaid en gecontroleerd 21-10: alle onderdelen aanwezig, opruimtaak `soundscout-members-cleanup` 03:15, `member_codes_version() = 2`, rechten zoals bedoeld. Rem-test vanuit de browser: het netwerkadres komt binnen via `request.headers` (geen `unknown`).
+
+**Na de lancering (uit het rapport):** E6, E8, E9, E10, E12, E13, M4–M6, M8, L3–L6, toegankelijkheid (knoppen ≥ 44 px, labels, contrast gele clips), "Muziek · MP3" (staat zo in de goedgekeurde mockup).
 
 ---
 
@@ -102,3 +164,17 @@
 ### Nog te doen door Bert (fase 0)
 - Review van [PR #5](https://github.com/bertvanuffelen/soundscout/pull/5) (branch `claude/soundscout-podium-workflow-2268b6`) en merge naar `main`, dan de build uploaden vóór 27-10.
 - Korte eigen check op een echt apparaat: inleveren met klascode (Tier 1 #6), openen via bewaarcode, en "Kies een nieuwe plek" bij een praatplaat. Die routes raken de server, en die heb ik niet gebruikt.
+| 21-10-2026 | 1.2–1.4 startscherm, codevenster, klas zonder opdracht | 0f12077 | tsc ✓ · 440 tests ✓ · lint ✓ · browser 1366×768: tabtitel "SoundScout", docentlink klein, codevenster met drie regels, Route C → codevenster / uitleg + wizard |
+| 21-10-2026 | 1.7 A3 uitleg één keer in de klasroute | feecccb | tsc ✓ · tests ✓ · browser: eerste "Starten" toont de uitleg, tweede keer niet |
+| 21-10-2026 | 1.6 A2 klasbewuste nieuwe soundscape | 7b49ca8 | tsc ✓ · 442 tests ✓ (2 nieuw) · lint ✓ · browser 1366×768: podium praatplaat → "Nog één op een andere plek" houdt klas + praatplaat, gaat naar plekkiezer; "Zelf iets nieuws" wist klas en opent de wizard; startscherm vrije opdracht toont "nog niet ingeleverd". Niet getest: "Nog één voor deze opdracht" tegen de echte server (opdracht ophalen) |
+| 21-10-2026 | 1.5 A1 werk overleeft herladen | b74ef7c | tsc ✓ · 446 tests ✓ (4 nieuw) · lint ✓ · browser: clip + 2 geluiden + klas Groep 6b → echte herlaadbeurt → startscherm "Ga verder / Groep 6b" + "Naar het podium" → studio toont alles terug; resetten wist de snapshot. Let op: op een gedeeld apparaat ziet de volgende leerling het open werk van de vorige tot die opnieuw begint (zelfde als bij Mijn composities). Een template-sessie herstelt `activeTemplate`; een bewaarcode-koppeling blijft (die stond al in localStorage) |
+| 21-10-2026 | 1.1 soundscape-termen | b59c3e8 | 67 sleutels NL+EN · tsc ✓ · 446 tests ✓ · browser: startscherm "Nieuwe soundscape". Bewust niet: docentteksten (teacher, lessonCards, templates, submissions, about, album-deeltekst), werkwoord "componeren". `sharedPraatplaat.submissionCount` ("compositie(s)") gaat mee in 1.8 (meervoud) |
+| 21-10-2026 | 1.8 Engelse teksten (a: harde teksten + privacylink, b: meervouden, c: termen/zinsletters/VK) | fbbdb5d, ed8fe0a, 7e0e6f1 | tsc ✓ · 446 tests ✓ · meervouden gecontroleerd (1 composition / 5 compositions, "Listened to once", NL "8 klassen") · browser EN: "New soundscape", privacylink /privacy/en/. Standaard-opdrachtkaart heet nu "Opdracht"/"Assignment". **Niet gedaan, verschoven naar fase 3:** Engelse schuilnamen en vertaalde peer-criteria (komen uit de database, migratie 027-data). Ook nog open (lage prioriteit): `public/les/*` en meta-titels van de statische pagina's alleen NL |
+| 21-10-2026 | 2.1–2.8 podium v4 | 9349416, 61e4317, f9aabbb, eefb4bf, HEAD | tsc ✓ · 457 tests ✓ (11 nieuw) · lint ✓ · browser 1024 + 375 px: vrij zonder klas (afspelen + voortgang, titel-suggestie, Luister → presentatie, Bewaar → echte bewaarcode Z7B4FC, wijziging → "bewaar opnieuw" → bijgewerkt, muziekkaart met QR), praatplaat in klas (opdrachtkaart, pin + zoom, plek verzetten → terug naar podium met zelfde werk), nagebootste inlevering (versie 1 → wijziging → "lever versie 2 in", peer ontgrendeld, docentfeedback-stap), storyboard met strip, klascode-venster (onbekende code → melding), Engels. **Niet getest tegen de server:** echt inleveren, feedback klasgenoten (batch ophalen + sterren rechts), "Heb je een klascode?" met een echte klas |
+| 21-10-2026 | 3.1–3.3 titelinstelling, Engelse data | 99fb476, 2b0e129 | tsc ✓ · 462 tests ✓ (5 nieuw) · lint ✓ · browser: klas met instelling uit → titel automatisch, kop alleen-lezen met slot, stap "Je docent kiest de titels automatisch". **Niet getest:** de schakelaar in ClassDetail (vraagt een docentlogin en de migratie) |
+| 21-10-2026 | 4.1–4.3 live, leerlingcodes, Mijn soundscapes | 2a93811, e72b0f1, 2abd024 | tsc ✓ · 470 tests ✓ (8 nieuw) · build ✓ (main 791 → 820 kB) · PGlite: 037 + 038 ✓ · browser: melding bij andere opdracht, codeveld LK-4827 valt zonder migratie terug op "Code niet gevonden", Mijn soundscapes per klas met code. **Niet getest tegen de server:** leerlingcodes (vraagt migratie 038 en een docentlogin) |
+| 21-10-2026 | Controle database na 037/038 + migratie 039 | HEAD | Supabase (alleen lezen): objecten van 002–038 aanwezig, RLS op class_members, pg_cron `soundscout-cleanup` 03:00. Gevonden: 5 docentfuncties uitvoerbaar door `anon` (PUBLIC-standaardrecht; geen misbruik mogelijk door assert_class_owner). Migratie 039 zet ze dicht, getest in PGlite (2× draaien) |
+| 21-10-2026 | Controle 039 + Supabase-adviezen → migratie 040 | HEAD | 039 ✓ (docentfuncties dicht voor anon, leerlingfuncties open). Adviezen: 2 nieuwe hulpfuncties zonder vast search_path, assert_class_owner direct aanroepbaar → 040. PGlite: als rol authenticated codes maken ✓, assert_class_owner direct geweigerd ✓. Oudere adviezen (38 functies zonder search_path, lekwachtwoord-bescherming uit) staan los van deze ronde |
+| 21-10-2026 | Controle 040 | — | Vast search_path op alle nieuwe functies, assert_class_owner niet meer direct aanroepbaar. Adviezen bij nieuwe functies: alleen nog de verwachte meldingen (leerlingfuncties open voor anon, docentfuncties voor authenticated, met eigen eigenaarscontrole) |
+| 21-10-2026 | Fase 5 eindtest-fixes | 3c61a81 … 455e320 | tsc ✓ · 481 tests ✓ (+16) · browser 1280×800 + 375×812: transport stopt, vraag bij onbewaard werk + "Eerst bewaren", "Klaar, ik stop" → schoon start, uitleg en wizard passen · PGlite: 041 (retry = update, verkeerd geheim geweigerd) en 042 (rem alleen op fouten, school met 40 logins ok, geen buit, verlengen 2× gelijk) |
+| 21-10-2026 | Controle 041 + 042 | — | Alleen-lezen: voorgesteld geheim + pgcrypto (041), formaat ABC1234, generator met gen_random_bytes, login zonder bewaarcode (`has_work`), open_member_latest_work, geen omhangen, verlengen idempotent, cron 03:15, versie 2; interne functies dicht voor anon. Eén foute login vanuit de browser: rem telt op het echte netwerkadres. Adviezen: alleen verwachte meldingen; search_path-meldingen 38 → 37 |

@@ -8,6 +8,8 @@ import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, F
 import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
+import { useLibraryStore } from '../stores/libraryStore';
+import { readWorkInProgress } from '../services/workInProgress';
 import {
   initializeNewComposition,
   initializeCompositionFromStoryboard,
@@ -30,16 +32,40 @@ const FeedbackModal = lazy(() =>
 const NewCompositionWizard = lazy(() => import('./start/NewCompositionWizard'));
 import { ShareCodeModal } from './share';
 import { PrivacyModal } from './PrivacyModal';
+import { NewWorkChoiceModal } from './common/NewWorkChoiceModal';
 import type { Storyboard } from '../types';
 
 export function StartScreen() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const goToCompositions = useAppStore((s) => s.goToCompositions);
   const goToStudio = useAppStore((s) => s.goToStudio);
   const goToStage = useAppStore((s) => s.goToStage);
   const goToTutorial = useAppStore((s) => s.goToTutorial);
   const classSession = useAppStore((s) => s.classSession);
-  const hasClipsInProgress = useTimelineStore((s) => s.selectHasClips());
+  // Werk = clips óf verzamelde geluiden; overleeft herladen (A1)
+  const hasClips = useTimelineStore((s) => s.selectHasClips());
+  const hasCollected = useLibraryStore((s) => s.librarySamples.length > 0);
+  const hasClipsInProgress = hasClips || hasCollected;
+  const currentCompositionId = useAppStore((s) => s.currentCompositionId);
+  const compositionTitle = useAppStore((s) => s.compositionTitle);
+  // Onderregel van "Verder werken": titel · klas
+  const continueDetail = useMemo(() => {
+    if (!hasClipsInProgress) return '';
+    const name = compositionTitle.trim()
+      || (currentCompositionId ? storageService.getCompositionById(currentCompositionId)?.name : undefined);
+    // Tijd van het laatst onthouden werk (E1): zo ziet een kind op een
+    // gedeelde computer dat dit misschien niet zijn werk is
+    const savedAt = readWorkInProgress()?.savedAt;
+    let when: string | undefined;
+    if (savedAt) {
+      const d = new Date(savedAt);
+      const time = d.toLocaleTimeString(i18n.language, { hour: '2-digit', minute: '2-digit' });
+      when = d.toDateString() === new Date().toDateString()
+        ? t('start.continueToday', { time })
+        : d.toLocaleDateString(i18n.language, { weekday: 'short', day: 'numeric', month: 'short' });
+    }
+    return [name, classSession?.className, when].filter(Boolean).join(' · ');
+  }, [hasClipsInProgress, compositionTitle, currentCompositionId, classSession, t, i18n.language]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -58,6 +84,19 @@ export function StartScreen() {
     const compositions = storageService.getCompositions();
     setHasCompositions(compositions.length > 0);
   }, []);
+
+  // Doorverwijzing vanaf een ander scherm (O7): bv. het opdrachtscherm zonder
+  // opdracht vraagt om het codevenster of de wizard meteen te openen.
+  const pendingStartAction = useAppStore((s) => s.pendingStartAction);
+  useEffect(() => {
+    if (!pendingStartAction) return;
+    useAppStore.getState().setPendingStartAction(null);
+    if (pendingStartAction === 'code') setShowCodeModal(true);
+    else handleNewComposition();
+    // handleNewComposition is een gewone functie in deze component; we willen
+    // alleen reageren op een nieuwe doorverwijzing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pendingStartAction]);
 
   // Stille check op nieuwe docent-feedback (migratie 026): als dit apparaat
   // een klas-inzending met bewaarcode heeft, kijk of de docent heeft
@@ -152,8 +191,37 @@ export function StartScreen() {
     setShowComposeWizard(true);
   };
 
+  // Klasbewuste "Nieuwe compositie" (A2): in een klas eerst kiezen tussen
+  // nog één voor deze opdracht of zelf iets nieuws (verlaat de klas)
+  const [showNewWorkChoice, setShowNewWorkChoice] = useState(false);
+  const [newWorkLoading, setNewWorkLoading] = useState(false);
+  const [newWorkError, setNewWorkError] = useState<string | null>(null);
+  const submissionSynced = useAppStore((s) => s.submissionSynced);
+
+  const handleSameAssignment = async () => {
+    setNewWorkLoading(true);
+    setNewWorkError(null);
+    const { startAnotherForCurrentAssignment } = await import('../utils/compositionInit');
+    const result = await startAnotherForCurrentAssignment();
+    setNewWorkLoading(false);
+    if (result === 'ok') setShowNewWorkChoice(false);
+    else setNewWorkError(t('newWork.error'));
+  };
+
+  const handleFreshWork = () => {
+    setShowNewWorkChoice(false);
+    // De keuze-modal waarschuwde al; de klas-context wordt gewist zodra er
+    // een thema/storyboard gekozen is (handleSelectTheme/-Storyboard)
+    openWizard();
+  };
+
   const handleNewComposition = () => {
     seasonalPendingRef.current = false;
+    if (classSession) {
+      setNewWorkError(null);
+      setShowNewWorkChoice(true);
+      return;
+    }
     if (hasClipsInProgress) {
       // Waarschuw dat de huidige compositie verloren gaat
       setShowNewConfirm(true);
@@ -287,8 +355,13 @@ export function StartScreen() {
               size="lg"
               className="w-full"
             >
-              <Play className="w-5 h-5 mr-1.5 sm:mr-2" />
-              {t('start.continueComposition')}
+              <Play className="w-5 h-5 mr-1.5 sm:mr-2 shrink-0" />
+              <span className="flex flex-col items-start leading-tight min-w-0">
+                <span>{t('start.continueComposition')}</span>
+                {continueDetail && (
+                  <span className="text-xs font-semibold opacity-75 truncate max-w-full">{continueDetail}</span>
+                )}
+              </span>
             </Button>
           )}
 
@@ -360,18 +433,16 @@ export function StartScreen() {
           </button>
         </div>
 
-        {/* Teacher link — als knop, gelijkgetrokken met de andere CTA's */}
-        <div className="mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
-          <Button
-            onClick={() => { window.location.href = '/teacher'; }}
-            variant="secondary"
-            size="lg"
-            className="w-full"
-          >
-            <GraduationCap className="w-5 h-5 mr-1.5 sm:mr-2" />
-            {t('start.teacherLink')}
-          </Button>
-        </div>
+        {/* Docentlink: klein en onderaan (O2). Als knop met dezelfde stijl als
+            "Ik heb een code" klikten leerlingen er per ongeluk op. */}
+        <button
+          type="button"
+          onClick={() => { window.location.href = '/teacher'; }}
+          className="mt-5 sm:mt-6 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-300 underline underline-offset-4 hover:text-white md:text-text-muted md:hover:text-text-main transition-colors"
+        >
+          <GraduationCap className="w-4 h-4" aria-hidden="true" />
+          {t('start.teacherLink')}
+        </button>
 
       </div>
 
@@ -459,6 +530,21 @@ export function StartScreen() {
         </Suspense>
       )}
 
+      {/* Klasbewuste nieuwe soundscape (A2) */}
+      {classSession && (
+        <NewWorkChoiceModal
+          isOpen={showNewWorkChoice}
+          onClose={() => setShowNewWorkChoice(false)}
+          className={classSession.className}
+          isPraatplaat={classSession.assignmentType === 'praatplaat'}
+          handedIn={submissionSynced}
+          onSameAssignment={handleSameAssignment}
+          onFresh={handleFreshWork}
+          isLoading={newWorkLoading}
+          error={newWorkError}
+        />
+      )}
+
       {/* Waarschuwing: actieve compositie wordt gewist */}
       <Modal
         isOpen={showNewConfirm}
@@ -495,7 +581,6 @@ export function StartScreen() {
             onClose={() => setShowComposeWizard(false)}
             onStartFree={handleSelectTheme}
             onStartStoryboard={handleSelectStoryboard}
-            onHaveCode={() => { setShowComposeWizard(false); setShowCodeModal(true); }}
             isLoading={isLoading}
           />
         </Suspense>
@@ -517,14 +602,18 @@ export function StartScreen() {
         onClose={handleIntroDone}
         title={t('start.introTitle')}
         size="xl"
+        showClose
+        footer={(
+          <div className="flex justify-center">
+            <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
+              {t('start.introStart')}
+            </Button>
+          </div>
+        )}
       >
-        <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface mb-4">
+        {/* Lager scherm = smallere animatie, zodat alles in beeld past (E11) */}
+        <div className="mx-auto rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface" style={{ maxWidth: 'min(100%, calc((100dvh - 330px) * 1.78))' }}>
           <OnboardingAnimation />
-        </div>
-        <div className="flex justify-center">
-          <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
-            {t('start.introStart')}
-          </Button>
         </div>
       </Modal>
 

@@ -10,6 +10,8 @@
  */
 
 import { type ReactNode } from 'react';
+import { useTranslation } from 'react-i18next';
+import { X } from 'lucide-react';
 import { cn } from '../../utils/cn';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
 
@@ -26,6 +28,11 @@ export interface ModalProps {
   closeOnEscape?: boolean;
   /** Additional CSS classes for modal container */
   className?: string;
+  /** Vaste voetregel (knoppen) die altijd zichtbaar blijft, ook als de
+   *  inhoud scrolt (E11, eindtest) */
+  footer?: ReactNode;
+  /** Sluitkruisje rechtsboven */
+  showClose?: boolean;
 }
 
 const sizeStyles = {
@@ -44,7 +51,10 @@ export function Modal({
   closeOnBackdrop = true,
   closeOnEscape = true,
   className,
+  footer,
+  showClose = false,
 }: ModalProps) {
+  const { t } = useTranslation();
   // Gedeeld dialog-gedrag (focus trap, Escape, scroll-lock, focus-restore)
   const modalRef = useModalBehavior(onClose, { closeOnEscape, isOpen });
 
@@ -63,7 +73,8 @@ export function Modal({
       <div
         ref={modalRef}
         className={cn(
-          'relative w-full bg-white rounded-2xl shadow-2xl',
+          // Altijd binnen het scherm; de inhoud scrolt, kop en voet niet
+          'relative w-full bg-white rounded-2xl shadow-2xl flex flex-col max-h-[calc(100dvh-2rem)] sm:max-h-[calc(100dvh-3rem)]',
           'transform transition-all',
           'animate-in fade-in zoom-in-95 duration-200',
           sizeStyles[size],
@@ -74,8 +85,18 @@ export function Modal({
         aria-labelledby={title ? 'modal-title' : undefined}
         aria-describedby="modal-body"
       >
+        {showClose && (
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t('common.close')}
+            className="absolute top-2 right-2 sm:top-3 sm:right-3 z-10 w-11 h-11 flex items-center justify-center rounded-full text-text-muted hover:text-text-main hover:bg-neutral-100 transition-colors"
+          >
+            <X className="w-5 h-5" aria-hidden="true" />
+          </button>
+        )}
         {title && (
-          <div className="px-4 sm:px-6 pt-4 sm:pt-6 pb-1 sm:pb-2">
+          <div className={cn('px-4 sm:px-6 pt-4 sm:pt-6 pb-1 sm:pb-2 shrink-0', showClose && 'pr-14')}>
             <h2
               id="modal-title"
               className="text-xl sm:text-2xl font-bold text-text-main"
@@ -88,12 +109,18 @@ export function Modal({
         <div
           id="modal-body"
           className={cn(
-            title ? 'px-4 sm:px-6 pb-4 sm:pb-6' : 'p-4 sm:p-6',
-            size === 'xl' && 'max-h-[75dvh] overflow-y-auto'
+            'min-h-0 overflow-y-auto',
+            title ? 'px-4 sm:px-6' : 'px-4 sm:px-6 pt-4 sm:pt-6',
+            footer ? 'pb-2' : 'pb-4 sm:pb-6',
           )}
         >
           {children}
         </div>
+        {footer && (
+          <div className="shrink-0 px-4 sm:px-6 pt-2 pb-4 sm:pb-6">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
   );

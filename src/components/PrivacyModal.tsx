@@ -15,7 +15,7 @@ interface PrivacyModalProps {
 }
 
 export function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   return (
     <Modal
@@ -59,7 +59,7 @@ export function PrivacyModal({ isOpen, onClose }: PrivacyModalProps) {
         <section className="pt-2 border-t border-neutral-200 space-y-2">
           <p>
             <a
-              href="/privacy/"
+              href={i18n.language?.startsWith('en') ? '/privacy/en/' : '/privacy/'}
               className="text-brand-700 hover:text-brand-800 font-medium underline underline-offset-2"
             >
               {t('privacy.fullLink')}
