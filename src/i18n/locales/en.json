@@ -1123,7 +1123,7 @@
   "auth": {
     "emailAlreadyRegistered": "This email address is already registered",
     "invalidEmail": "Please enter a valid email address",
-    "passwordTooShort": "Password must be at least 6 characters",
+    "passwordTooShort": "Password must be at least 8 characters",
     "invalidCredentials": "Incorrect email address or password",
     "emailNotConfirmed": "Please confirm your email address first",
     "logoutError": "Error logging out",
@@ -1632,10 +1632,11 @@
       "emailRequired": "Please enter your email address",
       "passwordRequired": "Please enter your password",
       "nameRequired": "Please enter your name",
-      "passwordMinLength": "Password must be at least 6 characters",
+      "passwordMinLength": "Password must be at least 8 characters",
       "educatorRequired": "Confirm that you are a teacher or education professional.",
       "passwordMismatch": "Passwords do not match",
-      "genericError": "Something went wrong"
+      "genericError": "Something went wrong",
+      "passwordLettersDigits": "Use both letters and numbers in your password"
     },
     "login": {
       "subtitle": "Teacher Login",

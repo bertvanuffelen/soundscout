@@ -13,6 +13,7 @@ import { KeyRound, CheckCircle2, AlertTriangle } from 'lucide-react';
 import { updatePassword } from '../../lib/auth';
 import { useAuth } from '../../contexts/useAuth';
 import { Button } from '../ui/Button';
+import { checkPassword } from '../../utils/password';
 
 interface TeacherResetPasswordProps {
   /** Klaar: wachtwoord gewijzigd, door naar het dashboard */
@@ -35,8 +36,9 @@ export function TeacherResetPassword({ onDone, onRequestNew }: TeacherResetPassw
     setError(null);
 
     // Validatie
-    if (password.length < 6) {
-      setError(t('auth.passwordTooShort'));
+    const passwordProblem = checkPassword(password);
+    if (passwordProblem) {
+      setError(t(passwordProblem === 'tooShort' ? 'auth.passwordTooShort' : 'teacher.validation.passwordLettersDigits'));
       return;
     }
     if (password !== confirmPassword) {

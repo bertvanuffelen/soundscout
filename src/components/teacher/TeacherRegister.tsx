@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { Music, Mail, Lightbulb, ArrowLeft } from 'lucide-react';
 import { signUpTeacher } from '../../lib/auth';
 import { Button } from '../ui/Button';
+import { checkPassword } from '../../utils/password';
 
 interface TeacherRegisterProps {
   onSwitchToLogin: () => void;
@@ -39,8 +40,9 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
       setError(t('teacher.validation.emailRequired'));
       return;
     }
-    if (password.length < 6) {
-      setError(t('teacher.validation.passwordMinLength'));
+    const passwordProblem = checkPassword(password);
+    if (passwordProblem) {
+      setError(t(passwordProblem === 'tooShort' ? 'teacher.validation.passwordMinLength' : 'teacher.validation.passwordLettersDigits'));
       return;
     }
     if (password !== confirmPassword) {
