@@ -37,8 +37,8 @@ export function StoryboardPicker({ variant, onSelect, isLoading = false }: Story
       {items.length === 0 ? (
         <p className="text-text-muted text-center py-8">
           {variant === 'image'
-            ? t('composeMode.noImages', 'Er zijn nog geen compositie-afbeeldingen beschikbaar.')
-            : t('composeMode.noStoryboards', 'Er zijn nog geen storyboards beschikbaar.')}
+            ? t('composeMode.noImages')
+            : t('composeMode.noStoryboards')}
         </p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-5">

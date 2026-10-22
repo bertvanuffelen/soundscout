@@ -12,6 +12,7 @@ import { useState, useCallback, useEffect, useRef } from 'react';
 import { useAppStore } from '../stores/appStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useTimelineStore } from '../stores/timelineStore';
+import { buildCompositionData } from '../utils/buildCompositionData';
 import { storageService } from '../services/StorageService';
 import { updateSavedComposition, submitOrUpdateComposition, SubmissionForbiddenError } from '../lib/submissions';
 import { TimeoutError } from '../utils/withTimeout';
@@ -138,23 +139,9 @@ export function useStageSave() {
       setSaveSuccess(true);
       setTimeout(() => setSaveSuccess(false), 3000);
 
-      // Build compositionData once (shared by all remote sync paths)
-      const { sections } = useTimelineStore.getState();
-      const compositionData: CompositionData = {
-        tracks: timelineState.tracks,
-        bpm: timelineState.bpm,
-        totalBeats: timelineState.totalBeats,
-        isLooping: timelineState.isLooping,
-        samples: librarySamples,
-        sections: sections.length > 0 ? sections : undefined,
-        // Sequencer-patronen (fase 2) — levend, dus geëmbed meesturen
-        sequences: timelineState.sequences,
-        storyboardId: activeStoryboard?.id,
-        // Snapshot van praatplaat-context (#72) zodat online-bewaarcode en
-        // templates de afbeelding + positie bij heropening kunnen herstellen.
-        praatplaat: activePraatplaat ?? undefined,
-        praatplaatPosition: praatplaatPosition ?? undefined,
-      };
+      // Build compositionData once (shared by all remote sync paths). Eén
+      // gedeelde builder (B26): sequences + praatplaat-snapshot altijd mee.
+      const compositionData: CompositionData = buildCompositionData();
 
       // --- Universele klascode auto-submit ---
       if (classSession) {

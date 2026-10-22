@@ -12,10 +12,8 @@ import { useCallback, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Music, AlertTriangle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
-import { useTimelineStore } from '../../stores/timelineStore';
-import { useLibraryStore } from '../../stores/libraryStore';
 import { storageService } from '../../services/StorageService';
-import { hydrateCompositionContext } from '../../utils/compositionInit';
+import { openLocalComposition } from '../../utils/compositionInit';
 import type { SavedComposition } from '../../types';
 import { Button } from '../ui';
 import { CompositionCard } from './CompositionCard';
@@ -23,17 +21,6 @@ import { CompositionCard } from './CompositionCard';
 export function CompositionsView() {
   const { t } = useTranslation();
   const goToStart = useAppStore((s) => s.goToStart);
-  const goToStudio = useAppStore((s) => s.goToStudio);
-  const goToStage = useAppStore((s) => s.goToStage);
-  const goToMap = useAppStore((s) => s.goToMap);
-  const setCurrentCompositionId = useAppStore((s) => s.setCurrentCompositionId);
-  const setClassSession = useAppStore((s) => s.setClassSession);
-  const setSubmissionId = useAppStore((s) => s.setSubmissionId);
-  const setSubmissionSynced = useAppStore((s) => s.setSubmissionSynced);
-  const clearClassSession = useAppStore((s) => s.clearClassSession);
-
-  const loadTimeline = useTimelineStore((s) => s.loadTimeline);
-  const loadLibrary = useLibraryStore((s) => s.loadLibrary);
 
   const [compositions, setCompositions] = useState<SavedComposition[]>([]);
   const [droppedCount, setDroppedCount] = useState(0);
@@ -55,71 +42,15 @@ export function CompositionsView() {
     goToStart();
   }, [goToStart]);
 
-  // Restore classSession context from a saved composition
-  const restoreClassSession = useCallback(
-    (composition: SavedComposition) => {
-      if (composition.classSession) {
-        setClassSession(composition.classSession);
-        if (composition.submissionId) {
-          setSubmissionId(composition.submissionId);
-          // Een bewaarde submissionId = eerder succesvol ingeleverd. Zonder
-          // deze herstelstap bleef submissionSynced false en verdween de
-          // peer-feedback-knop na heropenen (bugfix sessie-herstel).
-          setSubmissionSynced(true);
-        }
-      } else {
-        clearClassSession();
-      }
-    },
-    [setClassSession, setSubmissionId, setSubmissionSynced, clearClassSession]
-  );
-
+  // Openen en afspelen delen één pad met een schone lei (B21)
   const handleOpenComposition = useCallback(
-    (composition: SavedComposition) => {
-      // Track which composition we're editing
-      setCurrentCompositionId(composition.id);
-      // Een lokale compositie is niet de bewaarcode-compositie van daarnet:
-      // ontkoppelen, anders overschrijft de auto-sync die (AUD-09).
-      storageService.clearSaveOnlineInfo();
-      // Restore klascode context if present
-      restoreClassSession(composition);
-      // Load timeline and library into stores
-      loadTimeline(composition.timeline);
-      loadLibrary(composition.samples);
-      // Restore storyboard / praatplaat / compose-mode context (#41, #72)
-      hydrateCompositionContext({
-        storyboardId: composition.storyboardId,
-        praatplaat: composition.praatplaat,
-        praatplaatPosition: composition.praatplaatPosition,
-      });
-      // Navigate to Studio
-      goToStudio();
-    },
-    [setCurrentCompositionId, restoreClassSession, loadTimeline, loadLibrary, goToStudio]
+    (composition: SavedComposition) => openLocalComposition(composition, 'studio'),
+    []
   );
 
   const handlePlayComposition = useCallback(
-    (composition: SavedComposition) => {
-      // Track which composition we're editing
-      setCurrentCompositionId(composition.id);
-      // Een lokale compositie is niet de bewaarcode-compositie van daarnet:
-      // ontkoppelen, anders overschrijft de auto-sync die (AUD-09).
-      storageService.clearSaveOnlineInfo();
-      // Restore klascode context if present
-      restoreClassSession(composition);
-      // Load timeline and library into stores
-      loadTimeline(composition.timeline);
-      loadLibrary(composition.samples);
-      // Restore storyboard / praatplaat / compose-mode context (#41, #72)
-      hydrateCompositionContext({
-        storyboardId: composition.storyboardId,
-        praatplaat: composition.praatplaat,
-        praatplaatPosition: composition.praatplaatPosition,
-      });
-      // Navigate to Stage
-      goToStage();
-    },
-    [setCurrentCompositionId, restoreClassSession, loadTimeline, loadLibrary, goToStage]
+    (composition: SavedComposition) => openLocalComposition(composition, 'stage'),
+    []
   );
 
   const handleDeleteComposition = useCallback((id: string) => {
@@ -131,9 +62,12 @@ export function CompositionsView() {
     // If deletion failed, logger will have recorded the error
   }, []);
 
+  // Naar het startscherm: daar start "Nieuwe compositie" met een schone lei
+  // (wizard + bevestiging bij werk in uitvoering). Direct naar de kaart
+  // gaan liet de vorige compositie en klas-sessie staan (B21).
   const handleNewComposition = useCallback(() => {
-    goToMap();
-  }, [goToMap]);
+    goToStart();
+  }, [goToStart]);
 
   return (
     <div className="min-h-screen bg-bg-app">

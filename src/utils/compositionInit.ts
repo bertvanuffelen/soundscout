@@ -18,7 +18,7 @@ import { getActiveAssignment, AssignmentLookupError, type ActiveAssignment } fro
 import { MAX_SECTIONS } from '../constants/config';
 import { logger } from './logger';
 import { praatplaatToStoryboard } from './praatplaatStoryboard';
-import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, Storyboard, ComposeMode, ClassSession } from '../types';
+import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, Storyboard, ComposeMode, ClassSession, SavedComposition } from '../types';
 import type { SavedOnlineComposition } from '../lib/submissions';
 import { storageService } from '../services/StorageService';
 import i18n from '../i18n';
@@ -129,8 +129,10 @@ export async function initializeNewComposition(
   // Stap 1: Stel thema in
   useThemeStore.getState().setTheme(themeId);
 
-  // Stap 2: Reset state (sync, kan niet falen)
-  useTimelineStore.getState().clearAllTracks();
+  // Stap 2: Reset state (sync, kan niet falen). Volledige reset (B24): ook
+  // secties/sequences/lengte, anders erft een vrije compositie bv. de
+  // onverwijderbare storyboard-secties van de vorige.
+  useTimelineStore.getState().resetTimeline();
   useLibraryStore.getState().clearLibrary();
   // Bewaarcode-context hoort bij de VORIGE compositie — zonder wissen zou
   // de auto-sync (#52-FASE2) de oude online compositie overschrijven met
@@ -192,10 +194,9 @@ export async function initializeCompositionFromStoryboard(
   // 1. Thema impliciet uit storyboard
   useThemeStore.getState().setTheme(storyboard.themeId);
 
-  // 2. Reset state
-  const { totalBeats, clearAllTracks, clearSections, addSection } = useTimelineStore.getState();
-  clearAllTracks();
-  clearSections();
+  // 2. Reset state (volledig, B24): na de reset is totalBeats de standaard
+  useTimelineStore.getState().resetTimeline();
+  const { totalBeats, addSection } = useTimelineStore.getState();
   useLibraryStore.getState().clearLibrary();
   // Bewaarcode-context hoort bij de VORIGE compositie — anders overschrijft
   // de auto-sync die online compositie met dit nieuwe werk (AUD-09).
@@ -428,6 +429,11 @@ export async function activatePendingAssignment(): Promise<void> {
       assignmentName: assignment.praatplaat.name,
     });
 
+    // Nieuwe praatplaat-sessie = nieuwe compositie: lege tijdlijn en
+    // bibliotheek (B24; voorheen bleef het werk van daarvoor staan)
+    useTimelineStore.getState().resetTimeline();
+    useLibraryStore.getState().clearLibrary();
+
     useAppStore.getState().setPraatplaat({
       id: assignment.praatplaat.id,
       name: assignment.praatplaat.name,
@@ -563,6 +569,46 @@ export async function initializeFromSavedComposition(
 }
 
 /**
+ * Open een lokaal opgeslagen compositie ("Mijn composities") in de studio of
+ * op het podium. Begint met een schone lei (B21) zodat er geen template,
+ * feedback of klas-sessie van een eerder geopende compositie blijft hangen,
+ * en herstelt daarna alleen wat bij déze compositie hoort.
+ */
+export function openLocalComposition(
+  composition: SavedComposition,
+  destination: 'studio' | 'stage',
+): void {
+  const app = useAppStore.getState();
+  app.resetCompositionContext();
+  app.setCurrentCompositionId(composition.id);
+  // Een lokale compositie is niet de bewaarcode-compositie van daarnet:
+  // ontkoppelen, anders overschrijft de auto-sync die (AUD-09).
+  storageService.clearSaveOnlineInfo();
+
+  if (composition.classSession) {
+    // Volgorde: setClassSession reset submissionId/synced, dus die erná.
+    app.setClassSession(composition.classSession);
+    if (composition.submissionId) {
+      app.setSubmissionId(composition.submissionId);
+      // Een bewaarde submissionId = eerder succesvol ingeleverd: zonder deze
+      // herstelstap verdween de peer-feedback-knop na heropenen.
+      app.setSubmissionSynced(true);
+    }
+  }
+
+  useTimelineStore.getState().loadTimeline(composition.timeline);
+  useLibraryStore.getState().loadLibrary(composition.samples);
+  hydrateCompositionContext({
+    storyboardId: composition.storyboardId,
+    praatplaat: composition.praatplaat,
+    praatplaatPosition: composition.praatplaatPosition,
+  });
+
+  if (destination === 'stage') app.goToStage();
+  else app.goToStudio();
+}
+
+/**
  * Open een al-geladen bewaarde compositie volledig (testronde 2): claim,
  * initialiseer, herstel de klas-sessie en zet ontvangen feedback klaar.
  * Gedeeld door het keuzescherm (ShareCodeInput) en de "Je hebt een
@@ -581,6 +627,12 @@ export async function openSavedComposition(
   // Hetzelfde geheim geeft dit apparaat het recht de klas-inzending bij te
   // werken (migratie 036): de server vergelijkt met save_secret van de rij.
   storageService.setSubmissionSecret(saved.id, newSecret);
+
+  // Schone lei (B21): context van een eerder geopende compositie mag niet
+  // doorlekken. Anders overschrijft "Opslaan" die andere lokale compositie
+  // (currentCompositionId), gaat inleveren naar een oude klas, of blijven
+  // oude feedback en template-vergrendelingen staan.
+  useAppStore.getState().resetCompositionContext();
 
   // Klas-sessie herstellen (migratie 028) — VÓÓR de navigatie, zodat het
   // podium bij mount meteen de sessie, code-badge en feedback kan tonen.

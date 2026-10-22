@@ -30,7 +30,8 @@
     "location": "Location",
     "zoom": "Zoom in",
     "saved": "Saved",
-    "dateLocale": "en-GB"
+    "dateLocale": "en-GB",
+    "duration": "Duration {{duration}} s"
   },
   "language": {
     "nl": "Nederlands",
@@ -321,7 +322,8 @@
       "labelPlaceholder": "Label (e.g. Intro, A, B)",
       "maxReached": "Maximum number of sections reached",
       "needsPlayhead": "First move the playhead to where the section should end (play or click the timeline)"
-    }
+    },
+    "startBeat": "Starts on beat {{beat}}"
   },
   "transport": {
     "play": "Play",
@@ -381,7 +383,7 @@
     "colClass": "For your class",
     "colShare": "Share with others",
     "actionsSaveHint": "On this device",
-    "classNotYetSubmitted": "Click Save to submit to {{className}}.",
+    "classNotYetSubmitted": "Click Hand in to send it to {{className}}.",
     "teacherOnly": "Visible to teachers only",
     "actionsOnlineHint": "Continue working on another device",
     "actionsShareHint": "Create a listen link for anyone",
@@ -389,7 +391,7 @@
     "actionsExportMp3Hint": "Download as audio file",
     "actionsExportVideoHint": "Download as video with images",
     "actionsTemplateHint": "Create an assignment for students",
-    "actionsNameRequired": "Give your composition a name first",
+    "actionsNameRequired": "Give your composition a name first (at the top of the stage). Then you can save and share.",
     "saveQuotaError": "Storage full — delete an old composition to free up space.",
     "saveGenericError": "Save failed. Please try again.",
     "syncSuccess": "Online copy updated",
@@ -397,6 +399,7 @@
     "presentButton": "Present on the whiteboard",
     "actionsPresentHint": "Show and play your composition full screen",
     "submitToClass": "Hand in",
+    "resubmitToClass": "Hand in again",
     "submitToClassHint": "Save and send to {{className}}",
     "exportKeepTabOpen": "Exporting — keep this tab visible, otherwise the browser pauses the export.",
     "exportReadyMp3": "MP3 downloaded!",
@@ -1011,6 +1014,7 @@
   },
   "errors": {
     "notLoggedIn": "You need to be signed in",
+    "networkTimeout": "The connection is too slow. We'll try again next time you save.",
     "templates": {
       "load": "Could not load templates",
       "code": "Could not generate a template code",
@@ -1852,6 +1856,8 @@
     "storyboardDescription": "Create a soundscape for a series of images",
     "pickImage": "Choose an image",
     "pickStoryboard": "Choose a storyboard",
+    "noImages": "No pictures available yet.",
+    "noStoryboards": "No storyboards available yet.",
     "images_one": "{{count}} image",
     "images_other": "{{count}} images",
     "back": "Back",
