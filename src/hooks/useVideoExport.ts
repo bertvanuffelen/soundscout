@@ -51,7 +51,7 @@ interface UseVideoExportReturn {
 export function useVideoExport(
   options: UseVideoExportOptions = {},
 ): UseVideoExportReturn {
-  const { defaultFilename = 'mijn-compositie' } = options;
+  const { defaultFilename = 'mijn-soundscape' } = options;
 
   const [videoExportState, setVideoExportState] = useState<VideoExportState>('idle');
   const [videoProgress, setVideoProgress] = useState(0);

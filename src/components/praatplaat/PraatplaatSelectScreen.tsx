@@ -26,7 +26,10 @@ export function PraatplaatSelectScreen() {
   const goToMap = useAppStore((s) => s.goToMap);
   const goToStart = useAppStore((s) => s.goToStart);
 
-  const [selectedPos, setSelectedPos] = useState<{ x: number; y: number } | null>(null);
+  // Plek verzetten vanaf het podium: begin bij de huidige plek
+  const [selectedPos, setSelectedPos] = useState<{ x: number; y: number } | null>(
+    () => (useAppStore.getState().praatplaatReturnToStage ? useAppStore.getState().praatplaatPosition : null),
+  );
   const imageRef = useRef<HTMLDivElement>(null);
 
   // Verwerk klik op afbeelding
@@ -81,6 +84,12 @@ export function PraatplaatSelectScreen() {
   const handleConfirm = useCallback(() => {
     if (!selectedPos || !activePraatplaat) return;
     setPraatplaatPosition(selectedPos);
+    // Plek verzetten vanaf het podium: zelfde soundscape, terug naar het podium
+    if (useAppStore.getState().praatplaatReturnToStage) {
+      useAppStore.setState({ praatplaatReturnToStage: false });
+      useAppStore.getState().goToStage();
+      return;
+    }
     // Herbevestig het thema-geluidenpalet van deze praatplaat (vangnet als de
     // leerling na een herlaad direct op dit scherm binnenkomt) — testronde 5 / D2.
     const ppThemeId = activePraatplaat.themeId;
@@ -93,6 +102,15 @@ export function PraatplaatSelectScreen() {
     goToMap();
   }, [selectedPos, activePraatplaat, setPraatplaatPosition, setActiveStoryboard, setComposeMode, goToMap]);
 
+  function handleBack() {
+    if (useAppStore.getState().praatplaatReturnToStage) {
+      useAppStore.setState({ praatplaatReturnToStage: false });
+      useAppStore.getState().goToStage();
+    } else {
+      goToStart();
+    }
+  }
+
   if (!activePraatplaat) {
     // Fallback — zou niet moeten voorkomen
     goToStart();
@@ -104,7 +122,7 @@ export function PraatplaatSelectScreen() {
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 bg-black/20">
         <button
-          onClick={goToStart}
+          onClick={handleBack}
           className="text-white/70 hover:text-white text-sm flex items-center gap-1"
         >
           <ArrowLeft className="w-4 h-4" />

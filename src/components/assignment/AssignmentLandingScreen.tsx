@@ -22,9 +22,13 @@ import { useTranslation } from 'react-i18next';
 import { getMapBackgroundImage } from '../../data/themes';
 import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCircle, Loader2, ChevronLeft, ChevronRight, Clock } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
-import { activatePendingAssignment } from '../../utils/compositionInit';
+import { activatePendingAssignment, openSavedComposition } from '../../utils/compositionInit';
+import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
 import { findStoryboardById, getTheme } from '../../data/themes';
 import { Button } from '../ui/Button';
+import { Modal } from '../ui/Modal';
+import { OnboardingAnimation } from '../common/OnboardingAnimation';
+import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { OpdrachtkaartCard } from './OpdrachtkaartCard';
 import { logger } from '../../utils/logger';
 import type { TFunction } from 'i18next';
@@ -39,7 +43,12 @@ export default function AssignmentLandingScreen() {
   const [isStarting, setIsStarting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
-  const handleStart = useCallback(async () => {
+  // Eenmalige uitleg (A3): de klasroute is in het onderwijs de hoofdroute,
+  // maar zag de "Zo werkt SoundScout"-animatie nooit (die hing alleen aan
+  // "Nieuwe compositie"). Zelfde first-run-vlag, dus één keer per apparaat.
+  const [showIntro, setShowIntro] = useState(false);
+
+  const startAssignment = useCallback(async () => {
     if (!pending?.assignment) return;
     setIsStarting(true);
     setError(null);
@@ -51,6 +60,49 @@ export default function AssignmentLandingScreen() {
       setIsStarting(false);
     }
   }, [pending, t]);
+
+  // Leerlingcode (fase 4.2): verder met het laatste werk van dit kind
+  const [isContinuing, setIsContinuing] = useState(false);
+  const handleContinueLatest = useCallback(async () => {
+    const member = pending?.member;
+    if (!member?.hasWork) return;
+    setIsContinuing(true);
+    setError(null);
+    try {
+      const [{ loadSavedComposition }, { openMemberLatestWork }] = await Promise.all([
+        import('../../lib/submissions'),
+        import('../../lib/members'),
+      ]);
+      const work = await openMemberLatestWork(member.code);
+      if (!work) throw new Error('not found');
+      const saved = await loadSavedComposition(work.saveCode);
+      if (!saved) throw new Error('not found');
+      await openSavedComposition(saved, work.saveCode, 'studio', { existingSecret: work.saveSecret });
+      // De herstelde klassessie krijgt de identiteit weer mee
+      const session = useAppStore.getState().classSession;
+      if (session) useAppStore.setState({ classSession: { ...session, member: { code: member.code, pseudonym: member.pseudonym } } });
+    } catch (err) {
+      logger.error('[AssignmentLandingScreen] verder met laatste werk mislukt', err);
+      setError(t('assignmentLanding.startError'));
+      setIsContinuing(false);
+    }
+  }, [pending, t]);
+
+  // Eerst vragen over onbewaard werk (E5): starten vervangt de studio
+  const { guard, modal: unsavedModal } = useUnsavedWorkGuard();
+  const handleStart = () => guard(() => {
+    if (!hasSeenFirstRun('onboarding-intro')) {
+      setShowIntro(true);
+      return;
+    }
+    void startAssignment();
+  });
+
+  const handleIntroDone = useCallback(() => {
+    markFirstRunSeen('onboarding-intro');
+    setShowIntro(false);
+    void startAssignment();
+  }, [startAssignment]);
 
   // Safety: als pending ontbreekt (bv. direct geopend), terug naar start
   if (!pending) {
@@ -83,6 +135,13 @@ export default function AssignmentLandingScreen() {
 
         {/* Indeling (testronde 2, wens Bert): 1) header met titel/type-icoon
             2) grote afbeelding 3) labels klascode + klas 4) opdrachtkaart */}
+
+        {/* Leerlingcode: begroeting met de vaste schuilnaam */}
+        {pending.member && (
+          <p className="mb-4 text-xl font-extrabold text-white md:text-text-main">
+            {t('members.hello', { name: pending.member.pseudonym })}
+          </p>
+        )}
 
         {/* 1+2: Body per assignment-type (header + afbeelding + evt. uitleg) */}
         {assignment?.type === 'template' && assignment.template && (
@@ -142,7 +201,12 @@ export default function AssignmentLandingScreen() {
             <Button variant="ghost" onClick={goToStart} disabled={isStarting} className="md:text-text-main md:hover:bg-neutral-100">
               {t('assignmentLanding.back')}
             </Button>
-            <Button variant="primary" onClick={handleStart} disabled={isStarting}>
+            {pending.member?.hasWork && (
+              <Button variant="secondary" onClick={() => guard(handleContinueLatest)} disabled={isStarting || isContinuing} isLoading={isContinuing}>
+                {t('members.continueLatest')}
+              </Button>
+            )}
+            <Button variant="primary" onClick={handleStart} disabled={isStarting || isContinuing}>
               {isStarting ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin mr-2" />
@@ -158,20 +222,42 @@ export default function AssignmentLandingScreen() {
           <RouteCActions />
         )}
       </div>
+
+      {unsavedModal}
+      <Modal
+        isOpen={showIntro}
+        onClose={handleIntroDone}
+        title={t('start.introTitle')}
+        size="xl"
+        showClose
+        footer={(
+          <div className="flex justify-center">
+            <Button variant="primary" size="lg" onClick={handleIntroDone} className="w-full sm:w-auto sm:min-w-[240px]">
+              {t('start.introStart')}
+            </Button>
+          </div>
+        )}
+      >
+        <div className="mx-auto rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface" style={{ maxWidth: 'min(100%, calc((100dvh - 330px) * 1.78))' }}>
+          <OnboardingAnimation />
+        </div>
+      </Modal>
     </div>
   );
 }
 
 function RouteCActions() {
   const { t } = useTranslation();
-  const goToStart = useAppStore((s) => s.goToStart);
+  const goToStartWith = useAppStore((s) => s.goToStartWith);
 
+  // De knoppen doen nu wat ze zeggen (O7): voorheen brachten beide alleen
+  // terug naar het startscherm.
   return (
     <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-end">
-      <Button variant="ghost" onClick={goToStart} className="md:text-text-main md:hover:bg-neutral-100">
+      <Button variant="ghost" onClick={() => goToStartWith('code')} className="md:text-text-main md:hover:bg-neutral-100">
         {t('assignmentLanding.none.otherCode')}
       </Button>
-      <Button variant="primary" onClick={goToStart}>
+      <Button variant="primary" onClick={() => goToStartWith('new')}>
         {t('assignmentLanding.none.composeFree')}
       </Button>
     </div>

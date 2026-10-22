@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-10-15 (audit oktober 2026: blok B toegevoegd; zie § Audit oktober 2026)
+**Laatst bijgewerkt**: 2026-10-21 (leerlingflow fase 0–5 gebouwd; eindtest-restpunten onder § Leerlingflow na de eindtest)
 
 ---
 
@@ -24,7 +24,7 @@
 > de korte testlijst staat in `docs/TESTPLAN-LANCERING.md` § Stand 07-10.
 > **Live (gecontroleerd 07-10):** soundscout.nl draait de build van 07-10 (= `main` 952da05) met actieve CSP.
 
-**Leerling-workflow / podium (21-10):** bouwplan in [`PLAN-PODIUM-LEERLING.md`](PLAN-PODIUM-LEERLING.md). Fase 0 (fouten bij context, audio, data, podium-UI en Engelse sleutels) moet vóór 27-10 af; fase 1–4 volgen daarna. Status per stap staat alleen daar.
+**Leerling-workflow / podium (21-10):** bouwplan in [`PLAN-PODIUM-LEERLING.md`](PLAN-PODIUM-LEERLING.md). Fase 0–5 zijn gebouwd (PR #5 fase 0, #6 fase 1–5, #7 wachtwoordeisen) en migraties 037–042 staan in Supabase. Nog vóór 27-10: PR's mergen, uitrollen, test met een echte klas. De restpunten uit de eindtest staan onder § *Leerlingflow na de eindtest*. Status per stap staat alleen in het bouwplan.
 
 **Vóór 27-10 (klein, lanceer-polish):**
 - [x] **PRAATPLAAT-MOBIEL** — *opgelost 07-10:* nieuw `FittedImage` (contain-fit via ResizeObserver + `utils/fitContain.ts`) zodat spots en markers precies over het beeld liggen; zijpaneel start dicht onder 640 px, schuift er als overlay overheen en sluit na een keuze. Geverifieerd op 375×812, 812×375, 1280×800 (ook met montagelijn) en 3440×1440. Oorspronkelijke melding: gevonden 06-10 bij het testen van SSDEMO (`soundscout.nl/?pp-share=SSDEMO`) op 375 px: (1) het zijpaneel *Inzendingen* staat in de publieke weergave standaard open en knijpt de plaat samen tot een strookje; (2) óók met het paneel dicht staan de spots naast het plaatje — de `interactiveBoard`-weergave in `PresentationSurface` positioneert de spots over het hele (hoge) kader in plaats van over het plaatje zelf (wrapper niet shrink-wrapped op portret). Desktop is goed. Iedereen die de uitnodiging op de telefoon opent, ziet dit.
@@ -43,6 +43,51 @@
 - [ ] **LESKAART-PDF's** — alle vier ingebouwde leskaarten hebben `pdf: null` (`scripts/les-pages-data.json`); de kolom `pdf_url` bestaat. Bert maakt de PDF's; daarna hier koppelen.
 - [ ] **TEACHER-HERO-MOBIEL** (P3, gevonden bij Tier 1 #4, 08-10) — op 375 × 812 staat *Bekijk de demo* nét onder de vouw (top 817 px): de onboarding-animatie staat op mobiel bóven de hero-tekst (`src/pages/TeacherLandingPage.tsx`). Overweeg op mobiel tekst + knop eerst, animatie eronder. Geen fout; de knop werkt.
 - [ ] **TEACHER-STAPPEN-TEKST** (P3, gevonden bij Tier 1 #4, 08-10) — "Zo zet je een klas op", stap 2: *Activeer een praatplaat, storyboard of template* noemt vrij componeren niet, terwijl dat een van de vier opdrachttypes is (NL + EN in `teacherLanding.*`).
+
+---
+
+## Leerlingflow na de eindtest (21-10)
+
+> Bron: `eindtest-leerling.md` in het kennisdossier (tweede AI, testklas 3597), nagelopen in de code. De kritieke en hoge punten (E1–E5, E7, E11, H2, H3, K2 en M1–M3) zijn gebouwd in fase 5. Dit zijn de restpunten. Volgorde binnen een blok = voorkeur.
+
+**Eerst na de lancering (gedrag dat een kind of docent raakt)**
+- [ ] **ET-E6 vrij werk bij een storyboard-opdracht** (middel-hoog) — `JoinClassModal.tsx` blokkeert alleen praatplaat. Bij een andere vorm dan de opdracht (vrij werk, storyboard-opdracht) een korte keuze: "Toch inleveren" / "Begin aan de opdracht", of de vorm meesturen zodat de docent het ziet.
+- [ ] **ET-E8 storyboard langer dan de muziek** (middel) — scène 2–4 komen nooit in beeld en inleveren kan gewoon. Op het podium een regel "Je soundscape duurt 0:07, het verhaal 1:04", met "Naar de Studio"; het podium laten doorlopen tot het einde van het storyboard (zoals de video-export).
+- [ ] **ET-E9 klassessie bewaren zonder clips** (middel) — `workInProgress` bewaart alleen met clips; herladen vóór de eerste clip wist de klassessie. Ook bewaren als `classSession` gezet is.
+- [ ] **ET-E10 één code per soundscape** (middel) — na "Bewaar" en daarna inleveren staan er twee codes en verdwijnt de eerste uit `save-online`. De muziekkaart opnieuw tonen met de nieuwe code, of de eerste blijven bijwerken (`compositionInit.ts` ~r.647, `useStageSave.ts`).
+- [ ] **ET-M4 "Verder met laatste" onder een andere opdracht** (middel) — `AssignmentLandingScreen.handleContinueLatest` hangt oud werk onder de nu actieve opdracht. Of de sessie van het oude werk gebruiken, of waarschuwen.
+- [ ] **ET-E13 uitgeschakelde "Naar Podium"** (laag-middel) — in de studio zonder clips ziet de knop eruit als aan. Grijs maken en een regel "Sleep eerst een geluid naar de tijdlijn".
+- [ ] **ET-E15 "Geluisterd" te vroeg** (laag) — telt al na openen en sluiten van de presentatie. Pas afvinken na een paar seconden afspelen.
+- [ ] **ET-M8 koppelen aan leerlingcode is fire-and-forget** (middel) — `linkSubmissionToMember` faalt alleen in de log; bij mislukken een melding of een nieuwe poging.
+- [ ] **ET-M6 onthouden werk bij een volle opslag** (middel) — `workInProgress.ts`: een quotafout laat een oudere snapshot staan; één sleutel voor alle tabbladen.
+- [ ] **ET-L3 ontvangen feedback wissen** (laag) — `receivedFeedback` blijft staan bij een nieuwe plek of soundscape (`StageView.tsx`, `compositionInit.ts`).
+- [ ] **ET-L4 titel-uit na het typen** (laag) — zet de docent de titelinstelling uit nadat het kind al typte, dan blijft die titel staan; de server dwingt het niet af.
+- [ ] **ET-L5 audio-init op het podium** (laag, vermoeden) — `StageVisual` wacht `initAudio`/`loadSamples` niet af vóór de eerste play na openen via een code.
+- [ ] **ET-L6 dnd-kit-meldingen voor schermlezers** (laag) — Engels en technisch ("Draggable item … was dropped over droppable area track-4"); vertalen via de `accessibility.announcements`-optie.
+
+**Toegankelijkheid en telefoon**
+- [ ] **ET-A11Y-44 knopmaten onder 44 px** (middel) — studio-werkbalk 32×32 (28 op de telefoon), spoorvolume 23×16, "Sequencer sluiten" 11×11, "Verwijder" in de recorder, "Terug" in wizard en opdrachtscherm, voettekst-icoontjes, "Terug naar Studio" op het podium (telefoon) 34×36.
+- [ ] **ET-A11Y-NAAM knoppen zonder naam** (middel) — voorbeeldknoppen in de bibliotheek, sluitknoppen van het effect- en inkortvenster, schermvullend-knop in de presentatie, kaartpins op de telefoon; voettekst-iconen alleen `title`; taalknop "NL EN" zonder label of `aria-pressed`.
+- [ ] **ET-A11Y-CONTRAST** (middel) — witte tekst op gele clips (Skateboard) ver onder 3:1: donkere tekst op lichte clipkleuren. Klaspil "Klas-Test 3597" wit op grijs. De presentatiedialoog maakt de achtergrond niet inert (twee "Afspelen"-knoppen in de toegankelijkheidsboom).
+- [ ] **ET-E12 locatienamen op de telefoon** (middel) — de pins op de kaart hebben alleen "0/6" en geen `aria-label`; de draai-melding bedekt de kop en heeft een sluitknop van 20×20 px (valt samen met AUD-25). `LocationMarker.tsx`: naam als `aria-label` en een korte naam onder de pin.
+- [ ] **ET-TOUCH slepen met een echte vinger** (test) — de eindtest gebruikte muisevents in een touch-emulatie; de TouchSensor (150 ms) van dnd-kit is niet echt getest. Eén korte controle op een iPad en een Chromebook met touchscherm.
+
+**Tekst en uitleg**
+- [ ] **ET-TEKST-WOORDEN** (laag) — "Studio-tip: Tip!" + "Tip: klik op een blok…" (kies één woord: blok / clip / geluid); kaartkop "geluiden op te nemen" tegenover de tip "verzamelen"; "je soundscape" en "jouw soundscape" door elkaar; "To a picture" naast "a single image" (EN); "last name" → "surname" (VK). Bewust zo gelaten: "Muziek · MP3" op de exporttegel (goedgekeurde mockup) en "kan je" (Berts formulering).
+- [ ] **ET-ONBOARDING-ÉÉN-VENSTER** (laag) — de klasroute toont twee vensters na elkaar (uitleg + kaarttip); voor jonge leerlingen kan dat één zijn. Op het startscherm na herladen in de klas staan vier grote knoppen: "Naar het podium" is een tweede "Ga verder" — alleen "Ga verder" laten, met studio of podium als keuze erna.
+- [ ] **ET-E17 Mijn soundscapes** (laag) — Afspelen en Verwijderen zijn onzichtbaar tot hover (op telefoon of tablet niet te vinden); de waarschuwing "worden opgeslagen in deze browser" botst met de code erboven. Knoppen altijd tonen.
+
+**Database en beveiliging**
+- [ ] **ET-DB-SEARCHPATH** (laag) — 37 oudere SECURITY DEFINER-functies zonder vast `search_path` (Supabase-advies 0011); één migratie in de stijl van 036/040.
+- [ ] **ET-L2 enumeratie leerlingcodes** (laag) — `inactive`/`expired` zijn te onderscheiden van "bestaat niet". Bewust gelaten (een kind moet "vraag je docent om een nieuwe" zien); de rem op foute pogingen telt ze al mee. Heroverwegen als scholen erom vragen.
+- [ ] **ET-PW-LEAKED** (P3) — *leaked password protection* kan alleen op het Pro-abonnement. Nu: minimaal 8 tekens met letters en cijfers (PR #7). Overweeg Pro als er veel docenten komen (ook voor back-ups).
+- [ ] **ET-BACKUPS** (P3) — de privacyverklaring noemt back-ups; controleer wat het huidige Supabase-abonnement daaraan biedt en pas de tekst aan als dat afwijkt.
+
+**Tests (direct na de lancering)**
+- [ ] **ET-TEST-SUBMIT** — `submitToClass`: retry na time-out, terugval na een geweigerd geheim; de race met een nieuwe soundscape is gedekt in `useStageSaveRace.test.ts`.
+- [ ] **ET-TEST-CODEINPUT** — `ShareCodeInput`: route leerlingcode (ok, verlopen, rem, fout), bewaarcode, templatecode; `handleContinueLatest`.
+- [ ] **ET-TEST-WIP** — `workInProgress`: quota, vervaldatum is gedekt; gedeeld apparaat in `finishSession.test.ts`.
+- [ ] **ET-TEST-SQL** — de PGlite-testscripts voor 037–042 (nu in de kladmap van de sessie) opnemen als vaste SQL-tests in de repo, naast de migraties.
 
 ---
 
@@ -66,10 +111,10 @@
 - [ ] **AUD-70 Zod-CSP-melding** — `z.config({ jitless: true })` bij het opstarten; nu één `script-src eval`-violation per paginalading (raakt Tier 1 #2). 15 min
 - [ ] 🔀 **AUD-15 label "Storyboard" bij praatplaat/afbeelding** — één helper `submissionShape()` voor `SubmissionCard.tsx:21` en `PresentationSurface.tsx:114-119`. 1 u
 - [ ] **AUD-24 taaldetectie** — `src/i18n/index.ts`: alleen de eerste voorkeurstaal; nu krijgt een NL-browser met EN als tweede taal een Engelse app. 30 min
-- [ ] **AUD-23 intro-knop onder de vouw** — "Aan de slag" in de modal "Zo werkt SoundScout" sticky onderaan (1366×768, 1024×768). 30-60 min
+- [x] **AUD-23 intro-knop onder de vouw** — *opgelost 21-10 (fase 5.7, ook de wizard): `Modal` heeft een vaste voetregel en ✕; gecontroleerd op 1280×800 en 375×812.* "Aan de slag" in de modal "Zo werkt SoundScout" sticky onderaan (1366×768, 1024×768). 30-60 min
 - [ ] **AUD-25 liggend-balk over de knoppen** — `LandscapeHint` niet `fixed` over de header; ✕ ≥44 px. 1 u
 - [ ] **AUD-44 security-headers** — `.htaccess`: HSTS, `X-Content-Type-Options: nosniff`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'self'` in de CSP. 30 min
-- [ ] **AUD-46 wachtwoorden docenten** — Supabase Auth: *leaked password protection* aan + minimaal 10 tekens; client gelijktrekken (`TeacherRegister.tsx:42`, `TeacherResetPassword.tsx:38`, `supabaseErrors.ts`). 15 min (dashboard = Bert)
+- [~] **AUD-46 wachtwoorden docenten** — *deels 21-10: leaked-protection kan alleen op Pro (zie ET-PW-LEAKED); minimaal 8 tekens met letters en cijfers staat in Supabase en in de app (PR #7, `utils/password.ts`).* Supabase Auth: *leaked password protection* aan + minimaal 10 tekens; client gelijktrekken (`TeacherRegister.tsx:42`, `TeacherResetPassword.tsx:38`, `supabaseErrors.ts`). 15 min (dashboard = Bert)
 - [ ] **AUD-41 cache audio/beelden** — `/audio/` en `/images/` niet `immutable` voor een jaar (bestandsnamen hebben geen hash); vóór het vervangen van de piraten-dummytonen. 15 min
 - [ ] 🔀 **AUD-28 venster "Klas aanmaken" hangt** bij een fout (oorzaak BUG-MAXCLASSES-MODAL: `TeacherDashboard.tsx:100-108` gooit de fout niet door). 30 min
 - [ ] **AUD-64 ontbrekende kleurtokens** — `warning-200…800`, `error-300/700`, `success-700` in `@theme`; de status "beluisterd" in het presentatie-zijpaneel is nu onzichtbaar. 1,5 u

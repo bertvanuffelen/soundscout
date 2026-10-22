@@ -15,13 +15,14 @@ import {
 } from '../../lib/peerFeedback';
 import { logger } from '../../utils/logger';
 import { cn } from '../../utils/cn';
+import { peerChipLabel } from '../../utils/peerChipLabel';
 
 interface PeerReviewSettingsProps {
   assignmentId: string;
 }
 
 export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [available, setAvailable] = useState(true); // false als migratie 027 nog niet draait
   const [enabled, setEnabled] = useState(false);
@@ -243,7 +244,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
             >
               {cards.map((c) => (
                 <option key={c.id} value={c.id}>
-                  {c.title}{c.builtinKey ? '' : ` (${t('teacher.peerReview.ownCard')})`}
+                  {peerChipLabel(c.title, i18n.language)}{c.builtinKey ? '' : ` (${t('teacher.peerReview.ownCard')})`}
                 </option>
               ))}
             </select>
@@ -269,7 +270,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
             <div className="flex flex-wrap gap-1.5">
               {selectedCard.chips.map((chip) => (
                 <span key={chip} className="px-2 py-0.5 rounded-full bg-accent-50 border border-accent-200 text-accent-800 text-xs">
-                  {chip}
+                  {peerChipLabel(chip, i18n.language)}
                 </span>
               ))}
             </div>
