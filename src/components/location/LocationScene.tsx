@@ -157,7 +157,7 @@ export function LocationScene() {
   if (!location) {
     return (
       <div className="min-h-screen bg-success-50 flex items-center justify-center">
-        <p className="text-lg text-text-muted">Location not found</p>
+        <p className="text-lg text-text-muted">{t('location.notFound')}</p>
       </div>
     );
   }

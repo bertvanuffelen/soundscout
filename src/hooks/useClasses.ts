@@ -123,10 +123,7 @@ export function useClasses(): UseClassesReturn {
 
       // Check klassen limiet (null = onbeperkt)
       if (maxClasses !== null && classes.length >= maxClasses) {
-        throw new Error(
-          `Je hebt het maximum van ${maxClasses} klassen bereikt. ` +
-          `Verwijder een bestaande klas om een nieuwe aan te maken.`
-        );
+        throw new Error(i18n.t('errors.classes.limitReached', { count: maxClasses }));
       }
 
       // Genereer unieke code via database functie
@@ -178,7 +175,7 @@ export function useClasses(): UseClassesReturn {
 
       return newClass;
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Onbekende fout bij aanmaken klas';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.classes.create');
       setOperationError(msg);
       logger.error('createClass failed:', err);
       throw err;
@@ -207,7 +204,7 @@ export function useClasses(): UseClassesReturn {
       // Verwijder uit lokale state
       setClasses(prev => prev.filter(c => c.id !== id));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Onbekende fout bij verwijderen klas';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.classes.delete');
       setOperationError(msg);
       logger.error('deleteClass failed:', err);
       throw err;

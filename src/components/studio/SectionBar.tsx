@@ -118,7 +118,7 @@ export const SectionBar = memo(function SectionBar({
     <div
       ref={barRef}
       className="relative h-5 w-full select-none"
-      aria-label="Sections"
+      aria-label={t('studio.sections.barLabel')}
     >
       {segments.map(({ section, startBeat, endBeat, index }) => {
         const leftPercent = (startBeat / totalBeats) * 100;

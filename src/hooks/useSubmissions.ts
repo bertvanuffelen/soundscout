@@ -122,7 +122,7 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
       // Verwijder uit lokale state
       setSubmissions(prev => prev.filter(s => s.id !== id));
     } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Onbekende fout bij verwijderen';
+      const msg = err instanceof Error ? err.message : i18n.t('errors.submissions.delete');
       setOperationError(msg);
       logger.error('deleteSubmission failed:', err);
       throw err;

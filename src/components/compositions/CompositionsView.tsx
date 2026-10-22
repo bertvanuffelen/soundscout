@@ -12,11 +12,25 @@ import { useCallback, useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Music, AlertTriangle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
+import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
 import { storageService } from '../../services/StorageService';
 import { openLocalComposition } from '../../utils/compositionInit';
 import type { SavedComposition } from '../../types';
 import { Button } from '../ui';
 import { CompositionCard } from './CompositionCard';
+
+/** Groepeer per klasnaam; labels alleen tonen als er een klas bij zit */
+function groupByClass(list: SavedComposition[], noClassLabel: string) {
+  const groups = new Map<string, SavedComposition[]>();
+  for (const c of list) {
+    const key = c.classSession?.className ?? '';
+    groups.set(key, [...(groups.get(key) ?? []), c]);
+  }
+  const hasClass = [...groups.keys()].some((k) => k !== '');
+  return [...groups.entries()]
+    .sort(([a], [b]) => (a === '' ? 1 : b === '' ? -1 : 0))
+    .map(([key, items]) => ({ label: key || noClassLabel, items, showLabel: hasClass }));
+}
 
 export function CompositionsView() {
   const { t } = useTranslation();
@@ -43,15 +57,12 @@ export function CompositionsView() {
   }, [goToStart]);
 
   // Openen en afspelen delen één pad met een schone lei (B21)
-  const handleOpenComposition = useCallback(
-    (composition: SavedComposition) => openLocalComposition(composition, 'studio'),
-    []
-  );
-
-  const handlePlayComposition = useCallback(
-    (composition: SavedComposition) => openLocalComposition(composition, 'stage'),
-    []
-  );
+  // Eerst vragen over onbewaard werk (E5): openen vervangt de studio
+  const { guard, modal: unsavedModal } = useUnsavedWorkGuard();
+  const handleOpenComposition = (composition: SavedComposition) =>
+    guard(() => openLocalComposition(composition, 'studio'));
+  const handlePlayComposition = (composition: SavedComposition) =>
+    guard(() => openLocalComposition(composition, 'stage'));
 
   const handleDeleteComposition = useCallback((id: string) => {
     const deleted = storageService.deleteComposition(id);
@@ -125,14 +136,23 @@ export function CompositionsView() {
         ) : (
           /* Compositions list */
           <div className="space-y-3">
-            {compositions.map((composition) => (
-              <CompositionCard
-                key={composition.id}
-                composition={composition}
-                onOpen={handleOpenComposition}
-                onPlay={handlePlayComposition}
-                onDelete={handleDeleteComposition}
-              />
+            {/* Per klas gegroepeerd (podium v4): zo vind je het werk van
+                een les terug; zonder klas onderaan */}
+            {groupByClass(compositions, t('compositions.noClass')).map((group) => (
+              <div key={group.label} className="space-y-3">
+                {group.showLabel && (
+                  <h2 className="pt-2 text-xs font-bold uppercase tracking-wide text-text-muted">{group.label}</h2>
+                )}
+                {group.items.map((composition) => (
+                  <CompositionCard
+                    key={composition.id}
+                    composition={composition}
+                    onOpen={handleOpenComposition}
+                    onPlay={handlePlayComposition}
+                    onDelete={handleDeleteComposition}
+                  />
+                ))}
+              </div>
             ))}
 
             {/* New composition button */}
@@ -156,6 +176,7 @@ export function CompositionsView() {
           </p>
         </div>
       </main>
+      {unsavedModal}
     </div>
   );
 }

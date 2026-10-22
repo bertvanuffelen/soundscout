@@ -12,7 +12,7 @@ import { useEffect, useRef, useCallback, useState } from 'react';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useAudioStore } from '../stores/audioStore';
 import { audioService } from '../services/AudioService';
-import type { Track, Section } from '../types';
+import type { Track, Section, Clip } from '../types';
 
 const MAX_HISTORY = 50;
 
@@ -26,7 +26,8 @@ interface TimelineSnapshot {
 function cloneTracks(tracks: Track[]): Track[] {
   return tracks.map((t) => ({
     ...t,
-    clips: t.clips.map((c) => ({ ...c })),
+    // effects is een object: mee-kopiëren, anders deelt de snapshot hem
+    clips: t.clips.map((c) => (c.effects ? { ...c, effects: { ...c.effects } } : { ...c })),
   }));
 }
 
@@ -43,11 +44,25 @@ function createSnapshot(tracks: Track[], sections: Section[]): TimelineSnapshot 
   };
 }
 
-/** Check of twee track-arrays identiek zijn (snelle vergelijking) */
-function tracksEqual(a: Track[], b: Track[]): boolean {
+/** Zelfde effecten? (beide leeg telt als gelijk) */
+function effectsEqual(a: Clip['effects'], b: Clip['effects']): boolean {
+  if (a === b) return true;
+  if (!a || !b) return false;
+  return a.volume === b.volume && a.mute === b.mute && a.pitch === b.pitch
+    && a.reverb === b.reverb && a.fadeIn === b.fadeIn && a.fadeOut === b.fadeOut;
+}
+
+/**
+ * Check of twee track-arrays identiek zijn. Alles wat de leerling kan
+ * veranderen telt mee (E3, eindtest): ook loop, effecten, label en het
+ * volume of dempen van een spoor — anders wordt zo'n wijziging nooit een
+ * stap en gooit "Opnieuw" hem weg.
+ */
+export function tracksEqual(a: Track[], b: Track[]): boolean {
   if (a === b) return true;
   if (a.length !== b.length) return false;
   for (let i = 0; i < a.length; i++) {
+    if (a[i].volume !== b[i].volume || a[i].mute !== b[i].mute) return false;
     if (a[i].clips.length !== b[i].clips.length) return false;
     for (let j = 0; j < a[i].clips.length; j++) {
       const ca = a[i].clips[j];
@@ -57,7 +72,11 @@ function tracksEqual(a: Track[], b: Track[]): boolean {
         ca.sampleId !== cb.sampleId ||
         ca.startBeat !== cb.startBeat ||
         ca.trimStart !== cb.trimStart ||
-        ca.trimEnd !== cb.trimEnd
+        ca.trimEnd !== cb.trimEnd ||
+        ca.loop !== cb.loop ||
+        ca.loopDurationBeats !== cb.loopDurationBeats ||
+        ca.label !== cb.label ||
+        !effectsEqual(ca.effects, cb.effects)
       ) {
         return false;
       }

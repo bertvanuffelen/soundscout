@@ -76,6 +76,21 @@ export interface ClassSession {
   assignmentId: string;
   /** Display name of the assignment */
   assignmentName: string;
+  /** Opdrachtkaart van de docent (null = standaardkaart per type) — podium v4 */
+  card?: OpdrachtkaartContent | null;
+  /** Tijdsduur van de docent, bijv. "2 lessen" (migratie 033) */
+  durationLabel?: string | null;
+  /** Mag de leerling zelf een titel typen? (migratie 037; ontbreekt = ja) */
+  studentsTypeTitle?: boolean;
+  /** Ingelogd met een leerlingcode (migratie 038): vaste schuilnaam */
+  member?: ClassMemberIdentity;
+}
+
+/** Leerlingcode + vaste schuilnaam (fase 4.2, ontwerp LEERLING-CODES) */
+export interface ClassMemberIdentity {
+  /** Code zonder streepje, bijv. "ABC1234" */
+  code: string;
+  pseudonym: string;
 }
 
 // --- Opdrachtkaart (vorm-onafhankelijke instructiekaart) ---
@@ -379,6 +394,8 @@ export interface SavedComposition {
   praatplaat?: ActivePraatplaat;
   /** Position on the praatplaat (0-1 normalized), if applicable */
   praatplaatPosition?: PraatplaatPosition;
+  /** Bewaarcode waarmee je op een ander apparaat verder kunt (podium v4) */
+  saveCode?: string;
 }
 
 // --- Composition Data Transfer Object ---

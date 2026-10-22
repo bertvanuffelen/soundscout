@@ -6,19 +6,21 @@
 
 import { useState, useMemo, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, Clock, Check, AlertTriangle } from 'lucide-react';
+import { RefreshCw, Loader2, Music, PenLine, MapPin, FileText, Clapperboard, Play, XCircle, Share2, Info, Star, MonitorPlay, Eye, Trash2, GraduationCap, Clock, Check, AlertTriangle, Type } from 'lucide-react';
+import { cn } from '../../utils/cn';
 import type { TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
-import { updateAssignmentDuration, submissionMatchesAssignment } from '../../lib/assignments';
+import { updateAssignmentDuration, submissionMatchesAssignment, fetchStudentsTypeTitle, updateStudentsTypeTitle } from '../../lib/assignments';
 import { getClassDeletionWarning } from '../../lib/retention';
 import type { AssignmentType, ClassAssignmentRow } from '../../lib/assignments';
 import { SubmissionCard } from './SubmissionCard';
 import { SubmissionPlayer } from './SubmissionPlayer';
 import { PeerReviewSettings } from './PeerReviewSettings';
 import { PeerFeedbackOverview } from './PeerFeedbackOverview';
+import { ClassMembersPanel } from './ClassMembersPanel';
 import { ClassPresentationView } from './ClassPresentationView';
 import { ActivateAssignmentModal } from './ActivateAssignmentModal';
 import { AssignmentTypeCards } from './AssignmentTypeCards';
@@ -169,6 +171,28 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
       setActionError(err instanceof Error ? err.message : String(err));
     }
   }, [activeAssignment, durationDraft, refetchAssignment]);
+
+  // Titelinstelling (migratie 037, podium v4): null = kolom bestaat nog niet
+  const [typeTitle, setTypeTitle] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (!activeAssignment?.id) return;
+    let cancelled = false;
+    void fetchStudentsTypeTitle(activeAssignment.id).then((value) => {
+      if (!cancelled) setTypeTitle(value);
+    });
+    return () => { cancelled = true; };
+  }, [activeAssignment?.id]);
+  const handleToggleTypeTitle = useCallback(async () => {
+    if (!activeAssignment || typeTitle === null) return;
+    const next = !typeTitle;
+    setTypeTitle(next);
+    try {
+      await updateStudentsTypeTitle(activeAssignment.id, next);
+    } catch (err) {
+      setTypeTitle(!next);
+      setActionError(err instanceof Error ? err.message : String(err));
+    }
+  }, [activeAssignment, typeTitle]);
 
   const [showActivateModal, setShowActivateModal] = useState(false);
   // Type-eerste flow: welk type toont de scoped modal + welk type wacht op vervang-bevestiging.
@@ -667,6 +691,32 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   )}
                 </div>
 
+                {/* Titelinstelling (migratie 037): alleen zichtbaar als de
+                    kolom bestaat. Uit = automatische titel (AVG). */}
+                {typeTitle !== null && (
+                  <div className="mt-3 flex flex-wrap items-center gap-2">
+                    <button
+                      type="button"
+                      role="switch"
+                      aria-checked={typeTitle}
+                      onClick={() => void handleToggleTypeTitle()}
+                      className="inline-flex items-center gap-2 text-sm text-text-muted"
+                    >
+                      <Type className="w-4 h-4 text-accent-500" aria-hidden="true" />
+                      {t('assignments.typeTitleLabel')}
+                      <span
+                        className={cn('relative inline-block w-9 h-5 rounded-full transition-colors', typeTitle ? 'bg-accent-500' : 'bg-neutral-300')}
+                        aria-hidden="true"
+                      >
+                        <span className={cn('absolute top-0.5 w-4 h-4 bg-white rounded-full shadow transition-all', typeTitle ? 'left-[18px]' : 'left-0.5')} />
+                      </span>
+                    </button>
+                    <span className="text-xs text-text-muted">
+                      {typeTitle ? t('assignments.typeTitleOn') : t('assignments.typeTitleOff')}
+                    </span>
+                  </div>
+                )}
+
                 {/* Praatplaat: thema-geluidenpalet wijzigen op de actieve opdracht
                     (TR5 / D2 — de leerling verzamelt geluiden uit dit thema). */}
                 {activeAssignment.type === 'praatplaat' && activeAssignment.praatplaatId && (
@@ -746,6 +796,9 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
             )}
           </div>
         )}
+
+        {/* --- Leerlingcodes (fase 4.2, migratie 038) --- */}
+        <ClassMembersPanel classId={classData.id} className={classData.name} />
 
         {/* --- Eerdere opdrachten --- */}
         {!loading && !assignmentLoading && pastAssignments.length > 0 && (

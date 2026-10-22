@@ -26,6 +26,8 @@ export function CompositionCard({
 }: CompositionCardProps) {
   const { t } = useTranslation();
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  // Klaswerk (E1): code pas na een klik, niet voor iedereen die meekijkt
+  const [codeVisible, setCodeVisible] = useState(!composition.classSession);
 
   const formatDate = useCallback((isoString: string) => {
     const date = new Date(isoString);
@@ -84,8 +86,23 @@ export function CompositionCard({
             <p className="text-sm text-text-muted mt-0.5">
               {formatDate(composition.updatedAt)} •{' '}
               {formatDuration(composition.metadata.duration)} •{' '}
-              {composition.metadata.trackCount} {t('compositions.tracks')}
+              {t('compositions.trackCount', { count: composition.metadata.trackCount })}
             </p>
+            {composition.saveCode && (
+              <p className="text-xs text-text-muted mt-0.5">
+                {codeVisible ? (
+                  <>{t('compositions.code')} <span className="font-mono font-bold tracking-wider text-text-main">{composition.saveCode}</span></>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={(e) => { e.stopPropagation(); setCodeVisible(true); }}
+                    className="font-semibold underline underline-offset-2 hover:text-text-main"
+                  >
+                    {t('compositions.showCode')}
+                  </button>
+                )}
+              </p>
+            )}
           </div>
 
           {/* Actions - always visible on touch, hover on desktop */}

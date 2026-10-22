@@ -586,8 +586,9 @@ export function PresentationSurface({
           </div>
 
           {/* Peer: sterren-rij + versturen (aangeleverd door de modal) */}
+          {/* Op een smal scherm onder de kaart; breed staat hij rechts (2.6) */}
           {ratingSlot && (
-            <div className="mx-3 mt-2 rounded-xl overflow-hidden bg-bg-surface shadow-xl max-h-[40dvh] overflow-y-auto p-4">
+            <div className="lg:hidden mx-3 mt-2 rounded-xl overflow-hidden bg-bg-surface shadow-xl max-h-[40dvh] overflow-y-auto p-4">
               {ratingSlot}
             </div>
           )}
@@ -682,6 +683,14 @@ export function PresentationSurface({
             )}
           </div>
         </div>
+
+        {/* Peer op een breed scherm (podium v4, 2.6): links de soundscape,
+            rechts de sterren — groot genoeg om rustig te luisteren en te kiezen */}
+        {ratingSlot && (
+          <aside className="hidden lg:flex w-[380px] shrink-0 flex-col bg-bg-surface rounded-2xl my-3 mr-3 shadow-2xl overflow-y-auto p-5">
+            {ratingSlot}
+          </aside>
+        )}
 
         {/* Playlist-zijpaneel (licht, mockup-stijl) */}
         {hasPlaylistUi && sidebarOpen && (

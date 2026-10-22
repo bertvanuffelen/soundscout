@@ -11,7 +11,7 @@
 
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Headphones, Loader2, X, SlidersHorizontal, Theater } from 'lucide-react';
+import { Headphones, Loader2, X, SlidersHorizontal, Theater, ArrowRight, Hash, CloudUpload } from 'lucide-react';
 import { Button } from '../ui/Button';
 import { getTemplateByCode } from '../../lib/templates';
 import { getSharedComposition, loadSavedComposition } from '../../lib/submissions';
@@ -20,6 +20,8 @@ import { getSharedClassAlbum } from '../../lib/albums';
 import { useAppStore } from '../../stores/appStore';
 import { initializeFromTemplate, openSavedComposition, lookupAndRouteAssignment } from '../../utils/compositionInit';
 import { logger } from '../../utils/logger';
+import { loginWithMemberCode, MEMBER_CODE_PATTERN } from '../../lib/members';
+import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
 
 type PendingSaved = {
   saved: NonNullable<Awaited<ReturnType<typeof loadSavedComposition>>>;
@@ -44,6 +46,8 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
   const [pendingSaved, setPendingSaved] = useState<PendingSaved | null>(null);
   const [destLoading, setDestLoading] = useState<'studio' | 'stage' | null>(null);
   const abortRef = useRef<AbortController | null>(null);
+  // Vraag over onbewaard werk vóór openen (E5)
+  const { guard, modal: unsavedModal } = useUnsavedWorkGuard();
 
   // Only allow alphanumeric characters, convert to uppercase
   const handleChange = useCallback((value: string) => {
@@ -85,6 +89,37 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
           return;
         }
 
+        // 1a. Leerlingcode ABC-1234 (7 tekens, migratie 042)
+        if (MEMBER_CODE_PATTERN.test(code)) {
+          const login = await loginWithMemberCode(code);
+          if (signal.aborted) return;
+          if (!login) {
+            setError(t('share.codeNotFound'));
+            return;
+          }
+          if (login.status === 'busy' || login.status === 'error') {
+            // Rem of netwerk (M1): eerlijk zeggen, niet "niet gevonden"
+            setError(t(login.status === 'busy' ? 'share.classBusy' : 'share.lookupError'));
+            return;
+          }
+          if (login.status !== 'ok') {
+            setError(t('members.notActive'));
+            return;
+          }
+          const result = await lookupAndRouteAssignment(login.classCode, {
+            code,
+            pseudonym: login.pseudonym,
+            hasWork: login.hasWork,
+          });
+          if (signal.aborted) return;
+          if (result === 'ok') {
+            setCode('');
+            return;
+          }
+          setError(t(result === 'busy' ? 'share.classBusy' : 'share.lookupError'));
+          return;
+        }
+
         // 1. Als 6 karakters → probeer als bewaarcode (#52)
         if (code.length === 6) {
           // Laden heeft eigen foutafhandeling: alleen een écht lege lookup is
@@ -115,11 +150,12 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
         const template = await getTemplateByCode(code);
         if (signal.aborted) return;
         if (template) {
-          // Schone lei (B21): geen klas-sessie, feedback of compositie-id
-          // van een eerder geopende compositie meenemen in dit template.
-          useAppStore.getState().resetCompositionContext();
-          await initializeFromTemplate(template);
-          setCode('');
+          // Eerst vragen over onbewaard werk (E5); daarna een schone lei (B21)
+          guard(async () => {
+            useAppStore.getState().resetCompositionContext();
+            await initializeFromTemplate(template);
+            setCode('');
+          });
           return;
         }
 
@@ -172,7 +208,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
         if (!signal.aborted) setIsLoading(false);
       }
     },
-    [t, goToShared, goToSharedPraatplaat, goToSharedAlbum]
+    [t, goToShared, goToSharedPraatplaat, goToSharedAlbum, guard]
   );
 
   const handleSubmit = useCallback((e: React.FormEvent) => {
@@ -215,6 +251,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
   if (pendingSaved) {
     return (
       <div className="w-full max-w-sm mx-auto">
+        {unsavedModal}
         <p className="text-sm font-semibold text-text-main text-center mb-1">
           {t('share.destinationTitle')}
         </p>
@@ -223,7 +260,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
         </p>
         <div className="grid grid-cols-2 gap-3">
           <button
-            onClick={() => handleDestination('studio')}
+            onClick={() => guard(() => handleDestination('studio'))}
             disabled={destLoading !== null}
             className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-border-subtle bg-bg-surface hover:border-accent-400 hover:shadow-md active:scale-[0.98] transition-all p-4 disabled:opacity-60"
           >
@@ -234,7 +271,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
             <span className="text-xs text-text-muted text-center leading-snug">{t('share.destStudioHint')}</span>
           </button>
           <button
-            onClick={() => handleDestination('stage')}
+            onClick={() => guard(() => handleDestination('stage'))}
             disabled={destLoading !== null}
             className="flex flex-col items-center gap-1.5 rounded-2xl border-2 border-border-subtle bg-bg-surface hover:border-accent-400 hover:shadow-md active:scale-[0.98] transition-all p-4 disabled:opacity-60"
           >
@@ -263,9 +300,7 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
 
   return (
     <div className="w-full max-w-sm mx-auto">
-      <p className="text-sm text-text-muted text-center mb-2">
-        {t('share.listenTitle')}
-      </p>
+      {unsavedModal}
       <form onSubmit={handleSubmit} className="flex gap-2">
         <label htmlFor="share-code-input" className="sr-only">
           {t('share.listenPlaceholder')}
@@ -296,22 +331,35 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
           variant="secondary"
           size="sm"
           disabled={code.length < 4 || isLoading}
-          aria-label={t('share.listen')}
           className="shrink-0"
         >
           {isLoading ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
+            <Loader2 className="w-4 h-4 animate-spin" aria-label={t('common.loading')} />
           ) : (
             <>
-              <Headphones className="w-4 h-4 sm:mr-1.5" />
-              <span className="hidden sm:inline">{t('share.listen')}</span>
+              {/* Tekst ook op mobiel (O6): een knop met alleen een icoon was onduidelijk */}
+              {t('share.listen')}
+              <ArrowRight className="w-4 h-4 ml-1.5" aria-hidden="true" />
             </>
           )}
         </Button>
       </form>
-      <p className="text-text-muted text-[10px] sm:text-xs text-center mt-1.5">
-        {t('share.codeFormatHint')}
-      </p>
+      {/* Welke code is wat (O6): drie korte regels in plaats van één
+          piepkleine hint */}
+      <ul className="mt-3 grid gap-1.5 text-xs sm:text-sm text-text-muted">
+        <li className="flex items-center gap-2">
+          <Hash className="w-4 h-4 shrink-0 text-accent-600" aria-hidden="true" />
+          <span><strong className="text-text-main">{t('share.codeKinds.classLabel')}</strong> · {t('share.codeKinds.classText')}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <CloudUpload className="w-4 h-4 shrink-0 text-accent-600" aria-hidden="true" />
+          <span><strong className="text-text-main">{t('share.codeKinds.saveLabel')}</strong> · {t('share.codeKinds.saveText')}</span>
+        </li>
+        <li className="flex items-center gap-2">
+          <Headphones className="w-4 h-4 shrink-0 text-accent-600" aria-hidden="true" />
+          <span><strong className="text-text-main">{t('share.codeKinds.listenLabel')}</strong> · {t('share.codeKinds.listenText')}</span>
+        </li>
+      </ul>
       {error && (
         <p role="alert" aria-live="polite" className="text-error-400 text-xs text-center mt-1">
           {error}

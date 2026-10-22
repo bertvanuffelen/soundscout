@@ -10,7 +10,7 @@
  */
 
 import { create } from 'zustand';
-import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition, ClassSession, ReceivedFeedback } from '../types';
+import type { GameScreen, Template, ComposeMode, Storyboard, TemplateLockOptions, ActivePraatplaat, PraatplaatPosition, ClassSession, ReceivedFeedback, ClassMemberIdentity } from '../types';
 import type { ActiveAssignment } from '../lib/assignments';
 
 /**
@@ -25,14 +25,19 @@ import type { ActiveAssignment } from '../lib/assignments';
 export interface PendingAssignment {
   classCode: string;
   assignment: ActiveAssignment | null;
+  /** Ingelogd met een leerlingcode (fase 4.2): identiteit + laatste werk */
+  member?: (ClassMemberIdentity & { hasWork: boolean }) | null;
 }
 
-interface AppStore {
+export interface AppStore {
   // Navigation state
   currentScreen: GameScreen;
   currentLocationId: string | null;
   // Track which composition is being edited (null = new composition)
   currentCompositionId: string | null;
+  /** Titel van de open soundscape (podium v4): blijft staan tussen studio en podium */
+  compositionTitle: string;
+  setCompositionTitle: (title: string) => void;
   // Share code for viewing shared compositions (null = not viewing)
   shareCode: string | null;
   // Share code for viewing shared praatplaat (#73)
@@ -127,6 +132,16 @@ interface AppStore {
   pendingSaveCode: string | null;
   setPendingSaveCode: (code: string | null) => void;
 
+  // Startscherm openen met een actie (O7): 'code' = codevenster, 'new' =
+  // "Nieuwe compositie" (wizard). Eenmalig gelezen door StartScreen.
+  pendingStartAction: 'code' | 'new' | null;
+  // Plek op de praatplaat verzetten vanaf het podium (fase 2): de plekkiezer
+  // gaat dan terug naar het podium in plaats van naar de kaart
+  praatplaatReturnToStage: boolean;
+  goToPraatplaatMove: () => void;
+  setPendingStartAction: (action: 'code' | 'new' | null) => void;
+  goToStartWith: (action: 'code' | 'new') => void;
+
   // Dashboard-tab die na de login-hop geopend moet worden (bv. 'lessons' via de
   // "Bekijk alle leskaarten"-knop op de landingspagina).
   pendingTeacherTab: string | null;
@@ -142,6 +157,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   currentScreen: 'start',
   currentLocationId: null,
   currentCompositionId: null,
+  compositionTitle: '',
   shareCode: null,
   sharedPraatplaatCode: null,
   sharedAlbumCode: null,
@@ -160,6 +176,8 @@ export const useAppStore = create<AppStore>()((set) => ({
   pendingAssignment: null,
   pendingLessonCardKey: null,
   pendingSaveCode: null,
+  pendingStartAction: null,
+  praatplaatReturnToStage: false,
   pendingTeacherTab: null,
   pendingGuideSection: null,
 
@@ -168,9 +186,11 @@ export const useAppStore = create<AppStore>()((set) => ({
   setLocation: (locationId) => set({ currentLocationId: locationId }),
 
   setCurrentCompositionId: (id) => set({ currentCompositionId: id }),
+  setCompositionTitle: (title) => set({ compositionTitle: title }),
 
   resetCompositionContext: () => set({
     currentCompositionId: null,
+    compositionTitle: '',
     activeTemplate: null,
     templateLockOptions: { clipsLocked: false, sectionsLocked: false, libraryLocked: false, allowNewClips: true },
     activeStoryboard: null,
@@ -237,7 +257,7 @@ export const useAppStore = create<AppStore>()((set) => ({
   setPraatplaat: (praatplaat) => set({ activePraatplaat: praatplaat }),
   setPraatplaatPosition: (position) => set({ praatplaatPosition: position }),
   clearPraatplaat: () => set({ activePraatplaat: null, praatplaatPosition: null }),
-  goToPraatplaatSelect: () => set({ currentScreen: 'praatplaat-select' }),
+  goToPraatplaatSelect: () => set({ currentScreen: 'praatplaat-select', praatplaatReturnToStage: false }),
 
   // Klascode-sessie actions (universele flow)
   setReceivedFeedback: (feedback) => set({ receivedFeedback: feedback }),
@@ -254,6 +274,10 @@ export const useAppStore = create<AppStore>()((set) => ({
   setPendingLessonCardKey: (key) => set({ pendingLessonCardKey: key }),
 
   setPendingSaveCode: (code) => set({ pendingSaveCode: code }),
+
+  setPendingStartAction: (action) => set({ pendingStartAction: action }),
+  goToPraatplaatMove: () => set({ currentScreen: 'praatplaat-select', praatplaatReturnToStage: true }),
+  goToStartWith: (action) => set({ currentScreen: 'start', currentLocationId: null, isSubmitting: false, pendingAssignment: null, pendingStartAction: action }),
 
   setPendingTeacherTab: (tab) => set({ pendingTeacherTab: tab }),
 

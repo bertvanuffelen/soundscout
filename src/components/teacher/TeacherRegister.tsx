@@ -15,7 +15,7 @@ interface TeacherRegisterProps {
 }
 
 export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [displayName, setDisplayName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -216,7 +216,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
           </Button>
           <p className="text-xs text-text-muted text-center">
             {t('teacher.register.privacyNote')}{' '}
-            <a href="/privacy/" className="underline underline-offset-2 hover:text-text-main">
+            <a href={i18n.language?.startsWith('en') ? '/privacy/en/' : '/privacy/'} className="underline underline-offset-2 hover:text-text-main">
               {t('privacy.fullLink')}
             </a>
           </p>

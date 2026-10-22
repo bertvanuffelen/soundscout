@@ -30,7 +30,9 @@ import {
 // Current storage version for migrations (reserved for future use)
 // const STORAGE_VERSION = 1;
 const MAX_COMPOSITIONS = 10;
-const MAX_SUBMISSION_SECRETS = 20;
+// H3 (eindtest): een computerlokaal levert op één apparaat veel meer dan 20
+// keer per week in; te weinig ruimte maakte van versie 2 een nieuwe inzending
+const MAX_SUBMISSION_SECRETS = 200;
 
 /** Error types returned by save operations (TP5-11) */
 export type StorageSaveError = 'quota_exceeded' | 'serialization' | 'unknown';
@@ -145,7 +147,7 @@ class StorageServiceImpl {
    */
   updateComposition(
     id: string,
-    updates: Partial<Pick<SavedComposition, 'name' | 'timeline' | 'samples' | 'classSession' | 'submissionId' | 'praatplaat' | 'praatplaatPosition' | 'storyboardId'>>
+    updates: Partial<Pick<SavedComposition, 'name' | 'timeline' | 'samples' | 'classSession' | 'submissionId' | 'praatplaat' | 'praatplaatPosition' | 'storyboardId' | 'saveCode'>>
   ): SavedComposition | null {
     const compositions = this.getCompositions();
     const index = compositions.findIndex((c) => c.id === id);
@@ -411,7 +413,7 @@ class StorageServiceImpl {
    * Bewaar het geheim waarmee dit apparaat een klas-inzending mag bijwerken.
    * Per inzending-id, zodat elk pad dat een bestaande inzending hergebruikt
    * (podium, bewaarcode openen, "Mijn composities") het terugvindt. Alleen
-   * de laatste 20 blijven bewaard.
+   * de laatste 200 blijven bewaard.
    */
   setSubmissionSecret(submissionId: string, secret: string): void {
     const map = this.getSubmissionSecrets();
@@ -419,6 +421,14 @@ class StorageServiceImpl {
     map[submissionId] = secret;
     const entries = Object.entries(map).slice(-MAX_SUBMISSION_SECRETS);
     this.set('soundscout:submission-secrets', Object.fromEntries(entries));
+  }
+
+  /** Geheim van één inzending vergeten ("Klaar, ik stop" op een gedeeld apparaat) */
+  removeSubmissionSecret(submissionId: string): void {
+    const map = this.getSubmissionSecrets();
+    if (!(submissionId in map)) return;
+    delete map[submissionId];
+    this.set('soundscout:submission-secrets', map);
   }
 
   getSubmissionSecret(submissionId: string): string | null {
