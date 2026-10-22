@@ -138,7 +138,8 @@ export default function AssignmentLandingScreen() {
         {/* Footer: acties */}
         {assignment ? (
           <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-end">
-            <Button variant="ghost" onClick={goToStart} disabled={isStarting}>
+            {/* md-kleuren: anders wit op de witte desktopkaart (B34) */}
+            <Button variant="ghost" onClick={goToStart} disabled={isStarting} className="md:text-text-main md:hover:bg-neutral-100">
               {t('assignmentLanding.back')}
             </Button>
             <Button variant="primary" onClick={handleStart} disabled={isStarting}>
@@ -167,7 +168,7 @@ function RouteCActions() {
 
   return (
     <div className="mt-8 flex flex-col sm:flex-row gap-3 sm:justify-end">
-      <Button variant="ghost" onClick={goToStart}>
+      <Button variant="ghost" onClick={goToStart} className="md:text-text-main md:hover:bg-neutral-100">
         {t('assignmentLanding.none.otherCode')}
       </Button>
       <Button variant="primary" onClick={goToStart}>

@@ -94,7 +94,8 @@ function ActionButton({
       <span className="mr-3 shrink-0">{icon}</span>
       <span className="text-left min-w-0">
         <span className="block text-sm font-medium truncate">{label}</span>
-        <span className="block text-xs text-text-muted truncate">{hint}</span>
+        {/* Niet afkappen (B10): de uitleg mag over twee regels lopen */}
+        <span className="block text-xs text-text-muted leading-snug whitespace-normal">{hint}</span>
       </span>
     </Button>
   );
@@ -168,6 +169,13 @@ export function StageActionsModal({
         </div>
 
         <div className="px-4 sm:px-5 pb-4">
+          {/* Naam vereist: bovenaan en goed zichtbaar (B2), niet als klein
+              grijs regeltje onderaan dat niemand leest */}
+          {nameDisabled && (
+            <p role="status" className="mb-3 rounded-xl border border-warning-100 bg-warning-50 px-3 py-2 text-sm font-semibold text-warning-600">
+              {t('stage.actionsNameRequired')}
+            </p>
+          )}
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* --- Kolom 1: Voor jezelf --- */}
             <div className="rounded-2xl bg-neutral-50 p-3">
@@ -185,7 +193,9 @@ export function StageActionsModal({
                      op het podium zelf — of de bewaar-waarschuwing neemt het
                      over. In de modal blijven hangen voelde als "en nu?". */
                   onClick={() => { onSave(); onClose(); }}
-                  disabled={saveSuccess}
+                  /* Zonder naam uit, net als de andere acties (B2): voorheen
+                     sloot de modal en gebeurde er zichtbaar niets */
+                  disabled={saveSuccess || nameDisabled}
                 />
                 {/* Online bewaren: verborgen in klascode-flow (auto-sync regelt het) */}
                 {!hasClassSession && (
@@ -244,7 +254,8 @@ export function StageActionsModal({
                 {hasClassSession && (
                   <ActionButton
                     icon={<Send size={18} className="text-brand-700" />}
-                    label={t('stage.submitToClass')}
+                    /* Na een eerdere inzending: "Opnieuw inleveren" (B3) */
+                    label={submissionSynced ? t('stage.resubmitToClass') : t('stage.submitToClass')}
                     hint={t('stage.submitToClassHint', { className: className ?? '' })}
                     onClick={() => { onSave(); onClose(); }}
                     disabled={nameDisabled}
@@ -302,11 +313,6 @@ export function StageActionsModal({
             </div>
           </div>
 
-          {nameDisabled && (
-            <p className="text-xs text-warning-500 text-center mt-3">
-              {t('stage.actionsNameRequired')}
-            </p>
-          )}
 
           {/* Export-status: de modal blijft open tijdens exporteren, dus
               fouten/succes/waarschuwingen moeten hiér zichtbaar zijn (audit #3) */}

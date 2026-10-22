@@ -150,7 +150,7 @@ export function SharePraatplaatModal({
             variant="ghost"
             size="sm"
             onClick={() => setShowQr(!showQr)}
-            className="w-full inline-flex items-center justify-center gap-2"
+            className="w-full inline-flex items-center justify-center gap-2 text-text-main hover:bg-neutral-100"
           >
             <QrCode className="w-4 h-4" />
             {showQr ? t('teacher.praatplaat.hideQr') : t('teacher.praatplaat.showQr')}
@@ -230,7 +230,7 @@ export function SharePraatplaatModal({
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowShareQr(!showShareQr)}
-                className="w-full inline-flex items-center justify-center gap-2 mt-2"
+                className="w-full inline-flex items-center justify-center gap-2 mt-2 text-text-main hover:bg-neutral-100"
               >
                 <QrCode className="w-4 h-4" />
                 {showShareQr ? t('teacher.praatplaat.hideQr') : t('teacher.praatplaat.showQr')}
