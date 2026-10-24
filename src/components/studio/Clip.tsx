@@ -7,6 +7,7 @@ import type { Clip as ClipType, Sample } from '../../types';
 import { getClipDurationBeats, getEffectiveClipDurationBeats, beatsToSeconds } from '../../utils/audio';
 import { SampleIcon } from '../../utils/iconMap';
 import { isSequenceSampleId } from '../../utils/sequencer';
+import { getOnSoundTextClass } from '../../utils/soundColor';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 
@@ -49,6 +50,9 @@ export const Clip = memo(function Clip({
   const durationSeconds = beatsToSeconds(singleDurationBeats, bpm);
   const leftPercent = (clip.startBeat / totalBeats) * 100;
   const widthPercent = (effectiveDurationBeats / totalBeats) * 100;
+
+  // Tekst/icoon in navy of wit, wat het best leesbaar is op de geluidskleur
+  const onSoundText = getOnSoundTextClass(sample.color);
 
   // Effect indicators (#33)
   const hasEffects = ((clip.effects?.pitch ?? 0) !== 0) ||
@@ -201,7 +205,8 @@ export const Clip = memo(function Clip({
       style={{
         left: `${leftPercent}%`,
         width: `${Math.min(widthPercent, 100 - leftPercent)}%`,
-        backgroundColor: `${sample.color}cc`,
+        // Volle kleur: de tekstkleur is op deze kleur afgestemd (AA)
+        backgroundColor: sample.color,
         // Sequence-clip (fase 2): blokjespatroon-uiterlijk
         ...(isSequenceSampleId(clip.sampleId)
           ? {
@@ -233,11 +238,11 @@ export const Clip = memo(function Clip({
       {/* Clip content */}
       <div className="flex items-center gap-1 z-10 min-w-0">
         {locked ? (
-          <Lock size={10} className="shrink-0 text-white/70" />
+          <Lock size={12} className={`shrink-0 opacity-70 ${onSoundText}`} />
         ) : (
-          <SampleIcon name={sample.icon} size={14} className="shrink-0 text-white" />
+          <SampleIcon name={sample.icon} size={14} className={`shrink-0 ${onSoundText}`} />
         )}
-        <span className="text-[10px] font-semibold text-white truncate leading-tight">
+        <span className={`text-xs font-bold truncate leading-tight ${onSoundText}`}>
           {clip.label || t(sample.name)}
         </span>
       </div>
@@ -245,7 +250,7 @@ export const Clip = memo(function Clip({
       {/* Effect indicator (#33) */}
       {hasEffects && (
         <div className="absolute right-0.5 bottom-0.5 z-10 pointer-events-none">
-          <Sparkles size={10} className="text-white/70" />
+          <Sparkles size={10} className={`opacity-70 ${onSoundText}`} />
         </div>
       )}
 

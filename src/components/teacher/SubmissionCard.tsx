@@ -43,10 +43,12 @@ export function SubmissionCard({ submission, onPlay, onDelete, isWip }: Submissi
 
       {/* Info */}
       <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2">
-          <h3 className="font-bold text-text-main truncate">
-            {composition_name}
-          </h3>
+        {/* Titel op eigen regel (max. 2 regels), labels eronder met wrap:
+            op smalle schermen brak de titel anders af tot "V…" */}
+        <h3 className="font-bold text-text-main line-clamp-2 break-words">
+          {composition_name}
+        </h3>
+        <div className="flex flex-wrap items-center gap-1.5 mt-1">
           {isWip && (
             <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-warning-100 text-warning-700 text-xs font-medium shrink-0">
               <PenLine className="w-3 h-3" />
