@@ -81,7 +81,7 @@
 - [ ] **ET-DB-SEARCHPATH** (laag) — 37 oudere SECURITY DEFINER-functies zonder vast `search_path` (Supabase-advies 0011); één migratie in de stijl van 036/040.
 - [ ] **ET-L2 enumeratie leerlingcodes** (laag) — `inactive`/`expired` zijn te onderscheiden van "bestaat niet". Bewust gelaten (een kind moet "vraag je docent om een nieuwe" zien); de rem op foute pogingen telt ze al mee. Heroverwegen als scholen erom vragen.
 - [ ] **ET-PW-LEAKED** (P3) — *leaked password protection* kan alleen op het Pro-abonnement. Nu: minimaal 8 tekens met letters en cijfers (PR #7). Overweeg Pro als er veel docenten komen (ook voor back-ups).
-- [ ] **ET-BACKUPS** (P3) — de privacyverklaring noemt back-ups; controleer wat het huidige Supabase-abonnement daaraan biedt en pas de tekst aan als dat afwijkt.
+- [x] **ET-BACKUPS** (P3) — de privacyverklaring noemt back-ups; controleer wat het huidige Supabase-abonnement daaraan biedt en pas de tekst aan als dat afwijkt. *Gedaan 24-10 (Z-0305):* organisatie op het gratis abonnement; Supabase maakt daar nu tot 7 dagelijkse back-ups (niet zichtbaar in het dashboard), Pro bewaart er 7. Tekst wordt "maximaal 7 dagen" (NL + EN). Bij PITR of het Team-plan (14/28 dagen) de tekst aanpassen.
 
 **Tests (direct na de lancering)**
 - [ ] **ET-TEST-SUBMIT** — `submitToClass`: retry na time-out, terugval na een geweigerd geheim; de race met een nieuwe soundscape is gedekt in `useStageSaveRace.test.ts`.
