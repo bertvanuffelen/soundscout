@@ -348,7 +348,9 @@ export function StageView() {
 
       {/* Beeld + stappen */}
       <main className="flex-1 min-h-0 flex flex-col lg:flex-row overflow-y-auto lg:overflow-hidden">
-        <div className="h-[46dvh] lg:h-auto lg:flex-1 min-w-0 flex shrink-0 lg:shrink">
+        {/* min-h = beeld (min 220px) + afspeelbalk (80px): op een liggende
+            telefoon is 46dvh maar ±170px en viel de inhoud over de stappen */}
+        <div className="h-[46dvh] min-h-[300px] lg:h-auto lg:min-h-0 lg:flex-1 min-w-0 flex shrink-0 lg:shrink">
           <StageVisual zoomed={zoomed} onPlayed={() => setListened(true)} />
         </div>
         <aside className="lg:w-[360px] shrink-0 bg-bg-app lg:overflow-y-auto px-4 py-4">
