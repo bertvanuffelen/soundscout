@@ -814,7 +814,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
               {pastAssignments.map((pa) => (
                 <div
                   key={pa.id}
-                  className="bg-bg-surface rounded-xl p-3 border border-border-subtle flex items-center gap-3"
+                  className="bg-bg-surface rounded-xl p-3 border border-border-subtle flex flex-wrap sm:flex-nowrap items-center gap-x-3 gap-y-2"
                 >
                   {pa.imageUrl ? (
                     <div className="w-9 h-9 rounded-md overflow-hidden shrink-0 bg-neutral-100">
@@ -828,12 +828,15 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                       })()}
                     </div>
                   )}
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-medium text-text-main truncate">{pa.assignmentName}</p>
+                  {/* Op smalle schermen: titel naast het beeld, acties op een
+                      tweede regel; anders brak de titel af tot "Pirat…". */}
+                  <div className="min-w-0 flex-1 basis-[calc(100%-3rem)] sm:basis-0">
+                    <p className="text-sm font-medium text-text-main line-clamp-2 break-words">{pa.assignmentName}</p>
                     <p className="text-xs text-text-muted">
                       {new Date(pa.activatedAt).toLocaleDateString('nl-NL', { day: 'numeric', month: 'short', year: 'numeric' })}
                     </p>
                   </div>
+                  <div className="flex items-center gap-1 ml-12 sm:ml-0 shrink-0">
                   {/* Elke rij dezelfde twee acties (wens Bert 19-7): bekijken
                       en delen. Bij een praatplaat opent het oog het klikbare
                       bord; bij de rest de presentatie met díe inzendingen. */}
@@ -888,6 +891,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
                   >
                     {t('assignments.reactivate')}
                   </Button>
+                  </div>
                 </div>
               ))}
             </div>
