@@ -29,6 +29,7 @@ import type { StudioViewMode } from './storytelling';
 // EditToolbar is now integrated into Timeline header bar
 import { TrimModal } from './TrimModal';
 import { SampleIcon } from '../../utils/iconMap';
+import { getOnSoundTextClass } from '../../utils/soundColor';
 import { Button } from '../ui';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { audioService } from '../../services/AudioService';
@@ -583,10 +584,10 @@ export function StudioView() {
             activeDragType === 'clip' ? (
               <div
                 className="flex items-center gap-1 px-2 py-1.5 rounded-lg shadow-xl opacity-90"
-                style={{ backgroundColor: `${activeDragSample.color}cc` }}
+                style={{ backgroundColor: activeDragSample.color }}
               >
-                <SampleIcon name={activeDragSample.icon} size={14} className="text-white" />
-                <span className="text-[10px] font-semibold text-white">
+                <SampleIcon name={activeDragSample.icon} size={14} className={getOnSoundTextClass(activeDragSample.color)} />
+                <span className={`text-xs font-bold ${getOnSoundTextClass(activeDragSample.color)}`}>
                   {t(activeDragSample.name)}
                 </span>
               </div>
