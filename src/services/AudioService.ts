@@ -12,15 +12,10 @@ import * as Tone from 'tone';
 import type { Clip, Sample, Track } from '../types';
 import type { SequencerSequence } from '../types/sequencer';
 import { beatsToSeconds, getClipTrimStart, getClipDuration, getEffectiveClipEndBeat } from '../utils/audio';
-import { createWaveformData, type WaveformData } from '../utils/waveform';
+import type { WaveformData } from '../utils/waveform';
 import {
   DEFAULT_BPM,
   PLAYHEAD_UPDATE_INTERVAL_MS,
-  AUDIO_LOAD_TIMEOUT_MS,
-  AUDIO_LOAD_MAX_RETRIES,
-  AUDIO_LOAD_CONCURRENCY,
-  AMBIENT_AUDIO_VOLUME_DB,
-  AMBIENT_AUDIO_FADE_SECONDS,
 } from '../constants/config';
 import { logger } from '../utils/logger';
 import { audioDiag } from '../utils/audioDiagnostics';
@@ -37,6 +32,9 @@ import {
 } from './audioGraph';
 import { pitchBufferService } from './PitchBufferService';
 import { sanitizeLatency, secondsToAudibleBeat } from './audibleBeat';
+import { SampleStore, type LoadingProgressCallback, type SampleLoadResult } from './audio/SampleStore';
+import { AmbientPlayer } from './audio/AmbientPlayer';
+import { buildCaptureWorkletCode } from './audio/captureWorklet';
 import {
   buildLimiterProcessorCode,
   applyLimiterToChannels,
@@ -44,25 +42,26 @@ import {
 
 type BeatUpdateCallback = (beat: number) => void;
 type PlaybackEndCallback = () => void;
-type LoadingProgressCallback = (loaded: number, total: number) => void;
-
-export interface SampleLoadResult {
-  sampleId: string;
-  success: boolean;
-  error?: string;
-}
+export type { SampleLoadResult } from './audio/SampleStore';
 
 export class AudioService {
   private static instance: AudioService | null = null;
 
   // Audio buffers: raw ToneAudioBuffer storage — NO audio graph footprint.
   // Used by scheduleTimeline() to create on-demand players.
-  private buffers: Map<string, Tone.ToneAudioBuffer> = new Map();
+  private readonly sampleStore = new SampleStore();
+  private get buffers(): Map<string, Tone.ToneAudioBuffer> {
+    return this.sampleStore.buffers;
+  }
 
   // Preview players: minimal Tone.Player per sample for playSample()/playSampleRegion().
   // Connected to Destination but only active during preview — negligible overhead.
-  private players: Map<string, Tone.Player> = new Map();
-  private waveformCache: Map<string, WaveformData> = new Map();
+  private get players(): Map<string, Tone.Player> {
+    return this.sampleStore.players;
+  }
+  private get waveformCache(): Map<string, WaveformData> {
+    return this.sampleStore.waveformCache;
+  }
   private isInitialized = false;
   private playheadIntervalId: number | null = null;
   private beatUpdateCallbacks: Set<BeatUpdateCallback> = new Set();
@@ -73,10 +72,7 @@ export class AudioService {
   private autoStopBeat: number = 0;
 
   // Ambient audio
-  private ambientPlayer: Tone.Player | null = null;
-  private ambientVolume: Tone.Volume | null = null;
-  private isAmbientPlaying = false;
-  private ambientFadeTimeout: ReturnType<typeof setTimeout> | null = null;
+  private readonly ambient = new AmbientPlayer();
 
   // Timeline Part (for seek support)
   private timelinePart: Tone.Part | null = null;
@@ -180,146 +176,23 @@ export class AudioService {
   }
 
   // ==========================================================================
-  // SAMPLE LOADING
+  // SAMPLE LOADING (gedelegeerd aan SampleStore — V2 Fase 1)
   // ==========================================================================
 
-  async loadSample(sample: Sample): Promise<SampleLoadResult> {
-    if (this.buffers.has(sample.id)) {
-      return { sampleId: sample.id, success: true };
-    }
-
-    try {
-      // Load into a ToneAudioBuffer — no audio graph footprint.
-      // This is the primary storage used by scheduleTimeline().
-      const buffer = new Tone.ToneAudioBuffer();
-      await buffer.load(sample.audioUrl);
-      this.buffers.set(sample.id, buffer);
-
-      // Also create a preview Player for playSample()/playSampleRegion().
-      // This is the only permanent Player per sample (one per unique sample,
-      // typically 6 — negligible overhead vs 85+ per-clip Players before).
-      const player = new Tone.Player(buffer).toDestination();
-      this.players.set(sample.id, player);
-
-      return { sampleId: sample.id, success: true };
-    } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Unknown error';
-      logger.warn(`Failed to load sample "${sample.id}"`, {
-        url: sample.audioUrl,
-        error: errorMsg,
-      });
-      return { sampleId: sample.id, success: false, error: errorMsg };
-    }
+  loadSample(sample: Sample): Promise<SampleLoadResult> {
+    return this.sampleStore.loadSample(sample);
   }
 
-  /**
-   * Load multiple samples with parallel loading, retry, and timeout support.
-   *
-   * Features:
-   * - Parallel loading with controlled concurrency (max 3 at a time)
-   * - Automatic retry on failure (up to 2 retries with exponential backoff)
-   * - Timeout protection (15 seconds per sample)
-   * - AbortSignal support for cancellation (e.g., when navigating away)
-   */
-  async loadSamples(
+  loadSamples(
     samples: Sample[],
     onProgress?: LoadingProgressCallback,
     signal?: AbortSignal
   ): Promise<SampleLoadResult[]> {
-    const results: SampleLoadResult[] = [];
-    let loaded = 0;
-
-    // Process in batches for controlled concurrency
-    for (let i = 0; i < samples.length; i += AUDIO_LOAD_CONCURRENCY) {
-      // Check if aborted before processing next batch
-      if (signal?.aborted) {
-        logger.info('Sample loading aborted');
-        break;
-      }
-
-      const batch = samples.slice(i, i + AUDIO_LOAD_CONCURRENCY);
-
-      const batchResults = await Promise.allSettled(
-        batch.map((sample) => this.loadSampleWithRetry(sample, AUDIO_LOAD_MAX_RETRIES, signal))
-      );
-
-      batchResults.forEach((result, idx) => {
-        if (result.status === 'fulfilled') {
-          results.push(result.value);
-        } else {
-          results.push({
-            sampleId: batch[idx].id,
-            success: false,
-            error: result.reason?.message || 'Unknown error',
-          });
-        }
-      });
-
-      loaded += batch.length;
-      onProgress?.(loaded, samples.length);
-    }
-
-    return results;
-  }
-
-  /**
-   * Load a sample with automatic retry on failure.
-   */
-  private async loadSampleWithRetry(
-    sample: Sample,
-    maxRetries = AUDIO_LOAD_MAX_RETRIES,
-    signal?: AbortSignal
-  ): Promise<SampleLoadResult> {
-    for (let attempt = 0; attempt <= maxRetries; attempt++) {
-      // Check if aborted before each attempt
-      if (signal?.aborted) {
-        return { sampleId: sample.id, success: false, error: 'Aborted' };
-      }
-
-      const result = await this.loadSampleWithTimeout(sample);
-      if (result.success) return result;
-
-      if (attempt < maxRetries) {
-        // Exponential backoff: 1s, 2s
-        await new Promise((r) => setTimeout(r, 1000 * (attempt + 1)));
-        logger.info(`Retrying sample "${sample.id}" (attempt ${attempt + 2}/${maxRetries + 1})`);
-      }
-    }
-
-    return {
-      sampleId: sample.id,
-      success: false,
-      error: `Failed after ${maxRetries + 1} attempts`,
-    };
-  }
-
-  /**
-   * Load a sample with timeout protection.
-   */
-  private async loadSampleWithTimeout(sample: Sample): Promise<SampleLoadResult> {
-    // Skip if already loaded
-    if (this.buffers.has(sample.id)) {
-      return { sampleId: sample.id, success: true };
-    }
-
-    const timeoutPromise = new Promise<SampleLoadResult>((_, reject) =>
-      setTimeout(() => reject(new Error('Timeout')), AUDIO_LOAD_TIMEOUT_MS)
-    );
-
-    try {
-      return await Promise.race([this.loadSample(sample), timeoutPromise]);
-    } catch (err) {
-      return {
-        sampleId: sample.id,
-        success: false,
-        error: err instanceof Error ? err.message : 'Unknown error',
-      };
-    }
+    return this.sampleStore.loadSamples(samples, onProgress, signal);
   }
 
   isSampleLoaded(sampleId: string): boolean {
-    const buffer = this.buffers.get(sampleId);
-    return buffer?.loaded ?? false;
+    return this.sampleStore.isSampleLoaded(sampleId);
   }
 
   // ==========================================================================
@@ -453,62 +326,20 @@ export class AudioService {
   }
 
   // ==========================================================================
-  // WAVEFORM DATA
+  // WAVEFORM DATA (gedelegeerd aan SampleStore — V2 Fase 1)
   // ==========================================================================
 
-  /**
-   * Get waveform data for a sample (cached).
-   *
-   * Returns null if sample is not loaded or has no buffer.
-   */
   getWaveform(sampleId: string): WaveformData | null {
-    // Check cache first
-    if (this.waveformCache.has(sampleId)) {
-      return this.waveformCache.get(sampleId)!;
-    }
-
-    const buffer = this.buffers.get(sampleId);
-    if (!buffer || !buffer.loaded) {
-      return null;
-    }
-
-    if (buffer.length === 0) {
-      return null;
-    }
-
-    // Get the raw AudioBuffer from ToneAudioBuffer
-    const audioBuffer = buffer.get() as AudioBuffer | undefined;
-    if (!audioBuffer) {
-      return null;
-    }
-
-    // Generate waveform data
-    const waveformData = createWaveformData(audioBuffer);
-
-    // Cache it
-    this.waveformCache.set(sampleId, waveformData);
-
-    return waveformData;
+    return this.sampleStore.getWaveform(sampleId);
   }
 
-  /**
-   * Reeds geladen buffer voor hergebruik door de export (audit #15) —
-   * scheelt een dubbele download/decodeer-slag bij exporteren vanuit de app.
-   */
+  /** Reeds geladen buffer voor hergebruik door de export (audit #15). */
   getLoadedBuffer(sampleId: string): Tone.ToneAudioBuffer | undefined {
-    const buffer = this.buffers.get(sampleId);
-    return buffer && buffer.loaded ? buffer : undefined;
+    return this.sampleStore.getLoadedBuffer(sampleId);
   }
 
-  /**
-   * Clear waveform cache for a specific sample.
-   */
   clearWaveformCache(sampleId?: string): void {
-    if (sampleId) {
-      this.waveformCache.delete(sampleId);
-    } else {
-      this.waveformCache.clear();
-    }
+    this.sampleStore.clearWaveformCache(sampleId);
   }
 
   // ==========================================================================
@@ -580,7 +411,7 @@ export class AudioService {
    * één module werken wél onbeperkt.
    */
   private buildDspWorkletCode(): string {
-    return buildLimiterProcessorCode() + '\n' + this.buildCaptureWorkletCode();
+    return buildLimiterProcessorCode() + '\n' + buildCaptureWorkletCode();
   }
 
   /**
@@ -1193,56 +1024,6 @@ export class AudioService {
   // REALTIME-CAPTURE-VANGNET (Audio Engine v2, Fase 4)
   // ==========================================================================
 
-  private buildCaptureWorkletCode(): string {
-    // De worklet vangt ALLES vanaf zijn geboorte, frame-geïndexeerd; de
-    // main thread knipt het exacte venster uit. Zo maakt de latentie van
-    // het start-bericht (module-compile kan honderden ms duren) niet uit.
-    return `
-        class SoundScoutCapture extends AudioWorkletProcessor {
-          constructor() {
-            super();
-            this.capturing = true;
-            this.bufs = [];
-            this.count = 0;
-            this.port.onmessage = (e) => {
-              const d = e.data;
-              if (d.cmd === 'ping') { this.port.postMessage({ type: 'pong' }); }
-              if (d.cmd === 'flush') {
-                this.capturing = false;
-                this.flush();
-                this.port.postMessage({ type: 'end' });
-              }
-            };
-          }
-          flush() {
-            if (this.bufs.length) {
-              this.port.postMessage({ type: 'chunks', chunks: this.bufs });
-              this.bufs = [];
-              this.count = 0;
-            }
-          }
-          process(inputs) {
-            if (!this.capturing) return true;
-            const inp = inputs[0];
-            if (!inp || !inp[0]) {
-              // Inactieve input (bv. na de laatste clip) = stilte — óók
-              // vastleggen, anders mist het venster zijn stille staart.
-              const zeros = new Float32Array(128);
-              this.bufs.push({ f: currentFrame, L: zeros, R: zeros });
-            } else {
-              this.bufs.push({
-                f: currentFrame,
-                L: inp[0].slice(0),
-                R: (inp[1] || inp[0]).slice(0),
-              });
-            }
-            if (++this.count >= 64) this.flush();
-            return true;
-          }
-        }
-        registerProcessor('soundscout-capture', SoundScoutCapture);
-      `;
-  }
 
   /**
    * Vangnet-export: speel de compositie via de échte live motor af (onhoorbaar,
@@ -1461,108 +1242,27 @@ export class AudioService {
   }
 
   // ==========================================================================
-  // AMBIENT AUDIO
+  // AMBIENT AUDIO (gedelegeerd aan AmbientPlayer — V2 Fase 1)
   // ==========================================================================
 
-  /**
-   * Load ambient audio for a location.
-   * Returns true if loaded successfully, false otherwise.
-   */
-  async loadAmbient(url: string): Promise<boolean> {
-    if (!url) return false;
-
-    // Stop and dispose previous ambient
-    this.stopAmbient(false);
-    this.ambientPlayer?.dispose();
-    this.ambientPlayer = null;
-
-    // Initialize volume node if needed
-    if (!this.ambientVolume) {
-      this.ambientVolume = new Tone.Volume(AMBIENT_AUDIO_VOLUME_DB).toDestination();
-    }
-
-    try {
-      this.ambientPlayer = new Tone.Player({
-        url,
-        loop: true,
-        fadeIn: 0.5,
-        fadeOut: 0.5,
-      }).connect(this.ambientVolume);
-
-      await Tone.loaded();
-      logger.info('Ambient audio loaded', { url });
-      return true;
-    } catch (err) {
-      logger.warn('Failed to load ambient audio', {
-        url,
-        error: err instanceof Error ? err.message : 'Unknown error',
-      });
-      return false;
-    }
+  loadAmbient(url: string): Promise<boolean> {
+    return this.ambient.loadAmbient(url);
   }
 
-  /**
-   * Start playing ambient audio (loops continuously).
-   */
   playAmbient(): void {
-    if (!this.ambientPlayer?.loaded || this.isAmbientPlaying) return;
-
-    // Reset volume to normal level
-    if (this.ambientVolume) {
-      this.ambientVolume.volume.value = AMBIENT_AUDIO_VOLUME_DB;
-    }
-
-    this.ambientPlayer.start();
-    this.isAmbientPlaying = true;
-    logger.audio('playAmbient', {});
+    this.ambient.playAmbient();
   }
 
-  /**
-   * Stop ambient audio with optional fade out.
-   */
   stopAmbient(fade = true): void {
-    // Always clear any pending fade timeout first
-    if (this.ambientFadeTimeout) {
-      clearTimeout(this.ambientFadeTimeout);
-      this.ambientFadeTimeout = null;
-    }
-
-    // Cancel any in-progress volume ramp to prevent it firing on a disposed node
-    if (this.ambientVolume) {
-      this.ambientVolume.volume.cancelScheduledValues(Tone.now());
-    }
-
-    if (!this.ambientPlayer || !this.isAmbientPlaying) return;
-
-    if (fade && this.ambientVolume) {
-      // Fade out then stop
-      this.ambientVolume.volume.rampTo(-60, AMBIENT_AUDIO_FADE_SECONDS);
-      this.ambientFadeTimeout = setTimeout(() => {
-        this.ambientPlayer?.stop();
-        this.isAmbientPlaying = false;
-        this.ambientFadeTimeout = null;
-      }, AMBIENT_AUDIO_FADE_SECONDS * 1000);
-    } else {
-      this.ambientPlayer.stop();
-      this.isAmbientPlaying = false;
-    }
+    this.ambient.stopAmbient(fade);
   }
 
-  /**
-   * Set ambient audio volume.
-   * @param db Volume in decibels (e.g., -15)
-   */
   setAmbientVolume(db: number): void {
-    if (this.ambientVolume) {
-      this.ambientVolume.volume.value = db;
-    }
+    this.ambient.setAmbientVolume(db);
   }
 
-  /**
-   * Check if ambient audio is currently playing.
-   */
   isAmbientAudioPlaying(): boolean {
-    return this.isAmbientPlaying;
+    return this.ambient.isAmbientAudioPlaying();
   }
 
   // ==========================================================================
@@ -1631,16 +1331,8 @@ export class AudioService {
     this.players.clear();
     this.waveformCache.clear();
 
-    // Dispose ambient audio (clear fade timeout first)
-    if (this.ambientFadeTimeout) {
-      clearTimeout(this.ambientFadeTimeout);
-      this.ambientFadeTimeout = null;
-    }
-    this.stopAmbient(false);
-    this.ambientPlayer?.dispose();
-    this.ambientPlayer = null;
-    this.ambientVolume?.dispose();
-    this.ambientVolume = null;
+    // Dispose ambient audio
+    this.ambient.dispose();
 
     this.beatUpdateCallbacks.clear();
     this.playbackEndCallbacks.clear();
