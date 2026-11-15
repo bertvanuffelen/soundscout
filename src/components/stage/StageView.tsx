@@ -25,6 +25,7 @@ import { useVideoExport } from '../../hooks/useVideoExport';
 import { useStageSave } from '../../hooks/useStageSave';
 import { useStageModals } from '../../hooks/useStageModals';
 import { useLiveAssignment } from '../../hooks/useLiveAssignment';
+import { useLuisterspiegelEnabled } from '../../hooks/useLuisterspiegelEnabled';
 import { Button, Modal } from '../ui';
 import { ShareLinkModal } from '../share';
 import { storageService } from '../../services/StorageService';
@@ -34,6 +35,8 @@ import { compositionFingerprint } from '../../utils/handInVersions';
 import { deriveStageSteps } from '../../utils/stageSteps';
 import { getPeerDone, setPeerDone } from '../../utils/peerProgress';
 import { randomTitle } from '../../utils/randomTitles';
+import { withSequenceSamples } from '../../utils/sequencer';
+import type { MirrorResult } from './LuisterspiegelStep';
 import { SaveAsTemplateModal } from './SaveAsTemplateModal';
 import { PresentationSurface } from '../presentation/PresentationSurface';
 import { PeerReviewModal } from './PeerReviewModal';
@@ -99,6 +102,10 @@ export function StageView() {
   const [listened, setListened] = useState(false);
   const [zoomed, setZoomed] = useState(false);
   const [exported, setExported] = useState(false);
+  // Luisterspiegel: bekeken of overgeslagen (alleen deze podiumsessie)
+  const luisterspiegelEnabled = useLuisterspiegelEnabled();
+  const [mirrorResult, setMirrorResult] = useState<MirrorResult | null>(null);
+  const mirrorSamples = useMemo(() => withSequenceSamples(librarySamples, sequences), [librarySamples, sequences]);
   const [showPresentation, setShowPresentation] = useState(false);
   const [showPeerReview, setShowPeerReview] = useState(false);
   const [showCard, setShowCard] = useState(false);
@@ -177,6 +184,8 @@ export function StageView() {
     isPraatplaat,
     listened,
     hasTitle: compositionName.trim().length > 0,
+    mirrorEnabled: luisterspiegelEnabled,
+    mirrorDone: mirrorResult !== null,
     handedIn: submissionSynced,
     changedSinceHandIn: !!classSession && changed,
     saved: !!onlineSaveCode,
@@ -364,6 +373,10 @@ export function StageView() {
             title={compositionName}
             onTitleChange={setCompositionName}
             titleLocked={titleLocked}
+            mirrorTracks={tracks}
+            mirrorSamples={mirrorSamples}
+            mirrorResult={mirrorResult}
+            onMirrorDone={setMirrorResult}
             zoomed={zoomed}
             onToggleZoom={() => setZoomed((v) => !v)}
             onMoveSpot={handleMoveSpot}

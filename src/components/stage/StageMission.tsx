@@ -16,10 +16,11 @@ import {
 import { Button } from '../ui/Button';
 import { FeedbackBanner } from '../common/FeedbackBanner';
 import { OpdrachtCard } from './OpdrachtCard';
+import { LuisterspiegelStep, type MirrorAnswer, type MirrorResult } from './LuisterspiegelStep';
 import { allStepsDone, firstOpenStep, PEER_TARGET, type StageStep, type StageStepId } from '../../utils/stageSteps';
 import { titleSuggestions } from '../../utils/randomTitles';
 import { cn } from '../../utils/cn';
-import type { ClassSession } from '../../types';
+import type { ClassSession, Sample, Track } from '../../types';
 import type { VersionInfo } from '../../utils/handInVersions';
 
 type ExportState = 'idle' | 'exporting' | 'success' | 'error' | 'unsupported';
@@ -37,6 +38,12 @@ export interface StageMissionProps {
   onTitleChange: (value: string) => void;
   /** Docent zette "zelf een titel typen" uit (migratie 037) */
   titleLocked: boolean;
+  // Luisterspiegel (alleen als de stap aan staat)
+  mirrorTracks?: Track[];
+  /** Sample-lijst inclusief sequence-samples */
+  mirrorSamples?: Sample[];
+  mirrorResult?: MirrorResult | null;
+  onMirrorDone?: (result: MirrorResult) => void;
   // Plek
   zoomed: boolean;
   onToggleZoom: () => void;
@@ -92,6 +99,9 @@ export function StageMission(props: StageMissionProps) {
   const [openChoice, setOpenChoice] = useState<StageStepId | 'none' | null>(null);
   const [suggestions, setSuggestions] = useState(() => titleSuggestions(3, i18n.language));
   const openId = openChoice === 'none' ? null : openChoice ?? firstOpenStep(steps);
+  // Luisterspiegel: alleen op het scherm, nergens bewaard of verstuurd
+  const [mirrorRoll, setMirrorRoll] = useState(0);
+  const [mirrorAnswers, setMirrorAnswers] = useState<Record<string, MirrorAnswer>>({});
 
   const version = props.versionInfo?.version ?? 0;
   const busy = props.exportState === 'exporting' || props.videoExportState === 'exporting';
@@ -101,6 +111,7 @@ export function StageMission(props: StageMissionProps) {
       case 'listen': return t('podium.listen.title');
       case 'title': return t('podium.titleStep.title');
       case 'spot': return t('podium.spot.title');
+      case 'mirror': return t('luisterspiegel.title');
       case 'hand': return isPraatplaat ? t('podium.hand.titlePraatplaat') : t('podium.hand.title', { className: session?.className ?? '' });
       case 'save': return t('podium.save.title');
       case 'post': return t('podium.post.title');
@@ -118,6 +129,7 @@ export function StageMission(props: StageMissionProps) {
         case 'listen': return t('podium.listen.done');
         case 'title': return props.title;
         case 'spot': return t('podium.spot.done');
+        case 'mirror': return props.mirrorResult === 'skipped' ? t('luisterspiegel.skipped') : t('luisterspiegel.done');
         case 'hand': return props.versionInfo
           ? t('podium.hand.done', { n: version, time: formatClock(props.versionInfo.at, i18n.language) })
           : t('podium.listen.done');
@@ -223,6 +235,20 @@ export function StageMission(props: StageMissionProps) {
               </Button>
             </div>
           </>
+        );
+      case 'mirror':
+        return (
+          <LuisterspiegelStep
+            tracks={props.mirrorTracks ?? []}
+            samples={props.mirrorSamples ?? []}
+            roll={mirrorRoll}
+            answers={mirrorAnswers}
+            onAnswer={(id, answer) => setMirrorAnswers((prev) => ({ ...prev, [id]: answer }))}
+            onReroll={() => { setMirrorRoll((r) => r + 1); setMirrorAnswers({}); }}
+            onBackToStudio={props.onBackToStudio}
+            onContinue={(result) => { props.onMirrorDone?.(result); setOpenChoice(null); }}
+            disabled={props.isSubmitting}
+          />
         );
       case 'hand': {
         const label = props.isSubmitting

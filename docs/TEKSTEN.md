@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1916 teksten in 51 secties._
+_Stand: 1945 teksten in 52 secties._
 
 ## app
 
@@ -2181,6 +2181,40 @@ _Stand: 1916 teksten in 51 secties._
 | `members.teacher.printTitle` | Leerlingcodes {{className}} | Student codes {{className}} |
 | `members.teacher.printHow` | Ga naar soundscout.nl, kies "Ik heb een code" en typ je code. | Go to soundscout.nl, choose "I have a code" and type your code. |
 | `members.teacher.printName` | Naam: | Name: |
+
+## luisterspiegel
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `luisterspiegel.title` | Luisterspiegel | Listening mirror |
+| `luisterspiegel.text` | Zo ziet jouw soundscape eruit. | This is what your soundscape looks like. |
+| `luisterspiegel.empty` | Je soundscape is nog leeg. | Your soundscape is still empty. |
+| `luisterspiegel.done` | Gedaan | Done |
+| `luisterspiegel.skipped` | Overgeslagen | Skipped |
+| `luisterspiegel.part` | Deel {{n}} | Part {{n}} |
+| `luisterspiegel.busiest` | drukst | busiest |
+| `luisterspiegel.silent` | stil | silent |
+| `luisterspiegel.mapLabel` | Vormkaart: {{count}} geluiden in 4 delen. | Form map: {{count}} sounds in 4 parts. |
+| `luisterspiegel.mapLabelBusiest` | Deel {{part}} is het drukst. | Part {{part}} is the busiest. |
+| `luisterspiegel.mapLabelSilent` | Deel {{part}} is stil. | Part {{part}} is silent. |
+| `luisterspiegel.aSound` | een geluid | a sound |
+| `luisterspiegel.answerYes` | Ja, zo wil ik het | Yes, that's how I want it |
+| `luisterspiegel.answerChange` | Ik pas het aan | I'll change it |
+| `luisterspiegel.otherQuestions` | Andere vragen | Other questions |
+| `luisterspiegel.backToStudio` | Terug naar de studio | Back to the studio |
+| `luisterspiegel.next` | Verder | Carry on |
+| `luisterspiegel.skip` | Sla over | Skip |
+| `luisterspiegel.questions.busyPeak1` | Deel {{part}} is het drukst. Is dat ook het spannendste moment? | Part {{part}} is the busiest. Is it the most exciting moment too? |
+| `luisterspiegel.questions.busyPeak2` | In deel {{part}} klinkt het meeste tegelijk. Hoor je elk geluid nog? | The most sounds play at once in part {{part}}. Can you still hear each one? |
+| `luisterspiegel.questions.silence1` | In deel {{part}} is het stil. Wilde je dat zo? | Part {{part}} is silent. Is that what you wanted? |
+| `luisterspiegel.questions.silence2` | Past de stilte in deel {{part}} bij je verhaal? | Does the silence in part {{part}} fit your story? |
+| `luisterspiegel.questions.repeat1` | Je gebruikt {{sound}} vaker. Wil je dat dit geluid terugkomt? | You use {{sound}} more than once. Do you want this sound to come back? |
+| `luisterspiegel.questions.repeat2` | {{sound}} komt terug. Past dat bij je soundscape? | {{sound}} comes back. Does that suit your soundscape? |
+| `luisterspiegel.questions.noRepeat1` | Geen geluid komt terug. Klinkt je soundscape als één geheel? | No sound comes back. Does your soundscape sound like one whole piece? |
+| `luisterspiegel.questions.fewSounds1` | Je koos weinig geluiden. Zijn dit de goede geluiden? | You chose only a few sounds. Are these the right ones? |
+| `luisterspiegel.questions.manySounds1` | Je gebruikt veel geluiden. Hoor je het belangrijkste geluid goed? | You use lots of sounds. Can you hear the most important one clearly? |
+| `luisterspiegel.questions.always1` | Luister naar het begin en het einde. Klinken ze zoals jij wilt? | Listen to the beginning and the end. Do they sound the way you want? |
+| `luisterspiegel.questions.always2` | Kan een luisteraar horen waar jouw soundscape over gaat? | Can a listener hear what your soundscape is about? |
 
 ## unsavedWork
 

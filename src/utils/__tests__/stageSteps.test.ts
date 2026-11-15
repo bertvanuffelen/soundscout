@@ -42,6 +42,25 @@ describe('deriveStageSteps', () => {
     expect(allStepsDone(steps)).toBe(false);
   });
 
+  it('Luisterspiegel staat tussen titel en bewaren/inleveren, alleen als hij aan staat', () => {
+    expect(ids({ mirrorEnabled: true })).toEqual(['listen', 'title', 'mirror', 'save', 'export']);
+    expect(ids({ mirrorEnabled: true, inClass: true, isPraatplaat: true }))
+      .toEqual(['listen', 'title', 'spot', 'mirror', 'hand', 'export']);
+    expect(ids({ mirrorEnabled: false })).not.toContain('mirror');
+  });
+
+  it('een overgeslagen Luisterspiegel houdt niets tegen', () => {
+    const steps = deriveStageSteps({ ...BASE, mirrorEnabled: true, listened: true, hasTitle: true, saved: true, exported: true });
+    expect(steps.find((s) => s.id === 'mirror')).toMatchObject({ done: false, locked: false, optional: true });
+    expect(allStepsDone(steps)).toBe(true);
+  });
+
+  it('na de titel opent de Luisterspiegel; daarna bewaren', () => {
+    const input = { ...BASE, mirrorEnabled: true, listened: true, hasTitle: true };
+    expect(firstOpenStep(deriveStageSteps(input))).toBe('mirror');
+    expect(firstOpenStep(deriveStageSteps({ ...input, mirrorDone: true }))).toBe('save');
+  });
+
   it('alles klaar', () => {
     const steps = deriveStageSteps({ ...BASE, listened: true, hasTitle: true, saved: true, exported: true });
     expect(allStepsDone(steps)).toBe(true);

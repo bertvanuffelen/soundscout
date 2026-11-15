@@ -2584,6 +2584,39 @@
       "printName": "Name:"
     }
   },
+  "luisterspiegel": {
+    "title": "Listening mirror",
+    "text": "This is what your soundscape looks like.",
+    "empty": "Your soundscape is still empty.",
+    "done": "Done",
+    "skipped": "Skipped",
+    "part": "Part {{n}}",
+    "busiest": "busiest",
+    "silent": "silent",
+    "mapLabel": "Form map: {{count}} sounds in 4 parts.",
+    "mapLabelBusiest": "Part {{part}} is the busiest.",
+    "mapLabelSilent": "Part {{part}} is silent.",
+    "aSound": "a sound",
+    "answerYes": "Yes, that's how I want it",
+    "answerChange": "I'll change it",
+    "otherQuestions": "Other questions",
+    "backToStudio": "Back to the studio",
+    "next": "Carry on",
+    "skip": "Skip",
+    "questions": {
+      "busyPeak1": "Part {{part}} is the busiest. Is it the most exciting moment too?",
+      "busyPeak2": "The most sounds play at once in part {{part}}. Can you still hear each one?",
+      "silence1": "Part {{part}} is silent. Is that what you wanted?",
+      "silence2": "Does the silence in part {{part}} fit your story?",
+      "repeat1": "You use {{sound}} more than once. Do you want this sound to come back?",
+      "repeat2": "{{sound}} comes back. Does that suit your soundscape?",
+      "noRepeat1": "No sound comes back. Does your soundscape sound like one whole piece?",
+      "fewSounds1": "You chose only a few sounds. Are these the right ones?",
+      "manySounds1": "You use lots of sounds. Can you hear the most important one clearly?",
+      "always1": "Listen to the beginning and the end. Do they sound the way you want?",
+      "always2": "Can a listener hear what your soundscape is about?"
+    }
+  },
   "unsavedWork": {
     "title": "Your soundscape isn't saved yet",
     "text": "Save it in My soundscapes first, so you don't lose anything.",

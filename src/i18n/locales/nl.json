@@ -2583,6 +2583,39 @@
       "printName": "Naam:"
     }
   },
+  "luisterspiegel": {
+    "title": "Luisterspiegel",
+    "text": "Zo ziet jouw soundscape eruit.",
+    "empty": "Je soundscape is nog leeg.",
+    "done": "Gedaan",
+    "skipped": "Overgeslagen",
+    "part": "Deel {{n}}",
+    "busiest": "drukst",
+    "silent": "stil",
+    "mapLabel": "Vormkaart: {{count}} geluiden in 4 delen.",
+    "mapLabelBusiest": "Deel {{part}} is het drukst.",
+    "mapLabelSilent": "Deel {{part}} is stil.",
+    "aSound": "een geluid",
+    "answerYes": "Ja, zo wil ik het",
+    "answerChange": "Ik pas het aan",
+    "otherQuestions": "Andere vragen",
+    "backToStudio": "Terug naar de studio",
+    "next": "Verder",
+    "skip": "Sla over",
+    "questions": {
+      "busyPeak1": "Deel {{part}} is het drukst. Is dat ook het spannendste moment?",
+      "busyPeak2": "In deel {{part}} klinkt het meeste tegelijk. Hoor je elk geluid nog?",
+      "silence1": "In deel {{part}} is het stil. Wilde je dat zo?",
+      "silence2": "Past de stilte in deel {{part}} bij je verhaal?",
+      "repeat1": "Je gebruikt {{sound}} vaker. Wil je dat dit geluid terugkomt?",
+      "repeat2": "{{sound}} komt terug. Past dat bij je soundscape?",
+      "noRepeat1": "Geen geluid komt terug. Klinkt je soundscape als één geheel?",
+      "fewSounds1": "Je koos weinig geluiden. Zijn dit de goede geluiden?",
+      "manySounds1": "Je gebruikt veel geluiden. Hoor je het belangrijkste geluid goed?",
+      "always1": "Luister naar het begin en het einde. Klinken ze zoals jij wilt?",
+      "always2": "Kan een luisteraar horen waar jouw soundscape over gaat?"
+    }
+  },
   "unsavedWork": {
     "title": "Je soundscape is nog niet bewaard",
     "text": "Bewaar hem eerst in Mijn soundscapes, dan raak je niets kwijt.",

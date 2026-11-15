@@ -17,7 +17,15 @@ interface DevFlags {
   sections: boolean;
   /** Enable template system for teachers */
   templates: boolean;
+  /** Podiumstap "Luisterspiegel" (vormkaart + reflectievragen) */
+  luisterspiegel: boolean;
 }
+
+/**
+ * Luisterspiegel staat in ontwikkeling standaard AAN en in een productie-build
+ * UIT (daar aan te zetten met ?dev=true, net als de andere vlaggen).
+ */
+const LUISTERSPIEGEL_DEFAULT: boolean = import.meta.env.DEV;
 
 interface DevFlagsStore extends DevFlags {
   /** Set all flags at once */
@@ -47,29 +55,31 @@ function persistFlags(flags: DevFlags) {
 }
 
 export const useDevFlagsStore = create<DevFlagsStore>((set, get) => ({
-  // Default: all flags off
+  // Default: all flags off (luisterspiegel: aan in ontwikkeling)
   sections: false,
   templates: false,
+  luisterspiegel: LUISTERSPIEGEL_DEFAULT,
 
   setAllFlags: (enabled) => {
-    const flags: DevFlags = { sections: enabled, templates: enabled };
+    const flags: DevFlags = { sections: enabled, templates: enabled, luisterspiegel: enabled };
     persistFlags(flags);
     set(flags);
   },
 
   setFlag: (flag, enabled) => {
-    const { sections, templates } = get();
-    const flags: DevFlags = { sections, templates, [flag]: enabled };
+    const { sections, templates, luisterspiegel } = get();
+    const flags: DevFlags = { sections, templates, luisterspiegel, [flag]: enabled };
     persistFlags(flags);
     set({ [flag]: enabled });
   },
 
   hydrate: () => {
     const saved = loadFlags();
-    if (saved.sections !== undefined || saved.templates !== undefined) {
+    if (saved.sections !== undefined || saved.templates !== undefined || saved.luisterspiegel !== undefined) {
       set({
         sections: saved.sections ?? false,
         templates: saved.templates ?? false,
+        luisterspiegel: saved.luisterspiegel ?? LUISTERSPIEGEL_DEFAULT,
       });
     }
   },

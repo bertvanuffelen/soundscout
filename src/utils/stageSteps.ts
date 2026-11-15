@@ -7,13 +7,17 @@
  * "Feedback klasgenoten" wacht tot er is ingeleverd (de server eist dat).
  */
 
-export type StageStepId = 'listen' | 'title' | 'spot' | 'hand' | 'save' | 'post' | 'peer' | 'export';
+export type StageStepId = 'listen' | 'title' | 'spot' | 'mirror' | 'hand' | 'save' | 'post' | 'peer' | 'export';
 
 export interface StageStepInput {
   inClass: boolean;
   isPraatplaat: boolean;
   listened: boolean;
   hasTitle: boolean;
+  /** Luisterspiegel staat aan (nu een dev-vlag, later per opdracht) */
+  mirrorEnabled?: boolean;
+  /** Luisterspiegel bekeken of overgeslagen */
+  mirrorDone?: boolean;
   /** Klas: ingeleverd en de laatste versie is bij de docent */
   handedIn: boolean;
   /** Klas: iets veranderd sinds de laatste ingeleverde versie */
@@ -38,6 +42,8 @@ export interface StageStep {
   locked: boolean;
   /** Was klaar, maar er is iets veranderd: opnieuw inleveren/bewaren */
   changed: boolean;
+  /** Mag altijd overgeslagen worden: telt niet mee voor "alles klaar" */
+  optional?: boolean;
 }
 
 export const PEER_TARGET = 3;
@@ -50,6 +56,8 @@ export function deriveStageSteps(input: StageStepInput): StageStep[] {
   add('listen', input.listened);
   add('title', input.hasTitle);
   if (input.isPraatplaat) add('spot', true);
+  // Luisterspiegel: vlak vóór bewaren/inleveren, altijd over te slaan
+  if (input.mirrorEnabled) add('mirror', !!input.mirrorDone, { optional: true });
 
   if (input.inClass) {
     add('hand', input.handedIn && !input.changedSinceHandIn, {
@@ -75,5 +83,5 @@ export function firstOpenStep(steps: StageStep[]): StageStepId | null {
 }
 
 export function allStepsDone(steps: StageStep[]): boolean {
-  return steps.every((s) => s.done);
+  return steps.every((s) => s.done || s.optional);
 }
