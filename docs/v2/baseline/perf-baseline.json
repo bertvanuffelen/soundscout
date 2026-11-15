@@ -1,0 +1,58 @@
+{
+  "measuredAt": "2026-11-15",
+  "environment": {
+    "note": "Headless Chromium op een ontwikkelmachine — vergelijkingsbasis, geen schoolapparaat.",
+    "chromium": "159.0.8154.6",
+    "platform": "darwin",
+    "viewport": "1366x768"
+  },
+  "themes": [
+    {
+      "theme": "basis",
+      "locations": 5,
+      "samples": 31,
+      "failed": 0,
+      "audioSeconds": 171,
+      "mp3MB": 4,
+      "decodedMB": 57.5,
+      "decodedPerMp3": 14.4
+    },
+    {
+      "theme": "winterspelen",
+      "locations": 4,
+      "samples": 27,
+      "failed": 0,
+      "audioSeconds": 131,
+      "mp3MB": 3.13,
+      "decodedMB": 44.1,
+      "decodedPerMp3": 14.1
+    },
+    {
+      "theme": "piraten",
+      "locations": 5,
+      "samples": 36,
+      "failed": 0,
+      "audioSeconds": 169,
+      "mp3MB": 2.61,
+      "decodedMB": 43.4,
+      "decodedPerMp3": 16.6
+    }
+  ],
+  "studio": {
+    "clips": 10,
+    "domNodes": 574,
+    "heapMB": 26.3,
+    "heapAfterPlaybackMB": 32.9
+  },
+  "playback": {
+    "seconds": 6,
+    "stillPlaying": true,
+    "fps": 60.3,
+    "frameMsP50": 16.7,
+    "frameMsP95": 16.8,
+    "frameMsMax": 16.8,
+    "framesOver33ms": 0,
+    "longTasks": 0,
+    "currentBeatUpdatesPerSecond": 20.2
+  }
+}

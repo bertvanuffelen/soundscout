@@ -27,6 +27,9 @@ const EditorHub = lazy(() =>
 // Dev-only prototype: step sequencer lab (/sequencer). Volledig geïsoleerd —
 // eigen store, engine en opslag; raakt de reguliere app niet.
 const SequencerLab = lazy(() => import('./pages/SequencerLab'));
+// Dev-only: klikbare V2-mockup (/v2-mockup) voor ontwerpfeedback — zie
+// v2-architecture-proposal.md. Volledig geïsoleerd van de app.
+const V2Mockup = lazy(() => import('./pages/V2Mockup'));
 
 // Lazy-loaded screen components for code splitting
 const StudioView = lazy(() => import('./components/studio/StudioView'));
@@ -487,6 +490,17 @@ function App() {
       <ErrorBoundary>
         <Suspense fallback={null}>
           <SequencerLab />
+        </Suspense>
+      </ErrorBoundary>
+    );
+  }
+
+  // V2-mockup (/v2-mockup) — dev-only, zelfde patroon als /sequencer.
+  if (window.location.pathname === '/v2-mockup' && import.meta.env.DEV) {
+    return (
+      <ErrorBoundary>
+        <Suspense fallback={null}>
+          <V2Mockup />
         </Suspense>
       </ErrorBoundary>
     );
