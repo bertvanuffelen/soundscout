@@ -19,6 +19,7 @@ import { SampleIcon } from '../../utils/iconMap';
 import type { Clip, Sample, ClipEffects } from '../../types';
 import type { WaveformData } from '../../utils/waveform';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
+import { usePreviewPlayhead } from '../../hooks/usePreviewPlayhead';
 
 interface EffectsModalProps {
   clip: Clip;
@@ -49,11 +50,13 @@ export const EffectsModal = memo(function EffectsModal({
 
   // --- Playback state ---
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playheadPos, setPlayheadPos] = useState<number | undefined>(undefined);
-  const playbackRef = useRef<{ animationId: number | null; startTime: number }>({
-    animationId: null,
-    startTime: 0,
-  });
+  // V2 Fase 1: de afspeellijn loopt via de gedeelde frame-lus, direct in de DOM.
+  const handlePreviewFinished = useCallback(() => setIsPlaying(false), []);
+  const {
+    lineRef: playheadLineRef,
+    start: startPlayhead,
+    stop: stopPlayhead,
+  } = usePreviewPlayhead(handlePreviewFinished);
 
   // --- Drag state for fade handles ---
   const [dragging, setDragging] = useState<'fadeIn' | 'fadeOut' | null>(null);
@@ -76,16 +79,14 @@ export const EffectsModal = memo(function EffectsModal({
       setPitch(clip.effects?.pitch ?? 0);
       setReverb(clip.effects?.reverb ?? 0);
       setIsPlaying(false);
-      setPlayheadPos(undefined);
+      stopPlayhead();
     }
 
     return () => {
-      if (playbackRef.current.animationId) {
-        cancelAnimationFrame(playbackRef.current.animationId);
-      }
+      stopPlayhead();
       audioService.stopPreviewWithEffects();
     };
-  }, [isOpen, sample.id, clip.effects]);
+  }, [isOpen, sample.id, clip.effects, stopPlayhead]);
 
   // --- Container width tracking ---
   useEffect(() => {
@@ -144,16 +145,11 @@ export const EffectsModal = memo(function EffectsModal({
     if (isPlaying) {
       audioService.stopPreviewWithEffects();
       setIsPlaying(false);
-      setPlayheadPos(undefined);
-      if (playbackRef.current.animationId) {
-        cancelAnimationFrame(playbackRef.current.animationId);
-        playbackRef.current.animationId = null;
-      }
+      stopPlayhead();
       return;
     }
 
     setIsPlaying(true);
-    setPlayheadPos(trimStart);
 
     audioService.playSampleWithEffects(sample.id, trimStart, clipDuration, {
       pitch,
@@ -162,24 +158,8 @@ export const EffectsModal = memo(function EffectsModal({
       fadeOut,
     });
 
-    playbackRef.current.startTime = performance.now();
-
-    const animate = () => {
-      const elapsed = (performance.now() - playbackRef.current.startTime) / 1000;
-
-      if (elapsed >= clipDuration) {
-        setIsPlaying(false);
-        setPlayheadPos(undefined);
-        playbackRef.current.animationId = null;
-        return;
-      }
-
-      setPlayheadPos(trimStart + elapsed);
-      playbackRef.current.animationId = requestAnimationFrame(animate);
-    };
-
-    playbackRef.current.animationId = requestAnimationFrame(animate);
-  }, [isPlaying, sample.id, trimStart, clipDuration, pitch, reverb, fadeIn, fadeOut]);
+    startPlayhead(trimStart, clipDuration, waveform?.duration ?? sample.duration);
+  }, [isPlaying, sample.id, sample.duration, trimStart, clipDuration, pitch, reverb, fadeIn, fadeOut, waveform, startPlayhead, stopPlayhead]);
 
   // --- Slider handlers ---
   const handlePitchChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -201,21 +181,17 @@ export const EffectsModal = memo(function EffectsModal({
   // --- Apply and close ---
   const handleApply = useCallback(() => {
     audioService.stopPreviewWithEffects();
-    if (playbackRef.current.animationId) {
-      cancelAnimationFrame(playbackRef.current.animationId);
-    }
+    stopPlayhead();
     onApply({ fadeIn, fadeOut, pitch, reverb });
     onClose();
-  }, [fadeIn, fadeOut, pitch, reverb, onApply, onClose]);
+  }, [fadeIn, fadeOut, pitch, reverb, onApply, onClose, stopPlayhead]);
 
   // --- Close with cleanup ---
   const handleClose = useCallback(() => {
     audioService.stopPreviewWithEffects();
-    if (playbackRef.current.animationId) {
-      cancelAnimationFrame(playbackRef.current.animationId);
-    }
+    stopPlayhead();
     onClose();
-  }, [onClose]);
+  }, [onClose, stopPlayhead]);
 
   // Gedeeld dialog-gedrag: Escape sluit (annuleert), focus trap, scroll-lock
   const modalRef = useModalBehavior(handleClose, { isOpen });
@@ -275,15 +251,22 @@ export const EffectsModal = memo(function EffectsModal({
             {waveform ? (
               <>
                 <div className="p-2">
-                  <Waveform
-                    data={waveform}
-                    color={sample.color}
-                    width={containerWidth - 16}
-                    height={100}
-                    trimRegion={[trimStart, trimEnd]}
-                    fadeRegion={{ fadeIn, fadeOut }}
-                    playheadPosition={playheadPos}
-                  />
+                  <div className="relative">
+                    <Waveform
+                      data={waveform}
+                      color={sample.color}
+                      width={containerWidth - 16}
+                      height={100}
+                      trimRegion={[trimStart, trimEnd]}
+                      fadeRegion={{ fadeIn, fadeOut }}
+                    />
+                    {/* Afspeellijn van het voorbeeld: per frame verplaatst (usePreviewPlayhead) */}
+                    <div
+                      ref={playheadLineRef}
+                      className="hidden absolute top-0 bottom-0 w-0.5 -translate-x-1/2 bg-error-500 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                  </div>
                 </div>
 
                 {/* Fade-in handle — always visible at left trim edge */}

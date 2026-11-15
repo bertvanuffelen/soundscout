@@ -55,6 +55,8 @@ import FittedImage from './FittedImage';
 import { clusterSubmissions, type SpotCluster } from '../../utils/praatplaatClustering';
 import { FeedbackPanel } from '../teacher/FeedbackPanel';
 import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
+import { useDerivedBeat } from '../../hooks/useBeatFrame';
+import { getActiveImageIndex } from '../../utils/storytelling';
 import { useFullscreen, isDocumentFullscreen } from '../../hooks/useFullscreen';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
 import { DEFAULT_BPM } from '../../constants/config';
@@ -193,7 +195,7 @@ export function PresentationSurface({
 
   const {
     state: playbackState,
-    currentBeat,
+    getBeat,
     loadingProgress,
     errorMessage,
     play: playComposition,
@@ -201,6 +203,16 @@ export function PresentationSurface({
     stop: stopComposition,
     seek: seekComposition,
   } = useCompositionPlayback(data ?? null, { respectLoop, onEnded: handleEnded });
+
+  // V2 Fase 1: de afspeelpositie gaat niet meer door React-state. De tijdlijn
+  // leest `getBeat` per frame; het storyboard rendert alleen opnieuw wanneer
+  // het ACTIEVE BEELD wisselt (een paar keer per compositie).
+  const storyboardImageCount = storyboard?.images.length ?? 0;
+  const storyboardSections = data?.sections;
+  const activeImageIndex = useDerivedBeat(
+    (beat) => getActiveImageIndex(beat, totalBeats, storyboardImageCount, storyboardSections ?? []),
+    getBeat,
+  );
 
   // Geen samples = niets af te spelen: eerlijke foutstaat (geen maskering)
   const noSamples = (data?.samples?.length ?? 0) === 0;
@@ -521,7 +533,7 @@ export function PresentationSurface({
                   <div className={cn('min-h-0', immersive ? 'bg-brand-900' : 'bg-neutral-50', showTimeline ? 'flex-[2]' : 'flex-1')}>
                     <StoryboardViewer
                       storyboard={storyboard}
-                      currentBeat={currentBeat}
+                      activeIndex={activeImageIndex}
                       totalBeats={totalBeats}
                       sections={data?.sections ?? []}
                       fill
@@ -571,7 +583,7 @@ export function PresentationSurface({
                       tracks={data?.tracks ?? []}
                       bpm={bpm}
                       totalBeats={totalBeats}
-                      currentBeat={currentBeat}
+                      getBeat={getBeat}
                       isPlaying={isPlaying}
                       onSeek={seekComposition}
                       snapPreview={null}

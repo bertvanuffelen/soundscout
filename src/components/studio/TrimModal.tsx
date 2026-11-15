@@ -18,6 +18,7 @@ import type { WaveformData } from '../../utils/waveform';
 import { MIN_TRIM_DURATION_SECONDS } from '../../constants/config';
 import { SampleIcon } from '../../utils/iconMap';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
+import { usePreviewPlayhead } from '../../hooks/usePreviewPlayhead';
 
 interface TrimModalProps {
   clip: Clip;
@@ -46,11 +47,13 @@ export const TrimModal = memo(function TrimModal({
 
   // Playback state
   const [isPlaying, setIsPlaying] = useState(false);
-  const [playheadPos, setPlayheadPos] = useState<number | undefined>(undefined);
-  const playbackRef = useRef<{ animationId: number | null; startTime: number }>({
-    animationId: null,
-    startTime: 0,
-  });
+  // V2 Fase 1: de afspeellijn loopt via de gedeelde frame-lus, direct in de DOM.
+  const handlePreviewFinished = useCallback(() => setIsPlaying(false), []);
+  const {
+    lineRef: playheadLineRef,
+    start: startPlayhead,
+    stop: stopPlayhead,
+  } = usePreviewPlayhead(handlePreviewFinished);
 
   // Drag state
   const [dragging, setDragging] = useState<'start' | 'end' | null>(null);
@@ -66,17 +69,15 @@ export const TrimModal = memo(function TrimModal({
       setTrimStart(clip.trimStart ?? 0);
       setTrimEnd(clip.trimEnd ?? sample.duration);
       setIsPlaying(false);
-      setPlayheadPos(undefined);
+      stopPlayhead();
     }
 
     return () => {
       // Cleanup on close
-      if (playbackRef.current.animationId) {
-        cancelAnimationFrame(playbackRef.current.animationId);
-      }
+      stopPlayhead();
       audioService.stopSample(sample.id);
     };
-  }, [isOpen, sample.id, clip.trimStart, clip.trimEnd, sample.duration]);
+  }, [isOpen, sample.id, clip.trimStart, clip.trimEnd, sample.duration, stopPlayhead]);
 
   // Update container width on resize
   useEffect(() => {
@@ -115,40 +116,17 @@ export const TrimModal = memo(function TrimModal({
       // Stop playback
       audioService.stopSample(sample.id);
       setIsPlaying(false);
-      setPlayheadPos(undefined);
-      if (playbackRef.current.animationId) {
-        cancelAnimationFrame(playbackRef.current.animationId);
-        playbackRef.current.animationId = null;
-      }
+      stopPlayhead();
       return;
     }
 
     // Start playback
     setIsPlaying(true);
-    setPlayheadPos(trimStart);
 
     const duration = trimEnd - trimStart;
     audioService.playSampleRegion(sample.id, trimStart, duration);
-
-    // Animate playhead
-    playbackRef.current.startTime = performance.now();
-
-    const animate = () => {
-      const elapsed = (performance.now() - playbackRef.current.startTime) / 1000;
-
-      if (elapsed >= duration) {
-        setIsPlaying(false);
-        setPlayheadPos(undefined);
-        playbackRef.current.animationId = null;
-        return;
-      }
-
-      setPlayheadPos(trimStart + elapsed);
-      playbackRef.current.animationId = requestAnimationFrame(animate);
-    };
-
-    playbackRef.current.animationId = requestAnimationFrame(animate);
-  }, [isPlaying, sample.id, trimStart, trimEnd]);
+    startPlayhead(trimStart, duration, waveform?.duration ?? sample.duration);
+  }, [isPlaying, sample.id, sample.duration, trimStart, trimEnd, waveform, startPlayhead, stopPlayhead]);
 
   // Reset to original
   const handleReset = useCallback(() => {
@@ -160,13 +138,11 @@ export const TrimModal = memo(function TrimModal({
   const handleApply = useCallback(() => {
     // Stop any playback
     audioService.stopSample(sample.id);
-    if (playbackRef.current.animationId) {
-      cancelAnimationFrame(playbackRef.current.animationId);
-    }
+    stopPlayhead();
 
     onApply(trimStart, trimEnd);
     onClose();
-  }, [trimStart, trimEnd, onApply, onClose, sample.id]);
+  }, [trimStart, trimEnd, onApply, onClose, sample.id, stopPlayhead]);
 
   // Handle pointer events for drag handles
   const handlePointerDown = useCallback(
@@ -203,11 +179,9 @@ export const TrimModal = memo(function TrimModal({
   // Handle close with cleanup
   const handleClose = useCallback(() => {
     audioService.stopSample(sample.id);
-    if (playbackRef.current.animationId) {
-      cancelAnimationFrame(playbackRef.current.animationId);
-    }
+    stopPlayhead();
     onClose();
-  }, [onClose, sample.id]);
+  }, [onClose, sample.id, stopPlayhead]);
 
   // Gedeeld dialog-gedrag: Escape sluit (annuleert), focus trap, scroll-lock
   const modalRef = useModalBehavior(handleClose, { isOpen });
@@ -259,14 +233,21 @@ export const TrimModal = memo(function TrimModal({
               <>
                 {/* Waveform visualization */}
                 <div className="p-2">
-                  <Waveform
-                    data={waveform}
-                    color={sample.color}
-                    width={containerWidth - 16}
-                    height={100}
-                    trimRegion={[trimStart, trimEnd]}
-                    playheadPosition={playheadPos}
-                  />
+                  <div className="relative">
+                    <Waveform
+                      data={waveform}
+                      color={sample.color}
+                      width={containerWidth - 16}
+                      height={100}
+                      trimRegion={[trimStart, trimEnd]}
+                    />
+                    {/* Afspeellijn van het voorbeeld: per frame verplaatst (usePreviewPlayhead) */}
+                    <div
+                      ref={playheadLineRef}
+                      className="hidden absolute top-0 bottom-0 w-0.5 -translate-x-1/2 bg-error-500 pointer-events-none"
+                      aria-hidden="true"
+                    />
+                  </div>
                 </div>
 
                 {/* Left trim handle */}

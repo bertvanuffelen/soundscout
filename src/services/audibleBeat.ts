@@ -23,3 +23,27 @@ export function secondsToAudibleBeat(transportSeconds: number, bpm: number): num
   if (!Number.isFinite(transportSeconds) || transportSeconds <= 0) return 0;
   return (transportSeconds / 60) * bpm;
 }
+
+/**
+ * Positie binnen een compositie van `totalBeats` tellen: bij loopen modulo de
+ * lengte, anders begrensd op het einde. Nooit negatief.
+ * (Weergaves met een eigen afspeelmotor — useCompositionPlayback.)
+ */
+export function wrapBeat(beat: number, totalBeats: number, looping: boolean): number {
+  if (!Number.isFinite(beat) || beat <= 0) return 0;
+  if (!(totalBeats > 0)) return 0;
+  return looping ? beat % totalBeats : Math.min(beat, totalBeats);
+}
+
+/**
+ * Positie (s) van de voorbeeld-afspeellijn in trim-/effectenvenster, of `null`
+ * zodra het voorbeeld is afgelopen.
+ */
+export function previewPosition(
+  elapsedSeconds: number,
+  startSeconds: number,
+  durationSeconds: number,
+): number | null {
+  if (elapsedSeconds >= durationSeconds) return null;
+  return startSeconds + Math.max(0, elapsedSeconds);
+}

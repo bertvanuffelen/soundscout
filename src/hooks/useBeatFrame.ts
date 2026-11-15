@@ -37,16 +37,22 @@ export function useBeatFrame(
   }), []);
 }
 
-/** Afgeleide waarde van de tel; rendert alleen bij verandering van die waarde. */
-export function useDerivedBeat<T>(select: (beat: number) => T): T {
+/**
+ * Afgeleide waarde van de tel; rendert alleen bij verandering van die waarde.
+ * @param getBeat  optioneel: eigen bron in plaats van de afspeelklok
+ */
+export function useDerivedBeat<T>(select: (beat: number) => T, getBeat?: BeatGetter): T {
   const selectRef = useRef(select);
+  const getBeatRef = useRef(getBeat);
   useEffect(() => {
     selectRef.current = select;
+    getBeatRef.current = getBeat;
   });
-  const [value, setValue] = useState<T>(() => select(playbackClock.getBeat()));
+  const [value, setValue] = useState<T>(() => select(getBeat ? getBeat() : playbackClock.getBeat()));
 
   useEffect(() => subscribeFrame(() => {
-    const next = selectRef.current(playbackClock.getBeat());
+    const beat = getBeatRef.current ? getBeatRef.current() : playbackClock.getBeat();
+    const next = selectRef.current(beat);
     setValue((prev) => (Object.is(prev, next) ? prev : next));
   }), []);
 

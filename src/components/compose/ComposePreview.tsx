@@ -25,6 +25,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 import type { ComposeVariant } from './composeVariants';
+import { subscribeFrame } from '../../services/frameLoop';
 
 interface ComposePreviewProps {
   variant: ComposeVariant;
@@ -131,7 +132,6 @@ function PraatplaatPreview() {
       return;
     }
 
-    let raf = 0;
     let startTime: number | null = null;
 
     const frame = (now: number) => {
@@ -209,11 +209,10 @@ function PraatplaatPreview() {
         backdrop.style.opacity = bOp.toFixed(3);
       }
 
-      raf = requestAnimationFrame(frame);
     };
 
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    // V2 Fase 1: gedeelde frame-lus i.p.v. een eigen rAF-lus per preview.
+    return subscribeFrame(frame);
   }, []);
 
   return (
@@ -386,7 +385,6 @@ function StoryboardPreview() {
       return;
     }
 
-    let raf = 0;
     let startTime: number | null = null;
 
     const frame = (now: number) => {
@@ -492,11 +490,10 @@ function StoryboardPreview() {
         }
       }
 
-      raf = requestAnimationFrame(frame);
     };
 
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    // V2 Fase 1: gedeelde frame-lus i.p.v. een eigen rAF-lus per preview.
+    return subscribeFrame(frame);
   }, []);
 
   return (
@@ -660,7 +657,6 @@ function VrijPreview() {
       return;
     }
 
-    let raf = 0;
     let startTime: number | null = null;
 
     // Eén rAF-klok: elke frame wordt de staat volledig berekend uit de verstreken
@@ -717,11 +713,10 @@ function VrijPreview() {
         }
       }
 
-      raf = requestAnimationFrame(frame);
     };
 
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    // V2 Fase 1: gedeelde frame-lus i.p.v. een eigen rAF-lus per preview.
+    return subscribeFrame(frame);
   }, []);
 
   return (
@@ -831,7 +826,6 @@ function ImagePreview() {
       return;
     }
 
-    let raf = 0;
     let startTime: number | null = null;
 
     const frame = (now: number) => {
@@ -915,11 +909,10 @@ function ImagePreview() {
         }
       }
 
-      raf = requestAnimationFrame(frame);
     };
 
-    raf = requestAnimationFrame(frame);
-    return () => cancelAnimationFrame(raf);
+    // V2 Fase 1: gedeelde frame-lus i.p.v. een eigen rAF-lus per preview.
+    return subscribeFrame(frame);
   }, []);
 
   return (

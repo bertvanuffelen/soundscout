@@ -4,9 +4,14 @@
  *
  * Kapselt de tot nu toe 4-6× gedupliceerde cyclus in:
  *   samples laden (AbortController) → scheduleTimeline → setLoop → play,
- * plus beat-tracking (~30fps op Tone.Transport.seconds, met loop-modulo),
- * pause/resume via de bestaande Part (geen reschedule) en de
- * onPlaybackEnd-lifecycle.
+ * plus de afspeelpositie (`getBeat()`, met loop-modulo), pause/resume via de
+ * bestaande Part (geen reschedule) en de onPlaybackEnd-lifecycle.
+ *
+ * V2 Fase 1: de positie gaat NIET meer door React-state. `getBeat()` is een
+ * stabiele functie die per frame gelezen wordt (useBeatFrame / useDerivedBeat):
+ * tijdens afspelen de HOORBARE positie (audioService.getAudibleBeat), in rust
+ * de rustpositie (na pauze, stop, seek, einde). De hook rendert dus alleen nog
+ * bij een toestandswissel (laden/klaar/afspelen/pauze).
  *
  * Gebruikt door: PeerReviewModal, SubmissionPlayer, SharedPlayer,
  * ClassPresentationView. Bewust NIET door StageView/StagePlayback — het
@@ -19,8 +24,8 @@
  */
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import * as Tone from 'tone';
 import { audioService } from '../services/AudioService';
+import { wrapBeat } from '../services/audibleBeat';
 import { audioDiag } from '../utils/audioDiagnostics';
 import { DEFAULT_BPM } from '../constants/config';
 import { logger } from '../utils/logger';
@@ -56,7 +61,6 @@ export function useCompositionPlayback(
   { onEnded, respectLoop = true, autoLoad = true }: UseCompositionPlaybackOptions = {},
 ) {
   const [state, setState] = useState<CompositionPlaybackState>('idle');
-  const [currentBeat, setCurrentBeat] = useState(0);
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
@@ -80,32 +84,36 @@ export function useCompositionPlayback(
   }, [bpm, totalBeats, effectiveLooping, onEnded, data]);
 
   const abortRef = useRef<AbortController | null>(null);
-  const beatIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
-  // --- Beat-tracking (~30fps; interval is stabieler dan RAF hier) ---
-  useEffect(() => {
-    if (state === 'playing') {
-      beatIntervalRef.current = setInterval(() => {
-        const beat = (Tone.Transport.seconds / 60) * bpmRef.current;
-        if (loopingRef.current && totalBeatsRef.current > 0) {
-          setCurrentBeat(beat % totalBeatsRef.current);
-        } else {
-          setCurrentBeat(Math.min(beat, totalBeatsRef.current));
-        }
-      }, 33);
-    } else if (beatIntervalRef.current) {
-      clearInterval(beatIntervalRef.current);
-      beatIntervalRef.current = null;
-    }
-    return () => {
-      if (beatIntervalRef.current) clearInterval(beatIntervalRef.current);
-    };
-  }, [state]);
+  // --- Afspeelpositie zonder React-state (V2 Fase 1) ---
+  // playingRef loopt synchroon mee met de transport-acties (niet met de
+  // render), zodat getBeat() nooit een frame achterloopt op `state`.
+  const playingRef = useRef(false);
+  const restBeatRef = useRef(0);
+
+  /** Naar rust: vanaf nu geeft getBeat() deze positie. */
+  const rest = useCallback((beat: number) => {
+    playingRef.current = false;
+    restBeatRef.current = beat;
+  }, []);
+
+  /** Tellen van de motor (DEFAULT_BPM) → tellen van deze compositie, met loop-modulo. */
+  const toCompositionBeat = useCallback((engineBeat: number) => wrapBeat(
+    engineBeat * (bpmRef.current / DEFAULT_BPM),
+    totalBeatsRef.current,
+    loopingRef.current,
+  ), []);
+
+  const getBeat = useCallback((): number => (
+    playingRef.current
+      ? toCompositionBeat(audioService.getAudibleBeat())
+      : restBeatRef.current
+  ), [toCompositionBeat]);
 
   // --- Einde-afspelen: terug naar 'ready' + onEnded (auto-advance) ---
   useEffect(() => {
     const unsubscribe = audioService.onPlaybackEnd(() => {
-      setCurrentBeat(0);
+      rest(0);
       setState((prev) => {
         if (prev === 'playing') {
           onEndedRef.current?.();
@@ -115,7 +123,7 @@ export function useCompositionPlayback(
       });
     });
     return unsubscribe;
-  }, []);
+  }, [rest]);
 
   // --- Samples laden (expliciet aanroepbaar voor de gesture-gate) ---
   const load = useCallback(async () => {
@@ -125,7 +133,7 @@ export function useCompositionPlayback(
     if (!current) {
       audioService.stop();
       setState('idle');
-      setCurrentBeat(0);
+      rest(0);
       return;
     }
 
@@ -135,7 +143,7 @@ export function useCompositionPlayback(
     setState('loading');
     setLoadingProgress(0);
     setErrorMessage(null);
-    setCurrentBeat(0);
+    rest(0);
     audioService.stop();
 
     try {
@@ -168,7 +176,7 @@ export function useCompositionPlayback(
       setErrorMessage(err instanceof Error ? err.message : String(err));
       setState('error');
     }
-  }, []);
+  }, [rest]);
 
   // --- Auto-laden bij data-wissel (playlist-advance, modal-open) ---
   const dataKey = data === null ? null : `${data.samples?.length ?? 0}:${data.totalBeats}:${data.tracks?.length ?? 0}`;
@@ -195,45 +203,48 @@ export function useCompositionPlayback(
     const current = dataRef.current;
     if (!current) return;
 
-    setCurrentBeat((beat) => {
-      const startBeat = fromBeat ?? beat;
-      if (audioService.hasActiveSchedule()) {
-        // Resume: de bestaande Part overleeft pause(); geen reschedule nodig
-        audioDiag.resumeWithExistingSchedule(startBeat);
-        audioService.play(startBeat);
-      } else {
-        audioService.scheduleTimeline(
-          current.tracks ?? [],
-          current.samples ?? [],
-          current.sequences ?? []
-        );
-        audioService.setLoop(loopingRef.current, totalBeatsRef.current);
-        audioService.play(startBeat);
-      }
-      return startBeat;
-    });
+    const startBeat = fromBeat ?? getBeat();
+    if (audioService.hasActiveSchedule()) {
+      // Resume: de bestaande Part overleeft pause(); geen reschedule nodig
+      audioDiag.resumeWithExistingSchedule(startBeat);
+      audioService.play(startBeat);
+    } else {
+      audioService.scheduleTimeline(
+        current.tracks ?? [],
+        current.samples ?? [],
+        current.sequences ?? []
+      );
+      audioService.setLoop(loopingRef.current, totalBeatsRef.current);
+      audioService.play(startBeat);
+    }
+    restBeatRef.current = startBeat;
+    playingRef.current = true;
     setState('playing');
-  }, []);
+  }, [getBeat]);
 
   const pause = useCallback(() => {
+    const wasPlaying = playingRef.current;
     audioService.pause();
+    // Rustpositie = waar de motor is blijven staan (daar hervat play() ook).
+    if (wasPlaying) rest(toCompositionBeat(audioService.getCurrentBeat()));
     setState((prev) => (prev === 'playing' ? 'paused' : prev));
-  }, []);
+  }, [rest, toCompositionBeat]);
 
   const stop = useCallback(() => {
     audioService.stop();
-    setCurrentBeat(0);
+    rest(0);
     setState((prev) => (prev === 'playing' || prev === 'paused' ? 'ready' : prev));
-  }, []);
+  }, [rest]);
 
   const seek = useCallback((beat: number) => {
-    setCurrentBeat(beat);
+    // Rustpositie bijwerken; tijdens afspelen volgt getBeat() de motor.
+    restBeatRef.current = beat;
     audioService.seek(beat);
   }, []);
 
   return {
     state,
-    currentBeat,
+    getBeat,
     loadingProgress,
     errorMessage,
     load,

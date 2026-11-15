@@ -18,7 +18,14 @@ import { CrossfadeImage } from './CrossfadeImage';
 
 interface StoryboardViewerProps {
   storyboard: Storyboard;
-  currentBeat: number;
+  /** Tel waaruit het actieve beeld wordt berekend (tenzij `activeIndex` is gegeven). */
+  currentBeat?: number;
+  /**
+   * Het actieve beeld, al afgeleid door de aanroeper (V2 Fase 1: via
+   * useDerivedBeat, zodat dit component niet per frame een nieuwe tel krijgt).
+   * Gaat vóór `currentBeat`.
+   */
+  activeIndex?: number;
   totalBeats: number;
   sections: Section[];
   /** Optional: compact layout for side-by-side with timeline */
@@ -36,7 +43,8 @@ interface StoryboardViewerProps {
 
 export function StoryboardViewer({
   storyboard,
-  currentBeat,
+  currentBeat = 0,
+  activeIndex,
   totalBeats,
   sections,
   compact = false,
@@ -50,8 +58,10 @@ export function StoryboardViewer({
   const imageCount = storyboard.images.length;
 
   const displayIndex = useMemo(
-    () => getActiveImageIndex(currentBeat, totalBeats, imageCount, sections),
-    [currentBeat, totalBeats, imageCount, sections],
+    () => (activeIndex !== undefined
+      ? Math.max(0, Math.min(activeIndex, imageCount - 1))
+      : getActiveImageIndex(currentBeat, totalBeats, imageCount, sections)),
+    [activeIndex, currentBeat, totalBeats, imageCount, sections],
   );
 
   const currentImage = storyboard.images[displayIndex];
