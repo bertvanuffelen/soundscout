@@ -103,4 +103,18 @@ test('afspeelklok: speelt, pauzeert, zoekt en spoelt terug', async ({ page }) =>
   await page.waitForTimeout(200);
   expect((await state()).storeBeat).toBe(0);
   expect(await leftPercent()).toBe(0);
+
+  // --- Podium: voortgangsbalk en tijd volgen de klok, zonder store-updates ---
+  await page.getByRole('button', { name: /Naar (het )?[Pp]odium/ }).first().click();
+  const seek = page.getByRole('button', { name: 'Spring naar een plek in je soundscape' });
+  await seek.waitFor({ timeout: 10000 });
+  const fillWidth = () => seek.locator('span span').evaluate((el) => parseFloat((el as HTMLElement).style.width || '0'));
+  expect(await fillWidth()).toBe(0);
+  await page.getByRole('button', { name: 'Afspelen', exact: true }).first().click();
+  await page.waitForTimeout(2500);
+  const onStage = await state();
+  expect(onStage.isPlaying).toBe(true);
+  expect(onStage.storeBeat, 'ook op het podium wijzigt de store niet tijdens afspelen').toBe(0);
+  expect(await fillWidth(), 'de voortgangsbalk loopt mee').toBeGreaterThan(0);
+  await expect(page.getByText(/^0:0[1-9] \//).first()).toBeVisible();
 });
