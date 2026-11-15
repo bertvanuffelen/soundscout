@@ -1,9 +1,11 @@
-import { memo, useCallback, useState } from 'react';
+import { memo, useCallback, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { cn } from '../../utils/cn';
+import { useBeatFrame, type BeatGetter } from '../../hooks/useBeatFrame';
 
 interface PlayheadProps {
-  currentBeat: number;
+  /** Actuele positie (afspeelklok of eigen bron). Wordt per frame gelezen. */
+  getBeat: BeatGetter;
   totalBeats: number;
   isPlaying: boolean;
   onSeek: (beat: number) => void;
@@ -19,15 +21,34 @@ interface PlayheadProps {
  * - Visual handle is 12px circle
  */
 export const Playhead = memo(function Playhead(props: PlayheadProps) {
-  const { currentBeat, totalBeats, onSeek, containerRef } = props;
+  const { getBeat, totalBeats, onSeek, containerRef } = props;
   const { t } = useTranslation();
   const [isDragging, setIsDragging] = useState(false);
-  const playheadPercent = (currentBeat / totalBeats) * 100;
+
+  // V2 Fase 1: het handvat volgt de klok per frame, direct in de DOM.
+  // React rendert dit component niet meer mee met de afspeelpositie.
+  const handleRef = useRef<HTMLDivElement>(null);
+  const last = useRef<{ el: HTMLElement | null; left: string; value: number }>({ el: null, left: '', value: -1 });
+  useBeatFrame((beat) => {
+    const el = handleRef.current;
+    if (!el) return;
+    if (last.current.el !== el) last.current = { el, left: '', value: -1 };
+    const left = `${(beat / totalBeats) * 100}%`;
+    if (left !== last.current.left) {
+      el.style.left = left;
+      last.current.left = left;
+    }
+    const value = Math.round(beat);
+    if (value !== last.current.value) {
+      el.setAttribute('aria-valuenow', String(value));
+      last.current.value = value;
+    }
+  }, getBeat);
 
   // Calculate beat from pointer position
   const calculateBeatFromPointer = useCallback(
     (clientX: number): number => {
-      if (!containerRef.current) return currentBeat;
+      if (!containerRef.current) return getBeat();
 
       const rect = containerRef.current.getBoundingClientRect();
       const scrollLeft = containerRef.current.scrollLeft;
@@ -46,7 +67,7 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
       // Clamp to valid range
       return Math.max(0, Math.min(totalBeats, beat));
     },
-    [containerRef, currentBeat, totalBeats]
+    [containerRef, getBeat, totalBeats]
   );
 
   // --- Ruler click: seek to clicked position ---
@@ -105,6 +126,7 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
   const handleKeyDown = useCallback(
     (e: React.KeyboardEvent) => {
       const step = 1; // Move by 1 beat per key press
+      const currentBeat = getBeat();
       let newBeat = currentBeat;
 
       switch (e.key) {
@@ -130,7 +152,7 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
           break;
       }
     },
-    [currentBeat, totalBeats, onSeek]
+    [getBeat, totalBeats, onSeek]
   );
 
   return (
@@ -146,7 +168,6 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
         role="slider"
         tabIndex={0}
         aria-label={t('studio.playhead')}
-        aria-valuenow={Math.round(currentBeat)}
         aria-valuemin={0}
         aria-valuemax={totalBeats}
         className={cn(
@@ -157,7 +178,7 @@ export const Playhead = memo(function Playhead(props: PlayheadProps) {
           isDragging && 'touch-none',
           'focus-visible:ring-2 focus-visible:ring-error-500 focus-visible:ring-offset-1'
         )}
-        style={{ left: `${playheadPercent}%` }}
+        ref={handleRef}
         onPointerDown={handlePointerDown}
         onPointerMove={handlePointerMove}
         onPointerUp={handlePointerUp}

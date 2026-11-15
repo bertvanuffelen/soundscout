@@ -36,6 +36,7 @@ import {
   scheduleFadeCurvesAtOffset,
 } from './audioGraph';
 import { pitchBufferService } from './PitchBufferService';
+import { sanitizeLatency, secondsToAudibleBeat } from './audibleBeat';
 import {
   buildLimiterProcessorCode,
   applyLimiterToChannels,
@@ -1102,6 +1103,10 @@ export class AudioService {
       try { player.stop(); } catch { /* ignore */ }
     });
     this.stopPlayheadUpdates();
+    // Meld de rustpositie (V2 Fase 1: tijdens afspelen komen er geen
+    // positie-updates meer; bij pauze moet de store weten waar we staan).
+    const pausedBeat = this.getCurrentBeat();
+    this.beatUpdateCallbacks.forEach((cb) => cb(pausedBeat));
   }
 
   stop(): void {
@@ -1367,10 +1372,12 @@ export class AudioService {
 
     const transport = Tone.getTransport();
 
+    // V2 Fase 1: dit interval stuurt GEEN positie meer naar de UI. De
+    // afspeellijn leest de hoorbare positie zelf, per frame, via
+    // playbackClock/frameLoop. Het interval bewaakt alleen nog de auto-stop.
     this.playheadIntervalId = window.setInterval(() => {
       const seconds = transport.seconds;
       const currentBeat = (seconds / 60) * DEFAULT_BPM;
-      this.beatUpdateCallbacks.forEach((cb) => cb(currentBeat));
 
       // Auto-stop: when not looping and playhead passed the audible end
       // (incl. galmstaart — D12: live laat de reverb net als de export uitklinken)
@@ -1389,7 +1396,10 @@ export class AudioService {
   }
 
   /**
-   * Subscribe to beat updates. Returns unsubscribe function.
+   * Subscribe to POSITION CHANGES: seek, pause en stop (losse gebeurtenissen).
+   * Sinds V2 Fase 1 komt hier tijdens afspelen niets meer binnen — de actuele
+   * positie lees je per frame via `playbackClock.getBeat()`.
+   * Returns unsubscribe function.
    */
   onBeatUpdate(callback: BeatUpdateCallback): () => void {
     this.beatUpdateCallbacks.add(callback);
@@ -1412,6 +1422,30 @@ export class AudioService {
   getCurrentBeat(): number {
     const seconds = Tone.getTransport().seconds;
     return (seconds / 60) * DEFAULT_BPM;
+  }
+
+  /**
+   * De positie die je nu HOORT, in tellen (V2 Fase 1).
+   *
+   * `transport.seconds` loopt vooruit: Tone rekent met `now() = currentTime +
+   * lookAhead` (0,1 s), zodat events op tijd ingepland kunnen worden. Daar
+   * komt de uitvoervertraging van het apparaat nog bij (bluetooth, HDMI naar
+   * een digibord). Voor beeld willen we de positie op het moment dat het
+   * geluid de luidspreker verlaat: de transportpositie op
+   * `currentTime − outputLatency`.
+   *
+   * Alleen voor weergave. Engine-logica (seek, auto-stop, reschedule) blijft
+   * `getCurrentBeat()` gebruiken.
+   */
+  getAudibleBeat(): number {
+    try {
+      const raw = Tone.getContext().rawContext as AudioContext;
+      const latency = sanitizeLatency(raw.outputLatency, raw.baseLatency);
+      const seconds = Tone.getTransport().getSecondsAtTime(Tone.immediate() - latency);
+      return secondsToAudibleBeat(seconds, DEFAULT_BPM);
+    } catch {
+      return this.getCurrentBeat();
+    }
   }
 
   /**

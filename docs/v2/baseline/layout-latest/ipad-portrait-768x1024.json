@@ -1,0 +1,205 @@
+{
+  "viewport": {
+    "id": "ipad-portrait-768x1024",
+    "width": 768,
+    "height": 1024
+  },
+  "journey": {
+    "clicksToFirstSound": 5,
+    "clicksToFirstClip": 9
+  },
+  "screens": [
+    {
+      "screen": "01-start",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 13,
+        "offscreen": [],
+        "under44": 10,
+        "under24": 0,
+        "smallestTarget": 24,
+        "overlaps": [],
+        "textUnder12": 0
+      }
+    },
+    {
+      "screen": "02-wizard-modus",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": true,
+        "interactiveCount": 5,
+        "offscreen": [],
+        "under44": 0,
+        "under24": 0,
+        "smallestTarget": 44,
+        "overlaps": [],
+        "textUnder12": 0
+      }
+    },
+    {
+      "screen": "03-wizard-wereld",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": true,
+        "interactiveCount": 4,
+        "offscreen": [],
+        "under44": 1,
+        "under24": 1,
+        "smallestTarget": 20,
+        "overlaps": [],
+        "textUnder12": 0
+      }
+    },
+    {
+      "screen": "04-kaart",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 7,
+        "offscreen": [],
+        "under44": 2,
+        "under24": 0,
+        "smallestTarget": 40,
+        "overlaps": [],
+        "textUnder12": 0
+      }
+    },
+    {
+      "screen": "05-locatie",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 8,
+        "offscreen": [],
+        "under44": 2,
+        "under24": 0,
+        "smallestTarget": 40,
+        "overlaps": [],
+        "textUnder12": 0
+      }
+    },
+    {
+      "screen": "06-locatie-verzameld",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 8,
+        "offscreen": [],
+        "under44": 5,
+        "under24": 0,
+        "smallestTarget": 28,
+        "overlaps": [],
+        "textUnder12": 3
+      }
+    },
+    {
+      "screen": "07-studio-leeg",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 31,
+        "offscreen": [],
+        "under44": 25,
+        "under24": 9,
+        "smallestTarget": 16,
+        "overlaps": [],
+        "textUnder12": 41
+      }
+    },
+    {
+      "screen": "08-studio-clips",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 31,
+        "offscreen": [],
+        "under44": 25,
+        "under24": 9,
+        "smallestTarget": 16,
+        "overlaps": [],
+        "textUnder12": 41
+      }
+    },
+    {
+      "screen": "09-studio-clip-geselecteerd",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 37,
+        "offscreen": [],
+        "under44": 31,
+        "under24": 9,
+        "smallestTarget": 16,
+        "overlaps": [],
+        "textUnder12": 42
+      }
+    },
+    {
+      "screen": "10-podium",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 0,
+        "dialogOpen": false,
+        "interactiveCount": 17,
+        "offscreen": [],
+        "under44": 10,
+        "under24": 1,
+        "smallestTarget": 16,
+        "overlaps": [],
+        "textUnder12": 41
+      }
+    },
+    {
+      "screen": "11-docentenpagina",
+      "reached": true,
+      "metrics": {
+        "pageOverflowX": 0,
+        "pageOverflowY": 3958,
+        "dialogOpen": false,
+        "interactiveCount": 23,
+        "offscreen": [
+          "Samen · digibordPraatplaatDe hele klas o",
+          "Verhaal in scènesStoryboardDrie tot vier",
+          "OpenVrij componerenEen klankcompositie z",
+          "Lees het hoofdstuk in de handleiding",
+          "Speel video af: Zo componeert een leerli",
+          "Speel video af: Zo beheer je je klas",
+          "De StadBoerderij, speeltuin, gymzaal en ",
+          "WinterspelenSkipiste, bobslee en ijsaren",
+          "Maak een gratis account en start je klas",
+          "Bekijk alle leskaarten",
+          "Bekijk de workshops",
+          "Over SoundScout",
+          "Privacy",
+          "Voor docenten",
+          "Contact"
+        ],
+        "under44": 6,
+        "under24": 5,
+        "smallestTarget": 20,
+        "overlaps": [],
+        "textUnder12": 5
+      }
+    }
+  ]
+}

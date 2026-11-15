@@ -15,7 +15,8 @@ import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, MIN_TOTAL
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
-import { useAudioStore } from '../../stores/audioStore';
+import { playbackClock } from '../../services/playbackClock';
+import { useBeatFrame, useDerivedBeat } from '../../hooks/useBeatFrame';
 import { useAppStore } from '../../stores/appStore';
 
 // --- Clip edit props (inline in header bar) ---
@@ -143,10 +144,17 @@ export const Timeline = memo(function Timeline({
   // Exception: when template locks sections, no resize allowed
   const sectionsResizable = isMultiImageStoryboard && !(activeTemplate !== null && templateLockOptions.sectionsLocked);
 
-  // Subscribe to currentBeat from store (for StudioView)
-  // or use prop (for SubmissionPlayer with local state)
-  const storeCurrentBeat = useAudioStore((s) => s.currentBeat);
-  const currentBeat = propCurrentBeat ?? storeCurrentBeat;
+  // V2 Fase 1: de tijdlijn abonneert zich NIET meer op de afspeelpositie.
+  // De positie komt per frame uit de afspeelklok (studio) of uit de prop
+  // (weergaves met een eigen afspeelmotor) en wordt direct in de DOM gezet.
+  const propBeatRef = useRef(propCurrentBeat);
+  useEffect(() => {
+    propBeatRef.current = propCurrentBeat;
+  }, [propCurrentBeat]);
+  const getBeat = useCallback(() => propBeatRef.current ?? playbackClock.getBeat(), []);
+  const playheadLineRef = useRef<HTMLDivElement>(null);
+  // "Markeer deel" kan niet op tel 0: rendert alleen opnieuw als dát omslaat.
+  const playheadAtStart = useDerivedBeat((beat) => Math.round(beat) < 1);
 
   // --- Clip edit: volume popover state ---
   const [showClipVolumePopover, setShowClipVolumePopover] = useState(false);
@@ -225,12 +233,11 @@ export const Timeline = memo(function Timeline({
 
   // Mark section at current playhead position
   const handleMarkSection = useCallback(() => {
-    // Read currentBeat imperatively to avoid dependency on fast-updating value
-    const beat = Math.round(useAudioStore.getState().currentBeat);
+    const beat = Math.round(getBeat());
     if (beat > 0 && beat <= totalBeats) {
       addSection(beat);
     }
-  }, [totalBeats, addSection]);
+  }, [totalBeats, addSection, getBeat]);
 
   // Resize a section's endBeat (drag handle in SectionBar)
   const handleResizeSection = useCallback((sectionId: string, newEndBeat: number) => {
@@ -244,7 +251,6 @@ export const Timeline = memo(function Timeline({
 
   // widthMultiplier: 1.0 = fit all beats in viewport, 2.0 = half visible, etc.
   const widthMultiplier = zoomLevel;
-  const playheadPercent = (currentBeat / totalBeats) * 100;
 
   // Zoom handlers — center on playhead position
   const applyZoom = useCallback((newZoom: number) => {
@@ -252,7 +258,7 @@ export const Timeline = memo(function Timeline({
     const container = scrollContainerRef.current;
     if (container) {
       // Use playhead position as zoom anchor so it stays in view
-      const beat = useAudioStore.getState().currentBeat;
+      const beat = getBeat();
       const playheadFraction = beat / totalBeats;
       setZoomLevel(clamped);
       // After React re-renders with new width, scroll to keep playhead in view
@@ -306,26 +312,36 @@ export const Timeline = memo(function Timeline({
     [totalBeats],
   );
 
-  // Auto-scroll to follow playhead during playback
-  useEffect(() => {
-    if (isPlaying && scrollContainerRef.current) {
-      const container = scrollContainerRef.current;
-      const containerWidth = container.clientWidth;
-      const scrollWidth = container.scrollWidth;
-      const playheadPosition = (currentBeat / totalBeats) * scrollWidth;
-
-      // Keep playhead in the middle third of the visible area
-      const visibleStart = container.scrollLeft;
-      const visibleEnd = visibleStart + containerWidth;
-      const margin = containerWidth * 0.3;
-
-      if (playheadPosition < visibleStart + margin) {
-        container.scrollLeft = Math.max(0, playheadPosition - margin);
-      } else if (playheadPosition > visibleEnd - margin) {
-        container.scrollLeft = Math.min(scrollWidth - containerWidth, playheadPosition - containerWidth + margin);
-      }
+  // Per frame: afspeellijn verplaatsen + meescrollen tijdens afspelen.
+  // Direct naar de DOM — geen React-render (V2 Fase 1).
+  const lastLine = useRef<{ el: HTMLElement | null; left: string }>({ el: null, left: '' });
+  useBeatFrame((beat) => {
+    const left = `${(beat / totalBeats) * 100}%`;
+    const line = playheadLineRef.current;
+    if (line && (lastLine.current.el !== line || lastLine.current.left !== left)) {
+      line.style.left = left;
+      lastLine.current = { el: line, left };
     }
-  }, [currentBeat, totalBeats, isPlaying]);
+
+    const container = scrollContainerRef.current;
+    if (!isPlaying || !container) return;
+    const containerWidth = container.clientWidth;
+    const scrollWidth = container.scrollWidth;
+    if (scrollWidth <= containerWidth) return;
+    const playheadPosition = (beat / totalBeats) * scrollWidth;
+
+    // Keep playhead in the middle third of the visible area
+    const visibleStart = container.scrollLeft;
+    const visibleEnd = visibleStart + containerWidth;
+    const margin = containerWidth * 0.3;
+
+    if (playheadPosition < visibleStart + margin) {
+      const target = Math.max(0, playheadPosition - margin);
+      if (target !== visibleStart) container.scrollLeft = target;
+    } else if (playheadPosition > visibleEnd - margin) {
+      container.scrollLeft = Math.min(scrollWidth - containerWidth, playheadPosition - containerWidth + margin);
+    }
+  }, getBeat);
 
   return (
     <div className={`flex flex-col shrink-0 ${composeMode === 'free' ? 'max-h-[50dvh]' : 'max-h-[40dvh]'}`} role="region" aria-label={t('studio.timeline')}>
@@ -497,11 +513,11 @@ export const Timeline = memo(function Timeline({
           {!readOnly && !sectionsLocked && (
             <button
               onClick={handleMarkSection}
-              disabled={sections.length >= MAX_SECTIONS || Math.round(storeCurrentBeat) < 1}
+              disabled={sections.length >= MAX_SECTIONS || playheadAtStart}
               aria-label={t('studio.sections.markSection')}
               title={sections.length >= MAX_SECTIONS
                 ? t('studio.sections.maxReached')
-                : Math.round(storeCurrentBeat) < 1
+                : playheadAtStart
                   ? t('studio.sections.needsPlayhead')
                   : t('studio.sections.markSection')
               }
@@ -737,7 +753,7 @@ export const Timeline = memo(function Timeline({
               {/* Playhead (handle in ruler + line through tracks) */}
               {onSeek && (
                 <Playhead
-                  currentBeat={currentBeat}
+                  getBeat={getBeat}
                   totalBeats={totalBeats}
                   isPlaying={isPlaying}
                   onSeek={onSeek}
@@ -799,8 +815,8 @@ export const Timeline = memo(function Timeline({
               liniaal, zie Playhead.tsx) */}
           <div className="absolute top-4 inset-x-0 bottom-0 left-4 sm:left-6 pointer-events-none z-20">
             <div
+              ref={playheadLineRef}
               className="absolute top-0 bottom-0 w-0.5 bg-error-500 -translate-x-1/2"
-              style={{ left: `${playheadPercent}%` }}
             />
           </div>
 

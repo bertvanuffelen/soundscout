@@ -105,6 +105,9 @@ test('geheugen per thema + afspeelbasislijn', async ({ page, browser }) => {
     const unsub = useAudioStore.subscribe((s: { currentBeat: number }) => {
       if (s.currentBeat !== last) { beatUpdates += 1; last = s.currentBeat; }
     });
+    // Beweegt de afspeellijn echt? Tel hoe vaak zijn positie in de DOM wijzigt.
+    const handle = document.querySelector<HTMLElement>('[role="slider"]');
+    let playheadMoves = 0, lastLeft = handle?.style.left ?? '';
     let longTasks = 0;
     const po = new PerformanceObserver((list) => { longTasks += list.getEntries().length; });
     try { po.observe({ entryTypes: ['longtask'] }); } catch { /* niet ondersteund */ }
@@ -117,6 +120,8 @@ test('geheugen per thema + afspeelbasislijn', async ({ page, browser }) => {
       const tick = (now: number) => {
         frames.push(now - prev);
         prev = now;
+        const left = handle?.style.left ?? '';
+        if (left !== lastLeft) { playheadMoves += 1; lastLeft = left; }
         if (now - start < seconds * 1000) requestAnimationFrame(tick);
         else resolve();
       };
@@ -136,6 +141,7 @@ test('geheugen per thema + afspeelbasislijn', async ({ page, browser }) => {
       framesOver33ms: frames.filter((f) => f > 33.4).length,
       longTasks,
       currentBeatUpdatesPerSecond: Number((beatUpdates / seconds).toFixed(1)),
+      playheadMovesPerSecond: Number((playheadMoves / seconds).toFixed(1)),
     };
   });
 
@@ -145,7 +151,9 @@ test('geheugen per thema + afspeelbasislijn', async ({ page, browser }) => {
       : null,
   }));
 
-  writeJson('docs/v2/baseline/perf-baseline.json', {
+  // Fase 0-basislijn blijft staan; latere runs schrijven naar perf-latest.json
+  // (of naar PERF_OUT). Basislijn vernieuwen: PERF_OUT=docs/v2/baseline/perf-baseline.json
+  writeJson(process.env.PERF_OUT ?? 'docs/v2/baseline/perf-latest.json', {
     measuredAt: new Date().toISOString().slice(0, 10),
     environment: {
       note: 'Headless Chromium op een ontwikkelmachine — vergelijkingsbasis, geen schoolapparaat.',

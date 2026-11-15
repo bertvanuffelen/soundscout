@@ -7,7 +7,7 @@
 
 ## Locked decisions (15-11-2026)
 
-These seven decisions are final. Where older text in this document differed, it has been changed to match.
+These eight decisions are final. Where older text in this document differed, it has been changed to match.
 
 | # | Topic | Decision |
 |---|---|---|
@@ -18,6 +18,7 @@ These seven decisions are final. Where older text in this document differed, it 
 | 5 | US legal budget | **Zero.** No paid US privacy review, and therefore **no active US promotion**. |
 | 6 | Data location | **100 % EU (Supabase EU region).** Accept that some strict US schools will block it; present EU storage as a strength to European schools. |
 | 7 | A face on the page | **Bert front and centre:** name, photo and background as music teacher and pabo lecturer. |
+| 8 | Typed names on public share pages | **Hidden by default** when the V2 share page is built (Phase 5b), in line with V2 decision 10 (privacy by default). |
 
 ## Summary
 
@@ -204,7 +205,7 @@ SoundScout's design helps: no student accounts, no trackers, no ads, automatic d
 
 Check every other occurrence of "anoniem" / "anonymous" in `nl.json`, `en.json` and `teacher.html` before release; peer review stays anonymous between classmates and that sentence may stay.
 
-**Remaining risk to know about.** A name typed in the share modal appears publicly on the listen page ("door …" in `SharedPlayer`). That sits uneasily with locked V2 decision 10 (names off by default on public pages), which was written for class showcases. The hint text above limits it. When the V2 share page is built in Phase 5b, decide whether a typed name shows there by default.
+**Remaining risk to know about.** A name typed in the share modal appears publicly on the listen page ("door …" in `SharedPlayer`). That sits uneasily with locked V2 decision 10 (names off by default on public pages), which was written for class showcases. The hint text above limits it until V2. Decided (locked decision 8): the V2 share page built in Phase 5b hides a typed name by default.
 
 | Gate | What was confirmed | What SoundScout needs |
 |---|---|---|
@@ -338,17 +339,16 @@ Targets are set in February against the Phase 0 baseline, not before.
 
 ## 5. Decisions
 
-**Decided on 15-11-2026:** the seven decisions in **Locked decisions** at the top (free through 2027, name fields stay with honest texts, British English, US organic only, no US legal budget, 100 % EU, Bert's face on the page).
+**Decided on 15-11-2026:** the eight decisions in **Locked decisions** at the top (free through 2027, name fields stay with honest texts, British English, US organic only, no US legal budget, 100 % EU, Bert's face on the page, typed names hidden by default on V2 share pages).
 
-**Still open.** None of these block Phase 0. Each is a choice between named options; my recommendation is marked.
+**Parked (15-11-2026).** These do not block Phase 0 or Phase 1 and are picked up later. Each is a choice between named options; my recommendation is marked.
 
 1. **Example classes.** Which two or three classes do you ask, and who asks the school?
 2. **Support in English.** How many hours a week, and which reply time do you promise: (a) two working days, (b) one week?
 3. **One trip.** (a) Two days at the London Expo in February 2027 — *recommended.* (b) No travel; find the five UK teachers online.
 4. **Workshops abroad.** (a) Offer online sessions in English as a paid service. (b) Keep workshops Dutch only and end the English page without that band — *recommended for 2027.*
 5. **Old kerndoelen.** (a) Show 54–56 and the new goals side by side until 1-8-2027 — *recommended.* (b) Switch to the new goals now.
-6. **A typed name on the public share page (Phase 5b).** (a) Hide it by default, in line with V2 decision 10 — *recommended.* (b) Show what the child typed, as today.
-7. **The Supabase region on the public page.** Which exact region and which sub-processors? A fact to fill in, not a choice.
+6. **The Supabase region on the public page.** Which exact region and which sub-processors? A fact to fill in, not a choice.
 
 ---
 

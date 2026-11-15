@@ -8,7 +8,7 @@
  * We use requestAnimationFrame + imperative store read to avoid re-render storms.
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ChevronLeft, ChevronRight, Crosshair, Maximize2, ZoomIn } from 'lucide-react';
 import { useAppStore } from '../../../stores/appStore';
@@ -17,6 +17,8 @@ import { useTimelineStore } from '../../../stores/timelineStore';
 import { useLibraryStore } from '../../../stores/libraryStore';
 import { getActiveImageIndex } from '../../../utils/storytelling';
 import { audioService } from '../../../services/AudioService';
+import { subscribeFrame } from '../../../services/frameLoop';
+import { playbackClock } from '../../../services/playbackClock';
 import { ImageLightbox } from '../../ui/ImageLightbox';
 import { CrossfadeImage } from '../../ui/CrossfadeImage';
 
@@ -36,7 +38,6 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
   // --- Praatplaat zoom (#80) ---
   const hasPraatplaatZoom = !!praatplaatPosition;
   const [isZoomed, setIsZoomed] = useState(hasPraatplaatZoom);
-  const rafRef = useRef<number | null>(null);
 
   const imageCount = activeStoryboard?.images.length ?? 0;
   const isStoryboard = composeMode === 'storyboard' && imageCount > 1;
@@ -45,53 +46,24 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
 
   // --- Playback sync ---
 
-  const syncWithPlayback = useCallback(() => {
-    const { isPlaying } = useAudioStore.getState();
-    if (!isPlaying || !activeStoryboard) {
-      rafRef.current = null;
-      return;
-    }
-
-    const { currentBeat } = useAudioStore.getState();
-    const { totalBeats, sections } = useTimelineStore.getState();
-
-    const newIndex = getActiveImageIndex(currentBeat, totalBeats, activeStoryboard.images.length, sections);
-
-    setDisplayIndex((prev) => {
-      if (prev !== newIndex) {
-        // Also update the store so other components stay in sync
-        useAppStore.getState().setCurrentImageIndex(newIndex);
-        return newIndex;
-      }
-      return prev;
-    });
-
-    rafRef.current = requestAnimationFrame(syncWithPlayback);
-  }, [activeStoryboard]);
-
-  // Start/stop the sync loop when playback state changes
+  // V2 Fase 1: het beeld volgt de afspeelklok via de gedeelde frame-lus
+  // (geen eigen rAF-lus meer, geen store-updates per frame).
   useEffect(() => {
-    if (!isStoryboard) return;
-
-    const unsub = useAudioStore.subscribe((state) => {
-      if (state.isPlaying && !rafRef.current) {
-        rafRef.current = requestAnimationFrame(syncWithPlayback);
-      }
+    if (!isStoryboard || !activeStoryboard) return;
+    return subscribeFrame(() => {
+      if (!playbackClock.isPlaying()) return;
+      const { totalBeats, sections } = useTimelineStore.getState();
+      const newIndex = getActiveImageIndex(playbackClock.getBeat(), totalBeats, activeStoryboard.images.length, sections);
+      setDisplayIndex((prev) => {
+        if (prev !== newIndex) {
+          // Also update the store so other components stay in sync
+          useAppStore.getState().setCurrentImageIndex(newIndex);
+          return newIndex;
+        }
+        return prev;
+      });
     });
-
-    // Check initial state
-    if (useAudioStore.getState().isPlaying) {
-      rafRef.current = requestAnimationFrame(syncWithPlayback);
-    }
-
-    return () => {
-      unsub();
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      }
-    };
-  }, [isStoryboard, syncWithPlayback]);
+  }, [isStoryboard, activeStoryboard]);
 
   // Sync image when seeking while NOT playing (scrubbing playhead)
   useEffect(() => {
@@ -156,7 +128,7 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
       useAudioStore.getState().setIsPlaying(false);
     } else {
       const { tracks, totalBeats, isLooping } = useTimelineStore.getState();
-      const { currentBeat } = useAudioStore.getState();
+      const currentBeat = playbackClock.getBeat();
       const { librarySamples } = useLibraryStore.getState();
       audioService.scheduleTimeline(tracks, librarySamples);
       audioService.setLoop(isLooping, totalBeats);

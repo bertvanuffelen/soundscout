@@ -8,10 +8,10 @@
  * - Clear all
  */
 
+import { playbackClock } from '../services/playbackClock';
 import { useCallback, useEffect, useRef } from 'react';
 import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
-import { useAudioStore } from '../stores/audioStore';
 import { useAudioEngine } from './useAudioEngine';
 import { sectionAt } from '../utils/audio';
 
@@ -73,9 +73,8 @@ export function useStudioPlayback() {
       setScheduledVersion(currentVersion);
     }
     setTransportLoop(isLooping, totalBeats, loopRegion);
-    // Read currentBeat at call time to avoid recreating this callback ~20x/sec
-    const currentBeat = useAudioStore.getState().currentBeat;
-    playTimeline(currentBeat);
+    // Actuele positie op het moment van aanroepen (klok, niet de store)
+    playTimeline(playbackClock.getBeat());
   }, [
     scheduleTimeline,
     playTimeline,
@@ -124,7 +123,7 @@ export function useStudioPlayback() {
 
   // Loop de sectie waar de afspeellijn op dat moment staat.
   const handleLoopSection = useCallback(() => {
-    const beat = useAudioStore.getState().currentBeat;
+    const beat = playbackClock.getBeat();
     const region = sectionAt(beat, sections, totalBeats);
     if (!region) return; // geen secties → niets te loopen
     setLoopRegion(region); // zet ook isLooping aan

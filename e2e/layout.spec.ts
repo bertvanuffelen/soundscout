@@ -134,7 +134,10 @@ for (const vp of VIEWPORTS) {
         await p.locator('h1').first().waitFor();
       });
 
-      writeJson(`docs/v2/baseline/layout/${vp.id}.json`, {
+      // Fase 0-basislijn blijft staan; latere runs schrijven naar layout-latest/.
+      // Basislijn vernieuwen: UPDATE_BASELINE=1 npx playwright test layout
+      const outDir = process.env.UPDATE_BASELINE ? 'docs/v2/baseline/layout' : 'docs/v2/baseline/layout-latest';
+      writeJson(`${outDir}/${vp.id}.json`, {
         viewport: vp,
         journey,
         screens: results,

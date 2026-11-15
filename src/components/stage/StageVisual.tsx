@@ -27,6 +27,7 @@ import { withSequenceSamples } from '../../utils/sequencer';
 import { beatsToSeconds, getEffectiveClipEndBeat } from '../../utils/audio';
 import { getActiveImageIndex } from '../../utils/storytelling';
 import { cn } from '../../utils/cn';
+import { useBeatFrame, useDerivedBeat } from '../../hooks/useBeatFrame';
 import type { Section } from '../../types';
 
 interface StageVisualProps {
@@ -178,8 +179,24 @@ export function StageVisual({ zoomed, onPlayed }: StageVisualProps) {
 /** Voortgang + tijd: eigen component, zodat alleen dit 20×/s rendert */
 function StageProgress({ endBeat, bpm, onSeek }: { endBeat: number; bpm: number; onSeek: (beat: number) => void }) {
   const { t } = useTranslation();
-  const currentBeat = useAudioStore((s) => s.currentBeat);
-  const fraction = endBeat > 0 ? Math.min(1, currentBeat / endBeat) : 0;
+  // V2 Fase 1: voortgang en tijd volgen de afspeelklok per frame, direct in
+  // de DOM — dit component rendert niet meer mee met de afspeelpositie.
+  const fillRef = useRef<HTMLSpanElement>(null);
+  const timeRef = useRef<HTMLSpanElement>(null);
+  const last = useRef({ width: '', time: '' });
+  useBeatFrame((beat) => {
+    const fraction = endBeat > 0 ? Math.min(1, beat / endBeat) : 0;
+    const width = `${(fraction * 100).toFixed(2)}%`;
+    if (fillRef.current && width !== last.current.width) {
+      fillRef.current.style.width = width;
+      last.current.width = width;
+    }
+    const time = formatTime(beatsToSeconds(Math.min(beat, endBeat), bpm));
+    if (timeRef.current && time !== last.current.time) {
+      timeRef.current.textContent = time;
+      last.current.time = time;
+    }
+  });
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     const rect = e.currentTarget.getBoundingClientRect();
@@ -195,11 +212,11 @@ function StageProgress({ endBeat, bpm, onSeek }: { endBeat: number; bpm: number;
         className="flex-1 min-w-0 h-8 flex items-center cursor-pointer"
       >
         <span className="block w-full h-2 rounded-full bg-white/15 overflow-hidden">
-          <span className="block h-full bg-accent-400 rounded-full" style={{ width: `${fraction * 100}%` }} />
+          <span ref={fillRef} className="block h-full bg-accent-400 rounded-full" style={{ width: 0 }} />
         </span>
       </button>
       <span className="shrink-0 text-xs sm:text-sm font-semibold tabular-nums text-white/80">
-        {formatTime(beatsToSeconds(Math.min(currentBeat, endBeat), bpm))} / {formatTime(beatsToSeconds(endBeat, bpm))}
+        <span ref={timeRef}>{formatTime(0)}</span> / {formatTime(beatsToSeconds(endBeat, bpm))}
       </span>
     </>
   );
@@ -211,11 +228,14 @@ function StoryboardVisual({ playFrom }: { playFrom: (beat: number) => void }) {
   const storyboard = useAppStore((s) => s.activeStoryboard);
   const totalBeats = useTimelineStore((s) => s.totalBeats);
   const sections = useTimelineStore((s) => s.sections);
-  const currentBeat = useAudioStore((s) => s.currentBeat);
+  // V2 Fase 1: rendert alleen opnieuw wanneer het ACTIEVE BEELD wisselt.
+  const imageCount = storyboard?.images.length ?? 0;
+  const activeIndex = useDerivedBeat((beat) => getActiveImageIndex(beat, totalBeats, imageCount, sections));
   if (!storyboard) return null;
 
-  const count = storyboard.images.length;
-  const activeIndex = getActiveImageIndex(currentBeat, totalBeats, count, sections);
+  const count = imageCount;
+  // StoryboardViewer rekent zelf het beeld uit een tel: geef de starttel van het actieve beeld.
+  const currentBeat = imageStartBeat(activeIndex, totalBeats, count, sections);
 
   return (
     <div className="h-full w-full flex flex-col min-h-0">

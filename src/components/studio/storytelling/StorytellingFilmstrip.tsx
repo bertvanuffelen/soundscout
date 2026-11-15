@@ -19,6 +19,8 @@ import { useTranslation } from 'react-i18next';
 import { Play, Maximize2 } from 'lucide-react';
 import { StoryboardLightbox } from '../../start/StoryboardLightbox';
 import { useAppStore } from '../../../stores/appStore';
+import { subscribeFrame } from '../../../services/frameLoop';
+import { playbackClock } from '../../../services/playbackClock';
 import { useAudioStore } from '../../../stores/audioStore';
 import { useTimelineStore } from '../../../stores/timelineStore';
 import { getActiveImageIndex } from '../../../utils/storytelling';
@@ -39,7 +41,6 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
   const isPlaying = useAudioStore((s) => s.isPlaying);
 
   const outerRef = useRef<HTMLDivElement>(null);
-  const rafRef = useRef<number | null>(null);
 
   // Vergroot bekijken (testronde 7): de thumbnails blijven vullend (cover),
   // het vergrootglas opent de bestaande lightbox op de gekozen scène.
@@ -54,7 +55,7 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
   const computeIndex = useCallback(() => {
     const sb = useAppStore.getState().activeStoryboard;
     if (!sb) return 0;
-    const { currentBeat } = useAudioStore.getState();
+    const currentBeat = playbackClock.getBeat();
     const { totalBeats: tb, sections: secs } = useTimelineStore.getState();
     return getActiveImageIndex(currentBeat, tb, sb.images.length, secs);
   }, []);
@@ -69,32 +70,12 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
     });
   }, []);
 
-  // rAF-loop tijdens afspelen (lokale functie i.p.v. self-referencing useCallback)
+  // V2 Fase 1: tijdens afspelen via de gedeelde frame-lus + afspeelklok
   useEffect(() => {
     if (imageCount <= 1) return;
-    const loop = () => {
-      if (!useAudioStore.getState().isPlaying) {
-        rafRef.current = null;
-        return;
-      }
-      applyIndex(computeIndex());
-      rafRef.current = requestAnimationFrame(loop);
-    };
-    const unsub = useAudioStore.subscribe((state) => {
-      if (state.isPlaying && !rafRef.current) {
-        rafRef.current = requestAnimationFrame(loop);
-      }
+    return subscribeFrame(() => {
+      if (playbackClock.isPlaying()) applyIndex(computeIndex());
     });
-    if (useAudioStore.getState().isPlaying && !rafRef.current) {
-      rafRef.current = requestAnimationFrame(loop);
-    }
-    return () => {
-      unsub();
-      if (rafRef.current) {
-        cancelAnimationFrame(rafRef.current);
-        rafRef.current = null;
-      }
-    };
   }, [imageCount, applyIndex, computeIndex]);
 
   // Scrubben (niet afspelen): index volgt de playhead
