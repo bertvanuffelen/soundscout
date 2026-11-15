@@ -106,7 +106,7 @@ export function AssignmentCardEditorModal({
           {bullets.filter((b) => b.trim()).length}/{MAX_CARD_BULLETS}
         </span>
       </div>
-      <div className="space-y-2 max-h-[40vh] overflow-y-auto">
+      <div className="space-y-2 max-h-[40dvh] overflow-y-auto">
         {bullets.map((bullet, index) => (
           <div key={index} className="flex items-center gap-2">
             <span className="text-text-muted text-sm shrink-0 w-4 text-center">•</span>

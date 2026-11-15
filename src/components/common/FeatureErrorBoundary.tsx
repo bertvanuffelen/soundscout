@@ -55,7 +55,7 @@ export class FeatureErrorBoundary extends Component<
   render() {
     if (this.state.hasError) {
       return (
-        <div className="min-h-screen flex items-center justify-center bg-neutral-50 p-6">
+        <div className="min-h-dvh flex items-center justify-center bg-neutral-50 p-6">
           <div className="max-w-sm w-full bg-white rounded-2xl shadow-lg p-6 text-center">
             <div className="w-12 h-12 mx-auto mb-3 rounded-full bg-warning-100 flex items-center justify-center">
               <AlertTriangle className="w-6 h-6 text-warning-700" aria-hidden="true" />

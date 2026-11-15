@@ -101,7 +101,7 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
 
   if (viewerState === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-accent-400 animate-spin mx-auto mb-4" />
           <p className="text-text-muted">{t('common.loading')}</p>
@@ -112,7 +112,7 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
 
   if (viewerState === 'not-found') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center max-w-sm px-6">
           <p className="text-text-main font-semibold text-lg mb-2">
             {t('sharedPraatplaat.notFoundTitle')}
@@ -131,7 +131,7 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
 
   if (viewerState === 'expired') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center max-w-sm px-6">
           <p className="text-text-main font-semibold text-lg mb-2">
             {t('sharedPraatplaat.expiredTitle')}
@@ -150,7 +150,7 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
 
   if (viewerState === 'error') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center max-w-sm px-6">
           <p className="text-error-600 font-semibold text-lg mb-2">
             {t('sharedPraatplaat.errorTitle')}
@@ -169,7 +169,7 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
 
   if (viewerState === 'waiting-gesture') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center max-w-md px-6">
           {data && (
             <h1 className="text-text-main font-bold text-2xl mb-2">

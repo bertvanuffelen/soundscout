@@ -6,6 +6,7 @@
  * - Recorder full modal (RecorderFullModal)
  */
 
+import { Scene } from '../ui/Scene';
 import { useCallback, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { AlertCircle, Lock } from 'lucide-react';
@@ -156,7 +157,7 @@ export function LocationScene() {
   // Error state
   if (!location) {
     return (
-      <div className="min-h-screen bg-success-50 flex items-center justify-center">
+      <div className="min-h-dvh bg-success-50 flex items-center justify-center">
         <p className="text-lg text-text-muted">{t('location.notFound')}</p>
       </div>
     );
@@ -170,9 +171,8 @@ export function LocationScene() {
           dit vlak is een size-container: de canvas kiest de kleinste van
           "volle breedte" en "hoogte × 16/9" — altijd passend, altijd 16:9
           (hotspot-percentages blijven kloppen). */}
-      <div className="flex-1 min-h-0 [container-type:size] flex items-center justify-center px-2 sm:px-4 py-1 sm:py-2">
-        {/* 16:9 Canvas container */}
-        <div className="relative w-full max-w-[min(100cqw,calc(100cqh*16/9))] aspect-video rounded-2xl overflow-hidden shadow-2xl">
+      <Scene className="px-2 sm:px-4 py-1 sm:py-2" frameClassName="rounded-2xl shadow-2xl">
+          <>
           {/* Background image */}
           <div className="absolute inset-0 bg-screen-location" />
           {!bgImageFailed && (
@@ -184,27 +184,23 @@ export function LocationScene() {
             />
           )}
 
-          {/* Location name */}
-          <div className="absolute top-2 sm:top-3 left-1/2 -translate-x-1/2 z-20">
-            <h2 className="text-sm sm:text-base font-extrabold tracking-tight text-white bg-black/30 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">
-              {t(location.name)}
-            </h2>
-          </div>
-
-          {/* Navigation buttons */}
-          <div className="absolute top-2 sm:top-3 left-2 sm:left-3 z-20">
+          {/* Kop: Terug · naam · Naar Studio. V2 Fase 1: één rij op dezelfde
+              plek als voorheen, zodat de drie elkaar op smalle schermen niet
+              meer kunnen overlappen (de naam kort in, de knoppen niet). */}
+          <div className="absolute top-2 sm:top-3 inset-x-2 sm:inset-x-3 z-20 flex items-start justify-between gap-2 pointer-events-none">
             <Button
               onClick={handleBack}
               variant="secondary"
               size="sm"
-              className="shadow-md"
+              className="shadow-md shrink-0 pointer-events-auto"
             >
               <span className="hidden sm:inline">{t('location.backToMap')}</span>
               <span className="sm:hidden">{t('common.back')}</span>
             </Button>
-          </div>
-          <div className="absolute top-2 sm:top-3 right-2 sm:right-3 z-20">
-            <Button onClick={handleGoToStudio} size="sm" className="shadow-md">
+            <h2 className="min-w-0 truncate text-sm sm:text-base font-extrabold tracking-tight text-white bg-black/30 backdrop-blur-sm px-3 sm:px-4 py-1 sm:py-1.5 rounded-full">
+              {t(location.name)}
+            </h2>
+            <Button onClick={handleGoToStudio} size="sm" className="shadow-md shrink-0 pointer-events-auto">
               {t('location.toStudio')}
             </Button>
           </div>
@@ -291,8 +287,8 @@ export function LocationScene() {
               </div>
             </div>
           )}
-        </div>
-      </div>
+          </>
+      </Scene>
 
       {/* Recorder bar - fixed at bottom */}
       <RecorderBar

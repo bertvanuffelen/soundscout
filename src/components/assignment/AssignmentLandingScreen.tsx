@@ -107,7 +107,7 @@ export default function AssignmentLandingScreen() {
   // Safety: als pending ontbreekt (bv. direct geopend), terug naar start
   if (!pending) {
     return (
-      <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-6">
+      <div className="min-h-dvh bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-6">
         <p className="text-white md:text-text-main mb-4">{t('assignmentLanding.missingContext')}</p>
         <Button variant="primary" onClick={goToStart}>
           {t('assignmentLanding.backToStart')}
@@ -122,7 +122,7 @@ export default function AssignmentLandingScreen() {
   const hasTeacherCard = !!(assignment?.card && (assignment.card.title || assignment.card.bullets.length > 0));
 
   return (
-    <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
+    <div className="min-h-dvh bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-2xl md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-8 lg:p-10 md:p-8">
         {/* Back */}
         <button

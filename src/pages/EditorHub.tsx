@@ -20,7 +20,7 @@ export function EditorHub() {
   );
 
   return (
-    <div className="min-h-screen bg-bg-app">
+    <div className="min-h-dvh bg-bg-app">
       <div className="bg-brand-900 text-white px-4 py-2 flex items-center gap-3">
         <span className="font-extrabold tracking-tight">SoundScout · Editor</span>
         <nav className="flex gap-1">

@@ -288,7 +288,7 @@ export function StartScreen() {
   };
 
   return (
-    <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
+    <div className="min-h-dvh bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
       {/* Card container - white card on desktop, transparent on mobile */}
       <div className="w-full max-w-md md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-8 lg:p-12 flex flex-col items-center">
         {/* Logo + Title */}

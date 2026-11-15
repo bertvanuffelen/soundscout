@@ -61,7 +61,7 @@ export function TeacherResetPassword({ onDone, onRequestNew }: TeacherResetPassw
   // uit de URL) — toon een neutrale laadstatus, geen voorbarig "verlopen"
   if (authLoading) {
     return (
-      <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-bg-app flex items-center justify-center p-4">
         <div className="text-text-muted text-lg font-medium">{t('common.loading')}</div>
       </div>
     );
@@ -70,7 +70,7 @@ export function TeacherResetPassword({ onDone, onRequestNew }: TeacherResetPassw
   // Geen recovery-sessie: link is verlopen of ongeldig
   if (!user) {
     return (
-      <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-bg-app flex items-center justify-center p-4">
         <div className="bg-bg-surface rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md text-center">
           <div className="flex justify-center mb-4">
             <AlertTriangle className="w-16 h-16 text-warning-500" />
@@ -97,7 +97,7 @@ export function TeacherResetPassword({ onDone, onRequestNew }: TeacherResetPassw
   // Succes scherm
   if (success) {
     return (
-      <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-bg-app flex items-center justify-center p-4">
         <div className="bg-bg-surface rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md text-center">
           <div className="flex justify-center mb-4">
             <CheckCircle2 className="w-16 h-16 text-success-500" />
@@ -122,7 +122,7 @@ export function TeacherResetPassword({ onDone, onRequestNew }: TeacherResetPassw
   }
 
   return (
-    <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-bg-app flex items-center justify-center p-4">
       <div className="bg-bg-surface rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-6">

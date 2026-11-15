@@ -167,6 +167,56 @@
   --transition-fast: 150ms;
   --transition-normal: 200ms;
   --transition-slow: 300ms;
+
+  /* ============================================================
+     LAGEN (V2 Fase 1) — één z-index-schaal voor de hele app.
+     Gebruik de utilities z-sticky / z-overlay / z-popover / z-drag /
+     z-modal / z-lightbox / z-toast in plaats van losse getallen.
+     Volgorde = wat boven wat hoort te liggen.
+     ============================================================ */
+
+  --z-base: 0;
+  --z-sticky: 10;     /* linialen, spoor-labels, vaste koppen binnen een vlak */
+  --z-overlay: 20;    /* knoppen en labels bovenop een beeld (Scene) */
+  --z-popover: 30;    /* popovers, uitklapmenu's */
+  --z-drag: 40;       /* het element dat je sleept */
+  --z-modal: 50;      /* modals en hun achtergrond */
+  --z-lightbox: 60;   /* schermvullend beeld bovenop een modal */
+  --z-toast: 100;     /* meldingen en hints die altijd zichtbaar moeten zijn */
+
+  /* ============================================================
+     MATEN (V2 Fase 1)
+     ============================================================ */
+
+  --size-touch: 2.75rem;   /* 44px: minimale raak-grootte */
+  --size-icon-btn: 2rem;   /* 32px: zichtbare maat van een compacte icoonknop */
+}
+
+/* --- Lagen als utilities --- */
+@utility z-sticky { z-index: var(--z-sticky); }
+@utility z-overlay { z-index: var(--z-overlay); }
+@utility z-popover { z-index: var(--z-popover); }
+@utility z-drag { z-index: var(--z-drag); }
+@utility z-modal { z-index: var(--z-modal); }
+@utility z-lightbox { z-index: var(--z-lightbox); }
+@utility z-toast { z-index: var(--z-toast); }
+
+/* --- Compacte icoonknop: zichtbaar 28–32px, raakvlak 44px via ::after ---
+   Eén definitie voor alle werkbalkknoppen (stond 17× uitgeschreven in de
+   tijdlijn). Zie ook components/ui/IconButton.tsx. */
+@utility icon-btn {
+  @apply relative flex items-center justify-center min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5;
+}
+
+/* --- Veilige zones (notch, home-balk) ---
+   Zonder `viewport-fit=cover` zijn de env()-waarden 0 en verandert er niets.
+   Zodra de app als geïnstalleerde app schermvullend draait (Fase 2), houden
+   randbalken hiermee vanzelf afstand van de notch en de home-balk. */
+@utility pt-safe { padding-top: max(var(--safe-min, 0px), env(safe-area-inset-top)); }
+@utility pb-safe { padding-bottom: max(var(--safe-min, 0px), env(safe-area-inset-bottom)); }
+@utility px-safe {
+  padding-left: max(var(--safe-min, 0px), env(safe-area-inset-left));
+  padding-right: max(var(--safe-min, 0px), env(safe-area-inset-right));
 }
 
 /* ============================================================

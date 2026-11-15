@@ -53,7 +53,7 @@ export function ImageLightbox({
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex flex-col items-center justify-center bg-black/85 p-4 sm:p-8"
+      className="fixed inset-0 z-lightbox flex flex-col items-center justify-center bg-black/85 p-4 sm:p-8"
       onClick={onClose}
     >
       {/* Close button */}
@@ -69,7 +69,7 @@ export function ImageLightbox({
       <img
         src={src}
         alt={alt}
-        className="max-w-full max-h-[80vh] object-contain rounded-lg shadow-2xl"
+        className="max-w-full max-h-[80dvh] object-contain rounded-lg shadow-2xl"
         onClick={(e) => e.stopPropagation()}
       />
 

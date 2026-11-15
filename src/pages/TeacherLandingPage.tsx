@@ -156,7 +156,7 @@ export default function TeacherLandingPage() {
   }, [pendingDemoScroll, landingTab]);
 
   return (
-    <div className="min-h-screen bg-bg-app text-text-main">
+    <div className="min-h-dvh bg-bg-app text-text-main">
       {/* Terug naar de SoundScout-app (losse route → volledige navigatie) + taalwissel */}
       <div className="max-w-5xl mx-auto px-4 sm:px-6 pt-6 flex items-center justify-between">
         <button

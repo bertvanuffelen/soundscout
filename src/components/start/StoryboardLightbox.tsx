@@ -74,7 +74,7 @@ export function StoryboardLightbox({ isOpen, onClose, storyboard, startIndex = 0
 
   return (
     <div
-      className="fixed inset-0 z-[60] flex items-center justify-center p-4"
+      className="fixed inset-0 z-lightbox flex items-center justify-center p-4"
       role="dialog"
       aria-modal="true"
       aria-label={t(storyboard.name)}
@@ -107,7 +107,7 @@ export function StoryboardLightbox({ isOpen, onClose, storyboard, startIndex = 0
           <img
             src={current.url}
             alt={t(current.label)}
-            className="w-full max-h-[70vh] object-contain select-none"
+            className="w-full max-h-[70dvh] object-contain select-none"
             draggable={false}
           />
 

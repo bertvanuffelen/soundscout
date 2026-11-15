@@ -97,7 +97,7 @@ export default function ComposeModeScreen() {
   const multiImages = storyboards.filter((sb) => sb.images.length > 1);
 
   return (
-    <div className="min-h-screen bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
+    <div className="min-h-dvh bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
       <div className="w-full max-w-2xl md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-8 lg:p-10">
         {/* Back button — als de mode al via modal gekozen is, brengt 'terug'
             de leerling helemaal terug naar het startscherm. Anders terug naar

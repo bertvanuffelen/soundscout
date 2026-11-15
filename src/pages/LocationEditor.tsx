@@ -312,7 +312,7 @@ export function LocationEditor() {
   // --- Render ---
 
   return (
-    <div className="min-h-screen bg-brand-900 text-white">
+    <div className="min-h-dvh bg-brand-900 text-white">
       {/* Header */}
       <header className="bg-brand-800 border-b border-brand-700 px-6 py-4">
         <div className="max-w-6xl mx-auto flex items-center justify-between">
@@ -536,7 +536,7 @@ export function LocationEditor() {
         onClose={() => setShowHelp(false)}
         title="Handleiding Locatie Editor"
         size="lg"
-        className="max-h-[80vh] overflow-y-auto"
+        className="max-h-[80dvh] overflow-y-auto"
       >
         <div className="space-y-5 text-sm text-brand-700 leading-relaxed">
           <section>

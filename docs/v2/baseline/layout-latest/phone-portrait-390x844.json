@@ -66,9 +66,9 @@
         "dialogOpen": false,
         "interactiveCount": 7,
         "offscreen": [],
-        "under44": 7,
+        "under44": 2,
         "under24": 0,
-        "smallestTarget": 27,
+        "smallestTarget": 36,
         "overlaps": [],
         "textUnder12": 5
       }
@@ -166,7 +166,7 @@
         "pageOverflowX": 0,
         "pageOverflowY": 0,
         "dialogOpen": false,
-        "interactiveCount": 16,
+        "interactiveCount": 17,
         "offscreen": [],
         "under44": 11,
         "under24": 1,

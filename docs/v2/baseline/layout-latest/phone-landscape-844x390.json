@@ -75,7 +75,7 @@
       "reached": true,
       "metrics": {
         "pageOverflowX": 0,
-        "pageOverflowY": 41,
+        "pageOverflowY": 0,
         "dialogOpen": false,
         "interactiveCount": 7,
         "offscreen": [],
@@ -211,7 +211,7 @@
         "pageOverflowX": 0,
         "pageOverflowY": 0,
         "dialogOpen": false,
-        "interactiveCount": 17,
+        "interactiveCount": 18,
         "offscreen": [],
         "under44": 10,
         "under24": 1,

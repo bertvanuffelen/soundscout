@@ -166,7 +166,7 @@ export function ZoomableView({
               e.stopPropagation();
               closeZoom();
             }}
-            className="fixed top-4 right-4 z-[60] p-3
+            className="fixed top-4 right-4 z-lightbox p-3
               bg-white/90 hover:bg-white active:bg-neutral-100
               text-brand-800 rounded-full shadow-lg
               transition-all active:scale-95"
@@ -176,7 +176,7 @@ export function ZoomableView({
           </button>
 
           {/* Pan hint - shows at bottom */}
-          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[60]
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-lightbox
             bg-black/60 text-white text-sm px-4 py-2 rounded-full
             pointer-events-none animate-pulse">
             {t('location.panHint', 'Sleep om rond te kijken')}

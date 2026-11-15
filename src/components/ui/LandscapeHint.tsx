@@ -33,7 +33,7 @@ export default function LandscapeHint() {
   if (dismissed || !IS_TOUCH || !WIDE_SCREENS.has(currentScreen)) return null;
 
   return (
-    <div className="landscape:hidden fixed top-0 inset-x-0 z-[100] flex items-center gap-2 px-4 py-2 bg-accent-50 border-b border-accent-200 text-xs sm:text-sm text-accent-800 shadow-sm">
+    <div className="landscape:hidden fixed top-0 inset-x-0 z-toast flex items-center gap-2 px-4 py-2 bg-accent-50 border-b border-accent-200 text-xs sm:text-sm text-accent-800 shadow-sm">
       <RotateCw size={16} className="shrink-0" />
       <span className="flex-1">{t('landscapeHint.message')}</span>
       <button

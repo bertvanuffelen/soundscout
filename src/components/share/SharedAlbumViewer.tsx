@@ -113,7 +113,7 @@ export function SharedAlbumViewer({ code, onBack }: SharedAlbumViewerProps) {
 
   if (viewerState === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center">
           <Loader2 className="w-10 h-10 text-accent-400 animate-spin mx-auto mb-4" />
           <p className="text-text-muted">{t('common.loading')}</p>
@@ -130,7 +130,7 @@ export function SharedAlbumViewer({ code, onBack }: SharedAlbumViewerProps) {
       ? t('album.notFoundDescription')
       : viewerState === 'expired' ? t('album.expiredDescription') : (errorMessage || t('sharedPraatplaat.errorDescription'));
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center max-w-sm px-6">
           <p className={`font-semibold text-lg mb-2 ${viewerState === 'error' ? 'text-error-600' : 'text-text-main'}`}>
             {title}
@@ -147,7 +147,7 @@ export function SharedAlbumViewer({ code, onBack }: SharedAlbumViewerProps) {
 
   if (viewerState === 'waiting-gesture') {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center max-w-md px-6">
           {data && (
             <>
@@ -184,7 +184,7 @@ export function SharedAlbumViewer({ code, onBack }: SharedAlbumViewerProps) {
 
   if (playlist.length === 0) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app">
         <div className="text-center max-w-sm px-6">
           <p className="text-text-main font-semibold text-lg mb-2">{assignmentName}</p>
           <p className="text-text-muted text-sm mb-6">{t('album.noSubmissions')}</p>

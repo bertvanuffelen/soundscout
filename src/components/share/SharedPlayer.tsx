@@ -116,7 +116,7 @@ export function SharedPlayer({ code, onBack }: SharedPlayerProps) {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-brand-900">
+    <div className="min-h-dvh flex flex-col bg-brand-900">
       {/* Header — compact: back + title on one line */}
       <div className="bg-bg-surface border-b border-border-subtle px-3 sm:px-6 py-2 sm:py-3 flex items-center gap-3 shrink-0">
         <Button variant="secondary" size="sm" onClick={onBack}>

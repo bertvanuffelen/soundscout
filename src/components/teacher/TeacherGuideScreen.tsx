@@ -165,7 +165,7 @@ export default function TeacherGuideScreen() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-bg-app flex flex-col">
+    <div className="min-h-dvh bg-bg-app flex flex-col">
       {/* --- Header --- */}
       <header className="bg-brand-900 border-b border-brand-800">
         <div className="max-w-4xl mx-auto px-4 py-4 flex items-center gap-3">

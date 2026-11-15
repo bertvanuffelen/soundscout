@@ -69,7 +69,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
   // Succes scherm
   if (success) {
     return (
-      <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
+      <div className="min-h-dvh bg-bg-app flex items-center justify-center p-4">
         <div className="bg-bg-surface rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md text-center">
           <div className="flex justify-center mb-4">
             <Mail className="w-16 h-16 text-accent-500" />
@@ -103,7 +103,7 @@ export function TeacherRegister({ onSwitchToLogin, onBack }: TeacherRegisterProp
   }
 
   return (
-    <div className="min-h-screen bg-bg-app flex items-center justify-center p-4">
+    <div className="min-h-dvh bg-bg-app flex items-center justify-center p-4">
       <div className="bg-bg-surface rounded-2xl shadow-xl p-6 sm:p-8 w-full max-w-md">
         {/* Header */}
         <div className="text-center mb-6">

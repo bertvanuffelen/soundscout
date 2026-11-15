@@ -41,8 +41,8 @@
   "studio": {
     "clips": 10,
     "domNodes": 574,
-    "heapMB": 27.5,
-    "heapAfterPlaybackMB": 30.9
+    "heapMB": 27.9,
+    "heapAfterPlaybackMB": 26.9
   },
   "playback": {
     "seconds": 6,

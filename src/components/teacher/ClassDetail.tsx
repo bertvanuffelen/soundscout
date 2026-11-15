@@ -446,7 +446,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   };
 
   return (
-    <div className="min-h-screen bg-bg-app">
+    <div className="min-h-dvh bg-bg-app">
       {/* Header - gedeelde brand-900 shell met broodkruimel */}
       <TeacherPageHeader
         title={classData.name}

@@ -85,7 +85,7 @@ export default function TutorialScreen() {
   const steps = t('tutorial.steps', { returnObjects: true }) as string[];
 
   return (
-    <div className="min-h-screen bg-bg-app flex flex-col">
+    <div className="min-h-dvh bg-bg-app flex flex-col">
       {/* --- Header --- */}
       <header className="bg-bg-surface border-b border-border-subtle px-4 py-3 flex items-center gap-3">
         <button

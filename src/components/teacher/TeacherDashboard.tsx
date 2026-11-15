@@ -146,7 +146,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   };
 
   return (
-    <div className="min-h-screen bg-bg-app">
+    <div className="min-h-dvh bg-bg-app">
       {/* Header - gedeelde brand-900 shell */}
       <TeacherPageHeader
         title={t('teacher.dashboard.title')}

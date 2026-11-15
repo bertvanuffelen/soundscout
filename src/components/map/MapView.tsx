@@ -5,6 +5,7 @@
  * Users can select a location to visit and collect samples.
  */
 
+import { Scene } from '../ui/Scene';
 import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { MapPin, ArrowLeft } from 'lucide-react';
@@ -60,14 +61,14 @@ export function MapView() {
 
   if (!theme || !mapConfig) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-brand-900">
+      <div className="min-h-dvh flex items-center justify-center bg-brand-900">
         <div className="text-brand-300">{t('map.loadingTheme')}</div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-brand-900 md:bg-bg-app overflow-hidden">
+    <div className="h-dvh flex flex-col bg-brand-900 md:bg-bg-app overflow-hidden">
       {/* Header - branding donkerblauw op mobile, wit op desktop */}
       <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 bg-brand-800/90 md:bg-bg-surface border-b border-brand-700 md:border-border-subtle shrink-0">
         <Button variant="secondary" size="sm" onClick={goToStart} className="bg-brand-700 md:bg-white text-white md:text-text-main border-brand-600 md:border-border-subtle hover:bg-brand-600 md:hover:bg-neutral-50">
@@ -90,11 +91,14 @@ export function MapView() {
       <TipModal isOpen={showMapHint} onDismiss={dismissMapHint} text={t('map.firstVisitHint')} />
 
       {/* Map Area - Desktop: white card with minimal padding, Mobile: full bleed */}
-      <div className="flex-1 flex items-center justify-center p-[1%] md:p-[2%]">
-        {/* Card wrapper for desktop - constrained to never exceed viewport height */}
-        <div className="w-full max-w-[calc((100vh-80px)*16/9)] md:max-w-[calc((100vh-100px)*16/9)] md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-3">
-          {/* 16:9 Canvas container */}
-          <div className="relative w-full aspect-video rounded-lg md:rounded-2xl overflow-hidden shadow-2xl md:shadow-lg">
+      {/* V2 Fase 1: de kaart past ALTIJD in de ruimte onder de kop (Scene rekent
+          met de echte beschikbare ruimte — geen 100vh en geen vaste kopmaten
+          meer; dat gaf 62px overloop op een Chromebook). */}
+      <Scene
+        className="p-2 md:p-4"
+        frameClassName="rounded-lg md:rounded-2xl shadow-2xl md:shadow-lg md:ring-[12px] md:ring-bg-surface"
+      >
+          <>
             {/* Background Image */}
             {mapBackground ? (
               <img
@@ -130,9 +134,8 @@ export function MapView() {
                 />
               );
             })}
-          </div>
-        </div>
-      </div>
+          </>
+      </Scene>
 
       {/* Footer with theme info (dev only) */}
       {import.meta.env.DEV && (

@@ -55,7 +55,7 @@ export function TeacherPage() {
   // Loading state
   if (loading) {
     return (
-      <div className="min-h-screen bg-bg-app flex items-center justify-center">
+      <div className="min-h-dvh bg-bg-app flex items-center justify-center">
         <div className="text-text-muted text-lg">{t('common.loading')}</div>
       </div>
     );

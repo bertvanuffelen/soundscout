@@ -81,7 +81,7 @@ export function CompositionsView() {
   }, [goToStart]);
 
   return (
-    <div className="min-h-screen bg-bg-app">
+    <div className="min-h-dvh bg-bg-app">
       {/* Header - branding donkerblauw */}
       <header className="bg-brand-900 px-3 sm:px-4 py-3 sm:py-4">
         <div className="max-w-2xl mx-auto flex items-center justify-between">

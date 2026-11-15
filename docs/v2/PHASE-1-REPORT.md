@@ -1,7 +1,7 @@
 # V2 Phase 1 — clock and visuals (part 1: the playback clock)
 
-> Status: **the clock is implemented and ready for Bert's sync/audio test** (15-11-2026).
-> The layout half of Phase 1 (`<Scene>`, tokens, map overflow) has not started; see "Not done yet".
+> Status: **Phase 1 implemented** (15-11-2026); sync on real devices still to be tested by Bert.
+> Part 1 below is the playback clock; part 2 covers presentation screens, layout and the Luisterspiegel step.
 
 ## What changed
 
@@ -47,13 +47,48 @@ The automated tests prove the playhead moves and the store is quiet. They cannot
 
 The brief said "canvas playhead". I kept the playhead as a DOM element moved per frame. It is a focusable slider with keyboard and screen-reader support, which a canvas would lose, and a single element moved per frame costs nothing. Canvas remains the plan for waveforms and level meters.
 
-## Not done yet (still Phase 1)
+## Part 2 — the rest of Phase 1 (15-11-2026)
+
+### Presentation screens and modals
+- `useCompositionPlayback` no longer keeps the position in React state; it returns a stable `getBeat()`. Measured in the browser: 0 React commits during one second of playback on the presentation surface (was about 30 per second).
+- Trim modal and effects modal: the preview playhead is a line moved per frame; the waveform is no longer redrawn every frame.
+- Compose-mode preview: its four animation loops run in the shared frame loop.
+- New tests: 9 unit tests for the hook, and `e2e/presentation-clock.spec.ts` (3 browser tests) that mounts the real presentation surface through a test harness.
+
+### Layout
+| Item | Result |
+|---|---|
+| `<Scene>` (`src/components/ui/Scene.tsx`) | One component for "an image with things on it". Used by the map, the location screen and the praatplaat picker. |
+| Map overflow | 62 px (Chromebook), 84 px (digibord), 41 px (phone landscape) → **0 on all seven sizes**. |
+| Map markers on a phone | 20 px → 44 px. |
+| Location header | Back, title and Naar Studio share one row and cannot overlap. |
+| Praatplaat picker | Always fits the screen; the frame takes the image's own shape, so a chosen spot means the same in the picker and in the presentation (finding L4). |
+| Layer tokens | One z-index scale in `index.css` (`z-sticky` … `z-toast`); the loose `z-[60]` / `z-[100]` values are replaced. |
+| Icon buttons | One `icon-btn` definition (and an `IconButton` component) instead of the class string copied 16 times in the timeline. Pixel-identical. |
+| Viewport height | `min-h-screen` / `vh` → dynamic units in 29 files. |
+| Safe areas | Bottom bars (recorder, transport, praatplaat confirm) respect the home bar. Has no visible effect until the app runs full-screen as an installed app (Phase 2). |
+
+Only the map screenshots changed in the layout suite; every other screen is pixel-identical to the Phase 0 baseline. The screenshot baseline has been re-created.
+
+### Luisterspiegel as a podium step
+Step order is now listen → title → **Luisterspiegel** → save → export. The step shows a small form map and one or two questions picked by local rules; it is optional and never blocks saving, handing in or exporting. Nothing is stored or sent.
+- Logic: `src/utils/luisterspiegel.ts` (27 unit tests). UI: `src/components/stage/LuisterspiegelStep.tsx`.
+- **Switch:** behind the dev flag `luisterspiegel` — on in development, **off in production builds** — because the per-assignment teacher switch needs database work that is not part of Phase 1. The single plug-in point is `src/hooks/useLuisterspiegelEnabled.ts`.
+- **Needs Bert's eye:** several questions from the mockup were open questions and did not fit the two answer buttons ("Ja, zo wil ik het" / "Ik pas het aan"). They were rewritten as yes/no questions (see `luisterspiegel.questions.*` in `nl.json` / `en.json`, also in `docs/TEKSTEN.md`).
+
+### Gates
+`tsc` clean · 536 unit tests · 16 end-to-end tests (layout at 7 sizes, 4 golden audio renders, perf, studio clock, presentation clock ×3) · lint: 23 errors, all pre-existing (was 24), none in new code.
+
+## Still open after Phase 1
 
 | Item | Note |
 |---|---|
-| Presentation screens (digibord, shared player, peer review) | They use `useCompositionPlayback`, which still keeps the position in React state at about 30 updates per second. Same fix, separate step. |
-| Trim modal, effects modal, compose-mode preview | Still have their own animation-frame loops. |
-| Further `AudioService` split | Transport/scheduling, the realtime capture and the master limiter are still inside it. They are the risky part; the golden audio suite now makes that split safe to do. |
-| Layout half of Phase 1 (proposal §6.5) | `<Scene>` primitive, layer and size tokens, `IconButton`, `dvh`/safe-area sweep, map overflow (62 px on a Chromebook). |
-| Lint | The 24 pre-existing errors are untouched. |
+| Sync by ear on real devices | Bert's classroom test (laptop, Bluetooth, digibord, iPad). |
+| Screens behind a login | Digibord presentation, teacher review, shared player, album and praatplaat viewers were tested through a harness with local data, not with real Supabase data. |
+| `<Scene>` in the remaining image views | The studio's storytelling panel and the presentation surface still use their own sizing (`FittedImage`). They fit today; converting them is consistency work. |
+| Timeline toolbar on short or narrow screens | The 8–15 overlapping pairs on a phone in landscape are unchanged; the decision was that the studio targets tablets and larger. |
+| Small text in the studio | 41–50 text elements under 12 px are unchanged; raising them changes the look of the timeline and was not part of this step. |
+| Further `AudioService` split | Transport/scheduling, realtime capture and the limiter are still inside it (1,360 lines). |
+| Luisterspiegel switch and question management | Per-assignment teacher switch and admin-managed questions need a migration and the Administrator Dashboard (Phases 3 and 5). |
+| Lint | 23 pre-existing errors. |
 | School devices | Not measured. |

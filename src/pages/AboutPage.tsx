@@ -51,7 +51,7 @@ export default function AboutPage() {
   }, [metaTitle]);
 
   return (
-    <div className="min-h-screen bg-bg-app text-text-main">
+    <div className="min-h-dvh bg-bg-app text-text-main">
       {/* Terug naar de app + taalwissel — zelfde kop als de docentenpagina */}
       <div className="max-w-3xl mx-auto px-4 sm:px-6 pt-6 flex items-center justify-between">
         <button

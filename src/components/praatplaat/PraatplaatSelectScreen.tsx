@@ -8,6 +8,7 @@
  * Positie wordt opgeslagen als genormaliseerde x,y (0-1) in appStore.
  */
 
+import { Scene } from '../ui/Scene';
 import { useState, useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Check } from 'lucide-react';
@@ -31,6 +32,7 @@ export function PraatplaatSelectScreen() {
     () => (useAppStore.getState().praatplaatReturnToStage ? useAppStore.getState().praatplaatPosition : null),
   );
   const imageRef = useRef<HTMLDivElement>(null);
+  const [imageRatio, setImageRatio] = useState(16 / 9);
 
   // Verwerk klik op afbeelding
   const handleImageClick = useCallback(
@@ -118,12 +120,12 @@ export function PraatplaatSelectScreen() {
   }
 
   return (
-    <div className="min-h-[100dvh] bg-gradient-to-b from-brand-900 to-brand-800 flex flex-col">
+    <div className="h-dvh bg-gradient-to-b from-brand-900 to-brand-800 flex flex-col overflow-hidden">
       {/* Header */}
       <header className="flex items-center justify-between px-4 py-3 bg-black/20">
         <button
           onClick={handleBack}
-          className="text-white/70 hover:text-white text-sm flex items-center gap-1"
+          className="text-white/70 hover:text-white text-sm flex items-center gap-1 min-h-11 pr-3"
         >
           <ArrowLeft className="w-4 h-4" />
           {t('common.back')}
@@ -145,22 +147,33 @@ export function PraatplaatSelectScreen() {
       </div>
 
       {/* Afbeelding met klik-handler */}
-      <div className="flex-1 flex items-center justify-center px-2 pb-2 min-h-0">
-        <div
-          ref={imageRef}
-          className="relative w-full max-w-6xl aspect-video rounded-xl overflow-hidden shadow-2xl cursor-crosshair select-none"
-          onClick={handleImageClick}
-          onTouchStart={handleImageClick}
-          onKeyDown={handleKeyDown}
-          role="button"
-          tabIndex={0}
-          autoFocus
-          aria-label={t('praatplaat.select.imageAria')}
-        >
+      {/* V2 Fase 1: de plaat past altijd in de ruimte tussen instructie en
+          knop (Scene), en het kader heeft de verhouding van het BEELD ZELF.
+          Daardoor wordt er nooit iets afgesneden en betekent een gekozen plek
+          hetzelfde als in de presentatie (FittedImage, ook niet-afsnijdend). */}
+      <Scene
+        ratio={imageRatio}
+        className="px-2 pb-2"
+        frameRef={imageRef}
+        frameClassName="rounded-xl shadow-2xl cursor-crosshair select-none"
+        frameProps={{
+          onClick: handleImageClick,
+          onTouchStart: handleImageClick,
+          onKeyDown: handleKeyDown,
+          role: 'button',
+          tabIndex: 0,
+          autoFocus: true,
+          'aria-label': t('praatplaat.select.imageAria'),
+        }}
+      >
           <img
             src={activePraatplaat.imageUrl}
             alt={activePraatplaat.name}
-            className="w-full h-full object-cover pointer-events-none"
+            onLoad={(e) => {
+              const img = e.currentTarget;
+              if (img.naturalWidth > 0 && img.naturalHeight > 0) setImageRatio(img.naturalWidth / img.naturalHeight);
+            }}
+            className="absolute inset-0 w-full h-full object-cover pointer-events-none"
             draggable={false}
           />
 
@@ -183,11 +196,10 @@ export function PraatplaatSelectScreen() {
               </div>
             </div>
           )}
-        </div>
-      </div>
+      </Scene>
 
       {/* Footer met bevestigknop */}
-      <div className="px-4 pb-6 sm:pb-8 flex justify-center">
+      <div className="shrink-0 px-4 pb-[max(1rem,env(safe-area-inset-bottom))] sm:pb-6 flex justify-center">
         {selectedPos ? (
           <Button
             variant="primary"

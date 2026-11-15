@@ -35,9 +35,9 @@ export function LocationMarker({
 
   // Size classes based on position.size - all same small size on mobile (20px), varies on desktop
   const sizeClasses = {
-    sm: 'w-5 h-5 sm:w-14 sm:h-14',
-    md: 'w-5 h-5 sm:w-16 sm:h-16',
-    lg: 'w-5 h-5 sm:w-20 sm:h-20',
+    sm: 'w-11 h-11 sm:w-14 sm:h-14',
+    md: 'w-11 h-11 sm:w-16 sm:h-16',
+    lg: 'w-11 h-11 sm:w-20 sm:h-20',
   };
 
   const size = position.size ?? 'md';
@@ -79,7 +79,7 @@ export function LocationMarker({
         ) : (
           <MapPin
             className={cn(
-              'w-2.5 h-2.5 sm:w-6 sm:h-6',
+              'w-5 h-5 sm:w-6 sm:h-6',
               isComplete
                 ? 'text-success-600'
                 : hasProgress

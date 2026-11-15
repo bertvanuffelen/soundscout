@@ -61,7 +61,7 @@ export const TransportControls = memo(function TransportControls({
     : t('transport.loop');
 
   return (
-    <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-t border-border-subtle">
+    <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-t border-border-subtle pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {/* Play / Pause */}
       <button
         onClick={isPlaying ? onPause : onPlay}

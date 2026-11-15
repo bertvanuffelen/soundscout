@@ -37,7 +37,7 @@ export function ShareCodeModal({ isOpen, onClose, initialCode = null }: ShareCod
         role="dialog"
         aria-modal="true"
         aria-labelledby="share-code-title"
-        className="relative bg-bg-surface rounded-2xl shadow-2xl w-full max-w-md max-h-[90vh] overflow-hidden"
+        className="relative bg-bg-surface rounded-2xl shadow-2xl w-full max-w-md max-h-[90dvh] overflow-hidden"
       >
         <div className="flex items-center justify-between p-4 sm:p-6 border-b border-neutral-200">
           <h2 id="share-code-title" className="text-xl sm:text-2xl font-bold text-text-main">

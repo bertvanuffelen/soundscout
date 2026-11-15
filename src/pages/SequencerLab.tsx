@@ -74,7 +74,7 @@ export default function SequencerLab() {
 
   if (!isThemeInitialized || !hasHydrated) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-bg-app text-text-muted">
+      <div className="min-h-dvh flex items-center justify-center bg-bg-app text-text-muted">
         <div className="text-lg font-medium">{t('common.loading')}</div>
       </div>
     );
