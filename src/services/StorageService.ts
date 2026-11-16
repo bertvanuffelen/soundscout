@@ -1,11 +1,15 @@
 /**
- * StorageService - Type-safe localStorage management
+ * StorageService - Type-safe lokale opslag
  *
  * Handles:
- * - Compositions CRUD
- * - Library state persistence
- * - User preferences
+ * - Compositions CRUD — sinds V2 Fase 2 in IndexedDB via `compositionStore`
+ *   (met localStorage als terugval en als back-up; zie docs/v2/LOCAL-STORAGE.md)
+ * - Library state persistence (localStorage)
+ * - User preferences (localStorage)
  * - Share code generation
+ *
+ * De API is bewust synchroon gebleven; zie de ontwerpnotitie bovenaan
+ * `compositionStore.ts`.
  */
 
 import type {
@@ -20,6 +24,8 @@ import type {
 import { DEFAULT_USER_PREFERENCES } from '../types';
 import { generateId, generateShareCode } from '../utils/uuid';
 import { logger } from '../utils/logger';
+import { CompositionStore } from './compositionStore';
+import type { CompositionStoreMode, CompositionWriteResult } from './compositionStore';
 import { beatsToSeconds, getClipEndBeat } from '../utils/audio';
 import {
   parseSavedCompositions,
@@ -29,7 +35,13 @@ import {
 
 // Current storage version for migrations (reserved for future use)
 // const STORAGE_VERSION = 1;
-const MAX_COMPOSITIONS = 10;
+/**
+ * Maximum aantal lokaal bewaarde composities ("Mijn composities"). Bij de
+ * volgende die erbij komt verdwijnt de oudste. De technische reden (de 5 MB
+ * van localStorage) is met IndexedDB vervallen; het getal is nu een
+ * productkeuze en staat alleen hier. Verhogen: zie docs/v2/LOCAL-STORAGE.md.
+ */
+export const MAX_LOCAL_COMPOSITIONS = 10;
 // H3 (eindtest): een computerlokaal levert op één apparaat veel meer dan 20
 // keer per week in; te weinig ruimte maakte van versie 2 een nieuwe inzending
 const MAX_SUBMISSION_SECRETS = 200;
@@ -49,16 +61,57 @@ class StorageServiceImpl {
   // --- Compositions ---
 
   /**
+   * Opslag van de composities (IndexedDB met localStorage-terugval). Opent
+   * zichzelf bij het aanmaken; er is geen aanroep in main.tsx/App.tsx nodig.
+   */
+  private compositionStore = new CompositionStore({
+    onAsyncError: (error) => { this.lastSaveError = error; },
+  });
+
+  /** 'idb' = IndexedDB, 'local' = terugval op localStorage, 'pending' = bezig met openen */
+  getCompositionStorageMode(): CompositionStoreMode {
+    return this.compositionStore.getMode();
+  }
+
+  /** Klaar met openen en (eenmalig) overzetten */
+  whenCompositionsReady(): Promise<CompositionStoreMode> {
+    return this.compositionStore.whenReady();
+  }
+
+  /** Alle schrijfacties tot nu toe zijn door IndexedDB bevestigd (of gelogd als mislukt) */
+  whenCompositionsPersisted(): Promise<void> {
+    return this.compositionStore.whenIdle();
+  }
+
+  /** Voor React (useSyncExternalStore): seintje als de lijst van buitenaf verandert */
+  subscribeCompositions = (listener: () => void): (() => void) =>
+    this.compositionStore.subscribe(listener);
+
+  getCompositionsVersion = (): number => this.compositionStore.getVersion();
+
+  private writeComposition(result: CompositionWriteResult): boolean {
+    if (result.ok) {
+      this.lastSaveError = null;
+      return true;
+    }
+    this.lastSaveError = result.error;
+    if (result.error === 'quota_exceeded') {
+      logger.error('localStorage quota exceeded', { key: 'soundscout:compositions', usage: this.getStorageUsage() });
+    } else {
+      logger.error('Failed to save composition', { error: result.error });
+    }
+    return false;
+  }
+
+  /**
    * Get all saved compositions
    */
   getCompositions(): SavedComposition[] {
     this.lastLoadDroppedCount = 0;
     try {
-      const raw = this.getRaw('soundscout:compositions');
-      if (!raw) return [];
+      const { raw, extraDropped } = this.compositionStore.list();
       const validated = parseSavedCompositions(raw);
-      const originalCount = Array.isArray(raw) ? raw.length : 0;
-      const dropped = originalCount - validated.length;
+      const dropped = raw.length - validated.length + extraDropped;
       if (dropped > 0) {
         this.lastLoadDroppedCount = dropped;
         logger.warn('Some compositions failed validation, filtered out invalid entries', { dropped });
@@ -102,16 +155,13 @@ class StorageServiceImpl {
   ): SavedComposition | null {
     const compositions = this.getCompositions();
 
-    // Check max limit
-    if (compositions.length >= MAX_COMPOSITIONS) {
-      // Remove oldest
-      compositions.sort(
+    // Check max limit: de oudste maakt plaats, maar pas als de nieuwe er staat
+    const oldest = compositions.length >= MAX_LOCAL_COMPOSITIONS
+      ? [...compositions].sort(
         (a, b) =>
           new Date(a.updatedAt).getTime() - new Date(b.updatedAt).getTime()
-      );
-      compositions.shift();
-      logger.warn('Max compositions reached, removed oldest');
-    }
+      )[0]
+      : null;
 
     const now = new Date().toISOString();
     const newComposition: SavedComposition = {
@@ -129,12 +179,16 @@ class StorageServiceImpl {
       ...(praatplaatPosition ? { praatplaatPosition } : {}),
     };
 
-    compositions.push(newComposition);
-    const saved = this.set('soundscout:compositions', compositions);
+    const saved = this.writeComposition(this.compositionStore.put(newComposition));
 
     if (!saved) {
       logger.error('Failed to save new composition', { name });
       return null;
+    }
+
+    if (oldest) {
+      this.compositionStore.remove(oldest.id);
+      logger.warn('Max compositions reached, removed oldest');
     }
 
     logger.info('Composition saved', { id: newComposition.id, name });
@@ -168,8 +222,7 @@ class StorageServiceImpl {
           : existing.metadata,
     };
 
-    compositions[index] = updated;
-    const saved = this.set('soundscout:compositions', compositions);
+    const saved = this.writeComposition(this.compositionStore.put(updated));
 
     if (!saved) {
       logger.error('Failed to save updated composition', { id });
@@ -186,14 +239,14 @@ class StorageServiceImpl {
    */
   deleteComposition(id: string): boolean {
     const compositions = this.getCompositions();
-    const filtered = compositions.filter((c) => c.id !== id);
 
-    if (filtered.length === compositions.length) {
+    if (!compositions.some((c) => c.id === id)) {
       logger.warn('Composition not found for deletion', { id });
       return false;
     }
 
-    const saved = this.set('soundscout:compositions', filtered);
+    // Bewuste verwijdering: ook uit de localStorage-back-up van de migratie
+    const saved = this.writeComposition(this.compositionStore.remove(id, true));
     if (!saved) {
       logger.error('Failed to save after deleting composition', { id });
       return false;
@@ -222,13 +275,12 @@ class StorageServiceImpl {
     }
 
     const shareCode = generateShareCode();
-    compositions[index] = {
+    const shared: SavedComposition = {
       ...compositions[index],
       shareCode,
       sharedAt: new Date().toISOString(),
     };
-
-    const saved = this.set('soundscout:compositions', compositions);
+    const saved = this.writeComposition(this.compositionStore.put(shared));
     if (!saved) {
       logger.error('Failed to save share code', { id, shareCode });
       return null;
@@ -325,6 +377,9 @@ class StorageServiceImpl {
    * Clear all SoundScout data
    */
   clearAll(): void {
+    for (const composition of this.getCompositions()) {
+      this.compositionStore.remove(composition.id, true);
+    }
     localStorage.removeItem('soundscout:compositions');
     localStorage.removeItem('soundscout:library');
     localStorage.removeItem('soundscout:preferences');

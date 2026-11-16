@@ -14,7 +14,7 @@
 
 | Manier van bewaren | Waar | Nodig om terug te vinden | Termijn |
 |---|---|---|---|
-| **Lokaal** ("Mijn composities") | In de browser (localStorage) van dát apparaat | Automatisch, op hetzelfde apparaat | Blijft, maar **max. 10** — de oudste verdwijnt; weg bij browser-opschoning. Opslaan werkt dezelfde compositie bij (sinds 14-10 geen kopie per klik) |
+| **Lokaal** ("Mijn composities") | In de browser (IndexedDB; zie `docs/v2/LOCAL-STORAGE.md`) van dát apparaat | Automatisch, op hetzelfde apparaat | Blijft, maar **max. 10** — de oudste verdwijnt; weg bij browser-opschoning. Opslaan werkt dezelfde compositie bij (sinds 14-10 geen kopie per klik) |
 | **Online bewaarcode** | Onze database (Supabase) | De **6-tekens bewaarcode** | Werkt tot **60 dagen** ná de laatste wijziging |
 | **Klas-inzending** (klascode) | Onze database | De **klascode** (docent) · de bewaarcode (leerling) | **1 schooljaar** na de laatste activiteit, dan automatisch verwijderd (docent 30 d vooraf gewaarschuwd) |
 | **Praatplaat-inzending** | Onze database | Via de klas/praatplaat (docent) | Zoals klas-inzending |

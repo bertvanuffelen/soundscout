@@ -8,6 +8,7 @@ import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, F
 import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
+import { useCompositionsVersion } from '../hooks/useCompositionsVersion';
 import { useLibraryStore } from '../stores/libraryStore';
 import { readWorkInProgress } from '../services/workInProgress';
 import {
@@ -37,6 +38,8 @@ import type { Storyboard } from '../types';
 
 export function StartScreen() {
   const { t, i18n } = useTranslation();
+  // Loopt op zodra de lokale opslag klaar (of van buitenaf veranderd) is
+  const storageVersion = useCompositionsVersion();
   const goToCompositions = useAppStore((s) => s.goToCompositions);
   const goToStudio = useAppStore((s) => s.goToStudio);
   const goToStage = useAppStore((s) => s.goToStage);
@@ -65,7 +68,9 @@ export function StartScreen() {
         : d.toLocaleDateString(i18n.language, { weekday: 'short', day: 'numeric', month: 'short' });
     }
     return [name, classSession?.className, when].filter(Boolean).join(' · ');
-  }, [hasClipsInProgress, compositionTitle, currentCompositionId, classSession, t, i18n.language]);
+    // storageVersion: de naam komt uit de opslag, die net na het laden klaar is
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasClipsInProgress, compositionTitle, currentCompositionId, classSession, t, i18n.language, storageVersion]);
   const [isLoading, setIsLoading] = useState(false);
   const [showFeedback, setShowFeedback] = useState(false);
   const [showPrivacy, setShowPrivacy] = useState(false);
@@ -83,7 +88,7 @@ export function StartScreen() {
   useEffect(() => {
     const compositions = storageService.getCompositions();
     setHasCompositions(compositions.length > 0);
-  }, []);
+  }, [storageVersion]);
 
   // Doorverwijzing vanaf een ander scherm (O7): bv. het opdrachtscherm zonder
   // opdracht vraagt om het codevenster of de wizard meteen te openen.

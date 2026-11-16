@@ -14,6 +14,7 @@ import { ArrowLeft, Music, AlertTriangle } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
 import { storageService } from '../../services/StorageService';
+import { useCompositionsVersion } from '../../hooks/useCompositionsVersion';
 import { openLocalComposition } from '../../utils/compositionInit';
 import type { SavedComposition } from '../../types';
 import { Button } from '../ui';
@@ -39,7 +40,8 @@ export function CompositionsView() {
   const [compositions, setCompositions] = useState<SavedComposition[]>([]);
   const [droppedCount, setDroppedCount] = useState(0);
 
-  // Load compositions on mount
+  // Load compositions on mount, en opnieuw zodra de opslag klaar of veranderd is
+  const storageVersion = useCompositionsVersion();
   useEffect(() => {
     const saved = storageService.getCompositions();
     // Aantal corrupte/weggefilterde entries zichtbaar maken (mirror lastSaveError)
@@ -50,7 +52,7 @@ export function CompositionsView() {
         new Date(b.updatedAt).getTime() - new Date(a.updatedAt).getTime()
     );
     setCompositions(saved);
-  }, []);
+  }, [storageVersion]);
 
   const handleBack = useCallback(() => {
     goToStart();
