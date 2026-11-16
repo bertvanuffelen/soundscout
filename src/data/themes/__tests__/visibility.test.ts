@@ -16,6 +16,7 @@ import {
   findStoryboardById,
   loadTheme,
   isThemeVisible,
+  getPickerThemes,
 } from '../index';
 import { getPraatplaatCatalog } from '../../praatplaatCatalog';
 import { storyboards } from '../../storyboards';
@@ -65,5 +66,20 @@ describe('zichtbaarheid van thema\'s in kiezers', () => {
     expect(isThemeVisible(undefined)).toBe(false);
     expect(isThemeVisible(null)).toBe(false);
     expect(isThemeVisible('bestaat-niet')).toBe(false);
+  });
+});
+
+describe('getPickerThemes: een ?theme=-link naar een verborgen thema (stagingtest 16-11)', () => {
+  it('zet het gelinkte verborgen thema vooraan in de kiezer', () => {
+    const themes = getPickerThemes('piraten');
+    expect(themes[0].id).toBe('piraten');
+    expect(themes.slice(1).map((t) => t.id)).toEqual(getPublicThemes().map((t) => t.id));
+  });
+
+  it('verandert niets zonder link, bij een openbaar thema of bij een onbekend id', () => {
+    const publicIds = getPublicThemes().map((t) => t.id);
+    expect(getPickerThemes(null).map((t) => t.id)).toEqual(publicIds);
+    expect(getPickerThemes('winterspelen').map((t) => t.id)).toEqual(publicIds);
+    expect(getPickerThemes('bestaat-niet').map((t) => t.id)).toEqual(publicIds);
   });
 });

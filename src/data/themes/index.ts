@@ -142,6 +142,20 @@ export function getThemeIdFromUrl(): string {
 }
 
 /**
+ * Thema's voor de kiezer: de openbare thema's (binnen seizoen), plus het thema
+ * uit een ?theme=-link als dat verborgen of buiten seizoen is. Zo'n link is
+ * een bewuste keuze (docent, beheerder die een verborgen thema test); zonder
+ * deze aanvulling laadde het thema wel, maar kon de leerling de kaart nooit
+ * bereiken, omdat de kiezer het niet toonde (stagingtest 16-11, blok G).
+ */
+export function getPickerThemes(urlThemeId: string | null): ThemeSummary[] {
+  const themes = getPublicThemes();
+  if (!urlThemeId || themes.some((th) => th.id === urlThemeId)) return themes;
+  const linked = getThemeSummary(urlThemeId);
+  return linked ? [linked, ...themes] : themes;
+}
+
+/**
  * Get all public themes (for pickers). Respecteert het seizoensvenster:
  * een thema buiten seizoen verschijnt niet in kiezers, maar blijft via
  * ?theme= gewoon werken.

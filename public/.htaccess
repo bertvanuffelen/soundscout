@@ -8,6 +8,16 @@
   # /over is de publieke Over/colofon + contactpagina (eigen SEO-meta)
   RewriteRule ^over/?$ over.html [L]
 
+  # Een ONTBREKEND bestand met een bestandsextensie (script, stijl, data,
+  # media) krijgt een echte 404, niet de startpagina. Zonder deze regel kreeg
+  # een vergeten sw.js index.html terug (text/html): de browser weigert dan de
+  # service worker en de app werkt niet offline, zonder duidelijke foutmelding
+  # (stagingtest 16-11). App-paden hebben nooit een extensie.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{REQUEST_URI} \.(js|mjs|css|json|map|wasm|webmanifest|txt|xml|ico|mp3|wav|ogg|png|jpe?g|webp|gif|svg|woff2?|sspack|zip|pdf)$ [NC]
+  RewriteRule ^ - [R=404,L]
+
   # Don't rewrite files or directories
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d

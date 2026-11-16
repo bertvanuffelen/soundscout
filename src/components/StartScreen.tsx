@@ -98,6 +98,19 @@ export function StartScreen() {
   const [showCodeModal, setShowCodeModal] = useState(() => !!pendingSaveCode);
   const [showNewConfirm, setShowNewConfirm] = useState(false);
 
+  // Donkere pagina-achtergrond zolang het startscherm open is. Zonder dit
+  // toont het "doorveren" voorbij het einde van de pagina (iPad Safari, Chrome
+  // op de Mac) de witte achtergrond van <html> (stagingtest 16-11). Andere
+  // schermen zijn nog licht, dus bij verlaten zetten we hem terug.
+  useEffect(() => {
+    const root = document.documentElement;
+    const previous = root.style.backgroundColor;
+    root.style.backgroundColor = 'var(--color-brand-900)';
+    return () => {
+      root.style.backgroundColor = previous;
+    };
+  }, []);
+
   // Check if there are saved compositions
   useEffect(() => {
     const compositions = storageService.getCompositions();

@@ -8,7 +8,8 @@
 
 import { useTranslation } from 'react-i18next';
 import { getMapBackgroundImage } from '../../data/themes';
-import { getPublicThemes, type ThemeSummary } from '../../data/themes';
+import { getPickerThemes, type ThemeSummary } from '../../data/themes';
+
 
 interface ThemePickerProps {
   onSelectTheme: (themeId: string) => void;
@@ -16,12 +17,11 @@ interface ThemePickerProps {
 }
 
 export function ThemePicker({ onSelectTheme, isLoading = false }: ThemePickerProps) {
-  const themes = getPublicThemes();
-
   // Deeplink (?theme=, bv. via een themakaart op /teacher): toon dat thema
   // vooraan mét een "gekozen thema"-badge — de deeplink heeft zo zichtbaar
   // effect, maar de leerling houdt keuzevrijheid (testronde 1, 5c).
   const urlThemeId = new URLSearchParams(window.location.search).get('theme');
+  const themes = getPickerThemes(urlThemeId);
   const preselectedId = themes.some((th) => th.id === urlThemeId) ? urlThemeId : null;
   const sortedThemes = preselectedId
     ? [...themes].sort((a, b) => (a.id === preselectedId ? -1 : b.id === preselectedId ? 1 : 0))
