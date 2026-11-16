@@ -2828,7 +2828,9 @@
       "deleteConfirm": "Are you sure you want to delete \"{{name}}\"?",
       "untitled": "Sequence {{number}}",
       "copySuffix": " (copy)",
-      "namePlaceholder": "Name of your sequence"
+      "namePlaceholder": "Name of your sequence",
+      "untitledRhythm": "Rhythm {{number}}",
+      "untitledMelody": "Melody {{number}}"
     },
     "studio": {
       "addSequence": "Add sequence",
@@ -2837,7 +2839,15 @@
       "libraryHeading": "Sequences",
       "deleteWithClips": "This sequence is still on the timeline. Deleting it also removes those blocks.",
       "playsSequence": "Plays this sequence (loops)",
-      "firstRunHint": "In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline."
+      "firstRunHint": "In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline.",
+      "done": "Done",
+      "savedToast": "{{name}} is in your library.",
+      "emptyDiscarded": "It was still empty, so nothing was saved.",
+      "chooseTitle": "What do you want to make?",
+      "chooseRhythmText": "A beat with sounds from your library.",
+      "chooseMelodyText": "A melody with notes that always sound good.",
+      "chooseHint": "You choose once. Want the other one later? Make a new sequence.",
+      "emptyHint": "Click the boxes. An empty sequence is not saved."
     }
   },
   "about": {

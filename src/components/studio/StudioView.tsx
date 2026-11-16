@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, pointerWithin, closestCenter, MeasuringStrategy, type CollisionDetection } from '@dnd-kit/core';
-import { Music, Image, Map as MapIcon } from 'lucide-react';
+import { Music, Image, Map as MapIcon, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
@@ -39,9 +39,13 @@ import { generateClipId } from '../../utils/uuid';
 import { useSequencerStore } from '../../stores/sequencerStore';
 import { sequencerEngine } from '../../services/SequencerEngine';
 import StudioSequencerPanel from '../sequencer/StudioSequencerPanel';
+import SequenceKindChooser from '../sequencer/SequenceKindChooser';
+import type { SequenceKind } from '../../types/sequencer';
 import {
   getSequenceIdFromSampleId,
+  isSequenceEmpty,
   isSequenceSampleId,
+  sequenceSampleId,
   withSequenceSamples,
 } from '../../utils/sequencer';
 
@@ -171,14 +175,29 @@ export function StudioView() {
     [handlePause, setOpenSequenceId]
   );
 
-  const handleAddSequence = useCallback(() => {
+  // --- Sequence maken (designronde nov 2026) ---
+  // "+ Sequence" → eerst kiezen: Ritme of Melodie (daarna vast).
+  const [kindChooserOpen, setKindChooserOpen] = useState(false);
+  const handleAddSequence = useCallback(() => setKindChooserOpen(true), []);
+  const handleChooseKind = useCallback((kind: SequenceKind) => {
+    setKindChooserOpen(false);
     const store = useSequencerStore.getState();
+    const number = store.sequences.filter((sq) => (sq.kind ?? 'rhythm') === kind).length + 1;
     store.createSequence(
-      t('sequencer.sequences.untitled', { number: store.sequences.length + 1 })
+      t(kind === 'melody' ? 'sequencer.sequences.untitledMelody' : 'sequencer.sequences.untitledRhythm', { number }),
+      kind,
     );
     const newId = useSequencerStore.getState().activeSequenceId;
     if (newId) handleOpenSequence(newId);
   }, [t, handleOpenSequence]);
+
+  // Korte bevestiging onderin (bewaard / niets bewaard)
+  const [studioToast, setStudioToast] = useState<{ id: number; text: string } | null>(null);
+  useEffect(() => {
+    if (!studioToast) return;
+    const timer = setTimeout(() => setStudioToast(null), 2800);
+    return () => clearTimeout(timer);
+  }, [studioToast]);
 
   const handleSeqPlay = useCallback(async () => {
     await sequencerEngine.start();
@@ -190,13 +209,26 @@ export function StudioView() {
     useSequencerStore.getState().setIsPlaying(false);
   }, []);
 
-  // Klik buiten het sequencer-panel (bibliotheek/beeldzone) → terug naar de
-  // montagelijn (testronde 7). De transportbalk en modals sluiten NIET.
+  // Sequencer sluiten ("Klaar", ✕ of de tab Tijdlijn). Een LEGE sequence die
+  // nergens op de tijdlijn staat, wordt niet bewaard — zo ontstaan er geen
+  // lege chips meer. Anders: bevestiging "staat in je bibliotheek".
+  // Klikken buiten het paneel sluit niet meer (designronde nov 2026).
   const handleCloseSequencer = useCallback(() => {
     sequencerEngine.stop();
-    useSequencerStore.getState().setIsPlaying(false);
+    const store = useSequencerStore.getState();
+    store.setIsPlaying(false);
+    const seq = store.sequences.find((sq) => sq.id === store.openSequenceId);
     setOpenSequenceId(null);
-  }, [setOpenSequenceId]);
+    if (!seq) return;
+    const sampleId = sequenceSampleId(seq.id);
+    const usedOnTimeline = useTimelineStore.getState().tracks.some((tr) => tr.clips.some((c) => c.sampleId === sampleId));
+    if (isSequenceEmpty(seq) && !usedOnTimeline) {
+      store.deleteSequence(seq.id, '');
+      setStudioToast({ id: Date.now(), text: t('sequencer.studio.emptyDiscarded') });
+    } else {
+      setStudioToast({ id: Date.now(), text: t('sequencer.studio.savedToast', { name: seq.name }) });
+    }
+  }, [setOpenSequenceId, t]);
 
   // DnD hook needs samples for collision detection
   const {
@@ -484,12 +516,8 @@ export function StudioView() {
         onDragCancel={handleDragCancel}
       >
         {/* Content area: Library, Split, or Image — depends on storytelling state.
-            Klik hier terwijl de sequencer open is → terug naar de montagelijn
-            (display:contents laat de flex-layout intact). */}
-        <div
-          className="contents"
-          onClickCapture={sequencerOpen ? handleCloseSequencer : undefined}
-        >
+            (Klikken hier sluit de sequencer niet meer: alleen Klaar of ✕.) */}
+        <div className="contents">
         {!hasStorytelling ? (
           /* No storytelling: library only (existing behavior) */
           <SampleLibrary
@@ -561,6 +589,7 @@ export function StudioView() {
           <StudioSequencerPanel
             samples={librarySamples}
             isFreeMode={composeMode === 'free'}
+            onDone={handleCloseSequencer}
           />
         ) : (
         <Timeline
@@ -648,6 +677,23 @@ export function StudioView() {
         onLoopOff={sequencerOpen ? () => undefined : handleLoopOff}
         trailing={<TempoPicker />}
       />
+
+      <SequenceKindChooser
+        isOpen={kindChooserOpen}
+        onClose={() => setKindChooserOpen(false)}
+        onChoose={handleChooseKind}
+      />
+
+      {studioToast && (
+        <div
+          key={studioToast.id}
+          role="status"
+          className="fixed left-1/2 -translate-x-1/2 bottom-24 z-toast type-body rounded-full bg-brand-900 text-white px-5 py-3 shadow-xl inline-flex items-center gap-2 max-w-[90vw]"
+        >
+          <Check className="w-4 h-4 text-accent-400 shrink-0" aria-hidden="true" />
+          {studioToast.text}
+        </div>
+      )}
 
       {/* Trim Modal */}
       {selectedClipData && (

@@ -2827,7 +2827,9 @@
       "deleteConfirm": "Weet je zeker dat je \"{{name}}\" wilt verwijderen?",
       "untitled": "Sequence {{number}}",
       "copySuffix": " (kopie)",
-      "namePlaceholder": "Naam van je sequence"
+      "namePlaceholder": "Naam van je sequence",
+      "untitledRhythm": "Ritme {{number}}",
+      "untitledMelody": "Melodie {{number}}"
     },
     "studio": {
       "addSequence": "Sequence toevoegen",
@@ -2836,7 +2838,15 @@
       "libraryHeading": "Sequences",
       "deleteWithClips": "Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg.",
       "playsSequence": "Speelt deze sequence (loopt rond)",
-      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn."
+      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn.",
+      "done": "Klaar",
+      "savedToast": "{{name}} staat in je bibliotheek.",
+      "emptyDiscarded": "Er stond nog niets in, dus er is niets bewaard.",
+      "chooseTitle": "Wat wil je maken?",
+      "chooseRhythmText": "Een beat met geluiden uit je bibliotheek.",
+      "chooseMelodyText": "Een melodie met tonen die altijd mooi klinken.",
+      "chooseHint": "Je kiest één keer. Wil je daarna het andere? Maak dan een nieuwe sequence.",
+      "emptyHint": "Klik in de vakjes. Een lege sequence wordt niet bewaard."
     }
   },
   "about": {

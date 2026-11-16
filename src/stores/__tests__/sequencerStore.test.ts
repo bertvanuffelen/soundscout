@@ -171,6 +171,18 @@ describe('sequencerStore', () => {
     expect(state.activeSequenceId).toBe(state.sequences[0].id);
   });
 
+  it('deleteSequence van de laatste in de studio laat de lijst leeg (geen verse lege chip)', () => {
+    useSequencerStore.getState().hydrateForStudio([]);
+    useSequencerStore.getState().createSequence('Ritme 1', 'rhythm');
+    const id = useSequencerStore.getState().activeSequenceId!;
+    useSequencerStore.getState().setOpenSequenceId(id);
+    useSequencerStore.getState().deleteSequence(id, 'Vers');
+    const state = useSequencerStore.getState();
+    expect(state.sequences).toHaveLength(0);
+    expect(state.activeSequenceId).toBeNull();
+    expect(state.openSequenceId).toBeNull();
+  });
+
   it('renameSequence trimt en weigert lege namen', () => {
     const id = active().id;
     useSequencerStore.getState().renameSequence(id, '   ');
