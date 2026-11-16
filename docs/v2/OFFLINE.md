@@ -36,6 +36,7 @@ Not precached: theme media, `teacher.html`, `over.html`, `/les/`, `/privacy/`, a
 | `soundscout-audio-v1` | same origin, `/audio/**.mp3` | cache-first | 400 files, 60 days, purged first when storage is full |
 | `soundscout-images-v1` | same origin, `/images/**` (`jpg`, `png`, `webp`, `svg`) | cache-first | 300 files, 60 days, purged first when storage is full |
 | `soundscout-themes-v1` | same origin, `/themes/**.json` (theme index + manifests, Phase 3) | network-first, 4 s timeout | 60 files, 1 year — see `docs/v2/THEMES.md` §4 |
+| `soundscout-theme-media-v1` | **any origin**, path `/storage/v1/object/public/themes/**` with a media extension — the public `themes` bucket of Supabase Storage (themes published in `/beheer`, migration 043) | cache-first (every version has its own immutable path) | 500 files, 60 days, purged first when storage is full — see `docs/v2/ADMIN-DASHBOARD.md` §5 |
 
 - Only complete `200` responses are stored. Partial (`206`) and opaque responses are never stored.
 - **Range requests**: the app loads audio with `fetch` + `decodeAudioData` (Tone's `ToneAudioBuffer.load`), which asks for the whole file, so ranges do not occur in normal use. For safety the audio rule has Workbox's range plugin: a `Range` request is answered by slicing the complete cached file.
@@ -46,7 +47,7 @@ Not precached: theme media, `teacher.html`, `over.html`, `/les/`, `/privacy/`, a
 
 As soon as the service worker controls the page (on a first visit: a few seconds after load), the app waits 4 seconds and then fetches, two at a time:
 
-1. the map, every location image and every sound of the **active** theme (`basis` ≈ 10 MB);
+1. the map, every location image and every sound of the **active** theme (`basis` ≈ 10 MB) — for a theme published in `/beheer` these are Storage URLs, fetched with CORS so they are stored as complete `200` responses;
 2. the media this page had already loaded before the service worker took over (re-read from the browser cache, no network).
 
 It repeats when the theme changes (a class code that selects another theme, `?theme=`). It does not run when the browser's data-saver is on or the device is offline. Nothing is decoded, so this costs disk space, not working memory. Other themes are never fetched in advance.
@@ -57,7 +58,7 @@ Not warmed: storyboard and praatplaat images. They are cached once they have bee
 
 ## 3. What is never cached or intercepted
 
-- **Supabase** (API, auth, storage), **EmailJS** and **YouTube**: other origins, no rule. The service worker does not call `respondWith` for them; the browser handles them as if there were no service worker.
+- **Supabase** (REST, RPC, auth, every other storage bucket), **EmailJS** and **YouTube**: other origins, no rule. The service worker does not call `respondWith` for them; the browser handles them as if there were no service worker. The single exception is the public theme bucket above (media only, never `manifest.json`, never REST — the published-themes list is read from REST and therefore not cached by the service worker; the app keeps its own last-seen copy in `localStorage` instead, see `docs/v2/ADMIN-DASHBOARD.md` §4).
 - **Anything that is not GET** (every Supabase RPC is a POST).
 - `/teacher`, `/teacher.html`, `/over`, `/over.html`, `/les/**`, `/privacy/**`, `/sitemap.xml`, `/robots.txt`: always from the server.
 
@@ -146,6 +147,7 @@ npm run e2e:sw     # builds to node_modules/.cache/sw-e2e-dist, serves it on :51
 | e | `/?theme=winterspelen` resolves online (from the precache) and offline, the parameter stays; `/?screen=teacher-guide`, `/index.html`, `/kaart` and an unknown path open the app offline. |
 | f | A new `sw.js` installs and waits; the open page is not reloaded or taken over; the notice appears on the start screen; "Vernieuwen" activates it. |
 | g | The kill-switch file removes all caches and the controller, reloads exactly once (no loop), and later visits stay clean. |
+| i | A file in the public theme bucket on the (fake) Supabase origin is fetched once, then answered from `soundscout-theme-media-v1`, also offline; a REST GET on the same origin still reaches the backend every time and is in no cache. |
 
 Unit tests: `src/pwa/__tests__/swRouting.test.ts` (deny-list against every app path and legacy link; nothing from another origin is cacheable) and `warmThemeCache.test.ts`.
 

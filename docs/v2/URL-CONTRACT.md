@@ -46,7 +46,7 @@ Search values are always text. TanStack's default parser reads values as JSON, w
 | 20 | `/privacy/`, `/privacy/en/` | privacy modal, register form, sitemap | Static HTML | untouched | E |
 | 21 | `/animaties/*.html` | iframes in the app | Static HTML | untouched | E |
 | 22 | `/sitemap.xml`, `/robots.txt`, `/manifest.json`, `/assets/*`, `/audio/*`, `/images/*`, `/fonts/*` | build | Files | untouched | E (sitemap) |
-| 23 | `/editor` (+`?location=<id>`), `/sequencer`, `/v2-mockup` | developers | **Dev only**: the tool. In production: start screen | same (production: address becomes `/`) | E (dev) |
+| 23 | `/editor` (+`?location=<id>`), `/sequencer`, `/v2-mockup` | developers | **Dev only**: the tool. In production: start screen | same (production: address becomes `/`); `/editor` now shows a banner pointing to `/beheer` | E (dev) |
 | 24 | Browser Back on a work screen | user | Stays inside the app | real history (see §4) | E |
 | 25 | 4/6/8-character codes typed into "Ik heb een code" | students, teachers | Class code → landing; save code → studio/podium; 8 chars → template / share / praatplaat / album | unchanged (`ShareCodeInput` calls the same store actions) | — (§6) |
 
@@ -71,6 +71,7 @@ Combination rule, unchanged from before: if one link carries several destination
 | shared | `/gedeeld/$code` | stays — reloadable and forwardable |
 | shared-praatplaat | `/praatplaat/gedeeld/$code` | stays |
 | shared-album | `/album/$code` | stays |
+| — (admin dashboard, outside the app layout) | `/beheer` | stays — login gate, then "geen toegang" or the dashboard (`docs/v2/ADMIN-DASHBOARD.md`). Production route, own lazy chunk. Falls back to `index.html` in Apache and the service worker. Tests: `src/router/__tests__/paths.test.ts`, `e2e/admin.spec.ts` |
 
 Why work screens go to `/` on a cold open: they need state that only exists in memory (collected sounds, the open composition, the class session). This is how the app already recovered from a refresh: `workInProgress.ts` silently restores the work and the start screen offers "Verder werken". Nothing is lost; the student is one tap away.
 

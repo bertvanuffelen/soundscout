@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { NAVIGATE_FALLBACK_DENYLIST, isThemeAudio, isAppImage, isThemeData } from '../swRouting';
+import { NAVIGATE_FALLBACK_DENYLIST, isThemeAudio, isAppImage, isThemeData, isThemeBucketMedia } from '../swRouting';
 import { SCREEN_PATHS } from '../../router/paths';
 
 /** Zoals Workbox' NavigationRoute: pad + query tegen de denylist. */
@@ -98,5 +98,28 @@ describe('thema-data (V2 Fase 3)', () => {
     expect(isThemeData(input('/manifest.json'))).toBe(false);
     expect(isThemeData(input('/audio/themes/basis/boerderij/koe.mp3'))).toBe(false);
     expect(isThemeData(input('https://example.supabase.co/themes/index.json'))).toBe(false);
+  });
+});
+
+describe('thema-bucket van Supabase Storage (migratie 043)', () => {
+  const base = 'https://xpjutrzonnranyqyqfzj.supabase.co/storage/v1/object/public/themes/sinterklaas/v2';
+  it('bewaart beelden en geluiden van gepubliceerde thema-versies', () => {
+    expect(isThemeBucketMedia(input(`${base}/audio/fluit.mp3`))).toBe(true);
+    expect(isThemeBucketMedia(input(`${base}/images/stoomboot.jpg`))).toBe(true);
+    expect(isThemeBucketMedia(input(`${base}/images/stoomboot.webp`))).toBe(true);
+  });
+
+  it('blijft af van de rest van Supabase', () => {
+    for (const href of [
+      'https://xpjutrzonnranyqyqfzj.supabase.co/rest/v1/published_themes?select=*',
+      'https://xpjutrzonnranyqyqfzj.supabase.co/rest/v1/rpc/get_active_assignment',
+      'https://xpjutrzonnranyqyqfzj.supabase.co/auth/v1/token',
+      'https://xpjutrzonnranyqyqfzj.supabase.co/storage/v1/object/public/audio/koe.mp3',
+      'https://xpjutrzonnranyqyqfzj.supabase.co/storage/v1/object/themes/sinterklaas/v2/audio/fluit.mp3',
+      `${base}/manifest.json`,
+    ]) {
+      expect(isThemeBucketMedia(input(href)), href).toBe(false);
+    }
+    expect(isThemeBucketMedia({ ...input(`${base}/audio/fluit.mp3`), request: { method: 'POST' } })).toBe(false);
   });
 });

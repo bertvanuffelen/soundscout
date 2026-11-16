@@ -4,7 +4,9 @@
  * Toont de tellingen uit usage_stats (migration 025): per gebeurtenis de
  * totalen van vandaag / 7 dagen / 30 dagen, plus een staafgrafiekje van de
  * sessies (app_start) per dag over de laatste 30 dagen. Alleen zichtbaar
- * voor accounts in VITE_ADMIN_EMAILS (zie usageStatsAdmin.isAdminEmail).
+ * voor beheerders (useIsAdmin: admins-tabel, migratie 043; terugval
+ * VITE_ADMIN_EMAILS). Twee vormen: `UsageStatsContent` (tabblad Statistieken
+ * in /beheer) en `UsageStatsPanel` (modal in het docentendashboard).
  */
 
 import { useEffect, useMemo, useState } from 'react';
@@ -44,6 +46,17 @@ function sumSince(rows: UsageStatRow[], event: string, sinceDay: string): number
 }
 
 export function UsageStatsPanel({ isOpen, onClose }: UsageStatsPanelProps) {
+  const { t } = useTranslation();
+  return (
+    <Modal isOpen={isOpen} onClose={onClose} title={t('teacher.stats.title')} size="lg">
+      {isOpen && <UsageStatsContent />}
+    </Modal>
+  );
+}
+
+/** De statistieken zelf (haalt op zodra ze getoond worden). */
+export function UsageStatsContent() {
+  const isOpen = true;
   const { t } = useTranslation();
   const [rows, setRows] = useState<UsageStatRow[] | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -94,7 +107,7 @@ export function UsageStatsPanel({ isOpen, onClose }: UsageStatsPanelProps) {
   const chartMax = Math.max(1, ...chart.map((d) => d.count));
 
   return (
-    <Modal isOpen={isOpen} onClose={onClose} title={t('teacher.stats.title')} size="lg">
+    <>
       <p className="text-sm text-text-muted mb-5">{t('teacher.stats.subtitle')}</p>
 
       {error && (
@@ -162,7 +175,7 @@ export function UsageStatsPanel({ isOpen, onClose }: UsageStatsPanelProps) {
           <p className="text-xs text-text-muted mt-5">{t('teacher.stats.privacyNote')}</p>
         </>
       )}
-    </Modal>
+    </>
   );
 }
 

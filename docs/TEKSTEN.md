@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1948 teksten in 53 secties._
+_Stand: 2144 teksten in 54 secties._
 
 ## app
 
@@ -1502,6 +1502,7 @@ _Stand: 1948 teksten in 53 secties._
 | `teacher.dashboard.setupLessons.step2.description` | Eén klik en de opdracht staat klaar; je ziet meteen de klascode voor op het bord. | One click and the assignment is ready; you immediately get the class code for the board. |
 | `teacher.dashboard.setupLessons.step3.title` | Presenteer en geef feedback | Present and give feedback |
 | `teacher.dashboard.setupLessons.step3.description` | Volg de inzendingen in het klaslokaal, presenteer op het digibord en geef feedback. | Follow submissions in the classroom, present on the whiteboard and give feedback. |
+| `teacher.dashboard.adminLink` | Beheer | Admin |
 | `teacher.classCodeMeaning` | Leerlingen typen deze code in om mee te doen. | Students type this code to join. |
 | `teacher.classDetail.back` | Terug naar overzicht | Back to overview |
 | `teacher.classDetail.dashboardCrumb` | Dashboard | Dashboard |
@@ -2232,3 +2233,203 @@ _Stand: 1948 teksten in 53 secties._
 | `pwa.updateAvailable` | Er is een nieuwe versie van SoundScout. | A new version of SoundScout is ready. |
 | `pwa.updateNow` | Vernieuwen | Refresh |
 | `pwa.later` | Later | Later |
+
+## admin
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `admin.title` | Beheer | Admin |
+| `admin.brand` | SoundScout · Beheer | SoundScout · Admin |
+| `admin.loading` | Laden… | Loading… |
+| `admin.nav.label` | Beheer-onderdelen | Admin sections |
+| `admin.nav.themes` | Thema's | Themes |
+| `admin.nav.editor` | Editor | Editor |
+| `admin.nav.import` | Importeren | Import |
+| `admin.nav.stats` | Statistieken | Statistics |
+| `admin.noAccess.title` | Geen toegang | No access |
+| `admin.noAccess.body` | Dit deel van SoundScout is alleen voor beheerders. Je bent ingelogd als {{email}}. | This part of SoundScout is for administrators only. You are signed in as {{email}}. |
+| `admin.noAccess.back` | Naar het docentendashboard | To the teacher dashboard |
+| `admin.login.title` | Inloggen voor beheer | Sign in to admin |
+| `admin.login.body` | Log in met je docentaccount. Alleen beheerders komen verder. | Sign in with your teacher account. Only administrators can continue. |
+| `admin.backendMissing` | De beheer-database is nog niet ingericht (migratie 043). Je kunt thema's bekijken, bewerken en importeren, maar alleen in dit venster; download je werk als themapakket. | The admin database has not been set up yet (migration 043). You can view, edit and import themes, but only in this window; download your work as a theme pack. |
+| `admin.fallbackNote` | Toegang via de e-maillijst (VITE_ADMIN_EMAILS) omdat migratie 043 nog niet gedraaid is. | Access through the e-mail list (VITE_ADMIN_EMAILS) because migration 043 has not been run yet. |
+| `admin.status.draft` | Concept | Draft |
+| `admin.status.published` | Gepubliceerd | Published |
+| `admin.status.hidden` | Verborgen | Hidden |
+| `admin.status.static` | Ingebouwd | Built in |
+| `admin.themes.title` | Thema's | Themes |
+| `admin.themes.subtitle` | Volgorde = volgorde in de themakiezer van leerlingen. | Order = order in the students' theme picker. |
+| `admin.themes.empty` | Nog geen thema's. | No themes yet. |
+| `admin.themes.summary` | {{season}} · {{locations}} plekken · {{sounds}} geluiden | {{season}} · {{locations}} places · {{sounds}} sounds |
+| `admin.themes.yearRound` | Hele jaar | All year |
+| `admin.themes.season` | {{from}} – {{until}} | {{from}} – {{until}} |
+| `admin.themes.version` | v{{n}} | v{{n}} |
+| `admin.themes.errors` | {{count}} fouten | {{count}} errors |
+| `admin.themes.warnings` | {{count}} waarschuwingen | {{count}} warnings |
+| `admin.themes.moveUp` | {{name}} omhoog | Move {{name}} up |
+| `admin.themes.moveDown` | {{name}} omlaag | Move {{name}} down |
+| `admin.themes.visible` | In de leerlingkiezers | In the student pickers |
+| `admin.themes.visibleHelp` | Uit = alleen via link, opdracht of bewaarcode. | Off = only through a link, assignment or save code. |
+| `admin.themes.hide` | Verbergen | Hide |
+| `admin.themes.unhide` | Weer tonen | Show again |
+| `admin.themes.openEditor` | Open in editor | Open in editor |
+| `admin.themes.preview` | Bekijk als leerling | View as student |
+| `admin.themes.publish` | Publiceren | Publish |
+| `admin.themes.publishBlocked` | Los eerst {{count}} punten op | Fix {{count}} issues first |
+| `admin.themes.noDraft` | Geen nieuw concept om te publiceren | No new draft to publish |
+| `admin.themes.rollback` | Vorige versie | Previous version |
+| `admin.themes.rollbackTo` | Terug naar v{{n}} | Back to v{{n}} |
+| `admin.themes.staticNote` | Ingebouwd in de app (public/themes). Open het in de editor en bewaar een concept om het hier te beheren. | Built into the app (public/themes). Open it in the editor and save a draft to manage it here. |
+| `admin.themes.versions` | Versies | Versions |
+| `admin.themes.versionLive` | live | live |
+| `admin.themes.versionDraft` | concept | draft |
+| `admin.themes.versionOld` | eerder gepubliceerd | published earlier |
+| `admin.themes.seasonFrom` | Zichtbaar van (MM-DD) | Visible from (MM-DD) |
+| `admin.themes.seasonUntil` | tot en met (MM-DD) | until (MM-DD) |
+| `admin.themes.seasonSave` | Seizoen bewaren | Save season |
+| `admin.themes.seasonClear` | Hele jaar | All year |
+| `admin.themes.seasonInvalid` | Vul beide datums in als MM-DD, of laat ze allebei leeg. | Enter both dates as MM-DD, or leave both empty. |
+| `admin.themes.checks` | Automatische controles | Automatic checks |
+| `admin.themes.allGood` | Alles in orde | All good |
+| `admin.themes.refresh` | Vernieuwen | Refresh |
+| `admin.themes.loadError` | Thema's niet geladen: {{message}} | Themes not loaded: {{message}} |
+| `admin.themes.import` | Themapakket importeren | Import theme pack |
+| `admin.confirm.publishTitle` | Publiceren? | Publish? |
+| `admin.confirm.publishBody` | Versie {{version}} van {{name}} gaat live voor alle leerlingen. Een gepubliceerde versie verandert nooit meer; een correctie wordt een nieuwe versie. | Version {{version}} of {{name}} goes live for all students. A published version never changes again; a correction becomes a new version. |
+| `admin.confirm.publish` | Publiceren | Publish |
+| `admin.confirm.rollbackTitle` | Terug naar een vorige versie? | Go back to a previous version? |
+| `admin.confirm.rollbackBody` | {{name}} gaat terug naar versie {{version}}. De nieuwere versie blijft bewaard. | {{name}} goes back to version {{version}}. The newer version is kept. |
+| `admin.confirm.rollback` | Terugzetten | Roll back |
+| `admin.confirm.cancel` | Annuleren | Cancel |
+| `admin.errors.rateLimit` | Even wachten: te veel publicaties in korte tijd. | Please wait: too many publications in a short time. |
+| `admin.errors.forbidden` | Geweigerd door de database: je account is geen beheerder. | Refused by the database: your account is not an administrator. |
+| `admin.errors.invalid` | De database weigert deze versie: {{message}} | The database refuses this version: {{message}} |
+| `admin.errors.generic` | Er ging iets mis: {{message}} | Something went wrong: {{message}} |
+| `admin.editor.title` | Editor · {{name}} | Editor · {{name}} |
+| `admin.editor.chooseTheme` | Kies eerst een thema bij Thema's, of importeer een themapakket. | First choose a theme under Themes, or import a theme pack. |
+| `admin.editor.draftNote` | Concept — wijzigingen staan pas live na publiceren. | Draft — changes go live only after publishing. |
+| `admin.editor.tabs.label` | Onderdelen van de editor | Editor sections |
+| `admin.editor.tabs.hotspots` | Hotspots & geluiden | Hotspots & sounds |
+| `admin.editor.tabs.map` | Kaart | Map |
+| `admin.editor.tabs.images` | Beelden | Images |
+| `admin.editor.tabs.texts` | Teksten | Texts |
+| `admin.editor.locations` | Locaties | Locations |
+| `admin.editor.save` | Concept bewaren | Save draft |
+| `admin.editor.saving` | Bewaren… | Saving… |
+| `admin.editor.saved` | Concept bewaard als v{{version}} | Draft saved as v{{version}} |
+| `admin.editor.download` | Download als themapakket | Download as theme pack |
+| `admin.editor.downloading` | Pakket maken… | Building pack… |
+| `admin.editor.localOnly` | Niet verbonden met de beheer-database: dit concept staat alleen in dit venster. Download het als themapakket om het te bewaren. | Not connected to the admin database: this draft exists only in this window. Download it as a theme pack to keep it. |
+| `admin.editor.unsaved` | Niet bewaarde wijzigingen | Unsaved changes |
+| `admin.editor.publish` | Publiceren | Publish |
+| `admin.editor.publishNeedsSave` | Bewaar eerst het concept | Save the draft first |
+| `admin.editor.publishBlocked` | Los eerst {{count}} punten op | Fix {{count}} issues first |
+| `admin.editor.published` | Versie {{version}} is gepubliceerd | Version {{version}} is published |
+| `admin.editor.preview` | Bekijk als leerling | View as student |
+| `admin.editor.previewNeedsSave` | Bewaar eerst het concept: nieuwe bestanden staan nog alleen op deze computer. | Save the draft first: new files are still only on this computer. |
+| `admin.editor.safeZoneHint` | Sleep een hotspot, of kies hem en gebruik de pijltjestoetsen. Rood = buiten de veilige zone (daar staan knoppen) of te dicht bij een andere. | Drag a hotspot, or select it and use the arrow keys. Red = outside the safe zone (buttons sit there) or too close to another. |
+| `admin.editor.hotspotLabel` | Hotspot {{name}}, x {{x}} %, y {{y}} % | Hotspot {{name}}, x {{x}} %, y {{y}} % |
+| `admin.editor.sounds` | Geluiden op deze plek | Sounds at this place |
+| `admin.editor.addSound` | Geluid toevoegen | Add sound |
+| `admin.editor.listen` | Luister naar {{name}} | Listen to {{name}} |
+| `admin.editor.removeHotspot` | Hotspot verwijderen | Remove hotspot |
+| `admin.editor.removeSound` | Geluid verwijderen | Remove sound |
+| `admin.editor.addHotspot` | Extra hotspot voor dit geluid | Extra hotspot for this sound |
+| `admin.editor.selectHint` | Kies een hotspot om het geluid aan te passen. | Select a hotspot to edit its sound. |
+| `admin.editor.kind` | Soort | Type |
+| `admin.editor.icon` | Icoon | Icon |
+| `admin.editor.color` | Kleur | Colour |
+| `admin.editor.position` | x {{x}} % · y {{y}} % | x {{x}} % · y {{y}} % |
+| `admin.editor.mapHint` | Sleep een locatie naar de juiste plek op de plattegrond. | Drag a location to the right spot on the map. |
+| `admin.editor.markerLabel` | Locatie {{name}} op de kaart, x {{x}} %, y {{y}} % | Location {{name}} on the map, x {{x}} %, y {{y}} % |
+| `admin.editor.issuesTitle` | Controles ({{errors}} fouten, {{warnings}} waarschuwingen) | Checks ({{errors}} errors, {{warnings}} warnings) |
+| `admin.editor.noIssues` | Geen fouten of waarschuwingen. | No errors or warnings. |
+| `admin.editor.credit` | Bron en licentie | Source and licence |
+| `admin.editor.creditRequired` | Verplicht voor nieuwe bestanden, voordat je kunt publiceren. | Required for new files before you can publish. |
+| `admin.soundForm.title` | Nieuw geluid | New sound |
+| `admin.soundForm.duration` | Gemeten duur: {{seconds}} s | Measured length: {{seconds}} s |
+| `admin.soundForm.kind` | Soort | Type |
+| `admin.soundForm.kindSfx` | Geluidseffect (2–8 s) | Sound effect (2–8 s) |
+| `admin.soundForm.kindLoop` | Muziekloop (exact 8,0 s) | Music loop (exactly 8.0 s) |
+| `admin.soundForm.nameNl` | Naam (NL) | Name (NL) |
+| `admin.soundForm.nameEn` | Naam (EN) | Name (EN) |
+| `admin.soundForm.icon` | Icoon (Lucide-naam, bv. Bird) | Icon (Lucide name, e.g. Bird) |
+| `admin.soundForm.color` | Kleur | Colour |
+| `admin.soundForm.source` | Bron (bv. freesound, eigen opname, gegenereerd) | Source (e.g. freesound, own recording, generated) |
+| `admin.soundForm.author` | Maker | Author |
+| `admin.soundForm.licence` | Licentie (bv. CC0, CC BY 4.0) | Licence (e.g. CC0, CC BY 4.0) |
+| `admin.soundForm.licenceUrl` | URL van bron of licentie | URL of source or licence |
+| `admin.soundForm.prompt` | Prompt of job-id (als gegenereerd) | Prompt or job id (if generated) |
+| `admin.soundForm.add` | Toevoegen | Add |
+| `admin.soundForm.cancel` | Annuleren | Cancel |
+| `admin.soundForm.undecodable` | Dit bestand kan niet als geluid worden gelezen. | This file cannot be read as a sound. |
+| `admin.soundForm.tooLarge` | Dit bestand is groter dan 5 MB. | This file is larger than 5 MB. |
+| `admin.soundForm.notAudio` | Kies een geluidsbestand (mp3, m4a, ogg of wav). | Choose a sound file (mp3, m4a, ogg or wav). |
+| `admin.images.mapImage` | Plattegrond ({{lang}}) | Map ({{lang}}) |
+| `admin.images.sizeOk` | Exact 1920×1080 | Exactly 1920×1080 |
+| `admin.images.sizeBad` | {{width}}×{{height}} — moet 1920×1080 zijn | {{width}}×{{height}} — must be 1920×1080 |
+| `admin.images.sizeUnknown` | Maat nog onbekend | Size not known yet |
+| `admin.images.replace` | Beeld vervangen | Replace image |
+| `admin.images.newFile` | Nieuw bestand (nog niet bewaard) | New file (not saved yet) |
+| `admin.images.notImage` | Kies een beeld (jpg, png, webp of avif). | Choose an image (jpg, png, webp or avif). |
+| `admin.images.noReencode` | Het dashboard meldt de maat, het snijdt of comprimeert niets. | The dashboard reports the size; it never crops or compresses. |
+| `admin.texts.intro` | Nederlands is verplicht; een ontbrekende vertaling valt terug op het Nederlands. | Dutch is required; a missing translation falls back to Dutch. |
+| `admin.texts.field` | Tekst | Text |
+| `admin.texts.missing` | ontbreekt | missing |
+| `admin.texts.themeName` | Themanaam | Theme name |
+| `admin.texts.themeDescription` | Themabeschrijving | Theme description |
+| `admin.texts.locationName` | {{name}} — naam | {{name}} — name |
+| `admin.texts.locationDescription` | {{name}} — beschrijving | {{name}} — description |
+| `admin.texts.sampleName` | Geluid {{id}} | Sound {{id}} |
+| `admin.import.title` | Themapakket importeren | Import theme pack |
+| `admin.import.body` | Een .sspack (zip) of een map met manifest.json, de beelden en geluiden en credits.json. Het dashboard controleert alles zelf opnieuw; het rapport uit het pakket wordt alleen getoond. | A .sspack (zip) or a folder with manifest.json, the images and sounds, and credits.json. The dashboard re-runs every check itself; the pack's own report is only displayed. |
+| `admin.import.chooseZip` | Kies een .sspack of .zip | Choose a .sspack or .zip |
+| `admin.import.chooseFolder` | Kies een map | Choose a folder |
+| `admin.import.reading` | Pakket controleren… | Checking pack… |
+| `admin.import.reportTitle` | Controlerapport | Check report |
+| `admin.import.packReport` | Rapport uit het pakket (alleen ter info) | Report from the pack (for information only) |
+| `admin.import.createDraft` | Maak concept | Create draft |
+| `admin.import.createDraftWithErrors` | Maak toch een concept (fouten oplossen in de editor) | Create a draft anyway (fix errors in the editor) |
+| `admin.import.created` | Concept {{id}} aangemaakt | Draft {{id}} created |
+| `admin.import.summary` | {{files}} bestanden · {{errors}} fouten · {{warnings}} waarschuwingen | {{files}} files · {{errors}} errors · {{warnings}} warnings |
+| `admin.import.ok` | Geen fouten | No errors |
+| `admin.import.unreadable` | Geen geldig pakket: {{message}} | Not a valid pack: {{message}} |
+| `admin.import.exists` | Thema {{id}} bestaat al; het pakket wordt een nieuwe conceptversie. | Theme {{id}} already exists; the pack becomes a new draft version. |
+| `admin.preview.banner` | Voorbeeld van een concept — alleen in dit tabblad | Preview of a draft — this tab only |
+| `admin.preview.stop` | Voorbeeld stoppen | Stop preview |
+| `admin.preview.back` | Terug naar beheer | Back to admin |
+| `admin.editorBanner.text` | Deze editor is vervangen door het beheerdashboard. Dit oude gereedschap blijft voorlopig werken. | This editor has been replaced by the admin dashboard. This old tool keeps working for now. |
+| `admin.editorBanner.link` | Naar /beheer | To /beheer |
+| `admin.rules.duplicate-id` | Dubbele id | Duplicate id |
+| `admin.rules.hotspot-unknown-sample` | Hotspot zonder bestaand geluid | Hotspot without an existing sound |
+| `admin.rules.hotspot-location-mismatch` | Hotspot op een andere plek dan zijn geluid | Hotspot in a different place than its sound |
+| `admin.rules.map-unknown-location` | Kaartpositie voor onbekende locatie | Map position for an unknown location |
+| `admin.rules.location-without-position` | Locatie staat niet op de kaart | Location is not on the map |
+| `admin.rules.missing-nl-text` | Nederlandse tekst ontbreekt | Dutch text missing |
+| `admin.rules.missing-translation` | Vertaling ontbreekt | Translation missing |
+| `admin.rules.hotspot-safe-zone` | Hotspot buiten de veilige zone | Hotspot outside the safe zone |
+| `admin.rules.hotspot-spacing` | Hotspots te dicht bij elkaar | Hotspots too close together |
+| `admin.rules.marker-spacing` | Kaartmarkers te dicht bij elkaar | Map markers too close together |
+| `admin.rules.sample-duration` | Verkeerde geluidsduur | Wrong sound length |
+| `admin.rules.sample-without-hotspot` | Geluid zonder hotspot | Sound without a hotspot |
+| `admin.rules.sample-multiple-hotspots` | Geluid met meerdere hotspots | Sound with several hotspots |
+| `admin.rules.pack-no-manifest` | Geen manifest.json in het pakket | No manifest.json in the pack |
+| `admin.rules.pack-bad-json` | Bestand is geen geldige JSON | File is not valid JSON |
+| `admin.rules.pack-schema` | Manifest voldoet niet aan het schema | Manifest does not match the schema |
+| `admin.rules.pack-asset-base` | assetBase hoort niet in een pakket | assetBase does not belong in a pack |
+| `admin.rules.pack-external-file` | Bestand buiten het pakket (niet te controleren) | File outside the pack (cannot be checked) |
+| `admin.rules.pack-missing-file` | Bestand ontbreekt | File missing |
+| `admin.rules.pack-format` | Verkeerd bestandsformaat | Wrong file format |
+| `admin.rules.pack-extension` | Extensie past niet bij de inhoud | Extension does not match the content |
+| `admin.rules.pack-unused-file` | Geluid in het pakket dat niet gebruikt wordt | Sound in the pack that is not used |
+| `admin.rules.file-too-large` | Bestand groter dan 5 MB | File larger than 5 MB |
+| `admin.rules.file-large` | Groot bestand | Large file |
+| `admin.rules.image-size` | Beeld niet exact 1920×1080 | Image not exactly 1920×1080 |
+| `admin.rules.image-size-unknown` | Beeldmaat niet te meten | Image size cannot be measured |
+| `admin.rules.audio-undecodable` | Geluid niet te decoderen | Sound cannot be decoded |
+| `admin.rules.audio-duration-mismatch` | Opgegeven duur klopt niet (gemeten duur gebruikt) | Declared length is wrong (measured length used) |
+| `admin.rules.credit-missing` | Bron of licentie ontbreekt | Source or licence missing |
+| `admin.rules.credit-licence` | Licentie niet toegestaan (NC/ND) | Licence not allowed (NC/ND) |
+| `admin.rules.credit-attribution` | CC BY vraagt maker en URL | CC BY needs author and URL |
+| `admin.severity.error` | fout | error |
+| `admin.severity.warning` | waarschuwing | warning |

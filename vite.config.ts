@@ -10,7 +10,9 @@ import {
   PRECACHE_ID,
   PRECACHE_IGNORE_PARAMS,
   THEME_DATA_CACHE,
+  THEME_MEDIA_CACHE,
   isAppImage,
+  isThemeBucketMedia,
   isThemeAudio,
   isThemeData,
 } from './src/pwa/swRouting'
@@ -66,8 +68,10 @@ const pwa = VitePWA({
     navigateFallbackDenylist: NAVIGATE_FALLBACK_DENYLIST,
 
     // --- Runtime: thema-media, pas bewaard als ze gebruikt worden ---
-    // Alleen GET en alleen de eigen origin. Supabase, EmailJS en YouTube
-    // hebben geen regel en gaan dus ongemoeid langs de service worker.
+    // Alleen GET. Eigen origin, plus ÉÉN uitzondering: de publieke thema-bucket
+    // van Supabase Storage (isThemeBucketMedia). De rest van Supabase (REST,
+    // RPC, Auth, andere buckets), EmailJS en YouTube heeft geen regel en gaat
+    // dus ongemoeid langs de service worker.
     runtimeCaching: [
       {
         // Thema-index en -manifesten (V2 Fase 3, docs/v2/THEMES.md): eerst het
@@ -93,6 +97,19 @@ const pwa = VitePWA({
           cacheableResponse: { statuses: [200] },
           rangeRequests: true,
           expiration: { maxEntries: 400, maxAgeSeconds: 60 * DAY, purgeOnQuotaError: true },
+        },
+      },
+      {
+        // Media van in /beheer gepubliceerde thema's (Supabase Storage,
+        // .../object/public/themes/<id>/v<n>/...): elk versiepad is
+        // onveranderlijk, dus cache-first, net als de eigen thema-media.
+        urlPattern: isThemeBucketMedia,
+        handler: 'CacheFirst',
+        options: {
+          cacheName: THEME_MEDIA_CACHE,
+          cacheableResponse: { statuses: [200] },
+          rangeRequests: true,
+          expiration: { maxEntries: 500, maxAgeSeconds: 60 * DAY, purgeOnQuotaError: true },
         },
       },
       {

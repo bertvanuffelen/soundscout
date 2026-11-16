@@ -3,6 +3,7 @@
  *
  *  root
  *  ├─ /teacher, /teacher.html, /over, /over.html   losse pagina's (eigen HTML + SEO-meta)
+ *  ├─ /beheer                                      beheerdersdashboard (eigen chunk, eigen login-poort)
  *  ├─ /editor, /sequencer, /v2-mockup              alleen in ontwikkeling
  *  └─ app-layout (AppShell: thema, auth, werk-in-uitvoering)
  *       ├─ /  /nieuw  /kaart  /locatie/$locationId  /studio  /podium …
@@ -161,6 +162,22 @@ function About() {
     </Suspense>
   );
 }
+
+// --- Beheer (V2 Fase 3): eigen lazy chunk, buiten de app-layout, ook in productie ---
+
+const AdminPage = lazy(() => import('../pages/admin/AdminPage'));
+
+const adminRoute = createRoute({
+  getParentRoute: () => rootRoute,
+  path: '/beheer',
+  component: () => (
+    <FeatureErrorBoundary featureName="Admin">
+      <Suspense fallback={<LoadingFallback />}>
+        <AdminPage />
+      </Suspense>
+    </FeatureErrorBoundary>
+  ),
+});
 
 const teacherLandingRoute = createRoute({ getParentRoute: () => rootRoute, path: '/teacher', component: TeacherLanding });
 const teacherLandingHtmlRoute = createRoute({ getParentRoute: () => rootRoute, path: '/teacher.html', component: TeacherLanding });
@@ -388,6 +405,7 @@ export const routeTree = rootRoute.addChildren([
   teacherLandingHtmlRoute,
   aboutRoute,
   aboutHtmlRoute,
+  adminRoute,
   ...devRoutes,
   appRoute.addChildren([
     startRoute,

@@ -54,3 +54,26 @@ export const ERR_AUTH_RATE_LIMIT = 'rate limit';
 export function matchesError(error: { message: string }, pattern: string): boolean {
   return error.message.includes(pattern);
 }
+
+// --- Ontbrekende database-objecten (migratie nog niet gedraaid) ---
+
+/** PostgreSQL: tabel/view bestaat niet */
+export const ERR_PG_UNDEFINED_TABLE = '42P01';
+/** PostgreSQL: functie bestaat niet */
+export const ERR_PG_UNDEFINED_FUNCTION = '42883';
+/** PostgREST: tabel/view niet in de schema-cache */
+export const ERR_PGRST_TABLE_NOT_FOUND = 'PGRST205';
+/** PostgREST: functie niet in de schema-cache */
+export const ERR_PGRST_FUNCTION_NOT_FOUND = 'PGRST202';
+
+/**
+ * Wijst de fout erop dat een tabel, view of functie (nog) niet bestaat? Dan is
+ * een migratie nog niet toegepast en valt de app terug op wat er al was.
+ */
+export function isMissingDatabaseObject(error: { code?: string | null; message?: string | null } | null | undefined): boolean {
+  if (!error) return false;
+  const code = error.code ?? '';
+  if ([ERR_PG_UNDEFINED_TABLE, ERR_PG_UNDEFINED_FUNCTION, ERR_PGRST_TABLE_NOT_FOUND, ERR_PGRST_FUNCTION_NOT_FOUND].includes(code)) return true;
+  const message = error.message ?? '';
+  return /does not exist|Could not find the (table|function)|schema cache/i.test(message);
+}

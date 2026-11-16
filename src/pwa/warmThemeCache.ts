@@ -17,6 +17,7 @@
  * worker er is; zonder opwarmen zou de app offline de themalijst missen.
  */
 import type { ThemeConfig } from '../data/themes';
+import { isThemeBucketMedia } from './swRouting';
 
 const CONCURRENCY = 2;
 const START_DELAY_MS = 4000;
@@ -26,14 +27,28 @@ export function themeDataUrls(themeId: string): string[] {
   return ['/themes/index.json', `/themes/${themeId}/manifest.json`];
 }
 
-/** Alle media-adressen van één thema (eigen site), zonder dubbelen. */
+/** Een adres in de publieke thema-bucket van Supabase (beheerdashboard, migratie 043)? */
+function isBucketUrl(value: string): boolean {
+  try {
+    const url = new URL(value);
+    return /^https?:$/.test(url.protocol) && isThemeBucketMedia({ url, sameOrigin: false });
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Alle media-adressen van één thema, zonder dubbelen: van de eigen site, of
+ * uit de thema-bucket van Supabase Storage (ook door de service worker bewaard).
+ */
 export function themeAssetUrls(theme: Pick<ThemeConfig, 'map' | 'locations' | 'samples'>): string[] {
   const urls = [
     theme.map?.backgroundImage,
     ...theme.locations.flatMap((l) => [l.backgroundImage, l.ambientAudio]),
     ...theme.samples.map((s) => s.audioUrl),
   ];
-  return [...new Set(urls.filter((u): u is string => typeof u === 'string' && u.startsWith('/') && !u.startsWith('//')))];
+  return [...new Set(urls.filter((u): u is string =>
+    typeof u === 'string' && ((u.startsWith('/') && !u.startsWith('//')) || isBucketUrl(u))))];
 }
 
 /**

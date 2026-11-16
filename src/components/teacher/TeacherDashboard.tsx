@@ -11,7 +11,7 @@
 
 import { useState, useCallback, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Loader2, BookOpen, Plus, LogOut, FileText, ClipboardList, GraduationCap, HelpCircle, BarChart3 } from 'lucide-react';
+import { Loader2, BookOpen, Plus, LogOut, FileText, ClipboardList, GraduationCap, HelpCircle, BarChart3, ShieldCheck } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useAuth } from '../../contexts/useAuth';
 import { useClasses } from '../../hooks/useClasses';
@@ -30,7 +30,7 @@ import { AssignmentCardEditorModal } from './AssignmentCardEditorModal';
 import { LessonCardEditorModal } from './LessonCardEditorModal';
 import { LessonCardsTab } from './LessonCardsTab';
 import { createLessonCard, type LessonCardInput } from '../../lib/lessonCards';
-import { isAdminEmail } from '../../lib/usageStatsAdmin';
+import { useIsAdmin } from '../../hooks/useIsAdmin';
 import { UsageStatsPanel } from './UsageStatsPanel';
 import type { TeacherTemplate } from '../../lib/templates';
 import { SectionTitle, HowItWorksSteps, TeacherPageHeader, SegmentedTabs, GuideLink } from './common';
@@ -44,6 +44,8 @@ interface TeacherDashboardProps {
 export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDashboardProps) {
   const { t } = useTranslation();
   const { user } = useAuth();
+  // Beheerder? Database (admins, migratie 043), terugval VITE_ADMIN_EMAILS — alleen voor de knoppen
+  const { isAdmin } = useIsAdmin();
   const goToTeacherGuide = useAppStore((s) => s.goToTeacherGuide);
   const { classes, loading, error, createClass, deleteClass, refetch } = useClasses();
   const {
@@ -56,7 +58,7 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
   } = useAssignmentCards();
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showTemplateInfo, setShowTemplateInfo] = useState(false);
-  // Statistieken-dashboardje — alleen voor beheerders (VITE_ADMIN_EMAILS)
+  // Statistieken-dashboardje — alleen voor beheerders (useIsAdmin). Staat ook in /beheer.
   const [showStats, setShowStats] = useState(false);
   const [actionError, setActionError] = useState<string | null>(null);
   const [deleteClassId, setDeleteClassId] = useState<string | null>(null);
@@ -155,14 +157,23 @@ export function TeacherDashboard({ onSelectClass, onLogout, onBack }: TeacherDas
         backLabel={t('teacher.common.backToSoundScout')}
         actions={
           <>
-            {isAdminEmail(user?.email) && (
-              <button
-                onClick={() => setShowStats(true)}
-                className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
-              >
-                <BarChart3 className="w-4 h-4" />
-                {t('teacher.stats.title')}
-              </button>
+            {isAdmin && (
+              <>
+                <a
+                  href="/beheer"
+                  className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  {t('teacher.dashboard.adminLink')}
+                </a>
+                <button
+                  onClick={() => setShowStats(true)}
+                  className="text-brand-300 hover:text-white text-sm inline-flex items-center gap-1 transition-colors"
+                >
+                  <BarChart3 className="w-4 h-4" />
+                  {t('teacher.stats.title')}
+                </button>
+              </>
             )}
             <button
               onClick={() => goToTeacherGuide()}

@@ -9,9 +9,13 @@
  *
  * - /__hits                → { hits } : hoeveel verzoeken er echt aankwamen
  * - .../rpc/get_active_assignment → één vaste klas met een vrije opdracht
+ * - .../storage/v1/object/public/themes/… → een PNG (thema-bucket, migratie 043)
  * - al het andere          → []
  */
 import { createServer } from 'node:http';
+import { makePng } from '../fixtures/make-theme-pack.mjs';
+
+const PNG = makePng(1920, 1080);
 
 const port = Number(process.argv[2] ?? 5182);
 let hits = 0;
@@ -34,6 +38,11 @@ createServer((req, res) => {
   res.setHeader('Content-Type', 'application/json');
   if (req.url === '/__hits') { res.end(JSON.stringify({ hits })); return; }
   hits += 1;
+  if (req.url?.includes('/storage/v1/object/public/themes/')) {
+    res.setHeader('Content-Type', 'image/png');
+    res.end(PNG);
+    return;
+  }
   req.resume();
   req.on('end', () => {
     res.end(JSON.stringify(req.url?.includes('/rpc/get_active_assignment') ? ASSIGNMENT : []));

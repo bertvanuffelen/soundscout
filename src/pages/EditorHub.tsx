@@ -7,13 +7,15 @@
  */
 
 import { useState } from 'react';
-import { Wand2, MapPin } from 'lucide-react';
+import { Wand2, MapPin, ShieldCheck } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import { ThemeWizard } from './ThemeWizard';
 import { LocationEditor } from './LocationEditor';
 
 type EditorTab = 'wizard' | 'locations';
 
 export function EditorHub() {
+  const { t } = useTranslation();
   // Deep-link: /editor?location=x opent direct de locatie-editor (bestaand gedrag)
   const [tab, setTab] = useState<EditorTab>(() =>
     new URLSearchParams(window.location.search).has('location') ? 'locations' : 'wizard'
@@ -41,6 +43,13 @@ export function EditorHub() {
             <MapPin size={14} /> Locatie-editor
           </button>
         </nav>
+      </div>
+      {/* Vervangen door /beheer (ontwerpcorrectie G); dit oude gereedschap blijft voorlopig */}
+      <div role="note" className="bg-accent-50 border-b border-accent-100 px-4 py-2 flex flex-wrap items-center gap-3 text-sm text-text-main">
+        <span>{t('admin.editorBanner.text')}</span>
+        <a href="/beheer" className="inline-flex items-center gap-1.5 min-h-11 px-3 rounded-full bg-brand-900 text-white font-bold">
+          <ShieldCheck size={14} aria-hidden /> {t('admin.editorBanner.link')}
+        </a>
       </div>
       {tab === 'wizard' ? <ThemeWizard /> : <LocationEditor />}
     </div>

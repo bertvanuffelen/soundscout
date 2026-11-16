@@ -11,7 +11,7 @@
  *    zodat `t('themes.basis.name')`, `t(sample.name)` enz. exact blijven werken.
  *
  * Bron van de data: één `ThemeRepository` (repository.ts). Vandaag statische
- * bestanden; een Supabase-versie wordt later met `setThemeRepository` ingeplugd.
+ * bestanden, samengevoegd met Supabase (migratie 043) via `install.ts`.
  */
 
 import { create } from 'zustand';
@@ -84,7 +84,12 @@ function registerManifest(loaded: LoadedManifest): ThemeConfig {
 
 // --- Bron ---
 
-let repository: ThemeRepository = createStaticThemeRepository({ indexUrl: THEME_INDEX_URL, bundled: [bundledBasis] });
+/** De statische bron: /themes/index.json + manifesten, basis uit de bundel. */
+export function createDefaultStaticRepository(): ThemeRepository {
+  return createStaticThemeRepository({ indexUrl: THEME_INDEX_URL, bundled: [bundledBasis] });
+}
+
+let repository: ThemeRepository = createDefaultStaticRepository();
 const inflight = new Map<string, Promise<ThemeConfig | undefined>>();
 
 /** Vervang de bron (tests; later de Supabase-implementatie). Wist geladen thema's behalve basis. */

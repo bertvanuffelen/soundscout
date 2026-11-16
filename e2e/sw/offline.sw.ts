@@ -11,6 +11,8 @@
  *  (d) een Supabase-verzoek wordt nooit bewaard en mislukt zonder verbinding;
  *  (e) oude links (?theme=…) blijven werken, ook zonder verbinding;
  *  (h) het actieve thema (manifest, V2 Fase 3) laadt na één bezoek ook offline;
+ *  (i) media uit de thema-bucket van Supabase Storage (migratie 043) worden wél
+ *      bewaard, de rest van Supabase nog steeds niet;
  *  (f) een nieuwe versie wacht: ze neemt een open pagina niet vanzelf over;
  *  (g) de noodrem (docs/v2/sw-kill-switch.js) ruimt service worker en caches op.
  *
@@ -25,6 +27,7 @@ const BACKEND = 'http://127.0.0.1:5182';
 const AUDIO_CACHE = 'soundscout-audio-v1';
 const IMAGE_CACHE = 'soundscout-images-v1';
 const THEME_DATA_CACHE = 'soundscout-themes-v1';
+const THEME_MEDIA_CACHE = 'soundscout-theme-media-v1';
 /** De sw.js van de testbuild (zie OUT_DIR in playwright.sw.config.ts). */
 const SW_FILE = 'node_modules/.cache/sw-e2e-dist/sw.js';
 
@@ -339,6 +342,38 @@ test('(h) het actieve thema laadt na één bezoek ook offline uit zijn manifest'
   await page.getByRole('button', { name: /Winterspelen/ }).click();
   await expect(page.locator('img[src="/images/themes/winterspelen/plattegrond.jpg"]')).toBeVisible();
   await expect(page.getByTitle('IJsarena', { exact: true }).first()).toBeVisible();
+});
+
+test('(i) thema-bucket van Supabase wordt bewaard (cache-first), REST nog steeds nooit', async ({ page, context }) => {
+  await prepare(page);
+  await page.goto('/');
+  await waitForController(page);
+
+  const bucketUrl = `${BACKEND}/__e2e-supabase/storage/v1/object/public/themes/kerst/v2/images/plein.png`;
+  const restUrl = `${BACKEND}/__e2e-supabase/rest/v1/published_themes?select=*`;
+  const before = await backendHits(page);
+  for (let i = 0; i < 2; i++) {
+    const ok = await page.evaluate(async (url) => (await fetch(url, { cache: 'no-store' })).ok, bucketUrl);
+    expect(ok).toBe(true);
+  }
+  expect(await backendHits(page), 'het tweede verzoek kwam uit de cache van de service worker').toBe(before + 1);
+  expect(await cachedPaths(page, THEME_MEDIA_CACHE)).toEqual(['/__e2e-supabase/storage/v1/object/public/themes/kerst/v2/images/plein.png']);
+
+  // REST op dezelfde backend: elke keer echt naar de server, nergens bewaard
+  const beforeRest = await backendHits(page);
+  for (let i = 0; i < 2; i++) await page.evaluate(async (url) => (await fetch(url, { cache: 'no-store' })).ok, restUrl);
+  expect(await backendHits(page)).toBe(beforeRest + 2);
+  expect((await allCachedUrls(page)).filter((u) => u.startsWith(BACKEND) && !u.includes('/storage/v1/object/public/themes/'))).toEqual([]);
+
+  // Offline: het bucketbeeld komt uit de cache, REST mislukt
+  await context.setOffline(true);
+  const offline = await page.evaluate(async ([bucket, rest]) => {
+    const b = await fetch(bucket).then((r) => r.ok, () => false);
+    const r = await fetch(rest, { cache: 'no-store' }).then(() => 'answered', () => 'failed');
+    return { b, r };
+  }, [bucketUrl, restUrl]);
+  expect(offline).toEqual({ b: true, r: 'failed' });
+  await context.setOffline(false);
 });
 
 test('(f) een nieuwe versie wacht en neemt een open pagina niet vanzelf over', async ({ page }) => {

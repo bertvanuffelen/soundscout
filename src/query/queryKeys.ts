@@ -35,6 +35,10 @@ export const queryKeys = {
     /** Actieve opdracht + eerdere opdrachten van een klas (één fetch) */
     classAssignment: (userId: string, classId: string) =>
       [...teacherClass(userId, classId), 'assignment'] as const,
+    /** Is deze docent beheerder? (is_admin(), migratie 043) */
+    isAdmin: (userId: string) => [...teacherRoot(userId), 'is-admin'] as const,
+    /** Beheer: alle thema's incl. concepten */
+    adminThemes: (userId: string) => [...teacherRoot(userId), 'admin-themes'] as const,
   },
   student: {
     /** Wat de docent nu actief heeft staan voor deze klascode (geen leerlingwerk) */

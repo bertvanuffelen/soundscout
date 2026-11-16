@@ -40,3 +40,21 @@ describe('pathForScreen', () => {
     }
   });
 });
+
+describe('/beheer (beheerdashboard, V2 Fase 3)', () => {
+  it('is geen app-scherm-pad, botst niet met public/ en valt in de service worker terug op de app', async () => {
+    const { existsSync } = await import('node:fs');
+    const { join } = await import('node:path');
+    const { NAVIGATE_FALLBACK_DENYLIST } = await import('../../pwa/swRouting');
+    expect(Object.values(SCREEN_PATHS)).not.toContain('/beheer');
+    expect(existsSync(join(process.cwd(), 'public', 'beheer'))).toBe(false);
+    expect(NAVIGATE_FALLBACK_DENYLIST.some((re) => re.test('/beheer'))).toBe(false);
+  });
+
+  it('staat als route in de boom, buiten de app-layout', async () => {
+    const { routeTree } = await import('../routes');
+    const raw = (routeTree as unknown as { children: unknown }).children;
+    const children = (Array.isArray(raw) ? raw : Object.values(raw as object)) as Array<{ options?: { path?: string } }>;
+    expect(children.map((r) => r.options?.path)).toContain('/beheer');
+  });
+});

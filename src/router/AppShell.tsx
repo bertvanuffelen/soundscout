@@ -21,6 +21,7 @@ import { AuthProvider } from '../contexts/AuthContext';
 import { queryClient } from '../query/queryClient';
 import { QueryAuthSync } from '../query/QueryAuthSync';
 import LandscapeHint from '../components/ui/LandscapeHint';
+import { ThemePreviewBanner } from '../components/common/ThemePreviewBanner';
 
 function AppContent() {
   const { t } = useTranslation();
@@ -96,6 +97,7 @@ export default function AppShell() {
         <QueryAuthSync />
         <AppContent />
         <LandscapeHint />
+        <ThemePreviewBanner />
       </AuthProvider>
     </QueryClientProvider>
   );

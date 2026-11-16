@@ -23,6 +23,8 @@ export const AUDIO_CACHE = 'soundscout-audio-v1';
 export const IMAGE_CACHE = 'soundscout-images-v1';
 /** Thema-index en -manifesten (V2 Fase 3), network-first: zie isThemeData. */
 export const THEME_DATA_CACHE = 'soundscout-themes-v1';
+/** Media van thema's uit het beheerdashboard (Supabase Storage, bucket 'themes'), cache-first. */
+export const THEME_MEDIA_CACHE = 'soundscout-theme-media-v1';
 
 /**
  * Navigaties die NIET naar de app (index.html) mogen terugvallen: eigen
@@ -68,4 +70,21 @@ export function isAppImage({ url, sameOrigin }: MatchInput): boolean {
  */
 export function isThemeData({ url, sameOrigin }: MatchInput): boolean {
   return sameOrigin && url.pathname.startsWith('/themes/') && url.pathname.endsWith('.json');
+}
+
+/**
+ * Media van thema's die in het beheerdashboard zijn gepubliceerd (migratie 043):
+ * de PUBLIEKE bucket 'themes' van Supabase Storage, paden
+ * `/storage/v1/object/public/themes/<id>/v<n>/…`. Elke versie heeft een eigen,
+ * nooit veranderend pad, dus cache-first is veilig.
+ *
+ * Bewust ALLEEN dit pad: REST, RPC, Auth en elke andere bucket van Supabase
+ * blijven ongemoeid (e2e/sw: "Supabase wordt nooit bewaard"). De origin staat
+ * niet in de regel omdat Workbox deze functie als tekst in sw.js zet (geen
+ * toegang tot VITE_SUPABASE_URL); het pad is specifiek genoeg.
+ */
+export function isThemeBucketMedia({ url, request }: MatchInput): boolean {
+  if (request?.method && request.method !== 'GET') return false;
+  return url.pathname.includes('/storage/v1/object/public/themes/')
+    && /\.(mp3|m4a|aac|ogg|wav|jpe?g|png|webp|avif|svg)$/i.test(url.pathname);
 }

@@ -31,6 +31,16 @@ describe('themeAssetUrls', () => {
     });
     expect(result).toEqual(['/audio/themes/basis/boerderij/koe.mp3']);
   });
+
+  it('neemt media uit de thema-bucket van Supabase mee (die bewaart de service worker ook)', () => {
+    const bucket = 'https://x.supabase.co/storage/v1/object/public/themes/kerst/v1';
+    const result = themeAssetUrls({
+      map: { backgroundImage: `${bucket}/images/kaart.jpg`, locationPositions: [] },
+      locations: [{ ...basisTheme.locations[0], backgroundImage: `${bucket}/images/plein.jpg`, ambientAudio: '' }],
+      samples: [{ ...basisTheme.samples[0], audioUrl: 'https://x.supabase.co/rest/v1/rpc/iets' }],
+    });
+    expect(result).toEqual([`${bucket}/images/kaart.jpg`, `${bucket}/images/plein.jpg`]);
+  });
 });
 
 describe('themeDataUrls', () => {

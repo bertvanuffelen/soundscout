@@ -81,7 +81,7 @@ Design rules (safe zone, spacing, duration) are for the dashboard to enforce on 
 3. **`?theme=<id>` or `setTheme(id)`:** known id → `loadTheme(id)` fetches `/themes/<id>/manifest.json` (Zod + integrity check), maps it to `ThemeConfig`, registers its texts, caches it. Unknown id → refresh the index once, else `basis`. AppShell shows "Laden…" until the initial theme is there; `setTheme` returns a Promise (the latest call wins).
 4. **i18n:** manifest texts are added with `i18n.addResources` under the same keys the app already uses; for the three migrated themes they are identical to `nl.json`/`en.json` (which still contain them — see §7).
 
-`ThemeRepository` (`listThemes`, `getManifest`, `getTheme`) is the seam for the Supabase Storage implementation: `setThemeRepository(createSupabaseThemeRepository(...))`, same return shapes, versioned URLs such as `themes/<id>/v<n>/manifest.json` with `assetBase` omitted.
+`ThemeRepository` (`listThemes`, `getManifest`, `getTheme`) is the seam. Since the Administrator Dashboard (`docs/v2/ADMIN-DASHBOARD.md`) the app installs a **merged** repository in one place (`src/themes/install.ts`, called from `main.tsx`): static files + themes published in Supabase (`src/themes/supabaseRepository.ts`, view `published_themes`, migration 043) + a draft previewed in this tab (`src/themes/preview.ts`). `basis` always comes from the bundle; a published Supabase theme replaces the static copy of the same id; everything degrades to the static themes when Supabase is unconfigured, down or not migrated. Published manifests get the version folder `…/storage/v1/object/public/themes/<id>/v<n>/` as their address, with `assetBase` omitted.
 
 ## 4. Caching and offline
 
@@ -97,7 +97,7 @@ Design rules (safe zone, spacing, duration) are for the dashboard to enforce on 
 3. `npm run themes:index` — validates, prints the rule report, refuses manifests with integrity errors or `status: "draft"`, writes `index.json` and the bundle copies.
 4. Upload `themes/` (index last). Already-built apps pick the theme up from the refreshed index; a rebuild only matters for the bundled copy.
 
-Later the Administrator Dashboard replaces steps 2–4 (draft → checks → publish an immutable version).
+The Administrator Dashboard (`/beheer`, `docs/v2/ADMIN-DASHBOARD.md`) replaces steps 2–4: import a pack or edit a theme → every check → save a draft version → publish an immutable version. The static route above keeps working.
 
 ## 6. Mapping to the `.sspack` (v2-theme-sinterklaas-pipeline §4)
 

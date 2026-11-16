@@ -80,13 +80,22 @@
   # master-limiter en faalt het realtime-opname-vangnet.
   # NIET weghalen zonder de worklets eerst statisch te hosten -- signalsmith
   # levert daar geen bestand voor.
+  #
+  # Supabase-host (https://xpjutrzonnranyqyqfzj.supabase.co = VITE_SUPABASE_URL
+  # van productie) staat in drie directives:
+  #   connect-src -- REST/RPC/Auth, en het ophalen van thema-geluiden (fetch)
+  #   img-src     -- beelden van in /beheer gepubliceerde thema's
+  #   media-src   -- idem voor <audio>/<video> (thema-media, migratie 043)
+  # Alleen die ene host, geen wildcard. Verandert VITE_SUPABASE_URL (ander
+  # project), pas dan alle drie aan; src/pwa/__tests__/csp.test.ts bewaakt dat
+  # ze gelijk zijn. Zie docs/v2/ADMIN-DASHBOARD.md §5.
   Header set Content-Security-Policy "default-src 'self'; \
     script-src 'self' blob: 'wasm-unsafe-eval'; \
     style-src 'self' 'unsafe-inline'; \
     font-src 'self'; \
     connect-src 'self' blob: https://xpjutrzonnranyqyqfzj.supabase.co https://api.emailjs.com; \
-    img-src 'self' data: blob: https://img.youtube.com; \
-    media-src 'self' blob:; \
+    img-src 'self' data: blob: https://img.youtube.com https://xpjutrzonnranyqyqfzj.supabase.co; \
+    media-src 'self' blob: https://xpjutrzonnranyqyqfzj.supabase.co; \
     worker-src 'self' blob:; \
     frame-src 'self' https://www.youtube-nocookie.com https://www.youtube.com; \
     object-src 'none'; \
