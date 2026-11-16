@@ -7,6 +7,7 @@
     "prebuild": "node scripts/generate-les-pages.mjs && node scripts/export-theme-manifests.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
+    "build:staging": "npm run prebuild && tsc -b && vite build --mode staging",
     "lint": "eslint .",
     "preview": "vite preview",
     "test": "vitest",

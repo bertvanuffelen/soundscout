@@ -1,5 +1,5 @@
 import { fileURLToPath } from 'node:url'
-import { defineConfig } from 'vite'
+import { defineConfig, loadEnv } from 'vite'
 import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 import { VitePWA } from 'vite-plugin-pwa'
@@ -16,6 +16,7 @@ import {
   isThemeAudio,
   isThemeData,
 } from './src/pwa/swRouting'
+import { deployEnvPlugin } from './scripts/deployEnvPlugin'
 
 const DAY = 24 * 60 * 60
 
@@ -125,8 +126,14 @@ const pwa = VitePWA({
   },
 })
 
-export default defineConfig({
-  plugins: [react(), tailwindcss(), pwa],
+export default defineConfig(({ mode }) => ({
+  plugins: [
+    react(),
+    tailwindcss(),
+    pwa,
+    // CSP-host per omgeving + staging nooit indexeren (docs/v2/STAGING.md)
+    deployEnvPlugin({ mode, supabaseUrl: loadEnv(mode, process.cwd(), '').VITE_SUPABASE_URL }),
+  ],
   build: {
     rollupOptions: {
       // Multi-page: /teacher en /over krijgen een eigen HTML met eigen
@@ -150,4 +157,4 @@ export default defineConfig({
       },
     },
   },
-})
+}))
