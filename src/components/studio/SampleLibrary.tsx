@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, Square, MapPin, GripVertical, Grid3x3, Music, Plus as PlusIcon } from 'lucide-react';
+import { Play, Square, MapPin, GripVertical, Grid3x3, Music, Plus as PlusIcon, Map as MapIcon, Wand2 } from 'lucide-react';
 import type { Sample } from '../../types';
 import type { SequencerSequence } from '../../types/sequencer';
 import { createSequenceSample } from '../../utils/sequencer';
@@ -20,8 +20,54 @@ interface SampleLibraryProps {
   sequences?: SequencerSequence[];
   /** Open een sequence in de sequencer-tab (klik op de chip) */
   onOpenSequence?: (sequenceId: string) => void;
-  /** Maak een nieuwe sequence (gestippelde plus-chip achteraan) */
+  /** Maak een nieuwe sequence (knop in de maakbalk) */
   onAddSequence?: () => void;
+  /** Terug naar de kaart om meer geluiden te verzamelen (maakbalk) */
+  onCollectMore?: () => void;
+  /** Maak een nieuw geluidseffect van een bibliotheekgeluid (maakbalk) */
+  onAddEffectSound?: () => void;
+}
+
+/**
+ * Maakbalk (designronde nov 2026): altijd vooraan in de bibliotheek, op een
+ * vaste plek — Verzamel meer geluiden · + Sequence · + Geluidseffect. In een
+ * smalle bibliotheek (telefoon, of naast het storyboard) drie tegels met een
+ * kort woord; breed één rij met de volledige tekst.
+ */
+function MakeBar({ onCollectMore, onAddSequence, onAddEffectSound }: Pick<SampleLibraryProps, 'onCollectMore' | 'onAddSequence' | 'onAddEffectSound'>) {
+  const { t } = useTranslation();
+  const items = [
+    onCollectMore && { key: 'collect', Icon: MapIcon, plus: false, long: t('studio.collectMore'), short: t('studio.collectMoreShort'), onClick: onCollectMore },
+    onAddSequence && { key: 'sequence', Icon: Grid3x3, plus: true, long: t('studio.addSequenceShort'), short: t('studio.addSequenceShort'), onClick: onAddSequence },
+    onAddEffectSound && { key: 'effect', Icon: Wand2, plus: true, long: t('studio.addEffectSound'), short: t('studio.addEffectSoundShort'), onClick: onAddEffectSound },
+  ].filter(Boolean) as Array<{ key: string; Icon: typeof MapIcon; plus: boolean; long: string; short: string; onClick: () => void }>;
+  if (items.length === 0) return null;
+  return (
+    <div
+      role="group"
+      aria-label={t('studio.makeBar')}
+      className="grid @3xl:flex gap-1.5 sm:gap-2 shrink-0"
+      style={{ gridTemplateColumns: `repeat(${items.length}, minmax(0, 1fr))` }}
+    >
+      {items.map(({ key, Icon, plus, long, short, onClick }) => (
+        <button
+          key={key}
+          type="button"
+          onClick={onClick}
+          aria-label={plus ? `+ ${long}` : long}
+          data-testid={`make-${key}`}
+          className="type-body inline-flex flex-col @3xl:flex-row items-center justify-center gap-0.5 @3xl:gap-2 rounded-xl border-2 border-dashed border-accent-400 bg-accent-50 hover:bg-accent-100 active:bg-accent-200 text-accent-900 font-extrabold px-2 @3xl:px-3 min-h-11 @3xl:min-h-12 transition-colors select-none"
+        >
+          <span className="inline-flex items-center gap-0.5" aria-hidden="true">
+            {plus && <PlusIcon className="w-4 h-4" />}
+            <Icon className="w-5 h-5" />
+          </span>
+          <span className="text-xs @3xl:hidden">{short}</span>
+          <span className="hidden @3xl:inline whitespace-nowrap">{long}</span>
+        </button>
+      ))}
+    </div>
+  );
 }
 
 /** Bundel-chip in de kleur van de sequence: sleepbaar + klik = patroon bewerken */
@@ -171,6 +217,8 @@ export const SampleLibrary = memo(function SampleLibrary({
   sequences = [],
   onOpenSequence,
   onAddSequence,
+  onCollectMore,
+  onAddEffectSound,
 }: SampleLibraryProps) {
   const { t } = useTranslation();
 
@@ -196,54 +244,45 @@ export const SampleLibrary = memo(function SampleLibrary({
     );
   };
 
-  if (samples.length === 0 && sequences.length === 0) {
-    return (
-      <div className="flex-1 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
-        <p className="text-xs sm:text-sm text-text-muted italic">{t('studio.emptyLibrary')}</p>
-        <p className="text-xs text-text-muted mt-1 flex items-center gap-1">
-          <MapPin className="w-3 h-3 shrink-0" />
-          {t('studio.emptyLibraryHint')}
-        </p>
-      </div>
-    );
-  }
+  const makeBar = <MakeBar onCollectMore={onCollectMore} onAddSequence={onAddSequence} onAddEffectSound={onAddEffectSound} />;
+  const isEmpty = samples.length === 0 && sequences.length === 0;
 
   return (
-    <div className="flex-1 flex flex-col min-h-0 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
+    <div className="@container flex-1 flex flex-col min-h-0 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
       <h2 className="type-label text-text-muted mb-1.5 sm:mb-2">
         {t('studio.library')}
       </h2>
-      <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto" role="listbox" aria-label={t('studio.library')}>
-        {samples.map((sample) => (
-          <DraggableSample
-            key={sample.id}
-            sample={sample}
-            onPreview={() => handlePreviewToggle(sample)}
-            isPlaying={playingSampleId === sample.id}
-            isSelected={selectedSampleId === sample.id}
-            onSelect={onSelectSample ? (id) => onSelectSample(selectedSampleId === id ? null : id) : undefined}
-          />
-        ))}
-        {sequences.map((sequence) => (
-          <DraggableBundle
-            key={sequence.id}
-            sequence={sequence}
-            onOpen={onOpenSequence}
-          />
-        ))}
-        {onAddSequence && (
-          <button
-            type="button"
-            onClick={onAddSequence}
-            className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1.5 sm:py-2 rounded-xl border sm:border-2 border-dashed border-accent-400 text-accent-700 hover:bg-accent-50 transition-colors select-none shrink-0"
-            title={t('sequencer.studio.addSequence')}
-          >
-            <PlusIcon className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
-            <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
-            <span className="text-xs sm:text-sm font-semibold whitespace-nowrap">
-              {t('sequencer.studio.addSequence')}
-            </span>
-          </button>
+      <div className="flex flex-col @3xl:flex-row @3xl:items-start gap-2 @3xl:gap-3 min-h-0 flex-1">
+        {makeBar}
+        <div className="hidden @3xl:block w-px self-stretch bg-border-subtle shrink-0" aria-hidden="true" />
+        {isEmpty ? (
+          <div className="min-w-0">
+            <p className="type-body font-semibold text-text-muted italic">{t('studio.emptyLibrary')}</p>
+            <p className="text-xs text-text-muted mt-1 flex items-center gap-1">
+              <MapPin className="w-3 h-3 shrink-0" />
+              {t('studio.emptyLibraryHint')}
+            </p>
+          </div>
+        ) : (
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto min-h-0 min-w-0 flex-1" role="listbox" aria-label={t('studio.library')}>
+            {samples.map((sample) => (
+              <DraggableSample
+                key={sample.id}
+                sample={sample}
+                onPreview={() => handlePreviewToggle(sample)}
+                isPlaying={playingSampleId === sample.id}
+                isSelected={selectedSampleId === sample.id}
+                onSelect={onSelectSample ? (id) => onSelectSample(selectedSampleId === id ? null : id) : undefined}
+              />
+            ))}
+            {sequences.map((sequence) => (
+              <DraggableBundle
+                key={sequence.id}
+                sequence={sequence}
+                onOpen={onOpenSequence}
+              />
+            ))}
+          </div>
         )}
       </div>
     </div>

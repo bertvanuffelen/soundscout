@@ -352,7 +352,13 @@
       "needsPlayhead": "Move the playhead to where the section should end first (press play or click the timeline).",
       "barLabel": "Sections"
     },
-    "startBeat": "Starts on beat {{beat}}"
+    "startBeat": "Starts on beat {{beat}}",
+    "collectMore": "Collect more sounds",
+    "collectMoreShort": "Collect",
+    "makeBar": "Create",
+    "addSequenceShort": "Sequence",
+    "addEffectSound": "Sound effect",
+    "addEffectSoundShort": "Effect"
   },
   "transport": {
     "play": "Play",

@@ -352,7 +352,13 @@
       "needsPlayhead": "Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn)",
       "barLabel": "Secties"
     },
-    "startBeat": "Begint op tel {{beat}}"
+    "startBeat": "Begint op tel {{beat}}",
+    "collectMore": "Verzamel meer geluiden",
+    "collectMoreShort": "Verzamelen",
+    "makeBar": "Maken",
+    "addSequenceShort": "Sequence",
+    "addEffectSound": "Geluidseffect",
+    "addEffectSoundShort": "Effect"
   },
   "transport": {
     "play": "Afspelen",

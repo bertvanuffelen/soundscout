@@ -10,7 +10,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, pointerWithin, closestCenter, MeasuringStrategy, type CollisionDetection } from '@dnd-kit/core';
-import { Music, Image } from 'lucide-react';
+import { Music, Image, Map as MapIcon } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
@@ -32,6 +32,7 @@ import { TempoPicker } from './TempoPicker';
 import { SampleIcon } from '../../utils/iconMap';
 import { getOnSoundTextClass } from '../../utils/soundColor';
 import { Button } from '../ui';
+import { cn } from '../../utils/cn';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { audioService } from '../../services/AudioService';
 import { generateClipId } from '../../utils/uuid';
@@ -83,6 +84,11 @@ export function StudioView() {
   const effectiveMode: StudioViewMode = viewMode === 'scenes' && !allowScenes ? 'split' : viewMode;
   // Mobile tab: only 'library' or 'image' (no split on small screens)
   const [mobileTab, setMobileTab] = useState<'library' | 'image'>('library');
+  // Is de bibliotheek (met de maakbalk en "Verzamel meer geluiden") te zien?
+  // Zo niet (storyboard-beeld/scènes, of de beeldtab op de telefoon), dan
+  // toont de kop een eigen terugknop naar de kaart.
+  const libraryShownDesktop = !hasStorytelling || effectiveMode === 'library' || effectiveMode === 'split';
+  const libraryShownMobile = !hasStorytelling || mobileTab === 'library';
   // Gedeelde scroll-container van de timeline (Feature F): de scène-filmstrip spiegelt hem.
   const timelineScrollRef = useRef<HTMLDivElement>(null);
 
@@ -388,22 +394,33 @@ export function StudioView() {
 
   return (
     <div className="h-dvh flex flex-col overflow-hidden bg-studio-bg md:bg-bg-app">
-      {/* Navigation bar */}
-      <div className="flex items-center justify-between px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
-        <Button variant="secondary" size="sm" onClick={handleBack}>
-          <span className="hidden sm:inline">{t('studio.backToLocation')}</span>
+      {/* Navigatiebalk — donker kader (designronde nov 2026). Zelfde plek en
+          hoogte als voorheen; "terug naar de kaart" zit nu als "Verzamel meer
+          geluiden" in de maakbalk van de bibliotheek. */}
+      <div className="flex items-center gap-2 px-2 sm:px-4 py-2 sm:py-3 bg-brand-900 text-white border-b border-brand-800">
+        <Button
+          variant="secondary"
+          size="sm"
+          onClick={handleBack}
+          className={cn(
+            'items-center gap-1.5',
+            libraryShownMobile ? 'hidden' : 'inline-flex',
+            libraryShownDesktop ? 'sm:hidden' : 'sm:inline-flex',
+          )}
+        >
+          <MapIcon className="w-4 h-4" aria-hidden="true" />
+          <span className="hidden sm:inline">{t('studio.collectMore')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
-        <div className="flex items-center gap-2">
-          {/* Desktop storytelling toggle (hidden on mobile — mobile uses tab bar below) */}
-          {hasStorytelling && (
-            <div className="hidden sm:block">
-              <StorytellingToggle viewMode={viewMode} onViewModeChange={setViewMode} allowScenes={allowScenes} />
-            </div>
-          )}
-          <h1 className="text-base sm:text-lg font-extrabold tracking-tight text-text-main">{t('studio.title')}</h1>
-          <ClassSessionBadge variant="light" />
-        </div>
+        <h1 className="type-title text-white">{t('studio.title')}</h1>
+        <ClassSessionBadge variant="dark" />
+        <div className="flex-1" />
+        {/* Desktop storytelling toggle (hidden on mobile — mobile uses tab bar below) */}
+        {hasStorytelling && (
+          <div className="hidden sm:block">
+            <StorytellingToggle viewMode={viewMode} onViewModeChange={setViewMode} allowScenes={allowScenes} />
+          </div>
+        )}
         <Button
           variant="primary"
           size="sm"
@@ -483,6 +500,7 @@ export function StudioView() {
             sequences={sequences}
             onOpenSequence={handleOpenSequence}
             onAddSequence={handleAddSequence}
+                  onCollectMore={handleBack}
             onStopPreview={handleStopPreview}
           />
         ) : (
@@ -503,6 +521,7 @@ export function StudioView() {
                       sequences={sequences}
                       onOpenSequence={handleOpenSequence}
                       onAddSequence={handleAddSequence}
+                  onCollectMore={handleBack}
                       onStopPreview={handleStopPreview}
                     />
                   )}
@@ -524,6 +543,7 @@ export function StudioView() {
                   sequences={sequences}
                   onOpenSequence={handleOpenSequence}
                   onAddSequence={handleAddSequence}
+                  onCollectMore={handleBack}
                   onStopPreview={handleStopPreview}
                 />
               ) : (
