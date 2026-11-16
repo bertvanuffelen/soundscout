@@ -20,6 +20,13 @@ These eight decisions are final. Where older text in this document differed, it 
 | 7 | A face on the page | **Bert front and centre:** name, photo and background as music teacher and pabo lecturer. |
 | 8 | Typed names on public share pages | **Hidden by default** when the V2 share page is built (Phase 5b), in line with V2 decision 10 (privacy by default). |
 
+Added 16-11-2026:
+
+| # | Topic | Decision |
+|---|---|---|
+| 9 | Name when saving online | **Optional.** An empty field saves under a generated alias (built in the dark start-screen step, commit a63cea5). |
+| 10 | Teacher-portal redesign (branch `claude/docentenportaal-ombouw`, head 1d260c7) | **Integrated once, into V2, after the staging test**; it goes live with the December release. Not merged into `main` first: V2 already contains all of `main`, and the portal conflicts with V2 in 14 files (incl. `Playhead.tsx`, `ActivateAssignmentModal.tsx`, the teacher hooks), so a detour via `main` would mean resolving the conflicts twice. Work on its own branch with a PR into the V2 branch; bring back the title toggle (migration 037) and `ClassMembersPanel` (038–042), the latter as a class-level section; re-run runbook block F afterwards. Sinterklaas still ships on V1 `main` before 5 December. |
+
 ## Summary
 
 **The position.** The teacher page explains the product well and proves nothing: there is no class work to hear, no teacher's voice, and the first action is "create an account". Abroad, the blocker is paperwork and English lesson material, not promotion. Growth has to come from the lesson travelling with the children's work, because one person cannot do outreach in three countries.
