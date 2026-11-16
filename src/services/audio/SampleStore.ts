@@ -6,8 +6,13 @@
  *  - players:       één preview-Player per uniek geluid
  *  - waveformCache: berekende golfvormen
  *
- * AudioService blijft het aanspreekpunt en delegeert hierheen. Dit is de plek
- * waar in een latere fase het geheugenbudget per apparaat komt (voorstel §2.6).
+ * AudioService blijft het aanspreekpunt en delegeert hierheen.
+ *
+ * Geheugenbudget (V2 Fase 3, docs/v2/AUDIO-MEMORY.md): elke geladen buffer
+ * wordt in `decodedAudioBudget` geboekt; na elk laadblok ruimt het budget
+ * zo nodig de minst recent gebruikte, niet-vastgepinde buffers op via
+ * `evict()`. Een opgeruimd geluid blijft "bekend" (url in `known`) en laadt
+ * bij het volgende gebruik gewoon opnieuw via `loadSample`.
  */
 
 import * as Tone from 'tone';
@@ -15,6 +20,7 @@ import type { Sample } from '../../types';
 import { createWaveformData, type WaveformData } from '../../utils/waveform';
 import { AUDIO_LOAD_TIMEOUT_MS, AUDIO_LOAD_MAX_RETRIES, AUDIO_LOAD_CONCURRENCY } from '../../constants/config';
 import { logger } from '../../utils/logger';
+import { decodedAudioBudget, decodedBytes, type DecodedAudioBudget } from './memoryBudget';
 
 export type LoadingProgressCallback = (loaded: number, total: number) => void;
 
@@ -24,23 +30,58 @@ export interface SampleLoadResult {
   error?: string;
 }
 
+/**
+ * Hoeveel recente laadverzoeken als werkset beschermd blijven (pinregel f).
+ * Drie dekt de gelijktijdige laders in de praktijk: bibliotheek (studio/
+ * podium) + locatie-hotspots of de compositie van de presentatiespeler.
+ */
+const RECENT_REQUESTS_KEPT = 3;
+
 export class SampleStore {
   readonly buffers: Map<string, Tone.ToneAudioBuffer> = new Map();
   readonly players: Map<string, Tone.Player> = new Map();
   readonly waveformCache: Map<string, WaveformData> = new Map();
 
+  /** Elk ooit geladen geluid (klein: alleen metadata) — voor herladen na opruimen */
+  private readonly known: Map<string, Sample> = new Map();
+  /** Sample-ids van de laatste laadverzoeken (nieuwste achteraan) */
+  private recentRequests: string[][] = [];
+
+  private readonly budget: DecodedAudioBudget;
+
+  constructor(budget: DecodedAudioBudget = decodedAudioBudget) {
+    this.budget = budget;
+  }
+
   // --- Laden ---
 
   async loadSample(sample: Sample): Promise<SampleLoadResult> {
-    if (this.buffers.has(sample.id)) {
-      return { sampleId: sample.id, success: true };
-    }
+    const result = await this.loadSampleInternal(sample);
+    this.budget.enforce({ category: 'sample', id: sample.id });
+    return result;
+  }
 
+  private loadSampleInternal(sample: Sample): Promise<SampleLoadResult> {
+    this.known.set(sample.id, sample);
+    if (this.buffers.has(sample.id)) {
+      this.budget.touch('sample', sample.id);
+      return Promise.resolve({ sampleId: sample.id, success: true });
+    }
+    return this.decodeSample(sample);
+  }
+
+  private async decodeSample(sample: Sample): Promise<SampleLoadResult> {
     try {
       // Load into a ToneAudioBuffer — no audio graph footprint.
       // This is the primary storage used by scheduleTimeline().
       const buffer = new Tone.ToneAudioBuffer();
       await buffer.load(sample.audioUrl);
+      // Een parallelle lading (bv. een retry na timeout) was sneller: houd
+      // die aan en gooi deze weg, anders lekt er een preview-Player
+      if (this.buffers.has(sample.id)) {
+        buffer.dispose();
+        return { sampleId: sample.id, success: true };
+      }
       this.buffers.set(sample.id, buffer);
 
       // Also create a preview Player for playSample()/playSampleRegion().
@@ -48,6 +89,13 @@ export class SampleStore {
       // typically 6 — negligible overhead vs 85+ per-clip Players before).
       const player = new Tone.Player(buffer).toDestination();
       this.players.set(sample.id, player);
+
+      this.budget.register(sample.id, {
+        category: 'sample',
+        sampleId: sample.id,
+        bytes: decodedBytes(buffer),
+        evict: () => this.evict(sample.id),
+      });
 
       return { sampleId: sample.id, success: true };
     } catch (err) {
@@ -77,6 +125,11 @@ export class SampleStore {
     const results: SampleLoadResult[] = [];
     let loaded = 0;
 
+    // Pinregel (f): deze werkset is "net gevraagd" en blijft beschermd tot er
+    // RECENT_REQUESTS_KEPT nieuwere verzoeken zijn geweest
+    this.recentRequests.push(samples.map((s) => s.id));
+    if (this.recentRequests.length > RECENT_REQUESTS_KEPT) this.recentRequests.shift();
+
     // Process in batches for controlled concurrency
     for (let i = 0; i < samples.length; i += AUDIO_LOAD_CONCURRENCY) {
       // Check if aborted before processing next batch
@@ -104,6 +157,8 @@ export class SampleStore {
       });
 
       loaded += batch.length;
+      // Na elk blok het budget bewaken (de eigen werkset is beschermd)
+      this.budget.enforce();
       onProgress?.(loaded, samples.length);
     }
 
@@ -155,7 +210,7 @@ export class SampleStore {
     );
 
     try {
-      return await Promise.race([this.loadSample(sample), timeoutPromise]);
+      return await Promise.race([this.loadSampleInternal(sample), timeoutPromise]);
     } catch (err) {
       return {
         sampleId: sample.id,
@@ -168,6 +223,85 @@ export class SampleStore {
   isSampleLoaded(sampleId: string): boolean {
     const buffer = this.buffers.get(sampleId);
     return buffer?.loaded ?? false;
+  }
+
+  // --- Geheugenbudget ---
+
+  /** Pinregel (f): sample-ids van de laatste laadverzoeken */
+  getRecentRequestIds(): Set<string> {
+    return new Set(this.recentRequests.flat());
+  }
+
+  /** Markeer een geluid als gebruikt (LRU) — bv. bij een preview */
+  touch(sampleId: string): void {
+    this.budget.touch('sample', sampleId);
+  }
+
+  /** Is dit geluid ooit geladen en nu opgeruimd (dus herlaadbaar)? */
+  canReload(sampleId: string): boolean {
+    return !this.buffers.has(sampleId) && this.known.has(sampleId);
+  }
+
+  /** Laad een eerder opgeruimd geluid opnieuw via het gewone laadpad */
+  async reload(sampleId: string): Promise<boolean> {
+    const sample = this.known.get(sampleId);
+    if (!sample) return false;
+    const result = await this.loadSample(sample);
+    return result.success;
+  }
+
+  /**
+   * Ruim één geluid op (aangeroepen door het budget). De preview-Player is
+   * een graph-node en wordt gedisposed (Tone-valkuil 5). De ToneAudioBuffer
+   * zelf disposen we bewust NIET: een export die hem al vasthoudt (via
+   * getLoadedBuffer) moet blijven werken. Zonder verwijzingen ruimt de GC
+   * hem op; de Player had een eigen wrapper, dus die houdt niets vast.
+   * De golfvorm (klein) blijft in de cache.
+   */
+  private evict(sampleId: string): void {
+    const player = this.players.get(sampleId);
+    if (player) {
+      try { player.stop(); } catch { /* ignore */ }
+      try { player.dispose(); } catch { /* ignore */ }
+      this.players.delete(sampleId);
+    }
+    this.buffers.delete(sampleId);
+  }
+
+  /**
+   * Grove opruiming bij een themawissel (disposeUnusedPlayers): alles wat
+   * niet in `keepSampleIds` zit gaat weg, inclusief golfvorm. Geeft het
+   * aantal opgeruimde geluiden terug.
+   */
+  removeUnused(keepSampleIds: Set<string>): number {
+    let disposedCount = 0;
+    for (const [sampleId, buffer] of this.buffers) {
+      if (keepSampleIds.has(sampleId)) continue;
+      buffer.dispose();
+      this.buffers.delete(sampleId);
+      const player = this.players.get(sampleId);
+      if (player) {
+        player.dispose();
+        this.players.delete(sampleId);
+      }
+      this.waveformCache.delete(sampleId);
+      this.budget.unregister('sample', sampleId);
+      disposedCount++;
+    }
+    return disposedCount;
+  }
+
+  /** Alles weg (AudioService.dispose) */
+  clear(): void {
+    this.buffers.forEach((buffer, sampleId) => {
+      buffer.dispose();
+      this.budget.unregister('sample', sampleId);
+    });
+    this.buffers.clear();
+    this.players.forEach((player) => player.dispose());
+    this.players.clear();
+    this.waveformCache.clear();
+    this.recentRequests = [];
   }
 
   // --- Golfvormen ---
@@ -213,7 +347,11 @@ export class SampleStore {
    */
   getLoadedBuffer(sampleId: string): Tone.ToneAudioBuffer | undefined {
     const buffer = this.buffers.get(sampleId);
-    return buffer && buffer.loaded ? buffer : undefined;
+    if (buffer && buffer.loaded) {
+      this.budget.touch('sample', sampleId);
+      return buffer;
+    }
+    return undefined;
   }
 
   /**

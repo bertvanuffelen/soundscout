@@ -34,6 +34,13 @@ import { pitchBufferService } from './PitchBufferService';
 import { sanitizeLatency, secondsToAudibleBeat } from './audibleBeat';
 import { SampleStore, type LoadingProgressCallback, type SampleLoadResult } from './audio/SampleStore';
 import { AmbientPlayer } from './audio/AmbientPlayer';
+import {
+  decodedAudioBudget,
+  pitchKey,
+  type AudioMemoryStats,
+  type PinSet,
+} from './audio/memoryBudget';
+import { addSampleIdPins, addSessionPins, addTimelinePins, createPinSet } from './audio/audioPins';
 import { buildCaptureWorkletCode } from './audio/captureWorklet';
 import {
   buildLimiterProcessorCode,
@@ -58,9 +65,6 @@ export class AudioService {
   // Connected to Destination but only active during preview — negligible overhead.
   private get players(): Map<string, Tone.Player> {
     return this.sampleStore.players;
-  }
-  private get waveformCache(): Map<string, WaveformData> {
-    return this.sampleStore.waveformCache;
   }
   private isInitialized = false;
   private playheadIntervalId: number | null = null;
@@ -109,7 +113,8 @@ export class AudioService {
   private masterBus: Tone.Volume | null = null;
 
   private constructor() {
-    // Private constructor for singleton
+    // Het geheugenbudget vraagt "wat is in gebruik?" altijd hier op (V2 Fase 3)
+    decodedAudioBudget.setPinProvider(() => this.collectPins());
   }
 
   static getInstance(): AudioService {
@@ -202,12 +207,25 @@ export class AudioService {
   playSample(sampleId: string): void {
     const player = this.players.get(sampleId);
     if (!player || !player.loaded) {
+      // Door het geheugenbudget opgeruimd? Dan transparant herladen en
+      // alsnog spelen — tenzij er intussen een andere preview is gestart.
+      if (this.sampleStore.canReload(sampleId)) {
+        const token = {};
+        this.previewToken = token;
+        this.previewSampleId = sampleId;
+        void this.sampleStore.reload(sampleId).then((ok) => {
+          if (ok && this.previewToken === token) this.playSample(sampleId);
+        });
+        return;
+      }
       logger.warn(`Sample "${sampleId}" not loaded, skipping`);
       return;
     }
     // Stop any currently playing preview before starting a new one
     this.stopAllSamples();
     this.stopPreviewWithEffects();
+    this.previewToken = {}; // deze preview is nu de actuele (race-guard)
+    this.markPreview(sampleId);
     logger.audio('play', { sampleId });
     player.start();
   }
@@ -248,6 +266,8 @@ export class AudioService {
     // Stop any currently playing preview before starting a new one
     this.stopAllSamples();
     this.stopPreviewWithEffects();
+    this.previewToken = {}; // deze preview is nu de actuele (race-guard)
+    this.markPreview(sampleId);
     logger.audio('playRegion', { sampleId, offset: offsetSeconds, duration: durationSeconds });
     player.start(Tone.now(), offsetSeconds, durationSeconds);
   }
@@ -256,6 +276,15 @@ export class AudioService {
   private previewChain: { player: Tone.Player; nodes: Tone.ToneAudioNode[] } | null = null;
   // Race-guard: alleen de laatst gestarte preview mag gaan spelen (na bake-await)
   private previewToken: object | null = null;
+  // Pinregel (e): wat er als laatste gepreviewd is (blijft staan tot de volgende)
+  private previewSampleId: string | null = null;
+  private previewPitchKey: string | null = null;
+
+  private markPreview(sampleId: string, semitones = 0): void {
+    this.previewSampleId = sampleId;
+    this.previewPitchKey = semitones !== 0 ? pitchKey(sampleId, semitones) : null;
+    this.sampleStore.touch(sampleId);
+  }
 
   /**
    * Play a sample region with effects applied (for EffectsModal preview).
@@ -281,6 +310,7 @@ export class AudioService {
     // als de timeline én de export. Bake is snel (~50-100 ms) en gecachet.
     const previewToken = {};
     this.previewToken = previewToken;
+    this.markPreview(sampleId, effects.pitch);
     if (effects.pitch !== 0) {
       const source = buffer.get() as AudioBuffer | undefined;
       if (source) {
@@ -1276,26 +1306,44 @@ export class AudioService {
    * @param activeSampleIds - IDs of samples that should be kept loaded
    */
   disposeUnusedPlayers(activeSampleIds: Set<string>): void {
-    let disposedCount = 0;
-    for (const [sampleId, buffer] of this.buffers) {
-      if (!activeSampleIds.has(sampleId)) {
-        buffer.dispose();
-        this.buffers.delete(sampleId);
-        // Also dispose the corresponding preview player
-        const player = this.players.get(sampleId);
-        if (player) {
-          player.dispose();
-          this.players.delete(sampleId);
-        }
-        this.waveformCache.delete(sampleId);
-        disposedCount++;
-      }
-    }
+    // Grove opruiming bij een themawissel. Het geheugenbudget (LRU) maakt dit
+    // grotendeels overbodig, maar dit blijft: het ruimt meteen en volledig
+    // op (incl. golfvormen) op een moment dat er gegarandeerd niets speelt.
+    const disposedCount = this.sampleStore.removeUnused(activeSampleIds);
     if (disposedCount > 0) {
       logger.info(`Disposed ${disposedCount} unused audio buffers`);
     }
     // Pitch-bakes van verdwenen samples ook opruimen (Fase 3)
     pitchBufferService.prune(activeSampleIds);
+  }
+
+  // ==========================================================================
+  // GEHEUGENBUDGET (V2 Fase 3 — docs/v2/AUDIO-MEMORY.md)
+  // ==========================================================================
+
+  /**
+   * DE bron van waarheid voor "in gebruik": het budget ruimt nooit iets op
+   * dat hier in zit. Zie audioPins.ts voor de regels (a)–(f).
+   */
+  collectPins(): PinSet {
+    const pins = createPinSet();
+    addSessionPins(pins); // (a) tijdlijn + sequences, (b) bibliotheek + recorder
+    addTimelinePins(pins, this.scheduledTracks, this.scheduledSequences); // (c), (d)
+    addSampleIdPins(pins, [this.previewSampleId]); // (e)
+    if (this.previewPitchKey) pins.pitchKeys.add(this.previewPitchKey);
+    addSampleIdPins(pins, this.sampleStore.getRecentRequestIds()); // (f)
+    return pins;
+  }
+
+  /** Gedecodeerd geheugen: totaal, per categorie, aantal, budget. */
+  getMemoryStats(): AudioMemoryStats {
+    return decodedAudioBudget.getStats();
+  }
+
+  /** Budget overschrijven in bytes (tests/afstemmen); `null` = automatisch. */
+  setMemoryBudget(bytes: number | null): void {
+    decodedAudioBudget.setBudgetBytes(bytes);
+    decodedAudioBudget.enforce();
   }
 
   dispose(): void {
@@ -1318,18 +1366,10 @@ export class AudioService {
     // Dispose track buses
     this.disposeTrackBuses();
 
-    // Dispose audio buffers
-    this.buffers.forEach((buffer) => {
-      buffer.dispose();
-    });
-    this.buffers.clear();
-
-    // Dispose preview players
-    this.players.forEach((player) => {
-      player.dispose();
-    });
-    this.players.clear();
-    this.waveformCache.clear();
+    // Dispose audio buffers, preview players en golfvormen (+ budget afboeken)
+    this.sampleStore.clear();
+    this.previewSampleId = null;
+    this.previewPitchKey = null;
 
     // Dispose ambient audio
     this.ambient.dispose();
@@ -1353,3 +1393,16 @@ export class AudioService {
 
 // Export singleton instance
 export const audioService = AudioService.getInstance();
+
+// Dev-only: geheugen uitlezen/afstemmen vanuit de console of een e2e-test
+if (import.meta.env.DEV && typeof window !== 'undefined') {
+  const w = window as unknown as {
+    __soundscoutAudioStats?: () => AudioMemoryStats;
+    __soundscoutAudioBudget?: (mb: number | null) => AudioMemoryStats;
+  };
+  w.__soundscoutAudioStats = () => AudioService.getInstance().getMemoryStats();
+  w.__soundscoutAudioBudget = (mb) => {
+    AudioService.getInstance().setMemoryBudget(mb === null ? null : mb * 1024 * 1024);
+    return AudioService.getInstance().getMemoryStats();
+  };
+}

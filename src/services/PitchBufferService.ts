@@ -25,6 +25,12 @@ import * as Tone from 'tone';
 import type { Track } from '../types';
 import type { ClipEffectsConfig } from './audioEvents';
 import { logger } from '../utils/logger';
+import {
+  decodedAudioBudget,
+  decodedBytes,
+  pitchKey,
+  type DecodedAudioBudget,
+} from './audio/memoryBudget';
 
 /** Signalsmith Stretch node-factory (lazy geladen, ~110 KB incl. WASM) */
 type StretchNode = AudioWorkletNode & {
@@ -83,6 +89,17 @@ export class PitchBufferService {
   /** false zodra de omgeving bewezen niet ondersteunt (→ PitchShift-fallback) */
   private supported = true;
 
+  /**
+   * Gebakken buffers tellen mee in het geheugenbudget (V2 Fase 3). Het budget
+   * mag een bake opruimen als die toonhoogte nergens meer gebruikt wordt;
+   * `bake()` maakt hem bij een volgend gebruik gewoon opnieuw.
+   */
+  private readonly budget: DecodedAudioBudget;
+
+  constructor(budget: DecodedAudioBudget = decodedAudioBudget) {
+    this.budget = budget;
+  }
+
   static getInstance(): PitchBufferService {
     if (!PitchBufferService.instance) {
       PitchBufferService.instance = new PitchBufferService();
@@ -91,7 +108,25 @@ export class PitchBufferService {
   }
 
   private key(sampleId: string, semitones: number): string {
-    return `${sampleId}|${semitones}`;
+    return pitchKey(sampleId, semitones);
+  }
+
+  /** Bake opslaan + boeken in het budget, daarna het budget bewaken */
+  private store(key: string, sampleId: string, rendered: AudioBuffer): void {
+    this.cache.set(key, rendered);
+    this.budget.register(key, {
+      category: 'pitch',
+      sampleId,
+      pitchKey: key,
+      bytes: decodedBytes(rendered),
+      evict: () => { this.cache.delete(key); },
+    });
+    this.budget.enforce({ category: 'pitch', id: key });
+  }
+
+  private forget(key: string): void {
+    this.cache.delete(key);
+    this.budget.unregister('pitch', key);
   }
 
   private loadFactory(): Promise<StretchFactory | null> {
@@ -112,7 +147,10 @@ export class PitchBufferService {
 
   /** Gebakken buffer, of undefined als (nog) niet beschikbaar */
   getBaked(sampleId: string, semitones: number): AudioBuffer | undefined {
-    return this.cache.get(this.key(sampleId, semitones));
+    const key = this.key(sampleId, semitones);
+    const baked = this.cache.get(key);
+    if (baked) this.budget.touch('pitch', key);
+    return baked;
   }
 
   /**
@@ -124,7 +162,10 @@ export class PitchBufferService {
     if (!this.supported || semitones === 0) return Promise.resolve(null);
     const key = this.key(sampleId, semitones);
     const cached = this.cache.get(key);
-    if (cached) return Promise.resolve(cached);
+    if (cached) {
+      this.budget.touch('pitch', key);
+      return Promise.resolve(cached);
+    }
     const inFlight = this.pending.get(key);
     if (inFlight) return inFlight;
 
@@ -139,7 +180,7 @@ export class PitchBufferService {
       )
     )
       .then((rendered) => {
-        this.cache.set(key, rendered);
+        this.store(key, sampleId, rendered);
         logger.audio('pitch gebakken', { sampleId, semitones, ms: rendered.duration });
         return rendered;
       })
@@ -257,13 +298,18 @@ export class PitchBufferService {
   prune(keepSampleIds: Set<string>): void {
     for (const key of this.cache.keys()) {
       const sampleId = key.slice(0, key.lastIndexOf('|'));
-      if (!keepSampleIds.has(sampleId)) this.cache.delete(key);
+      if (!keepSampleIds.has(sampleId)) this.forget(key);
     }
   }
 
   clear(): void {
-    this.cache.clear();
+    for (const key of [...this.cache.keys()]) this.forget(key);
     this.pending.clear();
+  }
+
+  /** Aantal gebakken buffers in de cache (tests, statistiek) */
+  get size(): number {
+    return this.cache.size;
   }
 }
 

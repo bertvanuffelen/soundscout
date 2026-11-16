@@ -1,0 +1,49 @@
+{
+  "measuredAt": "2026-11-16",
+  "environment": {
+    "note": "Headless Chromium op een ontwikkelmachine — vergelijkingsbasis, geen schoolapparaat.",
+    "chromium": "159.0.8154.6"
+  },
+  "atLocation": {
+    "totalBytes": 13271040,
+    "totalMB": 12.7,
+    "budgetBytes": 201326592,
+    "budgetMB": 192,
+    "budgetSource": "deviceMemory",
+    "deviceMemoryGB": 16,
+    "entryCount": 6,
+    "byCategory": {
+      "sample": {
+        "bytes": 13271040,
+        "count": 6
+      },
+      "pitch": {
+        "bytes": 0,
+        "count": 0
+      }
+    },
+    "pinnedBytes": 13271040,
+    "evictedTotal": 0
+  },
+  "inStudio": {
+    "totalBytes": 13271040,
+    "totalMB": 12.7,
+    "budgetBytes": 201326592,
+    "budgetMB": 192,
+    "budgetSource": "deviceMemory",
+    "deviceMemoryGB": 16,
+    "entryCount": 6,
+    "byCategory": {
+      "sample": {
+        "bytes": 13271040,
+        "count": 6
+      },
+      "pitch": {
+        "bytes": 0,
+        "count": 0
+      }
+    },
+    "pinnedBytes": 13271040,
+    "evictedTotal": 0
+  }
+}
