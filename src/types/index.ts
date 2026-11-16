@@ -180,7 +180,15 @@ export interface Sample {
   icon: string;
   /** Hex color code for timeline visualization (e.g. "#FF5733") */
   color: string;
+  /**
+   * Soort geluid (V2 Fase 4, uit het thema-manifest): 'loop' = muziekloop van
+   * 8,0 s @ 120 BPM die met het compositietempo meerekt; 'sfx' of afwezig =
+   * los geluid dat niet wordt uitgerekt. Zie utils/sampleKinds.ts.
+   */
+  kind?: SampleKind;
 }
+
+export type SampleKind = 'sfx' | 'loop';
 
 // --- Audio Loading State ---
 
@@ -218,7 +226,26 @@ export interface ClipEffects {
   fadeIn: number;
   /** Fade out duration in seconds (0 = off, default 0) */
   fadeOut: number;
+
+  // --- Vervormen (V2 Fase 4) — alle optioneel, afwezig = neutraal ---
+
+  /**
+   * Bandsnelheid (tape-stijl): toonhoogte én lengte veranderen samen.
+   * Alleen CLIP_SPEEDS (0.5 · 0.75 · 1 · 1.5 · 2), default 1. Stapelt met
+   * `pitch` (semitonen tellen op: totaal = pitch + 12·log2(speed)).
+   */
+  speed?: ClipSpeed;
+  /** Achterstevoren afspelen (default false). Trim geldt op het omgekeerde geluid. */
+  reverse?: boolean;
+  /** Echo 0–100 (0 = uit). Vaste vertraging van een halve tel, met staart. */
+  echo?: number;
+  /** Klankfilter −100 (dof, low-pass) … 0 (uit) … +100 (helder, high-pass) */
+  filter?: number;
 }
+
+/** Toegestane bandsnelheden voor ClipEffects.speed */
+export const CLIP_SPEEDS = [0.5, 0.75, 1, 1.5, 2] as const;
+export type ClipSpeed = (typeof CLIP_SPEEDS)[number];
 
 /**
  * Default clip effects (neutral/off)

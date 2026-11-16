@@ -80,6 +80,65 @@ export interface SequencerTrack {
   /** Lineaire gain 0..1 (default 1) */
   volume?: number;
   mute?: boolean;
+  /**
+   * Aanslagsterkte per vakje 0..1 (V2 Fase 4), vermenigvuldigd met `volume`.
+   * Afwezig of korter dan `steps` = 1 voor de ontbrekende vakjes.
+   */
+  velocities?: number[];
+}
+
+// --- Melodie (V2 Fase 4 — datamodel + events; UI volgt) ---
+
+/** 'rhythm' = het bestaande stappenraster (default) · 'melody' = notenraster */
+export type SequenceKind = 'rhythm' | 'melody';
+
+/** Pentatonische standaardtoonladder: C D E G A (semitonen boven de grondtoon) */
+export const MELODY_DEFAULT_SCALE: readonly number[] = [0, 2, 4, 7, 9];
+/** Grondtoon van rij 0 als MIDI-noot (60 = C4) */
+export const MELODY_DEFAULT_ROOT = 60;
+/** Aantal octaven in het raster (rijen = scale.length × octaves) */
+export const MELODY_DEFAULT_OCTAVES = 2;
+export const MELODY_MAX_OCTAVES = 3;
+/** Swing-bovengrens: 0.5 = de achtertel schuift een halve tel op */
+export const SEQ_MAX_SWING = 0.5;
+/** Ingebouwde synth-klanken (deterministisch gerenderd, zie synthVoice.ts) */
+export const SYNTH_PRESETS = ['soft', 'bright', 'pluck'] as const;
+export type SynthPreset = (typeof SYNTH_PRESETS)[number];
+
+/**
+ * De stem van een melodie: een bibliotheekgeluid (per noot getransponeerd
+ * via de bake-service — `baseNote` = de toonhoogte die het geluid zelf
+ * heeft, default MELODY_DEFAULT_ROOT) of een ingebouwde synth.
+ */
+export type MelodyVoice =
+  | { type: 'sample'; sampleId: string | null; baseNote?: number }
+  | { type: 'synth'; preset: SynthPreset };
+
+/** Eén noot in het melodieraster */
+export interface MelodyNote {
+  /** Vakje (0-gebaseerd, < lengthSteps) */
+  step: number;
+  /** Rij in het raster: 0 = grondtoon; rij r = scale[r % n] + 12·floor(r / n) */
+  row: number;
+  /** Lengte in vakjes (default 1) */
+  length?: number;
+  /** Aanslagsterkte 0..1 (default 1) */
+  velocity?: number;
+}
+
+export interface MelodyPattern {
+  /** MIDI-noot van rij 0 */
+  root: number;
+  /** Toonladder in semitonen boven de grondtoon, oplopend */
+  scale: number[];
+  /** 1..MELODY_MAX_OCTAVES */
+  octaves: number;
+  voice: MelodyVoice;
+  /** Meerdere noten per vakje mag (akkoorden) */
+  notes: MelodyNote[];
+  /** Lineaire gain 0..1 (default 1) */
+  volume?: number;
+  mute?: boolean;
 }
 
 export interface SequencerSequence {
@@ -89,10 +148,19 @@ export interface SequencerSequence {
   color?: string;
   /** 4..32, veelvoud van 4 */
   lengthSteps: number;
-  /** Vast 120 in v1 */
+  /**
+   * Tempo voor het LAB. Op de tijdlijn volgt een sequence altijd het tempo
+   * van de compositie (1 vakje = 1 tel), dit veld wordt daar genegeerd.
+   */
   bpm: number;
-  /** 1..8 sporen */
+  /** 1..8 sporen (ritme). Een melodie-sequence houdt ≥1 leeg spoor (oudere clients). */
   tracks: SequencerTrack[];
+  /** Default 'rhythm' (afwezig = ritme, zoals vóór V2 Fase 4) */
+  kind?: SequenceKind;
+  /** Swing 0..0.5 op de achtertellen (oneven vakjes); default 0 */
+  swing?: number;
+  /** Alleen bij kind 'melody' */
+  melody?: MelodyPattern;
   /** ISO-tijdstempels */
   createdAt: string;
   updatedAt: string;

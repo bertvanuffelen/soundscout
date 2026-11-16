@@ -155,6 +155,8 @@ export function manifestToThemeConfig(manifest: ThemeManifest, manifestUrl: stri
     duration: s.duration,
     icon: s.icon,
     color: s.color,
+    // V2 Fase 4: 'loop' rekt mee met het compositietempo (utils/sampleKinds)
+    ...(s.kind ? { kind: s.kind } : {}),
   }));
 
   const locationPositions: LocationPosition[] = manifest.map.positions.map((p) => ({

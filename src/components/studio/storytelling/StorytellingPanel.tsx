@@ -127,10 +127,10 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
       audioService.pause();
       useAudioStore.getState().setIsPlaying(false);
     } else {
-      const { tracks, totalBeats, isLooping } = useTimelineStore.getState();
+      const { tracks, totalBeats, isLooping, sequences, bpm } = useTimelineStore.getState();
       const currentBeat = playbackClock.getBeat();
       const { librarySamples } = useLibraryStore.getState();
-      audioService.scheduleTimeline(tracks, librarySamples);
+      audioService.scheduleTimeline(tracks, librarySamples, sequences, bpm);
       audioService.setLoop(isLooping, totalBeats);
       audioService.play(currentBeat);
       useAudioStore.getState().setIsPlaying(true);

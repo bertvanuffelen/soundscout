@@ -4,7 +4,11 @@
 
 import type { Sample } from '../types';
 import { generateId } from './uuid';
+import { REFERENCE_BPM } from '../constants/config';
 import {
+  MELODY_DEFAULT_OCTAVES,
+  MELODY_DEFAULT_ROOT,
+  MELODY_DEFAULT_SCALE,
   SEQ_DEFAULT_BPM,
   SEQ_DEFAULT_STEPS,
   SEQ_DEFAULT_TRACKS,
@@ -14,6 +18,7 @@ import {
   SEQUENCE_COLORS,
   SEQUENCE_ICON,
   SEQUENCE_SAMPLE_PREFIX,
+  type MelodyVoice,
   type SequencerSequence,
   type SequencerTrack,
 } from '../types/sequencer';
@@ -84,6 +89,10 @@ export function getSequenceIdFromSampleId(sampleId: string): string | null {
  * Virtuele Sample voor een sequence: duur = vakjes × tel-duur. Hierdoor
  * werken collision, clip-breedte en loop-uitrekken zonder aanpassingen.
  * Wordt NOOIT gepersisteerd (afgeleid) en heeft geen audioUrl.
+ *
+ * V2 Fase 4: de duur is gedefinieerd bij REFERENCE_BPM en de sample is een
+ * 'loop' — zo is de breedte in elk compositietempo exact `lengthSteps` tellen
+ * (1 vakje = 1 tel), via dezelfde tempo-regel als muziekloops.
  */
 export function createSequenceSample(sequence: SequencerSequence): Sample {
   return {
@@ -91,9 +100,10 @@ export function createSequenceSample(sequence: SequencerSequence): Sample {
     name: sequence.name,
     locationId: 'sequencer',
     audioUrl: '',
-    duration: (sequence.lengthSteps * 60) / sequence.bpm,
+    duration: (sequence.lengthSteps * 60) / REFERENCE_BPM,
     icon: SEQUENCE_ICON,
     color: sequence.color ?? SEQUENCE_COLOR,
+    kind: 'loop',
   };
 }
 
@@ -133,5 +143,31 @@ export function createDefaultSequence(
     ),
     createdAt: now,
     updatedAt: now,
+  };
+}
+
+/**
+ * Maak een verse melodie-sequence (V2 Fase 4): pentatonisch raster (C D E G A,
+ * twee octaven vanaf C4), lege noten, 16 vakjes. Houdt bewust één leeg
+ * ritmespoor in `tracks` (schema-eis ≥1), zodat een oudere client hem als
+ * stille ritme-sequence leest in plaats van de compositie af te keuren.
+ */
+export function createDefaultMelodySequence(
+  name: string,
+  voice: MelodyVoice = { type: 'synth', preset: 'soft' },
+  color: string = SEQUENCE_COLOR
+): SequencerSequence {
+  const base = createDefaultSequence(name, color);
+  return {
+    ...base,
+    kind: 'melody',
+    tracks: [createEmptyTrack(SEQ_DEFAULT_STEPS)],
+    melody: {
+      root: MELODY_DEFAULT_ROOT,
+      scale: [...MELODY_DEFAULT_SCALE],
+      octaves: MELODY_DEFAULT_OCTAVES,
+      voice,
+      notes: [],
+    },
   };
 }

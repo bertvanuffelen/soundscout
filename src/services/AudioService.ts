@@ -9,9 +9,9 @@
  */
 
 import * as Tone from 'tone';
-import type { Clip, Sample, Track } from '../types';
+import type { ClipEffects, Sample, SampleKind, Track } from '../types';
 import type { SequencerSequence } from '../types/sequencer';
-import { beatsToSeconds, getClipTrimStart, getClipDuration, getEffectiveClipEndBeat } from '../utils/audio';
+import { beatsToSeconds, normalizeBpm, secondsToBeats } from '../utils/audio';
 import type { WaveformData } from '../utils/waveform';
 import {
   DEFAULT_BPM,
@@ -20,23 +20,35 @@ import {
 import { logger } from '../utils/logger';
 import { audioDiag } from '../utils/audioDiagnostics';
 import {
-  clipHasEffects,
   generateClipEvents,
+  toEffectsConfig,
   type ClipEvent,
   type ClipEffectsConfig,
 } from './audioEvents';
 import {
   buildClipChain,
+  createPlanPlayer,
   scheduleFadeCurves,
   scheduleFadeCurvesAtOffset,
 } from './audioGraph';
 import { pitchBufferService } from './PitchBufferService';
+import {
+  clipRecipe,
+  hasAsyncStage,
+  hasSyncStage,
+  NEUTRAL_RECIPE,
+  recipeKey,
+  recipeLengthFactor,
+  syncStageOf,
+  type BakeRecipe,
+} from './bakeRecipe';
+import { getSynthBuffer, isSynthSampleId } from './synthVoice';
+import { resolveSampleKind } from '../utils/sampleKinds';
 import { sanitizeLatency, secondsToAudibleBeat } from './audibleBeat';
 import { SampleStore, type LoadingProgressCallback, type SampleLoadResult } from './audio/SampleStore';
 import { AmbientPlayer } from './audio/AmbientPlayer';
 import {
   decodedAudioBudget,
-  pitchKey,
   type AudioMemoryStats,
   type PinSet,
 } from './audio/memoryBudget';
@@ -48,6 +60,16 @@ import {
 } from './masterLimiter';
 
 type BeatUpdateCallback = (beat: number) => void;
+
+/** Alle sleutels waaronder de bakes van een event in de cache staan (pins) */
+function bakeKeysOf(sampleId: string, recipe: BakeRecipe | undefined): string[] {
+  if (!recipe) return [];
+  const keys = [recipeKey(sampleId, recipe)];
+  if (hasSyncStage(recipe) && hasAsyncStage(recipe)) {
+    keys.push(recipeKey(sampleId, syncStageOf(recipe)));
+  }
+  return keys;
+}
 type PlaybackEndCallback = () => void;
 export type { SampleLoadResult } from './audio/SampleStore';
 
@@ -83,9 +105,19 @@ export class AudioService {
 
   // Timeline data (for active clip detection during seek)
   private scheduledTracks: Track[] = [];
-  private scheduledSamples: Sample[] = [];
   /** Sequencer-patronen van de huidige schedule (fase 2) */
   private scheduledSequences: SequencerSequence[] = [];
+  /** De events van de huidige schedule — bron voor seek (V2 Fase 4) */
+  private scheduledEvents: ClipEvent[] = [];
+  /** Bake-sleutels van de huidige schedule (geheugenbudget-pins) */
+  private scheduledBakeKeys: string[] = [];
+
+  /**
+   * Tempo van de huidige schedule (V2 Fase 4). Elke tel↔seconde-omrekening
+   * van de motor (afspelen, seek, loop, auto-stop, afspeellijn) gebruikt
+   * dit — gezet door scheduleTimeline met het tempo van de compositie.
+   */
+  private bpm: number = DEFAULT_BPM;
 
   // Active on-demand sources: created by Part callback and startActiveClips().
   // Each entry is a player + its effect nodes, auto-disposed when done.
@@ -278,23 +310,32 @@ export class AudioService {
   private previewToken: object | null = null;
   // Pinregel (e): wat er als laatste gepreviewd is (blijft staan tot de volgende)
   private previewSampleId: string | null = null;
-  private previewPitchKey: string | null = null;
+  private previewBakeKeys: string[] = [];
 
-  private markPreview(sampleId: string, semitones = 0): void {
+  private markPreview(sampleId: string, recipe?: BakeRecipe): void {
     this.previewSampleId = sampleId;
-    this.previewPitchKey = semitones !== 0 ? pitchKey(sampleId, semitones) : null;
+    this.previewBakeKeys = bakeKeysOf(sampleId, recipe);
     this.sampleStore.touch(sampleId);
   }
 
   /**
    * Play a sample region with effects applied (for EffectsModal preview).
-   * Creates a temporary isolated player with pitch, reverb, and fade.
+   * Creates a temporary isolated player through the SAME bake + chain path as
+   * the timeline and the export: pitch, speed, reverse, tempo-stretch (loops),
+   * filter, echo, reverb and fades.
+   *
+   * @param offsetSeconds   trim start in SOURCE seconds (as on the clip)
+   * @param durationSeconds trimmed length in SOURCE seconds
+   * @param options.bpm     composition tempo (default: tempo of the last schedule)
+   * @param options.kind    sample kind override (default: resolveSampleKind)
    */
   async playSampleWithEffects(
     sampleId: string,
     offsetSeconds: number,
     durationSeconds: number,
-    effects: { pitch: number; reverb: number; fadeIn: number; fadeOut: number },
+    effects: Pick<ClipEffects, 'pitch' | 'reverb' | 'fadeIn' | 'fadeOut'> &
+      Partial<Pick<ClipEffects, 'speed' | 'reverse' | 'echo' | 'filter'>>,
+    options: { bpm?: number; kind?: SampleKind } = {},
   ): Promise<void> {
     // Stop any currently playing preview before starting a new one
     this.stopAllSamples();
@@ -306,39 +347,51 @@ export class AudioService {
       return;
     }
 
-    // Pitch als gebakken buffer (Fase 3): de preview klinkt daarmee exact
-    // als de timeline én de export. Bake is snel (~50-100 ms) en gecachet.
+    const bpm = normalizeBpm(options.bpm ?? this.bpm);
+    const sampleRef = { id: sampleId, kind: options.kind ?? resolveSampleKind({ id: sampleId }) };
+    const recipe = clipRecipe({ effects: { volume: 0, ...effects } }, sampleRef, bpm);
+    const lengthFactor = recipeLengthFactor(recipe ?? NEUTRAL_RECIPE);
+
+    // Bake (pitch/stretch) vooraf: de preview klinkt daarmee exact als de
+    // timeline én de export. Bake is snel (~50-100 ms) en gecachet.
     const previewToken = {};
     this.previewToken = previewToken;
-    this.markPreview(sampleId, effects.pitch);
-    if (effects.pitch !== 0) {
+    this.markPreview(sampleId, recipe);
+    if (recipe && hasAsyncStage(recipe)) {
       const source = buffer.get() as AudioBuffer | undefined;
       if (source) {
-        await pitchBufferService.bake(sampleId, effects.pitch, source);
+        await pitchBufferService.bakeRecipe(sampleId, recipe, source);
       }
       // Klikte de gebruiker intussen een nieuwe preview aan? Dan afbreken.
       if (this.previewToken !== previewToken) return;
     }
-    const resolved = pitchBufferService.resolveForPlayback(sampleId, effects, buffer);
+    const outDuration = durationSeconds * lengthFactor;
+    const plan = pitchBufferService.resolvePlan(
+      sampleId,
+      recipe,
+      toEffectsConfig(effects, bpm),
+      buffer,
+      offsetSeconds * lengthFactor,
+      outDuration,
+    );
 
-    // Zelfde gedeelde keten als de timeline en de export (audioGraph):
-    // player → [pitchShift-fallback] → [reverb] → [fadeGain] → volume → destination
-    const chain = buildClipChain(0, resolved.effects);
-    const player = new Tone.Player(resolved.buffer);
+    // Zelfde gedeelde keten als de timeline en de export (audioGraph)
+    const chain = buildClipChain(0, plan.effects);
+    const player = createPlanPlayer(plan.buffer, plan.playbackRate);
     player.connect(chain.input);
     chain.output.connect(Tone.getDestination());
 
     // Schedule fade curves
     const now = Tone.now() + 0.05;
     if (chain.fadeGain) {
-      scheduleFadeCurves(chain.fadeGain, now, durationSeconds, effects.fadeIn, effects.fadeOut);
+      scheduleFadeCurves(chain.fadeGain, now, outDuration, effects.fadeIn, effects.fadeOut);
     }
 
     // Start playback
-    player.start(now, offsetSeconds, durationSeconds);
+    player.start(now, plan.offset, plan.duration);
 
     this.previewChain = { player, nodes: chain.nodes };
-    logger.audio('playWithEffects', { sampleId, effects });
+    logger.audio('playWithEffects', { sampleId, effects, bpm });
   }
 
   /**
@@ -578,12 +631,13 @@ export class AudioService {
     volumeDb: number,
     trackIndex: number,
     effects?: ClipEffectsConfig,
+    playbackRate = 1,
   ): { player: Tone.Player; fadeGain: Tone.Gain | null; source: { player: Tone.Player; nodes: Tone.ToneAudioNode[] } } {
     const chain = buildClipChain(volumeDb, effects);
-    const { nodes, fadeGain } = chain;
+    const { nodes, fadeGain, tailSeconds } = chain;
 
     // Create player from shared buffer
-    const player = new Tone.Player(buffer);
+    const player = createPlanPlayer(buffer, playbackRate);
 
     // Chain: player → [effects] → volume → trackBus
     const destination = this.trackBuses[trackIndex] || Tone.getDestination();
@@ -594,13 +648,24 @@ export class AudioService {
     const source = { player, nodes };
     this.activeSources.add(source);
 
-    // Auto-dispose when player finishes (fire-and-forget pattern)
-    player.onstop = () => {
+    // Auto-dispose when player finishes (fire-and-forget pattern).
+    // Galm/echo (V2 Fase 4): de keten blijft tot de staart is uitgeklonken
+    // (zoals in de export) en wordt dán opgeruimd. Tot die tijd blijft de
+    // bron in activeSources, zodat pause/stop hem alsnog direct opruimt.
+    const disposeNodes = () => {
+      if (!this.activeSources.has(source)) return; // al opgeruimd (pause/stop)
       this.activeSources.delete(source);
-      try { player.dispose(); } catch { /* ignore */ }
       nodes.forEach((node) => {
         try { node.dispose(); } catch { /* ignore */ }
       });
+    };
+    player.onstop = () => {
+      try { player.dispose(); } catch { /* ignore */ }
+      if (tailSeconds > 0) {
+        setTimeout(disposeNodes, tailSeconds * 1000 + 100);
+      } else {
+        disposeNodes();
+      }
     };
 
     return { player, fadeGain, source };
@@ -623,19 +688,41 @@ export class AudioService {
     this.activeSources.clear();
   }
 
+  /**
+   * De bronbuffer voor een sample-id: een geladen sample, of een
+   * synth-noot (melodie-sequences, V2 Fase 4) die synchroon gerenderd wordt.
+   */
+  private getSourceBuffer(sampleId: string): Tone.ToneAudioBuffer | AudioBuffer | undefined {
+    if (isSynthSampleId(sampleId)) {
+      return getSynthBuffer(sampleId, Tone.getContext().sampleRate);
+    }
+    const buffer = this.buffers.get(sampleId);
+    return buffer?.loaded ? buffer : undefined;
+  }
+
+  /** Tempo van de huidige schedule (V2 Fase 4) */
+  getBpm(): number {
+    return this.bpm;
+  }
+
+  /**
+   * @param bpm tempo van de compositie (90/105/120/135; anders 120). Alle
+   *            tel↔seconde-omrekening van de motor volgt vanaf nu dit tempo.
+   */
   scheduleTimeline(
     tracks: Track[],
     samples: Sample[],
     sequences: SequencerSequence[] = [],
+    bpm: number = DEFAULT_BPM,
   ): void {
     const scheduleStartTime = performance.now();
     const transport = Tone.getTransport();
     transport.cancel(); // Clear previous schedule
-    transport.bpm.value = DEFAULT_BPM;
+    this.bpm = normalizeBpm(bpm);
+    transport.bpm.value = this.bpm;
 
     // Store timeline data for active clip detection during seek
     this.scheduledTracks = tracks;
-    this.scheduledSamples = samples;
     this.scheduledSequences = sequences;
 
     // Dispose previous Part (important for memory)
@@ -651,28 +738,28 @@ export class AudioService {
     // and sync mute/solo
     this.updateTrackBuses(tracks);
 
-    // Pitch-bakes klaarzetten (Fase 3, fire-and-forget): de Part-callback
-    // lost per event op, dus zodra een bake klaar is gebruiken volgende
-    // events hem vanzelf — geen reschedule nodig. Eerste afspeelbeurt kan
-    // nog op de PitchShift-fallback lopen; de export wacht wél op de bakes.
-    void pitchBufferService.ensureForTracks(tracks, (sampleId) => {
-      const buf = this.buffers.get(sampleId);
-      return buf?.loaded ? (buf.get() as AudioBuffer | undefined) : undefined;
-    });
-
     // Gedeelde event-generatie (Audio Engine v2): identiek aan wat de export
-    // gebruikt — loop-iteraties, per-iteratie-fades, mute, volumes.
+    // gebruikt — loop-iteraties, per-iteratie-fades, mute, volumes, recepten.
     const generated = generateClipEvents(tracks, samples, {
-      bpm: DEFAULT_BPM,
+      bpm: this.bpm,
       // Solo wordt live dynamisch via bus-gains geregeld (setSoloTrack),
       // dus hier NIET in de events bakken.
-      hasBuffer: (sampleId) => {
-        const buffer = this.buffers.get(sampleId);
-        return !!buffer && buffer.loaded;
-      },
+      hasBuffer: (sampleId) => isSynthSampleId(sampleId) || this.getSourceBuffer(sampleId) !== undefined,
       sequences,
     });
     const { events, totalClipCount, mutedClipCount } = generated;
+    this.scheduledEvents = events;
+    this.scheduledBakeKeys = events.flatMap((e) => bakeKeysOf(e.sampleId, e.recipe));
+
+    // Bakes klaarzetten (fire-and-forget): de Part-callback lost per event
+    // op, dus zodra een bake klaar is gebruiken volgende events hem vanzelf —
+    // geen reschedule nodig. Tot dan de terugval (PitchShift/tape-rate, zie
+    // PitchBufferService); de export wacht wél op de bakes.
+    void pitchBufferService.ensureForEvents(events, (sampleId) => {
+      const buf = this.getSourceBuffer(sampleId);
+      if (!buf) return undefined;
+      return buf instanceof Tone.ToneAudioBuffer ? (buf.get() as AudioBuffer | undefined) : buf;
+    });
 
     // Auto-stop-grens: hoorbaar einde incl. galmstaart (D12 — live laat de
     // reverb nu net als de export uitklinken)
@@ -685,19 +772,20 @@ export class AudioService {
       (time, event) => {
         if (event.isMuted) return;
 
-        // Get buffer for this sample
-        const buffer = this.buffers.get(event.sampleId);
+        // Get buffer for this sample (of synth-noot)
+        const buffer = this.getSourceBuffer(event.sampleId);
         if (!buffer) return;
 
-        // Pitch als gebakken buffer (Fase 3): is er een Signalsmith-bake in
-        // de cache, dan speelt die zonder PitchShift-node; anders fallback.
-        const resolved = pitchBufferService.resolveForPlayback(
-          event.sampleId, event.effects, buffer
+        // Gebakken buffer (pitch/speed/reverse/stretch) als die klaar is;
+        // anders de terugval — zie PitchBufferService.resolvePlan.
+        const plan = pitchBufferService.resolvePlan(
+          event.sampleId, event.recipe, event.effects, buffer,
+          event.trimStart, event.duration
         );
 
         // Create on-demand player with effects, routed to track bus
         const { player, fadeGain } = this.createOnDemandPlayer(
-          resolved.buffer, event.volumeDb, event.trackIndex, resolved.effects
+          plan.buffer, event.volumeDb, event.trackIndex, plan.effects, plan.playbackRate
         );
 
         // Schedule fade curves on the fadeGain node (#79) — gedeelde planner
@@ -706,7 +794,7 @@ export class AudioService {
         }
 
         try {
-          player.start(time, event.trimStart, event.duration);
+          player.start(time, plan.offset, plan.duration);
           audioDiag.partCallback({
             scheduledTime: time,
             audioContextCurrentTime: Tone.getContext().rawContext.currentTime,
@@ -747,165 +835,57 @@ export class AudioService {
   }
 
   /**
-   * Check if a clip is active (playing) at a specific beat position.
-   * A clip is active if: startBeat < beat < endBeat (loop-aware)
+   * Start all events that are already sounding at the given beat position
+   * (seek / resume mid-clip). V2 Fase 4: built from the SAME scheduled events
+   * as the Part (loops, sequence steps, recipes, effects), so seek can't
+   * diverge from playing from the start.
    *
-   * Uses strict < for startBeat to avoid double-starting clips:
-   * clips starting exactly at the seek position are handled by Tone.Part,
-   * not by startActiveClips(). Using <= would cause both to start the same
-   * player at the same time, triggering "Start time must be strictly greater
-   * than previous start time" errors.
-   */
-  private isClipActiveAtBeat(clip: Clip, sample: Sample, beat: number): boolean {
-    const clipEndBeat = getEffectiveClipEndBeat(clip, sample, DEFAULT_BPM);
-    return clip.startBeat < beat && beat < clipEndBeat;
-  }
-
-  /**
-   * Get all clips that are active at a specific beat position,
-   * with calculated playback parameters for immediate start.
-   *
-   * Returns clips with adjusted trimStart, duration, trackIndex, and effects
-   * config for on-demand player creation.
-   */
-  private getActiveClipsAtBeat(beat: number): Array<{
-    clip: Clip;
-    sample: Sample;
-    adjustedTrimStart: number;
-    remainingDuration: number;
-    volumeDb: number;
-    isMuted: boolean;
-    trackIndex: number;
-    effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number };
-  }> {
-    const activeClips: Array<{
-      clip: Clip;
-      sample: Sample;
-      adjustedTrimStart: number;
-      remainingDuration: number;
-      volumeDb: number;
-      isMuted: boolean;
-      trackIndex: number;
-      effects?: { pitch: number; reverb: number; fadeIn: number; fadeOut: number };
-    }> = [];
-
-    const sampleMap = new Map(this.scheduledSamples.map((s) => [s.id, s]));
-
-    this.scheduledTracks.forEach((track, trackIndex) => {
-      const trackVolume = track.volume ?? 0;
-      const trackMuted = track.mute ?? false;
-
-      track.clips.forEach((clip) => {
-        const sample = sampleMap.get(clip.sampleId);
-        const buffer = this.buffers.get(clip.sampleId);
-
-        if (!sample || !buffer || !buffer.loaded) return;
-        if (!this.isClipActiveAtBeat(clip, sample, beat)) return;
-
-        const clipVolume = clip.effects?.volume ?? 0;
-        const clipMuted = clip.effects?.mute ?? false;
-
-        // Calculate how much time has elapsed since clip start
-        const elapsedBeats = beat - clip.startBeat;
-        const elapsedSeconds = beatsToSeconds(elapsedBeats, DEFAULT_BPM);
-
-        // Calculate original trim parameters
-        const originalTrimStart = getClipTrimStart(clip);
-        const singleDuration = getClipDuration(clip, sample);
-
-        // Calculate adjusted parameters for seek playback — loop-aware (#65)
-        let adjustedTrimStart: number;
-        let remainingDuration: number;
-
-        if (clip.loop && clip.loopDurationBeats) {
-          const posInLoop = elapsedSeconds % singleDuration;
-          adjustedTrimStart = originalTrimStart + posInLoop;
-          const remainingInIteration = singleDuration - posInLoop;
-          const totalRemaining = beatsToSeconds(clip.loopDurationBeats, DEFAULT_BPM) - elapsedSeconds;
-          remainingDuration = Math.min(remainingInIteration, totalRemaining);
-        } else {
-          adjustedTrimStart = originalTrimStart + elapsedSeconds;
-          remainingDuration = singleDuration - elapsedSeconds;
-        }
-
-        // Build effects config if clip has non-default effects
-        const effects = clipHasEffects(clip) ? {
-          pitch: clip.effects?.pitch ?? 0,
-          reverb: clip.effects?.reverb ?? 0,
-          fadeIn: clip.effects?.fadeIn ?? 0,
-          fadeOut: clip.effects?.fadeOut ?? 0,
-        } : undefined;
-
-        // Only add if there's still something to play (minimum 10ms)
-        if (remainingDuration > 0.01) {
-          activeClips.push({
-            clip,
-            sample,
-            adjustedTrimStart,
-            remainingDuration,
-            volumeDb: trackVolume + clipVolume,
-            isMuted: trackMuted || clipMuted,
-            trackIndex,
-            effects,
-          });
-        }
-      });
-    });
-
-    return activeClips;
-  }
-
-  /**
-   * Start all clips that are active at the given beat position.
-   * Creates on-demand players for each active clip, routed through track buses.
-   * Handles fade curve scheduling for seek into fade-in/fade-out zones.
+   * Uses strict < for the event start to avoid double-starting: an event
+   * starting exactly at the seek position is handled by Tone.Part.
    */
   private startActiveClips(seekBeat: number): void {
-    const activeClips = this.getActiveClipsAtBeat(seekBeat);
-    if (activeClips.length === 0) return;
-
+    const seekSeconds = beatsToSeconds(seekBeat, this.bpm);
     const startTime = Tone.now() + 0.05;
 
-    activeClips.forEach(({ adjustedTrimStart, remainingDuration, clip, sample, isMuted, volumeDb, trackIndex, effects }) => {
-      if (isMuted) return;
+    for (const event of this.scheduledEvents) {
+      if (event.isMuted) continue;
+      if (!(event.time < seekSeconds && seekSeconds < event.time + event.duration)) continue;
+      const elapsed = seekSeconds - event.time;
+      const remaining = event.duration - elapsed;
+      // Only if there's still something to play (minimum 10ms)
+      if (remaining <= 0.01) continue;
 
-      const buffer = this.buffers.get(clip.sampleId);
-      if (!buffer) return;
+      const buffer = this.getSourceBuffer(event.sampleId);
+      if (!buffer) continue;
 
-      // Pitch als gebakken buffer (Fase 3) — zelfde resolutie als de Part
-      const resolved = pitchBufferService.resolveForPlayback(
-        clip.sampleId, effects, buffer
+      // Zelfde resolutie als de Part (gebakken buffer of terugval)
+      const plan = pitchBufferService.resolvePlan(
+        event.sampleId, event.recipe, event.effects, buffer,
+        event.trimStart + elapsed, remaining
       );
 
-      // Create on-demand player routed to track bus
       const { player, fadeGain } = this.createOnDemandPlayer(
-        resolved.buffer, volumeDb, trackIndex, resolved.effects
+        plan.buffer, event.volumeDb, event.trackIndex, plan.effects, plan.playbackRate
       );
 
-      // Schedule fade curves for seek position (#79) — gedeelde planner
-      // UX-FADE-LOOP: fade per iteratie — effectiveElapsed binnen de huidige
-      // (loop-)iteratie bepaalt de tussenwaarde en het curve-restant.
-      if (fadeGain && effects) {
-        const elapsedBeats = seekBeat - clip.startBeat;
-        const elapsedSeconds = beatsToSeconds(elapsedBeats, DEFAULT_BPM);
-        const singleDuration = getClipDuration(clip, sample);
-        const effectiveElapsed = (clip.loop && clip.loopDurationBeats)
-          ? elapsedSeconds % singleDuration
-          : elapsedSeconds;
+      // Fades for the seek position (#79) — gedeelde planner. Elk event is
+      // één (loop-)iteratie, dus `elapsed` is de positie binnen die iteratie
+      // (UX-FADE-LOOP: fade per iteratie).
+      if (fadeGain) {
         scheduleFadeCurvesAtOffset(
-          fadeGain, startTime, effectiveElapsed, singleDuration,
-          effects.fadeIn, effects.fadeOut,
+          fadeGain, startTime, elapsed, event.duration,
+          event.fadeIn, event.fadeOut,
         );
       }
 
-      player.start(startTime, adjustedTrimStart, remainingDuration);
+      player.start(startTime, plan.offset, plan.duration);
       logger.audio('startActiveClip (on-demand)', {
-        sampleId: clip.sampleId,
+        sampleId: event.sampleId,
         seekBeat,
-        adjustedTrimStart,
-        remainingDuration,
+        offset: plan.offset,
+        remaining,
       });
-    });
+    }
   }
 
   /**
@@ -920,7 +900,7 @@ export class AudioService {
    */
   play(fromBeat: number = 0): void {
     const transport = Tone.getTransport();
-    const offsetSeconds = beatsToSeconds(fromBeat, DEFAULT_BPM);
+    const offsetSeconds = beatsToSeconds(fromBeat, this.bpm);
 
     audioDiag.play(fromBeat, offsetSeconds, transport.state);
 
@@ -1006,11 +986,11 @@ export class AudioService {
     const transport = Tone.getTransport();
     transport.loop = enabled;
     if (enabled && region) {
-      transport.loopStart = beatsToSeconds(region.startBeat, DEFAULT_BPM);
-      transport.loopEnd = beatsToSeconds(region.endBeat, DEFAULT_BPM);
+      transport.loopStart = beatsToSeconds(region.startBeat, this.bpm);
+      transport.loopEnd = beatsToSeconds(region.endBeat, this.bpm);
     } else if (enabled) {
       transport.loopStart = 0;
-      transport.loopEnd = beatsToSeconds(totalBeats, DEFAULT_BPM);
+      transport.loopEnd = beatsToSeconds(totalBeats, this.bpm);
     }
   }
 
@@ -1030,8 +1010,11 @@ export class AudioService {
     looping: boolean,
     totalBeats: number,
     sequences?: SequencerSequence[],
+    bpm: number = this.bpm,
   ): void {
     audioDiag.rescheduleTriggered(`live edit at beat ${this.getCurrentBeat().toFixed(2)}`);
+    // Positie in TELLEN, gemeten in het oude tempo: na een tempowissel speelt
+    // de afspeellijn verder op dezelfde tel (V2 Fase 4)
     const currentBeat = this.getCurrentBeat();
     const transport = Tone.getTransport();
 
@@ -1043,7 +1026,7 @@ export class AudioService {
     this.stopPlayheadUpdates();
 
     // 2. Full reschedule (disposes old Part + active sources, builds new Part)
-    this.scheduleTimeline(tracks, samples, sequences ?? this.scheduledSequences);
+    this.scheduleTimeline(tracks, samples, sequences ?? this.scheduledSequences, bpm);
     this.setLoop(looping, totalBeats, this.loopRegion);
 
     // 3. Resume playback from the same position
@@ -1067,6 +1050,7 @@ export class AudioService {
     durationSeconds: number,
     onProgress?: (fraction: number) => void,
     sequences: SequencerSequence[] = [],
+    bpm: number = DEFAULT_BPM,
   ): Promise<AudioBuffer> {
     await this.initialize();
     const ctx = Tone.getContext();
@@ -1105,7 +1089,7 @@ export class AudioService {
     try {
       // Schone transport-uitgangspositie vóór het plannen
       try { transport.cancel(); transport.stop(); transport.seconds = 0; } catch { /* ignore */ }
-      this.scheduleTimeline(tracks, samples, sequences);
+      this.scheduleTimeline(tracks, samples, sequences, bpm);
       this.setLoop(false, 0, null);
 
       // Handshake: pas als de worklet aantoonbaar draait het startmoment
@@ -1187,8 +1171,7 @@ export class AudioService {
     // afspeellijn leest de hoorbare positie zelf, per frame, via
     // playbackClock/frameLoop. Het interval bewaakt alleen nog de auto-stop.
     this.playheadIntervalId = window.setInterval(() => {
-      const seconds = transport.seconds;
-      const currentBeat = (seconds / 60) * DEFAULT_BPM;
+      const currentBeat = secondsToBeats(transport.seconds, this.bpm);
 
       // Auto-stop: when not looping and playhead passed the audible end
       // (incl. galmstaart — D12: live laat de reverb net als de export uitklinken)
@@ -1231,8 +1214,7 @@ export class AudioService {
   }
 
   getCurrentBeat(): number {
-    const seconds = Tone.getTransport().seconds;
-    return (seconds / 60) * DEFAULT_BPM;
+    return secondsToBeats(Tone.getTransport().seconds, this.bpm);
   }
 
   /**
@@ -1253,7 +1235,7 @@ export class AudioService {
       const raw = Tone.getContext().rawContext as AudioContext;
       const latency = sanitizeLatency(raw.outputLatency, raw.baseLatency);
       const seconds = Tone.getTransport().getSecondsAtTime(Tone.immediate() - latency);
-      return secondsToAudibleBeat(seconds, DEFAULT_BPM);
+      return secondsToAudibleBeat(seconds, this.bpm);
     } catch {
       return this.getCurrentBeat();
     }
@@ -1265,7 +1247,7 @@ export class AudioService {
    */
   seek(beat: number): void {
     const transport = Tone.getTransport();
-    const seconds = beatsToSeconds(beat, DEFAULT_BPM);
+    const seconds = beatsToSeconds(beat, this.bpm);
     transport.seconds = seconds;
     // Notify listeners of new position
     this.beatUpdateCallbacks.forEach((cb) => cb(beat));
@@ -1329,8 +1311,11 @@ export class AudioService {
     const pins = createPinSet();
     addSessionPins(pins); // (a) tijdlijn + sequences, (b) bibliotheek + recorder
     addTimelinePins(pins, this.scheduledTracks, this.scheduledSequences); // (c), (d)
+    // Gebakken buffers van de huidige schedule (incl. uitgepakte sequence-
+    // stappen en tempo-stretch — V2 Fase 4)
+    this.scheduledBakeKeys.forEach((key) => pins.pitchKeys.add(key));
     addSampleIdPins(pins, [this.previewSampleId]); // (e)
-    if (this.previewPitchKey) pins.pitchKeys.add(this.previewPitchKey);
+    this.previewBakeKeys.forEach((key) => pins.pitchKeys.add(key));
     addSampleIdPins(pins, this.sampleStore.getRecentRequestIds()); // (f)
     return pins;
   }
@@ -1361,7 +1346,8 @@ export class AudioService {
 
     // Clear timeline data
     this.scheduledTracks = [];
-    this.scheduledSamples = [];
+    this.scheduledEvents = [];
+    this.scheduledBakeKeys = [];
 
     // Dispose track buses
     this.disposeTrackBuses();
@@ -1369,7 +1355,7 @@ export class AudioService {
     // Dispose audio buffers, preview players en golfvormen (+ budget afboeken)
     this.sampleStore.clear();
     this.previewSampleId = null;
-    this.previewPitchKey = null;
+    this.previewBakeKeys = [];
 
     // Dispose ambient audio
     this.ambient.dispose();

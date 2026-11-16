@@ -28,6 +28,7 @@ import { audioService } from '../services/AudioService';
 import { wrapBeat } from '../services/audibleBeat';
 import { audioDiag } from '../utils/audioDiagnostics';
 import { DEFAULT_BPM } from '../constants/config';
+import { normalizeBpm } from '../utils/audio';
 import { logger } from '../utils/logger';
 import type { CompositionData } from '../types';
 
@@ -65,7 +66,8 @@ export function useCompositionPlayback(
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const totalBeats = data?.totalBeats ?? 32;
-  const bpm = data?.bpm ?? DEFAULT_BPM;
+  // V2 Fase 4: de motor speelt in het tempo van de compositie zelf
+  const bpm = normalizeBpm(data?.bpm ?? DEFAULT_BPM);
   const effectiveLooping = respectLoop && (data?.isLooping ?? false);
 
   // Waarden in refs zodat het beat-interval en de callbacks stabiel blijven
@@ -97,9 +99,13 @@ export function useCompositionPlayback(
     restBeatRef.current = beat;
   }, []);
 
-  /** Tellen van de motor (DEFAULT_BPM) → tellen van deze compositie, met loop-modulo. */
+  /**
+   * Tellen van de motor → tellen van deze compositie, met loop-modulo. Sinds
+   * V2 Fase 4 plant de motor in het compositietempo, dus motortellen ZIJN
+   * compositietellen (vroeger: × bpm/120).
+   */
   const toCompositionBeat = useCallback((engineBeat: number) => wrapBeat(
-    engineBeat * (bpmRef.current / DEFAULT_BPM),
+    engineBeat,
     totalBeatsRef.current,
     loopingRef.current,
   ), []);
@@ -212,7 +218,8 @@ export function useCompositionPlayback(
       audioService.scheduleTimeline(
         current.tracks ?? [],
         current.samples ?? [],
-        current.sequences ?? []
+        current.sequences ?? [],
+        bpmRef.current
       );
       audioService.setLoop(loopingRef.current, totalBeatsRef.current);
       audioService.play(startBeat);

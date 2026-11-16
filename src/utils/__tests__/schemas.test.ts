@@ -135,15 +135,13 @@ describe('parseCompositionData', () => {
     expect(result).toBeNull();
   });
 
-  it('should return null for invalid bpm (non-positive)', () => {
-    const invalidData = {
-      ...validCompositionData,
-      bpm: 0,
-    };
-
-    const result = parseCompositionData(invalidData);
-
-    expect(result).toBeNull();
+  // V2 Fase 4: een ongeldig tempo keurt de compositie niet meer af maar valt
+  // terug op 120 (alleen 90/105/120/135 bestaan) — nooit data verliezen.
+  it('falls back to 120 for an invalid bpm instead of rejecting', () => {
+    for (const bpm of [0, -5, 100, 'snel', undefined]) {
+      const result = parseCompositionData({ ...validCompositionData, bpm });
+      expect(result?.bpm).toBe(120);
+    }
   });
 
   it('should return null for invalid totalBeats (non-positive)', () => {

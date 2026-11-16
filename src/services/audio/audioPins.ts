@@ -22,15 +22,19 @@
  *      gepland)
  *
  * Pitch-bakes worden per (sample, semitonen) vastgepind: alleen de
- * toonhoogtes die echt op de tijdlijn of in de preview staan.
+ * toonhoogtes die echt op de tijdlijn of in de preview staan. Sinds V2 Fase 4
+ * pinnen we per bake-RECEPT (pitch/speed/reverse/tempo-stretch, ook van
+ * uitgepakte sequence-stappen) zodra de samples en het tempo bekend zijn.
  */
 
-import type { Track } from '../../types';
+import type { Sample, Track } from '../../types';
 import type { SequencerSequence } from '../../types/sequencer';
 import { getSequenceIdFromSampleId } from '../../utils/sequencer';
 import { useTimelineStore } from '../../stores/timelineStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { pitchKey } from './memoryBudget';
+import { generateClipEvents } from '../audioEvents';
+import { hasAsyncStage, hasSyncStage, recipeKey, syncStageOf } from '../bakeRecipe';
 
 /** Veranderlijke variant voor het opbouwen */
 export interface MutablePinSet {
@@ -50,7 +54,8 @@ export function createPinSet(): MutablePinSet {
 export function addTimelinePins(
   pins: MutablePinSet,
   tracks: readonly Track[],
-  sequences: readonly SequencerSequence[] = []
+  sequences: readonly SequencerSequence[] = [],
+  context?: { samples: readonly Sample[]; bpm: number }
 ): MutablePinSet {
   for (const track of tracks) {
     for (const clip of track.clips) {
@@ -63,6 +68,31 @@ export function addTimelinePins(
   for (const sequence of sequences) {
     for (const patternTrack of sequence.tracks) {
       if (patternTrack.sampleId) pins.sampleIds.add(patternTrack.sampleId);
+    }
+    const voice = sequence.kind === 'melody' ? sequence.melody?.voice : undefined;
+    if (voice?.type === 'sample' && voice.sampleId) pins.sampleIds.add(voice.sampleId);
+  }
+  if (context) addBakePins(pins, tracks, sequences, context.samples, context.bpm);
+  return pins;
+}
+
+/**
+ * Pin de bake-recepten van een tijdlijn (V2 Fase 4) — via dezelfde
+ * event-generatie als live en export, dus exact de buffers die zullen spelen.
+ */
+export function addBakePins(
+  pins: MutablePinSet,
+  tracks: readonly Track[],
+  sequences: readonly SequencerSequence[],
+  samples: readonly Sample[],
+  bpm: number
+): MutablePinSet {
+  const { events } = generateClipEvents([...tracks], [...samples], { bpm, sequences: [...sequences] });
+  for (const event of events) {
+    if (!event.recipe) continue;
+    pins.pitchKeys.add(recipeKey(event.sampleId, event.recipe));
+    if (hasSyncStage(event.recipe) && hasAsyncStage(event.recipe)) {
+      pins.pitchKeys.add(recipeKey(event.sampleId, syncStageOf(event.recipe)));
     }
   }
   return pins;
@@ -78,8 +108,11 @@ export function addSampleIdPins(pins: MutablePinSet, ids: Iterable<string | null
 /** (a) + (b): de sessie-stores. */
 export function addSessionPins(pins: MutablePinSet): MutablePinSet {
   const timeline = useTimelineStore.getState();
-  addTimelinePins(pins, timeline.tracks, timeline.sequences ?? []);
   const library = useLibraryStore.getState();
+  addTimelinePins(pins, timeline.tracks, timeline.sequences ?? [], {
+    samples: library.librarySamples,
+    bpm: timeline.bpm,
+  });
   addSampleIdPins(pins, library.librarySamples.map((s) => s.id));
   addSampleIdPins(pins, library.recorderSlots.map((s) => s?.id));
   return pins;

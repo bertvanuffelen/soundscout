@@ -21,7 +21,7 @@ import {
   createSampleMap,
   type SmartSnapResult,
 } from '../utils/clipCollision';
-import { getEffectiveClipEndBeat } from '../utils/audio';
+import { getEffectiveClipEndBeat, isAllowedBpm, normalizeBpm } from '../utils/audio';
 import { generateClipId } from '../utils/uuid';
 
 function createEmptyTracks(): Track[] {
@@ -124,6 +124,15 @@ interface TimelineStore {
 
   // Settings
   setLooping: (looping: boolean) => void;
+
+  /**
+   * Tempo van de compositie (V2 Fase 4): alleen ALLOWED_BPMS (90/105/120/135);
+   * een andere waarde wordt genegeerd. Bumpt audioVersion — tijdens afspelen
+   * plant useRescheduleOnChange opnieuw in en speelt de afspeellijn verder op
+   * dezelfde TEL. Clipposities (in tellen) blijven staan; loops houden hun
+   * lengte in tellen, losse geluiden niet (die kunnen daardoor gaan overlappen).
+   */
+  setBpm: (bpm: number) => void;
 
   /**
    * Verleng (positief) of verkort (negatief) de tijdlijn met N beats
@@ -737,6 +746,11 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     set((prev) => ({ isLooping: looping, audioVersion: prev.audioVersion + 1 }));
   },
 
+  setBpm: (bpm) => {
+    if (!isAllowedBpm(bpm)) return;
+    set((prev) => (prev.bpm === bpm ? prev : { bpm, audioVersion: prev.audioVersion + 1 }));
+  },
+
   extendTimeline: (byBeats, contentEndBeat = 0) => {
     set((prev) => {
       // Negatief = inkorten. Clips en secties voorbij het nieuwe einde
@@ -803,7 +817,8 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   loadTimeline: (timeline) => {
     set((prev) => ({
       tracks: timeline.tracks,
-      bpm: timeline.bpm,
+      // Alleen de vier tempi; ongeldig/afwezig → 120 met waarschuwing
+      bpm: normalizeBpm(timeline.bpm),
       totalBeats: timeline.totalBeats,
       isLooping: timeline.isLooping,
       sections: timeline.sections ?? [],

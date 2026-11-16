@@ -95,9 +95,10 @@ export function useAudioEngine() {
   // --- Timeline Playback ---
 
   const scheduleTimeline = useCallback((tracks: Track[], samples: Sample[]) => {
-    // Sequences horen bij de compositie (fase 2) — imperatief meelezen
-    const sequences = useTimelineStore.getState().sequences;
-    audioService.scheduleTimeline(tracks, samples, sequences);
+    // Sequences + tempo horen bij de compositie (fase 2, V2 Fase 4) —
+    // imperatief meelezen
+    const { sequences, bpm } = useTimelineStore.getState();
+    audioService.scheduleTimeline(tracks, samples, sequences, bpm);
   }, []);
 
   const playTimeline = useCallback((fromBeat: number = 0) => {
@@ -133,9 +134,10 @@ export function useAudioEngine() {
 
   const rescheduleWhilePlaying = useCallback(
     (tracks: Track[], samples: Sample[], looping: boolean, totalBeats: number) => {
-      // Verse sequences meelezen zodat live patroon-edits hoorbaar worden
-      const sequences = useTimelineStore.getState().sequences;
-      audioService.rescheduleWhilePlaying(tracks, samples, looping, totalBeats, sequences);
+      // Verse sequences + tempo meelezen zodat live patroon-edits en een
+      // tempowissel hoorbaar worden (de afspeellijn blijft op dezelfde tel)
+      const { sequences, bpm } = useTimelineStore.getState();
+      audioService.rescheduleWhilePlaying(tracks, samples, looping, totalBeats, sequences, bpm);
     }, []
   );
 

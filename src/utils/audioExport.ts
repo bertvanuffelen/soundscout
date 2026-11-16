@@ -11,8 +11,9 @@ import { DEFAULT_BPM } from '../constants/config';
 import { getSequenceIdFromSampleId } from './sequencer';
 import { logger } from './logger';
 import { generateClipEvents } from '../services/audioEvents';
-import { buildClipChain, scheduleFadeCurves } from '../services/audioGraph';
+import { buildClipChain, createPlanPlayer, scheduleFadeCurves } from '../services/audioGraph';
 import { pitchBufferService } from '../services/PitchBufferService';
+import { getSynthBuffer, isSynthSampleId } from '../services/synthVoice';
 import { analyzeAudioBuffer, formatRenderAnalysis } from './renderValidation';
 import { audioService } from '../services/AudioService';
 import { applyLimiterToBuffer } from '../services/masterLimiter';
@@ -93,14 +94,44 @@ export async function preloadBuffers(
 }
 
 /**
+ * Bak ALLE buffers voor deze tijdlijn (V2 Fase 4): pitch, bandsnelheid,
+ * reverse, tempo-stretch van loops én de noten van melodie-sequences —
+ * precies de recepten die renderOffline zal afspelen (zelfde
+ * generateClipEvents). VÓÓR renderOffline awaiten: de export mag nooit op
+ * een terugval renderen zolang Signalsmith beschikbaar is.
+ */
+export async function ensureBakedBuffers(
+  tracks: Track[],
+  samples: Sample[],
+  bufferMap: Map<string, Tone.ToneAudioBuffer>,
+  options: Pick<ExportOptions, 'bpm' | 'sequences'> = {}
+): Promise<void> {
+  const { events } = generateClipEvents(tracks, samples, {
+    bpm: options.bpm ?? DEFAULT_BPM,
+    hasBuffer: (sampleId) => bufferMap.has(sampleId) || isSynthSampleId(sampleId),
+    sequences: options.sequences ?? [],
+  });
+  await pitchBufferService.ensureForEvents(events, (sampleId) => {
+    const buffer = bufferMap.get(sampleId);
+    return buffer?.loaded ? (buffer.get() as AudioBuffer | undefined) : undefined;
+  });
+}
+
+/**
  * Bak alle pitch-buffers voor deze tijdlijn (Fase 3). VÓÓR renderOffline
- * awaiten: de export mag nooit op de PitchShift-fallback renderen zolang
- * Signalsmith beschikbaar is.
+ * awaiten. Met `samples` erbij bakt dit álle recepten (ensureBakedBuffers);
+ * zonder `samples` (oude aanroep) alleen pitch/speed/reverse van clips.
  */
 export async function ensurePitchBuffers(
   tracks: Track[],
-  bufferMap: Map<string, Tone.ToneAudioBuffer>
+  bufferMap: Map<string, Tone.ToneAudioBuffer>,
+  samples?: Sample[],
+  options: Pick<ExportOptions, 'bpm' | 'sequences'> = {}
 ): Promise<void> {
+  if (samples) {
+    await ensureBakedBuffers(tracks, samples, bufferMap, options);
+    return;
+  }
   await pitchBufferService.ensureForTracks(tracks, (sampleId) => {
     const buffer = bufferMap.get(sampleId);
     return buffer?.loaded ? (buffer.get() as AudioBuffer | undefined) : undefined;
@@ -130,6 +161,9 @@ export function findMissingSampleIds(
         for (const patternTrack of sequence?.tracks ?? []) {
           if (patternTrack.sampleId) used.add(patternTrack.sampleId);
         }
+        // Melodie met een bibliotheekstem (synth-stemmen hebben geen bestand)
+        const voice = sequence?.kind === 'melody' ? sequence.melody?.voice : undefined;
+        if (voice?.type === 'sample' && voice.sampleId) used.add(voice.sampleId);
         continue;
       }
       used.add(clip.sampleId);
@@ -209,7 +243,7 @@ export async function renderOffline(
   const generated = generateClipEvents(tracks, samples, {
     bpm,
     soloTrackIndex,
-    hasBuffer: (sampleId) => bufferMap.has(sampleId),
+    hasBuffer: (sampleId) => bufferMap.has(sampleId) || isSynthSampleId(sampleId),
     sequences,
   });
 
@@ -227,29 +261,33 @@ export async function renderOffline(
       // (ReverbIRService) — synchroon, dus géén ready-await meer nodig.
       generated.events.forEach((event) => {
         if (event.isMuted) return;
-        const buffer = bufferMap.get(event.sampleId);
+        const buffer = isSynthSampleId(event.sampleId)
+          ? getSynthBuffer(event.sampleId, sampleRate)
+          : bufferMap.get(event.sampleId);
         if (!buffer) return;
 
-        // Pitch als gebakken buffer (Fase 3) — exportflows hebben de bakes
-        // vooraf ge-await via ensurePitchBuffers, dus dit is vrijwel altijd
-        // de Signalsmith-buffer; anders PitchShift-fallback (zoals live).
-        const resolved = pitchBufferService.resolveForPlayback(
-          event.sampleId, event.effects, buffer
+        // Gebakken buffer (pitch/speed/reverse/stretch) — exportflows hebben
+        // de bakes vooraf ge-await via ensureBakedBuffers, dus dit is vrijwel
+        // altijd de echte bake; anders dezelfde terugval als live.
+        const plan = pitchBufferService.resolvePlan(
+          event.sampleId, event.recipe, event.effects, buffer,
+          event.trimStart, event.duration
         );
 
         // Verse keten + player per event (gedeelde builder)
-        const chain = buildClipChain(event.volumeDb, resolved.effects);
+        const chain = buildClipChain(event.volumeDb, plan.effects);
 
-        const player = new Tone.Player(resolved.buffer);
+        const player = createPlanPlayer(plan.buffer, plan.playbackRate);
         player.connect(chain.input);
         chain.output.connect(trackBuses[event.trackIndex] ?? masterBus);
 
-        const { time, trimStart, duration: eventDuration, fadeIn, fadeOut } = event;
+        const { time, duration: eventDuration, fadeIn, fadeOut } = event;
+        const { offset, duration: bufferDuration } = plan;
         transport.schedule((t) => {
           if (chain.fadeGain) {
             scheduleFadeCurves(chain.fadeGain, t, eventDuration, fadeIn, fadeOut);
           }
-          player.start(t, trimStart, eventDuration);
+          player.start(t, offset, bufferDuration);
         }, time);
       });
 
@@ -301,7 +339,8 @@ export async function validateOrCapture(
   samples: Sample[],
   duration: number,
   onProgress?: (fraction: number) => void,
-  sequences: import('../types/sequencer').SequencerSequence[] = []
+  sequences: import('../types/sequencer').SequencerSequence[] = [],
+  bpm: number = DEFAULT_BPM
 ): Promise<{ buffer: AudioBuffer; usedRealtimeFallback: boolean }> {
   const analysis = analyzeAudioBuffer(audioBuffer);
   logger.info('Export-validatie: ' + formatRenderAnalysis(analysis));
@@ -313,7 +352,7 @@ export async function validateOrCapture(
   });
   try {
     const captured = await audioService.captureRender(
-      tracks, samples, duration, onProgress, sequences
+      tracks, samples, duration, onProgress, sequences, bpm
     );
     const capturedAnalysis = analyzeAudioBuffer(captured);
     logger.info('Vangnet-validatie: ' + formatRenderAnalysis(capturedAnalysis));
@@ -372,7 +411,7 @@ export async function exportToMp3(
   // Preload all buffers + pitch-bakes
   const { bufferMap } = await preloadBuffers(samples, onProgress);
   const missingSampleIds = findMissingSampleIds(tracks, bufferMap, options.sequences ?? []);
-  await ensurePitchBuffers(tracks, bufferMap);
+  await ensureBakedBuffers(tracks, samples, bufferMap, options);
 
   // Render offline
   const renderedBuffer = await renderOffline(
@@ -388,7 +427,8 @@ export async function exportToMp3(
   const { buffer: audioBuffer, usedRealtimeFallback } = await validateOrCapture(
     renderedBuffer, tracks, samples, duration,
     (fraction) => onProgress?.(0.3 + fraction * 0.4),
-    options.sequences ?? []
+    options.sequences ?? [],
+    options.bpm ?? DEFAULT_BPM
   );
 
   // Encode to MP3

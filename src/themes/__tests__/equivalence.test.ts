@@ -9,7 +9,7 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import i18n from '../../i18n';
-import { LEGACY_THEMES, LEGACY_LOCALES, convertLegacyThemes } from '../export/legacyThemes';
+import { LEGACY_THEMES, LEGACY_LOCALES, LEGACY_SAMPLE_KINDS, convertLegacyThemes } from '../export/legacyThemes';
 import { lookupKey, stableJson } from '../convert';
 import { ThemeManifestSchema } from '../manifest';
 import { manifestToThemeConfig, themeTextResources } from '../mapping';
@@ -46,6 +46,14 @@ describe.each(LEGACY_THEMES.map(({ theme }) => [theme.id, theme] as const))('the
   it('het gepubliceerde manifest is actueel (conversie levert hetzelfde bestand)', () => {
     const converted = convertLegacyThemes().find((m) => m.id === id)!;
     expect(raw).toBe(stableJson(converted));
+  });
+
+  // V2 Fase 4: `original` = de bevroren fixture + LEGACY_SAMPLE_KINDS (de
+  // bewust toegevoegde loop-markering). Deze test borgt dat dat de ENIGE
+  // afwijking is: precies die samples dragen `kind`, verder niets.
+  it('alleen de bewust gemarkeerde samples dragen een kind (V2 Fase 4)', () => {
+    const kinds = Object.fromEntries(manifest.samples.filter((s) => s.kind).map((s) => [s.id, s.kind]));
+    expect(kinds).toEqual(LEGACY_SAMPLE_KINDS[id] ?? {});
   });
 
   it('manifest → ThemeConfig is gelijk aan het oorspronkelijke TS-thema', () => {

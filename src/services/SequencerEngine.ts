@@ -22,9 +22,16 @@ import type { Sample } from '../types';
 import {
   SEQ_CHOKE_FADE_SECONDS,
   SEQ_DEFAULT_BPM,
+  type SequencerSequence,
 } from '../types/sequencer';
 import { useSequencerStore } from '../stores/sequencerStore';
-import { eventsAtStep, generatePatternEvents } from './sequencerEvents';
+import { useTimelineStore } from '../stores/timelineStore';
+import { eventsAtStep, gainToDb, generatePatternEvents, type PatternEvent } from './sequencerEvents';
+import { pitchBufferService } from './PitchBufferService';
+import { buildClipChain, createPlanPlayer } from './audioGraph';
+import { getSynthBuffer, isSynthSampleId } from './synthVoice';
+import { hasAsyncStage } from './bakeRecipe';
+import { normalizeBpm } from '../utils/audio';
 import { logger } from '../utils/logger';
 
 /** Headroom op de master vóór de limiter (~−3 dB) */
@@ -89,6 +96,37 @@ export class SequencerEngine {
     return this.buffers.get(sampleId)?.loaded === true;
   };
 
+  /**
+   * Tempo waarin de sequencer nu speelt: in de studio het tempo van de
+   * compositie (V2 Fase 4 — 1 vakje = 1 tel, net als op de tijdlijn), in het
+   * lab het tempo van de sequence zelf.
+   */
+  private currentBpm(sequence: SequencerSequence | null | undefined): number {
+    const { mode } = useSequencerStore.getState();
+    if (mode === 'studio') return normalizeBpm(useTimelineStore.getState().bpm);
+    return sequence?.bpm ?? SEQ_DEFAULT_BPM;
+  }
+
+  /** Bronbuffer: geladen sample of (melodie) synth-noot */
+  private sourceBuffer(sampleId: string): Tone.ToneAudioBuffer | AudioBuffer | undefined {
+    if (isSynthSampleId(sampleId)) return getSynthBuffer(sampleId, Tone.getContext().sampleRate);
+    const buffer = this.buffers.get(sampleId);
+    return buffer?.loaded ? buffer : undefined;
+  }
+
+  /**
+   * Bak alle recepten van een sequence vooraf (melodienoten op een
+   * bibliotheekstem, uitgerekte loops). Optioneel — zonder deze aanroep
+   * bakt de tick ze zelf en speelt hij tot dan de terugval.
+   */
+  async prepare(sequence: SequencerSequence): Promise<void> {
+    const events = generatePatternEvents(sequence, this.samples, {
+      hasBuffer: this.hasBuffer,
+      bpm: this.currentBpm(sequence),
+    });
+    await pitchBufferService.ensureForEvents(events, (id) => this.getAudioBuffer(id) ?? undefined);
+  }
+
   /** Ruwe AudioBuffer voor de trim-golfvorm (null als nog niet geladen) */
   getAudioBuffer(sampleId: string): AudioBuffer | null {
     const buffer = this.buffers.get(sampleId);
@@ -140,8 +178,7 @@ export class SequencerEngine {
     }
     this.ensureGraph();
 
-    const bpm =
-      useSequencerStore.getState().activeSequence()?.bpm ?? SEQ_DEFAULT_BPM;
+    const bpm = this.currentBpm(useSequencerStore.getState().activeSequence());
     this.stepIndex = 0;
     this.currentStep = 0;
     // 1 tick = 1 tel: frequentie = bpm/60 Hz (2 Hz bij 120 BPM).
@@ -184,54 +221,93 @@ export class SequencerEngine {
     const step = this.stepIndex % sequence.lengthSteps;
     this.currentStep = step;
 
+    // Tempo volgen (tempowissel in de studio tijdens afspelen)
+    const bpm = this.currentBpm(sequence);
+    if (this.clock && Math.abs(this.clock.frequency.value - bpm / 60) > 1e-9) {
+      this.clock.frequency.value = bpm / 60;
+    }
+    const stepSeconds = 60 / bpm;
+
     const events = generatePatternEvents(sequence, this.samples, {
       hasBuffer: this.hasBuffer,
+      bpm,
     });
 
     for (const event of eventsAtStep(events, step)) {
-      const buffer = this.buffers.get(event.sampleId);
-      if (!buffer) continue;
-
-      const trackGain = this.getTrackGain(event.trackId);
-      trackGain.gain.setValueAtTime(event.gain, time);
-
-      // Choke: nieuwe stap op een 'cut'-spoor stopt de vorige (met fade-out)
-      if (event.choke) {
-        const previous = this.lastPlayer.get(event.trackId);
-        if (previous) {
-          try {
-            previous.stop(time);
-          } catch {
-            // al gestopt — negeren
-          }
-        }
-      }
-
-      // Fire-and-forget player (PERF-1-patroon): onstop → dispose
-      const player = new Tone.Player(buffer);
-      player.fadeIn = event.declickIn;
-      player.fadeOut = SEQ_CHOKE_FADE_SECONDS;
-      player.connect(trackGain);
-      player.onstop = () => {
-        try {
-          player.dispose();
-        } catch {
-          // al disposed — negeren
-        }
-        this.activePlayers.delete(player);
-        if (this.lastPlayer.get(event.trackId) === player) {
-          this.lastPlayer.delete(event.trackId);
-        }
-      };
-      player.start(time, event.trimStart, event.duration);
-      this.activePlayers.add(player);
-      // Altijd bijhouden (ook bij 'ring'): als het spoor later naar 'cut'
-      // wisselt, kan de klinkende staart alsnog gechoked worden.
-      this.lastPlayer.set(event.trackId, player);
+      // Swing (V2 Fase 4): de achtertel start later dan de tick
+      const when = time + Math.max(0, event.timeOffset - step * stepSeconds);
+      this.playEvent(event, when);
     }
 
     this.stepIndex = (step + 1) % sequence.lengthSteps;
   };
+
+  /**
+   * Speel één patroon-event af. Zelfde resolutie als de tijdlijn en de
+   * export (PitchBufferService.resolvePlan): gebakken buffer voor melodie-
+   * noten/uitgerekte loops, synth-noten als gewone buffer.
+   */
+  private playEvent(event: PatternEvent, when: number): void {
+    const buffer = this.sourceBuffer(event.sampleId);
+    if (!buffer) return;
+
+    // Bake nog niet klaar? Fire-and-forget starten; tot dan de terugval.
+    if (event.recipe && hasAsyncStage(event.recipe)
+      && !pitchBufferService.getBakedRecipe(event.sampleId, event.recipe)) {
+      const raw = buffer instanceof Tone.ToneAudioBuffer ? (buffer.get() as AudioBuffer | undefined) : buffer;
+      if (raw) void pitchBufferService.bakeRecipe(event.sampleId, event.recipe, raw);
+    }
+    const plan = pitchBufferService.resolvePlan(
+      event.sampleId, event.recipe, undefined, buffer, event.trimStart, event.duration
+    );
+
+    const trackGain = this.getTrackGain(event.trackId);
+    trackGain.gain.setValueAtTime(event.trackGain, when);
+
+    // Choke: nieuwe stap op een 'cut'-spoor stopt de vorige (met fade-out)
+    if (event.choke) {
+      const previous = this.lastPlayer.get(event.trackId);
+      if (previous) {
+        try {
+          previous.stop(when);
+        } catch {
+          // al gestopt — negeren
+        }
+      }
+    }
+
+    // Fire-and-forget player (PERF-1-patroon): onstop → dispose
+    const player = createPlanPlayer(plan.buffer, plan.playbackRate);
+    player.fadeIn = event.declickIn;
+    player.fadeOut = SEQ_CHOKE_FADE_SECONDS;
+    // Aanslagsterkte per stap (default 1 = 0 dB, ongewijzigd gedrag)
+    if (event.velocity !== 1) player.volume.value = gainToDb(event.velocity);
+    // Terugval-pitch (PitchShift) alleen als de bake er nog niet is
+    const chain = plan.effects ? buildClipChain(0, plan.effects) : null;
+    if (chain) {
+      player.connect(chain.input);
+      chain.output.connect(trackGain);
+    } else {
+      player.connect(trackGain);
+    }
+    player.onstop = () => {
+      try {
+        player.dispose();
+      } catch {
+        // al disposed — negeren
+      }
+      chain?.dispose();
+      this.activePlayers.delete(player);
+      if (this.lastPlayer.get(event.trackId) === player) {
+        this.lastPlayer.delete(event.trackId);
+      }
+    };
+    player.start(when, plan.offset, plan.duration);
+    this.activePlayers.add(player);
+    // Altijd bijhouden (ook bij 'ring'): als het spoor later naar 'cut'
+    // wisselt, kan de klinkende staart alsnog gechoked worden.
+    this.lastPlayer.set(event.trackId, player);
+  }
 
   // --- Preview (sample-picker + trim-modal) ---
 

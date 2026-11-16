@@ -18,6 +18,7 @@ import { create } from 'zustand';
 import i18n from '../i18n';
 import type { ThemeConfig } from '../data/themes/types';
 import { logger } from '../utils/logger';
+import { registerSampleKinds } from '../utils/sampleKinds';
 import { manifestToSummary, manifestToThemeConfig, themeTextResources, indexEntryToSummary, compareThemes, type ThemeSummary } from './mapping';
 import { createStaticThemeRepository, parseIndex, parseManifest, type LoadedManifest, type ThemeRepository } from './repository';
 // Kopieën van public/themes/basis/manifest.json en public/themes/index.json,
@@ -71,6 +72,9 @@ function registerManifest(loaded: LoadedManifest): ThemeConfig {
   const { manifest, url } = loaded;
   registerTexts(themeTextResources(manifest));
   const config = manifestToThemeConfig(manifest, url);
+  // Loop/sfx-register: ook samples zonder `kind` (bibliotheek, opgeslagen
+  // composities) krijgen zo hun soort (V2 Fase 4)
+  registerSampleKinds(config.samples);
   useThemeRegistry.setState((s) => ({
     themes: { ...s.themes, [manifest.id]: config },
     // Een thema dat (nog) niet in de index stond, toch in de lijst opnemen

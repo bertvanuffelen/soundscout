@@ -60,6 +60,7 @@ import { getActiveImageIndex } from '../../utils/storytelling';
 import { useFullscreen, isDocumentFullscreen } from '../../hooks/useFullscreen';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
 import { DEFAULT_BPM } from '../../constants/config';
+import { normalizeBpm } from '../../utils/audio';
 import { resolveStoryboard } from '../../utils/resolveStoryboard';
 import { cn } from '../../utils/cn';
 import { withSequenceSamples } from '../../utils/sequencer';
@@ -160,7 +161,7 @@ export function PresentationSurface({
   const current = playlist[index];
   const data = current?.composition_data;
   const totalBeats = data?.totalBeats ?? 32;
-  const bpm = data?.bpm ?? DEFAULT_BPM;
+  const bpm = normalizeBpm(data?.bpm ?? DEFAULT_BPM);
   // Bord-stand overrulet de per-item visual (de plaat is voor alle items gelijk)
   const storyboard = interactiveBoard ? null : resolveStoryboard(data);
   const praatplaatImage = interactiveBoard ? null : (data?.praatplaat?.imageUrl ?? null);

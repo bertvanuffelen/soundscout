@@ -10,6 +10,20 @@
 /** Default tempo in beats per minute */
 export const DEFAULT_BPM = 120;
 
+/**
+ * De vier tempi waaruit een compositie kiest (V2 Fase 4, besluit 3).
+ * Opgeslagen data met een ander tempo valt terug op DEFAULT_BPM (normalizeBpm).
+ */
+export const ALLOWED_BPMS = [90, 105, 120, 135] as const;
+export type AllowedBpm = (typeof ALLOWED_BPMS)[number];
+
+/**
+ * Het tempo waarop het bronmateriaal is gemaakt: muziekloops zijn exact
+ * 8,0 s = 16 tellen @ 120 BPM. Bij een ander compositietempo worden loops
+ * met factor REFERENCE_BPM / bpm uitgerekt (toonhoogte blijft gelijk).
+ */
+export const REFERENCE_BPM = 120;
+
 /** Interval for playhead position updates in milliseconds */
 export const PLAYHEAD_UPDATE_INTERVAL_MS = 50;
 

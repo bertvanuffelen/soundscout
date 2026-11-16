@@ -133,6 +133,7 @@ export function themeConfigToManifest(
         duration: s.duration,
         icon: s.icon,
         color: s.color,
+        ...(s.kind ? { kind: s.kind } : {}),
         ...(textKey ? { textKey } : {}),
       };
     }),

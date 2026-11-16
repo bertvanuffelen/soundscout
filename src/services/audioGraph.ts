@@ -2,7 +2,9 @@
  * audioGraph — de éne gedeelde effectketen-bouwer (Audio Engine v2).
  *
  * Bouwt per afspeel-event een verse keten
- *   Player → [PitchShift] → [Reverb] → [fadeGain] → Volume → bestemming
+ *   Player → [PitchShift] → [Filter] → [Echo] → [Reverb] → [fadeGain] → Volume → bestemming
+ * (PitchShift alleen nog als terugval; pitch/speed/reverse/stretch zijn
+ * gebakken buffers — PitchBufferService)
  * en plant fade-curves. Gebruikt door:
  * - AudioService.createOnDemandPlayer (live timeline)
  * - AudioService.playSampleWithEffects (EffectsModal-preview)
@@ -17,6 +19,10 @@ import * as Tone from 'tone';
 import {
   FADE_IN_CURVE,
   FADE_OUT_CURVE,
+  echoFeedback,
+  echoWet,
+  effectsTailSeconds,
+  filterSettings,
   type ClipEffectsConfig,
 } from './audioEvents';
 import { getReverbIR } from './ReverbIRService';
@@ -32,6 +38,12 @@ export interface ClipChain {
   nodes: Tone.ToneAudioNode[];
   /** Gain-node voor fades, of null als de clip geen fades heeft */
   fadeGain: Tone.Gain | null;
+  /**
+   * Hoe lang de keten ná het einde van de player nog klinkt (galm + echo).
+   * De live motor ruimt de nodes pas daarna op, zodat de staart uitklinkt
+   * zoals in de export.
+   */
+  tailSeconds: number;
   /** Alles in één keer opruimen (voor fire-and-forget-afhandeling) */
   dispose: () => void;
 }
@@ -67,6 +79,36 @@ export function buildClipChain(
     if (effects.pitch !== 0) {
       append(new Tone.PitchShift({ pitch: effects.pitch }));
     }
+    // Filter (V2 Fase 4): één biquad, 12 dB/oct, Butterworth-Q
+    const filter = filterSettings(effects.filter ?? 0);
+    if (filter) {
+      append(new Tone.Filter({
+        type: filter.type,
+        frequency: filter.frequency,
+        Q: Math.SQRT1_2,
+        rolloff: -12,
+      }));
+    }
+    // Echo (V2 Fase 4): droog op 1 + een terugkoppelende vertraging van een
+    // halve tel. Handgebouwd (geen Tone.FeedbackDelay: die mengt via een
+    // equal-power CrossFade en zou de droge klank zachter maken).
+    if ((effects.echo ?? 0) > 0 && (effects.echoDelay ?? 0) > 0) {
+      const echo = effects.echo!;
+      const entry = new Tone.Gain(1);
+      const sum = new Tone.Gain(1);
+      const delay = new Tone.Delay({ delayTime: effects.echoDelay!, maxDelay: Math.max(1, effects.echoDelay!) });
+      const feedback = new Tone.Gain(echoFeedback(echo));
+      const wet = new Tone.Gain(echoWet(echo));
+      append(entry);
+      entry.connect(sum); // droog
+      entry.connect(delay);
+      delay.connect(feedback);
+      feedback.connect(delay); // terugkoppeling
+      delay.connect(wet);
+      wet.connect(sum);
+      nodes.push(delay, feedback, wet, sum);
+      tail = sum;
+    }
     if (effects.reverb > 0) {
       // Wet/dry zoals Tone.Reverb: CrossFade (equal-power) tussen droog (a)
       // en convolver (b), fade = reverb/100 — met deterministische IR
@@ -96,12 +138,28 @@ export function buildClipChain(
     output: tail!,
     nodes,
     fadeGain,
+    tailSeconds: effectsTailSeconds(effects),
     dispose: () => {
       nodes.forEach((node) => {
         try { node.dispose(); } catch { /* ignore */ }
       });
     },
   };
+}
+
+// --- Player uit een afspeelplan (V2 Fase 4) ---
+
+/**
+ * Maak de player voor een event. Zet `playbackRate` alleen als die ≠ 1 (de
+ * tape-terugval voor stretch) zodat de standaardketen exact gelijk blijft.
+ */
+export function createPlanPlayer(
+  buffer: Tone.ToneAudioBuffer | AudioBuffer,
+  playbackRate = 1
+): Tone.Player {
+  const player = new Tone.Player(buffer);
+  if (playbackRate !== 1) player.playbackRate = playbackRate;
+  return player;
 }
 
 // --- Fade-planning (#79) ---

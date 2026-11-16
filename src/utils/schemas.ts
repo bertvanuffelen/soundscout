@@ -10,10 +10,22 @@
  */
 
 import { z } from 'zod';
+import { ALLOWED_BPMS, DEFAULT_BPM } from '../constants/config';
+import { CLIP_SPEEDS } from '../types';
+import { logger } from './logger';
 
 // =============================================================================
 // CORE SCHEMAS
 // =============================================================================
+
+/**
+ * Optioneel veld dat bij ongeldige waarden stil wegvalt (= neutraal) in
+ * plaats van de hele compositie af te keuren. Voor de Vervormen-effecten
+ * (V2 Fase 4): oude data zonder het veld én rommel in het veld laden allebei.
+ */
+function lenient<T extends z.ZodTypeAny>(schema: T) {
+  return schema.optional().catch(undefined);
+}
 
 export const ClipEffectsSchema = z.object({
   volume: z.number(),
@@ -22,6 +34,29 @@ export const ClipEffectsSchema = z.object({
   reverb: z.number(),
   fadeIn: z.number().optional().default(0),
   fadeOut: z.number().optional().default(0),
+  // V2 Fase 4 — Vervormen. Afwezig = neutraal; zo blijft elke bestaande
+  // compositie, bewaarcode, inzending en template ongewijzigd laden.
+  // (Een oudere client strip't deze onbekende velden: z.object is niet strict.)
+  speed: lenient(z.literal(CLIP_SPEEDS)),
+  reverse: lenient(z.boolean()),
+  echo: lenient(z.number().min(0).max(100)),
+  filter: lenient(z.number().min(-100).max(100)),
+});
+
+/**
+ * Tempo: alleen de vier toegestane waarden. Iets anders (oude of
+ * gemanipuleerde data) valt terug op 120 met een waarschuwing — nooit een
+ * afgekeurde compositie.
+ */
+export const BpmSchema = z.unknown().transform((value): number => {
+  if (typeof value === 'number' && (ALLOWED_BPMS as readonly number[]).includes(value)) {
+    return value;
+  }
+  logger.warn('Ongeldig tempo in opgeslagen data — terug naar standaardtempo', {
+    bpm: value,
+    fallback: DEFAULT_BPM,
+  });
+  return DEFAULT_BPM;
 });
 
 export const ClipSchema = z.object({
@@ -54,6 +89,8 @@ export const SampleSchema = z.object({
   duration: z.number().positive(),
   icon: z.string(),
   color: z.string(),
+  /** V2 Fase 4: 'loop' rekt mee met het tempo. Afwezig/ongeldig = onbekend (register). */
+  kind: lenient(z.enum(['sfx', 'loop'])),
 });
 
 // =============================================================================
@@ -69,6 +106,39 @@ export const SequencerTrackSchema = z.object({
   trimEnd: z.number().min(0).optional(),
   volume: z.number().min(0).max(1).optional(),
   mute: z.boolean().optional(),
+  /** V2 Fase 4: aanslagsterkte per vakje (0..1 → gain); afwezig = alles 1 */
+  velocities: lenient(z.array(z.number().min(0).max(1)).max(32)),
+});
+
+// --- Melodie-sequence (V2 Fase 4, alleen datamodel + events) ---
+
+export const MelodyVoiceSchema = z.discriminatedUnion('type', [
+  z.object({
+    type: z.literal('sample'),
+    sampleId: z.string().nullable(),
+    baseNote: z.number().int().min(0).max(127).optional(),
+  }),
+  z.object({
+    type: z.literal('synth'),
+    preset: z.enum(['soft', 'bright', 'pluck']),
+  }),
+]);
+
+export const MelodyNoteSchema = z.object({
+  step: z.number().int().min(0).max(31),
+  row: z.number().int().min(0).max(35),
+  length: z.number().int().min(1).max(32).optional(),
+  velocity: z.number().min(0).max(1).optional(),
+});
+
+export const MelodyPatternSchema = z.object({
+  root: z.number().int().min(24).max(96),
+  scale: z.array(z.number().int().min(0).max(11)).min(1).max(12),
+  octaves: z.number().int().min(1).max(3),
+  voice: MelodyVoiceSchema,
+  notes: z.array(MelodyNoteSchema).max(512),
+  volume: z.number().min(0).max(1).optional(),
+  mute: z.boolean().optional(),
 });
 
 export const SequencerSequenceSchema = z.object({
@@ -78,6 +148,12 @@ export const SequencerSequenceSchema = z.object({
   lengthSteps: z.number().int().min(4).max(32),
   bpm: z.number().positive(),
   tracks: z.array(SequencerTrackSchema).min(1).max(8),
+  // V2 Fase 4. Afwezig = 'rhythm' zonder swing — exact het gedrag van vóór.
+  // Een melodie-sequence houdt bewust ≥1 (leeg) ritmespoor in `tracks`, zodat
+  // een oudere client hem als stille ritme-sequence leest i.p.v. af te keuren.
+  kind: lenient(z.enum(['rhythm', 'melody'])),
+  swing: lenient(z.number().min(0).max(0.5)),
+  melody: lenient(MelodyPatternSchema),
   createdAt: z.string(),
   updatedAt: z.string(),
 });
@@ -121,7 +197,7 @@ export const PraatplaatPositionSchema = z.object({
 
 export const CompositionDataSchema = z.object({
   tracks: z.array(TrackSchema),
-  bpm: z.number().positive(),
+  bpm: BpmSchema,
   totalBeats: z.number().positive(),
   isLooping: z.boolean(),
   samples: z.array(SampleSchema),
@@ -139,7 +215,7 @@ export const CompositionDataSchema = z.object({
 
 export const TimelineStateSchema = z.object({
   tracks: z.array(TrackSchema),
-  bpm: z.number().positive(),
+  bpm: BpmSchema,
   totalBeats: z.number().positive(),
   isLooping: z.boolean(),
   sections: z.array(SectionSchema).optional(),

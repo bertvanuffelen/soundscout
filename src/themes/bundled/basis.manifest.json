@@ -497,6 +497,7 @@
       "file": "audio/themes/basis/muziekwinkel/muziekwinkel-drums.mp3",
       "icon": "Disc3",
       "id": "muziekwinkel-drums",
+      "kind": "loop",
       "locationId": "muziekwinkel",
       "textKey": "samples.muziekwinkel-drums"
     },
@@ -506,6 +507,7 @@
       "file": "audio/themes/basis/muziekwinkel/muziekwinkel-brass.mp3",
       "icon": "Volume2",
       "id": "muziekwinkel-brass",
+      "kind": "loop",
       "locationId": "muziekwinkel",
       "textKey": "samples.muziekwinkel-brass"
     },
@@ -515,6 +517,7 @@
       "file": "audio/themes/basis/muziekwinkel/muziekwinkel-bass.mp3",
       "icon": "AudioWaveform",
       "id": "muziekwinkel-bass",
+      "kind": "loop",
       "locationId": "muziekwinkel",
       "textKey": "samples.muziekwinkel-bass"
     },
@@ -524,6 +527,7 @@
       "file": "audio/themes/basis/muziekwinkel/muziekwinkel-guitar.mp3",
       "icon": "Guitar",
       "id": "muziekwinkel-guitar",
+      "kind": "loop",
       "locationId": "muziekwinkel",
       "textKey": "samples.muziekwinkel-guitar"
     },
@@ -533,6 +537,7 @@
       "file": "audio/themes/basis/muziekwinkel/muziekwinkel-strings.mp3",
       "icon": "Music",
       "id": "muziekwinkel-strings",
+      "kind": "loop",
       "locationId": "muziekwinkel",
       "textKey": "samples.muziekwinkel-strings"
     },
@@ -542,6 +547,7 @@
       "file": "audio/themes/basis/muziekwinkel/muziekwinkel-piano.mp3",
       "icon": "Piano",
       "id": "muziekwinkel-piano",
+      "kind": "loop",
       "locationId": "muziekwinkel",
       "textKey": "samples.muziekwinkel-piano"
     },
