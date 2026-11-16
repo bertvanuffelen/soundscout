@@ -358,7 +358,13 @@
     "makeBar": "Maken",
     "addSequenceShort": "Sequence",
     "addEffectSound": "Geluidseffect",
-    "addEffectSoundShort": "Effect"
+    "addEffectSoundShort": "Effect",
+    "effectPickerTitle": "Van welk geluid maak je een effect?",
+    "effectPickerHint": "Het oude geluid blijft gewoon staan. Je effect wordt een nieuw geluid.",
+    "editEffectSound": "Klik om aan te passen, sleep om te plaatsen",
+    "effectSoundName": "{{name}} effect",
+    "effectSoundNameN": "{{name}} effect {{number}}",
+    "effectSoundUpdated": "{{name}} is aangepast, ook op de tijdlijn."
   },
   "transport": {
     "play": "Afspelen",

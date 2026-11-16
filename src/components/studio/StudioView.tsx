@@ -12,7 +12,7 @@ import { useTranslation } from 'react-i18next';
 import { DndContext, DragOverlay, pointerWithin, closestCenter, MeasuringStrategy, type CollisionDetection } from '@dnd-kit/core';
 import { Music, Image, Map as MapIcon, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
-import { useTimelineStore } from '../../stores/timelineStore';
+import { useTimelineStore, NEUTRAL_CLIP_EFFECTS } from '../../stores/timelineStore';
 import { useAudioStore } from '../../stores/audioStore';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useStudioDnD } from '../../hooks/useStudioDnD';
@@ -31,11 +31,14 @@ import { TrimModal } from './TrimModal';
 import { TempoPicker } from './TempoPicker';
 import { SampleIcon } from '../../utils/iconMap';
 import { getOnSoundTextClass } from '../../utils/soundColor';
-import { Button } from '../ui';
+import { Button, Modal } from '../ui';
 import { cn } from '../../utils/cn';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { audioService } from '../../services/AudioService';
-import { generateClipId } from '../../utils/uuid';
+import { generateClipId, generateId } from '../../utils/uuid';
+import { EffectsModal } from './EffectsModal';
+import { resolveSampleKind } from '../../utils/sampleKinds';
+import type { Clip, EffectSound, Sample } from '../../types';
 import { useSequencerStore } from '../../stores/sequencerStore';
 import { sequencerEngine } from '../../services/SequencerEngine';
 import StudioSequencerPanel from '../sequencer/StudioSequencerPanel';
@@ -208,6 +211,58 @@ export function StudioView() {
     sequencerEngine.stop();
     useSequencerStore.getState().setIsPlaying(false);
   }, []);
+
+  // --- Geluidseffect (designronde nov 2026) ---
+  // "+ Geluidseffect" → kies een bibliotheekgeluid → Vervormen → Klaar →
+  // een eigen chip. Klik op de chip = aanpassen (ook alle geplaatste clips).
+  const effectSounds = useTimelineStore((st) => st.effectSounds);
+  const addEffectSound = useTimelineStore((st) => st.addEffectSound);
+  const updateEffectSound = useTimelineStore((st) => st.updateEffectSound);
+  const effectSoundItems = useMemo(
+    () => effectSounds
+      .map((effectSound) => ({ effectSound, source: librarySamples.find((smp) => smp.id === effectSound.sourceSampleId) }))
+      .filter((item): item is { effectSound: EffectSound; source: Sample } => !!item.source),
+    [effectSounds, librarySamples],
+  );
+  const [effectPickerOpen, setEffectPickerOpen] = useState(false);
+  const [effectTarget, setEffectTarget] = useState<
+    { mode: 'new'; sample: Sample } | { mode: 'edit'; sample: Sample; effectSound: EffectSound } | null
+  >(null);
+  const handleAddEffectSound = useCallback(() => setEffectPickerOpen(true), []);
+  const handleOpenEffectSound = useCallback((id: string) => {
+    const item = effectSoundItems.find((it) => it.effectSound.id === id);
+    if (item) setEffectTarget({ mode: 'edit', sample: item.source, effectSound: item.effectSound });
+  }, [effectSoundItems]);
+  const handlePreviewEffectSound = useCallback((id: string) => {
+    const item = effectSoundItems.find((it) => it.effectSound.id === id);
+    if (!item) return;
+    void audioService.playSampleWithEffects(
+      item.source.id, 0, item.source.duration,
+      { ...NEUTRAL_CLIP_EFFECTS, ...item.effectSound.effects },
+      { bpm, kind: resolveSampleKind(item.source) },
+    );
+  }, [effectSoundItems, bpm]);
+  const effectClip: Clip | null = effectTarget
+    ? {
+        id: 'effect-sound-editor',
+        sampleId: effectTarget.sample.id,
+        startBeat: 0,
+        effects: effectTarget.mode === 'edit' ? { ...NEUTRAL_CLIP_EFFECTS, ...effectTarget.effectSound.effects } : undefined,
+      }
+    : null;
+  const handleApplyEffectSound = useCallback((patch: Partial<import('../../types').ClipEffects>) => {
+    if (!effectTarget) return;
+    if (effectTarget.mode === 'edit') {
+      updateEffectSound(effectTarget.effectSound.id, { effects: patch });
+      setStudioToast({ id: Date.now(), text: t('studio.effectSoundUpdated', { name: effectTarget.effectSound.name }) });
+      return;
+    }
+    const base = t(effectTarget.sample.name);
+    const count = useTimelineStore.getState().effectSounds.filter((e) => e.sourceSampleId === effectTarget.sample.id).length + 1;
+    const name = (count > 1 ? t('studio.effectSoundNameN', { name: base, number: count }) : t('studio.effectSoundName', { name: base })).slice(0, 60);
+    addEffectSound({ id: generateId(), name, sourceSampleId: effectTarget.sample.id, effects: patch });
+    setStudioToast({ id: Date.now(), text: t('sequencer.studio.savedToast', { name }) });
+  }, [effectTarget, addEffectSound, updateEffectSound, t]);
 
   // Sequencer sluiten ("Klaar", ✕ of de tab Tijdlijn). Een LEGE sequence die
   // nergens op de tijdlijn staat, wordt niet bewaard — zo ontstaan er geen
@@ -529,6 +584,10 @@ export function StudioView() {
             onOpenSequence={handleOpenSequence}
             onAddSequence={handleAddSequence}
                   onCollectMore={handleBack}
+                  onAddEffectSound={handleAddEffectSound}
+                  effectSounds={effectSoundItems}
+                  onOpenEffectSound={handleOpenEffectSound}
+                  onPreviewEffectSound={handlePreviewEffectSound}
             onStopPreview={handleStopPreview}
           />
         ) : (
@@ -550,6 +609,10 @@ export function StudioView() {
                       onOpenSequence={handleOpenSequence}
                       onAddSequence={handleAddSequence}
                   onCollectMore={handleBack}
+                  onAddEffectSound={handleAddEffectSound}
+                  effectSounds={effectSoundItems}
+                  onOpenEffectSound={handleOpenEffectSound}
+                  onPreviewEffectSound={handlePreviewEffectSound}
                       onStopPreview={handleStopPreview}
                     />
                   )}
@@ -572,6 +635,10 @@ export function StudioView() {
                   onOpenSequence={handleOpenSequence}
                   onAddSequence={handleAddSequence}
                   onCollectMore={handleBack}
+                  onAddEffectSound={handleAddEffectSound}
+                  effectSounds={effectSoundItems}
+                  onOpenEffectSound={handleOpenEffectSound}
+                  onPreviewEffectSound={handlePreviewEffectSound}
                   onStopPreview={handleStopPreview}
                 />
               ) : (
@@ -678,6 +745,39 @@ export function StudioView() {
         trailing={<TempoPicker />}
       />
 
+      {/* Geluidseffect stap 1: kies een geluid */}
+      <Modal isOpen={effectPickerOpen} onClose={() => setEffectPickerOpen(false)} title={t('studio.effectPickerTitle')} size="md">
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          {librarySamples.map((smp) => (
+            <button
+              key={smp.id}
+              type="button"
+              data-testid="effect-source"
+              onClick={() => { setEffectPickerOpen(false); setEffectTarget({ mode: 'new', sample: smp }); }}
+              className="flex items-center gap-2 rounded-xl border-2 border-border-subtle hover:border-accent-400 bg-bg-surface px-3 min-h-[52px] text-left transition-colors"
+            >
+              <span className="w-2 self-stretch my-2 rounded-full shrink-0" style={{ backgroundColor: smp.color }} aria-hidden="true" />
+              <SampleIcon name={smp.icon} size={18} className="text-text-main shrink-0" />
+              <span className="type-body text-text-main truncate">{t(smp.name)}</span>
+            </button>
+          ))}
+        </div>
+        <p className="text-sm text-text-muted mt-3">{t('studio.effectPickerHint')}</p>
+      </Modal>
+
+      {/* Geluidseffect stap 2: Vervormen (zelfde venster als op een clip), knop Klaar */}
+      {effectTarget && effectClip && (
+        <EffectsModal
+          clip={effectClip}
+          sample={effectTarget.sample}
+          bpm={bpm}
+          isOpen
+          onClose={() => setEffectTarget(null)}
+          onApply={handleApplyEffectSound}
+          applyLabel={t('sequencer.studio.done')}
+        />
+      )}
+
       <SequenceKindChooser
         isOpen={kindChooserOpen}
         onClose={() => setKindChooserOpen(false)}
@@ -688,6 +788,7 @@ export function StudioView() {
         <div
           key={studioToast.id}
           role="status"
+          data-testid="studio-toast"
           className="fixed left-1/2 -translate-x-1/2 bottom-24 z-toast type-body rounded-full bg-brand-900 text-white px-5 py-3 shadow-xl inline-flex items-center gap-2 max-w-[90vw]"
         >
           <Check className="w-4 h-4 text-accent-400 shrink-0" aria-hidden="true" />

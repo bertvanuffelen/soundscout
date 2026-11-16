@@ -47,6 +47,8 @@ interface EffectsModalProps {
   onClose: () => void;
   /** Alleen de gewijzigde velden */
   onApply: (effects: Partial<ClipEffects>) => void;
+  /** Tekst van de bevestigknop (geluidseffect maken/aanpassen: "Klaar") */
+  applyLabel?: string;
 }
 
 /** Neutrale verplichte ClipEffects-velden, alleen om de lengtefactor te berekenen */
@@ -159,6 +161,7 @@ export const EffectsModal = memo(function EffectsModal({
   isOpen,
   onClose,
   onApply,
+  applyLabel,
 }: EffectsModalProps) {
   const { t, i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -624,7 +627,7 @@ export const EffectsModal = memo(function EffectsModal({
               disabled={!hasChanges}
               className="px-4 h-11 text-sm font-semibold text-text-main bg-accent-400 hover:bg-accent-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
-              {t('studio.effectsModal.apply')}
+              {applyLabel ?? t('studio.effectsModal.apply')}
             </button>
           </div>
         </div>

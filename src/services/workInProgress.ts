@@ -178,7 +178,8 @@ export function startWorkInProgressPersistence(): () => void {
 
   const unsubTimeline = useTimelineStore.subscribe((s, prev) => {
     if (s.tracks !== prev.tracks || s.sections !== prev.sections
-      || s.sequences !== prev.sequences || s.totalBeats !== prev.totalBeats) {
+      || s.sequences !== prev.sequences || s.effectSounds !== prev.effectSounds
+      || s.totalBeats !== prev.totalBeats) {
       schedule();
     }
   });

@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
 import { Play, Square, MapPin, GripVertical, Grid3x3, Music, Plus as PlusIcon, Map as MapIcon, Wand2 } from 'lucide-react';
-import type { Sample } from '../../types';
+import type { EffectSound, Sample } from '../../types';
 import type { SequencerSequence } from '../../types/sequencer';
 import { createSequenceSample } from '../../utils/sequencer';
 import { SEQUENCE_COLOR } from '../../types/sequencer';
@@ -26,7 +26,67 @@ interface SampleLibraryProps {
   onCollectMore?: () => void;
   /** Maak een nieuw geluidseffect van een bibliotheekgeluid (maakbalk) */
   onAddEffectSound?: () => void;
+  /** Geluidseffecten met hun brongeluid (chips; slepen = plaatsen met effecten) */
+  effectSounds?: Array<{ effectSound: EffectSound; source: Sample }>;
+  /** Klik op een geluidseffect-chip: Vervormen openen om het aan te passen */
+  onOpenEffectSound?: (effectSoundId: string) => void;
+  /** Luister naar een geluidseffect (met effecten) */
+  onPreviewEffectSound?: (effectSoundId: string) => void;
 }
+
+/** Geluidseffect-chip: gestippeld in de kleur van het brongeluid, toverstaf-icoon */
+const DraggableEffectSound = memo(function DraggableEffectSound({
+  effectSound,
+  source,
+  onOpen,
+  onPreview,
+}: {
+  effectSound: EffectSound;
+  source: Sample;
+  onOpen?: (id: string) => void;
+  onPreview?: (id: string) => void;
+}) {
+  const { t } = useTranslation();
+  const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
+    id: `fx-${effectSound.id}`,
+    data: { type: 'sample', sample: source, effectSound },
+  });
+  const style = transform ? { transform: CSS.Translate.toString(transform) } : undefined;
+  return (
+    <div
+      ref={setNodeRef}
+      style={{ ...style, touchAction: 'none', WebkitTouchCallout: 'none', userSelect: 'none', borderColor: source.color }}
+      onClick={() => onOpen?.(effectSound.id)}
+      {...listeners}
+      {...attributes}
+      data-testid="effect-sound-chip"
+      className={`
+        flex items-center gap-1 sm:gap-2 px-1.5 sm:px-3 py-1.5 sm:py-2 rounded-xl border sm:border-2 border-dashed bg-bg-surface
+        transition-all duration-150 select-none shrink-0 cursor-grab active:cursor-grabbing
+        ${isDragging ? 'opacity-30 scale-95' : 'hover:shadow-md active:shadow-sm'}
+      `}
+      title={t('studio.editEffectSound')}
+    >
+      <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 text-neutral-400 pointer-events-none">
+        <GripVertical className="w-3 h-4 sm:w-4 sm:h-5" aria-hidden="true" />
+      </div>
+      <div className="w-1 sm:w-2 h-4 sm:h-8 rounded-full shrink-0" style={{ backgroundColor: source.color }} />
+      <Wand2 className="w-3 h-3 sm:w-5 sm:h-5 text-text-main shrink-0" aria-label={t('studio.addEffectSound')} />
+      <span className="text-xs sm:text-sm font-semibold text-text-main whitespace-nowrap">{effectSound.name}</span>
+      {onPreview && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onPreview(effectSound.id); }}
+          onPointerDown={(e) => e.stopPropagation()}
+          className="ml-0.5 sm:ml-1 w-6 h-6 sm:w-9 sm:h-9 flex items-center justify-center rounded-full cursor-pointer shrink-0 bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-500 hover:text-neutral-700 transition-colors"
+          title={t('recorder.preview')}
+          aria-label={`${t('recorder.preview')}: ${effectSound.name}`}
+        >
+          <Play className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />
+        </button>
+      )}
+    </div>
+  );
+});
 
 /**
  * Maakbalk (designronde nov 2026): altijd vooraan in de bibliotheek, op een
@@ -219,6 +279,9 @@ export const SampleLibrary = memo(function SampleLibrary({
   onAddSequence,
   onCollectMore,
   onAddEffectSound,
+  effectSounds = [],
+  onOpenEffectSound,
+  onPreviewEffectSound,
 }: SampleLibraryProps) {
   const { t } = useTranslation();
 
@@ -245,7 +308,7 @@ export const SampleLibrary = memo(function SampleLibrary({
   };
 
   const makeBar = <MakeBar onCollectMore={onCollectMore} onAddSequence={onAddSequence} onAddEffectSound={onAddEffectSound} />;
-  const isEmpty = samples.length === 0 && sequences.length === 0;
+  const isEmpty = samples.length === 0 && sequences.length === 0 && effectSounds.length === 0;
 
   return (
     <div className="@container flex-1 flex flex-col min-h-0 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
@@ -264,7 +327,7 @@ export const SampleLibrary = memo(function SampleLibrary({
             </p>
           </div>
         ) : (
-          <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto min-h-0 min-w-0 flex-1" role="listbox" aria-label={t('studio.library')}>
+          <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto min-h-0 min-w-0 flex-1 @3xl:self-stretch" role="listbox" aria-label={t('studio.library')}>
             {samples.map((sample) => (
               <DraggableSample
                 key={sample.id}
@@ -273,6 +336,15 @@ export const SampleLibrary = memo(function SampleLibrary({
                 isPlaying={playingSampleId === sample.id}
                 isSelected={selectedSampleId === sample.id}
                 onSelect={onSelectSample ? (id) => onSelectSample(selectedSampleId === id ? null : id) : undefined}
+              />
+            ))}
+            {effectSounds.map(({ effectSound, source }) => (
+              <DraggableEffectSound
+                key={effectSound.id}
+                effectSound={effectSound}
+                source={source}
+                onOpen={onOpenEffectSound}
+                onPreview={onPreviewEffectSound}
               />
             ))}
             {sequences.map((sequence) => (

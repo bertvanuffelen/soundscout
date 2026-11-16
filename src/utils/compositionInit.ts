@@ -267,6 +267,7 @@ export async function initializeFromTemplate(template: Template): Promise<void> 
     isLooping: compositionData.isLooping,
     sections: compositionData.sections,
     sequences: compositionData.sequences,
+    effectSounds: compositionData.effectSounds,
   });
 
   // Stap 2: Laad samples in library
@@ -599,6 +600,7 @@ export async function initializeFromSavedComposition(
     isLooping: compositionData.isLooping,
     sections: compositionData.sections,
     sequences: compositionData.sequences,
+    effectSounds: compositionData.effectSounds,
   });
 
   // Stap 2: Laad samples in library

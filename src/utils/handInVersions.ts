@@ -37,6 +37,9 @@ export function compositionFingerprint(data: CompositionData, title: string): st
     data.praatplaatPosition ?? null,
     title.trim(),
   ];
+  // Geluidseffecten (nov 2026): alleen meetellen als ze er zijn, zodat de
+  // vingerafdruk van bestaand werk gelijk blijft.
+  if (data.effectSounds?.length) parts.push(data.effectSounds);
   // Tempo (V2 Fase 4): een ander tempo is een andere versie. Alleen
   // toegevoegd als het niet 120 is, zodat bestaande vingerafdrukken gelijk blijven.
   if (data.bpm !== DEFAULT_BPM) parts.push(data.bpm);

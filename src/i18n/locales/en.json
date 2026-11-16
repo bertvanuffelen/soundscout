@@ -358,7 +358,13 @@
     "makeBar": "Create",
     "addSequenceShort": "Sequence",
     "addEffectSound": "Sound effect",
-    "addEffectSoundShort": "Effect"
+    "addEffectSoundShort": "Effect",
+    "effectPickerTitle": "Which sound do you want to make an effect from?",
+    "effectPickerHint": "The original sound stays where it is. Your effect becomes a new sound.",
+    "editEffectSound": "Click to change, drag to place",
+    "effectSoundName": "{{name}} effect",
+    "effectSoundNameN": "{{name}} effect {{number}}",
+    "effectSoundUpdated": "{{name}} has been changed, also on the timeline."
   },
   "transport": {
     "play": "Play",

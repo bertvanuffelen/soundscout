@@ -71,6 +71,16 @@ export const ClipSchema = z.object({
   // #65 Clip Loop
   loop: z.boolean().optional(),
   loopDurationBeats: z.number().positive().optional(),
+  // Geluidseffect (designronde nov 2026)
+  effectSoundId: z.string().max(64).optional(),
+});
+
+/** Geluidseffect: brongeluid + Vervormen-instellingen (chip in de bibliotheek) */
+export const EffectSoundSchema = z.object({
+  id: z.string().max(64),
+  name: z.string().min(1).max(60),
+  sourceSampleId: z.string(),
+  effects: ClipEffectsSchema.partial(),
 });
 
 export const TrackSchema = z.object({
@@ -207,6 +217,8 @@ export const CompositionDataSchema = z.object({
   praatplaatPosition: PraatplaatPositionSchema.optional(),
   /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed */
   sequences: z.array(SequencerSequenceSchema).optional(),
+  /** Geluidseffecten (designronde nov 2026) */
+  effectSounds: z.array(EffectSoundSchema).max(50).optional(),
 });
 
 // =============================================================================
@@ -221,6 +233,8 @@ export const TimelineStateSchema = z.object({
   sections: z.array(SectionSchema).optional(),
   /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed */
   sequences: z.array(SequencerSequenceSchema).optional(),
+  /** Geluidseffecten (designronde nov 2026) */
+  effectSounds: z.array(EffectSoundSchema).max(50).optional(),
 });
 
 // =============================================================================

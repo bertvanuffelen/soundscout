@@ -200,6 +200,8 @@ export function useUndoRedoTimeline() {
       sections: cloneSections(snapshot.sections),
       // Sequences vallen buiten de undo-historie (fase 2) — huidige behouden
       sequences: useTimelineStore.getState().sequences,
+      // Geluidseffecten ook (de chips blijven staan bij ongedaan maken)
+      effectSounds: useTimelineStore.getState().effectSounds,
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;
@@ -228,6 +230,8 @@ export function useUndoRedoTimeline() {
       sections: cloneSections(snapshot.sections),
       // Sequences vallen buiten de undo-historie (fase 2) — huidige behouden
       sequences: useTimelineStore.getState().sequences,
+      // Geluidseffecten ook (de chips blijven staan bij ongedaan maken)
+      effectSounds: useTimelineStore.getState().effectSounds,
     });
     indexRef.current = newIndex;
     isRestoringRef.current = false;
