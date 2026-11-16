@@ -113,7 +113,7 @@ export default function SamplePickerModal({
                 <button
                   type="button"
                   onClick={() => onSelect(sample)}
-                  className="flex-1 min-h-9 rounded-lg bg-accent-400 hover:bg-accent-500 text-accent-900 text-sm font-bold"
+                  className="flex-1 min-h-9 rounded-lg bg-accent-400 hover:bg-accent-500 text-accent-900 text-sm font-extrabold"
                 >
                   {t('sequencer.select')}
                 </button>

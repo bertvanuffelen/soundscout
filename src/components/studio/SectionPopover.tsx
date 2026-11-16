@@ -119,7 +119,7 @@ export const SectionPopover = memo(function SectionPopover({
     >
       {/* Color swatches */}
       <div className="mb-2.5">
-        <span className="text-[10px] font-bold text-text-muted uppercase tracking-wide">
+        <span className="type-label text-text-muted">
           {t('studio.sections.colorLabel')}
         </span>
         <div className="flex gap-1.5 mt-1.5">

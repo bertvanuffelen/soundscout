@@ -153,7 +153,7 @@ export const TransportControls = memo(function TransportControls({
                 {t('transport.loopSection')}
               </button>
               {!canLoopSection && (
-                <p className="text-[11px] text-text-muted px-2 pt-0.5 pb-1">{t('transport.loopSectionHint')}</p>
+                <p className="text-xs text-text-muted px-2 pt-0.5 pb-1">{t('transport.loopSectionHint')}</p>
               )}
             </div>
           </>

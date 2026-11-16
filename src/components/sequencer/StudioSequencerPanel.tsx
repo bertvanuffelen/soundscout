@@ -156,12 +156,12 @@ export default function StudioSequencerPanel({
         <button
           type="button"
           onClick={closeTab}
-          className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide px-2 py-1 rounded-md hover:bg-neutral-100 shrink-0"
+          className="type-label text-text-muted px-2 py-1 rounded-md hover:bg-neutral-100 shrink-0"
         >
           {t('studio.timeline')}
         </button>
         <span
-          className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold shrink-0 max-w-40 text-text-main"
+          className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-extrabold shrink-0 max-w-40 text-text-main"
           style={{ backgroundColor: `${sequence.color ?? SEQUENCE_COLOR}33` }}
         >
           {isMelody ? (
@@ -236,7 +236,7 @@ export default function StudioSequencerPanel({
         >
           <Minus size={14} aria-hidden />
         </button>
-        <span className="text-[10px] sm:text-xs font-semibold text-text-muted tabular-nums whitespace-nowrap">
+        <span className="text-xs font-semibold text-text-muted tabular-nums whitespace-nowrap">
           {t('sequencer.length.bars', {
             beats: sequence.lengthSteps,
             bars: sequence.lengthSteps / 4,

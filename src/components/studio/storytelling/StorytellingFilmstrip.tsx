@@ -161,7 +161,7 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
                   <img src={img.url} alt={t(img.label)} className="w-full h-full object-cover" />
 
                   {/* Scène-nummer linksboven */}
-                  <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/55 text-white text-xs font-bold flex items-center justify-center">
+                  <span className="absolute top-1.5 left-1.5 w-6 h-6 rounded-full bg-black/55 text-white text-xs font-extrabold flex items-center justify-center">
                     {i + 1}
                   </span>
 
@@ -195,7 +195,7 @@ export function StorytellingFilmstrip({ className = '', syncScrollFrom }: Storyt
                   </span>
 
                   {/* Scène-label onderaan */}
-                  <span className="absolute inset-x-0 bottom-0 px-2 py-1 pr-10 text-[11px] font-medium text-white bg-gradient-to-t from-black/60 to-transparent truncate">
+                  <span className="absolute inset-x-0 bottom-0 px-2 py-1 pr-10 text-xs font-semibold text-white bg-gradient-to-t from-black/60 to-transparent truncate">
                     {t(img.label)}
                   </span>
                 </div>

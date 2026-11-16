@@ -130,10 +130,10 @@ export const VolumePopover = memo(function VolumePopover({
     >
       {/* Header with label */}
       <div className="flex items-center justify-between mb-2">
-        <span className="text-[10px] font-bold text-text-muted uppercase tracking-wide truncate max-w-[140px]">
+        <span className="type-label text-text-muted truncate max-w-[140px]">
           {label}
         </span>
-        <span className="text-[10px] text-neutral-400 tabular-nums ml-2">
+        <span className="text-xs text-neutral-400 tabular-nums ml-2">
           {isMuted ? t('studio.muted') : `${sliderPercent}%`}
         </span>
       </div>
@@ -207,7 +207,7 @@ export const VolumePopover = memo(function VolumePopover({
       {/* Track color picker (#67) — only shown when colorPalette is provided */}
       {colorPalette && onTrackColorChange && (
         <div className="flex items-center gap-1.5 mt-2 pt-2 border-t border-neutral-100">
-          <span className="text-[10px] font-bold text-text-muted uppercase tracking-wide shrink-0">
+          <span className="type-label text-text-muted shrink-0">
             {t('studio.trackColor')}
           </span>
           <div className="flex items-center gap-1 flex-wrap">

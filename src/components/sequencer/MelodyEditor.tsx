@@ -249,7 +249,7 @@ export default function MelodyEditor({ samples }: MelodyEditorProps) {
             <div key={row} className="flex items-center gap-2">
               <span
                 className={cn(
-                  'w-10 shrink-0 text-right text-sm font-bold tabular-nums',
+                  'w-10 shrink-0 text-right text-sm font-extrabold tabular-nums',
                   isRoot ? 'text-text-main' : 'text-text-muted'
                 )}
                 aria-hidden

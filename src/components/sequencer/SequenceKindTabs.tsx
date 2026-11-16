@@ -73,7 +73,7 @@ export default function SequenceKindTabs({ sequence, onCreated }: SequenceKindTa
               onClick={() => handleSelect(kind)}
               className={cn(
                 // Hitvlak naar 44px zonder de werkbalk hoger te maken
-                'relative inline-flex items-center gap-1.5 h-7 px-2 sm:px-3 rounded-md text-xs font-bold transition-colors',
+                'relative inline-flex items-center gap-1.5 h-7 px-2 sm:px-3 rounded-md text-xs font-extrabold transition-colors',
                 'before:absolute before:-inset-y-2 before:inset-x-0 before:content-[""]',
                 selected
                   ? 'bg-white text-text-main shadow-sm'

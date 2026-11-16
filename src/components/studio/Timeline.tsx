@@ -363,7 +363,7 @@ export const Timeline = memo(function Timeline({
       {/* --- Header bar: label | clip edit (center) | tools (right) --- */}
       <div className="flex items-center px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t">
         {/* Left: timeline label */}
-        <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide shrink-0">
+        <h2 className="type-label text-text-muted shrink-0">
           {t('studio.timeline')}
         </h2>
 
@@ -381,10 +381,10 @@ export const Timeline = memo(function Timeline({
                   style={{ backgroundColor: clipEdit.sample.color }}
                 />
                 <SampleIcon name={clipEdit.sample.icon} size={12} className="text-neutral-600 shrink-0" />
-                <span className="text-xs font-medium text-neutral-700 max-w-28 truncate">
+                <span className="text-xs font-semibold text-neutral-700 max-w-28 truncate">
                   {t(clipEdit.sample.name)}
                 </span>
-                <span className="text-[10px] text-neutral-400 inline-flex items-center gap-0.5">
+                <span className="text-xs text-neutral-400 inline-flex items-center gap-0.5">
                   {getClipPlaybackDuration(clipEdit.clip, clipEdit.sample, bpm).toFixed(1)}s
                   {(clipEdit.clip.trimStart !== undefined || clipEdit.clip.trimEnd !== undefined) && <Scissors size={10} aria-hidden="true" />}
                 </span>
@@ -401,7 +401,7 @@ export const Timeline = memo(function Timeline({
                     onBlur={handleLabelSubmit}
                     onKeyDown={handleLabelKeyDown}
                     placeholder={t('studio.clipLabelPlaceholder')}
-                    className="w-20 sm:w-24 text-[10px] sm:text-xs px-1.5 py-0.5 rounded border border-neutral-300 focus:border-accent-400 focus:outline-none bg-white text-neutral-700"
+                    className="w-20 sm:w-24 text-xs px-1.5 py-0.5 rounded border border-neutral-300 focus:border-accent-400 focus:outline-none bg-white text-neutral-700"
                   />
                 ) : (
                   <button
@@ -545,20 +545,20 @@ export const Timeline = memo(function Timeline({
           {!readOnly && (
             showClearConfirm ? (
               <div className="flex items-center gap-1 px-1">
-                <span className="text-[10px] text-error-500 font-medium whitespace-nowrap">
+                <span className="text-xs text-error-500 font-semibold whitespace-nowrap">
                   {t('studio.clearConfirm')}
                 </span>
                 <button
                   onClick={handleClearConfirm}
                   aria-label={t('common.delete')}
-                  className="px-1.5 py-0.5 text-[10px] font-bold text-white bg-error-500 hover:bg-error-600 rounded transition-colors"
+                  className="px-1.5 py-0.5 text-xs font-extrabold text-white bg-error-500 hover:bg-error-600 rounded transition-colors"
                 >
                   {t('common.delete')}
                 </button>
                 <button
                   onClick={handleClearCancel}
                   aria-label={t('common.cancel')}
-                  className="px-1.5 py-0.5 text-[10px] font-medium text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
+                  className="px-1.5 py-0.5 text-xs font-semibold text-neutral-500 hover:text-neutral-700 hover:bg-neutral-100 rounded transition-colors"
                 >
                   {t('common.cancel')}
                 </button>
@@ -584,7 +584,7 @@ export const Timeline = memo(function Timeline({
                 disabled={!canShrink}
                 aria-label={t('studio.shrinkTimelineTitle', { maten: totalBeats / 4 })}
                 title={t('studio.shrinkTimelineTitle', { maten: totalBeats / 4 })}
-                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors icon-btn text-[10px] sm:text-xs font-bold tabular-nums"
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors icon-btn text-xs font-extrabold tabular-nums"
               >
                 −8
               </button>
@@ -593,7 +593,7 @@ export const Timeline = memo(function Timeline({
                 disabled={!canExtend}
                 aria-label={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
                 title={t('studio.extendTimelineTitle', { maten: totalBeats / 4 })}
-                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors icon-btn text-[10px] sm:text-xs font-bold tabular-nums"
+                className="p-1 rounded text-neutral-400 hover:text-neutral-700 hover:bg-neutral-200/60 disabled:opacity-25 disabled:pointer-events-none transition-colors icon-btn text-xs font-extrabold tabular-nums"
               >
                 +8
               </button>
@@ -758,7 +758,7 @@ export const Timeline = memo(function Timeline({
                     >
                       {/* Measure number label */}
                       <span
-                        className="absolute left-0.5 top-0 text-[8px] sm:text-[9px] leading-4 text-neutral-400 select-none pointer-events-none"
+                        className="absolute left-0.5 top-0 text-xs leading-4 text-neutral-400 select-none pointer-events-none"
                       >
                         {measureNumber}
                       </span>
@@ -818,7 +818,7 @@ export const Timeline = memo(function Timeline({
           {!readOnly && tracks.length < MAX_TRACK_COUNT && (
             <button
               onClick={(e) => { e.stopPropagation(); addTrack(); }}
-              className="relative z-10 shrink-0 w-full h-6 flex items-center justify-center gap-1 text-[10px] sm:text-xs font-semibold text-text-muted/70 hover:text-text-main hover:bg-neutral-100/60 border-b border-dashed border-neutral-200 transition-colors"
+              className="relative z-10 shrink-0 w-full h-6 flex items-center justify-center gap-1 text-xs font-semibold text-text-muted/70 hover:text-text-main hover:bg-neutral-100/60 border-b border-dashed border-neutral-200 transition-colors"
               title={t('studio.addTrackTitle', { count: tracks.length })}
             >
               <Plus size={12} aria-hidden="true" />

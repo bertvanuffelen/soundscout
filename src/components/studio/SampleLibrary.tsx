@@ -73,7 +73,7 @@ const DraggableBundle = memo(function DraggableBundle({
       {sequence.kind === 'melody'
         ? <Music className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" style={{ color }} aria-hidden="true" />
         : <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" style={{ color }} aria-hidden="true" />}
-      <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap text-text-main">
+      <span className="text-xs sm:text-sm font-semibold whitespace-nowrap text-text-main">
         {sequence.name}
       </span>
     </div>
@@ -140,7 +140,7 @@ const DraggableSample = memo(function DraggableSample({
         style={{ backgroundColor: sample.color }}
       />
       <SampleIcon name={sample.icon} size={12} className="text-text-main sm:w-5 sm:h-5" />
-      <span className="text-[10px] sm:text-sm font-medium text-text-main whitespace-nowrap">
+      <span className="text-xs sm:text-sm font-semibold text-text-main whitespace-nowrap">
         {t(sample.name)}
       </span>
       <button
@@ -210,7 +210,7 @@ export const SampleLibrary = memo(function SampleLibrary({
 
   return (
     <div className="flex-1 flex flex-col min-h-0 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-b border-border-subtle">
-      <h2 className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide mb-1.5 sm:mb-2">
+      <h2 className="type-label text-text-muted mb-1.5 sm:mb-2">
         {t('studio.library')}
       </h2>
       <div className="flex flex-wrap gap-1.5 sm:gap-2 content-start overflow-y-auto" role="listbox" aria-label={t('studio.library')}>
@@ -240,7 +240,7 @@ export const SampleLibrary = memo(function SampleLibrary({
           >
             <PlusIcon className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
             <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4" aria-hidden="true" />
-            <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap">
+            <span className="text-xs sm:text-sm font-semibold whitespace-nowrap">
               {t('sequencer.studio.addSequence')}
             </span>
           </button>

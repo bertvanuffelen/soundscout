@@ -105,7 +105,7 @@ export const TempoPicker = memo(function TempoPicker() {
                   }}
                   className={cn(
                     'w-full min-h-11 flex items-center gap-2 px-2 rounded-lg text-sm text-text-main transition-colors',
-                    selected ? 'bg-accent-100 font-bold' : 'hover:bg-neutral-100',
+                    selected ? 'bg-accent-100 font-extrabold' : 'hover:bg-neutral-100',
                   )}
                 >
                   <span className="flex-1 text-left">{t(TEMPO_WORD_KEYS[option])}</span>

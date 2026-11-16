@@ -593,7 +593,7 @@ export function StudioView() {
                 style={{ backgroundColor: activeDragSample.color }}
               >
                 <SampleIcon name={activeDragSample.icon} size={14} className={getOnSoundTextClass(activeDragSample.color)} />
-                <span className={`text-xs font-bold ${getOnSoundTextClass(activeDragSample.color)}`}>
+                <span className={`text-xs font-extrabold ${getOnSoundTextClass(activeDragSample.color)}`}>
                   {t(activeDragSample.name)}
                 </span>
               </div>
@@ -603,7 +603,7 @@ export function StudioView() {
                 style={{ borderColor: activeDragSample.color }}
               >
                 <SampleIcon name={activeDragSample.icon} size={20} className="text-neutral-700" />
-                <span className="text-sm font-medium text-neutral-700">
+                <span className="text-sm font-semibold text-neutral-700">
                   {t(activeDragSample.name)}
                 </span>
               </div>

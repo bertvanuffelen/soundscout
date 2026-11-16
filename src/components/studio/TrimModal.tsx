@@ -229,7 +229,7 @@ export const TrimModal = memo(function TrimModal({
               style={{ backgroundColor: sample.color }}
             />
             <SampleIcon name={sample.icon} size={18} className="text-neutral-600" />
-            <h2 className="text-base font-bold text-neutral-900">
+            <h2 className="text-base font-extrabold text-neutral-900">
               {t('studio.trimModal.title')}
             </h2>
           </div>
@@ -302,7 +302,7 @@ export const TrimModal = memo(function TrimModal({
             <span className="text-neutral-500 font-mono">
               {(trimStart * lengthFactor).toFixed(2)}s
             </span>
-            <span className="font-medium text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded" data-testid="trim-duration">
+            <span className="font-semibold text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded" data-testid="trim-duration">
               {(trimDuration * lengthFactor).toFixed(2)}s
             </span>
             <span className="text-neutral-500 font-mono">
@@ -324,7 +324,7 @@ export const TrimModal = memo(function TrimModal({
               }`}
             >
               {isPlaying ? <Square size={16} /> : <Play size={16} />}
-              <span className="text-sm font-medium">
+              <span className="text-sm font-semibold">
                 {t('studio.trimModal.preview')}
               </span>
             </button>
@@ -351,7 +351,7 @@ export const TrimModal = memo(function TrimModal({
             {/* Apply button */}
             <button
               onClick={handleApply}
-              className="px-4 py-1.5 text-sm font-medium text-white bg-accent-500 hover:bg-accent-600 rounded-lg transition-colors"
+              className="px-4 py-1.5 text-sm font-semibold text-white bg-accent-500 hover:bg-accent-600 rounded-lg transition-colors"
             >
               {t('studio.trimModal.apply')}
             </button>
