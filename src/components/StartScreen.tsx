@@ -16,6 +16,7 @@ import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
 import { useCompositionsVersion } from '../hooks/useCompositionsVersion';
+import { useDarkPage } from '../hooks/useDarkPage';
 import { useLibraryStore } from '../stores/libraryStore';
 import { readWorkInProgress } from '../services/workInProgress';
 import {
@@ -98,18 +99,8 @@ export function StartScreen() {
   const [showCodeModal, setShowCodeModal] = useState(() => !!pendingSaveCode);
   const [showNewConfirm, setShowNewConfirm] = useState(false);
 
-  // Donkere pagina-achtergrond zolang het startscherm open is. Zonder dit
-  // toont het "doorveren" voorbij het einde van de pagina (iPad Safari, Chrome
-  // op de Mac) de witte achtergrond van <html> (stagingtest 16-11). Andere
-  // schermen zijn nog licht, dus bij verlaten zetten we hem terug.
-  useEffect(() => {
-    const root = document.documentElement;
-    const previous = root.style.backgroundColor;
-    root.style.backgroundColor = 'var(--color-brand-900)';
-    return () => {
-      root.style.backgroundColor = previous;
-    };
-  }, []);
+  // Donkere pagina-achtergrond (geen witte rand bij doorveren)
+  useDarkPage();
 
   // Check if there are saved compositions
   useEffect(() => {

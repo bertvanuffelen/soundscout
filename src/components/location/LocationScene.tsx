@@ -14,6 +14,7 @@ import { useAppStore } from '../../stores/appStore';
 import { useLibraryStore } from '../../stores/libraryStore';
 import { useThemeStore } from '../../stores/themeStore';
 import { useLocationAudio } from '../../hooks/useLocationAudio';
+import { useDarkPage } from '../../hooks/useDarkPage';
 import { Hotspot } from './Hotspot';
 import { RecorderBar } from './RecorderBar';
 import { RecorderFullModal } from './RecorderFullModal';
@@ -23,6 +24,8 @@ import type { Sample } from '../../types';
 
 export function LocationScene() {
   const { t } = useTranslation();
+  // Scherm van precies schermhoogte: donkere pagina, niet verschuiven of doorveren (stagingtest 16-11)
+  useDarkPage({ lockScroll: true });
 
   // Navigation
   const currentLocationId = useAppStore((s) => s.currentLocationId);

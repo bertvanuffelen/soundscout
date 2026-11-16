@@ -230,7 +230,13 @@
 body {
   margin: 0;
   min-width: 320px;
+  /* 100dvh, niet alleen 100vh: op iPad Safari is 100vh de hoogte mét
+     verborgen adresbalk. Met zichtbare balk werd de pagina daardoor hoger dan
+     het scherm en kon je schermen van precies schermhoogte (locatie, kaart,
+     studio) een stukje verschuiven (stagingtest 16-11). 100vh blijft als
+     terugval voor browsers zonder dvh. */
   min-height: 100vh;
+  min-height: 100dvh;
   font-family: 'Nunito', system-ui, -apple-system, sans-serif;
 }
 
