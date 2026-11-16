@@ -31,6 +31,8 @@ One session, in this order. Each block builds on the one before. Tick boxes as y
 
 Do this on the Chromebook and the iPad (landscape), then a quick look at the digibord.
 
+- [ ] **Dark start screen, Chromebook:** in a fresh private window, the buttons respond within about 2 seconds of opening the page. The farm picture may appear slightly later.
+- [ ] Start screen with saved work: the "Verder werken" row and the seasonal button sit neatly, without overlapping the hero.
 - [ ] Start screen → "Nieuwe soundscape" → *Hoe wil je componeren?* → *Kies je wereld*. The choice flow works as before.
 - [ ] Map: it fits the screen **without scrolling**; markers are large enough to tap.
 - [ ] Location: Terug, the title and Naar Studio sit in **one row** and do not overlap; collect three sounds.
