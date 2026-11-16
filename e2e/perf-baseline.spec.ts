@@ -27,10 +27,11 @@ test('geheugen per thema + afspeelbasislijn', async ({ page, browser }) => {
 
   // --- 1. Gedecodeerd geheugen per thema ---
   const themes = await page.evaluate(async () => {
-    const { getTheme } = await import('/src/data/themes/index.ts');
+    const { loadTheme } = await import('/src/data/themes/index.ts');
     const out = [];
     for (const id of ['basis', 'winterspelen', 'piraten']) {
-      const theme = getTheme(id);
+      // Sinds V2 Fase 3 laden thema's op aanvraag (manifest)
+      const theme = await loadTheme(id);
       if (!theme) continue;
       let mp3Bytes = 0, decodedBytes = 0, seconds = 0, failed = 0;
       const ctx = new OfflineAudioContext(2, 1, 44100);

@@ -11,11 +11,20 @@
  *
  * Er wordt niets gedecodeerd: dit kost schijfruimte (basis ≈ 10 MB), geen
  * werkgeheugen. Andere thema's worden niet aangeraakt.
+ *
+ * Sinds V2 Fase 3 ook de thema-data: /themes/index.json en het manifest van het
+ * actieve thema. Bij een eerste bezoek haalt de app die op vóórdat de service
+ * worker er is; zonder opwarmen zou de app offline de themalijst missen.
  */
 import type { ThemeConfig } from '../data/themes';
 
 const CONCURRENCY = 2;
 const START_DELAY_MS = 4000;
+
+/** Thema-index en het manifest van dit thema (V2 Fase 3, network-first in de service worker). */
+export function themeDataUrls(themeId: string): string[] {
+  return ['/themes/index.json', `/themes/${themeId}/manifest.json`];
+}
 
 /** Alle media-adressen van één thema (eigen site), zonder dubbelen. */
 export function themeAssetUrls(theme: Pick<ThemeConfig, 'map' | 'locations' | 'samples'>): string[] {
@@ -82,7 +91,7 @@ let current: AbortController | null = null;
 let timer: ReturnType<typeof setTimeout> | null = null;
 
 /** Plan het opwarmen van dit thema; een eerder gepland of lopend thema stopt. */
-export function scheduleThemeWarmup(theme: Pick<ThemeConfig, 'map' | 'locations' | 'samples'> | null): void {
+export function scheduleThemeWarmup(theme: Pick<ThemeConfig, 'id' | 'map' | 'locations' | 'samples'> | null): void {
   if (timer) clearTimeout(timer);
   current?.abort();
   current = null;
@@ -91,6 +100,6 @@ export function scheduleThemeWarmup(theme: Pick<ThemeConfig, 'map' | 'locations'
     timer = null;
     if (!shouldWarm()) return;
     current = new AbortController();
-    void warm([...new Set([...alreadyLoadedMediaUrls(), ...themeAssetUrls(theme)])], current.signal);
+    void warm([...new Set([...themeDataUrls(theme.id), ...alreadyLoadedMediaUrls(), ...themeAssetUrls(theme)])], current.signal);
   }, START_DELAY_MS);
 }

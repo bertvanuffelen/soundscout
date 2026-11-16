@@ -35,6 +35,7 @@ Not precached: theme media, `teacher.html`, `over.html`, `/les/`, `/privacy/`, a
 |---|---|---|---|
 | `soundscout-audio-v1` | same origin, `/audio/**.mp3` | cache-first | 400 files, 60 days, purged first when storage is full |
 | `soundscout-images-v1` | same origin, `/images/**` (`jpg`, `png`, `webp`, `svg`) | cache-first | 300 files, 60 days, purged first when storage is full |
+| `soundscout-themes-v1` | same origin, `/themes/**.json` (theme index + manifests, Phase 3) | network-first, 4 s timeout | 60 files, 1 year — see `docs/v2/THEMES.md` §4 |
 
 - Only complete `200` responses are stored. Partial (`206`) and opaque responses are never stored.
 - **Range requests**: the app loads audio with `fetch` + `decodeAudioData` (Tone's `ToneAudioBuffer.load`), which asks for the whole file, so ranges do not occur in normal use. For safety the audio rule has Workbox's range plugin: a `Range` request is answered by slicing the complete cached file.

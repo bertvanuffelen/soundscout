@@ -12,7 +12,7 @@ import { FileText, MapPin, Clapperboard, Music, Check, Loader2 } from 'lucide-re
 import { useTemplates } from '../../hooks/useTemplates';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { getAllMultiImageStoryboards, getTeacherThemes, DEFAULT_THEME_ID, type StoryboardWithTheme } from '../../data/themes';
-import type { ThemeConfig } from '../../data/themes';
+import type { ThemeSummary } from '../../data/themes';
 import { getPraatplaatCatalog, type PraatplaatCatalogEntry } from '../../data/praatplaatCatalog';
 import type { AssignmentType } from '../../lib/assignments';
 import type { TeacherTemplate } from '../../lib/templates';
@@ -46,7 +46,7 @@ type Selection =
 const storyboards: StoryboardWithTheme[] = getAllMultiImageStoryboards();
 const praatplaatCatalog: PraatplaatCatalogEntry[] = getPraatplaatCatalog();
 // Docent-kiezer: óók buiten-seizoen thema's tonen, mét badge (seizoensregel 17-7)
-const assignableThemes: ThemeConfig[] = getTeacherThemes();
+const assignableThemes: ThemeSummary[] = getTeacherThemes();
 
 export function ActivateAssignmentModal({
   isOpen,
@@ -495,7 +495,7 @@ function FreeThemeOption({
   isSelected,
   onSelect,
 }: {
-  theme: ThemeConfig;
+  theme: ThemeSummary;
   isSelected: boolean;
   onSelect: () => void;
 }) {

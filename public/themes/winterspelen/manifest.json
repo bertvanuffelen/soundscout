@@ -1,0 +1,605 @@
+{
+  "assetBase": "/",
+  "colors": {
+    "accent": "#60A5FA",
+    "mapBackground": "#E0F2FE",
+    "primary": "#3B82F6"
+  },
+  "id": "winterspelen",
+  "isPublic": true,
+  "locations": [
+    {
+      "hotspots": [
+        {
+          "id": "winterdorp-wakingup",
+          "radius": 8,
+          "sampleId": "winterdorp-wakingup",
+          "visualHint": "pulse",
+          "x": 56,
+          "y": 36.3
+        },
+        {
+          "id": "winterdorp-jumprope",
+          "radius": 8,
+          "sampleId": "winterdorp-jumprope",
+          "visualHint": "pulse",
+          "x": 16.9,
+          "y": 81.4
+        },
+        {
+          "id": "winterdorp-hospital",
+          "radius": 8,
+          "sampleId": "winterdorp-hospital",
+          "visualHint": "pulse",
+          "x": 89.5,
+          "y": 46.6
+        },
+        {
+          "id": "winterdorp-hond",
+          "radius": 8,
+          "sampleId": "winterdorp-hond",
+          "visualHint": "pulse",
+          "x": 45.3,
+          "y": 87.1
+        },
+        {
+          "id": "winterdorp-electric",
+          "radius": 8,
+          "sampleId": "winterdorp-electric",
+          "visualHint": "pulse",
+          "x": 62,
+          "y": 68.9
+        },
+        {
+          "id": "winterdorp-eating",
+          "radius": 8,
+          "sampleId": "winterdorp-eating",
+          "visualHint": "pulse",
+          "x": 36.7,
+          "y": 38.1
+        },
+        {
+          "id": "winterdorp-coffee",
+          "radius": 8,
+          "sampleId": "winterdorp-coffee",
+          "visualHint": "pulse",
+          "x": 12.1,
+          "y": 56.2
+        }
+      ],
+      "id": "winterdorp",
+      "image": "images/themes/winterspelen/winterdorp.jpg"
+    },
+    {
+      "hotspots": [
+        {
+          "id": "bobslee-kapot",
+          "radius": 8,
+          "sampleId": "bobslee-kapot",
+          "visualHint": "pulse",
+          "x": 49.7,
+          "y": 54.2
+        },
+        {
+          "id": "bobslee-reparatie",
+          "radius": 8,
+          "sampleId": "bobslee-reparatie",
+          "visualHint": "pulse",
+          "x": 74.8,
+          "y": 74.1
+        },
+        {
+          "id": "bobslee-ziekenboeg",
+          "radius": 8,
+          "sampleId": "bobslee-ziekenboeg",
+          "visualHint": "pulse",
+          "x": 88.2,
+          "y": 63.5
+        },
+        {
+          "id": "bobslee-drone",
+          "radius": 8,
+          "sampleId": "bobslee-drone",
+          "visualHint": "pulse",
+          "x": 55.8,
+          "y": 7.3
+        },
+        {
+          "id": "bobslee-curlingisnext",
+          "radius": 8,
+          "sampleId": "bobslee-curlingisnext",
+          "visualHint": "pulse",
+          "x": 17.1,
+          "y": 74.4
+        },
+        {
+          "id": "bobslee-bobslee",
+          "radius": 8,
+          "sampleId": "bobslee-bobslee",
+          "visualHint": "pulse",
+          "x": 28.4,
+          "y": 19.2
+        }
+      ],
+      "id": "bobslee",
+      "image": "images/themes/winterspelen/bobsleebaan.jpg"
+    },
+    {
+      "hotspots": [
+        {
+          "id": "skipiste-publiek",
+          "radius": 8,
+          "sampleId": "skipiste-publiek",
+          "visualHint": "pulse",
+          "x": 43.1,
+          "y": 67.1
+        },
+        {
+          "id": "skipiste-robot-beeps",
+          "radius": 8,
+          "sampleId": "skipiste-robot-beeps",
+          "visualHint": "pulse",
+          "x": 36.7,
+          "y": 83.4
+        },
+        {
+          "id": "skipiste-snowboard",
+          "radius": 8,
+          "sampleId": "skipiste-snowboard",
+          "visualHint": "pulse",
+          "x": 84.4,
+          "y": 48.7
+        },
+        {
+          "id": "skipiste-stoeltjeslift",
+          "radius": 8,
+          "sampleId": "skipiste-stoeltjeslift",
+          "visualHint": "pulse",
+          "x": 72.9,
+          "y": 18.1
+        },
+        {
+          "id": "skipiste-schans",
+          "radius": 8,
+          "sampleId": "skipiste-schans",
+          "visualHint": "pulse",
+          "x": 52.3,
+          "y": 39.4
+        },
+        {
+          "id": "skipiste-ski-raket",
+          "radius": 8,
+          "sampleId": "skipiste-ski-raket",
+          "visualHint": "pulse",
+          "x": 9.9,
+          "y": 34.2
+        }
+      ],
+      "id": "skipiste",
+      "image": "images/themes/winterspelen/skipiste.jpg"
+    },
+    {
+      "hotspots": [
+        {
+          "id": "ijsarena-go-team-robo",
+          "radius": 8,
+          "sampleId": "ijsarena-go-team-robo",
+          "visualHint": "pulse",
+          "x": 62.2,
+          "y": 91.2
+        },
+        {
+          "id": "ijsarena-alarm",
+          "radius": 8,
+          "sampleId": "ijsarena-alarm",
+          "visualHint": "pulse",
+          "x": 33.5,
+          "y": 73.7
+        },
+        {
+          "id": "ijsarena-brancard",
+          "radius": 8,
+          "sampleId": "ijsarena-brancard",
+          "visualHint": "pulse",
+          "x": 94,
+          "y": 40.8
+        },
+        {
+          "id": "ijsarena-juichen",
+          "radius": 8,
+          "sampleId": "ijsarena-juichen",
+          "visualHint": "pulse",
+          "x": 55,
+          "y": 35.2
+        },
+        {
+          "id": "ijsarena-lamp",
+          "radius": 8,
+          "sampleId": "ijsarena-lamp",
+          "visualHint": "pulse",
+          "x": 45.3,
+          "y": 12
+        },
+        {
+          "id": "ijsarena-werkplaats",
+          "radius": 8,
+          "sampleId": "ijsarena-werkplaats",
+          "visualHint": "pulse",
+          "x": 12.5,
+          "y": 40.8
+        },
+        {
+          "id": "ijsarena-puck",
+          "radius": 8,
+          "sampleId": "ijsarena-puck",
+          "visualHint": "pulse",
+          "x": 73.1,
+          "y": 51.3
+        },
+        {
+          "id": "ijsarena-wagen",
+          "radius": 8,
+          "sampleId": "ijsarena-wagen",
+          "visualHint": "pulse",
+          "x": 89.1,
+          "y": 85.8
+        }
+      ],
+      "id": "ijsarena",
+      "image": "images/themes/winterspelen/ijsarena.jpg"
+    }
+  ],
+  "map": {
+    "image": {
+      "nl": "images/themes/winterspelen/plattegrond.jpg"
+    },
+    "positions": [
+      {
+        "locationId": "winterdorp",
+        "x": 83.2,
+        "y": 78.8
+      },
+      {
+        "locationId": "bobslee",
+        "x": 24.3,
+        "y": 72.6
+      },
+      {
+        "locationId": "skipiste",
+        "x": 67.5,
+        "y": 31.9
+      },
+      {
+        "locationId": "ijsarena",
+        "x": 15.3,
+        "y": 23.3
+      }
+    ]
+  },
+  "samples": [
+    {
+      "color": "#FBBF24",
+      "duration": 4,
+      "file": "audio/themes/winterspelen/winterdorp/winterspelen-winterdorp-wakingup.mp3",
+      "icon": "Sun",
+      "id": "winterdorp-wakingup",
+      "locationId": "winterdorp"
+    },
+    {
+      "color": "#F472B6",
+      "duration": 4,
+      "file": "audio/themes/winterspelen/winterdorp/winterspelen-winterdorp-jumprope.mp3",
+      "icon": "Activity",
+      "id": "winterdorp-jumprope",
+      "locationId": "winterdorp"
+    },
+    {
+      "color": "#F87171",
+      "duration": 4,
+      "file": "audio/themes/winterspelen/winterdorp/winterspelen-winterdorp-hospital.mp3",
+      "icon": "Cross",
+      "id": "winterdorp-hospital",
+      "locationId": "winterdorp"
+    },
+    {
+      "color": "#FB923C",
+      "duration": 4,
+      "file": "audio/themes/winterspelen/winterdorp/winterspelen-winterdorp-hond.mp3",
+      "icon": "Dog",
+      "id": "winterdorp-hond",
+      "locationId": "winterdorp"
+    },
+    {
+      "color": "#60A5FA",
+      "duration": 5.5,
+      "file": "audio/themes/winterspelen/winterdorp/winterspelen-winterdorp-electric.mp3",
+      "icon": "Zap",
+      "id": "winterdorp-electric",
+      "locationId": "winterdorp"
+    },
+    {
+      "color": "#34D399",
+      "duration": 8,
+      "file": "audio/themes/winterspelen/winterdorp/winterspelen-winterdorp-eating.mp3",
+      "icon": "UtensilsCrossed",
+      "id": "winterdorp-eating",
+      "locationId": "winterdorp"
+    },
+    {
+      "color": "#A78BFA",
+      "duration": 4,
+      "file": "audio/themes/winterspelen/winterdorp/winterspelen-winterdorp-coffee.mp3",
+      "icon": "Coffee",
+      "id": "winterdorp-coffee",
+      "locationId": "winterdorp"
+    },
+    {
+      "color": "#FB923C",
+      "duration": 4,
+      "file": "audio/themes/winterspelen/bobslee/winterspelen-bobslee-kapot.mp3",
+      "icon": "AlertTriangle",
+      "id": "bobslee-kapot",
+      "locationId": "bobslee"
+    },
+    {
+      "color": "#FBBF24",
+      "duration": 3.4,
+      "file": "audio/themes/winterspelen/bobslee/winterspelen-bobslee-reparatie.mp3",
+      "icon": "Wrench",
+      "id": "bobslee-reparatie",
+      "locationId": "bobslee"
+    },
+    {
+      "color": "#F87171",
+      "duration": 6,
+      "file": "audio/themes/winterspelen/bobslee/winterspelen-bobslee-ziekenboeg.mp3",
+      "icon": "Cross",
+      "id": "bobslee-ziekenboeg",
+      "locationId": "bobslee"
+    },
+    {
+      "color": "#60A5FA",
+      "duration": 5.8,
+      "file": "audio/themes/winterspelen/bobslee/winterspelen-bobslee-drone.mp3",
+      "icon": "Plane",
+      "id": "bobslee-drone",
+      "locationId": "bobslee"
+    },
+    {
+      "color": "#A78BFA",
+      "duration": 3.9,
+      "file": "audio/themes/winterspelen/bobslee/winterspelen-bobslee-curlingisnext.mp3",
+      "icon": "Megaphone",
+      "id": "bobslee-curlingisnext",
+      "locationId": "bobslee"
+    },
+    {
+      "color": "#34D399",
+      "duration": 5.9,
+      "file": "audio/themes/winterspelen/bobslee/winterspelen-bobslee-bobslee.mp3",
+      "icon": "Zap",
+      "id": "bobslee-bobslee",
+      "locationId": "bobslee"
+    },
+    {
+      "color": "#60A5FA",
+      "duration": 2,
+      "file": "audio/themes/winterspelen/skipiste/winterspelen-publiek.mp3",
+      "icon": "Users",
+      "id": "skipiste-publiek",
+      "locationId": "skipiste"
+    },
+    {
+      "color": "#A78BFA",
+      "duration": 2,
+      "file": "audio/themes/winterspelen/skipiste/winterspelen-robot-beeps.mp3",
+      "icon": "Radio",
+      "id": "skipiste-robot-beeps",
+      "locationId": "skipiste"
+    },
+    {
+      "color": "#34D399",
+      "duration": 2,
+      "file": "audio/themes/winterspelen/skipiste/winterspelen-snowboard.mp3",
+      "icon": "Mountain",
+      "id": "skipiste-snowboard",
+      "locationId": "skipiste"
+    },
+    {
+      "color": "#FBBF24",
+      "duration": 2,
+      "file": "audio/themes/winterspelen/skipiste/winterspelen-stoeltjeslift.mp3",
+      "icon": "ArrowUp",
+      "id": "skipiste-stoeltjeslift",
+      "locationId": "skipiste"
+    },
+    {
+      "color": "#FB923C",
+      "duration": 2,
+      "file": "audio/themes/winterspelen/skipiste/winterspelen-schans.mp3",
+      "icon": "Zap",
+      "id": "skipiste-schans",
+      "locationId": "skipiste"
+    },
+    {
+      "color": "#F472B6",
+      "duration": 2,
+      "file": "audio/themes/winterspelen/skipiste/winterspelen-ski-raket.mp3",
+      "icon": "Rocket",
+      "id": "skipiste-ski-raket",
+      "locationId": "skipiste"
+    },
+    {
+      "color": "#60A5FA",
+      "duration": 3,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-goteamrobo.mp3",
+      "icon": "Bot",
+      "id": "ijsarena-go-team-robo",
+      "locationId": "ijsarena"
+    },
+    {
+      "color": "#F87171",
+      "duration": 5,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-alarm.mp3",
+      "icon": "Siren",
+      "id": "ijsarena-alarm",
+      "locationId": "ijsarena"
+    },
+    {
+      "color": "#FB923C",
+      "duration": 5.6,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-brancard.mp3",
+      "icon": "Cross",
+      "id": "ijsarena-brancard",
+      "locationId": "ijsarena"
+    },
+    {
+      "color": "#FBBF24",
+      "duration": 5.7,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-juichen.mp3",
+      "icon": "PartyPopper",
+      "id": "ijsarena-juichen",
+      "locationId": "ijsarena"
+    },
+    {
+      "color": "#34D399",
+      "duration": 5.7,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-lamp.mp3",
+      "icon": "Lightbulb",
+      "id": "ijsarena-lamp",
+      "locationId": "ijsarena"
+    },
+    {
+      "color": "#A78BFA",
+      "duration": 5.7,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-werkplaats.mp3",
+      "icon": "Wrench",
+      "id": "ijsarena-werkplaats",
+      "locationId": "ijsarena"
+    },
+    {
+      "color": "#F472B6",
+      "duration": 1,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-puck.mp3",
+      "icon": "Circle",
+      "id": "ijsarena-puck",
+      "locationId": "ijsarena"
+    },
+    {
+      "color": "#38BDF8",
+      "duration": 5.7,
+      "file": "audio/themes/winterspelen/ijsarena/winterspelen-ijs-wagen.mp3",
+      "icon": "Truck",
+      "id": "ijsarena-wagen",
+      "locationId": "ijsarena"
+    }
+  ],
+  "schemaVersion": 1,
+  "sort": 20,
+  "status": "published",
+  "texts": {
+    "en": {
+      "description": "Ski slope, bobsleigh and ice arena",
+      "locations": {
+        "bobslee": {
+          "description": "The fastest track",
+          "name": "Bobsleigh track"
+        },
+        "ijsarena": {
+          "description": "Skating on the ice",
+          "name": "Ice Arena"
+        },
+        "skipiste": {
+          "description": "Into the mountains!",
+          "name": "Ski Slope"
+        },
+        "winterdorp": {
+          "description": "A cosy winter village",
+          "name": "Winter Village"
+        }
+      },
+      "name": "Winter Games",
+      "samples": {
+        "bobslee-bobslee": "Bobsleigh",
+        "bobslee-curlingisnext": "Curling is next",
+        "bobslee-drone": "Drone",
+        "bobslee-kapot": "Broken",
+        "bobslee-reparatie": "Repair",
+        "bobslee-ziekenboeg": "First Aid",
+        "ijsarena-alarm": "Alarm",
+        "ijsarena-brancard": "Stretcher",
+        "ijsarena-go-team-robo": "Robo",
+        "ijsarena-juichen": "Cheering",
+        "ijsarena-lamp": "Lamp",
+        "ijsarena-puck": "Puck",
+        "ijsarena-wagen": "Cart",
+        "ijsarena-werkplaats": "Workshop",
+        "skipiste-publiek": "Crowd",
+        "skipiste-robot-beeps": "Beeps",
+        "skipiste-schans": "Ski Jump",
+        "skipiste-ski-raket": "Rocket",
+        "skipiste-snowboard": "Snowboard",
+        "skipiste-stoeltjeslift": "Chair Lift",
+        "winterdorp-coffee": "Coffee",
+        "winterdorp-eating": "Eating",
+        "winterdorp-electric": "Electric",
+        "winterdorp-hond": "Dog",
+        "winterdorp-hospital": "Hospital",
+        "winterdorp-jumprope": "Jump rope",
+        "winterdorp-wakingup": "Waking up"
+      }
+    },
+    "nl": {
+      "description": "Skipiste, bobslee en ijsarena",
+      "locations": {
+        "bobslee": {
+          "description": "De snelste baan",
+          "name": "Bobslee baan"
+        },
+        "ijsarena": {
+          "description": "Schaatsen op het ijs",
+          "name": "IJsarena"
+        },
+        "skipiste": {
+          "description": "De bergen in!",
+          "name": "Skipiste"
+        },
+        "winterdorp": {
+          "description": "Een gezellig winterdorp",
+          "name": "Winterdorp"
+        }
+      },
+      "name": "Winterspelen",
+      "samples": {
+        "bobslee-bobslee": "Bobslee",
+        "bobslee-curlingisnext": "Curling is next",
+        "bobslee-drone": "Drone",
+        "bobslee-kapot": "Kapot",
+        "bobslee-reparatie": "Reparatie",
+        "bobslee-ziekenboeg": "Ziekenboeg",
+        "ijsarena-alarm": "Alarm",
+        "ijsarena-brancard": "Brancard",
+        "ijsarena-go-team-robo": "Robo",
+        "ijsarena-juichen": "Juichen",
+        "ijsarena-lamp": "Lamp",
+        "ijsarena-puck": "Puck",
+        "ijsarena-wagen": "Wagen",
+        "ijsarena-werkplaats": "Werkplaats",
+        "skipiste-publiek": "Publiek",
+        "skipiste-robot-beeps": "Beeps",
+        "skipiste-schans": "Schans",
+        "skipiste-ski-raket": "Raket",
+        "skipiste-snowboard": "Snowboard",
+        "skipiste-stoeltjeslift": "Stoeltjeslift",
+        "winterdorp-coffee": "Koffie",
+        "winterdorp-eating": "Eten",
+        "winterdorp-electric": "Elektrisch",
+        "winterdorp-hond": "Hond",
+        "winterdorp-hospital": "Ziekenhuis",
+        "winterdorp-jumprope": "Touwtje springen",
+        "winterdorp-wakingup": "Wakker worden"
+      }
+    }
+  },
+  "version": 1
+}

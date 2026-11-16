@@ -4,14 +4,14 @@
  * De vaste set afbeeldingen waaruit een docent een praatplaat-opdracht kiest —
  * dezelfde bronnen die `CreatePraatplaatModal` combineert:
  *   1. de universele praatplaat-bibliotheek (`praatplaatImages`, docent-flow)
- *   2. de thema-locatie-afbeeldingen (`getAllLocationsByTheme`)
+ *   2. de thema-locatie-afbeeldingen (`getAllLocationSummariesByTheme`)
  *
  * De docent kiest een entry; het systeem find-or-create't één praatplaat-
  * instance per (klas + afbeelding) via `activatePraatplaatFromCatalog`.
  */
 
 import { praatplaatImages, isAvailableForTeacher } from './praatplaatImages';
-import { getAllLocationsByTheme, isThemeVisible } from './themes';
+import { getAllLocationSummariesByTheme, isThemeVisible } from './themes';
 
 export interface PraatplaatCatalogEntry {
   /** Stabiele referentie (voor React-keys). */
@@ -44,7 +44,7 @@ export function getPraatplaatCatalog(): PraatplaatCatalogEntry[] {
   }
 
   // 2. Thema-locatie-afbeeldingen
-  for (const group of getAllLocationsByTheme()) {
+  for (const group of getAllLocationSummariesByTheme()) {
     if (!isThemeVisible(group.themeId)) continue;
     for (const loc of group.locations) {
       entries.push({

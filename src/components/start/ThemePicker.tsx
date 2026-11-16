@@ -8,7 +8,7 @@
 
 import { useTranslation } from 'react-i18next';
 import { getMapBackgroundImage } from '../../data/themes';
-import { getPublicThemes, type ThemeConfig } from '../../data/themes';
+import { getPublicThemes, type ThemeSummary } from '../../data/themes';
 
 interface ThemePickerProps {
   onSelectTheme: (themeId: string) => void;
@@ -43,7 +43,7 @@ export function ThemePicker({ onSelectTheme, isLoading = false }: ThemePickerPro
 }
 
 interface ThemeCardProps {
-  theme: ThemeConfig;
+  theme: ThemeSummary;
   onSelect: () => void;
   isLoading: boolean;
   preselected?: boolean;

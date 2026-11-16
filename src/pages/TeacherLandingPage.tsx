@@ -532,8 +532,8 @@ function ThemesSection() {
                 <p className="text-sm text-text-muted leading-relaxed mb-2">{t(theme.description)}</p>
                 <p className="text-xs text-text-muted">
                   {t('teacherLanding.themes.stats', {
-                    locations: theme.locations.length,
-                    sounds: theme.samples.length,
+                    locations: theme.locationCount,
+                    sounds: theme.sampleCount,
                   })}
                   <span className="text-accent-700 font-semibold ml-2 inline-flex items-center gap-0.5">
                     {t('teacherLanding.themes.try')}

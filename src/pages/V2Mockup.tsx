@@ -17,7 +17,7 @@
 import { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { KeyRound, RotateCcw, Settings, SlidersHorizontal, X } from 'lucide-react';
-import { getTheme, DEFAULT_THEME_ID, type ThemeConfig } from '../data/themes';
+import { getTheme, loadTheme, DEFAULT_THEME_ID, type ThemeConfig } from '../data/themes';
 import type { Storyboard } from '../types';
 import { NewCompositionWizard } from '../components/start/NewCompositionWizard';
 import { ThemePicker } from '../components/start/ThemePicker';
@@ -77,8 +77,8 @@ export default function V2Mockup() {
 
   const location = theme.locations.find((l) => l.id === locationId) ?? theme.locations[0];
 
-  const startWith = (themeId: string) => {
-    const next = getTheme(themeId) ?? getTheme(DEFAULT_THEME_ID)!;
+  const startWith = async (themeId: string) => {
+    const next = (await loadTheme(themeId)) ?? getTheme(DEFAULT_THEME_ID)!;
     setTheme(next);
     setLocationId(next.locations[0].id);
     setBag([]);

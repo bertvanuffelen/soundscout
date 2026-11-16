@@ -1,5 +1,5 @@
 import { describe, it, expect } from 'vitest';
-import { NAVIGATE_FALLBACK_DENYLIST, isThemeAudio, isAppImage } from '../swRouting';
+import { NAVIGATE_FALLBACK_DENYLIST, isThemeAudio, isAppImage, isThemeData } from '../swRouting';
 import { SCREEN_PATHS } from '../../router/paths';
 
 /** Zoals Workbox' NavigationRoute: pad + query tegen de denylist. */
@@ -49,6 +49,7 @@ describe('navigatie-terugval van de service worker', () => {
       '/sitemap.xml', '/robots.txt', '/manifest.json', '/sw.js',
       '/assets/main-abc.js', '/audio/themes/basis/boerderij/koe.mp3', '/images/themes/basis/plattegrond.jpg',
       '/__e2e-supabase/rest/v1/rpc/x',
+      '/themes/index.json', '/themes/basis/manifest.json', '/themes',
     ]) {
       expect(fallsBackToApp(link), link).toBe(false);
     }
@@ -87,5 +88,15 @@ describe('wat de service worker bewaart', () => {
     expect(isThemeAudio(input('/audio/themes/basis/index.json'))).toBe(false);
     expect(isAppImage(input('/images/overige/iets.pdf'))).toBe(false);
     expect(isThemeAudio(input('/images/themes/basis/plattegrond.jpg'))).toBe(false);
+  });
+});
+
+describe('thema-data (V2 Fase 3)', () => {
+  it('herkent index en manifesten van de eigen site, niets anders', () => {
+    expect(isThemeData(input('/themes/index.json'))).toBe(true);
+    expect(isThemeData(input('/themes/winterspelen/manifest.json'))).toBe(true);
+    expect(isThemeData(input('/manifest.json'))).toBe(false);
+    expect(isThemeData(input('/audio/themes/basis/boerderij/koe.mp3'))).toBe(false);
+    expect(isThemeData(input('https://example.supabase.co/themes/index.json'))).toBe(false);
   });
 });

@@ -135,7 +135,7 @@ export function restoreWorkInProgress(): boolean {
   // Een expliciete ?theme= in de link wint van het bewaarde thema
   const urlTheme = new URLSearchParams(window.location.search).get('theme');
   if (!urlTheme && wip.themeId !== useThemeStore.getState().activeThemeId) {
-    useThemeStore.getState().setTheme(wip.themeId);
+    void useThemeStore.getState().setTheme(wip.themeId);
   }
 
   useTimelineStore.getState().loadTimeline(wip.timeline);

@@ -120,3 +120,26 @@ Object.defineProperty(window, 'ResizeObserver', {
   writable: true,
   value: MockResizeObserver,
 });
+
+// --- Thema-manifesten (V2 Fase 3) ---
+// In de app komen /themes/index.json en /themes/<id>/manifest.json van de
+// webserver; in jsdom bestaat die niet. Lees ze uit public/themes/ zodat
+// loadTheme('winterspelen') in tests hetzelfde manifest krijgt als de app.
+{
+  const { readFile } = await import('node:fs/promises');
+  const { join } = await import('node:path');
+  const realFetch = globalThis.fetch;
+  globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
+    const url = typeof input === 'string' ? input : input instanceof URL ? input.href : input.url;
+    const path = url.startsWith('/') ? url : (() => { try { return new URL(url).pathname; } catch { return url; } })();
+    if (path.startsWith('/themes/') && path.endsWith('.json')) {
+      try {
+        const body = await readFile(join(process.cwd(), 'public', path), 'utf8');
+        return new Response(body, { status: 200, headers: { 'Content-Type': 'application/json' } });
+      } catch {
+        return new Response('not found', { status: 404 });
+      }
+    }
+    return realFetch(input, init);
+  }) as typeof fetch;
+}

@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import { ArrowLeft, MapPin, Check } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
 import { useThemeStore } from '../../stores/themeStore';
-import { getTheme, DEFAULT_THEME_ID } from '../../data/themes';
+import { getThemeSummary, DEFAULT_THEME_ID } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { praatplaatToStoryboard } from '../../utils/praatplaatStoryboard';
 
@@ -95,8 +95,8 @@ export function PraatplaatSelectScreen() {
     // Herbevestig het thema-geluidenpalet van deze praatplaat (vangnet als de
     // leerling na een herlaad direct op dit scherm binnenkomt) — testronde 5 / D2.
     const ppThemeId = activePraatplaat.themeId;
-    useThemeStore.getState().setTheme(
-      ppThemeId && getTheme(ppThemeId) ? ppThemeId : DEFAULT_THEME_ID,
+    void useThemeStore.getState().setTheme(
+      ppThemeId && getThemeSummary(ppThemeId) ? ppThemeId : DEFAULT_THEME_ID,
     );
     // Stel praatplaat in als storyboard zodat de afbeelding in de studio te zien is
     setActiveStoryboard(praatplaatToStoryboard(activePraatplaat));

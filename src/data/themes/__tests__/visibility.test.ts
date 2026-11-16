@@ -14,7 +14,7 @@ import {
   getTeacherThemes,
   getAssignableThemes,
   findStoryboardById,
-  getTheme,
+  loadTheme,
   isThemeVisible,
 } from '../index';
 import { getPraatplaatCatalog } from '../../praatplaatCatalog';
@@ -54,9 +54,9 @@ describe('zichtbaarheid van thema\'s in kiezers', () => {
     }
   });
 
-  it('verbergt piraten, maar het thema blijft laadbaar', () => {
+  it('verbergt piraten, maar het thema blijft laadbaar', async () => {
     expect(isThemeVisible('piraten')).toBe(false);
-    expect(getTheme('piraten')).toBeDefined();
+    expect(await loadTheme('piraten')).toBeDefined();
     expect(getAllMultiImageStoryboards().some((e) => e.themeId === 'piraten')).toBe(false);
     expect(getPraatplaatCatalog().some((e) => e.themeId === 'piraten')).toBe(false);
   });

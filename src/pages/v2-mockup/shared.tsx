@@ -7,7 +7,7 @@
 import { useEffect, useRef, type ReactNode, type PointerEvent as ReactPointerEvent } from 'react';
 import { createRoot } from 'react-dom/client';
 import { Play, Square, X } from 'lucide-react';
-import { basisTheme } from '../../data/themes/basis';
+import { getDefaultTheme } from '../../data/themes';
 import type { Location, Sample } from '../../types';
 import { SampleIcon } from '../../utils/iconMap';
 import { cn } from '../../utils/cn';
@@ -18,6 +18,8 @@ import {
 
 // --- Data (echte basis-thema-content) ---
 
+// basis zit in de bundel (manifest), dus synchroon beschikbaar
+const basisTheme = getDefaultTheme();
 export const THEME = basisTheme;
 export const LOCATIONS: Location[] = basisTheme.locations;
 export const SAMPLES: Sample[] = basisTheme.samples;

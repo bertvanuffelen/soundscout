@@ -24,7 +24,7 @@ import { ArrowLeft, BookOpen, Image as ImageIcon, Clapperboard, Music, AlertCirc
 import { useAppStore } from '../../stores/appStore';
 import { activatePendingAssignment, openSavedComposition } from '../../utils/compositionInit';
 import { useUnsavedWorkGuard } from '../common/UnsavedWorkGuard';
-import { findStoryboardById, getTheme } from '../../data/themes';
+import { findStoryboardById, getThemeSummary } from '../../data/themes';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
 import { OnboardingAnimation } from '../common/OnboardingAnimation';
@@ -460,7 +460,7 @@ function StoryboardBody({ storyboard, showDescription }: { storyboard: Assignmen
 
 function FreeBody({ free, showDescription }: { free: { themeId: string; themeName: string }; showDescription: boolean }) {
   const { t, i18n } = useTranslation();
-  const theme = getTheme(free.themeId);
+  const theme = getThemeSummary(free.themeId);
   const preview = theme ? getMapBackgroundImage(theme.map, i18n.language) : null;
   return (
     <div>

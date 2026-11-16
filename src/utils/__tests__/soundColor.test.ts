@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { contrastRatio, getOnSoundTextClass } from '../soundColor';
-import { getTheme } from '../../data/themes';
+import { loadTheme } from '../../data/themes';
 import { SEQUENCE_COLORS } from '../../types/sequencer';
 
 const NAVY = '#0f172a';
@@ -30,10 +30,10 @@ describe('getOnSoundTextClass', () => {
     expect(getOnSoundTextClass('#9B59B6')).toBe('text-text-inverse');
   });
 
-  it('haalt op elke kleur uit thema’s en sequences minstens 4,3:1 en meestal AA', () => {
-    const themeColors = ['basis', 'winterspelen', 'piraten'].flatMap(
-      (id) => getTheme(id)?.samples.map((s) => s.color) ?? [],
-    );
+  it('haalt op elke kleur uit thema’s en sequences minstens 4,3:1 en meestal AA', async () => {
+    const loaded = await Promise.all(['basis', 'winterspelen', 'piraten'].map((id) => loadTheme(id)));
+    expect(loaded.every(Boolean)).toBe(true);
+    const themeColors = loaded.flatMap((theme) => theme?.samples.map((s) => s.color) ?? []);
     const colors = [...new Set([...themeColors, ...SEQUENCE_COLORS])];
     expect(colors.length).toBeGreaterThan(10);
 

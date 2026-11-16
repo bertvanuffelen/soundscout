@@ -117,6 +117,8 @@ AudioService (singleton)
 - `src/services/masterLimiter.ts` — **master-limiter (lookahead brickwall)**: plafond −1.0 dBFS, 5ms lookahead, 1ms attack / 150ms release; voorkomt digitaal clippen bij hard gestapelde sporen, transparant (unity, bit-identiek) onder het plafond. Eén pure kernel op drie plekken: live als AudioWorklet ná de masterBus, offline via `applyLimiterToBuffer` ná de render (lookahead-gecompenseerd), en op de vangnet-opname. Live-fallback zonder worklet = geen live limiter (export limit altijd).
 - **Export-vangnet**: `validateOrCapture` in `audioExport.ts` keurt elke offline render; bij een verdachte render neemt `AudioService.captureRender` de compositie onhoorbaar realtime op (master → capture-worklet → gain 0, frame-exact venster) en meldt de export dat eerlijk (i18n `stage.exportRealtimeFallback`). **Overeenstemmings-check**: flagt de opname hetzelfde profiel als de render, dan zijn de vlaggen de muziek zelf → deterministische offline render, géén melding (zelfherstellend bij valse positieven). Nooit-stilte-garantie: een (bijna) stille capture wordt verworpen.
 
+**Geheugenbudget gedecodeerde audio (V2 Fase 3)**: `src/services/audio/memoryBudget.ts` boekt elke langlevende buffer (`length × kanalen × 4`): sample-buffers van `SampleStore` én pitch-bakes van `PitchBufferService`. Budget per apparaat via `navigator.deviceMemory` (64/96/128/192 MB; zonder `deviceMemory` (iPad Safari, Firefox) 96 MB). Daarboven ruimt de LRU de minst recent gebruikte buffers op, maar **nooit** iets dat vastgepind is. `AudioService.collectPins()` is de enige bron van "in gebruik" (`src/services/audio/audioPins.ts`): tijdlijnclips incl. alle sequence-patroongeluiden, bibliotheek en recorder, `scheduledTracks` (ook de presentatiespeler), de laatste preview (+ toonhoogte) en de laatste 3 laadverzoeken. Pitch-bakes worden per `sampleId|semitonen` vastgepind. Opruimen disposet de preview-Player maar NIET de ToneAudioBuffer (een lopende export houdt hem dan vast). Een opgeruimd geluid laadt bij het volgende gebruik opnieuw; `playSample` herlaadt het transparant. Is alles vastgepind, dan ruimt de engine niets op en logt hij één waarschuwing. Afspelen gaat voor. `disposeUnusedPlayers` (themawissel) blijft, via `SampleStore.removeUnused`. Statistieken: `audioService.getMemoryStats()`, in DEV `__soundscoutAudioStats()` / `__soundscoutAudioBudget(mb)`. Details: `docs/v2/AUDIO-MEMORY.md`. **Let op bij bewerken**: een nieuwe plek die buffers vasthoudt of afspeelt buiten `scheduledTracks`/preview, moet zijn ids in `collectPins()` krijgen.
+
 **Clip Effects (#33, #79)**: Per-clip pitch (-12..+12 semitonen, gebakken buffer), reverb (0-100%, IR-convolver) en Fade In/Out (0..clipduur, s). Keten per event: Player → [PitchShift-fallback] → [reverb-unit] → FadeGain → Volume → trackBus → masterBus → Destination. `EffectsModal` preview (`playSampleWithEffects`, nu async — wacht op de pitch-bake zodat preview exact als export klinkt). Fade-curves: fade-in `x²`, fade-out `(1-x)²`, 128 stappen via `setValueCurveAtTime` op een aparte `Tone.Gain`. Loops: fade-in én fade-out op élke iteratie (pulse — UX-FADE-LOOP), **ook in de export**. Seek middenin een fade berekent de tussenwaarde en plant het curve-restant (`scheduleFadeCurvesAtOffset`). **Trim+fade clamping**: `updateClipTrim` schaalt fades proportioneel als `fadeIn + fadeOut > newDuration`. **Solo en mute tellen ook in de export** (export = wat je hoort); de reverbstaart klinkt live uit tot `autoStopBeat` — gelijk aan wat de export rendert.
 
 **Live reschedule (#22)**: Timeline changes during playback are detected via `audioVersion` counter in `timelineStore` (incremented on every audio-relevant action). `useRescheduleOnChange` hook watches this counter; when it changes while `isPlaying === true`, it calls `AudioService.rescheduleWhilePlaying()` which disposes all activeSources, rebuilds the `Tone.Part` with current tracks, and resumes from the same beat position. **Convention**: any new timelineStore action that affects audio output MUST increment `audioVersion` in its `set()` call.
@@ -202,11 +204,15 @@ Inbedden via `SoundScoutAnimation` (`src/components/common/OnboardingAnimation.t
 
 ### Theme System
 
-Themes in `src/data/themes/{themeId}/` — each has `locations.ts`, `samples.ts`, `map.ts`, `index.ts`.
+**Sinds V2 Fase 3 is een thema data, geen code** (volledig: `docs/v2/THEMES.md`). Elk thema is een manifest `public/themes/{themeId}/manifest.json` (Zod-schema `src/themes/manifest.ts`, JSON Schema in `public/themes/manifest.schema.json`), met teksten per taal (`texts.nl` verplicht, andere talen vrij). `public/themes/index.json` (kiezer-metadata, afgeleid) + bundel-kopieën in `src/themes/bundled/` worden gemaakt door `npm run themes:index` (draait ook in `prebuild`).
 
-- `?theme=x` URL param loads theme (default: `basis`)
-- Assets: `/public/audio/themes/{themeId}/{locationId}/{sampleId}.mp3` and `/public/images/themes/{themeId}/`
-- Guide for adding themes: `docs/NIEUWE-LOCATIE-THEMA.md`
+- **Loader**: `src/themes/repository.ts` (interface `ThemeRepository`, nu statisch; Supabase later via `setThemeRepository`) → `src/themes/registry.ts` (sync cache + i18n-registratie van de manifest-teksten onder de bestaande sleutels) → publieke API blijft `src/data/themes/index.ts`.
+- **Sync vs async**: `getThemeSummary(id)` / `getPublicThemes()` / `getTeacherThemes()` geven `ThemeSummary` (naam, kaart, seizoen, zichtbaarheid, locaties) en zijn altijd synchroon. `getTheme(id)` (volledig, met samples/hotspots) alleen als het geladen is — `basis` zit in de bundel; andere via `await loadTheme(id)` of `await useThemeStore.getState().setTheme(id)` (nu een Promise).
+- `?theme=x` blijft werken (default `basis`); AppShell wacht tot het thema geladen is.
+- Service worker: `/themes/**.json` network-first (`soundscout-themes-v1`); warm-up haalt index + actief manifest op.
+- Assets blijven op `/audio/themes/{themeId}/...` en `/images/themes/{themeId}/...` (`assetBase: "/"`).
+- De TS-thema's in `src/data/themes/{basis,winterspelen,piraten}/` zijn alleen nog fixtures (conversie + gelijkwaardigheidstest `src/themes/__tests__/equivalence.test.ts`); verwijderen is een aparte stap.
+- Guide for adding themes: `docs/v2/THEMES.md` §5 (oud: `docs/NIEUWE-LOCATIE-THEMA.md`)
 
 ### Storyboards & Composition Images
 
@@ -461,6 +467,7 @@ VITE_ADMIN_EMAILS=xxx@example.com      # Comma-separated; these teacher accounts
 | `docs/LOGBOEK-MASTERPLAN.md` | 6-weken masterplan logbook (besluiten, sessies, acties voor Bert) |
 | `docs/TESTPLAN-MASTERPLAN.md` | Manual test plan + hertest-lijsten per testronde |
 | `docs/audio/AUDIT-EXPORTS.md` | Exports audit (MP3 + video): 16 findings + prioritized fix plan |
+| `docs/v2/AUDIO-MEMORY.md` | Geheugenbudget gedecodeerde audio: budgetten, pinregels, statistieken, afstemmen |
 | `docs/audio/PLAN-AUDIO-ENGINE-V2.md` | **Audio Engine v2** (uitgevoerd 24-7): gedeelde motor, pitch-prebake, reverb-IR's, export-validator + vangnet |
 | `docs/audio/ONDERZOEK-EXPORT-EFFECTGLITCH.md` | Afgerond onderzoek export-effectglitch (TR6) — §15 bevat de empirische bevindingen (PitchShift ontmaskerd) |
 | `docs/BEWAREN-VAN-COMPOSITIES.md` | Leesbaar naslag: wanneer/waar/hoe lang leerlingwerk bewaard blijft en hoe je het terugvindt |

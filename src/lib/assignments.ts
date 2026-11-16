@@ -15,7 +15,7 @@ import { ERR_RATE_LIMIT, matchesError } from './supabaseErrors';
 import { sanitizeError } from '../utils/errorSanitize';
 import { logger } from '../utils/logger';
 import { parseCompositionData } from '../utils/schemas';
-import { findStoryboardById, getTheme, getMapBackgroundImage } from '../data/themes';
+import { findStoryboardById, getThemeSummary, getMapBackgroundImage } from '../data/themes';
 import i18n from '../i18n';
 import type { Template, TemplateLockOptions, OpdrachtkaartContent } from '../types';
 import { DEFAULT_LOCK_OPTIONS } from '../types';
@@ -86,7 +86,7 @@ export interface ActiveAssignment {
 /** Los een thema-registry-id op naar een leesbare naam (via i18n-key). */
 function themeDisplayName(themeId: string | null | undefined): string {
   if (!themeId) return 'Vrije compositie';
-  const theme = getTheme(themeId);
+  const theme = getThemeSummary(themeId);
   return theme ? i18n.t(theme.name) : themeId;
 }
 
@@ -476,7 +476,7 @@ function mapAssignmentRow(row: RawAssignmentRow): ClassAssignmentRow {
   } else {
     // free: naam + preview volgen uit het thema (app-content)
     assignmentName = themeDisplayName(row.free_theme_id);
-    const vrijThema = row.free_theme_id ? getTheme(row.free_theme_id) : undefined;
+    const vrijThema = getThemeSummary(row.free_theme_id);
     imageUrl = vrijThema ? getMapBackgroundImage(vrijThema.map, i18n.language) : null;
   }
 

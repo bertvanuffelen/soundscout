@@ -15,7 +15,8 @@
 import { useState, useCallback, useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useThemeStore } from '../stores/themeStore';
-import { getAllLocationsByTheme } from '../data/themes';
+import { getAllLocationsByTheme, loadTheme } from '../data/themes';
+import { getThemeSummaries } from '../themes/registry';
 import { EditorCanvas } from '../components/editor/EditorCanvas';
 import { HotspotList } from '../components/editor/HotspotList';
 import { HotspotModal } from '../components/editor/HotspotModal';
@@ -58,7 +59,17 @@ export function LocationEditor() {
   // loadExistingLocation (useCallback) en daarmee de mount-useEffect telkens
   // opnieuw draaide -> setState -> render -> oneindige lus. De themaregistry is
   // statisch, dus lege deps kloppen.
-  const allThemeLocations = useMemo(() => getAllLocationsByTheme(), []);
+  // Sinds V2 Fase 3 laden thema's op aanvraag: begin met wat er al is (basis)
+  // en vul aan zodra alle thema's geladen zijn. State (geen verse array per
+  // render, zie hierboven).
+  const [allThemeLocations, setAllThemeLocations] = useState(() => getAllLocationsByTheme());
+  useEffect(() => {
+    let cancelled = false;
+    void Promise.all(getThemeSummaries().map((s) => loadTheme(s.id))).then(() => {
+      if (!cancelled) setAllThemeLocations(getAllLocationsByTheme());
+    });
+    return () => { cancelled = true; };
+  }, []);
 
   // --- Form state ---
   const [themeId, setThemeId] = useState('basis');

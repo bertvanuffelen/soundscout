@@ -1,0 +1,297 @@
+{
+  "schemaVersion": 1,
+  "themes": [
+    {
+      "assetBase": "/",
+      "id": "basis",
+      "isPublic": true,
+      "locationCount": 5,
+      "locations": [
+        {
+          "id": "boerderij",
+          "image": "images/themes/basis/boerderij.jpg",
+          "textKeys": {
+            "description": "locations.boerderij.description",
+            "name": "locations.boerderij.name"
+          }
+        },
+        {
+          "id": "speeltuin",
+          "image": "images/themes/basis/speeltuin.jpg",
+          "textKeys": {
+            "description": "locations.speeltuin.description",
+            "name": "locations.speeltuin.name"
+          }
+        },
+        {
+          "id": "gymzaal",
+          "image": "images/themes/basis/gymlokaal.jpg",
+          "textKeys": {
+            "description": "locations.gymzaal.description",
+            "name": "locations.gymzaal.name"
+          }
+        },
+        {
+          "id": "muziekwinkel",
+          "image": "images/themes/basis/muziekwinkel.jpg",
+          "textKeys": {
+            "description": "locations.muziekwinkel.description",
+            "name": "locations.muziekwinkel.name"
+          }
+        },
+        {
+          "id": "klaslokaal",
+          "image": "images/themes/basis/klaslokaal.jpg",
+          "textKeys": {
+            "description": "locations.klaslokaal.description",
+            "name": "locations.klaslokaal.name"
+          }
+        }
+      ],
+      "manifest": "basis/manifest.json",
+      "map": {
+        "image": {
+          "nl": "images/themes/basis/plattegrond.jpg"
+        }
+      },
+      "sampleCount": 31,
+      "sort": 10,
+      "texts": {
+        "en": {
+          "description": "Farm, playground, gym and more",
+          "locations": {
+            "boerderij": {
+              "description": "A cosy petting zoo full of animal sounds",
+              "name": "The Petting Zoo"
+            },
+            "gymzaal": {
+              "description": "A sporty gym full of active sounds",
+              "name": "The Gym"
+            },
+            "klaslokaal": {
+              "description": "A cheerful classroom full of activities",
+              "name": "The Classroom"
+            },
+            "muziekwinkel": {
+              "description": "A cosy music room full of instruments",
+              "name": "The Music Room"
+            },
+            "speeltuin": {
+              "description": "A cheerful playground full of kids having fun",
+              "name": "The Playground"
+            }
+          },
+          "name": "The City"
+        },
+        "nl": {
+          "description": "Boerderij, speeltuin, gymzaal en meer",
+          "locations": {
+            "boerderij": {
+              "description": "Een gezellige kinderboerderij vol dierengeluiden",
+              "name": "De Kinderboerderij"
+            },
+            "gymzaal": {
+              "description": "Een sportieve gymzaal vol actieve geluiden",
+              "name": "De Gymzaal"
+            },
+            "klaslokaal": {
+              "description": "Een vrolijk klaslokaal vol met activiteiten",
+              "name": "Het Klaslokaal"
+            },
+            "muziekwinkel": {
+              "description": "Een gezellig muzieklokaal vol instrumenten",
+              "name": "Het Muzieklokaal"
+            },
+            "speeltuin": {
+              "description": "Een vrolijke speeltuin vol kinderpret",
+              "name": "De Speeltuin"
+            }
+          },
+          "name": "De Stad"
+        }
+      },
+      "version": 1
+    },
+    {
+      "assetBase": "/",
+      "colors": {
+        "accent": "#60A5FA",
+        "mapBackground": "#E0F2FE",
+        "primary": "#3B82F6"
+      },
+      "id": "winterspelen",
+      "isPublic": true,
+      "locationCount": 4,
+      "locations": [
+        {
+          "id": "winterdorp",
+          "image": "images/themes/winterspelen/winterdorp.jpg"
+        },
+        {
+          "id": "bobslee",
+          "image": "images/themes/winterspelen/bobsleebaan.jpg"
+        },
+        {
+          "id": "skipiste",
+          "image": "images/themes/winterspelen/skipiste.jpg"
+        },
+        {
+          "id": "ijsarena",
+          "image": "images/themes/winterspelen/ijsarena.jpg"
+        }
+      ],
+      "manifest": "winterspelen/manifest.json",
+      "map": {
+        "image": {
+          "nl": "images/themes/winterspelen/plattegrond.jpg"
+        }
+      },
+      "sampleCount": 27,
+      "sort": 20,
+      "texts": {
+        "en": {
+          "description": "Ski slope, bobsleigh and ice arena",
+          "locations": {
+            "bobslee": {
+              "description": "The fastest track",
+              "name": "Bobsleigh track"
+            },
+            "ijsarena": {
+              "description": "Skating on the ice",
+              "name": "Ice Arena"
+            },
+            "skipiste": {
+              "description": "Into the mountains!",
+              "name": "Ski Slope"
+            },
+            "winterdorp": {
+              "description": "A cosy winter village",
+              "name": "Winter Village"
+            }
+          },
+          "name": "Winter Games"
+        },
+        "nl": {
+          "description": "Skipiste, bobslee en ijsarena",
+          "locations": {
+            "bobslee": {
+              "description": "De snelste baan",
+              "name": "Bobslee baan"
+            },
+            "ijsarena": {
+              "description": "Schaatsen op het ijs",
+              "name": "IJsarena"
+            },
+            "skipiste": {
+              "description": "De bergen in!",
+              "name": "Skipiste"
+            },
+            "winterdorp": {
+              "description": "Een gezellig winterdorp",
+              "name": "Winterdorp"
+            }
+          },
+          "name": "Winterspelen"
+        }
+      },
+      "version": 1
+    },
+    {
+      "assetBase": "/",
+      "colors": {
+        "accent": "#E8A02C",
+        "mapBackground": "#F3E1BE",
+        "primary": "#0E8C8C"
+      },
+      "id": "piraten",
+      "isPublic": false,
+      "locationCount": 5,
+      "locations": [
+        {
+          "id": "grogkroeg",
+          "image": "images/themes/piraten/grogkroeg.jpg"
+        },
+        {
+          "id": "haven",
+          "image": "images/themes/piraten/haven.jpg"
+        },
+        {
+          "id": "schip",
+          "image": "images/themes/piraten/schip.jpg"
+        },
+        {
+          "id": "jungle",
+          "image": "images/themes/piraten/jungle.jpg"
+        },
+        {
+          "id": "voodoohut",
+          "image": "images/themes/piraten/voodoohut.jpg"
+        }
+      ],
+      "manifest": "piraten/manifest.json",
+      "map": {
+        "image": {
+          "en": "images/themes/piraten/plattegrond-en.jpg",
+          "nl": "images/themes/piraten/plattegrond.jpg"
+        }
+      },
+      "sampleCount": 36,
+      "sort": 30,
+      "texts": {
+        "en": {
+          "description": "Tavern, harbour, ship, jungle and voodoo — set sail!",
+          "locations": {
+            "grogkroeg": {
+              "description": "A cosy pirate tavern",
+              "name": "The Thirsty Parrot"
+            },
+            "haven": {
+              "description": "The harbour with docks",
+              "name": "The Harbour"
+            },
+            "jungle": {
+              "description": "A lush jungle trail",
+              "name": "The Jungle Trail"
+            },
+            "schip": {
+              "description": "The pirate ship's deck",
+              "name": "The Ship"
+            },
+            "voodoohut": {
+              "description": "A mysterious voodoo hut",
+              "name": "The Voodoo Hut"
+            }
+          },
+          "name": "Pirates"
+        },
+        "nl": {
+          "description": "Grogkroeg, haven, schip, jungle en voodoo — vaar mee!",
+          "locations": {
+            "grogkroeg": {
+              "description": "Een gezellige piratenkroeg",
+              "name": "De Dorstige Papegaai"
+            },
+            "haven": {
+              "description": "Het haventje met steigers",
+              "name": "De Kade"
+            },
+            "jungle": {
+              "description": "Een weelderig junglepad",
+              "name": "Het Junglepad"
+            },
+            "schip": {
+              "description": "Het dek van het piratenschip",
+              "name": "Het Schip"
+            },
+            "voodoohut": {
+              "description": "Een geheimzinnige voodoo-hut",
+              "name": "De Voodoo-hut"
+            }
+          },
+          "name": "Piraten"
+        }
+      },
+      "version": 1
+    }
+  ]
+}

@@ -17,7 +17,7 @@ import type { Submission } from '../../hooks/useSubmissions';
 import { PresentationSurface } from '../presentation/PresentationSurface';
 import { Button } from '../ui/Button';
 import { audioService } from '../../services/AudioService';
-import { findStoryboardById, getTheme } from '../../data/themes';
+import { findStoryboardById, getThemeSummary } from '../../data/themes';
 import { logger } from '../../utils/logger';
 
 type ViewerState = 'loading' | 'waiting-gesture' | 'ready' | 'error' | 'not-found' | 'expired';
@@ -88,7 +88,7 @@ export function SharedAlbumViewer({ code, onBack }: SharedAlbumViewerProps) {
         return found ? t(found.storyboard.name) : null;
       })() : null)
       ?? (data.free_theme_id ? (() => {
-        const theme = getTheme(data.free_theme_id!);
+        const theme = getThemeSummary(data.free_theme_id!);
         return theme ? t(theme.name) : null;
       })() : null)
       ?? t('album.fallbackTitle')

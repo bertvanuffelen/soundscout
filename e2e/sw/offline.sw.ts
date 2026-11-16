@@ -10,6 +10,7 @@
  *  (c) /teacher, /over en een /les/<key>/-pagina worden niet door de app gekaapt;
  *  (d) een Supabase-verzoek wordt nooit bewaard en mislukt zonder verbinding;
  *  (e) oude links (?theme=…) blijven werken, ook zonder verbinding;
+ *  (h) het actieve thema (manifest, V2 Fase 3) laadt na één bezoek ook offline;
  *  (f) een nieuwe versie wacht: ze neemt een open pagina niet vanzelf over;
  *  (g) de noodrem (docs/v2/sw-kill-switch.js) ruimt service worker en caches op.
  *
@@ -23,6 +24,7 @@ const START_BUTTON = 'Nieuwe soundscape';
 const BACKEND = 'http://127.0.0.1:5182';
 const AUDIO_CACHE = 'soundscout-audio-v1';
 const IMAGE_CACHE = 'soundscout-images-v1';
+const THEME_DATA_CACHE = 'soundscout-themes-v1';
 /** De sw.js van de testbuild (zie OUT_DIR in playwright.sw.config.ts). */
 const SW_FILE = 'node_modules/.cache/sw-e2e-dist/sw.js';
 
@@ -305,6 +307,38 @@ test('(e) oude links blijven werken, online en offline', async ({ page, context 
   await expect(page.getByRole('button', { name: START_BUTTON })).toBeVisible();
   await page.goto('/bestaat-niet');
   await expect(page.getByRole('button', { name: START_BUTTON })).toBeVisible();
+});
+
+test('(h) het actieve thema laadt na één bezoek ook offline uit zijn manifest', async ({ page, context }) => {
+  await prepare(page);
+  await page.goto('/');
+  await waitForController(page);
+
+  // Online: index en winter-manifest komen van het netwerk en worden bewaard
+  const manifest = page.waitForResponse((r) => new URL(r.url()).pathname === '/themes/winterspelen/manifest.json');
+  await page.goto('/?theme=winterspelen');
+  expect((await manifest).ok()).toBe(true);
+  await expect
+    .poll(async () => (await cachedPaths(page, THEME_DATA_CACHE)).sort(), { timeout: 30_000 })
+    .toEqual(expect.arrayContaining(['/themes/index.json', '/themes/winterspelen/manifest.json']));
+  await expect
+    .poll(async () => (await cachedPaths(page, IMAGE_CACHE)).includes('/images/themes/winterspelen/plattegrond.jpg'), { timeout: 60_000 })
+    .toBe(true);
+
+  // Offline: het manifest komt uit de cache van de service worker, de winterkaart verschijnt
+  await context.setOffline(true);
+  const offlineManifest = page.waitForResponse((r) => new URL(r.url()).pathname === '/themes/winterspelen/manifest.json');
+  await page.goto('/?theme=winterspelen');
+  const response = await offlineManifest;
+  expect(response.ok()).toBe(true);
+  expect(response.fromServiceWorker()).toBe(true);
+  await page.getByRole('button', { name: START_BUTTON }).click();
+  await page.getByText('Hoe wil je componeren?').waitFor();
+  await page.getByRole('button', { name: 'Volgende' }).click();
+  await page.getByText('Kies je wereld').waitFor();
+  await page.getByRole('button', { name: /Winterspelen/ }).click();
+  await expect(page.locator('img[src="/images/themes/winterspelen/plattegrond.jpg"]')).toBeVisible();
+  await expect(page.getByTitle('IJsarena', { exact: true }).first()).toBeVisible();
 });
 
 test('(f) een nieuwe versie wacht en neemt een open pagina niet vanzelf over', async ({ page }) => {

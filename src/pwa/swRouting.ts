@@ -21,6 +21,8 @@ export const PRECACHE_ID = 'soundscout-1';
 /** Versie in de cachenamen. Ophogen = alle apparaten beginnen met lege mediacaches. */
 export const AUDIO_CACHE = 'soundscout-audio-v1';
 export const IMAGE_CACHE = 'soundscout-images-v1';
+/** Thema-index en -manifesten (V2 Fase 3), network-first: zie isThemeData. */
+export const THEME_DATA_CACHE = 'soundscout-themes-v1';
 
 /**
  * Navigaties die NIET naar de app (index.html) mogen terugvallen: eigen
@@ -32,7 +34,7 @@ export const NAVIGATE_FALLBACK_DENYLIST: RegExp[] = [
   /^\/teacher(\.html)?\/?(\?|$)/,
   /^\/over(\.html)?\/?(\?|$)/,
   // Statische mappen
-  /^\/(les|privacy|animaties|assets|audio|images|fonts)(\/|\?|$)/,
+  /^\/(les|privacy|animaties|assets|audio|images|fonts|themes)(\/|\?|$)/,
   // Elk pad dat op een bestandsnaam met extensie eindigt (sitemap.xml,
   // robots.txt, manifest.json, sw.js, ...). Alleen het pad telt, niet de query.
   /^[^?]*\/[^/?]+\.[^/?]+(\?|$)/,
@@ -57,4 +59,13 @@ export function isThemeAudio({ url, sameOrigin }: MatchInput): boolean {
 /** Beelden (kaarten, locaties, praatplaten, storyboards): alleen eigen origin onder /images/. */
 export function isAppImage({ url, sameOrigin }: MatchInput): boolean {
   return sameOrigin && url.pathname.startsWith('/images/') && /\.(jpe?g|png|webp|svg)$/.test(url.pathname);
+}
+
+/**
+ * Thema-data (V2 Fase 3): /themes/index.json en /themes/<id>/manifest.json.
+ * Network-first: online altijd de gepubliceerde versie (een nieuwe publicatie
+ * is meteen zichtbaar, nooit "voor altijd" oud), offline de laatst geziene.
+ */
+export function isThemeData({ url, sameOrigin }: MatchInput): boolean {
+  return sameOrigin && url.pathname.startsWith('/themes/') && url.pathname.endsWith('.json');
 }

@@ -13,7 +13,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore, type PendingAssignment } from '../stores/appStore';
 import { audioService } from '../services/AudioService';
-import { getThemeStoryboards, findStoryboardById, getTheme, DEFAULT_THEME_ID } from '../data/themes';
+import { getThemeStoryboards, findStoryboardById, getThemeSummary, DEFAULT_THEME_ID } from '../data/themes';
 import { getActiveAssignment, AssignmentLookupError, type ActiveAssignment } from '../lib/assignments';
 import { MAX_SECTIONS } from '../constants/config';
 import { logger } from './logger';
@@ -126,8 +126,8 @@ export async function initializeNewComposition(
 ): Promise<boolean> {
   const { themeId, onAudioInitFailed } = options;
 
-  // Stap 1: Stel thema in
-  useThemeStore.getState().setTheme(themeId);
+  // Stap 1: Stel thema in (wacht op het manifest als het thema nog niet geladen is)
+  await useThemeStore.getState().setTheme(themeId);
 
   // Stap 2: Reset state (sync, kan niet falen). Volledige reset (B24): ook
   // secties/sequences/lengte, anders erft een vrije compositie bv. de
@@ -192,7 +192,7 @@ export async function initializeCompositionFromStoryboard(
   const mode: ComposeMode = storyboard.images.length === 1 ? 'image' : 'storyboard';
 
   // 1. Thema impliciet uit storyboard
-  useThemeStore.getState().setTheme(storyboard.themeId);
+  await useThemeStore.getState().setTheme(storyboard.themeId);
 
   // 2. Reset state (volledig, B24): na de reset is totalBeats de standaard
   useTimelineStore.getState().resetTimeline();
@@ -467,8 +467,8 @@ export async function activatePendingAssignment(): Promise<void> {
     // piraten-praatplaat — bevinding testronde 5 / D2). Onbekend of ontbrekend
     // thema valt terug op de standaard.
     const ppThemeId = assignment.praatplaat.themeId;
-    useThemeStore.getState().setTheme(
-      ppThemeId && getTheme(ppThemeId) ? ppThemeId : DEFAULT_THEME_ID,
+    await useThemeStore.getState().setTheme(
+      ppThemeId && getThemeSummary(ppThemeId) ? ppThemeId : DEFAULT_THEME_ID,
     );
 
     useAppStore.getState().goToPraatplaatSelect();

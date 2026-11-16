@@ -1,7 +1,9 @@
 import { describe, it, expect } from 'vitest';
-import { themeAssetUrls } from '../warmThemeCache';
-import { basisTheme } from '../../data/themes/basis';
-import { isThemeAudio, isAppImage } from '../swRouting';
+import { themeAssetUrls, themeDataUrls } from '../warmThemeCache';
+import { getDefaultTheme } from '../../data/themes';
+
+const basisTheme = getDefaultTheme();
+import { isThemeAudio, isAppImage, isThemeData } from '../swRouting';
 
 describe('themeAssetUrls', () => {
   const urls = themeAssetUrls(basisTheme);
@@ -28,5 +30,13 @@ describe('themeAssetUrls', () => {
       samples: [{ ...basisTheme.samples[0], audioUrl: '/audio/themes/basis/boerderij/koe.mp3' }],
     });
     expect(result).toEqual(['/audio/themes/basis/boerderij/koe.mp3']);
+  });
+});
+
+describe('themeDataUrls', () => {
+  it('warmt de thema-index en het manifest van het actieve thema op (network-first in de service worker)', () => {
+    const urls = themeDataUrls('winterspelen');
+    expect(urls).toEqual(['/themes/index.json', '/themes/winterspelen/manifest.json']);
+    for (const path of urls) expect(isThemeData({ url: new URL(path, 'https://soundscout.nl'), sameOrigin: true })).toBe(true);
   });
 });

@@ -4,7 +4,7 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "prebuild": "node scripts/generate-les-pages.mjs",
+    "prebuild": "node scripts/generate-les-pages.mjs && node scripts/export-theme-manifests.mjs",
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
@@ -20,7 +20,9 @@
     "e2e:baseline": "playwright test e2e/layout.spec.ts --update-snapshots",
     "e2e:golden": "UPDATE_GOLDEN=1 playwright test e2e/audio-golden.spec.ts",
     "e2e:sw": "playwright test -c playwright.sw.config.ts",
-    "pwa:icons": "node scripts/generate-pwa-icons.mjs"
+    "pwa:icons": "node scripts/generate-pwa-icons.mjs",
+    "themes:index": "node scripts/export-theme-manifests.mjs",
+    "themes:convert": "node scripts/export-theme-manifests.mjs --from-ts"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",

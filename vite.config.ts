@@ -9,8 +9,10 @@ import {
   NAVIGATE_FALLBACK_DENYLIST,
   PRECACHE_ID,
   PRECACHE_IGNORE_PARAMS,
+  THEME_DATA_CACHE,
   isAppImage,
   isThemeAudio,
+  isThemeData,
 } from './src/pwa/swRouting'
 
 const DAY = 24 * 60 * 60
@@ -67,6 +69,19 @@ const pwa = VitePWA({
     // Alleen GET en alleen de eigen origin. Supabase, EmailJS en YouTube
     // hebben geen regel en gaan dus ongemoeid langs de service worker.
     runtimeCaching: [
+      {
+        // Thema-index en -manifesten (V2 Fase 3, docs/v2/THEMES.md): eerst het
+        // netwerk (een publicatie is direct zichtbaar), na 4 s of zonder
+        // verbinding de laatst bewaarde versie. Klein, dus geen ruimteprobleem.
+        urlPattern: isThemeData,
+        handler: 'NetworkFirst',
+        options: {
+          cacheName: THEME_DATA_CACHE,
+          networkTimeoutSeconds: 4,
+          cacheableResponse: { statuses: [200] },
+          expiration: { maxEntries: 60, maxAgeSeconds: 365 * DAY },
+        },
+      },
       {
         urlPattern: isThemeAudio,
         handler: 'CacheFirst',
