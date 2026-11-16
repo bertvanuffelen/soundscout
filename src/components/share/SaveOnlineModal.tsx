@@ -2,7 +2,8 @@
  * SaveOnlineModal - Modal voor het online bewaren van een compositie (#52)
  *
  * Flow:
- * 1. Invoer: naam (verplicht), klascode (optioneel). Geen e-mailveld meer (AUD-11).
+ * 1. Invoer: naam (optioneel — leeg = willekeurige schuilnaam, besluit 2 van
+ *    de lanceerstrategie), klascode (optioneel). Geen e-mailveld meer (AUD-11).
  * 2. Bezig met bewaren (loading)
  * 3. Succes → Toont 6-karakter bewaarcode + "mee naar huis" (code, link, mail, QR)
  * 4. Error → Foutmelding + opnieuw proberen
@@ -16,6 +17,7 @@ import { saveCompositionOnline } from '../../lib/submissions';
 import type { CompositionData } from '../../types';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
 import { SaveCodeTakeHome } from './SaveCodeTakeHome';
+import { generateRandomName } from '../../utils/randomNames';
 
 interface SaveOnlineModalProps {
   compositionName: string;
@@ -34,7 +36,7 @@ export function SaveOnlineModal({
   onClose,
   onSaved,
 }: SaveOnlineModalProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const modalRef = useModalBehavior(onClose);
   const [state, setState] = useState<ModalState>('form');
   const [name, setName] = useState(initialStudentName || '');
@@ -43,14 +45,13 @@ export function SaveOnlineModal({
   const [error, setError] = useState<string | null>(null);
 
   const handleSave = useCallback(async () => {
-    if (!name.trim()) return;
-
     setState('saving');
     setError(null);
 
     try {
       const result = await saveCompositionOnline({
-        studentName: name.trim(),
+        // Leeg = schuilnaam, zoals de hint onder het veld belooft
+        studentName: name.trim() || generateRandomName(i18n.language),
         compositionName,
         compositionData,
         classCode: classCode.trim() || undefined,
@@ -65,7 +66,7 @@ export function SaveOnlineModal({
       setError(err instanceof Error ? err.message : t('saveOnline.saveError'));
       setState('error');
     }
-  }, [name, compositionName, compositionData, classCode, t, onSaved]);
+  }, [name, compositionName, compositionData, classCode, t, i18n.language, onSaved]);
 
 
 
@@ -98,18 +99,23 @@ export function SaveOnlineModal({
               {t('saveOnline.description')}
             </p>
 
-            {/* Name (required) */}
-            <label className="block text-sm font-medium text-text-muted mb-1">
-              {t('saveOnline.nameLabel')} *
+            {/* Naam (optioneel) — met privacy-hint */}
+            <label htmlFor="save-online-name" className="block text-sm font-medium text-text-muted mb-1">
+              {t('saveOnline.nameLabel')}
             </label>
             <input
+              id="save-online-name"
               type="text"
+              aria-describedby="save-online-name-hint"
               value={name}
               onChange={(e) => setName(e.target.value)}
               placeholder={t('saveOnline.namePlaceholder')}
               maxLength={50}
-              className="w-full px-3 py-2 bg-neutral-50 border border-border-subtle rounded-lg text-sm text-text-muted mb-3 focus:outline-none focus:border-accent-400"
+              className="w-full px-3 py-2 bg-neutral-50 border border-border-subtle rounded-lg text-sm text-text-muted mb-1 focus:outline-none focus:border-accent-400"
             />
+            <p id="save-online-name-hint" className="text-xs text-text-muted mb-3">
+              {t('saveOnline.nameHint')}
+            </p>
 
             {/* Class code (optional) */}
             <label className="block text-sm font-medium text-text-muted mb-1">
@@ -131,7 +137,6 @@ export function SaveOnlineModal({
               <Button
                 variant="primary"
                 onClick={handleSave}
-                disabled={!name.trim()}
                 className="flex-1"
               >
                 <Save className="w-4 h-4 mr-1.5" />

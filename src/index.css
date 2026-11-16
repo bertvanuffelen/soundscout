@@ -1,5 +1,9 @@
 @import "tailwindcss";
 
+/* Kort liggend scherm (telefoon dwars, ≤ 540px hoog): het startscherm
+   schakelt naar twee kolommen zodat de hoofdknop boven de vouw blijft. */
+@custom-variant short (@media (orientation: landscape) and (max-height: 540px));
+
 /* ============================================================
    SOUNDSCOUT DESIGN SYSTEM
    ============================================================
@@ -281,6 +285,18 @@ input:focus:not(:focus-visible),
 
 .animate-cta-pulse {
   animation: cta-pulse 2.2s ease-in-out infinite;
+}
+
+/* --- Startscherm: zachte puls rond de decoratieve hotspot-stippen --- */
+@keyframes start-hero-pulse {
+  0%, 100% { transform: scale(1); opacity: 0; }
+  50% { transform: scale(1.35); opacity: 0.7; }
+}
+.start-hero-pulse {
+  animation: start-hero-pulse 3.2s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .start-hero-pulse { animation: none; opacity: 0; }
 }
 
 /* Respect prefers-reduced-motion */

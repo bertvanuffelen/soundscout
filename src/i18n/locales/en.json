@@ -192,7 +192,15 @@
     "teacherLink": "Are you a teacher?",
     "createdBy": "Created by Bert van Uffelen",
     "aboutButton": "About this app",
-    "continueToday": "today {{time}}"
+    "continueToday": "today {{time}}",
+    "headline": "Make your own soundscape",
+    "chooseWorld": "Explore worlds",
+    "forTeachers": "For teachers",
+    "heroAlt": "Drawing of a busy petting farm full of animals to listen to",
+    "aboutLink": "About SoundScout",
+    "languageLabel": "Language",
+    "continueLabel": "Carry on where you left off",
+    "footerLabel": "More about SoundScout"
   },
   "newWork": {
     "title": "Make another soundscape?",
@@ -1985,7 +1993,8 @@
       "invalidCode": "Please enter a 4-digit code",
       "classNotFound": "Class not found. Check the code.",
       "checkingCode": "Checking code...",
-      "sendError": "Failed to send. Please try again."
+      "sendError": "Failed to send. Please try again.",
+      "nameHint": "First name only, or leave it empty for an alias."
     },
     "stats": {
       "title": "Statistics",
@@ -2075,7 +2084,7 @@
   "saveOnline": {
     "title": "Save online",
     "description": "Save your soundscape online and get a code. Use it to keep working on any device.",
-    "nameLabel": "Your name",
+    "nameLabel": "Your name (optional)",
     "namePlaceholder": "e.g. Lisa",
     "classCodeLabel": "Class code (optional)",
     "classCodePlaceholder": "4 digits",
@@ -2090,7 +2099,8 @@
     "updateError": "Update failed. Please try again.",
     "invalidSecret": "Invalid save code or you no longer have access.",
     "codeNotFound": "Save code not found or expired.",
-    "claimError": "Could not load the soundscape. Please try again."
+    "claimError": "Could not load the soundscape. Please try again.",
+    "nameHint": "First name only, or leave it empty for an alias."
   },
   "takeHome": {
     "copyLink": "Copy link",
@@ -2133,7 +2143,7 @@
     "dataTitle": "How SoundScout handles your data",
     "dataText": "You don't need an account. Your soundscape is stored on your own device (in the browser). If you save it online with a save code, it is stored on our server in the EU, with an automatic nickname. After 60 days without use it is deleted automatically. Anyone who has your save code or link can open and change your soundscape, so only share it at home.",
     "classCodeTitle": "Class code & teacher",
-    "classCodeText": "With a class code you hand in your soundscape to your teacher. You work anonymously: you get a random nickname, like 'Singing Seal'. Don't put your last name in the title. Your teacher listens to your soundscape and can give feedback. Classmates who give stars don't see whose it is. Do you have a student code from your teacher? Then you always have the same nickname and can keep working on any device. The card with your code is as personal as a password: keep it safe and don't share your code. If your teacher shares a class album, anyone with that link can listen to the soundscapes with nicknames. Submitted work is kept for at most one school year and then deleted automatically. The school is responsible for this data; SoundScout processes it on behalf of the school.",
+    "classCodeText": "With a class code you hand in your soundscape to your teacher. You get a random alias, like 'Singing Seal'. If you type a name yourself, use only your first name. Don't put your last name in the title. Your teacher listens to your soundscape and can give feedback. Classmates who give stars don't see whose it is. Do you have a student code from your teacher? Then you always have the same alias and can keep working on any device. The card with your code is as personal as a password: keep it safe and don't share your code. If your teacher shares a class album, anyone with that link can listen to the soundscapes with aliases. Submitted work is kept for at most one school year and then deleted automatically. The school is responsible for this data; SoundScout processes it on behalf of the school.",
     "cookiesTitle": "Cookies, tracking and other parties",
     "cookiesText": "SoundScout uses no cookies, no tracking and no ads. We only count anonymously how often the app is used (daily totals, without personal data); the 'Do Not Track' setting is respected. On your device we only store your soundscapes, your language choice, your save codes and the work you are doing now (at most 12 hours). On a shared computer, \"I'm done\" removes your work. Online storage runs on Supabase (servers in Ireland) and the website is hosted by Strato (Germany). If you open the explainer videos, they come from YouTube.",
     "fullLink": "Read the full privacy statement",
@@ -2292,7 +2302,7 @@
       },
       "noAccounts": {
         "title": "No student accounts",
-        "description": "One class code is enough. Students work anonymously with a random nickname; we only store their composition."
+        "description": "One class code is enough. Students get an alias automatically when they hand in; we only store their composition."
       },
       "praatplaat": {
         "title": "Sound map on the whiteboard",
@@ -2331,7 +2341,7 @@
         },
         "avg": {
           "q": "Is SoundScout GDPR-compliant?",
-          "a": "SoundScout is built to store as little as possible. Students work anonymously with a random nickname: no account, no email address, no password. No cookies, no tracking, no ads. Submitted work is deleted automatically after one school year. The school remains responsible for student data and SoundScout is the processor; a data processing agreement is available on request via hello@soundscout.nl. Everything is in the privacy statement at soundscout.nl/privacy."
+          "a": "SoundScout is built to store as little as possible. Children have no account, no e-mail address and no password. When they hand in work with a class code, they get an alias automatically. When saving or sharing, a child can type a name; this is optional. We recommend a first name or the alias. No cookies, no tracking, no ads. Submitted work is deleted automatically after one school year. The school remains responsible for student data and SoundScout is the processor; a data processing agreement is available on request via hello@soundscout.nl. Everything is in the privacy statement at soundscout.nl/privacy."
         },
         "devices": {
           "q": "Does SoundScout work on Chromebooks, iPads and the whiteboard?",
@@ -2375,7 +2385,7 @@
       "title": "Privacy by design",
       "point1": "No student accounts",
       "point2": "No tracking or ads",
-      "point3": "Students work anonymously",
+      "point3": "Automatic alias when handing in",
       "point4": "Data processing agreement on request",
       "link": "Read how we handle data"
     },

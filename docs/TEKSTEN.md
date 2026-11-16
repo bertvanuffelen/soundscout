@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2210 teksten in 57 secties._
+_Stand: 2220 teksten in 57 secties._
 
 ## app
 
@@ -225,6 +225,14 @@ _Stand: 2210 teksten in 57 secties._
 | `start.createdBy` | Gemaakt door Bert van Uffelen | Created by Bert van Uffelen |
 | `start.aboutButton` | Over deze app | About this app |
 | `start.continueToday` | vandaag {{time}} | today {{time}} |
+| `start.headline` | Maak je eigen soundscape | Make your own soundscape |
+| `start.chooseWorld` | Kies een wereld | Explore worlds |
+| `start.forTeachers` | Voor docenten | For teachers |
+| `start.heroAlt` | Tekening van een drukke kinderboerderij met dieren om naar te luisteren | Drawing of a busy petting farm full of animals to listen to |
+| `start.aboutLink` | Over SoundScout | About SoundScout |
+| `start.languageLabel` | Taal | Language |
+| `start.continueLabel` | Verder waar je was | Carry on where you left off |
+| `start.footerLabel` | Meer over SoundScout | More about SoundScout |
 
 ## newWork
 
@@ -1687,6 +1695,7 @@ _Stand: 2210 teksten in 57 secties._
 | `teacher.shareWithTeacher.classNotFound` | Klas niet gevonden. Controleer de code. | Class not found. Check the code. |
 | `teacher.shareWithTeacher.checkingCode` | Code controleren... | Checking code... |
 | `teacher.shareWithTeacher.sendError` | Versturen mislukt. Probeer opnieuw. | Failed to send. Please try again. |
+| `teacher.shareWithTeacher.nameHint` | Alleen je voornaam, of laat leeg voor een schuilnaam. | First name only, or leave it empty for an alias. |
 | `teacher.stats.title` | Statistieken | Statistics |
 | `teacher.stats.subtitle` | Anoniem gebruik van SoundScout — alleen tellingen per dag, zonder persoonsgegevens. | Anonymous SoundScout usage — daily counts only, no personal data. |
 | `teacher.stats.chartTitle` | Sessies per dag (laatste 30 dagen) | Sessions per day (last 30 days) |
@@ -1782,7 +1791,7 @@ _Stand: 2210 teksten in 57 secties._
 |---|---|---|
 | `saveOnline.title` | Bewaar online | Save online |
 | `saveOnline.description` | Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder. | Save your soundscape online and get a code. Use it to keep working on any device. |
-| `saveOnline.nameLabel` | Jouw naam | Your name |
+| `saveOnline.nameLabel` | Jouw naam (optioneel) | Your name (optional) |
 | `saveOnline.namePlaceholder` | Bijv. Lisa of Groep 5 | e.g. Lisa |
 | `saveOnline.classCodeLabel` | Klascode (optioneel) | Class code (optional) |
 | `saveOnline.classCodePlaceholder` | 4 cijfers | 4 digits |
@@ -1798,6 +1807,7 @@ _Stand: 2210 teksten in 57 secties._
 | `saveOnline.invalidSecret` | Ongeldige bewaarcode of je hebt geen toegang meer. | Invalid save code or you no longer have access. |
 | `saveOnline.codeNotFound` | Bewaarcode niet gevonden of verlopen. | Save code not found or expired. |
 | `saveOnline.claimError` | De soundscape kon niet worden opgehaald. Probeer het opnieuw. | Could not load the soundscape. Please try again. |
+| `saveOnline.nameHint` | Alleen je voornaam, of laat leeg voor een schuilnaam. | First name only, or leave it empty for an alias. |
 
 ## takeHome
 
@@ -1843,7 +1853,7 @@ _Stand: 2210 teksten in 57 secties._
 | `privacy.dataTitle` | Hoe SoundScout met je gegevens omgaat | How SoundScout handles your data |
 | `privacy.dataText` | Je hebt geen account nodig. Je soundscape wordt bewaard op je eigen apparaat (in de browser). Bewaar je hem online met een bewaarcode, dan staat hij op onze server in de EU, met een automatische schuilnaam. Na 60 dagen zonder gebruik wordt hij automatisch verwijderd. Wie je bewaarcode of link heeft, kan je soundscape openen en veranderen: deel hem dus alleen thuis. | You don't need an account. Your soundscape is stored on your own device (in the browser). If you save it online with a save code, it is stored on our server in the EU, with an automatic nickname. After 60 days without use it is deleted automatically. Anyone who has your save code or link can open and change your soundscape, so only share it at home. |
 | `privacy.classCodeTitle` | Klascode & docent | Class code & teacher |
-| `privacy.classCodeText` | Met een klascode lever je je soundscape in bij je docent. Je werkt dan anoniem: je krijgt een willekeurige schuilnaam, zoals 'Zingende Zeehond'. Zet je achternaam niet in de titel. Je docent hoort je soundscape en kan feedback geven. Klasgenoten die sterren geven, zien niet van wie het is. Heb je een leerlingcode van je docent? Dan heb je altijd dezelfde schuilnaam en kun je op elk apparaat verder werken. Het kaartje met je code is net zo persoonlijk als een wachtwoord: bewaar het goed en deel je code niet. Deelt je docent een klasalbum, dan kan iedereen met die link de soundscapes met schuilnaam beluisteren. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd. De school is verantwoordelijk voor deze gegevens; SoundScout verwerkt ze in opdracht van de school. | With a class code you hand in your soundscape to your teacher. You work anonymously: you get a random nickname, like 'Singing Seal'. Don't put your last name in the title. Your teacher listens to your soundscape and can give feedback. Classmates who give stars don't see whose it is. Do you have a student code from your teacher? Then you always have the same nickname and can keep working on any device. The card with your code is as personal as a password: keep it safe and don't share your code. If your teacher shares a class album, anyone with that link can listen to the soundscapes with nicknames. Submitted work is kept for at most one school year and then deleted automatically. The school is responsible for this data; SoundScout processes it on behalf of the school. |
+| `privacy.classCodeText` | Met een klascode lever je je soundscape in bij je docent. Je krijgt een willekeurige schuilnaam, zoals 'Zingende Zeehond'. Vul je zelf een naam in, gebruik dan alleen je voornaam. Zet je achternaam niet in de titel. Je docent hoort je soundscape en kan feedback geven. Klasgenoten die sterren geven, zien niet van wie het is. Heb je een leerlingcode van je docent? Dan heb je altijd dezelfde schuilnaam en kun je op elk apparaat verder werken. Het kaartje met je code is net zo persoonlijk als een wachtwoord: bewaar het goed en deel je code niet. Deelt je docent een klasalbum, dan kan iedereen met die link de soundscapes met schuilnaam beluisteren. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd. De school is verantwoordelijk voor deze gegevens; SoundScout verwerkt ze in opdracht van de school. | With a class code you hand in your soundscape to your teacher. You get a random alias, like 'Singing Seal'. If you type a name yourself, use only your first name. Don't put your last name in the title. Your teacher listens to your soundscape and can give feedback. Classmates who give stars don't see whose it is. Do you have a student code from your teacher? Then you always have the same alias and can keep working on any device. The card with your code is as personal as a password: keep it safe and don't share your code. If your teacher shares a class album, anyone with that link can listen to the soundscapes with aliases. Submitted work is kept for at most one school year and then deleted automatically. The school is responsible for this data; SoundScout processes it on behalf of the school. |
 | `privacy.cookiesTitle` | Cookies, tracking en andere partijen | Cookies, tracking and other parties |
 | `privacy.cookiesText` | SoundScout gebruikt geen cookies, geen tracking en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens); de instelling 'Do Not Track' wordt gerespecteerd. Op je apparaat bewaren we alleen je soundscapes, je taalkeuze, je bewaarcodes en het werk waar je nu aan werkt (maximaal 12 uur). Op een gedeelde computer haalt "Klaar, ik stop" je werk weg. Online opslag loopt via Supabase (servers in Ierland) en de website staat bij Strato (Duitsland). Open je de uitlegvideo's, dan komen die van YouTube. | SoundScout uses no cookies, no tracking and no ads. We only count anonymously how often the app is used (daily totals, without personal data); the 'Do Not Track' setting is respected. On your device we only store your soundscapes, your language choice, your save codes and the work you are doing now (at most 12 hours). On a shared computer, "I'm done" removes your work. Online storage runs on Supabase (servers in Ireland) and the website is hosted by Strato (Germany). If you open the explainer videos, they come from YouTube. |
 | `privacy.fullLink` | Lees de volledige privacyverklaring | Read the full privacy statement |
@@ -1966,7 +1976,7 @@ _Stand: 2210 teksten in 57 secties._
 | `teacherLanding.usp.collect.title` | Geluiden verzamelen als spel | Collecting sounds as a game |
 | `teacherLanding.usp.collect.description` | Leerlingen verkennen locaties en vangen geluiden — muziek maken begint met goed luisteren. | Students explore locations and catch sounds — making music starts with careful listening. |
 | `teacherLanding.usp.noAccounts.title` | Geen leerlingaccounts | No student accounts |
-| `teacherLanding.usp.noAccounts.description` | Eén klascode is genoeg. Leerlingen werken anoniem met een willekeurige schuilnaam; we bewaren alleen hun compositie. | One class code is enough. Students work anonymously with a random nickname; we only store their composition. |
+| `teacherLanding.usp.noAccounts.description` | Eén klascode is genoeg. Bij inleveren krijgen leerlingen automatisch een schuilnaam; we bewaren alleen hun compositie. | One class code is enough. Students get an alias automatically when they hand in; we only store their composition. |
 | `teacherLanding.usp.praatplaat.title` | Praatplaat op het digibord | Sound map on the whiteboard |
 | `teacherLanding.usp.praatplaat.description` | De hele klas plaatst composities op één kijkplaat. Samen luisteren, bespreken en vieren. | The whole class places compositions on one shared picture. Listen, discuss and celebrate together. |
 | `teacherLanding.usp.feedback.title` | Feedback die de cirkel rondmaakt | Feedback that closes the loop |
@@ -1988,7 +1998,7 @@ _Stand: 2210 teksten in 57 secties._
 | `teacherLanding.faq.items.accounts.q` | Moeten leerlingen een account aanmaken? | Do students need to create an account? |
 | `teacherLanding.faq.items.accounts.a` | Nee. Leerlingen werken met de klascode van hun docent en krijgen bij het inleveren automatisch een persoonlijke bewaarcode. Er wordt geen account, e-mailadres of wachtwoord gevraagd. Wil je dat een kind op elk apparaat met dezelfde schuilnaam verder kan, dan zet je optioneel leerlingcodes klaar (bijvoorbeeld ABC-1234); de echte naam schrijf je alleen op het papieren kaartje, nooit in SoundScout. | No. Students use their teacher's class code and automatically receive a personal save code when they submit. No account, email address or password is required. If you want a child to keep working on any device with the same nickname, you can optionally set up student codes (for example ABC-1234); you write the real name on the paper card only, never in SoundScout. |
 | `teacherLanding.faq.items.avg.q` | Is SoundScout AVG-proof? | Is SoundScout GDPR-compliant? |
-| `teacherLanding.faq.items.avg.a` | SoundScout is gebouwd om zo weinig mogelijk te bewaren. Leerlingen werken anoniem met een willekeurige schuilnaam: geen account, geen e-mailadres, geen wachtwoord. Geen cookies, geen tracking, geen advertenties. Ingeleverd werk wordt na één schooljaar automatisch verwijderd. De school blijft verantwoordelijk voor de leerlinggegevens en SoundScout is verwerker; een verwerkersovereenkomst krijg je op aanvraag via hello@soundscout.nl. Alles staat in de privacyverklaring op soundscout.nl/privacy. | SoundScout is built to store as little as possible. Students work anonymously with a random nickname: no account, no email address, no password. No cookies, no tracking, no ads. Submitted work is deleted automatically after one school year. The school remains responsible for student data and SoundScout is the processor; a data processing agreement is available on request via hello@soundscout.nl. Everything is in the privacy statement at soundscout.nl/privacy. |
+| `teacherLanding.faq.items.avg.a` | SoundScout is gebouwd om zo weinig mogelijk te bewaren. Leerlingen hebben geen account, geen e-mailadres en geen wachtwoord. Bij inleveren met een klascode krijgen ze automatisch een schuilnaam. Bij opslaan of delen kan een kind zelf een naam invullen; dat hoeft niet. Wij raden een voornaam of de schuilnaam aan. Geen cookies, geen tracking, geen advertenties. Ingeleverd werk wordt na één schooljaar automatisch verwijderd. De school blijft verantwoordelijk voor de leerlinggegevens en SoundScout is verwerker; een verwerkersovereenkomst krijg je op aanvraag via hello@soundscout.nl. Alles staat in de privacyverklaring op soundscout.nl/privacy. | SoundScout is built to store as little as possible. Children have no account, no e-mail address and no password. When they hand in work with a class code, they get an alias automatically. When saving or sharing, a child can type a name; this is optional. We recommend a first name or the alias. No cookies, no tracking, no ads. Submitted work is deleted automatically after one school year. The school remains responsible for student data and SoundScout is the processor; a data processing agreement is available on request via hello@soundscout.nl. Everything is in the privacy statement at soundscout.nl/privacy. |
 | `teacherLanding.faq.items.devices.q` | Werkt SoundScout op Chromebooks, iPads en het digibord? | Does SoundScout work on Chromebooks, iPads and the whiteboard? |
 | `teacherLanding.faq.items.devices.a` | Ja. SoundScout draait volledig in de browser en is gebouwd voor Chromebooks, iPads, laptops en het digibord. De praatplaat-weergave is speciaal gemaakt voor klassikaal gebruik op het digibord. | Yes. SoundScout runs entirely in the browser and is built for Chromebooks, iPads, laptops and the whiteboard. The sound map view is designed for whole-class use on the whiteboard. |
 | `teacherLanding.faq.items.install.q` | Moet ik iets installeren? | Do I need to install anything? |
@@ -2010,7 +2020,7 @@ _Stand: 2210 teksten in 57 secties._
 | `teacherLanding.privacyBand.title` | Privacy als uitgangspunt | Privacy by design |
 | `teacherLanding.privacyBand.point1` | Geen leerlingaccounts | No student accounts |
 | `teacherLanding.privacyBand.point2` | Geen tracking of advertenties | No tracking or ads |
-| `teacherLanding.privacyBand.point3` | Leerlingen werken anoniem | Students work anonymously |
+| `teacherLanding.privacyBand.point3` | Schuilnaam bij inleveren | Automatic alias when handing in |
 | `teacherLanding.privacyBand.point4` | Verwerkersovereenkomst op aanvraag | Data processing agreement on request |
 | `teacherLanding.privacyBand.link` | Lees hoe we met gegevens omgaan | Read how we handle data |
 | `teacherLanding.footer.privacy` | Privacy | Privacy |

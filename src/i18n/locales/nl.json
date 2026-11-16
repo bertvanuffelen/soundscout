@@ -192,7 +192,15 @@
     "teacherLink": "Ben je docent?",
     "createdBy": "Gemaakt door Bert van Uffelen",
     "aboutButton": "Over deze app",
-    "continueToday": "vandaag {{time}}"
+    "continueToday": "vandaag {{time}}",
+    "headline": "Maak je eigen soundscape",
+    "chooseWorld": "Kies een wereld",
+    "forTeachers": "Voor docenten",
+    "heroAlt": "Tekening van een drukke kinderboerderij met dieren om naar te luisteren",
+    "aboutLink": "Over SoundScout",
+    "languageLabel": "Taal",
+    "continueLabel": "Verder waar je was",
+    "footerLabel": "Meer over SoundScout"
   },
   "newWork": {
     "title": "Nog een soundscape maken?",
@@ -1984,7 +1992,8 @@
       "invalidCode": "Voer een 4-cijferige code in",
       "classNotFound": "Klas niet gevonden. Controleer de code.",
       "checkingCode": "Code controleren...",
-      "sendError": "Versturen mislukt. Probeer opnieuw."
+      "sendError": "Versturen mislukt. Probeer opnieuw.",
+      "nameHint": "Alleen je voornaam, of laat leeg voor een schuilnaam."
     },
     "stats": {
       "title": "Statistieken",
@@ -2074,7 +2083,7 @@
   "saveOnline": {
     "title": "Bewaar online",
     "description": "Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder.",
-    "nameLabel": "Jouw naam",
+    "nameLabel": "Jouw naam (optioneel)",
     "namePlaceholder": "Bijv. Lisa of Groep 5",
     "classCodeLabel": "Klascode (optioneel)",
     "classCodePlaceholder": "4 cijfers",
@@ -2089,7 +2098,8 @@
     "updateError": "Bijwerken mislukt. Probeer het opnieuw.",
     "invalidSecret": "Ongeldige bewaarcode of je hebt geen toegang meer.",
     "codeNotFound": "Bewaarcode niet gevonden of verlopen.",
-    "claimError": "De soundscape kon niet worden opgehaald. Probeer het opnieuw."
+    "claimError": "De soundscape kon niet worden opgehaald. Probeer het opnieuw.",
+    "nameHint": "Alleen je voornaam, of laat leeg voor een schuilnaam."
   },
   "takeHome": {
     "copyLink": "Kopieer link",
@@ -2132,7 +2142,7 @@
     "dataTitle": "Hoe SoundScout met je gegevens omgaat",
     "dataText": "Je hebt geen account nodig. Je soundscape wordt bewaard op je eigen apparaat (in de browser). Bewaar je hem online met een bewaarcode, dan staat hij op onze server in de EU, met een automatische schuilnaam. Na 60 dagen zonder gebruik wordt hij automatisch verwijderd. Wie je bewaarcode of link heeft, kan je soundscape openen en veranderen: deel hem dus alleen thuis.",
     "classCodeTitle": "Klascode & docent",
-    "classCodeText": "Met een klascode lever je je soundscape in bij je docent. Je werkt dan anoniem: je krijgt een willekeurige schuilnaam, zoals 'Zingende Zeehond'. Zet je achternaam niet in de titel. Je docent hoort je soundscape en kan feedback geven. Klasgenoten die sterren geven, zien niet van wie het is. Heb je een leerlingcode van je docent? Dan heb je altijd dezelfde schuilnaam en kun je op elk apparaat verder werken. Het kaartje met je code is net zo persoonlijk als een wachtwoord: bewaar het goed en deel je code niet. Deelt je docent een klasalbum, dan kan iedereen met die link de soundscapes met schuilnaam beluisteren. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd. De school is verantwoordelijk voor deze gegevens; SoundScout verwerkt ze in opdracht van de school.",
+    "classCodeText": "Met een klascode lever je je soundscape in bij je docent. Je krijgt een willekeurige schuilnaam, zoals 'Zingende Zeehond'. Vul je zelf een naam in, gebruik dan alleen je voornaam. Zet je achternaam niet in de titel. Je docent hoort je soundscape en kan feedback geven. Klasgenoten die sterren geven, zien niet van wie het is. Heb je een leerlingcode van je docent? Dan heb je altijd dezelfde schuilnaam en kun je op elk apparaat verder werken. Het kaartje met je code is net zo persoonlijk als een wachtwoord: bewaar het goed en deel je code niet. Deelt je docent een klasalbum, dan kan iedereen met die link de soundscapes met schuilnaam beluisteren. Ingeleverd werk wordt maximaal één schooljaar bewaard en daarna automatisch verwijderd. De school is verantwoordelijk voor deze gegevens; SoundScout verwerkt ze in opdracht van de school.",
     "cookiesTitle": "Cookies, tracking en andere partijen",
     "cookiesText": "SoundScout gebruikt geen cookies, geen tracking en geen advertenties. We tellen alleen anoniem hoe vaak de app wordt gebruikt (aantallen per dag, zonder persoonsgegevens); de instelling 'Do Not Track' wordt gerespecteerd. Op je apparaat bewaren we alleen je soundscapes, je taalkeuze, je bewaarcodes en het werk waar je nu aan werkt (maximaal 12 uur). Op een gedeelde computer haalt \"Klaar, ik stop\" je werk weg. Online opslag loopt via Supabase (servers in Ierland) en de website staat bij Strato (Duitsland). Open je de uitlegvideo's, dan komen die van YouTube.",
     "fullLink": "Lees de volledige privacyverklaring",
@@ -2291,7 +2301,7 @@
       },
       "noAccounts": {
         "title": "Geen leerlingaccounts",
-        "description": "Eén klascode is genoeg. Leerlingen werken anoniem met een willekeurige schuilnaam; we bewaren alleen hun compositie."
+        "description": "Eén klascode is genoeg. Bij inleveren krijgen leerlingen automatisch een schuilnaam; we bewaren alleen hun compositie."
       },
       "praatplaat": {
         "title": "Praatplaat op het digibord",
@@ -2330,7 +2340,7 @@
         },
         "avg": {
           "q": "Is SoundScout AVG-proof?",
-          "a": "SoundScout is gebouwd om zo weinig mogelijk te bewaren. Leerlingen werken anoniem met een willekeurige schuilnaam: geen account, geen e-mailadres, geen wachtwoord. Geen cookies, geen tracking, geen advertenties. Ingeleverd werk wordt na één schooljaar automatisch verwijderd. De school blijft verantwoordelijk voor de leerlinggegevens en SoundScout is verwerker; een verwerkersovereenkomst krijg je op aanvraag via hello@soundscout.nl. Alles staat in de privacyverklaring op soundscout.nl/privacy."
+          "a": "SoundScout is gebouwd om zo weinig mogelijk te bewaren. Leerlingen hebben geen account, geen e-mailadres en geen wachtwoord. Bij inleveren met een klascode krijgen ze automatisch een schuilnaam. Bij opslaan of delen kan een kind zelf een naam invullen; dat hoeft niet. Wij raden een voornaam of de schuilnaam aan. Geen cookies, geen tracking, geen advertenties. Ingeleverd werk wordt na één schooljaar automatisch verwijderd. De school blijft verantwoordelijk voor de leerlinggegevens en SoundScout is verwerker; een verwerkersovereenkomst krijg je op aanvraag via hello@soundscout.nl. Alles staat in de privacyverklaring op soundscout.nl/privacy."
         },
         "devices": {
           "q": "Werkt SoundScout op Chromebooks, iPads en het digibord?",
@@ -2374,7 +2384,7 @@
       "title": "Privacy als uitgangspunt",
       "point1": "Geen leerlingaccounts",
       "point2": "Geen tracking of advertenties",
-      "point3": "Leerlingen werken anoniem",
+      "point3": "Schuilnaam bij inleveren",
       "point4": "Verwerkersovereenkomst op aanvraag",
       "link": "Lees hoe we met gegevens omgaan"
     },

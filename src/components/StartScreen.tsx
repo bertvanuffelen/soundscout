@@ -1,10 +1,17 @@
 /**
- * StartScreen - Welcome screen with game start and tutorial
+ * StartScreen — V2-startscherm (donkerblauw, amber accent).
+ *
+ * Hero met groot merk, kop en twee knoppen: primair "Nieuwe soundscape"
+ * (wizard: modus → wereld), secundair "Kies een wereld" (direct vrij
+ * componeren in een publiek thema). "Ik heb een code" en "Voor docenten"
+ * staan rechtsboven (StartHeader). Daaronder alleen wat relevant is: verder
+ * werken, podium, Mijn soundscapes, seizoensthema, docentreactie. Het beeld
+ * (StartHero) is statisch: geen audio, geen Tone.js, geen canvas-lus.
  */
 
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Play, Info, HelpCircle, MessageCircleQuestion, Instagram, Facebook, Linkedin, Youtube, Shield, KeyRound, Sparkles, GraduationCap } from 'lucide-react';
+import { FolderOpen, Play, Sparkles, Compass, Mail, Loader2, Theater, Star } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
@@ -15,8 +22,11 @@ import {
   initializeNewComposition,
   initializeCompositionFromStoryboard,
 } from '../utils/compositionInit';
-import { Button, Modal, LanguageSwitcher } from './ui';
-import { Star, Mail, Loader2, Theater } from 'lucide-react';
+import { Button, Modal } from './ui';
+import { cn } from '../utils/cn';
+import { StartHeader } from './start/StartHeader';
+import { StartHero } from './start/StartHero';
+import { StartFooter } from './start/StartFooter';
 import { logger } from '../utils/logger';
 import type { SavedOnlineComposition } from '../lib/submissions';
 import type { ReceivedFeedback } from '../types';
@@ -31,6 +41,10 @@ const FeedbackModal = lazy(() =>
 // Lazy: de wizard sleept ComposePreview (~1000 regels animatie) mee — pas
 // laden wanneer de leerling echt op "Nieuwe compositie" tikt.
 const NewCompositionWizard = lazy(() => import('./start/NewCompositionWizard'));
+// Lazy: de wereldkiezer ("Kies een wereld") zit in hetzelfde stuk als de wizard.
+const ThemePicker = lazy(() =>
+  import('./start/ThemePicker').then((m) => ({ default: m.ThemePicker }))
+);
 import { ShareCodeModal } from './share';
 import { PrivacyModal } from './PrivacyModal';
 import { NewWorkChoiceModal } from './common/NewWorkChoiceModal';
@@ -196,12 +210,34 @@ export function StartScreen() {
     setShowComposeWizard(true);
   };
 
+  // Wat de leerling wil starten, vastgehouden tijdens een tussenvraag
+  // (klaskeuze of "je werk gaat verloren"): de wizard, de wereldkiezer of
+  // het seizoensthema. Zo gelden dezelfde waarschuwingen voor alle drie.
+  type StartIntent = 'wizard' | 'world' | 'seasonal';
+  const pendingIntentRef = useRef<StartIntent>('wizard');
+  const [showWorldPicker, setShowWorldPicker] = useState(false);
+
   // Klasbewuste "Nieuwe compositie" (A2): in een klas eerst kiezen tussen
   // nog één voor deze opdracht of zelf iets nieuws (verlaat de klas)
   const [showNewWorkChoice, setShowNewWorkChoice] = useState(false);
   const [newWorkLoading, setNewWorkLoading] = useState(false);
   const [newWorkError, setNewWorkError] = useState<string | null>(null);
   const submissionSynced = useAppStore((s) => s.submissionSynced);
+
+  // Seizoensthema-chip: alléén zichtbaar als een publiek thema een
+  // seizoensvenster heeft (week 4). Klik = direct een nieuwe compositie in
+  // dat thema; met werk-in-uitvoering eerst de bestaande waarschuwing.
+  const seasonalTheme = useMemo(
+    () => getPublicThemes().find((th) => th.activeFrom && th.activeUntil) ?? null,
+    []
+  );
+
+  /** Voer de gekozen start uit (na eventuele waarschuwing). */
+  const proceed = (intent: StartIntent) => {
+    if (intent === 'world') setShowWorldPicker(true);
+    else if (intent === 'seasonal' && seasonalTheme) void handleSelectTheme(seasonalTheme.id);
+    else openWizard();
+  };
 
   const handleSameAssignment = async () => {
     setNewWorkLoading(true);
@@ -217,11 +253,12 @@ export function StartScreen() {
     setShowNewWorkChoice(false);
     // De keuze-modal waarschuwde al; de klas-context wordt gewist zodra er
     // een thema/storyboard gekozen is (handleSelectTheme/-Storyboard)
-    openWizard();
+    proceed(pendingIntentRef.current);
   };
 
-  const handleNewComposition = () => {
-    seasonalPendingRef.current = false;
+  /** "Nieuwe soundscape" en "Kies een wereld": klas → keuze, werk → waarschuwing. */
+  const startFresh = (intent: 'wizard' | 'world') => {
+    pendingIntentRef.current = intent;
     if (classSession) {
       setNewWorkError(null);
       setShowNewWorkChoice(true);
@@ -231,38 +268,26 @@ export function StartScreen() {
       // Waarschuw dat de huidige compositie verloren gaat
       setShowNewConfirm(true);
     } else {
-      // Geen actieve compositie — open de wizard (met eenmalige intro)
-      openWizard();
+      proceed(intent);
     }
   };
 
-  // Seizoensthema-chip: alléén zichtbaar als een publiek thema een
-  // seizoensvenster heeft (week 4). Klik = direct een nieuwe compositie in
-  // dat thema; met werk-in-uitvoering eerst de bestaande waarschuwing.
-  const seasonalTheme = useMemo(
-    () => getPublicThemes().find((th) => th.activeFrom && th.activeUntil) ?? null,
-    []
-  );
-  const seasonalPendingRef = useRef(false);
+  const handleNewComposition = () => startFresh('wizard');
+  const handleChooseWorld = () => startFresh('world');
 
   const handleSeasonalTheme = () => {
     if (!seasonalTheme) return;
+    pendingIntentRef.current = 'seasonal';
     if (hasClipsInProgress) {
-      seasonalPendingRef.current = true;
       setShowNewConfirm(true);
     } else {
-      void handleSelectTheme(seasonalTheme.id);
+      proceed('seasonal');
     }
   };
 
   const handleConfirmNewComposition = () => {
     setShowNewConfirm(false);
-    if (seasonalPendingRef.current && seasonalTheme) {
-      seasonalPendingRef.current = false;
-      void handleSelectTheme(seasonalTheme.id);
-    } else {
-      openWizard();
-    }
+    proceed(pendingIntentRef.current);
   };
 
   const handleSelectTheme = async (themeId: string) => {
@@ -275,6 +300,7 @@ export function StartScreen() {
       useAppStore.getState().setComposeMode('free');
       await initializeNewComposition({ themeId });
       setShowComposeWizard(false);
+      setShowWorldPicker(false);
     } finally {
       setIsLoading(false);
     }
@@ -292,238 +318,171 @@ export function StartScreen() {
     }
   };
 
+  // Strook "verder waar je was": alleen als er iets is om naar terug te gaan
+  const showContinueStrip = hasClipsInProgress || hasCompositions || !!seasonalTheme || !!feedbackNotice;
+  const stripButton =
+    'inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-full text-sm font-bold transition-colors';
+
   return (
-    <div className="min-h-dvh bg-brand-900 md:bg-bg-app flex flex-col items-center justify-center p-4 sm:p-6">
-      {/* Card container - white card on desktop, transparent on mobile */}
-      <div className="w-full max-w-md md:bg-bg-surface md:rounded-2xl md:shadow-xl md:p-8 lg:p-12 flex flex-col items-center">
-        {/* Logo + Title */}
-        <div className="text-center mb-6 sm:mb-8">
-          {/* White logo for mobile (dark background) */}
-          <img
-            src="/images/overige/logo-soundscout-white.svg"
-            alt="SoundScout Logo"
-            className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-4 md:hidden"
-          />
-          {/* Dark logo for desktop (light background) */}
-          <img
-            src="/images/overige/logo-soundscout.svg"
-            alt="SoundScout Logo"
-            className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-3 sm:mb-4 hidden md:block"
-          />
-          <h1 className="text-4xl sm:text-5xl md:text-6xl font-extrabold text-white md:text-text-main tracking-tight mb-2 sm:mb-3">
-            {t('app.title')}
-          </h1>
-          <p className="text-base sm:text-lg md:text-xl text-brand-300 md:text-text-muted font-semibold">
-            {t('start.tagline')}
-          </p>
-        </div>
+    <div className="relative min-h-dvh bg-brand-900 text-white flex flex-col overflow-x-hidden">
+      {/* Statische gloed (geen animatie, geen canvas) */}
+      <div
+        className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top_right,var(--color-brand-700),transparent_55%)] opacity-60"
+        aria-hidden="true"
+      />
 
-        {/* "Je hebt een reactie!"-melding (docent-feedback, migratie 026) —
-            klik opent de compositie direct op het podium met het feedbackblok */}
-        {feedbackNotice && (
-          <button
-            type="button"
-            onClick={handleOpenFeedbackNotice}
-            disabled={noticeLoading}
-            className="mb-4 w-full max-w-[280px] sm:max-w-xs flex items-center gap-2.5 rounded-2xl border-2 border-accent-300 bg-accent-50 px-4 py-3 text-left shadow-md hover:bg-accent-100 transition-colors animate-pulse hover:animate-none disabled:opacity-70 disabled:animate-none"
-          >
-            {noticeLoading
-              ? <Loader2 className="w-6 h-6 text-accent-600 shrink-0 animate-spin" aria-hidden="true" />
-              : <Mail className="w-6 h-6 text-accent-600 shrink-0" aria-hidden="true" />}
-            <span className="text-sm font-bold text-text-main">
-              {t('studentFeedback.noticeButton', { name: feedbackNotice.compositionName })}
-            </span>
-          </button>
-        )}
+      <StartHeader
+        onCode={() => setShowCodeModal(true)}
+        onTeachers={() => { window.location.href = '/teacher'; }}
+      />
 
-        {/* Seizoensthema-chip: verschijnt alleen als een publiek thema een
-            seizoensvenster heeft — "de app leeft" zonder extra ruis */}
-        {seasonalTheme && (
-          <button
-            type="button"
-            onClick={handleSeasonalTheme}
-            className="mb-4 inline-flex items-center gap-2 rounded-full border-2 border-accent-300 bg-accent-50 px-4 py-2 text-sm font-bold text-accent-800 shadow-md hover:bg-accent-100 transition-colors"
-          >
-            <Sparkles className="w-4 h-4 text-accent-600" />
-            {t('start.newTheme', { name: t(seasonalTheme.name) })}
-          </button>
-        )}
+      <main className="relative z-10 flex-1 w-full max-w-[1440px] mx-auto px-safe [--safe-min:1rem] sm:[--safe-min:2rem] py-4 sm:py-6 short:py-2 grid grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] short:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 short:gap-6 items-center">
+        <section className="flex flex-col items-center lg:items-start short:items-start text-center lg:text-left short:text-left gap-4 sm:gap-6 short:gap-3 min-w-0">
+          {/* Merk groot: logo + woordmerk boven de kop */}
+          <div className="flex flex-col items-center lg:items-start short:flex-row short:items-center gap-2 short:gap-3">
+            <img
+              src="/images/overige/logo-soundscout-white.svg"
+              alt=""
+              width={576}
+              height={502}
+              className="h-16 sm:h-24 xl:h-28 short:h-12 w-auto drop-shadow-[0_0_24px_rgba(251,191,36,0.35)]"
+            />
+            <p className="text-5xl sm:text-6xl xl:text-7xl short:text-4xl font-extrabold tracking-tight leading-none">
+              Sound<span className="text-accent-400">Scout</span>
+            </p>
+          </div>
 
-        {/* Primaire keuzes — Sketch A (#78):
-            twee gelijkwaardige CTAs, plus "Verder werken" als er nog clips
-            zijn. Code-invoer verschijnt pas na expliciete klik. */}
-        <div className="flex flex-col gap-3 sm:gap-4 w-full max-w-[280px] sm:max-w-xs">
-          {/* Continue button — shown when composition in progress (#64) */}
-          {hasClipsInProgress && (
+          <div className="flex flex-col gap-1 sm:gap-2">
+            <h1 className="text-2xl sm:text-3xl xl:text-4xl short:text-xl font-extrabold tracking-tight leading-tight text-balance">
+              {t('start.headline')}
+            </h1>
+            <p className="text-base sm:text-lg text-brand-200 font-semibold short:hidden">
+              {t('start.tagline')}
+            </p>
+          </div>
+
+          {/* Hoofdknoppen: primair amber, secundair rustig */}
+          <div className="flex flex-col sm:flex-row sm:flex-wrap short:flex-row short:flex-wrap justify-center lg:justify-start short:justify-start gap-3 w-full sm:w-auto">
             <Button
-              onClick={goToStudio}
+              onClick={handleNewComposition}
+              isLoading={isLoading}
               size="lg"
-              className="w-full"
+              className="w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg"
             >
-              <Play className="w-5 h-5 mr-1.5 sm:mr-2 shrink-0" />
-              <span className="flex flex-col items-start leading-tight min-w-0">
-                <span>{t('start.continueComposition')}</span>
-                {continueDetail && (
-                  <span className="text-xs font-semibold opacity-75 truncate max-w-full">{continueDetail}</span>
-                )}
-              </span>
+              <Sparkles className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
+              {isLoading ? t('start.loading') : t('start.newComposition')}
             </Button>
-          )}
-
-          {/* Podium-shortcut (testronde 2): in een klas-sessie is het podium
-              de feedback-plek — leerlingen hoeven niet via de studio terug */}
-          {hasClipsInProgress && classSession && (
             <Button
-              onClick={goToStage}
-              variant="secondary"
-              size="lg"
-              className="w-full"
-            >
-              <Theater className="w-5 h-5 mr-1.5 sm:mr-2" />
-              {t('start.toStage')}
-            </Button>
-          )}
-
-          <Button
-            onClick={handleNewComposition}
-            isLoading={isLoading}
-            variant={hasClipsInProgress ? 'secondary' : 'primary'}
-            size="lg"
-            className="w-full"
-          >
-            <Sparkles className="w-5 h-5 mr-1.5 sm:mr-2" />
-            {isLoading ? t('start.loading') : t('start.newComposition')}
-          </Button>
-
-          <Button
-            onClick={() => setShowCodeModal(true)}
-            variant="secondary"
-            size="lg"
-            className="w-full"
-          >
-            <KeyRound className="w-5 h-5 mr-1.5 sm:mr-2" />
-            {t('start.haveCode')}
-          </Button>
-
-          {hasCompositions && (
-            <Button
-              onClick={goToCompositions}
+              onClick={handleChooseWorld}
               variant="ghost"
               size="lg"
-              /* Ghost = witte tekst; op de witte desktopkaart dus onzichtbaar
-                 zonder deze md-kleuren (B34) */
-              className="w-full md:text-text-main md:hover:bg-neutral-100"
+              className="w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg bg-white/10 hover:bg-white/20 ring-1 ring-white/30"
             >
-              <FolderOpen className="w-5 h-5 mr-1.5 sm:mr-2" />
-              {t('start.myCompositions')}
+              <Compass className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
+              {t('start.chooseWorld')}
             </Button>
+          </div>
+
+          {/* Verder waar je was — alleen wat er echt is */}
+          {showContinueStrip && (
+            <div
+              role="group"
+              aria-label={t('start.continueLabel')}
+              className="flex flex-wrap justify-center lg:justify-start short:justify-start gap-2 w-full sm:w-auto"
+            >
+              {/* "Je hebt een reactie!" (docent-feedback, migratie 026) */}
+              {feedbackNotice && (
+                <button
+                  type="button"
+                  onClick={handleOpenFeedbackNotice}
+                  disabled={noticeLoading}
+                  className={cn(stripButton, 'bg-accent-100 text-accent-900 ring-2 ring-accent-300 hover:bg-accent-50 disabled:opacity-70 text-left')}
+                >
+                  {noticeLoading
+                    ? <Loader2 className="w-5 h-5 text-accent-700 shrink-0 animate-spin" aria-hidden="true" />
+                    : <Mail className="w-5 h-5 text-accent-700 shrink-0" aria-hidden="true" />}
+                  {t('studentFeedback.noticeButton', { name: feedbackNotice.compositionName })}
+                </button>
+              )}
+
+              {/* Verder werken (#64) */}
+              {hasClipsInProgress && (
+                <button
+                  type="button"
+                  onClick={goToStudio}
+                  className={cn(stripButton, 'bg-white text-brand-900 hover:bg-brand-100 text-left max-w-full')}
+                >
+                  <Play className="w-5 h-5 shrink-0 text-accent-600" aria-hidden="true" />
+                  <span className="flex flex-col leading-tight min-w-0">
+                    <span>{t('start.continueComposition')}</span>
+                    {continueDetail && (
+                      <span className="text-xs font-semibold text-brand-600 truncate">{continueDetail}</span>
+                    )}
+                  </span>
+                </button>
+              )}
+
+              {/* Podium-shortcut (testronde 2): in een klas is het podium de feedback-plek */}
+              {hasClipsInProgress && classSession && (
+                <button
+                  type="button"
+                  onClick={goToStage}
+                  className={cn(stripButton, 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20')}
+                >
+                  <Theater className="w-5 h-5 shrink-0" aria-hidden="true" />
+                  {t('start.toStage')}
+                </button>
+              )}
+
+              {hasCompositions && (
+                <button
+                  type="button"
+                  onClick={goToCompositions}
+                  className={cn(stripButton, 'bg-white/10 text-white ring-1 ring-white/25 hover:bg-white/20')}
+                >
+                  <FolderOpen className="w-5 h-5 shrink-0" aria-hidden="true" />
+                  {t('start.myCompositions')}
+                </button>
+              )}
+
+              {/* Seizoensthema: verschijnt alleen in het seizoen — "de app leeft" */}
+              {seasonalTheme && (
+                <button
+                  type="button"
+                  onClick={handleSeasonalTheme}
+                  className={cn(stripButton, 'bg-accent-400/15 text-accent-200 ring-1 ring-accent-400/60 hover:bg-accent-400/25')}
+                >
+                  <Sparkles className="w-5 h-5 shrink-0 text-accent-300" aria-hidden="true" />
+                  {t('start.newTheme', { name: t(seasonalTheme.name) })}
+                </button>
+              )}
+            </div>
           )}
-        </div>
+        </section>
 
-        <div className="flex flex-col items-center gap-1 mt-6 sm:mt-8 w-full max-w-[280px] sm:max-w-xs">
-          <Button
-            onClick={goToTutorial}
-            variant="ghost"
-            size="lg"
-            className="w-full text-brand-300 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100"
-          >
-            {t('start.howItWorks')}
-          </Button>
-          <button
-            onClick={() => setShowFeedback(true)}
-            className="flex items-center gap-1.5 text-sm text-brand-400 hover:text-white hover:bg-brand-800 md:text-text-muted md:hover:text-text-main md:hover:bg-neutral-100 rounded-lg px-3 py-1.5 transition-colors"
-          >
-            <MessageCircleQuestion className="w-4 h-4" />
-            {t('start.feedbackHint')}
-          </button>
-        </div>
+        <StartHero />
+      </main>
 
-        {/* Docentlink: klein en onderaan (O2). Als knop met dezelfde stijl als
-            "Ik heb een code" klikten leerlingen er per ongeluk op. */}
-        <button
-          type="button"
-          onClick={() => { window.location.href = '/teacher'; }}
-          className="mt-5 sm:mt-6 inline-flex items-center gap-1.5 rounded-lg px-3 py-1.5 text-sm font-semibold text-brand-300 underline underline-offset-4 hover:text-white md:text-text-muted md:hover:text-text-main transition-colors"
+      <StartFooter
+        onTutorial={goToTutorial}
+        onFeedback={() => setShowFeedback(true)}
+        onPrivacy={() => setShowPrivacy(true)}
+      />
+
+      {/* Kies een wereld: alleen de publieke thema's, kiezen = vrij componeren */}
+      {showWorldPicker && (
+        <Modal
+          isOpen
+          onClose={() => setShowWorldPicker(false)}
+          title={t('themeSelection.title')}
+          size="xl"
+          showClose
         >
-          <GraduationCap className="w-4 h-4" aria-hidden="true" />
-          {t('start.teacherLink')}
-        </button>
-
-      </div>
-
-      {/* Language switcher */}
-      <div className="mt-6">
-        <LanguageSwitcher variant="dark" className="md:hidden" />
-        <LanguageSwitcher variant="light" className="hidden md:inline-flex" />
-      </div>
-
-      {/* Footer */}
-      <footer className="mt-4 flex items-center gap-3 text-brand-400 md:text-text-muted">
-        <span className="text-sm">{t('start.createdBy')}</span>
-        {/* Over/colofon staat op zijn eigen pagina (/over) — één bron van
-            waarheid, en een link die een docent kan doorsturen. */}
-        <a
-          href="/over"
-          className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-          title={t('start.aboutButton')}
-        >
-          <Info className="w-4 h-4" />
-        </a>
-        <button
-          onClick={() => setShowFeedback(true)}
-          className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-          title={t('feedback.helpButton')}
-        >
-          <HelpCircle className="w-4 h-4" />
-        </button>
-        <button
-          onClick={() => setShowPrivacy(true)}
-          className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-          title={t('privacy.button')}
-        >
-          <Shield className="w-4 h-4" />
-        </button>
-        <div className="w-px h-4 bg-brand-700 md:bg-neutral-300" />
-        <div className="flex items-center gap-2">
-          <a
-            href="https://www.instagram.com/bvanuffelen/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-            title="Instagram"
-          >
-            <Instagram className="w-4 h-4" />
-          </a>
-          <a
-            href="https://www.facebook.com/bvanuffelen"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-            title="Facebook"
-          >
-            <Facebook className="w-4 h-4" />
-          </a>
-          <a
-            href="https://www.linkedin.com/in/bvanuffelen/"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-            title="LinkedIn"
-          >
-            <Linkedin className="w-4 h-4" />
-          </a>
-          <a
-            href="https://www.youtube.com/@BertvanUffelen"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="p-1.5 hover:text-white md:hover:text-text-main hover:bg-brand-800 md:hover:bg-neutral-200 rounded-full transition-colors"
-            title="YouTube"
-          >
-            <Youtube className="w-4 h-4" />
-          </a>
-        </div>
-      </footer>
-
+          <Suspense fallback={null}>
+            <ThemePicker onSelectTheme={handleSelectTheme} isLoading={isLoading} />
+          </Suspense>
+        </Modal>
+      )}
       {/* Feedback modal */}
       {showFeedback && (
         <Suspense fallback={null}>
@@ -553,7 +512,7 @@ export function StartScreen() {
       {/* Waarschuwing: actieve compositie wordt gewist */}
       <Modal
         isOpen={showNewConfirm}
-        onClose={() => { seasonalPendingRef.current = false; setShowNewConfirm(false); }}
+        onClose={() => setShowNewConfirm(false)}
         title={t('start.newComposition')}
         size="sm"
       >

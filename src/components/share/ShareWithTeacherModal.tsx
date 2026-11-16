@@ -220,6 +220,8 @@ export function ShareWithTeacherModal({
             <div className="mb-2">
               <input
                 type="text"
+                aria-describedby="share-teacher-name-hint"
+                aria-label={t('teacher.shareWithTeacher.yourName')}
                 value={studentName}
                 onChange={(e) => setStudentName(e.target.value)}
                 placeholder={t('teacher.shareWithTeacher.namePlaceholder')}
@@ -228,9 +230,10 @@ export function ShareWithTeacherModal({
               />
             </div>
 
-            <p className="text-neutral-400 text-sm mb-6 flex items-center gap-1 flex-wrap">
-              {t('teacher.shareWithTeacher.namePlaceholder')}
-              <Bird className="w-4 h-4 text-accent-500" />
+            {/* Privacy-hint (besluit 2 lanceerstrategie): het veld blijft, de tekst is eerlijk */}
+            <p id="share-teacher-name-hint" className="text-text-muted text-sm mb-6 flex items-center gap-1 flex-wrap">
+              {t('teacher.shareWithTeacher.nameHint')}
+              <Bird className="w-4 h-4 text-accent-500" aria-hidden="true" />
             </p>
 
             <div className="flex gap-3">
