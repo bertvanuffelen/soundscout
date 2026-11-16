@@ -1,6 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import { getMapBackgroundImage } from '../index';
-import { piratenTheme } from '../piraten';
+import piratenFixture from '../../../themes/__tests__/fixtures/legacy-piraten.json';
+import type { ThemeConfig } from '../types';
+
+const piratenTheme = (piratenFixture as unknown as { theme: ThemeConfig }).theme;
 import { basisTheme } from '../basis';
 
 describe('getMapBackgroundImage', () => {

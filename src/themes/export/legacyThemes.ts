@@ -1,15 +1,17 @@
 /**
- * De drie TypeScript-thema's van vóór V2 Fase 3, als bron voor de eenmalige
- * conversie naar manifesten en als fixture voor de gelijkwaardigheidstest.
+ * De drie thema's van vóór V2 Fase 3, BEVROREN als JSON (16-11-2026, vlak
+ * vóór het verwijderen van src/data/themes/winterspelen en /piraten).
  *
- * De app importeert dit bestand NIET (alleen het script en de tests). Zodra de
- * TS-thema's verwijderd worden, verdwijnt dit bestand mee — zie docs/v2/THEMES.md §7.
+ * Deze fixtures zijn exact de oude TypeScript-objecten (gemaakt met de
+ * oude bron, daarna gecontroleerd door de gelijkwaardigheidstest). Ze houden
+ * de poort permanent: de gepubliceerde manifesten moeten deze thema's blijven
+ * opleveren. De app importeert dit bestand NIET (alleen script en tests).
  */
 
 import type { ThemeConfig } from '../../data/themes/types';
-import { basisTheme } from '../../data/themes/basis';
-import { winterspelenTheme } from '../../data/themes/winterspelen';
-import { piratenTheme } from '../../data/themes/piraten';
+import basisFixture from '../__tests__/fixtures/legacy-basis.json';
+import winterspelenFixture from '../__tests__/fixtures/legacy-winterspelen.json';
+import piratenFixture from '../__tests__/fixtures/legacy-piraten.json';
 import nl from '../../i18n/locales/nl.json';
 import en from '../../i18n/locales/en.json';
 import { themeConfigToManifest } from '../convert';
@@ -17,9 +19,9 @@ import type { ThemeManifest } from '../manifest';
 
 /** Volgorde = de volgorde van de oude registry (kiezers tonen ze zo). */
 export const LEGACY_THEMES: Array<{ theme: ThemeConfig; sort: number }> = [
-  { theme: basisTheme, sort: 10 },
-  { theme: winterspelenTheme, sort: 20 },
-  { theme: piratenTheme, sort: 30 },
+  basisFixture as unknown as { theme: ThemeConfig; sort: number },
+  winterspelenFixture as unknown as { theme: ThemeConfig; sort: number },
+  piratenFixture as unknown as { theme: ThemeConfig; sort: number },
 ];
 
 export const LEGACY_LOCALES = { nl, en } as { nl: Record<string, unknown>; en: Record<string, unknown> };

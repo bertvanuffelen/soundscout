@@ -35,7 +35,7 @@ const CC_BY_4 = { license: 'CC BY 4.0', licenseUrl: 'https://creativecommons.org
 const CC_BY_3 = { license: 'CC BY 3.0', licenseUrl: 'http://creativecommons.org/licenses/by/3.0/' };
 const CC0 = { license: 'CC0 1.0', licenseUrl: 'http://creativecommons.org/publicdomain/zero/1.0/' };
 
-/** Thema Piraten — geluiden van Freesound (bron: themes/piraten/BRONNEN.md) */
+/** Thema Piraten — geluiden van Freesound (bron: docs/themes/piraten-BRONNEN.md) */
 const PIRATEN_SOUNDS: SoundCredit[] = [
   { title: 'Bedroom wooden door close', author: 'MattRuthSound', ...CC_BY_4, sourceUrl: 'https://freesound.org/people/MattRuthSound/sounds/381964/' },
   { title: 'Dice Set A', author: 'Phorgador', ...CC_BY_4, sourceUrl: 'https://freesound.org/people/Phorgador/sounds/678196/' },

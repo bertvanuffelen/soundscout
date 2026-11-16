@@ -1,0 +1,614 @@
+{
+  "sort": 10,
+  "theme": {
+    "description": "themes.basis.description",
+    "id": "basis",
+    "isPublic": true,
+    "locations": [
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/basis/boerderij.jpg",
+        "description": "locations.boerderij.description",
+        "hotspots": [
+          {
+            "id": "boerderij-lach",
+            "radius": 8,
+            "sampleId": "boerderij-lach",
+            "visualHint": "pulse",
+            "x": 24.6,
+            "y": 36.3
+          },
+          {
+            "id": "boerderij-geit",
+            "radius": 8,
+            "sampleId": "boerderij-geit",
+            "visualHint": "pulse",
+            "x": 51.2,
+            "y": 80.1
+          },
+          {
+            "id": "boerderij-hond",
+            "radius": 8,
+            "sampleId": "boerderij-hond",
+            "visualHint": "pulse",
+            "x": 85.3,
+            "y": 72
+          },
+          {
+            "id": "boerderij-kippen",
+            "radius": 8,
+            "sampleId": "boerderij-kippen",
+            "visualHint": "pulse",
+            "x": 89.8,
+            "y": 26.7
+          },
+          {
+            "id": "boerderij-koe",
+            "radius": 8,
+            "sampleId": "boerderij-koe",
+            "visualHint": "pulse",
+            "x": 27,
+            "y": 67.9
+          },
+          {
+            "id": "boerderij-paard",
+            "radius": 8,
+            "sampleId": "boerderij-paard",
+            "visualHint": "pulse",
+            "x": 62.7,
+            "y": 40.7
+          }
+        ],
+        "id": "boerderij",
+        "name": "locations.boerderij.name",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/basis/speeltuin.jpg",
+        "description": "locations.speeltuin.description",
+        "hotspots": [
+          {
+            "id": "speeltuin-drone",
+            "radius": 8,
+            "sampleId": "speeltuin-drone",
+            "visualHint": "pulse",
+            "x": 8.5,
+            "y": 47.4
+          },
+          {
+            "id": "speeltuin-skateboard",
+            "radius": 8,
+            "sampleId": "speeltuin-skateboard",
+            "visualHint": "pulse",
+            "x": 46.1,
+            "y": 30.3
+          },
+          {
+            "id": "speeltuin-vissen",
+            "radius": 8,
+            "sampleId": "speeltuin-vissen",
+            "visualHint": "pulse",
+            "x": 21.9,
+            "y": 87.3
+          },
+          {
+            "id": "speeltuin-voetbal",
+            "radius": 8,
+            "sampleId": "speeltuin-voetbal",
+            "visualHint": "pulse",
+            "x": 66.5,
+            "y": 58.3
+          },
+          {
+            "id": "speeltuin-zandbak",
+            "radius": 8,
+            "sampleId": "speeltuin-zandbak",
+            "visualHint": "pulse",
+            "x": 22.9,
+            "y": 67.6
+          },
+          {
+            "id": "speeltuin-robot",
+            "radius": 8,
+            "sampleId": "speeltuin-robot",
+            "visualHint": "pulse",
+            "x": 73.3,
+            "y": 32.1
+          }
+        ],
+        "id": "speeltuin",
+        "name": "locations.speeltuin.name",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/basis/gymlokaal.jpg",
+        "description": "locations.gymzaal.description",
+        "hotspots": [
+          {
+            "id": "gymzaal-bal",
+            "radius": 8,
+            "sampleId": "gymzaal-bal",
+            "visualHint": "pulse",
+            "x": 70.8,
+            "y": 81.1
+          },
+          {
+            "id": "gymzaal-fluitje",
+            "radius": 8,
+            "sampleId": "gymzaal-fluitje",
+            "visualHint": "pulse",
+            "x": 67.1,
+            "y": 57.8
+          },
+          {
+            "id": "gymzaal-karate",
+            "radius": 8,
+            "sampleId": "gymzaal-karate",
+            "visualHint": "pulse",
+            "x": 40.7,
+            "y": 51.8
+          },
+          {
+            "id": "gymzaal-robot-smiling",
+            "radius": 8,
+            "sampleId": "gymzaal-robot-smiling",
+            "visualHint": "pulse",
+            "x": 38,
+            "y": 25.1
+          },
+          {
+            "id": "gymzaal-rolschaatsen",
+            "radius": 8,
+            "sampleId": "gymzaal-rolschaatsen",
+            "visualHint": "pulse",
+            "x": 48.4,
+            "y": 84.2
+          },
+          {
+            "id": "gymzaal-vallen",
+            "radius": 8,
+            "sampleId": "gymzaal-vallen",
+            "visualHint": "pulse",
+            "x": 55.7,
+            "y": 52.6
+          }
+        ],
+        "id": "gymzaal",
+        "name": "locations.gymzaal.name",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/basis/muziekwinkel.jpg",
+        "description": "locations.muziekwinkel.description",
+        "hotspots": [
+          {
+            "id": "muziekwinkel-drums",
+            "sampleId": "muziekwinkel-drums",
+            "visualHint": "pulse",
+            "x": 49.7,
+            "y": 25.4
+          },
+          {
+            "id": "muziekwinkel-brass",
+            "sampleId": "muziekwinkel-brass",
+            "visualHint": "pulse",
+            "x": 69.7,
+            "y": 48.7
+          },
+          {
+            "id": "muziekwinkel-bass",
+            "sampleId": "muziekwinkel-bass",
+            "visualHint": "pulse",
+            "x": 28,
+            "y": 29.5
+          },
+          {
+            "id": "muziekwinkel-guitar",
+            "sampleId": "muziekwinkel-guitar",
+            "visualHint": "pulse",
+            "x": 51.5,
+            "y": 51.3
+          },
+          {
+            "id": "muziekwinkel-strings",
+            "sampleId": "muziekwinkel-strings",
+            "visualHint": "pulse",
+            "x": 31.8,
+            "y": 61.9
+          },
+          {
+            "id": "muziekwinkel-piano",
+            "sampleId": "muziekwinkel-piano",
+            "visualHint": "pulse",
+            "x": 73,
+            "y": 24.9
+          }
+        ],
+        "id": "muziekwinkel",
+        "name": "locations.muziekwinkel.name",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/basis/klaslokaal.jpg",
+        "description": "locations.klaslokaal.description",
+        "hotspots": [
+          {
+            "id": "klaslokaal-beker-gevallen",
+            "radius": 8,
+            "sampleId": "klaslokaal-beker-gevallen",
+            "visualHint": "pulse",
+            "x": 17.1,
+            "y": 86.6
+          },
+          {
+            "id": "klaslokaal-bijen",
+            "radius": 8,
+            "sampleId": "klaslokaal-bijen",
+            "visualHint": "pulse",
+            "x": 43.3,
+            "y": 29.3
+          },
+          {
+            "id": "klaslokaal-blokken-stapelen",
+            "radius": 8,
+            "sampleId": "klaslokaal-blokken-stapelen",
+            "visualHint": "pulse",
+            "x": 34.4,
+            "y": 62.2
+          },
+          {
+            "id": "klaslokaal-lachen-emoji",
+            "radius": 8,
+            "sampleId": "klaslokaal-lachen-emoji",
+            "visualHint": "pulse",
+            "x": 54.8,
+            "y": 82.7
+          },
+          {
+            "id": "klaslokaal-schilderen",
+            "radius": 8,
+            "sampleId": "klaslokaal-schilderen",
+            "visualHint": "pulse",
+            "x": 16.6,
+            "y": 27
+          },
+          {
+            "id": "klaslokaal-tekenen",
+            "radius": 8,
+            "sampleId": "klaslokaal-tekenen",
+            "visualHint": "pulse",
+            "x": 57.3,
+            "y": 65.6
+          },
+          {
+            "id": "klaslokaal-vallende-bouten",
+            "radius": 8,
+            "sampleId": "klaslokaal-vallende-bouten",
+            "visualHint": "pulse",
+            "x": 51.5,
+            "y": 44.6
+          }
+        ],
+        "id": "klaslokaal",
+        "name": "locations.klaslokaal.name",
+        "unlocked": true
+      }
+    ],
+    "map": {
+      "backgroundImage": "/images/themes/basis/plattegrond.jpg",
+      "locationPositions": [
+        {
+          "locationId": "boerderij",
+          "x": 12.7,
+          "y": 80.6
+        },
+        {
+          "locationId": "speeltuin",
+          "x": 64.6,
+          "y": 39.1
+        },
+        {
+          "locationId": "gymzaal",
+          "x": 11.2,
+          "y": 46.9
+        },
+        {
+          "locationId": "muziekwinkel",
+          "x": 32.8,
+          "y": 23.8
+        },
+        {
+          "locationId": "klaslokaal",
+          "x": 81.3,
+          "y": 25.9
+        }
+      ]
+    },
+    "name": "themes.basis.name",
+    "samples": [
+      {
+        "audioUrl": "/audio/themes/basis/boerderij/robot_lach.mp3",
+        "color": "#FFC107",
+        "duration": 7,
+        "icon": "Smile",
+        "id": "boerderij-lach",
+        "locationId": "boerderij",
+        "name": "samples.boerderij-lach"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/boerderij/geit.mp3",
+        "color": "#9E9E9E",
+        "duration": 4,
+        "icon": "Cat",
+        "id": "boerderij-geit",
+        "locationId": "boerderij",
+        "name": "samples.boerderij-geit"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/boerderij/hond.mp3",
+        "color": "#FF9800",
+        "duration": 7,
+        "icon": "Dog",
+        "id": "boerderij-hond",
+        "locationId": "boerderij",
+        "name": "samples.boerderij-hond"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/boerderij/kippen.mp3",
+        "color": "#E74C3C",
+        "duration": 8,
+        "icon": "Bird",
+        "id": "boerderij-kippen",
+        "locationId": "boerderij",
+        "name": "samples.boerderij-kippen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/boerderij/koe.mp3",
+        "color": "#212121",
+        "duration": 4,
+        "icon": "Circle",
+        "id": "boerderij-koe",
+        "locationId": "boerderij",
+        "name": "samples.boerderij-koe"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/boerderij/paard.mp3",
+        "color": "#795548",
+        "duration": 3,
+        "icon": "Rabbit",
+        "id": "boerderij-paard",
+        "locationId": "boerderij",
+        "name": "samples.boerderij-paard"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/speeltuin/drone.mp3",
+        "color": "#3498DB",
+        "duration": 6,
+        "icon": "Plane",
+        "id": "speeltuin-drone",
+        "locationId": "speeltuin",
+        "name": "samples.speeltuin-drone"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/speeltuin/skateboard.mp3",
+        "color": "#F7DC6F",
+        "duration": 6,
+        "icon": "Zap",
+        "id": "speeltuin-skateboard",
+        "locationId": "speeltuin",
+        "name": "samples.speeltuin-skateboard"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/speeltuin/vissen.mp3",
+        "color": "#00BCD4",
+        "duration": 4,
+        "icon": "Fish",
+        "id": "speeltuin-vissen",
+        "locationId": "speeltuin",
+        "name": "samples.speeltuin-vissen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/speeltuin/voetbal.mp3",
+        "color": "#4CAF50",
+        "duration": 6,
+        "icon": "CircleDot",
+        "id": "speeltuin-voetbal",
+        "locationId": "speeltuin",
+        "name": "samples.speeltuin-voetbal"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/speeltuin/zandbak.mp3",
+        "color": "#D4A574",
+        "duration": 5,
+        "icon": "Castle",
+        "id": "speeltuin-zandbak",
+        "locationId": "speeltuin",
+        "name": "samples.speeltuin-zandbak"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/speeltuin/robot.mp3",
+        "color": "#9B59B6",
+        "duration": 5,
+        "icon": "Bot",
+        "id": "speeltuin-robot",
+        "locationId": "speeltuin",
+        "name": "samples.speeltuin-robot"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/gymzaal/bal.mp3",
+        "color": "#E74C3C",
+        "duration": 8,
+        "icon": "Target",
+        "id": "gymzaal-bal",
+        "locationId": "gymzaal",
+        "name": "samples.gymzaal-bal"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/gymzaal/fluitje.mp3",
+        "color": "#F39C12",
+        "duration": 3,
+        "icon": "Megaphone",
+        "id": "gymzaal-fluitje",
+        "locationId": "gymzaal",
+        "name": "samples.gymzaal-fluitje"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/gymzaal/karate.mp3",
+        "color": "#212121",
+        "duration": 4,
+        "icon": "Swords",
+        "id": "gymzaal-karate",
+        "locationId": "gymzaal",
+        "name": "samples.gymzaal-karate"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/gymzaal/robot-smiling.mp3",
+        "color": "#9B59B6",
+        "duration": 2,
+        "icon": "SmilePlus",
+        "id": "gymzaal-robot-smiling",
+        "locationId": "gymzaal",
+        "name": "samples.gymzaal-robot-smiling"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/gymzaal/rolschaatsen.mp3",
+        "color": "#3498DB",
+        "duration": 4,
+        "icon": "Disc3",
+        "id": "gymzaal-rolschaatsen",
+        "locationId": "gymzaal",
+        "name": "samples.gymzaal-rolschaatsen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/gymzaal/vallen.mp3",
+        "color": "#27AE60",
+        "duration": 4,
+        "icon": "ArrowDownRight",
+        "id": "gymzaal-vallen",
+        "locationId": "gymzaal",
+        "name": "samples.gymzaal-vallen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-drums.mp3",
+        "color": "#E74C3C",
+        "duration": 8,
+        "icon": "Disc3",
+        "id": "muziekwinkel-drums",
+        "locationId": "muziekwinkel",
+        "name": "samples.muziekwinkel-drums"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-brass.mp3",
+        "color": "#F1C40F",
+        "duration": 8,
+        "icon": "Volume2",
+        "id": "muziekwinkel-brass",
+        "locationId": "muziekwinkel",
+        "name": "samples.muziekwinkel-brass"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-bass.mp3",
+        "color": "#8E44AD",
+        "duration": 8,
+        "icon": "AudioWaveform",
+        "id": "muziekwinkel-bass",
+        "locationId": "muziekwinkel",
+        "name": "samples.muziekwinkel-bass"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-guitar.mp3",
+        "color": "#E67E22",
+        "duration": 8,
+        "icon": "Guitar",
+        "id": "muziekwinkel-guitar",
+        "locationId": "muziekwinkel",
+        "name": "samples.muziekwinkel-guitar"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-strings.mp3",
+        "color": "#1ABC9C",
+        "duration": 8,
+        "icon": "Music",
+        "id": "muziekwinkel-strings",
+        "locationId": "muziekwinkel",
+        "name": "samples.muziekwinkel-strings"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/muziekwinkel/muziekwinkel-piano.mp3",
+        "color": "#3498DB",
+        "duration": 8,
+        "icon": "Piano",
+        "id": "muziekwinkel-piano",
+        "locationId": "muziekwinkel",
+        "name": "samples.muziekwinkel-piano"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/klaslokaal/beker-gevallen.mp3",
+        "color": "#795548",
+        "duration": 4,
+        "icon": "CupSoda",
+        "id": "klaslokaal-beker-gevallen",
+        "locationId": "klaslokaal",
+        "name": "samples.klaslokaal-beker-gevallen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/klaslokaal/bijen.mp3",
+        "color": "#F1C40F",
+        "duration": 4,
+        "icon": "Bug",
+        "id": "klaslokaal-bijen",
+        "locationId": "klaslokaal",
+        "name": "samples.klaslokaal-bijen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/klaslokaal/blokken-stapelen.mp3",
+        "color": "#E74C3C",
+        "duration": 4,
+        "icon": "Boxes",
+        "id": "klaslokaal-blokken-stapelen",
+        "locationId": "klaslokaal",
+        "name": "samples.klaslokaal-blokken-stapelen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/klaslokaal/lachen-emoji.mp3",
+        "color": "#FFD700",
+        "duration": 4,
+        "icon": "Laugh",
+        "id": "klaslokaal-lachen-emoji",
+        "locationId": "klaslokaal",
+        "name": "samples.klaslokaal-lachen-emoji"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/klaslokaal/schilderen.mp3",
+        "color": "#3498DB",
+        "duration": 4,
+        "icon": "Paintbrush",
+        "id": "klaslokaal-schilderen",
+        "locationId": "klaslokaal",
+        "name": "samples.klaslokaal-schilderen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/klaslokaal/tekenen.mp3",
+        "color": "#27AE60",
+        "duration": 4,
+        "icon": "Pencil",
+        "id": "klaslokaal-tekenen",
+        "locationId": "klaslokaal",
+        "name": "samples.klaslokaal-tekenen"
+      },
+      {
+        "audioUrl": "/audio/themes/basis/klaslokaal/vallende-bouten.mp3",
+        "color": "#9E9E9E",
+        "duration": 4,
+        "icon": "Wrench",
+        "id": "klaslokaal-vallende-bouten",
+        "locationId": "klaslokaal",
+        "name": "samples.klaslokaal-vallende-bouten"
+      }
+    ]
+  }
+}

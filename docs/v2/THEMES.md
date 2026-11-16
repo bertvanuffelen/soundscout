@@ -113,11 +113,12 @@ The Administrator Dashboard (`/beheer`, `docs/v2/ADMIN-DASHBOARD.md`) replaces s
 | `credits.json`, `hotspots.json`, `report.json`, image/audio masters/derived | not part of the manifest; for the dashboard import |
 | storyboards, praatplaten | still in `src/data/storyboards.ts` / `praatplaatImages.ts` (later the same pattern) |
 
-## 7. Deleting the TypeScript themes (separate, reviewed step)
+## 7. Deleting the TypeScript themes — done for winterspelen and piraten (16-11-2026)
 
-Files that can then be deleted: `src/data/themes/basis/*`, `src/data/themes/winterspelen/*`, `src/data/themes/piraten/*` (keep `piraten/BRONNEN.md` content elsewhere), `src/themes/export/legacyThemes.ts`, `src/themes/convert.ts` (only if `--from-ts` is no longer needed).
-
-Still importing them: `src/themes/export/legacyThemes.ts` (conversion + equivalence fixture), `src/data/themes/__tests__/mapLocale.test.ts` (`piratenTheme`), `e2e/harness/presentationHarness.tsx` (basis `samples`), `src/utils/themeCodegen.ts` (writes new TS themes — to be replaced by manifest output). At the same time the theme strings can leave `nl.json`/`en.json` (they come from the manifests), after deciding how teacher views show sample names of a theme that is not loaded (load the composition's theme first).
+- **Deleted:** `src/data/themes/winterspelen/*` and `src/data/themes/piraten/*`. The pirate credits moved to `docs/themes/piraten-BRONNEN.md`.
+- **Kept:** `src/data/themes/basis/*` (product decision: basis stays bundled as offline fallback; the app itself loads basis from the bundled manifest `src/themes/bundled/basis.manifest.json`).
+- **The gate stays permanent:** just before deletion the three original theme objects were frozen as JSON (`src/themes/__tests__/fixtures/legacy-*.json`). `equivalence.test.ts` keeps comparing the published manifests against those fixtures, so a manifest edit that changes a converted theme fails the test. `scripts/export-theme-manifests.mjs --from-ts` now converts from the fixtures.
+- **Still open:** the theme strings remain in `nl.json`/`en.json` (teacher views show sample names of a theme that is not loaded); `src/utils/themeCodegen.ts` (old `/editor` wizard) still writes TypeScript themes — superseded by the dashboard import.
 
 ## 8. Not done / open
 

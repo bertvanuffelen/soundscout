@@ -1,0 +1,677 @@
+{
+  "sort": 30,
+  "theme": {
+    "colors": {
+      "accent": "#E8A02C",
+      "mapBackground": "#F3E1BE",
+      "primary": "#0E8C8C"
+    },
+    "description": "themes.piraten.description",
+    "id": "piraten",
+    "isPublic": false,
+    "locations": [
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/piraten/grogkroeg.jpg",
+        "description": "themes.piraten.locations.grogkroeg_desc",
+        "hotspots": [
+          {
+            "id": "grogkroeg-accordeon",
+            "sampleId": "grogkroeg-accordeon",
+            "visualHint": "pulse",
+            "x": 80.3,
+            "y": 61.8
+          },
+          {
+            "id": "grogkroeg-kroezen",
+            "sampleId": "grogkroeg-kroezen",
+            "visualHint": "pulse",
+            "x": 50.8,
+            "y": 35
+          },
+          {
+            "id": "grogkroeg-papegaai",
+            "sampleId": "grogkroeg-papegaai",
+            "visualHint": "pulse",
+            "x": 67.2,
+            "y": 18.5
+          },
+          {
+            "id": "grogkroeg-lach",
+            "sampleId": "grogkroeg-lach",
+            "visualHint": "pulse",
+            "x": 26.9,
+            "y": 46.2
+          },
+          {
+            "id": "grogkroeg-deur",
+            "sampleId": "grogkroeg-deur",
+            "visualHint": "pulse",
+            "x": 92.6,
+            "y": 37.2
+          },
+          {
+            "id": "grogkroeg-dobbel",
+            "sampleId": "grogkroeg-dobbel",
+            "visualHint": "pulse",
+            "x": 58.3,
+            "y": 92.3
+          },
+          {
+            "id": "grogkroeg-vat",
+            "sampleId": "grogkroeg-vat",
+            "visualHint": "pulse",
+            "x": 90.7,
+            "y": 71.2
+          },
+          {
+            "id": "grogkroeg-fluit",
+            "sampleId": "grogkroeg-fluit",
+            "visualHint": "pulse",
+            "x": 80.4,
+            "y": 51.4
+          }
+        ],
+        "id": "grogkroeg",
+        "name": "themes.piraten.locations.grogkroeg",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/piraten/haven.jpg",
+        "description": "themes.piraten.locations.haven_desc",
+        "hotspots": [
+          {
+            "id": "haven-meeuwen",
+            "sampleId": "haven-meeuwen",
+            "visualHint": "pulse",
+            "x": 49.1,
+            "y": 12.8
+          },
+          {
+            "id": "haven-golven",
+            "sampleId": "haven-golven",
+            "visualHint": "pulse",
+            "x": 23,
+            "y": 87.7
+          },
+          {
+            "id": "haven-scheepsbel",
+            "sampleId": "haven-scheepsbel",
+            "visualHint": "pulse",
+            "x": 55.3,
+            "y": 27.3
+          },
+          {
+            "id": "haven-katrol",
+            "sampleId": "haven-katrol",
+            "visualHint": "pulse",
+            "x": 38.8,
+            "y": 15.3
+          },
+          {
+            "id": "haven-kraan",
+            "sampleId": "haven-kraan",
+            "visualHint": "pulse",
+            "x": 27.4,
+            "y": 47.1
+          },
+          {
+            "id": "haven-kist",
+            "sampleId": "haven-kist",
+            "visualHint": "pulse",
+            "x": 45.4,
+            "y": 41.6
+          },
+          {
+            "id": "haven-boei",
+            "sampleId": "haven-boei",
+            "visualHint": "pulse",
+            "x": 6.4,
+            "y": 60.7
+          }
+        ],
+        "id": "haven",
+        "name": "themes.piraten.locations.haven",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/piraten/schip.jpg",
+        "description": "themes.piraten.locations.schip_desc",
+        "hotspots": [
+          {
+            "id": "schip-zeilen",
+            "sampleId": "schip-zeilen",
+            "visualHint": "pulse",
+            "x": 90.2,
+            "y": 25.4
+          },
+          {
+            "id": "schip-kanon",
+            "sampleId": "schip-kanon",
+            "visualHint": "pulse",
+            "x": 31,
+            "y": 74.5
+          },
+          {
+            "id": "schip-anker",
+            "sampleId": "schip-anker",
+            "visualHint": "pulse",
+            "x": 76.2,
+            "y": 88.9
+          },
+          {
+            "id": "schip-zeemanslied",
+            "sampleId": "schip-zeemanslied",
+            "visualHint": "pulse",
+            "x": 34.9,
+            "y": 55
+          },
+          {
+            "id": "schip-wind",
+            "sampleId": "schip-wind",
+            "visualHint": "pulse",
+            "x": 30.7,
+            "y": 12.5
+          },
+          {
+            "id": "schip-stuurwiel",
+            "sampleId": "schip-stuurwiel",
+            "visualHint": "pulse",
+            "x": 26.1,
+            "y": 34.1
+          },
+          {
+            "id": "schip-kraaiennest",
+            "sampleId": "schip-kraaiennest",
+            "visualHint": "pulse",
+            "x": 60,
+            "y": 14
+          }
+        ],
+        "id": "schip",
+        "name": "themes.piraten.locations.schip",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/piraten/jungle.jpg",
+        "description": "themes.piraten.locations.jungle_desc",
+        "hotspots": [
+          {
+            "id": "jungle-apen",
+            "sampleId": "jungle-apen",
+            "visualHint": "pulse",
+            "x": 10.9,
+            "y": 13.5
+          },
+          {
+            "id": "jungle-vogels",
+            "sampleId": "jungle-vogels",
+            "visualHint": "pulse",
+            "x": 79.7,
+            "y": 11.2
+          },
+          {
+            "id": "jungle-waterval",
+            "sampleId": "jungle-waterval",
+            "visualHint": "pulse",
+            "x": 80.1,
+            "y": 42.9
+          },
+          {
+            "id": "jungle-trommels",
+            "sampleId": "jungle-trommels",
+            "visualHint": "pulse",
+            "x": 16.9,
+            "y": 41.5
+          },
+          {
+            "id": "jungle-krekels",
+            "sampleId": "jungle-krekels",
+            "visualHint": "pulse",
+            "x": 27.1,
+            "y": 82.4
+          },
+          {
+            "id": "jungle-kokosnoot",
+            "sampleId": "jungle-kokosnoot",
+            "visualHint": "pulse",
+            "x": 93,
+            "y": 16.2
+          },
+          {
+            "id": "jungle-slang",
+            "sampleId": "jungle-slang",
+            "visualHint": "pulse",
+            "x": 48.2,
+            "y": 69.2
+          }
+        ],
+        "id": "jungle",
+        "name": "themes.piraten.locations.jungle",
+        "unlocked": true
+      },
+      {
+        "ambientAudio": "",
+        "backgroundImage": "/images/themes/piraten/voodoohut.jpg",
+        "description": "themes.piraten.locations.voodoohut_desc",
+        "hotspots": [
+          {
+            "id": "voodoohut-ketel",
+            "sampleId": "voodoohut-ketel",
+            "visualHint": "pulse",
+            "x": 50.9,
+            "y": 55.9
+          },
+          {
+            "id": "voodoohut-botten",
+            "sampleId": "voodoohut-botten",
+            "visualHint": "pulse",
+            "x": 38.7,
+            "y": 49.7
+          },
+          {
+            "id": "voodoohut-gong",
+            "sampleId": "voodoohut-gong",
+            "visualHint": "pulse",
+            "x": 73.4,
+            "y": 42.3
+          },
+          {
+            "id": "voodoohut-windgong",
+            "sampleId": "voodoohut-windgong",
+            "visualHint": "pulse",
+            "x": 6,
+            "y": 34.4
+          },
+          {
+            "id": "voodoohut-fluister",
+            "sampleId": "voodoohut-fluister",
+            "visualHint": "pulse",
+            "x": 14,
+            "y": 44
+          },
+          {
+            "id": "voodoohut-druppel",
+            "sampleId": "voodoohut-druppel",
+            "visualHint": "pulse",
+            "x": 35.2,
+            "y": 14.1
+          },
+          {
+            "id": "voodoohut-raaf",
+            "sampleId": "voodoohut-raaf",
+            "visualHint": "pulse",
+            "x": 70.8,
+            "y": 16.7
+          }
+        ],
+        "id": "voodoohut",
+        "name": "themes.piraten.locations.voodoohut",
+        "unlocked": true
+      }
+    ],
+    "map": {
+      "backgroundImage": "/images/themes/piraten/plattegrond.jpg",
+      "backgroundImageByLocale": {
+        "en": "/images/themes/piraten/plattegrond-en.jpg"
+      },
+      "locationPositions": [
+        {
+          "locationId": "grogkroeg",
+          "x": 16,
+          "y": 40
+        },
+        {
+          "locationId": "haven",
+          "x": 38,
+          "y": 18
+        },
+        {
+          "locationId": "schip",
+          "x": 48,
+          "y": 48
+        },
+        {
+          "locationId": "jungle",
+          "x": 72,
+          "y": 30
+        },
+        {
+          "locationId": "voodoohut",
+          "x": 62,
+          "y": 72
+        }
+      ]
+    },
+    "name": "themes.piraten.name",
+    "samples": [
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-accordeon.mp3",
+        "color": "#E8A02C",
+        "duration": 8,
+        "icon": "Music",
+        "id": "grogkroeg-accordeon",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-accordeon"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-kroezen.mp3",
+        "color": "#FB923C",
+        "duration": 4,
+        "icon": "Beer",
+        "id": "grogkroeg-kroezen",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-kroezen"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-papegaai.mp3",
+        "color": "#F87171",
+        "duration": 4,
+        "icon": "Bird",
+        "id": "grogkroeg-papegaai",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-papegaai"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-lach.mp3",
+        "color": "#F472B6",
+        "duration": 4,
+        "icon": "Smile",
+        "id": "grogkroeg-lach",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-lach"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-deur.mp3",
+        "color": "#A78BFA",
+        "duration": 1.2,
+        "icon": "DoorOpen",
+        "id": "grogkroeg-deur",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-deur"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-dobbel.mp3",
+        "color": "#34D399",
+        "duration": 3.69,
+        "icon": "Dice5",
+        "id": "grogkroeg-dobbel",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-dobbel"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-vat.mp3",
+        "color": "#60A5FA",
+        "duration": 1.69,
+        "icon": "CircleDot",
+        "id": "grogkroeg-vat",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-vat"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/grogkroeg/grogkroeg-fluit.mp3",
+        "color": "#38BDF8",
+        "duration": 2.76,
+        "icon": "AudioWaveform",
+        "id": "grogkroeg-fluit",
+        "locationId": "grogkroeg",
+        "name": "themes.piraten.samples.grogkroeg-fluit"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/haven/haven-meeuwen.mp3",
+        "color": "#38BDF8",
+        "duration": 5.21,
+        "icon": "Bird",
+        "id": "haven-meeuwen",
+        "locationId": "haven",
+        "name": "themes.piraten.samples.haven-meeuwen"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/haven/haven-golven.mp3",
+        "color": "#0E8C8C",
+        "duration": 7.98,
+        "icon": "Waves",
+        "id": "haven-golven",
+        "locationId": "haven",
+        "name": "themes.piraten.samples.haven-golven"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/haven/haven-scheepsbel.mp3",
+        "color": "#E8A02C",
+        "duration": 6.06,
+        "icon": "Bell",
+        "id": "haven-scheepsbel",
+        "locationId": "haven",
+        "name": "themes.piraten.samples.haven-scheepsbel"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/haven/haven-katrol.mp3",
+        "color": "#FB923C",
+        "duration": 2.67,
+        "icon": "Anchor",
+        "id": "haven-katrol",
+        "locationId": "haven",
+        "name": "themes.piraten.samples.haven-katrol"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/haven/haven-kraan.mp3",
+        "color": "#A78BFA",
+        "duration": 4,
+        "icon": "CircleDot",
+        "id": "haven-kraan",
+        "locationId": "haven",
+        "name": "themes.piraten.samples.haven-kraan"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/haven/haven-kist.mp3",
+        "color": "#FBBF24",
+        "duration": 1.99,
+        "icon": "Package",
+        "id": "haven-kist",
+        "locationId": "haven",
+        "name": "themes.piraten.samples.haven-kist"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/haven/haven-boei.mp3",
+        "color": "#60A5FA",
+        "duration": 4.52,
+        "icon": "Circle",
+        "id": "haven-boei",
+        "locationId": "haven",
+        "name": "themes.piraten.samples.haven-boei"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/schip/schip-zeilen.mp3",
+        "color": "#38BDF8",
+        "duration": 5,
+        "icon": "Sailboat",
+        "id": "schip-zeilen",
+        "locationId": "schip",
+        "name": "themes.piraten.samples.schip-zeilen"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/schip/schip-kanon.mp3",
+        "color": "#F87171",
+        "duration": 1.62,
+        "icon": "Zap",
+        "id": "schip-kanon",
+        "locationId": "schip",
+        "name": "themes.piraten.samples.schip-kanon"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/schip/schip-anker.mp3",
+        "color": "#A78BFA",
+        "duration": 2.17,
+        "icon": "Anchor",
+        "id": "schip-anker",
+        "locationId": "schip",
+        "name": "themes.piraten.samples.schip-anker"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/schip/schip-zeemanslied.mp3",
+        "color": "#E8A02C",
+        "duration": 8,
+        "icon": "Volume2",
+        "id": "schip-zeemanslied",
+        "locationId": "schip",
+        "name": "themes.piraten.samples.schip-zeemanslied"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/schip/schip-wind.mp3",
+        "color": "#60A5FA",
+        "duration": 7.97,
+        "icon": "Wind",
+        "id": "schip-wind",
+        "locationId": "schip",
+        "name": "themes.piraten.samples.schip-wind"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/schip/schip-stuurwiel.mp3",
+        "color": "#FB923C",
+        "duration": 3.74,
+        "icon": "Circle",
+        "id": "schip-stuurwiel",
+        "locationId": "schip",
+        "name": "themes.piraten.samples.schip-stuurwiel"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/schip/schip-kraaiennest.mp3",
+        "color": "#34D399",
+        "duration": 4,
+        "icon": "Megaphone",
+        "id": "schip-kraaiennest",
+        "locationId": "schip",
+        "name": "themes.piraten.samples.schip-kraaiennest"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/jungle/jungle-apen.mp3",
+        "color": "#34D399",
+        "duration": 4,
+        "icon": "Bot",
+        "id": "jungle-apen",
+        "locationId": "jungle",
+        "name": "themes.piraten.samples.jungle-apen"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/jungle/jungle-vogels.mp3",
+        "color": "#F472B6",
+        "duration": 4,
+        "icon": "Bird",
+        "id": "jungle-vogels",
+        "locationId": "jungle",
+        "name": "themes.piraten.samples.jungle-vogels"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/jungle/jungle-waterval.mp3",
+        "color": "#0E8C8C",
+        "duration": 8,
+        "icon": "Droplet",
+        "id": "jungle-waterval",
+        "locationId": "jungle",
+        "name": "themes.piraten.samples.jungle-waterval"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/jungle/jungle-trommels.mp3",
+        "color": "#E8A02C",
+        "duration": 8,
+        "icon": "Disc3",
+        "id": "jungle-trommels",
+        "locationId": "jungle",
+        "name": "themes.piraten.samples.jungle-trommels"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/jungle/jungle-krekels.mp3",
+        "color": "#34D399",
+        "duration": 8,
+        "icon": "Bug",
+        "id": "jungle-krekels",
+        "locationId": "jungle",
+        "name": "themes.piraten.samples.jungle-krekels"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/jungle/jungle-kokosnoot.mp3",
+        "color": "#FB923C",
+        "duration": 3.49,
+        "icon": "Circle",
+        "id": "jungle-kokosnoot",
+        "locationId": "jungle",
+        "name": "themes.piraten.samples.jungle-kokosnoot"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/jungle/jungle-slang.mp3",
+        "color": "#A78BFA",
+        "duration": 4,
+        "icon": "AudioWaveform",
+        "id": "jungle-slang",
+        "locationId": "jungle",
+        "name": "themes.piraten.samples.jungle-slang"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/voodoohut/voodoohut-ketel.mp3",
+        "color": "#34D399",
+        "duration": 8,
+        "icon": "CircleDot",
+        "id": "voodoohut-ketel",
+        "locationId": "voodoohut",
+        "name": "themes.piraten.samples.voodoohut-ketel"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/voodoohut/voodoohut-botten.mp3",
+        "color": "#A78BFA",
+        "duration": 5.46,
+        "icon": "Skull",
+        "id": "voodoohut-botten",
+        "locationId": "voodoohut",
+        "name": "themes.piraten.samples.voodoohut-botten"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/voodoohut/voodoohut-gong.mp3",
+        "color": "#E8A02C",
+        "duration": 6.5,
+        "icon": "Disc3",
+        "id": "voodoohut-gong",
+        "locationId": "voodoohut",
+        "name": "themes.piraten.samples.voodoohut-gong"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/voodoohut/voodoohut-windgong.mp3",
+        "color": "#0E8C8C",
+        "duration": 3.19,
+        "icon": "Music",
+        "id": "voodoohut-windgong",
+        "locationId": "voodoohut",
+        "name": "themes.piraten.samples.voodoohut-windgong"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/voodoohut/voodoohut-fluister.mp3",
+        "color": "#A78BFA",
+        "duration": 4,
+        "icon": "Volume2",
+        "id": "voodoohut-fluister",
+        "locationId": "voodoohut",
+        "name": "themes.piraten.samples.voodoohut-fluister"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/voodoohut/voodoohut-druppel.mp3",
+        "color": "#60A5FA",
+        "duration": 3.68,
+        "icon": "Droplet",
+        "id": "voodoohut-druppel",
+        "locationId": "voodoohut",
+        "name": "themes.piraten.samples.voodoohut-druppel"
+      },
+      {
+        "audioUrl": "/audio/themes/piraten/voodoohut/voodoohut-raaf.mp3",
+        "color": "#7C3AED",
+        "duration": 4,
+        "icon": "Bird",
+        "id": "voodoohut-raaf",
+        "locationId": "voodoohut",
+        "name": "themes.piraten.samples.voodoohut-raaf"
+      }
+    ]
+  }
+}
