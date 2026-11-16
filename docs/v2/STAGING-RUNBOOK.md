@@ -3,8 +3,8 @@
 One session, in this order. Each block builds on the one before. Tick boxes as you go; write anything odd in the notes column of the results table at the end.
 
 **Devices:** iPad (Safari), Chromebook (Chrome), laptop with Chrome + DevTools, digibord (HDMI), Bluetooth speaker or headphones.
-**Accounts:** two teacher accounts on staging (A = your admin account, B = a second address), one pupil device.
-**Setup done beforehand** (not part of the two hours): `docs/v2/STAGING.md` — subdomain with SSL, Supabase test project with schema + 043, `.env.staging`. Have **both** builds ready: the V1 build from `main` and the V2 build (`npm run build:staging`).
+**Accounts:** two **test**-teacher accounts on the production Supabase project (A = test admin, B = a second test address), one pupil device. Never use your real teacher account or real class codes on staging.
+**Setup done beforehand** (not part of the two hours): `docs/v2/STAGING.md` — subdomain with SSL, migration 043 on production, staging redirect URL, `.env.staging`. Have **both** builds ready: the V1 build from `main` and the V2 build (`npm run build:staging`). Have `docs/v2/staging/staging-testthema.sspack` on the laptop.
 
 ---
 
@@ -15,7 +15,7 @@ One session, in this order. Each block builds on the one before. Tick boxes as y
 
 ---
 
-## A. Upgrade and saved work — 0:00–0:15
+## A. Upgrade and saved work — 0:00–0:12
 
 - [ ] Upload the **V2** build, `sw.js` last.
 - [ ] iPad and Chromebook: reload. Open "Mijn soundscapes". **All four soundscapes are there**, with the right titles.
@@ -27,7 +27,7 @@ One session, in this order. Each block builds on the one before. Tick boxes as y
 - [ ] DevTools → Application → Service workers: `sw.js` is active.
 - [ ] Response headers of `/sw.js`, `/index.html` and `/manifest.json`: `no-cache`.
 
-## B. Pupil journey and layout — 0:15–0:35
+## B. Pupil journey and layout — 0:12–0:27
 
 Do this on the Chromebook and the iPad (landscape), then a quick look at the digibord.
 
@@ -40,7 +40,7 @@ Do this on the Chromebook and the iPad (landscape), then a quick look at the dig
 - [ ] Shared link: open an old-style link `https://staging.soundscout.nl/?theme=winterspelen` → the winter map opens.
 - [ ] Luisterspiegel (behind a flag in this build): open `/?dev=true`, make a soundscape, go to the podium. Step 3 "Luisterspiegel" shows the form map and two questions; you can skip it and still save.
 
-## C. Audio and sync — 0:35–0:55
+## C. Audio and sync — 0:27–0:45
 
 Use a soundscape with a short, sharp sound (e.g. the dog) and a loop.
 
@@ -51,7 +51,7 @@ Use a soundscape with a short, sharp sound (e.g. the dog) and a loop.
 - [ ] Pause and resume: playback continues from the same spot. (A hop of about a fifth of a beat on pause is known.)
 - [ ] Storyboard composition: the images change at the section boundaries during playback.
 
-## D. Sound Lab and tempo — 0:55–1:15
+## D. Sound Lab and tempo — 0:45–1:03
 
 - [ ] **Loops at four tempi:** put a music-shop loop (city theme) and the pirate accordion on the timeline. Switch Traag 90 → Rustig 105 → Normaal 120 → Snel 135:
   - [ ] the loops keep the **same width** on the timeline;
@@ -70,20 +70,20 @@ Use a soundscape with a short, sharp sound (e.g. the dog) and a loop.
   - [ ] Swing is audible.
   - [ ] Hard, Middel and Zacht are audibly different.
   - [ ] Close the tab, place the melody on the timeline and play the composition.
-- [ ] **Video export** (storyboard composition): it finishes and the sound is in sync.
+- [ ] *If time allows:* **video export** (storyboard composition) finishes with the sound in sync.
 
-## E. Offline — 1:15–1:30
+## E. Offline — 1:03–1:15
 
 - [ ] On the iPad and the Chromebook, visit the app once online, open the farm and wait 10 seconds (background download).
 - [ ] Switch **Wi-Fi off** and reload. These all work, with sound: start, map, location, collecting sounds, studio, podium.
 - [ ] Offline, try **Inleveren** with a class code and **share**: you get the normal error, not a fake "gelukt".
 - [ ] Wi-Fi on again: online features work again without a reinstall.
 
-## F. Teacher flows and Supabase — 1:30–1:55
+## F. Teacher flows — 1:15–1:40
 
 On the laptop as teacher, with the iPad as the pupil and the digibord for presenting.
 
-- [ ] **Register** teacher A on staging, confirm the e-mail, log in. Then run the admin insert from 043 for this address.
+- [ ] **Register** test teacher A on staging, confirm the e-mail, log in. Then run the admin insert from 043 for this address (production SQL editor).
 - [ ] **Class:** create a class, then activate a lesson card. The class code appears.
 - [ ] **Hand-in:** on the iPad enter the class code, make a short soundscape and hand it in.
 - [ ] **Presenting:** present on the digibord while the iPad hands in a second soundscape. It is added to the end of the list within about 20 seconds, without interrupting playback or showing a spinner.
@@ -91,15 +91,20 @@ On the laptop as teacher, with the iPad as the pupil and the digibord for presen
 - [ ] **Share link and QR:** open the class album share link and the QR code in a private window on another device. They open and play.
 - [ ] **Password reset:** request a reset e-mail for teacher B, click the link and set a new password. You can log in with it.
 - [ ] **Shared computer:** log in as A, log out, log in as B. Nothing of A is visible at any moment.
-- [ ] **/beheer as B (not an admin):** shows "Geen toegang".
-- [ ] **/beheer as A (admin):**
-  - [ ] the theme list shows the three themes with their rule warnings;
-  - [ ] in the editor, drag a hotspot into the red edge: an error appears and Publiceren is blocked;
-  - [ ] drag it back and save the draft;
-  - [ ] publish, then open `/?theme=<that theme>` in a private window: no CSP errors in the console, and the sounds play;
-  - [ ] Vorige versie: the earlier version is live again.
+## G. Theme platform `/beheer` — 1:40–1:55
 
-## G. Wrap-up — 1:55–2:00
+The three real themes still break the new hotspot rules, so publishing them is blocked by design. Use the prepared test pack instead: `docs/v2/staging/staging-testthema.sspack` (a small fake theme with two locations and seven generated tones, one of them an 8-second loop; it passes every dashboard check and is never shown in a picker).
+
+- [ ] **As B (not an admin):** `/beheer` shows "Geen toegang".
+- [ ] **As A (admin):** the theme list shows the three real themes with their rule warnings (expected).
+- [ ] **Import:** Importeren → choose `staging-testthema.sspack` → the report shows no errors → a draft "Staging-testthema" appears.
+- [ ] **Editor check:** open the draft, drag a hotspot into the red edge → an error appears and Publiceren is blocked → drag it back → Concept bewaren.
+- [ ] **Publish** → open `https://staging.soundscout.nl/?theme=staging-testthema` in a private window: the test map opens, the tones play, and the console shows no CSP errors.
+- [ ] **New version + rollback:** change one text, save and publish as version 2, then Vorige versie → version 1 is live again.
+- [ ] **Clean-up:** set the test theme to hidden.
+
+## H. Wrap-up — 1:55–2:00
+
 
 - [ ] Fill in the results table below.
 - [ ] Optional, only if time is left: rehearse the emergency stop on staging. Upload `docs/v2/sw-kill-switch.js` as `sw.js`, reload the iPad (it reloads once and is clean), then upload the real `sw.js` again.
@@ -115,7 +120,8 @@ On the laptop as teacher, with the iPad as the pupil and the digibord for presen
 | C. Audio and sync | | | |
 | D. Sound Lab and tempo | | | |
 | E. Offline | | | |
-| F. Teacher flows and Supabase | | | |
+| F. Teacher flows | | | |
+| G. Theme platform | | | |
 
 ## Go / no-go for a December release
 
@@ -125,8 +131,8 @@ On the laptop as teacher, with the iPad as the pupil and the digibord for presen
 - the MP3 export sounding different from playback (D);
 - offline reload not opening the app (E);
 - a hand-in, presentation, share link or password reset failing (F);
-- a non-admin able to reach `/beheer` data (F).
+- a non-admin able to reach `/beheer` data, or the test theme failing to publish or play (G).
 
 **Does not block** (note it and fix after release): small layout details, a stretched loop that sounds slightly "processed" at 90, a slow first load, Luisterspiegel details (it is behind a flag anyway).
 
-When everything in "blocks" is OK, the remaining step before a production release is running migration 043 on production and fixing the hotspots that break the new rules (see `docs/v2/PHASE-3-REPORT.md`).
+When everything in "blocks" is OK, the remaining steps before a production release are: fixing the hotspots that break the new rules in the three real themes (see `docs/v2/PHASE-3-REPORT.md`), and cleaning up the test accounts (`docs/v2/STAGING.md` §2, step 5).

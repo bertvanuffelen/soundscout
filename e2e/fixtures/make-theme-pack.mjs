@@ -49,7 +49,7 @@ export function makeCredits() {
 }
 
 // --- zip (stored) ---
-function zip(entries) {
+export function zip(entries) {
   const locals = []; const centrals = []; let offset = 0;
   for (const [name, data] of entries) {
     const nb = Buffer.from(name); const crc = crc32(data) >>> 0;
