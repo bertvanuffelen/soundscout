@@ -5,7 +5,10 @@
  * optimistische updates). Spiegelt useTemplates.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../query/queryKeys';
+import { NO_USER, errorMessage, updateCached, useManualRefetch, useTeacherId } from '../query/cache';
 import {
   fetchTeacherCards,
   createCard,
@@ -28,80 +31,82 @@ interface UseAssignmentCardsReturn {
   refetch: () => Promise<void>;
 }
 
+const NO_CARDS: Opdrachtkaart[] = [];
+
 export function useAssignmentCards(): UseAssignmentCardsReturn {
-  const [cards, setCards] = useState<Opdrachtkaart[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const client = useQueryClient();
+  const userId = useTeacherId();
+  const key = queryKeys.teacher.assignmentCards(userId ?? NO_USER);
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchTeacherCards();
-      setCards(data);
-    } catch (err) {
-      logger.error('Fout bij ophalen opdrachtkaarten:', err);
-      setError(err instanceof Error ? err.message : i18n.t('errors.assignmentCards.load'));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const query = useQuery({
+    queryKey: key,
+    enabled: userId !== null,
+    queryFn: async () => {
+      try {
+        return await fetchTeacherCards();
+      } catch (err) {
+        logger.error('Fout bij ophalen opdrachtkaarten:', err);
+        throw err;
+      }
+    },
+  });
+  const { refetching, refetch } = useManualRefetch(query.refetch);
 
-  const create = async (params: CreateCardParams): Promise<Opdrachtkaart> => {
-    try {
-      setOperationError(null);
-      const newCard = await createCard(params);
-      setCards((prev) => [newCard, ...prev]);
-      return newCard;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignmentCards.create');
-      setOperationError(msg);
+  // Alle drie: de lijst volgt ná een geslaagde schrijfactie (niet vooruitlopend)
+  const createMutation = useMutation({
+    mutationFn: (params: CreateCardParams) => createCard(params),
+    onMutate: () => setOperationError(null),
+    onSuccess: (created) =>
+      updateCached<Opdrachtkaart[]>(client, key, (prev) => [created, ...(prev ?? [])]),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.assignmentCards.create')));
       logger.error('createCard failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  const update = async (id: string, params: CreateCardParams): Promise<Opdrachtkaart> => {
-    try {
-      setOperationError(null);
-      const updated = await updateCard(id, params);
-      setCards((prev) => prev.map((c) => (c.id === id ? updated : c)));
-      return updated;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignmentCards.update');
-      setOperationError(msg);
+  const updateMutation = useMutation({
+    mutationFn: ({ id, params }: { id: string; params: CreateCardParams }) => updateCard(id, params),
+    onMutate: () => setOperationError(null),
+    onSuccess: (updated, { id }) =>
+      updateCached<Opdrachtkaart[]>(client, key, (prev) =>
+        prev?.map((c) => (c.id === id ? updated : c))),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.assignmentCards.update')));
       logger.error('updateCard failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  const remove = async (id: string): Promise<void> => {
-    try {
-      setOperationError(null);
-      await deleteCard(id);
-      setCards((prev) => prev.filter((c) => c.id !== id));
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignmentCards.delete');
-      setOperationError(msg);
+  const removeMutation = useMutation({
+    mutationFn: (id: string) => deleteCard(id),
+    onMutate: () => setOperationError(null),
+    onSuccess: (_void, id) =>
+      updateCached<Opdrachtkaart[]>(client, key, (prev) => prev?.filter((c) => c.id !== id)),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.assignmentCards.delete')));
       logger.error('deleteCard failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const { mutateAsync: createAsync } = createMutation;
+  const { mutateAsync: updateAsync } = updateMutation;
+  const { mutateAsync: removeAsync } = removeMutation;
+  const create = useCallback((params: CreateCardParams) => createAsync(params), [createAsync]);
+  const update = useCallback(
+    (id: string, params: CreateCardParams) => updateAsync({ id, params }),
+    [updateAsync],
+  );
+  const remove = useCallback((id: string) => removeAsync(id), [removeAsync]);
 
   return {
-    cards,
-    loading,
-    error,
+    cards: query.data ?? NO_CARDS,
+    loading: userId !== null && (query.isPending || refetching),
+    error: query.error && !refetching ? errorMessage(query.error, i18n.t('errors.assignmentCards.load')) : null,
     operationError,
     create,
     update,
     remove,
-    refetch: fetch,
+    refetch,
   };
 }
 

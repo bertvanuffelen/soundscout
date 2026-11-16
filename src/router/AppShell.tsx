@@ -2,7 +2,8 @@
  * AppShell — de layout rond alle schermen van de eigenlijke app.
  *
  * Alles wat vroeger in `AppContent` (App.tsx) stond behalve de schermkeuze:
- * thema laden, werk-in-uitvoering terugzetten, paginatitel, tellers. Welk
+ * thema laden, werk-in-uitvoering terugzetten, paginatitel, tellers, en de
+ * providers voor inloggen en server-state (TanStack Query). Welk
  * scherm er staat bepaalt de router (`<Outlet />`); links met oude parameters
  * handelt `beforeLoad` in routes.tsx af.
  */
@@ -15,7 +16,10 @@ import { useDevFlagsStore } from '../stores/devFlagsStore';
 import { logUsageEvent } from '../utils/usageStats';
 import { useLeaveGuard } from '../hooks/useLeaveGuard';
 import { startWorkInProgressPersistence } from '../services/workInProgress';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { AuthProvider } from '../contexts/AuthContext';
+import { queryClient } from '../query/queryClient';
+import { QueryAuthSync } from '../query/QueryAuthSync';
 import LandscapeHint from '../components/ui/LandscapeHint';
 
 function AppContent() {
@@ -85,9 +89,14 @@ function AppContent() {
 
 export default function AppShell() {
   return (
-    <AuthProvider>
-      <AppContent />
-      <LandscapeHint />
-    </AuthProvider>
+    // Server-state (TanStack Query, V2 Fase 2): één cache voor de hele app;
+    // QueryAuthSync ruimt hem op zodra er een andere docent inlogt.
+    <QueryClientProvider client={queryClient}>
+      <AuthProvider>
+        <QueryAuthSync />
+        <AppContent />
+        <LandscapeHint />
+      </AuthProvider>
+    </QueryClientProvider>
   );
 }

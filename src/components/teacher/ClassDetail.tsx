@@ -84,21 +84,31 @@ const ASSIGNMENT_ICON_WRAP_SM = {
   free: 'bg-rose-100 text-rose-600',
 } as const;
 
+/** Verversinterval van de inzendingen tijdens een lopende presentatie (I7) */
+const PRESENT_POLL_MS = 20_000;
+
 export function ClassDetail({ classData, onBack }: ClassDetailProps) {
   const { t } = useTranslation();
-  const { submissions, loading, error, deleteSubmission, setFeedback, markSeen, refetch } = useSubmissions(classData.id);
+  // Presentatiemodus: ids in presentatievolgorde (null = gesloten)
+  const [presentIds, setPresentIds] = useState<string[] | null>(null);
+  // Welke lijst er draait (I7): bij 'active'/'all' komen nieuwe inzendingen
+  // via polling achteraan de playlist; 'custom' (top 3, historie) blijft vast.
+  const [presentMode, setPresentMode] = useState<'active' | 'all' | 'custom'>('custom');
+  // I7: tijdens een lopende presentatie elke 20s de inzendingen verversen
+  // (op de achtergrond; de lijst blijft staan). Nieuwe items komen achteraan
+  // de playlist via het append-effect verderop; de playback blijft onverstoord
+  // (dataKey in useCompositionPlayback is inhouds-gebaseerd).
+  const { submissions, loading, error, deleteSubmission, setFeedback, markSeen, refetch } = useSubmissions(
+    classData.id,
+    { pollIntervalMs: presentIds && presentMode !== 'custom' ? PRESENT_POLL_MS : false },
+  );
   const [selectedSubmission, setSelectedSubmission] = useState<Submission | null>(null);
   const [actionError, setActionError] = useState<string | null>(null);
   const [refreshing, setRefreshing] = useState(false);
   // Peer-feedback-overzicht + top 3 (migratie 028)
   const [showPeerOverview, setShowPeerOverview] = useState(false);
-  // Presentatiemodus: ids in presentatievolgorde (null = gesloten)
-  const [presentIds, setPresentIds] = useState<string[] | null>(null);
   // Keuzemodaal Presenteren: actieve opdracht of alles (I8, testronde 4)
   const [showPresentChoice, setShowPresentChoice] = useState(false);
-  // Welke lijst er draait (I7): bij 'active'/'all' komen nieuwe inzendingen
-  // via polling achteraan de playlist; 'custom' (top 3, historie) blijft vast.
-  const [presentMode, setPresentMode] = useState<'active' | 'all' | 'custom'>('custom');
   const [activeTab, setActiveTab] = useState<'submitted' | 'wip'>('submitted');
   const [showDeactivateModal, setShowDeactivateModal] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
@@ -397,16 +407,7 @@ export function ClassDetail({ classData, onBack }: ClassDetailProps) {
     }
   }, [activeAssignment, submitted]);
 
-  // I7: tijdens een lopende presentatie elke 20s de inzendingen verversen;
-  // nieuwe items komen achteraan de playlist (append-effect hieronder), de
-  // playback blijft onverstoord (dataKey in useCompositionPlayback is
-  // inhouds-gebaseerd, geen referentie-churn).
-  useEffect(() => {
-    if (!presentIds || presentMode === 'custom') return;
-    const interval = setInterval(() => { void refetch(); }, 20_000);
-    return () => clearInterval(interval);
-  }, [presentIds, presentMode, refetch]);
-
+  // I7: nieuwe inzendingen (uit de polling van useSubmissions) achteraan de playlist
   useEffect(() => {
     if (!presentIds || presentMode === 'custom') return;
     const target = presentMode === 'active' ? activeMatching : submitted;

@@ -5,7 +5,10 @@
  * Alleen voor ingelogde docenten — volgt useClasses patroon
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../query/queryKeys';
+import { NO_USER, errorMessage, updateCached, useManualRefetch, useTeacherId } from '../query/cache';
 import {
   fetchTeacherTemplates,
   createTemplate,
@@ -27,81 +30,82 @@ interface UseTemplatesReturn {
   refetch: () => Promise<void>;
 }
 
+const NO_TEMPLATES: TeacherTemplate[] = [];
+
 export function useTemplates(): UseTemplatesReturn {
-  const [templates, setTemplates] = useState<TeacherTemplate[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const client = useQueryClient();
+  const userId = useTeacherId();
+  const key = queryKeys.teacher.templates(userId ?? NO_USER);
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchTeacherTemplates();
-      setTemplates(data);
-    } catch (err) {
-      logger.error('Fout bij ophalen templates:', err);
-      setError(err instanceof Error ? err.message : i18n.t('errors.templates.load'));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const query = useQuery({
+    queryKey: key,
+    enabled: userId !== null,
+    queryFn: async () => {
+      try {
+        return await fetchTeacherTemplates();
+      } catch (err) {
+        logger.error('Fout bij ophalen templates:', err);
+        throw err;
+      }
+    },
+  });
+  const { refetching, refetch } = useManualRefetch(query.refetch);
 
-  const create = async (params: CreateTemplateParams): Promise<TeacherTemplate> => {
-    try {
-      setOperationError(null);
-      const newTemplate = await createTemplate(params);
-      setTemplates((prev) => [newTemplate, ...prev]);
-      return newTemplate;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.templates.create');
-      setOperationError(msg);
+  // Alle drie: de lijst volgt ná een geslaagde schrijfactie (niet vooruitlopend)
+  const createMutation = useMutation({
+    mutationFn: (params: CreateTemplateParams) => createTemplate(params),
+    onMutate: () => setOperationError(null),
+    onSuccess: (created) =>
+      updateCached<TeacherTemplate[]>(client, key, (prev) => [created, ...(prev ?? [])]),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.templates.create')));
       logger.error('createTemplate failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  const remove = async (id: string): Promise<void> => {
-    try {
-      setOperationError(null);
-      await deleteTemplate(id);
-      setTemplates((prev) => prev.filter((t) => t.id !== id));
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.templates.delete');
-      setOperationError(msg);
+  const removeMutation = useMutation({
+    mutationFn: (id: string) => deleteTemplate(id),
+    onMutate: () => setOperationError(null),
+    onSuccess: (_void, id) =>
+      updateCached<TeacherTemplate[]>(client, key, (prev) => prev?.filter((t) => t.id !== id)),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.templates.delete')));
       logger.error('deleteTemplate failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  const toggle = async (id: string, isActive: boolean): Promise<void> => {
-    try {
-      setOperationError(null);
-      await toggleTemplate(id, isActive);
-      setTemplates((prev) =>
-        prev.map((t) => (t.id === id ? { ...t, isActive } : t))
-      );
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.templates.status');
-      setOperationError(msg);
+  const toggleMutation = useMutation({
+    mutationFn: ({ id, isActive }: { id: string; isActive: boolean }) => toggleTemplate(id, isActive),
+    onMutate: () => setOperationError(null),
+    onSuccess: (_void, { id, isActive }) =>
+      updateCached<TeacherTemplate[]>(client, key, (prev) =>
+        prev?.map((t) => (t.id === id ? { ...t, isActive } : t))),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.templates.status')));
       logger.error('toggleTemplate failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const { mutateAsync: createAsync } = createMutation;
+  const { mutateAsync: removeAsync } = removeMutation;
+  const { mutateAsync: toggleAsync } = toggleMutation;
+  const create = useCallback((params: CreateTemplateParams) => createAsync(params), [createAsync]);
+  const remove = useCallback((id: string) => removeAsync(id), [removeAsync]);
+  const toggle = useCallback(
+    (id: string, isActive: boolean) => toggleAsync({ id, isActive }),
+    [toggleAsync],
+  );
 
   return {
-    templates,
-    loading,
-    error,
+    templates: query.data ?? NO_TEMPLATES,
+    loading: userId !== null && (query.isPending || refetching),
+    error: query.error && !refetching ? errorMessage(query.error, i18n.t('errors.templates.load')) : null,
     operationError,
     create,
     remove,
     toggle,
-    refetch: fetch,
+    refetch,
   };
 }
 

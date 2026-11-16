@@ -6,7 +6,10 @@
  * useAssignmentCards / useTemplates.
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../query/queryKeys';
+import { NO_USER, errorMessage, updateCached, useManualRefetch, useTeacherId } from '../query/cache';
 import {
   fetchLessonCards,
   createLessonCard,
@@ -28,85 +31,87 @@ interface UseLessonCardsReturn {
   refetch: () => Promise<void>;
 }
 
+const NO_CARDS: LessonCard[] = [];
+
 export function useLessonCards(): UseLessonCardsReturn {
-  const [cards, setCards] = useState<LessonCard[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const client = useQueryClient();
+  const userId = useTeacherId();
+  const key = queryKeys.teacher.lessonCards(userId ?? NO_USER);
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
-    try {
-      setLoading(true);
-      setError(null);
-      const data = await fetchLessonCards();
-      setCards(data);
-    } catch (err) {
-      logger.error('Fout bij ophalen leskaarten:', err);
-      setError(err instanceof Error ? err.message : i18n.t('errors.lessonCards.load'));
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const query = useQuery({
+    queryKey: key,
+    enabled: userId !== null,
+    queryFn: async () => {
+      try {
+        return await fetchLessonCards();
+      } catch (err) {
+        logger.error('Fout bij ophalen leskaarten:', err);
+        throw err;
+      }
+    },
+  });
+  const { refetching, refetch } = useManualRefetch(query.refetch);
 
-  const create = async (input: LessonCardInput): Promise<LessonCard> => {
-    try {
-      setOperationError(null);
-      const created = await createLessonCard(input);
-      // Eigen kaart onder de ingebouwde plaatsen (die staan vooraan)
-      setCards((prev) => {
+  // Alle drie: de lijst volgt ná een geslaagde schrijfactie (niet vooruitlopend)
+  const createMutation = useMutation({
+    mutationFn: (input: LessonCardInput) => createLessonCard(input),
+    onMutate: () => setOperationError(null),
+    // Eigen kaart onder de ingebouwde plaatsen (die staan vooraan)
+    onSuccess: (created) =>
+      updateCached<LessonCard[]>(client, key, (prev = []) => {
         const builtins = prev.filter((c) => c.isBuiltin);
         const own = prev.filter((c) => !c.isBuiltin);
         return [...builtins, created, ...own];
-      });
-      return created;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.lessonCards.create');
-      setOperationError(msg);
+      }),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.lessonCards.create')));
       logger.error('createLessonCard failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  const update = async (id: string, input: LessonCardInput): Promise<LessonCard> => {
-    try {
-      setOperationError(null);
-      const updated = await updateLessonCard(id, input);
-      setCards((prev) => prev.map((c) => (c.id === id ? updated : c)));
-      return updated;
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.lessonCards.update');
-      setOperationError(msg);
+  const updateMutation = useMutation({
+    mutationFn: ({ id, input }: { id: string; input: LessonCardInput }) => updateLessonCard(id, input),
+    onMutate: () => setOperationError(null),
+    onSuccess: (updated, { id }) =>
+      updateCached<LessonCard[]>(client, key, (prev) =>
+        prev?.map((c) => (c.id === id ? updated : c))),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.lessonCards.update')));
       logger.error('updateLessonCard failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  const remove = async (id: string): Promise<void> => {
-    try {
-      setOperationError(null);
-      await deleteLessonCard(id);
-      setCards((prev) => prev.filter((c) => c.id !== id));
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.lessonCards.delete');
-      setOperationError(msg);
+  const removeMutation = useMutation({
+    mutationFn: (id: string) => deleteLessonCard(id),
+    onMutate: () => setOperationError(null),
+    onSuccess: (_void, id) =>
+      updateCached<LessonCard[]>(client, key, (prev) => prev?.filter((c) => c.id !== id)),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.lessonCards.delete')));
       logger.error('deleteLessonCard failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  const { mutateAsync: createAsync } = createMutation;
+  const { mutateAsync: updateAsync } = updateMutation;
+  const { mutateAsync: removeAsync } = removeMutation;
+  const create = useCallback((input: LessonCardInput) => createAsync(input), [createAsync]);
+  const update = useCallback(
+    (id: string, input: LessonCardInput) => updateAsync({ id, input }),
+    [updateAsync],
+  );
+  const remove = useCallback((id: string) => removeAsync(id), [removeAsync]);
 
   return {
-    cards,
-    loading,
-    error,
+    cards: query.data ?? NO_CARDS,
+    loading: userId !== null && (query.isPending || refetching),
+    error: query.error && !refetching ? errorMessage(query.error, i18n.t('errors.lessonCards.load')) : null,
     operationError,
     create,
     update,
     remove,
-    refetch: fetch,
+    refetch,
   };
 }
 

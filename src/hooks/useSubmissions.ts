@@ -4,8 +4,11 @@
  * Hook voor het ophalen en beheren van inzendingen (submissions) per klas
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useCallback, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { getSupabase } from '../lib/supabase';
+import { queryKeys } from '../query/queryKeys';
+import { NO_USER, errorMessage, updateCached, useManualRefetch, useTeacherId } from '../query/cache';
 import {
   setSubmissionFeedback as setSubmissionFeedbackRpc,
   markSubmissionSeen as markSubmissionSeenRpc,
@@ -64,51 +67,60 @@ interface UseSubmissionsReturn {
   refetch: () => Promise<void>;
 }
 
+export interface UseSubmissionsOptions {
+  /**
+   * Ververs de inzendingen elke zoveel ms op de achtergrond (I7: 20 s tijdens
+   * presenteren). Zonder waarde of `false`: geen polling. Loopt door als het
+   * tabblad niet zichtbaar is, net als de oude setInterval, en zet `loading`
+   * niet aan — de lijst blijft staan terwijl er ververst wordt.
+   */
+  pollIntervalMs?: number | false;
+}
+
+type FeedbackInput = { sticker: FeedbackSticker | null; level: number | null; text: string | null };
+
+const NO_SUBMISSIONS: Submission[] = [];
+
 /**
  * Hook voor het ophalen van submissions van een specifieke klas
  *
  * @param classId - ID van de klas
  */
-export function useSubmissions(classId: string): UseSubmissionsReturn {
-  const [submissions, setSubmissions] = useState<Submission[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+export function useSubmissions(classId: string, options: UseSubmissionsOptions = {}): UseSubmissionsReturn {
+  const client = useQueryClient();
+  const userId = useTeacherId();
+  const key = queryKeys.teacher.submissions(userId ?? NO_USER, classId);
+  const enabled = userId !== null && !!classId;
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  // Fetch submissions
-  const fetchSubmissions = useCallback(async () => {
-    if (!classId) {
-      setLoading(false);
-      return;
-    }
+  const query = useQuery({
+    queryKey: key,
+    enabled,
+    refetchInterval: options.pollIntervalMs || false,
+    refetchIntervalInBackground: true,
+    queryFn: async (): Promise<Submission[]> => {
+      try {
+        const supabase = await getSupabase();
+        const { data, error: fetchError } = await supabase
+          .from('submissions')
+          .select('*')
+          .eq('class_id', classId)
+          .order('created_at', { ascending: false });
 
-    try {
-      setLoading(true);
-      setError(null);
+        if (fetchError) throw fetchError;
 
-      const supabase = await getSupabase();
-      const { data, error: fetchError } = await supabase
-        .from('submissions')
-        .select('*')
-        .eq('class_id', classId)
-        .order('created_at', { ascending: false });
+        return data || [];
+      } catch (err) {
+        logger.error('Fout bij ophalen composities:', err);
+        throw err;
+      }
+    },
+  });
+  const { refetching, refetch } = useManualRefetch(query.refetch);
 
-      if (fetchError) throw fetchError;
-
-      setSubmissions(data || []);
-    } catch (err) {
-      logger.error('Fout bij ophalen composities:', err);
-      setError(err instanceof Error ? err.message : i18n.t('errors.submissions.load'));
-    } finally {
-      setLoading(false);
-    }
-  }, [classId]);
-
-  // Verwijder submission
-  const deleteSubmission = async (id: string): Promise<void> => {
-    try {
-      setOperationError(null);
-
+  // Verwijder submission — uit de lijst ná een geslaagde verwijdering
+  const deleteMutation = useMutation({
+    mutationFn: async (id: string): Promise<void> => {
       const supabase = await getSupabase();
       const { error: deleteErr } = await supabase
         .from('submissions')
@@ -118,58 +130,78 @@ export function useSubmissions(classId: string): UseSubmissionsReturn {
       if (deleteErr) {
         throw new Error(i18n.t('errors.submissions.delete') + ': ' + deleteErr.message);
       }
-
-      // Verwijder uit lokale state
-      setSubmissions(prev => prev.filter(s => s.id !== id));
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.submissions.delete');
-      setOperationError(msg);
+    },
+    onMutate: () => setOperationError(null),
+    onSuccess: (_void, id) =>
+      updateCached<Submission[]>(client, key, (prev) => prev?.filter((s) => s.id !== id)),
+    onError: (err) => {
+      setOperationError(errorMessage(err, i18n.t('errors.submissions.delete')));
       logger.error('deleteSubmission failed:', err);
-      throw err;
-    }
-  };
+    },
+  });
 
-  // Feedback zetten (migratie 026) — optimistic update van de lijst
-  const setFeedback = async (
-    id: string,
-    feedback: { sticker: FeedbackSticker | null; level: number | null; text: string | null }
-  ): Promise<void> => {
-    setOperationError(null);
-    await setSubmissionFeedbackRpc(id, feedback);
-    const isCleared = !feedback.sticker && !feedback.level && !feedback.text?.trim();
-    setSubmissions(prev => prev.map(s => s.id === id
-      ? {
-          ...s,
-          feedback_sticker: feedback.sticker,
-          feedback_level: feedback.level,
-          feedback_text: feedback.text?.trim() || null,
-          feedback_at: isCleared ? null : new Date().toISOString(),
-        }
-      : s));
-  };
+  // Feedback zetten (migratie 026) — de lijst volgt ná een geslaagde opslag;
+  // een fout gaat ongewijzigd naar de aanroeper (FeedbackPanel toont hem).
+  const feedbackMutation = useMutation({
+    mutationFn: ({ id, feedback }: { id: string; feedback: FeedbackInput }) =>
+      setSubmissionFeedbackRpc(id, feedback),
+    onMutate: () => setOperationError(null),
+    onSuccess: (_void, { id, feedback }) => {
+      const isCleared = !feedback.sticker && !feedback.level && !feedback.text?.trim();
+      return updateCached<Submission[]>(client, key, (prev) => prev?.map((s) => s.id === id
+        ? {
+            ...s,
+            feedback_sticker: feedback.sticker,
+            feedback_level: feedback.level,
+            feedback_text: feedback.text?.trim() || null,
+            feedback_at: isCleared ? null : new Date().toISOString(),
+          }
+        : s));
+    },
+  });
 
-  // "Gezien"-stempel bij openen (fire-and-forget + optimistic)
-  const markSeen = (id: string): void => {
-    setSubmissions(prev => prev.map(s => s.id === id && !s.teacher_seen_at
-      ? { ...s, teacher_seen_at: new Date().toISOString() }
-      : s));
-    void markSubmissionSeenRpc(id);
-  };
+  // "Gezien"-stempel bij openen: meteen in de lijst (optimistisch), de server
+  // volgt. markSubmissionSeen slikt zijn eigen fouten, dus terugdraaien komt
+  // in de praktijk niet voor; gebeurt het toch, dan verdwijnt alleen ónze
+  // stempel weer.
+  const seenMutation = useMutation({
+    mutationFn: (id: string) => markSubmissionSeenRpc(id),
+    onMutate: async (id: string) => {
+      const stamp = new Date().toISOString();
+      let stamped = false;
+      await updateCached<Submission[]>(client, key, (prev) => prev?.map((s) => {
+        if (s.id !== id || s.teacher_seen_at) return s;
+        stamped = true;
+        return { ...s, teacher_seen_at: stamp };
+      }));
+      return { stamp: stamped ? stamp : null };
+    },
+    onError: (_err, id, context) => {
+      if (!context?.stamp) return;
+      client.setQueryData<Submission[]>(key, (prev) => prev?.map((s) =>
+        s.id === id && s.teacher_seen_at === context.stamp ? { ...s, teacher_seen_at: null } : s));
+    },
+  });
 
-  // Initial fetch
-  useEffect(() => {
-    fetchSubmissions();
-  }, [fetchSubmissions]);
+  const { mutateAsync: deleteAsync } = deleteMutation;
+  const { mutateAsync: feedbackAsync } = feedbackMutation;
+  const { mutate: seenMutate } = seenMutation;
+  const deleteSubmission = useCallback((id: string) => deleteAsync(id), [deleteAsync]);
+  const setFeedback = useCallback(
+    (id: string, feedback: FeedbackInput) => feedbackAsync({ id, feedback }),
+    [feedbackAsync],
+  );
+  const markSeen = useCallback((id: string) => seenMutate(id), [seenMutate]);
 
   return {
-    submissions,
-    loading,
-    error,
+    submissions: query.data ?? NO_SUBMISSIONS,
+    loading: enabled && (query.isPending || refetching),
+    error: query.error && !refetching ? errorMessage(query.error, i18n.t('errors.submissions.load')) : null,
     operationError,
     deleteSubmission,
     setFeedback,
     markSeen,
-    refetch: fetchSubmissions,
+    refetch,
   };
 }
 

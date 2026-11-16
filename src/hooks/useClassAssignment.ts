@@ -5,7 +5,10 @@
  * Volgt het patroon van usePraatplaten/useTemplates.
  */
 
-import { useState, useCallback, useEffect } from 'react';
+import { useCallback, useState } from 'react';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { queryKeys } from '../query/queryKeys';
+import { NO_USER, errorMessage, updateCached, useManualRefetch, useTeacherId } from '../query/cache';
 import {
   fetchClassAssignment,
   fetchPastAssignments,
@@ -50,144 +53,139 @@ interface UseClassAssignmentReturn {
   refetch: () => Promise<void>;
 }
 
+interface ClassAssignmentData {
+  active: ClassAssignmentRow | null;
+  past: ClassAssignmentRow[];
+}
+
+type ActivateAssignmentParams = Parameters<typeof activateAssignment>[1];
+type CatalogEntry = { name: string; themeId: string; locationId: string; imageUrl: string };
+
+const NO_PAST: ClassAssignmentRow[] = [];
+
 export function useClassAssignment(classId: string): UseClassAssignmentReturn {
-  const [activeAssignment, setActiveAssignment] = useState<ClassAssignmentRow | null>(null);
-  const [pastAssignments, setPastAssignments] = useState<ClassAssignmentRow[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const client = useQueryClient();
+  const userId = useTeacherId();
+  const key = queryKeys.teacher.classAssignment(userId ?? NO_USER, classId);
+  const enabled = userId !== null;
   const [operationError, setOperationError] = useState<string | null>(null);
 
-  const fetch = useCallback(async () => {
-    setLoading(true);
-    setError(null);
-    try {
-      const [active, past] = await Promise.all([
-        fetchClassAssignment(classId),
-        fetchPastAssignments(classId),
-      ]);
-      setActiveAssignment(active);
-      setPastAssignments(past);
-    } catch (err) {
-      logger.error('useClassAssignment fetch error:', err);
-      setError(i18n.t('errors.assignments.load'));
-    } finally {
-      setLoading(false);
-    }
-  }, [classId]);
+  const query = useQuery({
+    queryKey: key,
+    enabled,
+    queryFn: async (): Promise<ClassAssignmentData> => {
+      try {
+        const [active, past] = await Promise.all([
+          fetchClassAssignment(classId),
+          fetchPastAssignments(classId),
+        ]);
+        return { active, past };
+      } catch (err) {
+        logger.error('useClassAssignment fetch error:', err);
+        throw err;
+      }
+    },
+  });
+  // Herladen na een activatie zet `loading` aan, net als voorheen
+  const { refetching, refetch } = useManualRefetch(query.refetch);
 
-  useEffect(() => {
-    fetch();
-  }, [fetch]);
+  // --- Activeren: eerst de server, dan herladen voor de volledige rij (met naam) ---
+
+  const activateMutation = useMutation({
+    mutationFn: ({ params }: { params: ActivateAssignmentParams; fallbackKey: string }) =>
+      activateAssignment(classId, params),
+    onMutate: () => setOperationError(null),
+    onError: (err, { fallbackKey }) => setOperationError(errorMessage(err, i18n.t(fallbackKey))),
+  });
+
+  const catalogMutation = useMutation({
+    mutationFn: ({ entry, cardId }: { entry: CatalogEntry; cardId?: string | null }) =>
+      activatePraatplaatFromCatalog(classId, entry, cardId),
+    onMutate: () => setOperationError(null),
+    onError: (err) => setOperationError(errorMessage(err, i18n.t('errors.praatplaten.activate'))),
+  });
+
+  const { mutateAsync: activateAsync } = activateMutation;
+  const { mutateAsync: catalogAsync } = catalogMutation;
 
   const activateTemplate = useCallback(async (templateId: string, cardId?: string | null) => {
-    setOperationError(null);
-    try {
-      await activateAssignment(classId, { templateId, cardId });
-      // Refetch to get the full assignment with joined name
-      await fetch();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.activateTemplate');
-      setOperationError(msg);
-      throw err;
-    }
-  }, [classId, fetch]);
+    await activateAsync({ params: { templateId, cardId }, fallbackKey: 'errors.assignments.activateTemplate' });
+    await refetch();
+  }, [activateAsync, refetch]);
 
   const activatePraatplaat = useCallback(async (praatplaatId: string, cardId?: string | null) => {
-    setOperationError(null);
-    try {
-      await activateAssignment(classId, { praatplaatId, cardId });
-      await fetch();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.activate');
-      setOperationError(msg);
-      throw err;
-    }
-  }, [classId, fetch]);
+    await activateAsync({ params: { praatplaatId, cardId }, fallbackKey: 'errors.praatplaten.activate' });
+    await refetch();
+  }, [activateAsync, refetch]);
 
-  const activatePraatplaatCatalog = useCallback(async (
-    entry: { name: string; themeId: string; locationId: string; imageUrl: string },
-    cardId?: string | null,
-  ) => {
-    setOperationError(null);
-    try {
-      await activatePraatplaatFromCatalog(classId, entry, cardId);
-      await fetch();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.praatplaten.activate');
-      setOperationError(msg);
-      throw err;
-    }
-  }, [classId, fetch]);
+  const activatePraatplaatCatalog = useCallback(async (entry: CatalogEntry, cardId?: string | null) => {
+    await catalogAsync({ entry, cardId });
+    await refetch();
+  }, [catalogAsync, refetch]);
 
   const activateStoryboard = useCallback(async (storyboardRef: string, cardId?: string | null) => {
-    setOperationError(null);
-    try {
-      await activateAssignment(classId, { storyboardRef, cardId });
-      await fetch();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.activateStoryboard');
-      setOperationError(msg);
-      throw err;
-    }
-  }, [classId, fetch]);
+    await activateAsync({ params: { storyboardRef, cardId }, fallbackKey: 'errors.assignments.activateStoryboard' });
+    await refetch();
+  }, [activateAsync, refetch]);
 
   const activateFree = useCallback(async (themeId: string, cardId?: string | null) => {
-    setOperationError(null);
-    try {
-      await activateAssignment(classId, { freeThemeId: themeId, cardId });
-      await fetch();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.activateFree');
-      setOperationError(msg);
-      throw err;
-    }
-  }, [classId, fetch]);
+    await activateAsync({ params: { freeThemeId: themeId, cardId }, fallbackKey: 'errors.assignments.activateFree' });
+    await refetch();
+  }, [activateAsync, refetch]);
 
-  const deactivate = useCallback(async () => {
-    setOperationError(null);
-    try {
-      await deactivateAssignment(classId);
-      setActiveAssignment(null);
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.deactivate');
-      setOperationError(msg);
-      throw err;
-    }
-  }, [classId]);
+  // --- Deactiveren: de actieve opdracht verdwijnt ná een geslaagde aanroep ---
+
+  const deactivateMutation = useMutation({
+    mutationFn: () => deactivateAssignment(classId),
+    onMutate: () => setOperationError(null),
+    onSuccess: () =>
+      updateCached<ClassAssignmentData>(client, key, (prev) => ({ past: prev?.past ?? [], active: null })),
+    onError: (err) => setOperationError(errorMessage(err, i18n.t('errors.assignments.deactivate'))),
+  });
 
   /** Haal een afgeronde opdracht uit de historie (leerlingwerk blijft staan). */
-  const removeFromHistory = useCallback(async (assignmentId: string) => {
-    setOperationError(null);
-    try {
-      await deleteAssignmentFromHistory(assignmentId);
-      setPastAssignments((prev) => prev.filter((row) => row.id !== assignmentId));
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.delete');
-      setOperationError(msg);
-      throw err;
-    }
-  }, []);
+  const removeMutation = useMutation({
+    mutationFn: (assignmentId: string) => deleteAssignmentFromHistory(assignmentId),
+    onMutate: () => setOperationError(null),
+    onSuccess: (_void, assignmentId) =>
+      updateCached<ClassAssignmentData>(client, key, (prev) =>
+        prev ? { ...prev, past: prev.past.filter((row) => row.id !== assignmentId) } : prev),
+    onError: (err) => setOperationError(errorMessage(err, i18n.t('errors.assignments.delete'))),
+  });
 
   /** Koppel of wis de opdrachtkaart op de actieve opdracht (TR5#2). */
+  const cardMutation = useMutation({
+    mutationFn: ({ assignmentId, cardId }: { assignmentId: string; cardId: string | null }) =>
+      updateAssignmentCard(assignmentId, cardId),
+    onMutate: () => setOperationError(null),
+    onError: (err) => setOperationError(errorMessage(err, i18n.t('errors.assignments.card'))),
+  });
+
+  const { mutateAsync: deactivateAsync } = deactivateMutation;
+  const { mutateAsync: removeAsync } = removeMutation;
+  const { mutateAsync: cardAsync } = cardMutation;
+
+  const deactivate = useCallback(async () => {
+    await deactivateAsync();
+  }, [deactivateAsync]);
+
+  const removeFromHistory = useCallback(async (assignmentId: string) => {
+    await removeAsync(assignmentId);
+  }, [removeAsync]);
+
   const updateCard = useCallback(async (assignmentId: string, cardId: string | null) => {
-    setOperationError(null);
-    try {
-      await updateAssignmentCard(assignmentId, cardId);
-      await fetch();
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : i18n.t('errors.assignments.card');
-      setOperationError(msg);
-      throw err;
-    }
-  }, [fetch]);
+    await cardAsync({ assignmentId, cardId });
+    await refetch();
+  }, [cardAsync, refetch]);
 
   return {
-    activeAssignment,
-    pastAssignments,
+    activeAssignment: query.data?.active ?? null,
+    pastAssignments: query.data?.past ?? NO_PAST,
     removeFromHistory,
     updateCard,
-    loading,
-    error,
+    loading: enabled && (query.isPending || refetching),
+    // Altijd de vaste melding, ongeacht de onderliggende fout (zoals voorheen)
+    error: query.error && !refetching ? i18n.t('errors.assignments.load') : null,
     operationError,
     activateTemplate,
     activatePraatplaat,
@@ -195,6 +193,6 @@ export function useClassAssignment(classId: string): UseClassAssignmentReturn {
     activateStoryboard,
     activateFree,
     deactivate,
-    refetch: fetch,
+    refetch,
   };
 }
