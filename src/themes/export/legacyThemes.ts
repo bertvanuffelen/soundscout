@@ -37,6 +37,12 @@ export const LEGACY_SAMPLE_KINDS: Record<string, Record<string, 'loop' | 'sfx'>>
     'muziekwinkel-strings': 'loop',
     'muziekwinkel-piano': 'loop',
   },
+  // Bevestigd door Bert (16-11-2026): deze drie zijn muziek en rekken mee met het tempo.
+  piraten: {
+    'grogkroeg-accordeon': 'loop',
+    'schip-zeemanslied': 'loop',
+    'jungle-trommels': 'loop',
+  },
 };
 
 /** Fixture + LEGACY_SAMPLE_KINDS (zonder de fixture zelf te muteren). */

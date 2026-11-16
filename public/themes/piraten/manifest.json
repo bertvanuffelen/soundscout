@@ -331,6 +331,7 @@
       "file": "audio/themes/piraten/grogkroeg/grogkroeg-accordeon.mp3",
       "icon": "Music",
       "id": "grogkroeg-accordeon",
+      "kind": "loop",
       "locationId": "grogkroeg"
     },
     {
@@ -475,6 +476,7 @@
       "file": "audio/themes/piraten/schip/schip-zeemanslied.mp3",
       "icon": "Volume2",
       "id": "schip-zeemanslied",
+      "kind": "loop",
       "locationId": "schip"
     },
     {
@@ -531,6 +533,7 @@
       "file": "audio/themes/piraten/jungle/jungle-trommels.mp3",
       "icon": "Disc3",
       "id": "jungle-trommels",
+      "kind": "loop",
       "locationId": "jungle"
     },
     {

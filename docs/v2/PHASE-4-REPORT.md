@@ -26,7 +26,7 @@ All transformations are stored as parameters on the clip or sequence and rendere
 
 ## Decisions made along the way (check these)
 
-- **Which sounds are loops.** Only the six music-shop sounds in `basis` are marked as loops (drums, brass, bass, guitar, strings, piano). Three pirate sounds look like music but are not marked: `grogkroeg-accordeon`, `schip-zeemanslied`, `jungle-trommels`. **Bert: should these stretch with the tempo?** Marking a loop is one field in the theme manifest.
+- **Which sounds are loops.** The six music-shop sounds in `basis` (drums, brass, bass, guitar, strings, piano) and, confirmed by Bert on 16-11-2026, three pirate sounds: `grogkroeg-accordeon`, `schip-zeemanslied`, `jungle-trommels`. Marking a loop is one field in the theme manifest (`kind: "loop"`).
 - **Overlap after a tempo change.** Clips are never moved. A faster tempo makes sound effects longer in beats, so they can overlap; overlapping clips get a dashed red outline. Switching back restores the original arrangement exactly, and one undo restores tempo and positions together.
 - **Templates lock the tempo** when the template has locked clips.
 - **Changing a filled sequence between Ritme and Melodie** creates a new sequence instead of converting it; nothing is lost.
