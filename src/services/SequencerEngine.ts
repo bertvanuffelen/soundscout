@@ -22,6 +22,7 @@ import type { Sample } from '../types';
 import {
   SEQ_CHOKE_FADE_SECONDS,
   SEQ_DEFAULT_BPM,
+  type MelodyVoice,
   type SequencerSequence,
 } from '../types/sequencer';
 import { useSequencerStore } from '../stores/sequencerStore';
@@ -344,6 +345,48 @@ export class SequencerEngine {
       player.start('+0.05');
     }
     this.previewPlayer = player;
+  }
+
+  /**
+   * Melodie-editor (V2 Fase 4): laat één noot direct horen — dezelfde
+   * eventresolutie als het afspelen (synth-noot of getransponeerd
+   * bibliotheekgeluid), dus wat je hoort bij het aantikken is wat de
+   * sequence straks speelt. Swing speelt hier geen rol.
+   */
+  async previewNote(sequence: SequencerSequence, row: number, velocity = 1): Promise<void> {
+    const melody = sequence.melody;
+    if (sequence.kind !== 'melody' || !melody) return;
+    if (melody.voice.type === 'sample') {
+      const voiceId = melody.voice.sampleId;
+      const sample = this.samples.find((s) => s.id === voiceId);
+      if (!sample) return;
+      await this.ensureBuffer(sample);
+    }
+    const single: SequencerSequence = {
+      ...sequence,
+      swing: 0,
+      melody: { ...melody, mute: false, notes: [{ step: 0, row, velocity }] },
+    };
+    const events = generatePatternEvents(single, this.samples, {
+      hasBuffer: this.hasBuffer,
+      bpm: this.currentBpm(sequence),
+    });
+    if (events.length === 0) return;
+    if (Tone.getContext().state !== 'running') {
+      await Tone.start();
+    }
+    this.ensureGraph();
+    const when = Tone.now() + 0.05;
+    for (const event of events) this.playEvent(event, when);
+  }
+
+  /** Laat een stem horen op de grondtoon (klankkiezer) */
+  async previewVoice(sequence: SequencerSequence, voice: MelodyVoice): Promise<void> {
+    if (!sequence.melody) return;
+    await this.previewNote(
+      { ...sequence, kind: 'melody', melody: { ...sequence.melody, voice } },
+      0
+    );
   }
 
   stopPreview(): void {

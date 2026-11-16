@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Grid3x3, Minus, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Copy, Grid3x3, Minus, Music, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { Button, Modal } from '../ui';
 import TipModal from '../ui/TipModal';
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
@@ -22,6 +22,8 @@ import { sequencerEngine } from '../../services/SequencerEngine';
 import { sequenceSampleId } from '../../utils/sequencer';
 import { SEQUENCE_COLOR } from '../../types/sequencer';
 import SequencerGrid from './SequencerGrid';
+import MelodyEditor from './MelodyEditor';
+import SequenceKindTabs from './SequenceKindTabs';
 import {
   SEQ_MAX_STEPS,
   SEQ_MIN_STEPS,
@@ -68,8 +70,12 @@ export default function StudioSequencerPanel({
   useEffect(() => {
     sequencerEngine.setSamples(samples);
   }, [samples]);
-  const assignedIds = (sequence?.tracks ?? [])
-    .map((track) => track.sampleId)
+  const melodyVoice = sequence?.kind === 'melody' ? sequence.melody?.voice : undefined;
+  const assignedIds = [
+    ...(sequence?.tracks ?? []).map((track) => track.sampleId),
+    // Melodie met een bibliotheekstem: die buffer ook klaarzetten
+    melodyVoice?.type === 'sample' ? melodyVoice.sampleId : null,
+  ]
     .filter(Boolean)
     .join(',');
   useEffect(() => {
@@ -89,6 +95,7 @@ export default function StudioSequencerPanel({
   }, []);
 
   if (!sequence) return null;
+  const isMelody = sequence.kind === 'melody';
 
   const closeTab = () => {
     sequencerEngine.stop();
@@ -142,7 +149,9 @@ export default function StudioSequencerPanel({
       aria-label={t('sequencer.title')}
     >
       {/* --- Modus-bewuste werkbalk: tabs links, sequence-acties rechts --- */}
-      <div className="flex items-center px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t gap-1">
+      {/* overflow-x-auto: op een smal scherm (tabs Ritme|Melodie erbij) blijft
+          alles bereikbaar zonder dat de pagina horizontaal gaat schuiven */}
+      <div className="flex items-center px-2 sm:px-4 py-1 sm:py-1.5 bg-white/60 md:bg-bg-surface border-b border-border-subtle border-t gap-1 overflow-x-auto">
         {/* Tabs */}
         <button
           type="button"
@@ -155,7 +164,11 @@ export default function StudioSequencerPanel({
           className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold shrink-0 max-w-40 text-text-main"
           style={{ backgroundColor: `${sequence.color ?? SEQUENCE_COLOR}33` }}
         >
-          <Grid3x3 size={12} aria-hidden style={{ color: sequence.color ?? SEQUENCE_COLOR }} />
+          {isMelody ? (
+            <Music size={12} aria-hidden style={{ color: sequence.color ?? SEQUENCE_COLOR }} />
+          ) : (
+            <Grid3x3 size={12} aria-hidden style={{ color: sequence.color ?? SEQUENCE_COLOR }} />
+          )}
           <span className="truncate">{sequence.name}</span>
           <button
             type="button"
@@ -166,6 +179,16 @@ export default function StudioSequencerPanel({
             <X size={11} aria-hidden />
           </button>
         </span>
+
+        {/* Ritme | Melodie (V2 Fase 4) */}
+        <SequenceKindTabs
+          sequence={sequence}
+          onCreated={(id) => {
+            sequencerEngine.stop();
+            setIsPlaying(false);
+            setOpenSequenceId(id);
+          }}
+        />
 
         <div className="flex-1" />
 
@@ -235,18 +258,24 @@ export default function StudioSequencerPanel({
         className="overflow-y-auto min-h-0 flex-1 px-2 sm:px-4 py-2"
         style={{ backgroundColor: `${sequence.color ?? SEQUENCE_COLOR}0d` }}
       >
-        <SequencerGrid samples={samples} />
-        <div className="mt-2">
-          <Button
-            variant="secondary"
-            size="sm"
-            onClick={() => useSequencerStore.getState().addTrack()}
-            disabled={sequence.tracks.length >= 8}
-          >
-            <Plus className="w-4 h-4 mr-1.5" aria-hidden />
-            {t('sequencer.addTrack')}
-          </Button>
-        </div>
+        {isMelody ? (
+          <MelodyEditor samples={samples} />
+        ) : (
+          <>
+            <SequencerGrid samples={samples} />
+            <div className="mt-2">
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={() => useSequencerStore.getState().addTrack()}
+                disabled={sequence.tracks.length >= 8}
+              >
+                <Plus className="w-4 h-4 mr-1.5" aria-hidden />
+                {t('sequencer.addTrack')}
+              </Button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* --- Eenmalige uitleg (leerling) --- */}

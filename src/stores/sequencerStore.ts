@@ -11,18 +11,35 @@ import { create } from 'zustand';
 import { generateId } from '../utils/uuid';
 import {
   clampLengthSteps,
+  createDefaultMelodySequence,
   createDefaultSequence,
   createEmptyTrack,
+  isSequenceEmpty,
+  melodyRowCount,
   nextSequenceColor,
   resizeSteps,
 } from '../utils/sequencer';
 import { loadSequences, saveSequences } from '../services/sequencerStorage';
 import { useTimelineStore } from './timelineStore';
 import {
+  MELODY_MAX_OCTAVES,
+  SEQ_MAX_SWING,
   SEQ_MAX_TRACKS,
+  type MelodyVoice,
+  type SequenceKind,
   type SequencerSequence,
   type SequencerTrackMode,
 } from '../types/sequencer';
+
+/** Resultaat van een tik in het melodieraster (voor de directe voorbeluistering) */
+export type MelodyNoteToggleResult = 'added' | 'changed' | 'removed' | 'ignored';
+
+/** Maak een verse sequence van het gevraagde soort */
+function createSequenceOfKind(name: string, kind: SequenceKind, color: string): SequencerSequence {
+  return kind === 'melody'
+    ? createDefaultMelodySequence(name, undefined, color)
+    : createDefaultSequence(name, color);
+}
 
 /**
  * Persistentie-modus (fase 2):
@@ -84,6 +101,29 @@ interface SequencerStore {
   // Stappen & lengte
   toggleStep: (trackId: string, stepIndex: number) => void;
   setLength: (delta: number) => void;
+  /** Aanslagsterkte van één ritmevakje (0..1); 1 = standaard */
+  setStepVelocity: (trackId: string, stepIndex: number, velocity: number) => void;
+  /** Swing van de actieve sequence (0..SEQ_MAX_SWING) */
+  setSwing: (swing: number) => void;
+
+  // Ritme ⇄ Melodie (V2 Fase 4)
+  /**
+   * Wissel het soort van de actieve sequence. Mag alleen zolang die nog
+   * leeg is (geen stappen/noten) — anders gebeurt er niets en geeft hij
+   * false terug; de UI biedt dan een nieuwe sequence aan.
+   */
+  setSequenceKind: (kind: SequenceKind) => boolean;
+
+  // Melodie
+  /**
+   * Tik op een melodievakje met de gekozen sterkte ("kwast"): leeg → noot
+   * erbij; noot met een andere sterkte → sterkte wordt de kwast; noot met
+   * dezelfde sterkte → noot weg.
+   */
+  toggleMelodyNote: (step: number, row: number, velocity?: number) => MelodyNoteToggleResult;
+  setMelodyVoice: (voice: MelodyVoice) => void;
+  /** 1..MELODY_MAX_OCTAVES; noten boven het nieuwe bereik vervallen */
+  setMelodyOctaves: (octaves: number) => void;
 
   // Sporen
   addTrack: () => void;
@@ -95,7 +135,7 @@ interface SequencerStore {
   toggleTrackMute: (trackId: string) => void;
 
   // Sequences
-  createSequence: (name: string) => void;
+  createSequence: (name: string, kind?: SequenceKind) => void;
   renameSequence: (id: string, name: string) => void;
   duplicateSequence: (id: string, copySuffix: string) => void;
   deleteSequence: (id: string, fallbackName: string) => void;
@@ -204,7 +244,122 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
           tracks: seq.tracks.map((track) => ({
             ...track,
             steps: resizeSteps(track.steps, newLength),
+            ...(track.velocities
+              ? { velocities: track.velocities.slice(0, newLength) }
+              : {}),
           })),
+          // Zelfde regel als bij ritme: wat buiten het patroon valt, vervalt
+          ...(seq.melody
+            ? {
+                melody: {
+                  ...seq.melody,
+                  notes: seq.melody.notes.filter((note) => note.step < newLength),
+                },
+              }
+            : {}),
+        };
+      });
+    },
+
+    setStepVelocity: (trackId, stepIndex, velocity) => {
+      updateTrack(trackId, (track) => {
+        if (stepIndex < 0 || stepIndex >= track.steps.length) return track;
+        const velocities = Array.from(
+          { length: track.steps.length },
+          (_, i) => track.velocities?.[i] ?? 1
+        );
+        velocities[stepIndex] = Math.min(1, Math.max(0, velocity));
+        // Alles standaard → veld weglaten (schoon model, = gedrag vóór Fase 4)
+        return velocities.every((v) => v === 1)
+          ? { ...track, velocities: undefined }
+          : { ...track, velocities };
+      });
+    },
+
+    setSwing: (swing) => {
+      const clamped = Number.isFinite(swing)
+        ? Math.round(Math.min(SEQ_MAX_SWING, Math.max(0, swing)) * 100) / 100
+        : 0;
+      updateActive((seq) => ({ ...seq, swing: clamped }));
+    },
+
+    // --- Ritme ⇄ Melodie ---
+
+    setSequenceKind: (kind) => {
+      const seq = get().activeSequence();
+      if (!seq) return false;
+      const current: SequenceKind = seq.kind ?? 'rhythm';
+      if (current === kind) return true;
+      if (!isSequenceEmpty(seq)) return false;
+      updateActive((s) => {
+        // Zelfde id/naam/kleur/lengte (clips op de montagelijn blijven geldig)
+        const fresh = createSequenceOfKind(s.name, kind, s.color ?? '');
+        const tracks =
+          kind === 'melody'
+            ? [createEmptyTrack(s.lengthSteps)]
+            : fresh.tracks.map(() => createEmptyTrack(s.lengthSteps));
+        const next: SequencerSequence = {
+          ...s,
+          kind,
+          tracks,
+          melody: kind === 'melody' ? fresh.melody : undefined,
+        };
+        if (kind === 'rhythm') delete next.melody;
+        return next;
+      });
+      return true;
+    },
+
+    // --- Melodie ---
+
+    toggleMelodyNote: (step, row, velocity = 1) => {
+      const seq = get().activeSequence();
+      const melody = seq?.melody;
+      if (!seq || seq.kind !== 'melody' || !melody) return 'ignored';
+      if (step < 0 || step >= seq.lengthSteps) return 'ignored';
+      if (row < 0 || row >= melodyRowCount(melody)) return 'ignored';
+      const v = Math.min(1, Math.max(0, velocity));
+      const existing = melody.notes.find((n) => n.step === step && n.row === row);
+      let result: MelodyNoteToggleResult;
+      let notes = melody.notes;
+      if (!existing) {
+        result = 'added';
+        notes = [...notes, v === 1 ? { step, row } : { step, row, velocity: v }];
+      } else if (Math.abs((existing.velocity ?? 1) - v) < 1e-6) {
+        result = 'removed';
+        notes = notes.filter((n) => n !== existing);
+      } else {
+        result = 'changed';
+        notes = notes.map((n) => {
+          if (n !== existing) return n;
+          const { velocity: _old, ...rest } = n;
+          void _old;
+          return v === 1 ? rest : { ...rest, velocity: v };
+        });
+      }
+      updateActive((s) => (s.melody ? { ...s, melody: { ...s.melody, notes } } : s));
+      return result;
+    },
+
+    setMelodyVoice: (voice) => {
+      updateActive((seq) =>
+        seq.melody ? { ...seq, melody: { ...seq.melody, voice } } : seq
+      );
+    },
+
+    setMelodyOctaves: (octaves) => {
+      updateActive((seq) => {
+        if (!seq.melody) return seq;
+        const clamped = Math.min(MELODY_MAX_OCTAVES, Math.max(1, Math.round(octaves)));
+        if (clamped === seq.melody.octaves) return seq;
+        const rows = seq.melody.scale.length * clamped;
+        return {
+          ...seq,
+          melody: {
+            ...seq.melody,
+            octaves: clamped,
+            notes: seq.melody.notes.filter((note) => note.row < rows),
+          },
         };
       });
     },
@@ -262,8 +417,8 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
 
     // --- Sequences ---
 
-    createSequence: (name) => {
-      const seq = createDefaultSequence(name, nextSequenceColor(get().sequences));
+    createSequence: (name, kind = 'rhythm') => {
+      const seq = createSequenceOfKind(name, kind, nextSequenceColor(get().sequences));
       set((state) => ({
         sequences: [...state.sequences, seq],
         activeSequenceId: seq.id,
@@ -299,7 +454,18 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
           ...track,
           id: generateId(),
           steps: [...track.steps],
+          ...(track.velocities ? { velocities: [...track.velocities] } : {}),
         })),
+        ...(source.melody
+          ? {
+              melody: {
+                ...source.melody,
+                scale: [...source.melody.scale],
+                voice: { ...source.melody.voice },
+                notes: source.melody.notes.map((note) => ({ ...note })),
+              },
+            }
+          : {}),
         createdAt: now,
         updatedAt: now,
       };

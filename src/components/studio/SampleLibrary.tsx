@@ -2,7 +2,7 @@ import { memo, useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useDraggable } from '@dnd-kit/core';
 import { CSS } from '@dnd-kit/utilities';
-import { Play, Square, MapPin, GripVertical, Grid3x3, Plus as PlusIcon } from 'lucide-react';
+import { Play, Square, MapPin, GripVertical, Grid3x3, Music, Plus as PlusIcon } from 'lucide-react';
 import type { Sample } from '../../types';
 import type { SequencerSequence } from '../../types/sequencer';
 import { createSequenceSample } from '../../utils/sequencer';
@@ -69,7 +69,10 @@ const DraggableBundle = memo(function DraggableBundle({
       <div className="flex items-center justify-center w-3 sm:w-4 -ml-0.5 sm:-ml-1 pointer-events-none" style={{ color }}>
         <GripVertical className="w-3 h-4 sm:w-4 sm:h-5" aria-hidden="true" />
       </div>
-      <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" style={{ color }} aria-hidden="true" />
+      {/* Melodie (V2 Fase 4) = muzieknoot, ritme = raster */}
+      {sequence.kind === 'melody'
+        ? <Music className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" style={{ color }} aria-hidden="true" />
+        : <Grid3x3 className="w-3 h-3 sm:w-4 sm:h-4 shrink-0" style={{ color }} aria-hidden="true" />}
       <span className="text-[10px] sm:text-sm font-medium whitespace-nowrap text-text-main">
         {sequence.name}
       </span>

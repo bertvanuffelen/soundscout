@@ -18,6 +18,7 @@ import {
   SEQUENCE_COLORS,
   SEQUENCE_ICON,
   SEQUENCE_SAMPLE_PREFIX,
+  type MelodyPattern,
   type MelodyVoice,
   type SequencerSequence,
   type SequencerTrack,
@@ -101,7 +102,7 @@ export function createSequenceSample(sequence: SequencerSequence): Sample {
     locationId: 'sequencer',
     audioUrl: '',
     duration: (sequence.lengthSteps * 60) / REFERENCE_BPM,
-    icon: SEQUENCE_ICON,
+    icon: sequence.kind === 'melody' ? MELODY_SEQUENCE_ICON : SEQUENCE_ICON,
     color: sequence.color ?? SEQUENCE_COLOR,
     kind: 'loop',
   };
@@ -170,4 +171,49 @@ export function createDefaultMelodySequence(
       notes: [],
     },
   };
+}
+
+// --- Melodie-editor (V2 Fase 4 — UI-hulpjes) ---
+
+/** Lucide-icoon voor melodie-sequences (chip, clip, tab) */
+export const MELODY_SEQUENCE_ICON = 'Music';
+
+/**
+ * De drie aanslagsterktes van de "sterkte-kwast" in de editor. Bewust drie
+ * grove standen: een kind kiest hard/middel/zacht, geen schuifje.
+ */
+export const VELOCITY_LEVELS = { loud: 1, medium: 0.7, soft: 0.4 } as const;
+export type VelocityLevel = keyof typeof VELOCITY_LEVELS;
+export const VELOCITY_LEVEL_ORDER: readonly VelocityLevel[] = ['loud', 'medium', 'soft'];
+
+/** Dichtstbijzijnde sterkte-stand van een aanslagsterkte (ontbrekend = hard) */
+export function velocityLevelOf(velocity: number | undefined): VelocityLevel {
+  const v = velocity ?? 1;
+  let best: VelocityLevel = 'loud';
+  for (const level of VELOCITY_LEVEL_ORDER) {
+    if (Math.abs(VELOCITY_LEVELS[level] - v) < Math.abs(VELOCITY_LEVELS[best] - v)) best = level;
+  }
+  return best;
+}
+
+/** Aantal rijen in het melodieraster (toonladder × octaven) */
+export function melodyRowCount(melody: Pick<MelodyPattern, 'scale' | 'octaves'>): number {
+  return melody.scale.length * melody.octaves;
+}
+
+const NOTE_NAMES = ['C', 'C♯', 'D', 'D♯', 'E', 'F', 'F♯', 'G', 'G♯', 'A', 'A♯', 'B'] as const;
+
+/** MIDI-noot → { naam, octaafnummer } (60 = C4) */
+export function midiToNoteName(midi: number): { name: string; octave: number } {
+  const pc = ((midi % 12) + 12) % 12;
+  return { name: NOTE_NAMES[pc], octave: Math.floor(midi / 12) - 1 };
+}
+
+/**
+ * Is een sequence nog leeg (geen enkele stap of noot)? Bepaalt of het
+ * wisselen tussen Ritme en Melodie zonder vragen mag.
+ */
+export function isSequenceEmpty(sequence: SequencerSequence): boolean {
+  if (sequence.kind === 'melody') return (sequence.melody?.notes.length ?? 0) === 0;
+  return sequence.tracks.every((track) => track.steps.every((step) => !step));
 }

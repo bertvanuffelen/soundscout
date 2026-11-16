@@ -7,7 +7,7 @@
  * Zie docs-plan "Step Sequencer Lab" voor het ontwerp.
  */
 
-import { useEffect } from 'react';
+import { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Music, Plus } from 'lucide-react';
 import { Button } from '../components/ui';
@@ -17,6 +17,8 @@ import { sequencerEngine } from '../services/SequencerEngine';
 import SequencerTransport from '../components/sequencer/SequencerTransport';
 import SequencerGrid from '../components/sequencer/SequencerGrid';
 import SequenceManagerBar from '../components/sequencer/SequenceManagerBar';
+import SequenceKindTabs from '../components/sequencer/SequenceKindTabs';
+import MelodyEditor from '../components/sequencer/MelodyEditor';
 import { SEQ_MAX_TRACKS } from '../types/sequencer';
 
 export default function SequencerLab() {
@@ -27,6 +29,14 @@ export default function SequencerLab() {
   const hydrate = useSequencerStore((s) => s.hydrate);
   const addTrack = useSequencerStore((s) => s.addTrack);
   const setIsPlaying = useSequencerStore((s) => s.setIsPlaying);
+  const activeSequence = useSequencerStore((s) =>
+    s.sequences.find((seq) => seq.id === s.activeSequenceId)
+  );
+  // Stabiele referentie: de melodie-editor bakt opnieuw bij een nieuwe lijst
+  const labSamples = useMemo(
+    () => (isThemeInitialized ? useThemeStore.getState().getSamples() : []),
+    [isThemeInitialized]
+  );
   const trackCount = useSequencerStore(
     (s) =>
       s.sequences.find((seq) => seq.id === s.activeSequenceId)?.tracks.length ?? 0
@@ -49,12 +59,16 @@ export default function SequencerLab() {
 
   // Buffers van reeds toegewezen samples voorladen (ID-gebaseerde dependency
   // — stabiele string i.p.v. array-referentie, repo-conventie)
-  const assignedSampleIds = useSequencerStore((s) =>
-    (s.sequences.find((seq) => seq.id === s.activeSequenceId)?.tracks ?? [])
-      .map((track) => track.sampleId)
+  const assignedSampleIds = useSequencerStore((s) => {
+    const seq = s.sequences.find((item) => item.id === s.activeSequenceId);
+    const voice = seq?.kind === 'melody' ? seq.melody?.voice : undefined;
+    return [
+      ...(seq?.tracks ?? []).map((track) => track.sampleId),
+      voice?.type === 'sample' ? voice.sampleId : null,
+    ]
       .filter(Boolean)
-      .join(',')
-  );
+      .join(',');
+  });
   useEffect(() => {
     if (!isThemeInitialized || !assignedSampleIds) return;
     const { getSampleById } = useThemeStore.getState();
@@ -101,22 +115,31 @@ export default function SequencerLab() {
       {/* --- Inhoud --- */}
       <main className="flex-1 flex flex-col gap-4 p-3 sm:p-4 overflow-hidden">
         <SequenceManagerBar />
-        <SequencerTransport />
+        <div className="flex flex-wrap items-center gap-3">
+          {activeSequence && <SequenceKindTabs sequence={activeSequence} />}
+          <SequencerTransport />
+        </div>
 
         <div className="flex-1 overflow-y-auto min-h-0">
-          <SequencerGrid />
+          {activeSequence?.kind === 'melody' ? (
+            <MelodyEditor samples={labSamples} />
+          ) : (
+            <>
+              <SequencerGrid />
 
-          <div className="mt-3">
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={addTrack}
-              disabled={trackCount >= SEQ_MAX_TRACKS}
-            >
-              <Plus className="w-4 h-4 mr-1.5" aria-hidden />
-              {t('sequencer.addTrack')}
-            </Button>
-          </div>
+              <div className="mt-3">
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={addTrack}
+                  disabled={trackCount >= SEQ_MAX_TRACKS}
+                >
+                  <Plus className="w-4 h-4 mr-1.5" aria-hidden />
+                  {t('sequencer.addTrack')}
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </main>
     </div>
