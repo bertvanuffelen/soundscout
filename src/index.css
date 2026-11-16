@@ -366,3 +366,21 @@ input:focus:not(:focus-visible),
   display: inline-block;
   animation: audience-bounce 0.6s ease-in-out infinite;
 }
+
+/* --- Schermovergang (V2 Fase 2, router: defaultViewTransition) ---
+   Korte overvloeier tussen schermen. Browsers zonder View Transitions wisselen
+   direct; bij "minder beweging" start de router de overgang niet eens, en dit
+   blok is het vangnet voor browsers die de typed variant niet kennen. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 160ms;
+  animation-timing-function: ease-out;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}

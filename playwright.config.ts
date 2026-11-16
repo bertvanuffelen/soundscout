@@ -38,5 +38,13 @@ export default defineConfig({
     url: `http://localhost:${PORT}`,
     reuseExistingServer: !process.env.CI,
     timeout: 60_000,
+    // Nep-Supabase op de eigen origin: zonder deze twee variabelen gooit
+    // getSupabase() meteen en is geen enkele deel-/klascode-flow te testen.
+    // e2e/url-contract.spec.ts onderschept de RPC-aanroepen met page.route;
+    // elders mislukken ze gewoon (404 van de dev-server), net als voorheen.
+    env: {
+      VITE_SUPABASE_URL: `http://localhost:${PORT}/__e2e-supabase`,
+      VITE_SUPABASE_ANON_KEY: 'e2e-anon-key',
+    },
   },
 });

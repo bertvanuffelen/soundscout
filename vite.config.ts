@@ -20,6 +20,9 @@ export default defineConfig({
           'dnd-kit': ['@dnd-kit/core', '@dnd-kit/sortable', '@dnd-kit/utilities'],
           'audio-export': ['@breezystack/lamejs'],
           'supabase': ['@supabase/supabase-js'],
+          // Eigen chunk: verandert zelden, dus blijft in de browsercache als
+          // de app-code (main) een nieuwe versie krijgt.
+          'router': ['@tanstack/react-router'],
         },
       },
     },

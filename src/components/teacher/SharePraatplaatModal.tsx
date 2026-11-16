@@ -14,6 +14,7 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { logger } from '../../utils/logger';
 import { copyToClipboard } from '../../utils/copyToClipboard';
+import { buildClassCodeLink, buildPraatplaatShareLink } from '../../utils/entryLinks';
 
 interface SharePraatplaatModalProps {
   isOpen: boolean;
@@ -44,7 +45,7 @@ export function SharePraatplaatModal({
   const [showShareQr, setShowShareQr] = useState(false);
 
   // Build shareable URL
-  const shareUrl = `${window.location.origin}${window.location.pathname}?pp=${classCode}`;
+  const shareUrl = buildClassCodeLink(classCode);
 
   // Generate QR code when toggled on
   useEffect(() => {
@@ -71,7 +72,7 @@ export function SharePraatplaatModal({
 
   // Share link URL
   const shareUrl2 = shareCode
-    ? `${window.location.origin}${window.location.pathname}?pp-share=${shareCode}`
+    ? buildPraatplaatShareLink(shareCode)
     : null;
 
   // Generate share link QR when toggled

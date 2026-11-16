@@ -12,7 +12,15 @@
   RewriteCond %{REQUEST_FILENAME} !-f
   RewriteCond %{REQUEST_FILENAME} !-d
 
-  # Rewrite everything else to index.html
+  # Rewrite everything else to index.html.
+  # Sinds V2 Fase 2 heeft elk scherm een eigen pad (/kaart, /studio, /podium,
+  # /docent, /gedeeld/<code>, /album/<code>, ...): die bestaan niet als bestand
+  # en komen dus hier uit, waarna de router in de app het scherm kiest.
+  # Bestaande bestanden en mappen (/assets, /audio, /images, /fonts, /les/<key>/,
+  # /privacy/, /animaties/) vallen onder de twee voorwaarden hierboven en worden
+  # NIET herschreven. Kies voor een nieuw app-pad nooit een naam die ook een map
+  # of bestand in public/ is (bewaakt door src/router/__tests__/paths.test.ts).
+  # Volledige tabel: docs/v2/URL-CONTRACT.md.
   RewriteRule ^ index.html [L]
 </IfModule>
 

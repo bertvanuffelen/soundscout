@@ -1,5 +1,5 @@
 {
-  "measuredAt": "2026-11-15",
+  "measuredAt": "2026-11-16",
   "environment": {
     "note": "Headless Chromium op een ontwikkelmachine — vergelijkingsbasis, geen schoolapparaat.",
     "chromium": "159.0.8154.6",
@@ -41,8 +41,8 @@
   "studio": {
     "clips": 10,
     "domNodes": 574,
-    "heapMB": 27.9,
-    "heapAfterPlaybackMB": 26.9
+    "heapMB": 31.7,
+    "heapAfterPlaybackMB": 38.4
   },
   "playback": {
     "seconds": 6,

@@ -41,7 +41,7 @@ Tests use jsdom environment with jest-style globals (`describe`, `it`, `expect`)
 
 ### Screen Navigation
 
-No router — `App.tsx` switches on `appStore.currentScreen`:
+**TanStack Router** (SPA mode, V2 Phase 2) — every screen has its own path (`/kaart`, `/locatie/$locationId`, `/studio`, `/podium`, `/docent`, `/gedeeld/$code`, …; full table incl. all legacy links in `docs/v2/URL-CONTRACT.md`). Routes live in `src/router/routes.tsx`. Callers still navigate with the appStore actions (`goToStudio()` etc.): `src/router/screenSync.ts` is the ONE place that ties `appStore.currentScreen` to the router (store change → `router.navigate`; resolved route → store). Old query/hash links (`?share=`, `?album=`, `?pp-share=`, `?pp=`, `?screen=…`, `#code=`) are resolved by the pure `src/router/legacyEntry.ts` and must keep working forever; links the app hands out are built in `src/utils/entryLinks.ts` / `saveCodeLink.ts` and keep their old form. Never use router hooks inside screen components (they must render without a router in unit tests). Screen flow:
 `'start'` → `'map'` → `'location'` → `'studio'` → `'stage'`
 
 Other screens: `'tutorial'` (video tutorials), `'compose-mode'` (storytelling mode selection), `'compositions'` (saved compositions), `'shared'` (shared composition player), `'shared-praatplaat'` (public praatplaat viewer #73), `'shared-album'` (public class album viewer, R4), `'praatplaat-select'` (student position picker for praatplaat #72), `'assignment-landing'` (class code assignment preview before starting)
@@ -80,7 +80,7 @@ Eight independent stores in `src/stores/`:
 | Service | Responsibility |
 |---|---|
 | `AudioService.ts` | Tone.js audio engine — sample loading (parallel with retry), playback scheduling, seek, ambient audio, waveform cache |
-| `StorageService.ts` | localStorage wrapper for compositions (max 10), library, preferences. Detects `QuotaExceededError` via `isQuotaExceeded()` helper; exposes `lastSaveError` for UI feedback |
+| `StorageService.ts` | Local storage, synchronous API. Compositions (max 10, `MAX_LOCAL_COMPOSITIONS`) live in IndexedDB via `compositionStore.ts` (Dexie; in-memory cache + write-through, localStorage as backup/fallback — see `docs/v2/LOCAL-STORAGE.md`); library, preferences and codes stay in localStorage. Detects `QuotaExceededError` via `isQuotaExceeded()` helper; exposes `lastSaveError` for UI feedback |
 
 ### Audio Engine — Key Architecture
 

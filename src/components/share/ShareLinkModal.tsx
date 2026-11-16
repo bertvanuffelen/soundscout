@@ -17,6 +17,7 @@ import { canShare, markShare, getShareCooldownRemaining } from '../../utils/rate
 import { copyToClipboard } from '../../utils/copyToClipboard';
 import type { CompositionData } from '../../types';
 import { useModalBehavior } from '../../hooks/useModalBehavior';
+import { buildShareLink } from '../../utils/entryLinks';
 
 interface ShareLinkModalProps {
   compositionName: string;
@@ -81,7 +82,7 @@ export function ShareLinkModal({
 
   // Build the full share URL
   const shareUrl = shareCode
-    ? `${window.location.origin}${window.location.pathname}?share=${shareCode}`
+    ? buildShareLink(shareCode)
     : '';
 
   // Copy link to clipboard

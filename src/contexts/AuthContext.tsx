@@ -7,6 +7,7 @@
  */
 
 import { createContext, useEffect, useState, useRef, useCallback } from 'react';
+import { getEntryLocation } from '../router/entryLocation';
 import type { ReactNode } from 'react';
 import type { User, Session } from '@supabase/supabase-js';
 import { getSupabase } from '../lib/supabase';
@@ -32,8 +33,11 @@ export interface AuthContextType {
  * de hash daarna opschoont.
  */
 function detectPasswordRecoveryFromUrl(): boolean {
-  const search = new URLSearchParams(window.location.search);
-  const hash = window.location.hash;
+  // De router schoont ?screen=reset-password op vóór deze provider rendert;
+  // daarom de adresbalk van binnenkomst (zie router/entryLocation.ts).
+  const entry = getEntryLocation();
+  const search = new URLSearchParams(entry.search);
+  const hash = entry.hash;
   return (
     search.get('screen') === 'reset-password' ||
     hash.includes('type=recovery') ||

@@ -15,6 +15,7 @@ import { Modal } from '../ui/Modal';
 import { Button } from '../ui/Button';
 import { logger } from '../../utils/logger';
 import { copyToClipboard } from '../../utils/copyToClipboard';
+import { buildAlbumLink } from '../../utils/entryLinks';
 
 interface ShareAlbumModalProps {
   isOpen: boolean;
@@ -64,7 +65,7 @@ export function ShareAlbumModal({ isOpen, onClose, assignmentId, assignmentName,
   }, [isOpen, assignmentId, submittedCount, t]);
 
   const shareUrl = shareCode
-    ? `${window.location.origin}/?album=${shareCode}`
+    ? buildAlbumLink(shareCode)
     : null;
 
   useEffect(() => {
