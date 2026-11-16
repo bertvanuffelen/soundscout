@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 1945 teksten in 52 secties._
+_Stand: 1948 teksten in 53 secties._
 
 ## app
 
@@ -2224,3 +2224,11 @@ _Stand: 1945 teksten in 52 secties._
 | `unsavedWork.text` | Bewaar hem eerst in Mijn soundscapes, dan raak je niets kwijt. | Save it in My soundscapes first, so you don't lose anything. |
 | `unsavedWork.saveFirst` | Eerst bewaren | Save first |
 | `unsavedWork.discard` | Niet bewaren | Don't save |
+
+## pwa
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `pwa.updateAvailable` | Er is een nieuwe versie van SoundScout. | A new version of SoundScout is ready. |
+| `pwa.updateNow` | Vernieuwen | Refresh |
+| `pwa.later` | Later | Later |

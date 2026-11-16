@@ -43,5 +43,6 @@ __pycache__/
 
 # Playwright (V2 Fase 0)
 e2e/.results/
+e2e/.results-sw/
 playwright-report/
 e2e/__screenshots__/

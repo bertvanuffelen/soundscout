@@ -18,7 +18,9 @@
     "test:db": "node supabase/tests/036/tests036.mjs",
     "e2e": "playwright test",
     "e2e:baseline": "playwright test e2e/layout.spec.ts --update-snapshots",
-    "e2e:golden": "UPDATE_GOLDEN=1 playwright test e2e/audio-golden.spec.ts"
+    "e2e:golden": "UPDATE_GOLDEN=1 playwright test e2e/audio-golden.spec.ts",
+    "e2e:sw": "playwright test -c playwright.sw.config.ts",
+    "pwa:icons": "node scripts/generate-pwa-icons.mjs"
   },
   "dependencies": {
     "@breezystack/lamejs": "^1.2.7",
@@ -27,6 +29,7 @@
     "@dnd-kit/utilities": "^3.2.2",
     "@emailjs/browser": "^4.4.1",
     "@supabase/supabase-js": "^2.93.3",
+    "@tanstack/react-query": "^5.107.1",
     "@tanstack/react-router": "^1.170.46",
     "@types/qrcode": "^1.5.6",
     "clsx": "^2.1.1",
@@ -66,6 +69,8 @@
     "typescript": "~5.9.3",
     "typescript-eslint": "^8.46.4",
     "vite": "^7.2.4",
-    "vitest": "^4.0.18"
+    "vite-plugin-pwa": "^2.0.0",
+    "vitest": "^4.0.18",
+    "workbox-window": "^7.4.1"
   }
 }

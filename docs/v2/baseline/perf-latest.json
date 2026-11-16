@@ -41,15 +41,15 @@
   "studio": {
     "clips": 10,
     "domNodes": 574,
-    "heapMB": 31.7,
-    "heapAfterPlaybackMB": 38.4
+    "heapMB": 29.1,
+    "heapAfterPlaybackMB": 27.6
   },
   "playback": {
     "seconds": 6,
     "stillPlaying": true,
     "fps": 60.2,
     "frameMsP50": 16.7,
-    "frameMsP95": 16.7,
+    "frameMsP95": 16.8,
     "frameMsMax": 16.8,
     "framesOver33ms": 0,
     "longTasks": 0,

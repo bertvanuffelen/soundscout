@@ -36,10 +36,26 @@
     Header set Cache-Control "max-age=31536000, immutable"
   </FilesMatch>
 
-  # HTML: 1 hour cache, always revalidate
+  # HTML: altijd eerst bij de server navragen (304 als er niets veranderd is).
+  # Was 1 uur. Sinds de service worker (V2 Fase 2) bepaalt index.html welke
+  # versie van de app start; een uur oude kopie in de browsercache zou een
+  # update of de noodrem (docs/v2/OFFLINE.md §6) een uur vertragen.
   <FilesMatch "\.html$">
-    Header set Cache-Control "max-age=3600, must-revalidate"
+    Header set Cache-Control "no-cache"
   </FilesMatch>
+
+  # Service worker: NOOIT in de browsercache. Dit blok moet NA de regel voor
+  # .js staan, anders krijgt sw.js "1 jaar, immutable" en ziet een apparaat
+  # een nieuwe versie (of de noodrem) niet. Zie docs/v2/OFFLINE.md.
+  <Files "sw.js">
+    Header set Cache-Control "no-cache, no-store, must-revalidate"
+  </Files>
+
+  # Web-app-manifest: kort bewaren, zodat een nieuw icoon of een nieuwe naam
+  # zonder omweg doorkomt.
+  <Files "manifest.json">
+    Header set Cache-Control "no-cache"
+  </Files>
 
   # --- Content Security Policy (CSP) ---
   # Strict policy to prevent XSS, injection, and unauthorized resource loading

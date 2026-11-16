@@ -2622,5 +2622,10 @@
     "text": "Save it in My soundscapes first, so you don't lose anything.",
     "saveFirst": "Save first",
     "discard": "Don't save"
+  },
+  "pwa": {
+    "updateAvailable": "A new version of SoundScout is ready.",
+    "updateNow": "Refresh",
+    "later": "Later"
   }
 }

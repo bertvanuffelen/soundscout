@@ -3,6 +3,7 @@
 > Status: **APPROVED - IN EXECUTION** (approved by Bert, 15-11-2026). This document is the single source of truth for V2.
 > **V2 design phase: APPROVED** (Bert, 15-11-2026) on the basis of the `/v2-mockup` journey with the final corrections below.
 > **Phase 0 — safety net and baseline: complete** (15-11-2026). Results and commands: `docs/v2/PHASE-0-BASELINE.md`.
+> **Phase 2 — shell: implemented** (16-11-2026): router, IndexedDB, TanStack Query, service worker. Report and manual checklist: `docs/v2/PHASE-2-REPORT.md`.
 > **Phase 1 — clock and visuals: implemented** (15-11-2026). Report, including what is still open: `docs/v2/PHASE-1-REPORT.md`. Waiting for Bert's sync test on real devices.
 > Companion documents: `v2-launch-strategy.md` (go-to-market) and `v2-theme-sinterklaas-pipeline.md` (first new theme).
 > Date: 15-11-2026 · Based on a scan of this repository (≈60k lines TS/TSX, 42 migrations) and a check of the current web platform.

@@ -32,8 +32,22 @@ dist/
 ├── manifest.json       → naar de root van je website
 ├── assets/             → complete map uploaden
 ├── audio/              → complete map uploaden
-└── images/             → complete map uploaden
+├── images/             → complete map uploaden
+└── sw.js               → ALS LAATSTE uploaden (zie hieronder)
 ```
+
+(En verder alles wat in `dist/` staat: `teacher.html`, `over.html`, `fonts/`, `animaties/`, `les/`, `privacy/`, `robots.txt`, `sitemap.xml`.)
+
+### Uploadvolgorde (belangrijk sinds de offline-versie)
+
+De app werkt sinds V2 Fase 2 ook zonder internet, via een *service worker* (`sw.js`). Dat bestand vertelt elk apparaat welke versie van de app het moet bewaren. Daarom:
+
+1. **Eerst** de mappen (`assets/`, `fonts/`, `animaties/`, `images/`, `audio/`, `les/`, `privacy/`).
+2. **Dan** de losse bestanden (`index.html`, `teacher.html`, `over.html`, `manifest.json`, `.htaccess`, …).
+3. **Als allerlaatste** `sw.js`.
+4. **Gooi oude bestanden in `assets/` niet meteen weg.** Apparaten met de vorige versie gebruiken ze nog. Opruimen kan bij de volgende upload.
+
+Gaat er toch iets mis: er is een noodrem. Alles hierover staat in `docs/v2/OFFLINE.md` (§5 uploaden, §6 noodrem).
 
 **Belangrijk:** De `.htaccess` is een verborgen bestand (begint met een punt). Je FTP-programma toont deze mogelijk niet standaard. Zet "verborgen bestanden tonen" aan in je FTP-instellingen.
 
@@ -45,7 +59,7 @@ De `.htaccess` doet drie dingen:
 
 **1. URL-routing** — Zorgt dat directe links werken (bijv. als iemand de pagina herlaadt). Zonder dit krijg je een 404-fout.
 
-**2. Caching** — Audio, afbeeldingen en scripts worden door de browser opgeslagen zodat ze niet elke keer opnieuw geladen hoeven worden. HTML wordt elk uur ververst zodat updates snel zichtbaar zijn.
+**2. Caching** — Audio, afbeeldingen en scripts worden door de browser opgeslagen zodat ze niet elke keer opnieuw geladen hoeven worden. HTML en `sw.js` worden bij elk bezoek bij de server nagevraagd, zodat updates direct doorkomen.
 
 **3. Beveiliging (CSP)** — Blokkeert ongeautoriseerde scripts en verbindingen. Alleen jouw domein, Supabase en EmailJS zijn toegestaan.
 
