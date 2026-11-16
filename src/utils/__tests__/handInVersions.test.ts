@@ -21,6 +21,12 @@ describe('handInVersions', () => {
     expect(compositionFingerprint(data(0), 'Andere titel')).not.toBe(a);
   });
 
+  it('een ander tempo is een andere versie; 120 houdt de oude vingerafdruk (V2 Fase 4)', () => {
+    const a = compositionFingerprint(data(0), 'Storm');
+    expect(compositionFingerprint({ ...data(0), bpm: 90 }, 'Storm')).not.toBe(a);
+    expect(compositionFingerprint({ ...data(0), bpm: 120 }, 'Storm')).toBe(a);
+  });
+
   it('telt versies op, maar niet bij dezelfde inhoud', () => {
     const fp1 = compositionFingerprint(data(0), 'Storm');
     expect(recordVersion('sub-1', fp1).version).toBe(1);

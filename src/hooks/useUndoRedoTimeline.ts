@@ -20,6 +20,9 @@ const MAX_HISTORY = 50;
 interface TimelineSnapshot {
   tracks: Track[];
   sections: Section[];
+  /** Tempo (V2 Fase 4): een tempowissel is één stap — terugzetten herstelt
+   *  tempo én (ongewijzigde) clipposities in één keer. */
+  bpm: number;
 }
 
 /** Deep clone tracks array (clips zijn shallow-safe: alleen primitieven) */
@@ -37,10 +40,11 @@ function cloneSections(sections: Section[]): Section[] {
 }
 
 /** Create a snapshot from current state */
-function createSnapshot(tracks: Track[], sections: Section[]): TimelineSnapshot {
+function createSnapshot(tracks: Track[], sections: Section[], bpm: number): TimelineSnapshot {
   return {
     tracks: cloneTracks(tracks),
     sections: cloneSections(sections),
+    bpm,
   };
 }
 
@@ -49,7 +53,10 @@ function effectsEqual(a: Clip['effects'], b: Clip['effects']): boolean {
   if (a === b) return true;
   if (!a || !b) return false;
   return a.volume === b.volume && a.mute === b.mute && a.pitch === b.pitch
-    && a.reverb === b.reverb && a.fadeIn === b.fadeIn && a.fadeOut === b.fadeOut;
+    && a.reverb === b.reverb && a.fadeIn === b.fadeIn && a.fadeOut === b.fadeOut
+    // Vervormen (V2 Fase 4)
+    && a.speed === b.speed && a.reverse === b.reverse
+    && a.echo === b.echo && a.filter === b.filter;
 }
 
 /**
@@ -104,7 +111,7 @@ function sectionsEqual(a: Section[], b: Section[]): boolean {
 
 /** Check of twee snapshots identiek zijn */
 function snapshotsEqual(a: TimelineSnapshot, b: TimelineSnapshot): boolean {
-  return tracksEqual(a.tracks, b.tracks) && sectionsEqual(a.sections, b.sections);
+  return a.bpm === b.bpm && tracksEqual(a.tracks, b.tracks) && sectionsEqual(a.sections, b.sections);
 }
 
 export function useUndoRedoTimeline() {
@@ -126,7 +133,7 @@ export function useUndoRedoTimeline() {
   // Initialiseer met huidige state
   useEffect(() => {
     const state = useTimelineStore.getState();
-    historyRef.current = [createSnapshot(state.tracks, state.sections)];
+    historyRef.current = [createSnapshot(state.tracks, state.sections, state.bpm)];
     indexRef.current = 0;
   }, []);
 
@@ -137,12 +144,16 @@ export function useUndoRedoTimeline() {
         // Negeer als wij zelf aan het herstellen zijn
         if (isRestoringRef.current) return;
 
-        // Negeer als tracks EN sections niet veranderd zijn
-        if (state.tracks === prevState.tracks && state.sections === prevState.sections) return;
+        // Negeer als tracks, sections EN tempo niet veranderd zijn
+        if (
+          state.tracks === prevState.tracks &&
+          state.sections === prevState.sections &&
+          state.bpm === prevState.bpm
+        ) return;
 
         const currentIndex = indexRef.current;
         const history = historyRef.current;
-        const newSnapshot = createSnapshot(state.tracks, state.sections);
+        const newSnapshot = createSnapshot(state.tracks, state.sections, state.bpm);
 
         // Negeer als snapshot identiek is aan huidige positie
         if (currentIndex >= 0 && snapshotsEqual(newSnapshot, history[currentIndex])) {
@@ -183,7 +194,7 @@ export function useUndoRedoTimeline() {
     isRestoringRef.current = true;
     useTimelineStore.getState().loadTimeline({
       tracks: cloneTracks(snapshot.tracks),
-      bpm: useTimelineStore.getState().bpm,
+      bpm: snapshot.bpm,
       totalBeats: useTimelineStore.getState().totalBeats,
       isLooping: useTimelineStore.getState().isLooping,
       sections: cloneSections(snapshot.sections),
@@ -211,7 +222,7 @@ export function useUndoRedoTimeline() {
     isRestoringRef.current = true;
     useTimelineStore.getState().loadTimeline({
       tracks: cloneTracks(snapshot.tracks),
-      bpm: useTimelineStore.getState().bpm,
+      bpm: snapshot.bpm,
       totalBeats: useTimelineStore.getState().totalBeats,
       isLooping: useTimelineStore.getState().isLooping,
       sections: cloneSections(snapshot.sections),

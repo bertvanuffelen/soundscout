@@ -21,7 +21,14 @@ import {
   createSampleMap,
   type SmartSnapResult,
 } from '../utils/clipCollision';
-import { getEffectiveClipEndBeat, isAllowedBpm, normalizeBpm } from '../utils/audio';
+import {
+  getClipLengthFactor,
+  getClipPlaybackDuration,
+  getEffectiveClipEndBeat,
+  isAllowedBpm,
+  normalizeBpm,
+} from '../utils/audio';
+import { clampFades } from '../utils/clipEffectsUi';
 import { generateClipId } from '../utils/uuid';
 
 function createEmptyTracks(): Track[] {
@@ -109,7 +116,16 @@ interface TimelineStore {
   // Clip effects (#33) — pitch + reverb + fade (#79)
   updateClipPitch: (trackIndex: number, clipId: string, pitch: number) => void;
   updateClipReverb: (trackIndex: number, clipId: string, reverb: number) => void;
-  updateClipEffects: (trackIndex: number, clipId: string, effects: Partial<import('../types').ClipEffects>) => void;
+  /**
+   * Zet clip-effecten (alleen de meegegeven velden). Met `sample` erbij
+   * worden fades geklemd op de lengte zoals gehoord (na snelheid/tempo).
+   */
+  updateClipEffects: (
+    trackIndex: number,
+    clipId: string,
+    effects: Partial<import('../types').ClipEffects>,
+    sample?: Sample,
+  ) => void;
 
   // Track actions
   clearTrack: (trackIndex: number) => void;
@@ -395,19 +411,18 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
 
                 const updated = { ...clip, trimStart, trimEnd };
 
-                // Clamp fade durations to fit new clip duration (#79)
+                // Clamp fade durations to fit new clip duration (#79).
+                // Fades zijn seconden zoals GEHOORD (na snelheid en, voor
+                // loops, tempo-uitrekking); trim staat in bron-seconden.
                 const fadeIn = clip.effects?.fadeIn ?? 0;
                 const fadeOut = clip.effects?.fadeOut ?? 0;
                 if (fadeIn > 0 || fadeOut > 0) {
-                  const newDuration = trimEnd - trimStart;
-                  const totalFade = fadeIn + fadeOut;
-                  if (totalFade > newDuration) {
-                    // Proportionally scale both fades to fit
-                    const scale = newDuration / totalFade;
+                  const newDuration =
+                    (trimEnd - trimStart) * getClipLengthFactor(clip, { id: clip.sampleId }, prev.bpm);
+                  if (fadeIn + fadeOut > newDuration) {
                     updated.effects = {
                       ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
-                      fadeIn: Math.round(fadeIn * scale * 10) / 10,
-                      fadeOut: Math.round(fadeOut * scale * 10) / 10,
+                      ...clampFades(fadeIn, fadeOut, newDuration),
                     };
                   }
                 }
@@ -684,23 +699,33 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
     }));
   },
 
-  updateClipEffects: (trackIndex, clipId, effects) => {
+  updateClipEffects: (trackIndex, clipId, effects, sample) => {
     set((prev) => ({
       tracks: prev.tracks.map((track, i) =>
         i === trackIndex
           ? {
               ...track,
-              clips: track.clips.map((clip) =>
-                clip.id === clipId
-                  ? {
-                      ...clip,
-                      effects: {
-                        ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
-                        ...effects,
-                      },
-                    }
-                  : clip,
-              ),
+              clips: track.clips.map((clip) => {
+                if (clip.id !== clipId) return clip;
+                const merged: Clip = {
+                  ...clip,
+                  effects: {
+                    ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
+                    ...effects,
+                  },
+                };
+                // Vangnet (V2 Fase 4): een snelheidswissel maakt de clip
+                // korter; fades (seconden zoals gehoord) mogen er niet
+                // overheen. Kan alleen met de sample (bronduur) erbij.
+                if (sample && merged.effects) {
+                  const heard = getClipPlaybackDuration(merged, sample, prev.bpm);
+                  const { fadeIn, fadeOut } = merged.effects;
+                  if (fadeIn + fadeOut > heard) {
+                    merged.effects = { ...merged.effects, ...clampFades(fadeIn, fadeOut, heard) };
+                  }
+                }
+                return merged;
+              }),
             }
           : track,
       ),

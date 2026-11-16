@@ -1,4 +1,4 @@
-import { memo, useCallback, useState, useRef } from 'react';
+import { memo, useCallback, useMemo, useState, useRef } from 'react';
 import { createPortal } from 'react-dom';
 import { useTranslation } from 'react-i18next';
 import { useDroppable } from '@dnd-kit/core';
@@ -12,6 +12,7 @@ import { useAppStore } from '../../stores/appStore';
 import { Clip } from './Clip';
 import { VolumePopover } from './VolumePopover';
 import { audioService } from '../../services/AudioService';
+import { findOverlappingClipIds } from '../../utils/clipEffectsUi';
 
 interface TrackProps {
   track: TrackType;
@@ -112,6 +113,14 @@ export const Track = memo(function Track({
     data: { type: 'track', trackIndex },
     disabled: readOnly,
   });
+
+  // Overlap na een tempowissel (V2 Fase 4): losse geluiden houden hun lengte
+  // in seconden en kunnen over hun buurman vallen. We verschuiven niets maar
+  // laten het zien (alleen in de bewerkmodus).
+  const overlappingIds = useMemo(
+    () => (readOnly ? new Set<string>() : findOverlappingClipIds(track.clips, getSampleById, bpm)),
+    [readOnly, track.clips, getSampleById, bpm],
+  );
 
   const clipCount = track.clips.length;
   const trackLabel = `${t('common.tracks')} ${trackIndex + 1}, ${clipCount} ${t('common.clips').toLowerCase()}`;
@@ -230,6 +239,7 @@ export const Track = memo(function Track({
               totalBeats={totalBeats}
               readOnly={readOnly}
               isMuted={isClipMuted}
+              overlapping={overlappingIds.has(clip.id)}
               locked={templateLockOptions.clipsLocked && (clip.fromTemplate === true)}
             />
           );

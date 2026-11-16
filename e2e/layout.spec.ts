@@ -116,7 +116,7 @@ for (const vp of VIEWPORTS) {
       if (hasClips) {
         await step('09-studio-clip-geselecteerd', async (p) => {
           await p.locator('[role="listitem"]').first().click({ timeout: 8000 });
-          await p.getByRole('button', { name: 'Effecten' }).waitFor({ timeout: 5000 });
+          await p.getByRole('button', { name: 'Vervormen' }).waitFor({ timeout: 5000 });
         });
       }
 

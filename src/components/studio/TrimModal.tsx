@@ -6,6 +6,11 @@
  * - Drag handles to adjust trim start/end
  * - Preview playback of trimmed region
  * - Apply/Cancel/Reset actions
+ *
+ * V2 Fase 4: trimwaarden blijven in BRON-seconden staan (de golfvorm-as),
+ * maar de getoonde tijden zijn zoals je ze HOORT (na snelheid en, bij loops,
+ * tempo). Staat "achterstevoren" aan, dan zie (en knip) je het omgekeerde
+ * geluid — de motor rekent trimStart vanaf het begin van het omgekeerde geluid.
  */
 
 import { memo, useState, useEffect, useCallback, useRef } from 'react';
@@ -14,6 +19,9 @@ import { X, Play, Square, RotateCcw } from 'lucide-react';
 import { Waveform } from './Waveform';
 import { audioService } from '../../services/AudioService';
 import type { Clip, Sample } from '../../types';
+import { getClipLengthFactor } from '../../utils/audio';
+import { resolveSampleKind } from '../../utils/sampleKinds';
+import { toVervormenValues } from '../../utils/clipEffectsUi';
 import type { WaveformData } from '../../utils/waveform';
 import { MIN_TRIM_DURATION_SECONDS } from '../../constants/config';
 import { SampleIcon } from '../../utils/iconMap';
@@ -23,6 +31,8 @@ import { usePreviewPlayhead } from '../../hooks/usePreviewPlayhead';
 interface TrimModalProps {
   clip: Clip;
   sample: Sample;
+  /** Tempo van de compositie (lengte zoals gehoord, voorbeeld als de export) */
+  bpm: number;
   isOpen: boolean;
   onClose: () => void;
   onApply: (trimStart: number, trimEnd: number) => void;
@@ -31,6 +41,7 @@ interface TrimModalProps {
 export const TrimModal = memo(function TrimModal({
   clip,
   sample,
+  bpm,
   isOpen,
   onClose,
   onApply,
@@ -75,7 +86,7 @@ export const TrimModal = memo(function TrimModal({
     return () => {
       // Cleanup on close
       stopPlayhead();
-      audioService.stopSample(sample.id);
+      audioService.stopPreviewWithEffects();
     };
   }, [isOpen, sample.id, clip.trimStart, clip.trimEnd, sample.duration, stopPlayhead]);
 
@@ -110,11 +121,15 @@ export const TrimModal = memo(function TrimModal({
     [sample.duration],
   );
 
-  // Preview playback
+  // Hoe veel langer/korter de clip klinkt dan de bron (snelheid + tempo)
+  const lengthFactor = getClipLengthFactor(clip, sample, bpm);
+  const reversed = clip.effects?.reverse === true;
+
+  // Preview playback — met de effecten van de clip, dus zoals de export
   const handlePreview = useCallback(() => {
     if (isPlaying) {
       // Stop playback
-      audioService.stopSample(sample.id);
+      audioService.stopPreviewWithEffects();
       setIsPlaying(false);
       stopPlayhead();
       return;
@@ -124,9 +139,15 @@ export const TrimModal = memo(function TrimModal({
     setIsPlaying(true);
 
     const duration = trimEnd - trimStart;
-    audioService.playSampleRegion(sample.id, trimStart, duration);
-    startPlayhead(trimStart, duration, waveform?.duration ?? sample.duration);
-  }, [isPlaying, sample.id, sample.duration, trimStart, trimEnd, waveform, startPlayhead, stopPlayhead]);
+    const fx = toVervormenValues(clip.effects);
+    void audioService.playSampleWithEffects(sample.id, trimStart, duration, fx, {
+      bpm,
+      kind: resolveSampleKind(sample),
+    });
+    // Lijn in gehoorde seconden; ×lengtefactor houdt de verhouding op de as gelijk
+    const total = (waveform?.duration ?? sample.duration) * lengthFactor;
+    startPlayhead(trimStart * lengthFactor, duration * lengthFactor, total);
+  }, [isPlaying, sample, clip.effects, bpm, trimStart, trimEnd, waveform, lengthFactor, startPlayhead, stopPlayhead]);
 
   // Reset to original
   const handleReset = useCallback(() => {
@@ -137,12 +158,12 @@ export const TrimModal = memo(function TrimModal({
   // Apply and close
   const handleApply = useCallback(() => {
     // Stop any playback
-    audioService.stopSample(sample.id);
+    audioService.stopPreviewWithEffects();
     stopPlayhead();
 
     onApply(trimStart, trimEnd);
     onClose();
-  }, [trimStart, trimEnd, onApply, onClose, sample.id, stopPlayhead]);
+  }, [trimStart, trimEnd, onApply, onClose, stopPlayhead]);
 
   // Handle pointer events for drag handles
   const handlePointerDown = useCallback(
@@ -178,10 +199,10 @@ export const TrimModal = memo(function TrimModal({
 
   // Handle close with cleanup
   const handleClose = useCallback(() => {
-    audioService.stopSample(sample.id);
+    audioService.stopPreviewWithEffects();
     stopPlayhead();
     onClose();
-  }, [onClose, sample.id, stopPlayhead]);
+  }, [onClose, stopPlayhead]);
 
   // Gedeeld dialog-gedrag: Escape sluit (annuleert), focus trap, scroll-lock
   const modalRef = useModalBehavior(handleClose, { isOpen });
@@ -240,6 +261,7 @@ export const TrimModal = memo(function TrimModal({
                       width={containerWidth - 16}
                       height={100}
                       trimRegion={[trimStart, trimEnd]}
+                      reversed={reversed}
                     />
                     {/* Afspeellijn van het voorbeeld: per frame verplaatst (usePreviewPlayhead) */}
                     <div
@@ -278,13 +300,13 @@ export const TrimModal = memo(function TrimModal({
           {/* Time display */}
           <div className="flex justify-between mt-3 text-xs">
             <span className="text-neutral-500 font-mono">
-              {trimStart.toFixed(2)}s
+              {(trimStart * lengthFactor).toFixed(2)}s
             </span>
-            <span className="font-medium text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded">
-              {trimDuration.toFixed(2)}s
+            <span className="font-medium text-neutral-700 bg-neutral-100 px-2 py-0.5 rounded" data-testid="trim-duration">
+              {(trimDuration * lengthFactor).toFixed(2)}s
             </span>
             <span className="text-neutral-500 font-mono">
-              {trimEnd.toFixed(2)}s
+              {(trimEnd * lengthFactor).toFixed(2)}s
             </span>
           </div>
         </div>

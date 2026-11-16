@@ -10,7 +10,8 @@ import { VolumePopover } from './VolumePopover';
 import { EffectsModal } from './EffectsModal';
 import TipModal from '../ui/TipModal';
 import { SampleIcon } from '../../utils/iconMap';
-import { getClipDuration, getEffectiveClipDurationBeats } from '../../utils/audio';
+import { getClipPlaybackDuration, getEffectiveClipDurationBeats } from '../../utils/audio';
+import { hasClipEffects } from '../../utils/clipEffectsUi';
 import { MAX_SECTIONS, ZOOM_MIN, ZOOM_MAX, ZOOM_STEP, MAX_TOTAL_BEATS, MIN_TOTAL_BEATS, EXTEND_BEATS_STEP, MAX_TRACK_COUNT } from '../../constants/config';
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
 import { useSelectionStore } from '../../stores/selectionStore';
@@ -379,7 +380,7 @@ export const Timeline = memo(function Timeline({
                   {t(clipEdit.sample.name)}
                 </span>
                 <span className="text-[10px] text-neutral-400 inline-flex items-center gap-0.5">
-                  {getClipDuration(clipEdit.clip, clipEdit.sample).toFixed(1)}s
+                  {getClipPlaybackDuration(clipEdit.clip, clipEdit.sample, bpm).toFixed(1)}s
                   {(clipEdit.clip.trimStart !== undefined || clipEdit.clip.trimEnd !== undefined) && <Scissors size={10} aria-hidden="true" />}
                 </span>
               </div>
@@ -473,15 +474,15 @@ export const Timeline = memo(function Timeline({
                 </button>
               )}
 
-              {/* Effects (#33, #79) — pitch, reverb, fade — niet voor sequence-clips */}
+              {/* Vervormen (#33, #79, V2 Fase 4) — klank + vervormen — niet voor sequence-clips */}
               {clipEdit.onClipEffectsApply && !clipEdit.onEditPattern && (
                 <button
                   onClick={handleEffectsClick}
-                  aria-label={t('studio.effects')}
-                  title={t('studio.effects')}
+                  aria-label={t('vervormen.button')}
+                  title={t('vervormen.button')}
                   className={`
                     p-1 sm:p-1.5 icon-btn rounded-lg transition-colors
-                    ${((clipEdit.clip.effects?.pitch ?? 0) !== 0 || (clipEdit.clip.effects?.reverb ?? 0) > 0 || (clipEdit.clip.effects?.fadeIn ?? 0) > 0 || (clipEdit.clip.effects?.fadeOut ?? 0) > 0)
+                    ${hasClipEffects(clipEdit.clip.effects)
                       ? 'bg-accent-50 text-accent-600 hover:bg-accent-100'
                       : 'hover:bg-neutral-100 active:bg-neutral-200 text-neutral-600'
                     }
@@ -681,11 +682,12 @@ export const Timeline = memo(function Timeline({
         document.body,
       )}
 
-      {/* Effects modal (#33, #79) — pitch, reverb, fade */}
-      {clipEdit?.onClipEffectsApply && (
+      {/* Vervormen-modal (#33, #79, V2 Fase 4) */}
+      {clipEdit?.onClipEffectsApply && !clipEdit.onEditPattern && (
         <EffectsModal
           clip={clipEdit.clip}
           sample={clipEdit.sample}
+          bpm={bpm}
           isOpen={showEffectsModal}
           onClose={handleCloseEffectsModal}
           onApply={(effects) => {

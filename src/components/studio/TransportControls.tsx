@@ -1,4 +1,4 @@
-import { memo, useState, useEffect, useRef } from 'react';
+import { memo, useState, useEffect, useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Play, Pause, SkipBack, Repeat, ListMusic } from 'lucide-react';
 import { cn } from '../../utils/cn';
@@ -18,6 +18,8 @@ interface TransportControlsProps {
   onLoopWhole: () => void;
   onLoopSection: () => void;
   onLoopOff: () => void;
+  /** Extra bediening rechts in de balk (tempo-keuze, V2 Fase 4). */
+  trailing?: ReactNode;
 }
 
 export const TransportControls = memo(function TransportControls({
@@ -31,6 +33,7 @@ export const TransportControls = memo(function TransportControls({
   onLoopWhole,
   onLoopSection,
   onLoopOff,
+  trailing,
 }: TransportControlsProps) {
   const { t } = useTranslation();
 
@@ -61,7 +64,12 @@ export const TransportControls = memo(function TransportControls({
     : t('transport.loop');
 
   return (
-    <div className="flex items-center justify-center gap-2 sm:gap-3 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-t border-border-subtle pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+    <div className="flex items-center gap-2 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-t border-border-subtle pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+      {/* Drie zones: lege linkerkant · knoppen in het midden · extra rechts.
+          De zijkanten delen de ruimte, zodat het midden gecentreerd blijft en
+          extra bediening (tempo) nooit over de knoppen heen valt. */}
+      <div className="flex-1 min-w-0" aria-hidden="true" />
+      <div className="flex items-center justify-center gap-2 sm:gap-3 shrink-0">
       {/* Play / Pause */}
       <button
         onClick={isPlaying ? onPause : onPlay}
@@ -151,6 +159,8 @@ export const TransportControls = memo(function TransportControls({
           </>
         )}
       </div>
+      </div>
+      <div className="flex-1 flex items-center justify-end">{trailing}</div>
     </div>
   );
 });

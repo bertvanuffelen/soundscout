@@ -478,6 +478,52 @@ describe('timelineStore', () => {
       expect(updatedClip.trimStart).toBe(0.5);
       expect(updatedClip.trimEnd).toBe(1.5);
     });
+
+    it('klemt fades op de lengte zoals gehoord (snelheid 2×, V2 Fase 4)', () => {
+      const store = useTimelineStore.getState();
+      const clip: Clip = {
+        ...createClip('sample-3', 0),
+        effects: { volume: 0, pitch: 0, reverb: 0, fadeIn: 0.8, fadeOut: 0.8, speed: 2 },
+      };
+      store.addClip(0, clip, mockSamples);
+      // 2 s bron op 2× = 1 s gehoord: 0,8 + 0,8 past niet meer
+      store.updateClipTrim(0, clip.id, 0, 2);
+      const fx = useTimelineStore.getState().tracks[0].clips[0].effects!;
+      expect(fx.fadeIn + fx.fadeOut).toBeLessThanOrEqual(1);
+      expect(fx.fadeIn).toBeCloseTo(fx.fadeOut);
+    });
+  });
+
+  describe('updateClipEffects (V2 Fase 4)', () => {
+    it('zet alleen de meegegeven velden en klemt fades met de sample erbij', () => {
+      const store = useTimelineStore.getState();
+      const clip: Clip = {
+        ...createClip('sample-1', 0),
+        effects: { volume: -3, pitch: 2, reverb: 0, fadeIn: 1, fadeOut: 0.6 },
+      };
+      store.addClip(0, clip, mockSamples);
+      store.updateClipEffects(0, clip.id, { speed: 2 }, mockSamples[0]);
+      const fx = useTimelineStore.getState().tracks[0].clips[0].effects!;
+      expect(fx.speed).toBe(2);
+      expect(fx.pitch).toBe(2);
+      expect(fx.volume).toBe(-3);
+      // 2 s op 2× = 1 s
+      expect(fx.fadeIn + fx.fadeOut).toBeLessThanOrEqual(1);
+    });
+  });
+
+  describe('setBpm (V2 Fase 4)', () => {
+    it('verschuift geen clips: overlap na een sneller tempo blijft staan', () => {
+      const store = useTimelineStore.getState();
+      store.addClip(0, { ...createClip('sample-1', 0), id: 'a' }, mockSamples);
+      store.addClip(0, { ...createClip('sample-1', 4), id: 'b' }, mockSamples);
+      store.setBpm(135);
+      const state = useTimelineStore.getState();
+      expect(state.bpm).toBe(135);
+      expect(state.tracks[0].clips.map((c) => c.startBeat)).toEqual([0, 4]);
+      store.setBpm(100); // geen toegestaan tempo
+      expect(useTimelineStore.getState().bpm).toBe(135);
+    });
   });
 
   describe('clearAllTracks', () => {

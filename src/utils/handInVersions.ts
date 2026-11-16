@@ -9,6 +9,7 @@
  */
 
 import type { CompositionData } from '../types';
+import { DEFAULT_BPM } from '../constants/config';
 
 const KEY = 'soundscout:versions';
 const MAX_ENTRIES = 30;
@@ -28,14 +29,18 @@ type VersionMap = Record<string, VersionInfo>;
  * beveiliging: alleen "is dit nog hetzelfde?".
  */
 export function compositionFingerprint(data: CompositionData, title: string): string {
-  const relevant = JSON.stringify([
+  const parts: unknown[] = [
     data.tracks,
     data.totalBeats,
     data.sections ?? [],
     data.sequences ?? [],
     data.praatplaatPosition ?? null,
     title.trim(),
-  ]);
+  ];
+  // Tempo (V2 Fase 4): een ander tempo is een andere versie. Alleen
+  // toegevoegd als het niet 120 is, zodat bestaande vingerafdrukken gelijk blijven.
+  if (data.bpm !== DEFAULT_BPM) parts.push(data.bpm);
+  const relevant = JSON.stringify(parts);
   let hash = 0x811c9dc5;
   for (let i = 0; i < relevant.length; i++) {
     hash ^= relevant.charCodeAt(i);

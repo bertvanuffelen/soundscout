@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2144 teksten in 54 secties._
+_Stand: 2210 teksten in 57 secties._
 
 ## app
 
@@ -2063,6 +2063,43 @@ _Stand: 2144 teksten in 54 secties._
 | `album.expiredDescription` | Deze albumlink is verlopen. De docent kan een nieuwe maken. | This album link has expired. The teacher can create a new one. |
 | `album.gestureHint` | Klik op de knop hieronder om het album te openen en de soundscapes te beluisteren. | Click the button below to open the album and listen to the soundscapes. |
 
+## melodie
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `melodie.tabs.label` | Soort sequence | Sequence type |
+| `melodie.tabs.rhythm` | Ritme | Rhythm |
+| `melodie.tabs.melody` | Melodie | Melody |
+| `melodie.switch.title.rhythm` | Nieuw ritme maken? | Make a new rhythm? |
+| `melodie.switch.title.melody` | Nieuwe melodie maken? | Make a new melody? |
+| `melodie.switch.body.rhythm` | In "{{name}}" staat al een melodie. Die blijft bewaard.<br>Wil je een nieuwe sequence voor een ritme beginnen? | "{{name}}" already has a melody. It will be kept.<br>Do you want to start a new sequence for a rhythm? |
+| `melodie.switch.body.melody` | In "{{name}}" staat al een ritme. Dat blijft bewaard.<br>Wil je een nieuwe sequence voor een melodie beginnen? | "{{name}}" already has a rhythm. It will be kept.<br>Do you want to start a new sequence for a melody? |
+| `melodie.switch.confirm.rhythm` | Nieuw ritme | New rhythm |
+| `melodie.switch.confirm.melody` | Nieuwe melodie | New melody |
+| `melodie.voice.title` | Kies een klank | Choose a sound |
+| `melodie.voice.button` | Klank: {{name}} | Sound: {{name}} |
+| `melodie.voice.presets.soft` | Warm | Warm |
+| `melodie.voice.presets.bright` | Helder | Bright |
+| `melodie.voice.presets.pluck` | Tokkel | Pluck |
+| `melodie.voice.previewPreset` | Luister naar {{name}} | Listen to {{name}} |
+| `melodie.voice.fromLibrary` | Geluid uit je bibliotheek | Sound from your library |
+| `melodie.voice.libraryEmpty` | Je bibliotheek is nog leeg. Verzamel eerst geluiden. | Your library is still empty. Collect some sounds first. |
+| `melodie.voice.missing` | Kies een klank | Choose a sound |
+| `melodie.octaves.label` | Octaven | Octaves |
+| `melodie.octaves.count_one` | {{count}} octaaf | {{count}} octave |
+| `melodie.octaves.count_other` | {{count}} octaven | {{count}} octaves |
+| `melodie.octaves.add` | Octaaf erbij | Add an octave |
+| `melodie.octaves.remove` | Octaaf eraf | Remove an octave |
+| `melodie.swing.label` | Swing | Swing |
+| `melodie.swing.straight` | Recht | Straight |
+| `melodie.swing.amount` | {{percent}} procent swing | {{percent}} per cent swing |
+| `melodie.velocity.label` | Sterkte | Strength |
+| `melodie.velocity.loud` | Hard | Loud |
+| `melodie.velocity.medium` | Middel | Medium |
+| `melodie.velocity.soft` | Zacht | Soft |
+| `melodie.cell` | {{note}}, tel {{step}} | {{note}}, beat {{step}} |
+| `melodie.cellActive` | {{note}}, tel {{step}}, {{level}} | {{note}}, beat {{step}}, {{level}} |
+
 ## sequencer
 
 | Sleutel | NL | EN |
@@ -2112,7 +2149,7 @@ _Stand: 2144 teksten in 54 secties._
 | `sequencer.studio.libraryHeading` | Sequences | Sequences |
 | `sequencer.studio.deleteWithClips` | Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg. | This sequence is still on the timeline. Deleting it also removes those blocks. |
 | `sequencer.studio.playsSequence` | Speelt deze sequence (loopt rond) | Plays this sequence (loops) |
-| `sequencer.studio.firstRunHint` | In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn. | In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Done? Drag your sequence from the library onto the timeline. |
+| `sequencer.studio.firstRunHint` | In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn. | In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline. |
 
 ## about
 
@@ -2216,6 +2253,50 @@ _Stand: 2144 teksten in 54 secties._
 | `luisterspiegel.questions.manySounds1` | Je gebruikt veel geluiden. Hoor je het belangrijkste geluid goed? | You use lots of sounds. Can you hear the most important one clearly? |
 | `luisterspiegel.questions.always1` | Luister naar het begin en het einde. Klinken ze zoals jij wilt? | Listen to the beginning and the end. Do they sound the way you want? |
 | `luisterspiegel.questions.always2` | Kan een luisteraar horen waar jouw soundscape over gaat? | Can a listener hear what your soundscape is about? |
+
+## vervormen
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `vervormen.title` | Vervormen | Transform |
+| `vervormen.button` | Vervormen | Transform |
+| `vervormen.close` | Sluiten | Close |
+| `vervormen.columnSound` | Klank | Sound |
+| `vervormen.columnShape` | Vervormen | Transform |
+| `vervormen.newBadge` | nieuw | new |
+| `vervormen.speed` | Snelheid | Speed |
+| `vervormen.speedOption` | Snelheid {{label}} | Speed {{label}} |
+| `vervormen.speedHint` | Sneller klinkt hoger en korter. | Faster sounds higher and shorter. |
+| `vervormen.reverse` | Achterstevoren | Backwards |
+| `vervormen.echo` | Echo | Echo |
+| `vervormen.echoMuch` | Veel | Lots |
+| `vervormen.off` | Uit | Off |
+| `vervormen.filter` | Filter | Filter |
+| `vervormen.filterDull` | Dof | Dull |
+| `vervormen.filterSharp` | Scherp | Bright |
+| `vervormen.filterOff` | Uit | Off |
+| `vervormen.filterDullValue` | Dof {{value}} | Dull {{value}} |
+| `vervormen.filterSharpValue` | Scherp {{value}} | Bright {{value}} |
+| `vervormen.fadeNone` | Geen | None |
+| `vervormen.fadeLong` | Lang | Long |
+| `vervormen.seconds` | {{value}} s | {{value}} s |
+| `vervormen.resetOne` | Terugzetten | Reset |
+| `vervormen.resetAll` | Alles terugzetten | Reset everything |
+| `vervormen.clipHasEffects` | vervormd | transformed |
+
+## tempo
+
+| Sleutel | NL | EN |
+|---|---|---|
+| `tempo.title` | Tempo | Tempo |
+| `tempo.choose` | Kies het tempo | Choose the tempo |
+| `tempo.slow` | Traag | Slow |
+| `tempo.calm` | Rustig | Calm |
+| `tempo.normal` | Normaal | Normal |
+| `tempo.fast` | Snel | Fast |
+| `tempo.buttonLabel` | Tempo: {{word}} ({{bpm}}) | Tempo: {{word}} ({{bpm}}) |
+| `tempo.locked` | Tempo {{bpm}}: de opdracht bepaalt het tempo | Tempo {{bpm}}: set by the assignment |
+| `tempo.overlap` | overlapt een ander geluid | overlaps another sound |
 
 ## unsavedWork
 

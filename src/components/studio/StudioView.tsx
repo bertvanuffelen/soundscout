@@ -28,6 +28,7 @@ import { StorytellingPanel, StorytellingToggle, StorytellingFilmstrip } from './
 import type { StudioViewMode } from './storytelling';
 // EditToolbar is now integrated into Timeline header bar
 import { TrimModal } from './TrimModal';
+import { TempoPicker } from './TempoPicker';
 import { SampleIcon } from '../../utils/iconMap';
 import { getOnSoundTextClass } from '../../utils/soundColor';
 import { Button } from '../ui';
@@ -336,7 +337,12 @@ export function StudioView() {
   const handleClipEffectsApply = useCallback(
     (effects: Partial<import('../../types').ClipEffects>) => {
       if (selectedClipData) {
-        updateClipEffects(selectedClipData.trackIndex, selectedClipData.clip.id, effects);
+        updateClipEffects(
+          selectedClipData.trackIndex,
+          selectedClipData.clip.id,
+          effects,
+          selectedClipData.sample,
+        );
       }
     },
     [selectedClipData, updateClipEffects],
@@ -620,6 +626,7 @@ export function StudioView() {
         onLoopWhole={sequencerOpen ? () => undefined : handleLoopWhole}
         onLoopSection={sequencerOpen ? () => undefined : handleLoopSection}
         onLoopOff={sequencerOpen ? () => undefined : handleLoopOff}
+        trailing={<TempoPicker />}
       />
 
       {/* Trim Modal */}
@@ -627,6 +634,7 @@ export function StudioView() {
         <TrimModal
           clip={selectedClipData.clip}
           sample={selectedClipData.sample}
+          bpm={bpm}
           isOpen={isTrimModalOpen}
           onClose={handleTrimModalClose}
           onApply={handleTrimApply}

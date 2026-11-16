@@ -50,3 +50,40 @@ describe('useUndoRedoTimeline (E3)', () => {
     expect(useTimelineStore.getState().tracks[0].volume).toBeUndefined();
   });
 });
+
+describe('useUndoRedoTimeline — tempo en Vervormen (V2 Fase 4)', () => {
+  beforeEach(() => {
+    useTimelineStore.getState().resetTimeline();
+    setClip(clip());
+  });
+
+  it('een tempowissel is één stap: terugzetten herstelt tempo én posities', () => {
+    // Twee losse geluiden die na de tempowissel overlappen — posities blijven staan
+    useTimelineStore.setState((s) => ({
+      tracks: s.tracks.map((tr, i) => (i === 0 ? { ...tr, clips: [clip({ id: 'a' }), clip({ id: 'b', startBeat: 4 })] } : tr)),
+    }));
+    const { result } = renderHook(() => useUndoRedoTimeline());
+    act(() => useTimelineStore.getState().setBpm(135));
+    expect(useTimelineStore.getState().bpm).toBe(135);
+    expect(useTimelineStore.getState().tracks[0].clips.map((c) => c.startBeat)).toEqual([0, 4]);
+    expect(result.current.canUndo).toBe(true);
+
+    act(() => result.current.undo());
+    expect(useTimelineStore.getState().bpm).toBe(120);
+    expect(useTimelineStore.getState().tracks[0].clips.map((c) => c.startBeat)).toEqual([0, 4]);
+    expect(result.current.canUndo).toBe(false);
+
+    act(() => result.current.redo());
+    expect(useTimelineStore.getState().bpm).toBe(135);
+  });
+
+  it('alleen een nieuw Vervormen-effect (snelheid) is ook een stap', () => {
+    const base = { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 };
+    setClip(clip({ effects: base }));
+    const { result } = renderHook(() => useUndoRedoTimeline());
+    act(() => useTimelineStore.getState().updateClipEffects(0, 'k1', { speed: 2 }));
+    expect(result.current.canUndo).toBe(true);
+    act(() => result.current.undo());
+    expect(firstClip().effects?.speed).toBeUndefined();
+  });
+});

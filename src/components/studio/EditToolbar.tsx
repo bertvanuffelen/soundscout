@@ -11,7 +11,8 @@ import { useTranslation } from 'react-i18next';
 import { Scissors, Trash2, Copy, Volume2, VolumeX } from 'lucide-react';
 import type { Clip, Sample } from '../../types';
 import { SampleIcon } from '../../utils/iconMap';
-import { getClipDuration } from '../../utils/audio';
+import { getClipPlaybackDuration } from '../../utils/audio';
+import { useTimelineStore } from '../../stores/timelineStore';
 import { VolumePopover } from './VolumePopover';
 
 interface EditToolbarProps {
@@ -42,8 +43,9 @@ export const EditToolbar = memo(function EditToolbar({
   const [popoverPos, setPopoverPos] = useState<{ left: number; top: number } | null>(null);
   const volumeBtnRef = useRef<HTMLButtonElement>(null);
 
-  // Calculate current clip duration (respects trim)
-  const duration = getClipDuration(clip, sample);
+  // Lengte zoals gehoord: trim, snelheid en (loops) tempo (V2 Fase 4)
+  const bpm = useTimelineStore((s) => s.bpm);
+  const duration = getClipPlaybackDuration(clip, sample, bpm);
   const isTrimmed = clip.trimStart !== undefined || clip.trimEnd !== undefined;
 
   const clipVolume = clip.effects?.volume ?? 0;

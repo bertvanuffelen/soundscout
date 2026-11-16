@@ -32,6 +32,19 @@ describe('buildCompositionData (B26)', () => {
     expect(data.storyboardId).toBe('praatplaat-pp1');
   });
 
+  it('neemt het tempo mee, en het tempo overleeft de schema-controle (V2 Fase 4)', async () => {
+    useTimelineStore.getState().setBpm(105);
+    const data = buildCompositionData();
+    expect(data.bpm).toBe(105);
+    const { CompositionDataSchema } = await import('../schemas');
+    const parsed = CompositionDataSchema.safeParse({ ...data, sequences: undefined });
+    expect(parsed.success && parsed.data.bpm).toBe(105);
+    // Laden zet het tempo terug in de tijdlijn
+    useTimelineStore.getState().resetTimeline();
+    useTimelineStore.getState().loadTimeline({ ...data, sequences: undefined });
+    expect(useTimelineStore.getState().bpm).toBe(105);
+  });
+
   it('laat de praatplaat (en het onherleidbare storyboard-id) weg voor templates', () => {
     const data = buildCompositionData({ includePraatplaat: false });
     expect(data.sequences).toHaveLength(1);

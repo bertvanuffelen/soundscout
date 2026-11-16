@@ -5,6 +5,7 @@ import { CSS } from '@dnd-kit/utilities';
 import { Lock, Sparkles } from 'lucide-react';
 import type { Clip as ClipType, Sample } from '../../types';
 import { getClipDurationBeats, getEffectiveClipDurationBeats, beatsToSeconds } from '../../utils/audio';
+import { hasClipEffects } from '../../utils/clipEffectsUi';
 import { SampleIcon } from '../../utils/iconMap';
 import { isSequenceSampleId } from '../../utils/sequencer';
 import { getOnSoundTextClass } from '../../utils/soundColor';
@@ -21,6 +22,8 @@ interface ClipProps {
   isMuted?: boolean;
   /** Locked clips (from template) can't be dragged or deleted */
   locked?: boolean;
+  /** Overlapt een andere clip op dit spoor (na een tempowissel, V2 Fase 4) */
+  overlapping?: boolean;
 }
 
 export const Clip = memo(function Clip({
@@ -32,6 +35,7 @@ export const Clip = memo(function Clip({
   readOnly = false,
   isMuted = false,
   locked = false,
+  overlapping = false,
 }: ClipProps) {
   const { t } = useTranslation();
 
@@ -54,9 +58,8 @@ export const Clip = memo(function Clip({
   // Tekst/icoon in navy of wit, wat het best leesbaar is op de geluidskleur
   const onSoundText = getOnSoundTextClass(sample.color);
 
-  // Effect indicators (#33)
-  const hasEffects = ((clip.effects?.pitch ?? 0) !== 0) ||
-                     ((clip.effects?.reverb ?? 0) > 0);
+  // Effect-indicator (#33, V2 Fase 4): elk klank- of vervormeffect telt
+  const hasEffects = hasClipEffects(clip.effects);
 
   // Locked clips (from template) can't be dragged, but can still be selected
   const dragDisabled = readOnly || locked;
@@ -181,7 +184,7 @@ export const Clip = memo(function Clip({
     beat: Math.round(clip.startBeat)
   })}, ${t('common.duration', {
     duration: durationSeconds.toFixed(1)
-  })}`;
+  })}${hasEffects ? `, ${t('vervormen.clipHasEffects')}` : ''}${overlapping ? `, ${t('tempo.overlap')}` : ''}`;
 
   return (
     <div
@@ -201,7 +204,9 @@ export const Clip = memo(function Clip({
         ${isMuted ? 'grayscale opacity-40' : ''}
         ${locked ? 'opacity-75' : ''}
         ${isSelected ? 'ring-2 ring-white ring-offset-1 ring-offset-black/20 shadow-lg z-20' : 'hover:shadow-md'}
+        ${overlapping ? 'outline-2 outline-dashed outline-error-600 -outline-offset-2' : ''}
       `}
+      data-overlapping={overlapping ? 'true' : undefined}
       style={{
         left: `${leftPercent}%`,
         width: `${Math.min(widthPercent, 100 - leftPercent)}%`,
@@ -220,7 +225,7 @@ export const Clip = memo(function Clip({
         userSelect: 'none',
         ...dragStyle,
       }}
-      title={t(sample.name)}
+      title={overlapping ? `${t(sample.name)} — ${t('tempo.overlap')}` : t(sample.name)}
     >
       {/* Loop repeat overlays (#65) */}
       {loopRepeats && loopRepeats.map((r, i) => (
@@ -249,7 +254,7 @@ export const Clip = memo(function Clip({
 
       {/* Effect indicator (#33) */}
       {hasEffects && (
-        <div className="absolute right-0.5 bottom-0.5 z-10 pointer-events-none">
+        <div className="absolute right-0.5 bottom-0.5 z-10 pointer-events-none" data-testid="clip-fx-indicator">
           <Sparkles size={10} className={`opacity-70 ${onSoundText}`} />
         </div>
       )}

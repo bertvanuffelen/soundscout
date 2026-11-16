@@ -114,7 +114,7 @@ async function openStudioWithClip(page: Page): Promise<void> {
 
 for (const modal of [
   { name: 'trimvenster', open: 'Inkorten' },
-  { name: 'effectenvenster', open: 'Effecten' },
+  { name: 'effectenvenster', open: 'Vervormen' },
 ]) {
   test(`${modal.name}: voorbeeld-afspeellijn loopt en verdwijnt`, async ({ page }) => {
     await openStudioWithClip(page);

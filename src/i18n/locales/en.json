@@ -2438,6 +2438,60 @@
     "expiredDescription": "This album link has expired. The teacher can create a new one.",
     "gestureHint": "Click the button below to open the album and listen to the soundscapes."
   },
+  "melodie": {
+    "tabs": {
+      "label": "Sequence type",
+      "rhythm": "Rhythm",
+      "melody": "Melody"
+    },
+    "switch": {
+      "title": {
+        "rhythm": "Make a new rhythm?",
+        "melody": "Make a new melody?"
+      },
+      "body": {
+        "rhythm": "\"{{name}}\" already has a melody. It will be kept.\nDo you want to start a new sequence for a rhythm?",
+        "melody": "\"{{name}}\" already has a rhythm. It will be kept.\nDo you want to start a new sequence for a melody?"
+      },
+      "confirm": {
+        "rhythm": "New rhythm",
+        "melody": "New melody"
+      }
+    },
+    "voice": {
+      "title": "Choose a sound",
+      "button": "Sound: {{name}}",
+      "presets": {
+        "soft": "Warm",
+        "bright": "Bright",
+        "pluck": "Pluck"
+      },
+      "previewPreset": "Listen to {{name}}",
+      "fromLibrary": "Sound from your library",
+      "libraryEmpty": "Your library is still empty. Collect some sounds first.",
+      "missing": "Choose a sound"
+    },
+    "octaves": {
+      "label": "Octaves",
+      "count_one": "{{count}} octave",
+      "count_other": "{{count}} octaves",
+      "add": "Add an octave",
+      "remove": "Remove an octave"
+    },
+    "swing": {
+      "label": "Swing",
+      "straight": "Straight",
+      "amount": "{{percent}} per cent swing"
+    },
+    "velocity": {
+      "label": "Strength",
+      "loud": "Loud",
+      "medium": "Medium",
+      "soft": "Soft"
+    },
+    "cell": "{{note}}, beat {{step}}",
+    "cellActive": "{{note}}, beat {{step}}, {{level}}"
+  },
   "sequencer": {
     "title": "Sequencer Lab",
     "devBadge": "DEV",
@@ -2495,7 +2549,7 @@
       "libraryHeading": "Sequences",
       "deleteWithClips": "This sequence is still on the timeline. Deleting it also removes those blocks.",
       "playsSequence": "Plays this sequence (loops)",
-      "firstRunHint": "In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Done? Drag your sequence from the library onto the timeline."
+      "firstRunHint": "In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline."
     }
   },
   "about": {
@@ -2617,6 +2671,44 @@
       "always1": "Listen to the beginning and the end. Do they sound the way you want?",
       "always2": "Can a listener hear what your soundscape is about?"
     }
+  },
+  "vervormen": {
+    "title": "Transform",
+    "button": "Transform",
+    "close": "Close",
+    "columnSound": "Sound",
+    "columnShape": "Transform",
+    "newBadge": "new",
+    "speed": "Speed",
+    "speedOption": "Speed {{label}}",
+    "speedHint": "Faster sounds higher and shorter.",
+    "reverse": "Backwards",
+    "echo": "Echo",
+    "echoMuch": "Lots",
+    "off": "Off",
+    "filter": "Filter",
+    "filterDull": "Dull",
+    "filterSharp": "Bright",
+    "filterOff": "Off",
+    "filterDullValue": "Dull {{value}}",
+    "filterSharpValue": "Bright {{value}}",
+    "fadeNone": "None",
+    "fadeLong": "Long",
+    "seconds": "{{value}} s",
+    "resetOne": "Reset",
+    "resetAll": "Reset everything",
+    "clipHasEffects": "transformed"
+  },
+  "tempo": {
+    "title": "Tempo",
+    "choose": "Choose the tempo",
+    "slow": "Slow",
+    "calm": "Calm",
+    "normal": "Normal",
+    "fast": "Fast",
+    "buttonLabel": "Tempo: {{word}} ({{bpm}})",
+    "locked": "Tempo {{bpm}}: set by the assignment",
+    "overlap": "overlaps another sound"
   },
   "unsavedWork": {
     "title": "Your soundscape isn't saved yet",

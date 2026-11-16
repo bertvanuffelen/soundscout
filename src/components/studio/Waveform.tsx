@@ -24,6 +24,12 @@ interface WaveformProps {
   fadeRegion?: { fadeIn: number; fadeOut: number };
   /** Optional current playhead position in seconds */
   playheadPosition?: number;
+  /**
+   * Teken het geluid achterstevoren (Vervormen · achterstevoren, V2 Fase 4).
+   * De tijd-as blijft gelijk: trim en fades gelden op het omgekeerde geluid,
+   * precies zoals de motor ze afspeelt.
+   */
+  reversed?: boolean;
 }
 
 /** Fade-in curve (0→1): x² — gradual build from silence */
@@ -46,6 +52,7 @@ export const Waveform = memo(function Waveform({
   trimRegion,
   fadeRegion,
   playheadPosition,
+  reversed = false,
 }: WaveformProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -96,7 +103,8 @@ export const Waveform = memo(function Waveform({
     const FADE_COLOR = '#9ca3af';
 
     for (let i = 0; i < actualBarCount; i++) {
-      const peakIndex = Math.floor((i / actualBarCount) * barCount);
+      const forwardIndex = Math.floor((i / actualBarCount) * barCount);
+      const peakIndex = reversed ? barCount - 1 - forwardIndex : forwardIndex;
       const peak = data.peaks[peakIndex] ?? 0;
 
       const x = (i / actualBarCount) * width;
@@ -161,12 +169,13 @@ export const Waveform = memo(function Waveform({
       ctx.fillStyle = '#EF4444'; // error-500 red
       ctx.fillRect(playheadX - 1, 0, 2, height);
     }
-  }, [data, color, width, height, trimRegion, fadeRegion, playheadPosition]);
+  }, [data, color, width, height, trimRegion, fadeRegion, playheadPosition, reversed]);
 
   return (
     <canvas
       ref={canvasRef}
       style={{ width, height }}
+      data-reversed={reversed ? 'true' : undefined}
       className="block"
     />
   );

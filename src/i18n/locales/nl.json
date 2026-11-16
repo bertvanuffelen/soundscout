@@ -2437,6 +2437,60 @@
     "expiredDescription": "Deze albumlink is verlopen. De docent kan een nieuwe maken.",
     "gestureHint": "Klik op de knop hieronder om het album te openen en de soundscapes te beluisteren."
   },
+  "melodie": {
+    "tabs": {
+      "label": "Soort sequence",
+      "rhythm": "Ritme",
+      "melody": "Melodie"
+    },
+    "switch": {
+      "title": {
+        "rhythm": "Nieuw ritme maken?",
+        "melody": "Nieuwe melodie maken?"
+      },
+      "body": {
+        "rhythm": "In \"{{name}}\" staat al een melodie. Die blijft bewaard.\nWil je een nieuwe sequence voor een ritme beginnen?",
+        "melody": "In \"{{name}}\" staat al een ritme. Dat blijft bewaard.\nWil je een nieuwe sequence voor een melodie beginnen?"
+      },
+      "confirm": {
+        "rhythm": "Nieuw ritme",
+        "melody": "Nieuwe melodie"
+      }
+    },
+    "voice": {
+      "title": "Kies een klank",
+      "button": "Klank: {{name}}",
+      "presets": {
+        "soft": "Warm",
+        "bright": "Helder",
+        "pluck": "Tokkel"
+      },
+      "previewPreset": "Luister naar {{name}}",
+      "fromLibrary": "Geluid uit je bibliotheek",
+      "libraryEmpty": "Je bibliotheek is nog leeg. Verzamel eerst geluiden.",
+      "missing": "Kies een klank"
+    },
+    "octaves": {
+      "label": "Octaven",
+      "count_one": "{{count}} octaaf",
+      "count_other": "{{count}} octaven",
+      "add": "Octaaf erbij",
+      "remove": "Octaaf eraf"
+    },
+    "swing": {
+      "label": "Swing",
+      "straight": "Recht",
+      "amount": "{{percent}} procent swing"
+    },
+    "velocity": {
+      "label": "Sterkte",
+      "loud": "Hard",
+      "medium": "Middel",
+      "soft": "Zacht"
+    },
+    "cell": "{{note}}, tel {{step}}",
+    "cellActive": "{{note}}, tel {{step}}, {{level}}"
+  },
   "sequencer": {
     "title": "Sequencer Lab",
     "devBadge": "DEV",
@@ -2494,7 +2548,7 @@
       "libraryHeading": "Sequences",
       "deleteWithClips": "Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg.",
       "playsSequence": "Speelt deze sequence (loopt rond)",
-      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn."
+      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn."
     }
   },
   "about": {
@@ -2616,6 +2670,44 @@
       "always1": "Luister naar het begin en het einde. Klinken ze zoals jij wilt?",
       "always2": "Kan een luisteraar horen waar jouw soundscape over gaat?"
     }
+  },
+  "vervormen": {
+    "title": "Vervormen",
+    "button": "Vervormen",
+    "close": "Sluiten",
+    "columnSound": "Klank",
+    "columnShape": "Vervormen",
+    "newBadge": "nieuw",
+    "speed": "Snelheid",
+    "speedOption": "Snelheid {{label}}",
+    "speedHint": "Sneller klinkt hoger en korter.",
+    "reverse": "Achterstevoren",
+    "echo": "Echo",
+    "echoMuch": "Veel",
+    "off": "Uit",
+    "filter": "Filter",
+    "filterDull": "Dof",
+    "filterSharp": "Scherp",
+    "filterOff": "Uit",
+    "filterDullValue": "Dof {{value}}",
+    "filterSharpValue": "Scherp {{value}}",
+    "fadeNone": "Geen",
+    "fadeLong": "Lang",
+    "seconds": "{{value}} s",
+    "resetOne": "Terugzetten",
+    "resetAll": "Alles terugzetten",
+    "clipHasEffects": "vervormd"
+  },
+  "tempo": {
+    "title": "Tempo",
+    "choose": "Kies het tempo",
+    "slow": "Traag",
+    "calm": "Rustig",
+    "normal": "Normaal",
+    "fast": "Snel",
+    "buttonLabel": "Tempo: {{word}} ({{bpm}})",
+    "locked": "Tempo {{bpm}}: de opdracht bepaalt het tempo",
+    "overlap": "overlapt een ander geluid"
   },
   "unsavedWork": {
     "title": "Je soundscape is nog niet bewaard",
