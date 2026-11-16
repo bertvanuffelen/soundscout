@@ -1,6 +1,6 @@
 # SoundScout — Todo's
 
-**Laatst bijgewerkt**: 2026-10-21 (leerlingflow fase 0–5 gebouwd; eindtest-restpunten onder § Leerlingflow na de eindtest)
+**Laatst bijgewerkt**: 2026-11-16 (docentenportaal-ombouw samengevoegd in V2; zie § Docentenportaal-ombouw)
 
 ---
 
@@ -45,6 +45,37 @@
 - [ ] **TEACHER-STAPPEN-TEKST** (P3, gevonden bij Tier 1 #4, 08-10) — "Zo zet je een klas op", stap 2: *Activeer een praatplaat, storyboard of template* noemt vrij componeren niet, terwijl dat een van de vier opdrachttypes is (NL + EN in `teacherLanding.*`).
 
 ---
+
+## Docentenportaal-ombouw (14/15-10) — vervolg
+
+> Gebouwd op branch `claude/docentenportaal-ombouw` (worktree
+> `praatplaat-leerling-visibility-f004ea`), in november 2026 samengevoegd in V2 (branch `claude/portaal-v2-integratie`, PR naar de V2-branch), geen migraties.
+> Logboek: `docs/WERKDOCUMENT-DOCENTENPORTAAL.md`. Verslag voor Bert:
+> `Kennis/1_ZZP/soundscout/bronnen/2026-10-14-ombouw-docentenportaal.md`.
+> Berts eigen handelingen (testen met echt account, besluiten) staan daar, niet hier.
+
+**Na Berts test en akkoord:**
+- [~] **PORTAAL-MERGE** — besluit 16-11: niet naar `main`, maar één keer in V2 (`claude/portaal-v2-integratie`, PR naar de V2-branch); gaat live met de V2-release in december. Daarna `npm run build`, `dist/` aanleveren (inclusief `dist/les/`) en een logboekregel in het dossier. Kopie van ervóór: tag `backup/voor-docentenportaal-ombouw-2026-10-14`.
+- [ ] **PORTAAL-BEVINDINGEN** — wat Bert vindt bij de test met een echt account. Let vooral op deze punten:
+  - de wizard per type (template, praatplaat, storyboard, vrij en leskaart), inclusief de vervangmelding;
+  - *Opslaan & volgende*;
+  - *Opdracht stoppen*;
+  - *Klas verwijderen*;
+  - het verwijderen van een feedbackkaart;
+  - "Wat klasgenoten zeiden" met echte peer-data.
+
+**Opruimen (klein, geen besluit nodig):**
+- [ ] **I18N-DODE-SLEUTELS** — sleutels die alleen de verwijderde componenten gebruikten (`ActivateAssignmentModal`, `LessonCardPickerModal`, `AssignmentTypeCards`, `ClassCard`, `SubmissionCard`). Voorbeelden: `teacher.classDetail.startChoice*`, `assignments.types.*.tag/pickTitle`, `assignments.chooseDescription`, `teacher.dashboard.newClass`, `teacher.dashboard.setup.*`, `classDetail.instruction`. Eerst per sleutel grep'en: er bestaan dynamische sleutels (`t(\`…${type}…\`)`). Daarna `npm run teksten:export`.
+- [ ] **WORKTREE-ENV** — in de worktree is `.env.local` een symlink naar die van de hoofdrepo (voor de dev-server). Na de merge de worktree opruimen.
+
+**Wacht op een besluit van Bert:**
+- [ ] **TEACHER-LANDING-TEKSTEN** (P3) — op `/teacher` (`teacherLanding.*`, NL+EN) staat nog "Activeer een praatplaat…" en "in één klik". De pagina is verder bevroren. Samen oppakken met TEACHER-STAPPEN-TEKST hierboven. *De tag "Verhaal in scènes" is op 15-10 met Berts akkoord vervangen door "Scène voor scène".*
+- ~~**STERREN-WOORDEN**~~ — *opgelost 15-10 (besluit Bert):* overal *op weg · goed · top* (EN *getting there · good · great*), via één gedeelde sleutel `common.starLevels.{1,2,3}`. Geldt voor het docentfeedbackscherm, de feedbackrij bij Presenteren, het klasgenotenscherm en de feedbackbanner van de leerling (Podium en startscherm, nu met het woord naast de sterren).
+- [ ] **EIGEN-TIPZINNEN** (P4, idee) — docenten eigen tipzinnen laten toevoegen. Nu staan er 5 vaste zinnen in `teacher.feedbackScreen.tips`.
+- ~~**LIVE-NAMEN-CODESCHERM**~~ — *besluit Bert 15-10: niet bouwen.* Het codescherm toont alleen namen van opgeslagen werk: de naam die de leerling zelf invulde, of de verzonnen systeemnaam (`utils/randomNames.ts`, bijvoorbeeld "Vrolijke Papegaai"). Dat doet het al. Er komt geen "begonnen"-signaal.
+- ~~**KLAS-ROOSTER**~~ — *besluit Bert 15-10: nu niet nodig.* De kaart "Nu" blijft de laatst geopende klas tonen.
+- [ ] **PRESENTEREN-NAMEN** (P4, alleen als Bert erom vraagt) — een schakelaar *Namen tonen* in `PresentationSurface`. Presenteren bleef op Berts verzoek ongewijzigd.
+- [ ] **PORTAAL-OPTIONEEL** (P4) — uit het UX-onderzoek: een QR-code op het codescherm, een eigen accountpagina (naam en wachtwoord) en een rondleiding voor de eerste keer.
 
 ## Leerlingflow na de eindtest (21-10)
 

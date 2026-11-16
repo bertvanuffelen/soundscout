@@ -255,7 +255,7 @@ opnieuw bouwen en uploaden (of, bij de SQL-regels, een migratie draaien).
 | **Welke leskaarten op `/teacher` staan** | `src/pages/TeacherLandingPage.tsx` → `LANDING_LESSON_KEYS` | Lijst van `builtin_key`s, in deze volgorde getoond |
 | **Welke statische lespagina's bestaan** (`/les/<key>`) | `scripts/generate-les-pages.mjs` + `public/les/` | Draait automatisch bij `npm run build` (prebuild) |
 | **Praatplaten die de docent kan activeren** | `src/data/praatplaatCatalog.ts` (+ `src/data/praatplaatImages.ts`) | `availableFor: 'teacher' \| 'student' \| 'both'` bepaalt waar een plaat opduikt |
-| **Storyboards (verhaal in beeld)** | `src/data/storyboards.ts` + `/public/images/storyboards/{id}/` | Registry-entry + i18n-teksten onder `storyboards.{id}.*` |
+| **Storyboards** | `src/data/storyboards.ts` + `/public/images/storyboards/{id}/` | Registry-entry + i18n-teksten onder `storyboards.{id}.*` |
 | **Standaard-leskaarten (built-ins)** | SQL-seeds, migratie `020` (+ `023` voor de systeem-template) | Nieuwe built-in = nieuwe additieve migratie; nooit een oude aanpassen |
 | **Statistieken-paneel zichtbaar** | `.env.local` → `VITE_ADMIN_EMAILS` | Kommagescheiden e-mails; moet óók bij de productie-build gezet zijn |
 | **Klassenlimiet per docent** | Supabase, kolom `teachers.max_classes` | Default 8; `NULL` = onbeperkt (zo staat Berts eigen account) |

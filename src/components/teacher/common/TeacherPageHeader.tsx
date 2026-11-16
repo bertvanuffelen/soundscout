@@ -36,12 +36,12 @@ export function TeacherPageHeader({
 }: TeacherPageHeaderProps) {
   return (
     <header className={cn('bg-brand-900', className)}>
-      <div className="max-w-4xl mx-auto px-4 py-4 sm:py-5 flex items-start justify-between gap-4">
-        <div className="min-w-0">
+      <div className="max-w-4xl mx-auto px-4 py-4 sm:py-5 flex flex-wrap sm:flex-nowrap items-start justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0 w-full sm:w-auto">
           {onBack && (
             <button
               onClick={onBack}
-              className="text-brand-300 hover:text-white text-sm mb-2 inline-flex items-center gap-1 transition-colors"
+              className="text-brand-300 hover:text-white text-sm mb-2 inline-flex items-center gap-1 whitespace-nowrap transition-colors"
             >
               <ArrowLeft className="w-4 h-4" />
               {backLabel}
@@ -56,7 +56,7 @@ export function TeacherPageHeader({
         {/* Taalknop staat altijd rechtsboven op dezelfde plek (wens Bert 19-7):
             één voorspelbaar punt over dashboard, klaslokaal en gids heen. */}
         {(actions || showLanguageSwitcher) && (
-          <div className="flex items-center gap-3 flex-shrink-0">
+          <div className="order-first sm:order-none w-full sm:w-auto flex flex-wrap items-center justify-end gap-3 flex-shrink-0">
             {actions}
             {showLanguageSwitcher && <LanguageSwitcher variant="dark" />}
           </div>

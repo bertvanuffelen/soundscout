@@ -16,12 +16,16 @@ import {
 import { logger } from '../../utils/logger';
 import { cn } from '../../utils/cn';
 import { peerChipLabel } from '../../utils/peerChipLabel';
+import { TIMER_OPTIONS, rememberTimer, readRememberedTimer, restoreTimerMinutes } from '../../lib/peerTimer';
+
 
 interface PeerReviewSettingsProps {
   assignmentId: string;
+  /** Zonder eigen bovenrand/marge (ingebed in een instellingenlijst) */
+  bare?: boolean;
 }
 
-export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
+export function PeerReviewSettings({ assignmentId, bare = false }: PeerReviewSettingsProps) {
   const { t, i18n } = useTranslation();
   const [loading, setLoading] = useState(true);
   const [available, setAvailable] = useState(true); // false als migratie 027 nog niet draait
@@ -37,6 +41,8 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
   const [newTitle, setNewTitle] = useState('');
   const [newChips, setNewChips] = useState('');
   const [savingCard, setSavingCard] = useState(false);
+  // Verwijderen vraagt eerst bevestiging (inline: dit paneel staat soms zelf in een venster)
+  const [confirmDeleteId, setConfirmDeleteId] = useState<string | null>(null);
 
   // Huidige instelling + kaarten laden
   useEffect(() => {
@@ -75,7 +81,9 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
         }
         setEnabled(!!row?.peer_review_enabled);
         setCardId((row?.feedback_card_id as string) ?? null);
-        setClosesAt((row?.peer_review_closes_at as string) ?? null);
+        const loadedClosesAt = (row?.peer_review_closes_at as string) ?? null;
+        setClosesAt(loadedClosesAt);
+        setTimerMinutes(restoreTimerMinutes(readRememberedTimer(assignmentId), loadedClosesAt));
         setCards(allCards);
       } catch (err) {
         logger.warn('PeerReviewSettings: laden mislukt', err);
@@ -101,6 +109,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
     );
     try {
       await setAssignmentPeerReview(assignmentId, nextEnabled, nextCardId, nextEnabled ? minutes : null);
+      rememberTimer(assignmentId, nextEnabled ? minutes : null);
       // Server valt bij aanzetten zonder kaart terug op de standaardkaart
       if (nextEnabled && !nextCardId) {
         const standard = cards.find((c) => c.builtinKey === 'standaard');
@@ -149,6 +158,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
   };
 
   const handleDeleteCard = async (id: string) => {
+    setConfirmDeleteId(null);
     try {
       await deleteFeedbackCard(id);
       setCards((prev) => prev.filter((c) => c.id !== id));
@@ -161,7 +171,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
   if (!available) return null;
   if (loading) {
     return (
-      <div className="mt-4 pt-4 border-t border-border-subtle flex items-center gap-2 text-text-muted text-sm">
+      <div className={cn(!bare && 'mt-4 pt-4 border-t border-border-subtle', 'flex items-center gap-2 text-text-muted text-sm')}>
         <Loader2 className="w-4 h-4 animate-spin" /> {t('common.loading')}
       </div>
     );
@@ -170,7 +180,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
   const selectedCard = cards.find((c) => c.id === cardId) ?? null;
 
   return (
-    <div className="mt-4 pt-4 border-t border-border-subtle">
+    <div className={cn(!bare && 'mt-4 pt-4 border-t border-border-subtle')}>
       {/* Toggle */}
       <div className="flex items-center justify-between gap-3">
         <div className="flex items-center gap-2 min-w-0">
@@ -183,6 +193,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
         <button
           role="switch"
           aria-checked={enabled}
+          aria-label={t('teacher.peerReview.title')}
           onClick={() => persist(!enabled, cardId)}
           className={cn(
             'relative w-11 h-6 rounded-full transition-colors shrink-0',
@@ -213,7 +224,7 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
               aria-label={t('teacher.peerReview.timerLabel')}
             >
               <option value={0}>{t('teacher.peerReview.timerNone')}</option>
-              {[10, 15, 30].map((m) => (
+              {TIMER_OPTIONS.map((m) => (
                 <option key={m} value={m}>{t('teacher.peerReview.timerMinutes', { minutes: m })}</option>
               ))}
             </select>
@@ -250,9 +261,11 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
             </select>
             {selectedCard && !selectedCard.builtinKey && (
               <button
-                onClick={() => handleDeleteCard(selectedCard.id)}
+                onClick={() => setConfirmDeleteId(selectedCard.id)}
+                aria-expanded={confirmDeleteId === selectedCard.id}
                 className="p-1.5 text-text-muted hover:text-error-600 transition-colors"
                 title={t('teacher.peerReview.deleteCard')}
+                aria-label={t('teacher.peerReview.deleteCard')}
               >
                 <Trash2 className="w-4 h-4" />
               </button>
@@ -264,6 +277,30 @@ export function PeerReviewSettings({ assignmentId }: PeerReviewSettingsProps) {
               <Plus className="w-3.5 h-3.5" /> {t('teacher.peerReview.newCard')}
             </button>
           </div>
+
+          {/* Bevestiging vóór verwijderen (onderzoek: verwijderde voorheen direct) */}
+          {selectedCard && confirmDeleteId === selectedCard.id && (
+            <div role="alert" className="rounded-xl border-2 border-error-200 bg-error-50 px-3 py-2.5">
+              <p className="text-sm font-bold text-text-main">{t('teacher.peerReview.deleteCardConfirmTitle', { title: selectedCard.title })}</p>
+              <p className="text-xs text-text-muted mt-0.5">{t('teacher.peerReview.deleteCardConfirmText')}</p>
+              <div className="flex gap-2 mt-2">
+                <button
+                  type="button"
+                  onClick={() => setConfirmDeleteId(null)}
+                  className="rounded-full border-2 border-border-subtle bg-white px-3 min-h-[36px] text-sm font-bold text-text-main"
+                >
+                  {t('common.cancel')}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleDeleteCard(selectedCard.id)}
+                  className="rounded-full bg-error-600 hover:bg-error-700 text-white px-3 min-h-[36px] text-sm font-bold"
+                >
+                  {t('common.delete')}
+                </button>
+              </div>
+            </div>
+          )}
 
           {/* Chips-preview van de gekozen kaart */}
           {selectedCard && (

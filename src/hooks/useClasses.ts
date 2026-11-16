@@ -12,6 +12,7 @@ import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import { queryKeys } from '../query/queryKeys';
 import { NO_USER, errorMessage, updateCached, useManualRefetch, useTeacherId } from '../query/cache';
+import { deleteClassById } from '../lib/classes';
 
 // Types
 export interface TeacherClass {
@@ -197,22 +198,7 @@ export function useClasses(): UseClassesReturn {
 
   // Verwijder klas
   const deleteMutation = useMutation({
-    mutationFn: async (id: string): Promise<void> => {
-      const supabase = await getSupabase();
-
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error(i18n.t('errors.notLoggedIn'));
-
-      const { error: deleteErr } = await supabase
-        .from('classes')
-        .delete()
-        .eq('id', id)
-        .eq('teacher_id', user.id);
-
-      if (deleteErr) {
-        throw new Error(i18n.t('errors.classes.delete') + ': ' + deleteErr.message);
-      }
-    },
+    mutationFn: (id: string): Promise<void> => deleteClassById(id),
     onMutate: () => setOperationError(null),
     onSuccess: async (_void, id) => {
       await updateCached<ClassesData>(client, key, (prev) =>

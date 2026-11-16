@@ -28,10 +28,12 @@ interface LessonCardsTabProps {
   onCreateClass: (name: string) => Promise<TeacherClass>;
   /** builtin_key van een leskaart om standaard te selecteren (landing-deeplink). */
   initialSelectKey?: string | null;
+  /** Verder in de opdracht-wizard (stap 2) met deze les voor deze klas */
+  onContinueToWizard: (classData: TeacherClass, lessonCardId: string) => void;
 }
 
 
-export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: LessonCardsTabProps) {
+export function LessonCardsTab({ classes, onCreateClass, initialSelectKey, onContinueToWizard }: LessonCardsTabProps) {
   const { t } = useTranslation();
   const { cards, loading, error, create, update, remove, refetch } = useLessonCards();
 
@@ -257,13 +259,14 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey }: Les
         </div>
       )}
 
-      {/* Activeren */}
+      {/* Klas kiezen → verder in de wizard */}
       <ActivateLessonCardModal
         isOpen={!!activateCard}
         onClose={() => setActivateCard(null)}
         lessonCard={activateCard}
         classes={classes}
         onCreateClass={onCreateClass}
+        onContinue={(cls, card) => { setActivateCard(null); onContinueToWizard(cls, card.id); }}
       />
 
       {/* Zachte seizoensbevestiging (nooit blokkeren) */}

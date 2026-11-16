@@ -17,6 +17,7 @@ import type { FeedbackSticker } from '../lib/submissions';
 import { logger } from '../utils/logger';
 import type { CompositionData } from '../types';
 import i18n from '../i18n';
+import { sortSubmissionsNewestFirst } from '../lib/submissionDisplay';
 
 // Types
 export interface Submission {
@@ -109,7 +110,9 @@ export function useSubmissions(classId: string, options: UseSubmissionsOptions =
 
         if (fetchError) throw fetchError;
 
-        return data || [];
+        // Nieuwste bovenaan op het moment van inleveren (niet op created_at,
+        // want dat is sinds migratie 026 de eerste keer opslaan)
+        return sortSubmissionsNewestFirst((data || []) as Submission[]);
       } catch (err) {
         logger.error('Fout bij ophalen composities:', err);
         throw err;

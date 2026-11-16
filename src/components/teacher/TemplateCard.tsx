@@ -2,7 +2,7 @@
  * TemplateCard - Kaart voor een template in het docenten dashboard
  *
  * Resource-kaart: toont naam, template-code, beschrijving, lock badges en verwijderen.
- * Activering per klas gaat via ClassDetail → ActivateAssignmentModal.
+ * Activering per klas gaat via de opdracht-wizard (AssignmentWizard).
  */
 
 import { useState, useCallback } from 'react';
@@ -24,7 +24,7 @@ export function TemplateCard({ template, onDelete, onMakeLessonCard }: TemplateC
   const { name, code, description, lockOptions, createdAt } = template;
   const [copied, setCopied] = useState(false);
 
-  const formattedDate = new Date(createdAt).toLocaleDateString('nl-NL', {
+  const formattedDate = new Date(createdAt).toLocaleDateString(t('common.dateLocale'), {
     day: 'numeric',
     month: 'short',
     year: 'numeric',

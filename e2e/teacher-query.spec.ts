@@ -128,9 +128,9 @@ async function login(page: Page): Promise<void> {
 }
 
 async function createClass(page: Page, name: string): Promise<void> {
-  await page.getByRole('button', { name: 'Nieuwe Klas', exact: true }).click();
+  await page.getByRole('button', { name: 'Nieuwe klas', exact: true }).click();
   await page.getByLabel('Klasnaam').fill(name);
-  await page.getByRole('button', { name: 'Aanmaken', exact: true }).click();
+  await page.getByRole('button', { name: 'Maak klas en kies een opdracht', exact: true }).click();
 }
 
 let backend: Backend;
@@ -150,18 +150,27 @@ test('na inloggen staan de klassen van de docent in het dashboard', async ({ pag
   await expect(page.getByText('Groep 7 van B')).toHaveCount(0);
 });
 
-test('een nieuwe klas staat meteen bovenaan, zonder de lijst opnieuw op te halen', async ({ page }) => {
+test('een nieuwe klas staat er meteen, zonder de lijst opnieuw op te halen', async ({ page }) => {
   await login(page);
   await expect(page.getByText('Groep 5 van A')).toBeVisible();
   const requestsBefore = backend.classListRequests;
 
   await createClass(page, 'Groep 8 nieuw');
 
-  await expect(page.getByText('Groep 8 nieuw')).toBeVisible();
+  // Docentenportaal: na aanmaken opent meteen de opdrachtwizard voor de nieuwe klas
+  await expect(page.getByText('Groep 8 nieuw').first()).toBeVisible();
   await expect(page.getByLabel('Klasnaam')).toHaveCount(0);
-  const names = await page.locator('h3').allTextContents();
-  expect(names.indexOf('Groep 8 nieuw')).toBeGreaterThanOrEqual(0);
-  expect(names.indexOf('Groep 8 nieuw')).toBeLessThan(names.indexOf('Groep 5 van A'));
+  // De klassenlijst in de cache is bijgewerkt (nieuwe klas bovenaan), zonder
+  // de lijst opnieuw op te halen
+  const cachedNames = await page.evaluate(async () => {
+    const { queryClient } = await import('/src/query/queryClient.ts');
+    const query = queryClient.getQueryCache().getAll()
+      .find((q) => JSON.stringify(q.queryKey).endsWith('"classes"]'));
+    const data = query?.state.data as { classes: { name: string }[] } | undefined;
+    return data?.classes.map((c) => c.name) ?? [];
+  });
+  expect(cachedNames[0]).toBe('Groep 8 nieuw');
+  expect(cachedNames).toContain('Groep 5 van A');
   expect(backend.classListRequests).toBe(requestsBefore);
 });
 
@@ -176,7 +185,8 @@ test('mislukt het aanmaken, dan blijft de lijst zoals hij was en staat de bestaa
   await expect(page.getByText('Groep 5 van A')).toBeAttached();
   await expect(page.getByText('Groep 6 van A')).toBeAttached();
   // De mislukte klas staat nergens in de lijst (alleen nog in het invulveld)
-  await expect(page.locator('h3', { hasText: 'Groep 8 mislukt' })).toHaveCount(0);
+  await expect(page.getByRole('listitem').filter({ hasText: 'Groep 8 mislukt' })).toHaveCount(0);
+  await expect(page.getByRole('heading', { name: /Groep 8 mislukt/ })).toHaveCount(0);
 });
 
 test('na uitloggen en inloggen als een andere docent is er niets van de vorige te zien', async ({ page }) => {

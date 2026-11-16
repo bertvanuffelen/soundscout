@@ -1,8 +1,11 @@
 /**
  * LessonCardEditorModal - Leskaart samenstellen of bewerken
  *
- * Eén formulier in vier delen: opdracht-type → resource → opdrachtkaart →
- * presentatie (titel, niveau, lesdoel, fasen, pdf). De docent stelt zo een
+ * Eén formulier in vier delen: vorm (gekleurde kaarten zoals de wizard) →
+ * bron (tegel met beeld; opent een groot raster in hetzelfde venster) →
+ * uitleg voor leerlingen → voor jezelf (titel, niveau, lesdoel, fasen, pdf).
+ * Rechts een live voorbeeld: de leskaart zoals in Lesideeën, of wat de
+ * leerling ziet (feedback Bert 15-10). De docent stelt zo een
  * herbruikbaar "pakket" samen. Bij opslaan wordt een `LessonCardInput`
  * opgebouwd; de cover-afbeelding volgt automatisch uit de gekozen resource.
  */
@@ -10,17 +13,22 @@
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { getMapBackgroundImage } from '../../data/themes';
-import { Plus, Trash2, Loader2 } from 'lucide-react';
-import { useTemplates } from '../../hooks/useTemplates';
+import { Plus, Trash2, Loader2, ArrowLeft, ArrowRight, Image as ImageIcon } from 'lucide-react';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
 import { getPraatplaatCatalog } from '../../data/praatplaatCatalog';
-import { getAllMultiImageStoryboards, getTeacherThemes, getThemeSeasonInfo } from '../../data/themes';
+import { getAllMultiImageStoryboards, getTeacherThemes } from '../../data/themes';
 import { MAX_CARD_BULLETS } from '../../lib/assignmentCards';
 import type { AssignmentType } from '../../lib/assignments';
 import { normalizeLevelToBuckets, LEVEL_BUCKETS, type LessonCard, type LessonCardInput, type LessonPhase } from '../../lib/lessonCards';
 import type { OpdrachtkaartContent } from '../../types';
 import { Button } from '../ui/Button';
 import { Modal } from '../ui/Modal';
+import { TYPE_META, TYPE_ORDER } from './assignmentTypeMeta';
+import { ThemeSeasonBadge } from './ThemeSeasonBadge';
+import { SourceGrid } from './wizard/SourceGrid';
+import { StudentPreview } from './wizard/StudentPreview';
+import { useAssignmentSources, type SourceItem } from './wizard/useAssignmentSources';
+import { cn } from '../../utils/cn';
 
 interface LessonCardEditorModalProps {
   isOpen: boolean;
@@ -35,8 +43,6 @@ interface LessonCardEditorModalProps {
   prefill?: { assignmentType: AssignmentType; templateId?: string; title?: string } | null;
 }
 
-const TYPES: AssignmentType[] = ['praatplaat', 'storyboard', 'free', 'template'];
-
 const praatplaatCatalog = getPraatplaatCatalog();
 const storyboards = getAllMultiImageStoryboards();
 // Docent-kiezer: óók buiten-seizoen thema's, met tekst-suffix (seizoensregel 17-7)
@@ -44,9 +50,7 @@ const assignableThemes = getTeacherThemes();
 
 export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill = null }: LessonCardEditorModalProps) {
   const { t, i18n } = useTranslation();
-  const { templates } = useTemplates();
   const { cards: assignmentCards, create: createOpdrachtkaart } = useAssignmentCards();
-  const activeTemplates = useMemo(() => templates.filter((tmpl) => tmpl.isActive), [templates]);
 
   const [assignmentType, setAssignmentType] = useState<AssignmentType>('praatplaat');
   // Resource-referentie per type (één van deze is relevant, afhankelijk van type)
@@ -67,12 +71,18 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill =
   const [pdfUrl, setPdfUrl] = useState('');
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  // 'pick' = groot bronnenraster in hetzelfde venster (geen tweede modal)
+  const [view, setView] = useState<'form' | 'pick'>('form');
+  const [previewTab, setPreviewTab] = useState<'card' | 'student'>('card');
+  const { sourcesFor, templatesLoading } = useAssignmentSources();
 
   // (Her)initialiseer bij openen
   useEffect(() => {
     if (!isOpen) return;
     setError(null);
     setSaving(false);
+    setView('form');
+    setPreviewTab('card');
     if (card) {
       setAssignmentType(card.assignmentType);
       setTemplateId(card.templateId ?? '');
@@ -226,9 +236,137 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill =
     }
   };
 
+  // --- Bron (één gedeeld raster met de wizard) ---
+  const sourceIdFor = (type: AssignmentType): string =>
+    type === 'template' ? templateId : type === 'praatplaat' ? praatplaatRef : type === 'storyboard' ? storyboardRef : freeThemeId;
+  const selectedSourceId = sourceIdFor(assignmentType);
+  const sources = sourcesFor(assignmentType);
+  const selectedSource = sources.find((x) => x.id === selectedSourceId) ?? null;
+
+  const handlePickSource = (item: SourceItem) => {
+    if (assignmentType === 'template') setTemplateId(item.id);
+    else if (assignmentType === 'praatplaat') setPraatplaatRef(item.id);
+    else if (assignmentType === 'storyboard') setStoryboardRef(item.id);
+    else setFreeThemeId(item.id);
+    prefillTitle(item.name);
+    setView('form');
+  };
+
+  // --- Wat de leerling straks ziet (zelfde bron als de wizard) ---
+  const studentCard = useMemo(() => {
+    if (cardMode === 'existing' && cardId) {
+      const own = assignmentCards.find((c) => c.id === cardId);
+      if (own) return { title: own.title, bullets: own.bullets };
+    }
+    if (cardMode === 'inline' && (inlineCardTitle.trim() || inlineBullets.some((b) => b.trim()))) {
+      return { title: inlineCardTitle.trim() || '…', bullets: inlineBullets.map((b) => b.trim()).filter(Boolean) };
+    }
+    const bullets = t(`assignmentCards.defaults.${assignmentType}.bullets`, { returnObjects: true }) as unknown;
+    return {
+      title: t(`assignmentCards.defaults.${assignmentType}.title`),
+      bullets: Array.isArray(bullets) ? bullets.map(String) : [],
+    };
+  }, [cardMode, cardId, assignmentCards, inlineCardTitle, inlineBullets, assignmentType, t]);
+
+  const meta = TYPE_META[assignmentType];
+  const previewTitle = title.trim() || selectedSource?.name || null;
+  const filledPhases = phases.filter((p) => p.name.trim() || p.text.trim());
+
   const labelCls = 'block text-xs font-medium text-text-muted uppercase tracking-wide mb-1.5';
+  const sectionCls = 'text-xs font-extrabold text-text-muted uppercase tracking-wide mb-2';
   const inputCls =
     'w-full px-3 py-2 rounded-lg border border-border-subtle bg-white text-text-main text-sm focus:outline-none focus:border-accent-400';
+
+  // --- Voorbeeld rechts: Leskaart (zoals in Lesideeën) of Leerling (telefoon) ---
+  const previewEl = (
+    <div>
+      <div role="tablist" className="inline-flex gap-1 bg-neutral-100 rounded-full p-1 mb-3">
+        {(['card', 'student'] as const).map((k) => (
+          <button
+            key={k}
+            type="button"
+            role="tab"
+            aria-selected={previewTab === k}
+            onClick={() => setPreviewTab(k)}
+            className={cn(
+              'px-3 py-1 rounded-full text-xs font-bold transition-colors',
+              previewTab === k ? 'bg-white text-text-main shadow-sm' : 'text-text-muted hover:text-text-main',
+            )}
+          >
+            {t(`lessonCards.editor.preview.${k}`)}
+          </button>
+        ))}
+      </div>
+      {previewTab === 'card' ? (
+        <div>
+          <p className="text-xs font-extrabold text-text-muted uppercase tracking-wide mb-2">{t('lessonCards.editor.preview.cardTitle')}</p>
+          <div className="rounded-2xl border border-border-subtle bg-bg-surface p-3">
+            {selectedSource?.imageUrl ? (
+              <img src={selectedSource.imageUrl} alt="" className="w-full aspect-video object-cover rounded-xl" />
+            ) : (
+              <span className={cn('w-full aspect-video rounded-xl flex items-center justify-center', meta.tone.tile)}>
+                <meta.Icon className="w-8 h-8" aria-hidden="true" />
+              </span>
+            )}
+            <div className="flex flex-wrap items-center gap-1.5 mt-2.5">
+              <span className={cn('inline-flex items-center gap-1 rounded-full text-[11px] font-bold px-2 py-0.5', meta.badge)}>
+                <meta.Icon className="w-3 h-3" aria-hidden="true" /> {t(meta.labelKey)}
+              </span>
+              <span className="text-xs text-text-muted">{t(`lessonCards.levels.${normalizeLevelToBuckets(level)[0] ?? 'all'}`)}</span>
+            </div>
+            <p className={cn('font-extrabold mt-1.5', previewTitle ? 'text-text-main' : 'text-text-muted')}>
+              {previewTitle ?? t('lessonCards.editor.preview.noTitle')}
+            </p>
+            {lessonGoal.trim() && (
+              <p className="text-xs text-text-main mt-1.5 leading-relaxed">
+                <span className="font-bold">{t('lessonCards.goalLabel')} </span>{lessonGoal.trim()}
+              </p>
+            )}
+            {filledPhases.length > 0 && (
+              <ul className="mt-2 space-y-1">
+                {filledPhases.map((p, i) => (
+                  <li key={i} className="flex gap-2 text-xs text-text-muted">
+                    <span className="mt-1.5 w-1 h-1 rounded-full bg-accent-400 shrink-0" />
+                    <span><span className="font-semibold text-text-main">{p.name.trim()}</span>{p.name.trim() && p.text.trim() ? ' — ' : ''}{p.text.trim()}</span>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
+        </div>
+      ) : (
+        <StudentPreview
+          title={previewTitle}
+          imageUrl={selectedSource?.imageUrl ?? null}
+          type={assignmentType}
+          cardTitle={studentCard.title}
+          bullets={studentCard.bullets}
+        />
+      )}
+    </div>
+  );
+
+  // --- Bron kiezen: groot raster in hetzelfde venster ---
+  if (view === 'pick') {
+    return (
+      <Modal isOpen={isOpen} onClose={() => setView('form')} title={t(`teacher.wizard.pick.${assignmentType}`)} size="xl">
+        <button
+          type="button"
+          onClick={() => setView('form')}
+          className="mb-4 inline-flex items-center gap-1.5 text-sm font-bold text-text-muted hover:text-text-main"
+        >
+          <ArrowLeft className="w-4 h-4" aria-hidden="true" /> {t('lessonCards.editor.backToForm')}
+        </button>
+        <SourceGrid
+          type={assignmentType}
+          sources={sources}
+          loading={assignmentType === 'template' && templatesLoading}
+          selectedId={selectedSourceId || null}
+          onSelect={handlePickSource}
+        />
+      </Modal>
+    );
+  }
 
   return (
     <Modal
@@ -243,109 +381,94 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill =
         </div>
       )}
 
-      <div className="space-y-5">
-        {/* 1. Type */}
-        <div>
-          <label className={labelCls}>{t('lessonCards.editor.typeLabel')}</label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-            {TYPES.map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => setAssignmentType(type)}
-                className={`px-3 py-2 rounded-xl border text-sm font-medium transition-colors ${
-                  assignmentType === type
-                    ? 'border-accent-500 bg-accent-50 text-text-main'
-                    : 'border-border-subtle bg-white text-text-muted hover:border-accent-300'
-                }`}
-              >
-                {t(`assignments.types.${type}.title`)}
-              </button>
-            ))}
+      <div className="grid lg:grid-cols-[minmax(0,1fr)_240px] gap-6 items-start">
+      <div className="space-y-6 min-w-0">
+        {/* 1. Vorm */}
+        <section>
+          <h3 className={sectionCls}>{t('lessonCards.editor.typeLabel')}</h3>
+          <div className="grid grid-cols-2 gap-2.5">
+            {TYPE_ORDER.map((type) => {
+              const m = TYPE_META[type];
+              const selected = assignmentType === type;
+              return (
+                <button
+                  key={type}
+                  type="button"
+                  onClick={() => setAssignmentType(type)}
+                  aria-pressed={selected}
+                  className={cn(
+                    'text-left rounded-2xl border-2 px-3 py-2.5 transition-all',
+                    m.tone.bg,
+                    selected ? m.tone.selected : cn(m.tone.border, m.tone.hoverBorder),
+                  )}
+                >
+                  <span className="flex items-center gap-2">
+                    <m.Icon className={cn('w-5 h-5 shrink-0', m.tone.icon)} aria-hidden="true" />
+                    <span className="font-extrabold text-sm text-text-main">{t(m.plainKey)}</span>
+                  </span>
+                  <span className={cn('inline-flex mt-1.5 rounded-full px-2 py-0.5 text-[10px] font-extrabold', m.badge)}>
+                    {t(m.labelKey)}
+                  </span>
+                </button>
+              );
+            })}
           </div>
-        </div>
+        </section>
 
-        {/* 2. Resource (per type) */}
-        <div>
-          <label className={labelCls}>{t('lessonCards.editor.resourceLabel')}</label>
-          {assignmentType === 'template' && (
-            <select
-              value={templateId}
-              onChange={(e) => {
-                setTemplateId(e.target.value);
-                const tmpl = activeTemplates.find((x) => x.id === e.target.value);
-                if (tmpl) prefillTitle(tmpl.name);
-              }}
-              className={inputCls}
-            >
-              <option value="">{t('lessonCards.editor.resourcePlaceholder')}</option>
-              {activeTemplates.map((tmpl) => (
-                <option key={tmpl.id} value={tmpl.id}>{tmpl.name}</option>
-              ))}
-            </select>
-          )}
-          {assignmentType === 'praatplaat' && (
-            <select
-              value={praatplaatRef}
-              onChange={(e) => {
-                setPraatplaatRef(e.target.value);
-                const entry = praatplaatCatalog.find((x) => x.ref === e.target.value);
-                if (entry) prefillTitle(t(entry.nameKey));
-              }}
-              className={inputCls}
-            >
-              <option value="">{t('lessonCards.editor.resourcePlaceholder')}</option>
-              {praatplaatCatalog.map((entry) => (
-                <option key={entry.ref} value={entry.ref}>{t(entry.nameKey)}</option>
-              ))}
-            </select>
-          )}
-          {assignmentType === 'storyboard' && (
-            <select
-              value={storyboardRef}
-              onChange={(e) => {
-                setStoryboardRef(e.target.value);
-                const sb = storyboards.find((x) => x.storyboard.id === e.target.value);
-                if (sb) prefillTitle(t(sb.storyboard.name));
-              }}
-              className={inputCls}
-            >
-              <option value="">{t('lessonCards.editor.resourcePlaceholder')}</option>
-              {storyboards.map((sb) => (
-                <option key={sb.storyboard.id} value={sb.storyboard.id}>{t(sb.storyboard.name)}</option>
-              ))}
-            </select>
-          )}
-          {assignmentType === 'free' && (
-            <select
-              value={freeThemeId}
-              onChange={(e) => {
-                setFreeThemeId(e.target.value);
-                const theme = assignableThemes.find((x) => x.id === e.target.value);
-                if (theme) prefillTitle(t(theme.name));
-              }}
-              className={inputCls}
-            >
-              <option value="">{t('lessonCards.editor.resourcePlaceholder')}</option>
-              {assignableThemes.map((theme) => (
-                <option key={theme.id} value={theme.id}>
-                  {t(theme.name)}{!getThemeSeasonInfo(theme.id).inSeason ? ` ${t('themes.seasonSuffix')}` : ''}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
+        {/* 2. Bron: tegel met beeld → opent het raster */}
+        <section>
+          <h3 className={sectionCls}>{t(`teacher.wizard.pick.${assignmentType}`)}</h3>
+          <button
+            type="button"
+            onClick={() => setView('pick')}
+            className={cn(
+              'w-full flex items-center gap-3 rounded-2xl border-2 p-2.5 text-left transition-colors',
+              selectedSource ? 'border-border-subtle bg-bg-surface hover:border-accent-300' : 'border-dashed border-accent-300 bg-accent-50/50 hover:border-accent-400',
+            )}
+          >
+            {selectedSource ? (
+              <>
+                {selectedSource.imageUrl ? (
+                  <img src={selectedSource.imageUrl} alt="" className="w-28 aspect-video object-cover rounded-xl shrink-0" />
+                ) : (
+                  <span className={cn('w-28 aspect-video rounded-xl flex items-center justify-center shrink-0', meta.tone.tile)}>
+                    <meta.Icon className="w-6 h-6" aria-hidden="true" />
+                  </span>
+                )}
+                <span className="min-w-0 flex-1">
+                  <span className="block font-extrabold text-text-main truncate">{selectedSource.name}</span>
+                  {selectedSource.sub && <span className="block text-xs text-text-muted truncate">{selectedSource.sub}</span>}
+                  {selectedSource.themeId && <ThemeSeasonBadge themeId={selectedSource.themeId} className="mt-1" />}
+                </span>
+                <span className="shrink-0 rounded-full border border-border-subtle bg-white px-3 py-1.5 text-sm font-bold text-text-main">
+                  {t('teacher.wizard.change')}
+                </span>
+              </>
+            ) : (
+              <>
+                <span className={cn('w-28 aspect-video rounded-xl flex items-center justify-center shrink-0', meta.tone.tile)}>
+                  <ImageIcon className="w-6 h-6" aria-hidden="true" />
+                </span>
+                <span className="flex-1 min-w-0">
+                  <span className="block font-bold text-accent-800">{t('lessonCards.editor.chooseSource')}</span>
+                  <span className="block text-xs text-text-muted">{t('lessonCards.editor.chooseSourceHint')}</span>
+                </span>
+                <ArrowRight className="w-5 h-5 text-accent-700 shrink-0" aria-hidden="true" />
+              </>
+            )}
+          </button>
+        </section>
 
-        {/* 3. Opdrachtkaart (leerling-tekst) */}
-        <div>
-          <label className={labelCls}>{t('lessonCards.editor.cardLabel')}</label>
+        {/* 3. Uitleg voor leerlingen */}
+        <section>
+          <h3 className={sectionCls}>{t('lessonCards.editor.cardLabel')}</h3>
           <p className="text-xs text-text-muted -mt-1 mb-2">{t('lessonCards.editor.cardStudentHint')}</p>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
             {(['none', 'existing', 'inline'] as const).map((mode) => (
               <button
                 key={mode}
                 type="button"
-                onClick={() => setCardMode(mode)}
+                onClick={() => { setCardMode(mode); setPreviewTab('student'); }}
                 className={`px-3 py-2 rounded-xl border text-sm font-medium transition-colors ${
                   cardMode === mode
                     ? 'border-accent-500 bg-accent-50 text-text-main'
@@ -440,11 +563,14 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill =
               </label>
             </div>
           )}
-        </div>
+        </section>
 
-        {/* 4. Presentatie (docent-facing) */}
-        <div className="border-t border-border-subtle pt-5 space-y-4">
-          <p className="text-xs text-text-muted -mt-1">{t('lessonCards.editor.presentationHint')}</p>
+        {/* 4. Voor jezelf (docent-facing) */}
+        <section className="border-t border-border-subtle pt-5 space-y-4" onFocus={() => setPreviewTab('card')}>
+          <div>
+            <h3 className={sectionCls + ' mb-0.5'}>{t('lessonCards.editor.forYouTitle')}</h3>
+            <p className="text-xs text-text-muted">{t('lessonCards.editor.presentationHint')}</p>
+          </div>
           <div>
             <label className={labelCls}>{t('lessonCards.editor.titleLabel')}</label>
             <input
@@ -542,7 +668,11 @@ export function LessonCardEditorModal({ isOpen, onClose, card, onSave, prefill =
               </div>
             )}
           </div>
-        </div>
+        </section>
+      </div>
+
+      {/* Voorbeeld: rechts op brede schermen (schuift mee), onderaan op smalle */}
+      <aside className="lg:sticky lg:top-0">{previewEl}</aside>
       </div>
 
       {/* Footer */}

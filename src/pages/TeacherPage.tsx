@@ -13,10 +13,18 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/useAuth';
 import { useAppStore } from '../stores/appStore';
 import { TeacherLogin, TeacherRegister, TeacherForgotPassword, TeacherResetPassword, TeacherDashboard, ClassDetail } from '../components/teacher';
+import { AssignmentWizard } from '../components/teacher/wizard/AssignmentWizard';
+import { rememberLastClass } from '../hooks/useClassOverview';
 import { LanguageSwitcher } from '../components/ui/LanguageSwitcher';
 import type { TeacherClass } from '../hooks/useClasses';
 
-type TeacherView = 'login' | 'register' | 'forgot-password' | 'dashboard' | 'class-detail';
+type TeacherView = 'login' | 'register' | 'forgot-password' | 'dashboard' | 'class-detail' | 'wizard';
+
+/** Waar de opdracht-wizard vandaan kwam (Annuleren gaat daarheen terug) */
+interface WizardState {
+  returnTo: 'dashboard' | 'class-detail';
+  lessonCardId: string | null;
+}
 
 /**
  * De auth-schermen (login/registreer/wachtwoord) zijn gecentreerde kaarten
@@ -43,12 +51,24 @@ export function TeacherPage() {
   // Bepaal welke view te tonen
   const [view, setView] = useState<TeacherView>(user ? 'dashboard' : 'login');
   const [selectedClass, setSelectedClass] = useState<TeacherClass | null>(null);
+  const [wizard, setWizard] = useState<WizardState | null>(null);
+  // Klaspagina openen op een bepaald tabblad (bijv. na de wizard: 'bezig')
+  const [classTab, setClassTab] = useState<'klaar' | 'bezig' | 'terug' | null>(null);
+  // Vanaf het dashboard "Presenteren": klas openen en meteen de presentatiekeuze tonen
+  const [autoPresent, setAutoPresent] = useState(false);
+
+  const openWizard = (classData: TeacherClass, returnTo: WizardState['returnTo'], lessonCardId: string | null = null) => {
+    rememberLastClass(classData.id);
+    setSelectedClass(classData);
+    setWizard({ returnTo, lessonCardId });
+    setView('wizard');
+  };
 
   // Update view als auth status verandert
   if (!loading && user && view === 'login') {
     setView('dashboard');
   }
-  if (!loading && !user && (view === 'dashboard' || view === 'class-detail')) {
+  if (!loading && !user && (view === 'dashboard' || view === 'class-detail' || view === 'wizard')) {
     setView('login');
   }
 
@@ -111,13 +131,41 @@ export function TeacherPage() {
     );
   }
 
+  // Opdracht-wizard (klaarzetten in 3 stappen)
+  if (view === 'wizard' && selectedClass && wizard) {
+    return (
+      <AssignmentWizard
+        key={`${selectedClass.id}-${wizard.lessonCardId ?? 'eigen'}`}
+        classData={selectedClass}
+        initialLessonCardId={wizard.lessonCardId}
+        onCancel={() => {
+          const back = wizard.returnTo;
+          setWizard(null);
+          if (back === 'dashboard') setSelectedClass(null);
+          setView(back);
+        }}
+        onToClass={() => {
+          setWizard(null);
+          setClassTab('bezig');
+          setView('class-detail');
+        }}
+      />
+    );
+  }
+
   // Class detail view
   if (view === 'class-detail' && selectedClass) {
     return (
       <ClassDetail
+        key={selectedClass.id}
         classData={selectedClass}
+        initialTab={classTab}
+        autoPresent={autoPresent}
+        onOpenWizard={() => openWizard(selectedClass, 'class-detail')}
         onBack={() => {
           setSelectedClass(null);
+          setClassTab(null);
+          setAutoPresent(false);
           setView('dashboard');
         }}
       />
@@ -127,10 +175,14 @@ export function TeacherPage() {
   // Dashboard view (default when logged in)
   return (
     <TeacherDashboard
-      onSelectClass={(classData) => {
+      onSelectClass={(classData, tab, opts) => {
+        rememberLastClass(classData.id);
         setSelectedClass(classData);
+        setClassTab(tab ?? null);
+        setAutoPresent(!!opts?.present);
         setView('class-detail');
       }}
+      onOpenWizard={(classData, lessonCardId) => openWizard(classData, 'dashboard', lessonCardId ?? null)}
       onLogout={() => {
         setView('login');
       }}
