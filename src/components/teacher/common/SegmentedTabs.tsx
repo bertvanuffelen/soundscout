@@ -33,12 +33,15 @@ export function SegmentedTabs<T extends string>({
   className,
 }: SegmentedTabsProps<T>) {
   if (variant === 'large') {
+    // Drie tabs passen op een telefoon alleen naast elkaar als het icoon boven
+    // het label staat; twee tabs (o.a. de landing) houden hun vorm.
+    const compact = tabs.length > 2;
     return (
       <div
         role="tablist"
         className={cn(
           'grid gap-3 sm:gap-4',
-          tabs.length === 2 ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3',
+          compact ? 'grid-cols-3' : 'grid-cols-2',
           className
         )}
       >
@@ -55,6 +58,7 @@ export function SegmentedTabs<T extends string>({
               className={cn(
                 'flex items-center justify-center gap-2.5 rounded-2xl px-4 py-4 sm:py-5',
                 'text-base sm:text-lg font-extrabold tracking-tight border-2 transition-all',
+                compact && 'flex-col sm:flex-row gap-1 sm:gap-2.5 px-2 sm:px-4 py-3 text-sm leading-tight text-center',
                 active
                   ? 'bg-brand-900 text-white border-brand-900 shadow-md'
                   : 'bg-bg-surface text-text-main border-border-subtle hover:border-brand-300 hover:shadow-sm'
@@ -66,6 +70,7 @@ export function SegmentedTabs<T extends string>({
                 <span
                   className={cn(
                     'inline-flex items-center justify-center min-w-6 h-6 px-1.5 rounded-full text-sm font-bold',
+                    compact && 'min-w-5 h-5 text-xs sm:min-w-6 sm:h-6 sm:text-sm',
                     active ? 'bg-white/20 text-white' : 'bg-neutral-100 text-text-muted'
                   )}
                 >

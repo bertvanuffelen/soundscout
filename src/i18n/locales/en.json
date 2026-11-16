@@ -31,7 +31,12 @@
     "zoom": "Zoom in",
     "saved": "Saved",
     "dateLocale": "en-GB",
-    "duration": "Duration {{duration}} s"
+    "duration": "Duration {{duration}} s",
+    "starLevels": {
+      "1": "getting there",
+      "2": "good",
+      "3": "great"
+    }
   },
   "language": {
     "nl": "Nederlands",
@@ -751,7 +756,7 @@
   },
   "assignments": {
     "chooseTitle": "Activate assignment",
-    "chooseDescription": "Choose a template, sound map or story in pictures to activate for this class.",
+    "chooseDescription": "Choose a template, sound map or storyboard to activate for this class.",
     "cardLabel": "Assignment card (optional)",
     "cardDefault": "Default explanation",
     "cardNone": "No custom card — show default explanation",
@@ -794,7 +799,7 @@
         "pickTitle": "Choose a sound map"
       },
       "storyboard": {
-        "tag": "Story in scenes",
+        "tag": "Scene by scene",
         "title": "Storyboard",
         "description": "Three to four images form a story — a soundtrack per scene.",
         "pickTitle": "Choose a storyboard"
@@ -824,9 +829,9 @@
     "typeTitleOff": "Off: the app picks a title (no names in titles)."
   },
   "assignmentCards": {
-    "sectionTitle": "My assignment cards",
+    "sectionTitle": "Instructions & assignment cards for students",
     "sectionDescription": "Short explanation cards (title + points) students see before they start. Make one and reuse it across assignments.",
-    "newButton": "New card",
+    "newButton": "New assignment card",
     "empty": "No assignment cards yet. Create one to help students get started.",
     "moreBullets": "+{{count}} more",
     "noBullets": "No points",
@@ -883,7 +888,7 @@
     }
   },
   "lessonCards": {
-    "tabTitle": "Lesson cards",
+    "tabTitle": "Lesson ideas",
     "builtin": {
       "robotfabriek": {
         "title": "Robot factory",
@@ -911,7 +916,7 @@
       "verspringen": {
         "title": "Long jump",
         "level": "Ages 8–12",
-        "goal": "Students create a soundtrack for each scene and experience how music supports a visual story.",
+        "goal": "Students create a soundtrack for each scene and experience how music strengthens the images of a storyboard.",
         "phases": [
           {
             "name": "Orient",
@@ -978,7 +983,7 @@
         ]
       }
     },
-    "sectionSubtitle": "Ready-made packages: pick one and set it up for a class in a single click. Or create your own.",
+    "sectionSubtitle": "Ready-made lessons: pick one, choose a class and check what your students will see. Or create your own.",
     "newButton": "New lesson card",
     "builtinBadge": "Built-in",
     "goalLabel": "Goal.",
@@ -998,16 +1003,18 @@
       "error": "Could not activate the lesson card. Please try again.",
       "successTitle": "Lesson card activated!",
       "successBody": "\"{{title}}\" is ready for {{className}}. Students enter the class code.",
-      "codeLabel": "Class code"
+      "codeLabel": "Class code",
+      "chooseClassTitle": "For which class?",
+      "continue": "Continue"
     },
     "editor": {
       "newTitle": "New lesson card",
       "editTitle": "Edit lesson card",
-      "typeLabel": "Assignment type",
+      "typeLabel": "What will your students do?",
       "resourceLabel": "Source",
       "resourcePlaceholder": "Choose a source…",
       "resourceRequired": "Choose a source for this lesson card.",
-      "cardLabel": "Assignment card (optional)",
+      "cardLabel": "Instructions for students (optional)",
       "cardStudentHint": "This is what the student sees after the class code.",
       "cardMode": {
         "none": "Default text",
@@ -1037,7 +1044,17 @@
       "noPhases": "No phases added yet.",
       "phaseNamePlaceholder": "Name",
       "phaseTextPlaceholder": "Description",
-      "saveError": "Could not save the lesson card."
+      "saveError": "Could not save the lesson card.",
+      "chooseSource": "Choose a resource",
+      "backToForm": "Back to the lesson card",
+      "forYouTitle": "For you",
+      "preview": {
+        "card": "Lesson card",
+        "student": "Student",
+        "cardTitle": "How it appears in Lesson ideas",
+        "noTitle": "No title yet"
+      },
+      "chooseSourceHint": "You will see them all with a picture."
     },
     "filterAll": "All",
     "filterGeneral": "General",
@@ -1067,7 +1084,7 @@
     "storyboardFrames_one": "{{count}} image",
     "storyboardFrames_other": "{{count}} images",
     "templatesTitle": "My templates",
-    "templatesDescription": "A pre-built composition that students work with.",
+    "templatesDescription": "First make a starting point yourself; your students then build on it.",
     "templatesEmpty": "No templates yet. Create a composition in SoundScout and save it as an assignment from the stage.",
     "newTemplate": "New template",
     "newTemplateModalTitle": "Create a template",
@@ -1077,7 +1094,7 @@
     "newTemplateModalButton": "Go to SoundScout",
     "typeTemplate": "Template",
     "typePraatplaat": "Sound map",
-    "typeStoryboard": "Story in pictures",
+    "typeStoryboard": "Storyboard",
     "typeFree": "Free composition",
     "copyCode": "Copy code",
     "active": "Active",
@@ -1155,7 +1172,7 @@
     "anonymousHint": "You don't know who made this. Listen carefully and say what you think.",
     "starsLabel": "Give stars for each part:",
     "starsHint": "1 = good try · 2 = well done · 3 = really strong. Rate at least one part.",
-    "starTitle": "{{stars}} of 3 stars",
+    "starTitle": "{{stars}} of 3 stars: {{word}}",
     "capReached": "You have reached the maximum of 3 reviews.",
     "windowClosed": "Your teacher has closed the feedback round.",
     "chipsLabel": "Choose 1 to 3 compliments:",
@@ -1231,7 +1248,8 @@
       "create": "Could not create the class",
       "delete": "Could not delete the class",
       "limitReached_one": "You have reached the maximum of {{count}} class. Delete a class to create a new one.",
-      "limitReached_other": "You have reached the maximum of {{count}} classes. Delete a class to create a new one."
+      "limitReached_other": "You have reached the maximum of {{count}} classes. Delete a class to create a new one.",
+      "maxReached": "You have reached the maximum of {{max}} classes. Delete an old class to create a new one."
     },
     "praatplaten": {
       "load": "Could not load sound maps",
@@ -1276,29 +1294,29 @@
               "type": "heading",
               "text": "Creating your first class"
             },
-            "After logging in, create your first class using the 'New class' button. Each class automatically gets a 4-digit class code. Share that code with your students — they enter it on the start screen to be linked to your class.",
+            "After logging in, create your first class with the 'Create your first class' button (later: 'New class'). Each class automatically gets a 4-digit class code. You then go straight on to setting up an assignment. Share the class code with your students — they enter it on the start screen to join your class.",
             "Tip: write the class code on the whiteboard or print it on a worksheet. Students can also enter via a link with the class code embedded (handy when using a Chromebook cart)."
           ]
         },
         "classes": {
           "title": "Managing classes",
           "content": [
-            "Your dashboard shows all classes you've created. You can have up to 8 classes simultaneously (free account). Each class has its own class code that doesn't change — students only need it once.",
-            "To delete a class, use the trash icon on the class card. Note: deleting a class also removes all related submissions, templates, and sound maps. This cannot be undone.",
-            "Click a class to open the detail view. There you see all student submissions, can activate assignments (template or sound map), and see compositions still 'In progress'."
+            "At the top of your dashboard is the class you are working with now (the one you opened last), with the buttons 'Open class', 'Present' and 'Code on the board'. Your other classes are listed below. You can have up to 8 classes at a time (free account). Each class has its own class code that never changes — students only need to get it once.",
+            "To delete a class, open it: tab '1 · Set up' → 'More options' → 'Delete class'. Note: deleting a class also removes all related submissions. This cannot be undone.",
+            "A class is organised the way a lesson runs, in three tabs: '1 · Set up' (choose and check the assignment), '2 · During the lesson' (who is done, who is still working) and '3 · Look back' (earlier assignments, sharing and what classmates thought). 'Present' and 'Give feedback' are always at the top."
           ]
         },
         "dashboard-tour": {
           "title": "Your dashboard at a glance",
           "content": [
-            "After logging in you land on your dashboard. At the top are three tabs that divide all of your teacher work.",
+            "After logging in you first land on the teacher page; 'Go to your dashboard' takes you to your dashboard. At the top are three tabs that divide all of your teacher work.",
             {
               "type": "heading",
               "text": "The three tabs"
             },
-            "My classes — all your classes with their class codes. Click a class to view submissions and activate an assignment.",
-            "My assignments — your reusable building blocks: assignment cards, sound maps, storyboards and templates. You use these across classes.",
-            "Lesson cards — ready-made lesson packages (built-in or your own) that you activate for a class in one click.",
+            "My classes — the current class with big buttons (Open class, Present, Code on the board) and your other classes below. This is also where you create a new class.",
+            "Own materials — your own building blocks: instructions & assignment cards for students, and templates. You use these across classes.",
+            "Lesson ideas — ready-made lessons (built-in or your own). Pick one, choose a class and check what your students will see.",
             {
               "type": "heading",
               "text": "Help and logout"
@@ -1308,13 +1326,13 @@
               "type": "heading",
               "text": "How to set up a class"
             },
-            "Below the tabs is a collapsible block 'How to set up a class' with the three basic steps: create a class → choose an assignment → students enter the code. For a new class this block opens automatically."
+            "If you have no classes yet, you see a welcome block with the three basic steps: create a class → choose an assignment → put the code on the board."
           ]
         },
         "assignments": {
           "title": "The four assignment types",
           "content": [
-            "You prepare one active assignment per class at a time. There are four types; students entering the class code are automatically routed to the right flow. You choose and activate the type in the class detail screen via the four type cards.",
+            "You prepare one active assignment per class at a time, in three steps: 1 Choose (build it yourself or a ready-made lesson), 2 Check & adjust (you see exactly what the student sees), 3 Code on the board. Start from the class with 'Choose an assignment' or 'Choose another assignment'. There are four types; students entering the class code are automatically routed to the right flow.",
             {
               "type": "heading",
               "text": "Free composition"
@@ -1340,7 +1358,7 @@
               "type": "heading",
               "text": "Titles and live changes"
             },
-            "On the active assignment you can turn off 'Students type their own title'. The app then picks a title itself, without an input field; handy to stop children putting their name in the title.",
+            "Under 'More options' on the assignment (and on the code screen after setting it) you can turn off 'Students type their own title'. The app then picks a title itself, without an input field; handy to stop children putting their name in the title.",
             "If you change the assignment card, the duration, peer feedback or the title setting during the lesson, students who are already working pick it up within about a minute. If you activate a different assignment, they see a message and can finish their soundscape or start a new one."
           ]
         },
@@ -1357,18 +1375,18 @@
               "type": "heading",
               "text": "Creating and managing"
             },
-            "Go to the 'My assignments' tab → 'Assignment cards' section. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later.",
+            "Go to the 'Own materials' tab → 'Instructions & assignment cards for students'. Click 'New assignment card', give it a title and add bullets (for example 'Use at least three different sounds'). You can edit and delete cards later.",
             {
               "type": "heading",
               "text": "Linking to an assignment"
             },
-            "When activating an assignment you optionally choose an assignment card. If you pick none, the app shows a default explanation matching the assignment type."
+            "In step 2 of setting up (Check & adjust) you optionally choose an assignment card; on the right you immediately see how the student sees it. If you pick none, the app shows a default explanation matching the assignment type. You can change it later under 'More options' in the class."
           ]
         },
         "lesson-cards": {
           "title": "Using lesson cards",
           "content": [
-            "A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). In one click you activate this complete package for a class.",
+            "A lesson card is a ready-made lesson package: an assignment type + the chosen resource (for example a storyboard or sound map) + an assignment card + presentation info (title, level, learning goal, phases). You find them under the 'Lesson ideas' tab.",
             {
               "type": "heading",
               "text": "Built-in and your own lesson cards"
@@ -1378,7 +1396,7 @@
               "type": "heading",
               "text": "Activating"
             },
-            "Go to the 'Lesson cards' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Activate in class' and choose an existing class or create one on the spot. You get the class code right away.",
+            "Go to the 'Lesson ideas' tab, pick a card from the list and view the details on the right (learning goal, phases, optionally a PDF). Click 'Set up for a class' and choose an existing class or create one on the spot. You then land in step 2: check what the student sees, adjust if needed and set the assignment up. The class code then appears large on screen.",
             {
               "type": "heading",
               "text": "Creating your own lesson card"
@@ -1430,7 +1448,7 @@
               "type": "heading",
               "text": "Activating a template"
             },
-            "After saving, the template appears in your dashboard. Activate it for a specific class via the class detail screen. Note: a template is linked to a theme — students automatically get the same theme you used.",
+            "After saving, the template appears under 'Own materials'. Set it up for a class via 'Choose an assignment' → 'Finish a beginning'. Note: a template is linked to a theme — students automatically get the same theme you used.",
             {
               "type": "heading",
               "text": "Lock options"
@@ -1451,7 +1469,7 @@
               "type": "heading",
               "text": "Creating a sound map"
             },
-            "Go to the class detail screen and click 'Activate an assignment'. Choose 'Sound map', enter a name (e.g. 'Sounds at the market — grade 5a') and choose a location image from the active theme. Each class can only have one active assignment at a time.",
+            "Open the class and choose 'Choose an assignment' (or 'Choose another assignment'). Pick 'Score one picture together' and then an image. In step 2 you choose the sound theme; it is already set to the theme that fits the image. Each class can only have one active assignment at a time.",
             {
               "type": "heading",
               "text": "What students see"
@@ -1461,12 +1479,12 @@
               "type": "heading",
               "text": "Presenting on the whiteboard"
             },
-            "Open the sound map via 'Open sound map' next to the active assignment. You see the image fullscreen with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
+            "Click 'Present' in the class. For a sound map you see the image with speaker icons at the spots where students placed compositions. Click an icon to play the composition. If multiple students are close together, spots are automatically clustered — you then pick from a list. Click the refresh icon in the top right to load newly added compositions.",
             {
               "type": "heading",
               "text": "Sharing a link with students"
             },
-            "Click 'Share link' next to the active sound map. You get a direct URL and a QR code. Students who open this link or scan the QR code go directly into the sound map flow without needing to enter the class code manually. Ideal for projecting on the whiteboard.",
+            "Open the '3 · Look back' tab in the class and choose the ⋯ menu next to the sound map → 'Share with parents (link)'. You get a direct URL and a QR code. Ideal for projecting on the whiteboard or sending home.",
             {
               "type": "heading",
               "text": "Public listening page"
@@ -1477,17 +1495,17 @@
         "submissions": {
           "title": "Reviewing submissions",
           "content": [
-            "The class detail screen shows all compositions students have shared with your class. Each submission shows the student's name, date, and a play button.",
+            "In the class, '2 · During the lesson' shows all compositions students have saved or handed in for your class, newest first. Each tile shows the student's name and how long ago the work came in.",
             {
               "type": "heading",
               "text": "Tabs"
             },
-            "'Submitted' shows formally submitted compositions. 'In progress' shows compositions students have saved locally but not yet submitted (marked with a badge and 'Last edited' timestamp).",
+            "'Handed in' shows compositions students have formally handed in. 'Still working' shows compositions they have saved but not handed in yet, with the time they last saved.",
             {
               "type": "heading",
               "text": "What can you do?"
             },
-            "Per submission you can listen, view details (timeline view), and export to MP3. This way you can review student work, provide feedback, or use compositions in a class presentation.",
+            "Click 'Give feedback' to listen to the submissions one by one. You see the visual (the image or the scenes) above the timeline, choose a sticker, stars and a short text, and click 'Save & next'. Use 'Present' to play submissions for the whole class.",
             {
               "type": "heading",
               "text": "Versions and handing in again"
@@ -1561,7 +1579,7 @@
               "type": "heading",
               "text": "Set up before the lesson"
             },
-            "Activate the assignment in advance and write the class code large on the board (or show it via the whiteboard). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in on the active assignment — pupils see it on their start screen.",
+            "Set up the assignment in advance and put the class code on the board with 'Code on the board' (large, also fullscreen; you see students' names coming in). Test one device beforehand: enter the code, sound on, headphones in. Want to share a duration? Fill it in at step 2 or under 'More options' — pupils see it on their start screen.",
             {
               "type": "heading",
               "text": "Ways of working"
@@ -1571,7 +1589,7 @@
               "type": "heading",
               "text": "Wrapping up and presenting"
             },
-            "Reserve the last ten minutes for presenting: open the presentation screen from the classroom and play a few submissions together. Pupils who finish early can give Peer feedback or refine their composition with effects.",
+            "Reserve the last ten minutes for presenting: click 'Present' in the class and play a few submissions together. Pupils who finish early can listen to each other's work (if you turned on 'Let classmates listen') or refine their composition with effects.",
             "Sequencer: have students fill one track first and only then add a second. The difference between 'ring out' and 'cut off' makes a fine listening task: the same pattern sounds completely different."
           ]
         },
@@ -1593,7 +1611,7 @@
               "type": "heading",
               "text": "Use sticker, stars and text together"
             },
-            "The sticker and stars are quick encouragement (they save the moment you click); the text field is for one concrete observation or question. One good sentence is enough — pupils read it back on their own stage.",
+            "The sticker and stars are quick encouragement; the text box is the place for one concrete observation or question. One good sentence is enough — pick one of the tip sentences if you like. 'Save & next' takes you straight to the next student; students read your reaction on their own stage.",
             {
               "type": "heading",
               "text": "Example sentences"
@@ -1603,7 +1621,7 @@
               "type": "heading",
               "text": "Peer feedback as a warm-up"
             },
-            "Turn on Peer feedback so pupils review each other's work on the criteria of your feedback card first. It trains their listening vocabulary — and your feedback lands better once the class is in \"listening mode\"."
+            "Turn on 'Let classmates listen' so students first rate each other's work on the criteria of your feedback card. That trains their listening vocabulary — and your feedback lands better afterwards, because the class is already in \"listening mode\"."
           ]
         },
         "sequencer": {
@@ -1647,7 +1665,7 @@
       "passwordLettersDigits": "Use both letters and numbers in your password"
     },
     "login": {
-      "subtitle": "Teacher Login",
+      "subtitle": "Teacher login",
       "emailLabel": "Email address",
       "emailPlaceholder": "teacher@school.com",
       "passwordLabel": "Password",
@@ -1677,7 +1695,7 @@
     },
     "register": {
       "educatorDeclaration": "I am a teacher or education professional and use SoundScout for my teaching.",
-      "subtitle": "Create Teacher Account",
+      "subtitle": "Create a teacher account",
       "nameLabel": "Name",
       "namePlaceholder": "Ms Smith",
       "emailLabel": "Email address",
@@ -1718,8 +1736,8 @@
       "guide": "Guide",
       "myClasses": "My Classes",
       "tabClasses": "My classes",
-      "tabAssignments": "My materials",
-      "tabLessons": "Lesson cards",
+      "tabAssignments": "Own materials",
+      "tabLessons": "Lesson ideas",
       "newClass": "New Class",
       "loading": "Loading classes...",
       "emptyTitle": "No classes yet",
@@ -1761,18 +1779,18 @@
         },
         "step3": {
           "title": "Turn it into a lesson card",
-          "description": "Bundle your materials with a lesson goal and phases into a lesson card you can activate in one click."
+          "description": "Bundle your materials with a learning goal and phases into a lesson card; you'll find it under Lesson ideas."
         }
       },
       "setupLessons": {
-        "title": "How lesson cards work",
+        "title": "How to work with lesson ideas",
         "step1": {
-          "title": "Pick a lesson card",
+          "title": "Choose a lesson",
           "description": "Built-in or your own — filter by theme and age group to find the right lesson quickly."
         },
         "step2": {
-          "title": "Activate it for a class",
-          "description": "One click and the assignment is ready; you immediately get the class code for the board."
+          "title": "Set up for a class",
+          "description": "Choose a class, check what students will see and put the code on the board."
         },
         "step3": {
           "title": "Present and give feedback",
@@ -1830,14 +1848,14 @@
       "starsHint": "{{count}} stars from classmates",
       "status": {
         "new": "New",
-        "seen": "Seen",
+        "seen": "Listened",
         "reviewed": "Reviewed"
       },
       "openMontage": "Open timeline",
       "closeMontage": "Close timeline"
     },
     "peerOverview": {
-      "title": "Feedback overview",
+      "title": "What classmates thought",
       "openButton": "Feedback overview",
       "empty": "No peer reviews yet. Enable \"Peer feedback\" on the active assignment.",
       "loadError": "Could not load peer feedback. Check your connection and try again.",
@@ -1850,8 +1868,8 @@
       "unknownGiver": "Unknown"
     },
     "peerReview": {
-      "title": "Peer feedback",
-      "hint": "Students who submitted listen to 3 anonymous classmates' compositions and give compliments.",
+      "title": "Let classmates listen",
+      "hint": "Classmates give each other feedback. Students who handed in listen to 3 anonymous classmate compositions and give stars.",
       "cardLabel": "Feedback card",
       "ownCard": "own card",
       "newCard": "New card",
@@ -1869,12 +1887,14 @@
       "timerMinutes": "Close after {{minutes}} min",
       "closesIn": "closes in {{minutes}} min",
       "windowClosed": "Round closed.",
-      "reopen": "Reopen"
+      "reopen": "Reopen",
+      "deleteCardConfirmTitle": "Delete feedback card “{{title}}”?",
+      "deleteCardConfirmText": "For this assignment the app switches to the standard card. If another class uses this card, ‘Let classmates listen’ stops there until you choose another card."
     },
     "feedback": {
       "stickerLabel": "Choose a sticker",
       "levelLabel": "Level (1-3 stars)",
-      "levelTitle": "{{level}} of 3 stars",
+      "levelTitle": "{{level}} of 3 stars: {{word}}",
       "textPlaceholder": "Write a personal message (optional)...",
       "send": "Send feedback",
       "saved": "Sent",
@@ -1889,14 +1909,14 @@
       }
     },
     "createClassModal": {
-      "title": "Create New Class",
+      "title": "New class",
       "nameLabel": "Class name",
       "namePlaceholder": "e.g. Class 5B or Music 2025",
       "nameRequired": "Please enter a class name",
       "nameMinLength": "Class name must be at least 2 characters",
-      "codeInfo": "After creating, you'll get a unique 4-digit code that you can share with your students.",
+      "codeInfo": "You immediately get a 4-digit code. Then you choose an assignment step by step.",
       "cancel": "Cancel",
-      "submit": "Create",
+      "submit": "Create class and choose an assignment",
       "submitLoading": "Creating..."
     },
     "submissionPlayer": {
@@ -1913,7 +1933,9 @@
       "view": "View",
       "showOnScreen": "Show on screen",
       "compositionLabel_one": "composition",
-      "compositionLabel_other": "compositions"
+      "compositionLabel_other": "compositions",
+      "compositionCount_one": "{{count}} composition",
+      "compositionCount_other": "{{count}} compositions"
     },
     "classCodeOverlay": {
       "label": "Class Code",
@@ -1926,11 +1948,12 @@
       "withStoryboard": "Storyboard",
       "wip": "In progress",
       "lastEdited": "Last edited:",
-      "fromTemplate": "Assignment",
+      "fromTemplate": "Template",
       "fromPraatplaat": "Sound map",
       "new": "New",
       "seen": "Listened",
-      "reviewed": "Reviewed"
+      "reviewed": "Reviewed",
+      "withImage": "Image"
     },
     "praatplaat": {
       "sectionTitle": "Sound maps",
@@ -2030,6 +2053,255 @@
       "chooseBoardHint": "The image with clickable spots — listeners explore it themselves",
       "chooseAlbum": "The compositions",
       "chooseAlbumHint": "All submitted compositions as one playlist"
+    },
+    "wizard": {
+      "title": "Set up an assignment",
+      "steps": {
+        "choose": "Choose",
+        "check": "Check & adjust",
+        "board": "Code on the board"
+      },
+      "replaceWarning": "{{className}} is now working on {{name}}. Choosing something new replaces it. Submissions are kept.",
+      "replaceWarningShort": "This replaces {{name}}. Submissions are kept under Look back.",
+      "tabs": {
+        "own": "Build it yourself",
+        "ownSub": "choose a format and a source",
+        "lesson": "Ready-made lesson",
+        "lessonSub": "with learning goal and phases"
+      },
+      "whatDo": "What will your students do?",
+      "pick": {
+        "praatplaat": "Choose a picture",
+        "storyboard": "Choose a storyboard",
+        "template": "Choose a template",
+        "free": "Choose a theme"
+      },
+      "noTemplates": "You don't have any templates yet. Make a composition in the studio and save it as a template on the stage.",
+      "noLessons": "No ready-made lessons yet.",
+      "storyboardScenes_one": "{{count}} scene",
+      "storyboardScenes_other": "{{count}} scenes",
+      "types": {
+        "praatplaat": {
+          "plain": "Score one picture together",
+          "desc": "Everyone picks a spot on the same picture."
+        },
+        "storyboard": {
+          "plain": "Set a story to music",
+          "desc": "Several scenes; music for each scene."
+        },
+        "template": {
+          "plain": "Finish a beginning",
+          "desc": "You prepare the start, they finish it."
+        },
+        "free": {
+          "plain": "Free composing",
+          "desc": "Their own piece with sounds from one theme."
+        }
+      },
+      "previewTitle": "What the student sees",
+      "previewEmpty": "Choose an assignment to see what the student gets.",
+      "previewStart": "Start",
+      "mobilePreview": "Students see: {{name}} with {{count}} short steps.",
+      "next": "Next",
+      "back": "Back",
+      "activate": "Set it up",
+      "activating": "Setting up…",
+      "chosenFor": "For {{className}}",
+      "change": "Change",
+      "settingsTitle": "Settings",
+      "settingsHint": "These are fine as they are. You can change them later, even during the lesson.",
+      "settings": {
+        "card": "Instructions for students",
+        "cardDefault": "Standard instructions",
+        "cardFromLesson": "Instructions from the lesson",
+        "theme": "Sounds from theme",
+        "duration": "Duration",
+        "durationHint": "students see this",
+        "durationPlaceholder": "e.g. 2 lessons",
+        "peer": "Let classmates listen",
+        "peerHint": "Classmates give each other feedback.",
+        "peerOn": "On · after handing in, each student listens to 3 classmates and gives stars",
+        "peerOff": "Off · you can switch it on later"
+      },
+      "seasonNotice": "This theme is out of season and hidden from the student pickers. You can still set it up.",
+      "activateError": "Could not set up the assignment. Please try again.",
+      "settingsPartial": "The assignment is ready, but not all settings were saved. Check them in the class under More options."
+    },
+    "codeBoard": {
+      "ready": "{{className}} · {{name}} is ready",
+      "goTo": "Go to",
+      "andType": "and type:",
+      "active_one": "{{count}} student is working or done",
+      "active_other": "{{count}} students are working or done",
+      "activeNone": "Names appear here as soon as students save their work for the first time.",
+      "fullscreen": "Full screen",
+      "exitFullscreen": "Exit full screen",
+      "settings": "Settings",
+      "toClass": "To the class",
+      "settingsLive": "Changes apply immediately, also for students who are already working.",
+      "done": "Done"
+    },
+    "liveSettings": {
+      "saved": "Saved",
+      "error": "Could not save the setting. Please try again."
+    },
+    "classPage": {
+      "tabs": {
+        "prepare": "1 · Set up",
+        "prepareSub": "choose an assignment",
+        "live": "2 · During the lesson",
+        "liveSub": "who is done?",
+        "review": "3 · Look back",
+        "reviewSub": "earlier work · share"
+      },
+      "activeSince": "Active · since {{date}}",
+      "noActiveTitle": "Nothing is set up for {{className}} yet",
+      "noActiveText": "Students who type code {{code}} can only compose freely right now. Choose an assignment and it will be ready for them.",
+      "chooseAssignment": "Choose an assignment",
+      "present": "Present",
+      "feedback": "Give feedback",
+      "newBadge": "{{count}} new",
+      "codeOnBoard": "On the board",
+      "backToOverview": "Overview",
+      "crumb": "My classes",
+      "prepare": {
+        "ready": "{{name}} is ready.",
+        "change": "Choose another assignment",
+        "studentView": "What students see",
+        "moreOptions": "More options",
+        "stopHint": "students can then only compose freely",
+        "classLabel": "Class",
+        "deleteClass": "Delete class…",
+        "deleteClassTitle": "Delete {{className}}?",
+        "deleteClassBody": "The class, its code and all submissions will be deleted. This cannot be undone.",
+        "stopAssignment": "Stop assignment…"
+      },
+      "live": {
+        "title": "Who is done?",
+        "autoRefresh": "refreshes automatically",
+        "submitted": "handed in",
+        "wip": "still working",
+        "emptySubmitted": "Nothing handed in yet. Put the code on the board: students type {{code}}.",
+        "emptyWip": "Nobody is working yet.",
+        "sortNote": "Newest first, by the moment of handing in. Tap a name to listen and give feedback.",
+        "activeOnlyNote": "Only work for {{name}}. Older work is under Look back.",
+        "lastSaved": "last saved {{time}}"
+      },
+      "status": {
+        "new": "New",
+        "seen": "Listened",
+        "reviewed": "Feedback given",
+        "wip": "Working"
+      },
+      "review": {
+        "title": "(Earlier) assignments",
+        "activeBadge": "active",
+        "count_one": "{{count}} composition",
+        "count_other": "{{count}} compositions",
+        "view": "View",
+        "more": "More actions",
+        "share": "Share with parents (link)",
+        "reuse": "Use again",
+        "remove": "Remove from list",
+        "empty": "No assignments yet.",
+        "peerTitle": "What classmates thought",
+        "peerAll": "View all",
+        "peerEmpty": "No stars from classmates yet. Switch on 'Let classmates listen' under Set up → More options.",
+        "presentAll": "Present all compositions"
+      },
+      "time": {
+        "justNow": "just now",
+        "minutes": "{{count}} min",
+        "hours": "{{count}} h"
+      },
+      "stopTitle": "Stop this assignment?",
+      "stopConfirm": "Students who type code {{code}} can then only compose freely. Work that was already handed in is kept.",
+      "stopAction": "Stop"
+    },
+    "feedbackScreen": {
+      "title": "Give feedback",
+      "back": "Back to the class",
+      "filters": {
+        "todo": "To do",
+        "new": "New",
+        "all": "All"
+      },
+      "assignmentAll": "All assignments",
+      "assignmentLabel": "Assignment",
+      "by": "by {{name}}",
+      "submitted": "handed in · {{time}}",
+      "spot": "spot on the picture",
+      "scene": "Scene {{n}}",
+      "listenHint": "Tap play or drag across the timeline (works with your finger too).",
+      "play": "Play",
+      "pause": "Pause",
+      "loading": "Loading sounds…",
+      "step1": "1. Choose a compliment",
+      "step2": "2. How far along is it?",
+      "step3": "3. A tip",
+      "step3Hint": "(optional)",
+      "levelNone": "not chosen yet",
+      "tips": [
+        "Try a moment of silence.",
+        "Let the sound ring out longer.",
+        "Start quietly and build up.",
+        "Repeat your favourite part.",
+        "Does the sound fit your spot?"
+      ],
+      "saveNext": "Save & next",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "needSomething": "Choose at least a compliment or stars.",
+      "studentSees": "The student sees this with their save code on the Stage.",
+      "emptyTitle": "Everything has feedback",
+      "emptyHint": "New submissions appear here automatically.",
+      "pick": "Choose a submission on the left.",
+      "delete": "Delete submission",
+      "noSamples": "This composition has no sounds to play.",
+      "doneBack": "Done? Back to the class",
+      "peer": {
+        "title": "What classmates said",
+        "count_one": "{{count}} classmate",
+        "count_other": "{{count}} classmates",
+        "avg": "average {{avg}} out of 3 stars",
+        "chosen_one": "chosen {{count}}×",
+        "chosen_other": "chosen {{count}}×",
+        "from": "From: {{names}} (only you can see the names)",
+        "loadError": "Classmates' reactions could not be loaded."
+      }
+    },
+    "today": {
+      "greeting": {
+        "morning": "Good morning, {{name}}",
+        "afternoon": "Good afternoon, {{name}}",
+        "evening": "Good evening, {{name}}"
+      },
+      "now": "Now",
+      "otherClasses": "Other classes",
+      "running": "{{name}} is running",
+      "submitted_one": "{{count}} handed in",
+      "submitted_other": "{{count}} handed in",
+      "noAssignment": "no assignment yet",
+      "nothingReady": "No assignment set up yet",
+      "openClass": "Open class",
+      "present": "Present",
+      "codeOnBoard": "Code on the board",
+      "chooseAssignment": "Choose assignment",
+      "newClass": "New class",
+      "classesUsed": "{{used}} of {{max}} classes used",
+      "maxReachedText": "Delete an old class (in the class under More options) or email us for more room.",
+      "welcomeTitle": "Welcome to SoundScout!",
+      "welcomeText": "Create a class. You get a 4-digit code that your students type in. Then you choose an assignment step by step.",
+      "createFirst": "Create your first class",
+      "lessonsHint": "Rather look around first?",
+      "lessonsLink": "Browse the lesson ideas",
+      "howTitle": "How to set up a class",
+      "how1Title": "Create a class",
+      "how1Desc": "You immediately get a four-digit class code.",
+      "how2Title": "Choose an assignment",
+      "how2Desc": "Build it yourself or use a ready-made lesson; you see right away what the student sees.",
+      "how3Title": "Put the code on the board",
+      "how3Desc": "Students type the code and you see their compositions come in."
     }
   },
   "praatplaatImages": {
@@ -2173,7 +2445,7 @@
       "description": "Next, you'll pick a spot on this picture. Your soundscape goes there."
     },
     "storyboard": {
-      "kind": "Story in pictures",
+      "kind": "Storyboard",
       "description": "Make a soundscape that fits each scene of this story. First collect sounds on the map."
     },
     "free": {
@@ -2234,7 +2506,7 @@
           "description": "The whole class on one image. Each pair gives voice to a spot."
         },
         "storyboard": {
-          "tag": "Story in scenes",
+          "tag": "Scene by scene",
           "title": "Storyboard",
           "description": "Three to four images form a story — a soundtrack per scene."
         },

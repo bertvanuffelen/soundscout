@@ -146,7 +146,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
         </p>
       </div>
       <p className="text-xs text-text-muted mb-3">{t('peerReview.starsHint')}</p>
-      <div className="flex flex-col gap-2 mb-4">
+      <div className="flex flex-col gap-2 mb-2">
         {chips.map((chip) => {
           const value = ratings[chip] ?? 0;
           return (
@@ -168,7 +168,8 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
                     role="radio"
                     aria-checked={value === n}
                     onClick={() => setStars(chip, n)}
-                    title={t('peerReview.starTitle', { stars: n })}
+                    title={t('peerReview.starTitle', { stars: n, word: t(`common.starLevels.${n}`) })}
+                    aria-label={t('peerReview.starTitle', { stars: n, word: t(`common.starLevels.${n}`) })}
                     className="p-1 transition-transform hover:scale-110"
                   >
                     <Star
@@ -186,6 +187,8 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
         })}
       </div>
 
+      {/* Vangnet: moet het paneel tóch scrollen, dan blijft versturen in beeld */}
+      <div className="sticky -bottom-4 -mx-4 -mb-4 px-4 pb-4 pt-2 bg-bg-surface">
       {submitError && (
         <p role="alert" className="text-error-600 text-sm text-center mb-3">
           {submitError}
@@ -204,6 +207,7 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
           ? t('peerReview.retry')
           : index + 1 < items.length ? t('peerReview.sendAndNext') : t('peerReview.sendAndFinish')}
       </Button>
+      </div>
     </div>
   );
 
