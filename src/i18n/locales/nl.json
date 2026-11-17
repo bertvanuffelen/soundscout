@@ -169,8 +169,6 @@
     "introTitle": "Zo werkt SoundScout",
     "introStart": "Aan de slag",
     "newTheme": "Nieuw thema: {{name}}",
-    "newCompositionConfirm": "Je werkt al aan een soundscape. Als je een nieuwe begint, ben je je verzamelde geluiden en je huidige soundscape kwijt.",
-    "newCompositionStart": "Opnieuw beginnen",
     "haveCode": "Ik heb een code",
     "backToChoices": "Terug",
     "howItWorks": "Hoe werkt het?",
@@ -205,7 +203,17 @@
     "aboutLink": "Over SoundScout",
     "languageLabel": "Taal",
     "continueLabel": "Verder waar je was",
-    "keepWorking": "Ga verder met je soundscape",
+    "discard": {
+      "title": "Deze gooi je weg",
+      "keep": "Bewaren",
+      "confirm": "Weggooien"
+    },
+    "ownerCheck": {
+      "title": "Hier staat nog een soundscape",
+      "mine": "Die is van mij",
+      "other": "Ik ben iemand anders",
+      "asideName": "Soundscape van eerder"
+    },
     "heroStart": "Begin met componeren",
     "footerLabel": "Meer over SoundScout"
   },

@@ -169,8 +169,6 @@
     "introTitle": "How SoundScout works",
     "introStart": "Get started",
     "newTheme": "New theme: {{name}}",
-    "newCompositionConfirm": "You already have a soundscape in progress. If you start a new one, you will lose your collected sounds and your current soundscape.",
-    "newCompositionStart": "Start over",
     "haveCode": "I have a code",
     "backToChoices": "Back",
     "howItWorks": "How does it work?",
@@ -205,7 +203,17 @@
     "aboutLink": "About SoundScout",
     "languageLabel": "Language",
     "continueLabel": "Carry on where you left off",
-    "keepWorking": "Keep working on your soundscape",
+    "discard": {
+      "title": "You will throw these away",
+      "keep": "Keep",
+      "confirm": "Throw away"
+    },
+    "ownerCheck": {
+      "title": "There is still a soundscape here",
+      "mine": "That one is mine",
+      "other": "I am someone else",
+      "asideName": "Earlier soundscape"
+    },
     "heroStart": "Start composing",
     "footerLabel": "More about SoundScout"
   },

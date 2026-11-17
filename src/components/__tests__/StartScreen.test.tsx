@@ -69,6 +69,8 @@ describe('StartScreen (V2)', () => {
     markFirstRunSeen('onboarding-intro');
     vi.spyOn(storageService, 'getCompositions').mockReturnValue([]);
     vi.spyOn(storageService, 'getClassFeedbackCode').mockReturnValue(null);
+    // Standaard: dit kind werkte zelf in deze zitting (geen eigenaarsvraag)
+    sessionStorage.setItem('soundscout:sitting', '1');
     useLibraryStore.setState({ librarySamples: [] });
     useTimelineStore.getState().clearAllTracks?.();
     useAppStore.setState({
@@ -135,21 +137,22 @@ describe('StartScreen (V2)', () => {
     expect(useAppStore.getState().currentScreen).toBe('studio');
   });
 
-  it('met werk: waarschuwing met veilige primaire knop; opnieuw beginnen opent de wizard', async () => {
+  it('met werk: de waarschuwing toont wat je weggooit; "Bewaren" sluit, "Weggooien" opent de wizard', async () => {
     withWork();
     render(<StartScreen />);
     fireEvent.click(screen.getByRole('button', { name: 'Nieuwe soundscape' }));
-    expect(screen.getByText(/Je werkt al aan een soundscape/)).toBeInTheDocument();
+    expect(screen.getByRole('dialog', { name: 'Deze gooi je weg' })).toBeInTheDocument();
+    expect(screen.getByTestId('discard-preview').children).toHaveLength(1);
     expect(screen.queryByRole('dialog', { name: 'wizard' })).not.toBeInTheDocument();
 
-    // Ga verder met je soundscape = terug naar de studio, niets gewist
-    fireEvent.click(screen.getByRole('button', { name: 'Ga verder met je soundscape' }));
-    expect(useAppStore.getState().currentScreen).toBe('studio');
-    expect(screen.queryByText(/Je werkt al aan een soundscape/)).not.toBeInTheDocument();
+    // Bewaren = er gebeurt niets met je werk
+    fireEvent.click(screen.getByRole('button', { name: 'Bewaren' }));
+    expect(screen.queryByRole('dialog', { name: 'Deze gooi je weg' })).not.toBeInTheDocument();
+    expect(useLibraryStore.getState().librarySamples).toHaveLength(1);
+    expect(useAppStore.getState().currentScreen).toBe('start');
 
-    useAppStore.setState({ currentScreen: 'start' });
     fireEvent.click(screen.getByRole('button', { name: 'Nieuwe soundscape' }));
-    fireEvent.click(screen.getByRole('button', { name: 'Opnieuw beginnen' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Weggooien' }));
     expect(await screen.findByRole('dialog', { name: 'wizard' })).toBeInTheDocument();
   });
 
@@ -184,9 +187,7 @@ describe('StartScreen (V2)', () => {
     render(<StartScreen />);
     fireEvent.click(screen.getByRole('button', { name: /Nieuw thema/ }));
     expect(initializeNewComposition).not.toHaveBeenCalled();
-    // De titel van de waarschuwing noemt wat je wilde starten
-    expect(screen.getByRole('dialog', { name: /Nieuw thema/ })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Opnieuw beginnen' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Weggooien' }));
     await waitFor(() => expect(initializeNewComposition).toHaveBeenCalledWith({ themeId: 'seizoen' }));
     expect(screen.queryByRole('dialog', { name: 'wizard' })).not.toBeInTheDocument();
   });
@@ -234,5 +235,43 @@ describe('StartScreen (V2)', () => {
     expect(await screen.findByRole('dialog', { name: 'wizard' })).toBeInTheDocument();
     expect(AudioSpy).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
+  });
+
+  describe('gedeeld apparaat: van wie is dit werk? (mockup B3)', () => {
+    beforeEach(() => { sessionStorage.removeItem('soundscout:sitting'); });
+
+    it('zonder werk komt de vraag niet', () => {
+      render(<StartScreen />);
+      expect(screen.queryByTestId('owner-check')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Nieuwe soundscape' })).toBeInTheDocument();
+    });
+
+    it('werk uit een eerdere zitting: eerst de vraag, geen "Ga verder"', () => {
+      withWork();
+      render(<StartScreen />);
+      expect(screen.getByTestId('owner-check')).toHaveTextContent('Hier staat nog een soundscape');
+      expect(screen.queryByRole('button', { name: /^Ga verder/ })).not.toBeInTheDocument();
+      expect(screen.queryByRole('button', { name: 'Nieuwe soundscape' })).not.toBeInTheDocument();
+    });
+
+    it('"Die is van mij" gaat naar de studio en onthoudt de zitting', () => {
+      withWork();
+      render(<StartScreen />);
+      fireEvent.click(screen.getByRole('button', { name: 'Die is van mij' }));
+      expect(useAppStore.getState().currentScreen).toBe('studio');
+      expect(sessionStorage.getItem('soundscout:sitting')).toBe('1');
+      expect(useLibraryStore.getState().librarySamples).toHaveLength(1);
+    });
+
+    it('"Ik ben iemand anders" maakt het werkblad leeg en toont het gewone startscherm', () => {
+      withWork();
+      render(<StartScreen />);
+      fireEvent.click(screen.getByRole('button', { name: 'Ik ben iemand anders' }));
+      expect(useLibraryStore.getState().librarySamples).toHaveLength(0);
+      expect(useAppStore.getState().currentScreen).toBe('start');
+      expect(screen.queryByTestId('owner-check')).not.toBeInTheDocument();
+      expect(screen.getByRole('button', { name: 'Nieuwe soundscape' })).toBeInTheDocument();
+      expect(sessionStorage.getItem('soundscout:sitting')).toBe('1');
+    });
   });
 });
