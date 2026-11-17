@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2485 teksten in 57 secties._
+_Stand: 2487 teksten in 57 secties._
 
 ## app
 
@@ -1584,6 +1584,8 @@ _Stand: 2485 teksten in 57 secties._
 | `teacher.presentation.autoAdvance` | Doorspelen | Play through |
 | `teacher.presentation.autoAdvanceHint` | Speel na afloop automatisch de volgende compositie | Automatically play the next composition when one ends |
 | `teacher.presentation.feedbackRow` | Feedback geven | Give feedback |
+| `teacher.presentation.stickerSaved` | Bewaard bij {{name}} | Saved for {{name}} |
+| `teacher.presentation.stickerRemoved` | Sticker weg bij {{name}} | Sticker removed for {{name}} |
 | `teacher.presentation.togglePlaylist` | Afspeellijst tonen/verbergen | Show/hide playlist |
 | `teacher.presentation.montageLine` | Montagelijn tonen/verbergen | Show/hide timeline strip |
 | `teacher.presentation.fullscreen` | Volledig scherm | Full screen |

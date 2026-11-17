@@ -54,6 +54,7 @@ import { PraatplaatSpot } from '../praatplaat/PraatplaatSpot';
 import FittedImage from './FittedImage';
 import { clusterSubmissions, type SpotCluster } from '../../utils/praatplaatClustering';
 import { FeedbackPanel } from '../teacher/FeedbackPanel';
+import { QuickStickers } from './QuickStickers';
 import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
 import { useDerivedBeat } from '../../hooks/useBeatFrame';
 import { getActiveImageIndex } from '../../utils/storytelling';
@@ -604,6 +605,17 @@ export function PresentationSurface({
             <div className="lg:hidden mx-3 mt-2 rounded-xl overflow-hidden bg-bg-surface shadow-xl max-h-[40dvh] overflow-y-auto p-4">
               {ratingSlot}
             </div>
+          )}
+
+          {/* Feedback met één tik tijdens het presenteren (mockup C2). Het
+              volledige paneel hieronder (sterren, tekst) neemt het over
+              zodra de docent het opent. */}
+          {mode === 'teacher-present' && onSetFeedback && !showFeedbackRow && (
+            <QuickStickers
+              key={current.id}
+              submission={current}
+              onSave={(feedback) => onSetFeedback(current.id, feedback)}
+            />
           )}
 
           {/* Docent-feedbackrij (hergebruik FeedbackPanel) */}
