@@ -1865,6 +1865,8 @@
       "autoAdvance": "Play through",
       "autoAdvanceHint": "Automatically play the next composition when one ends",
       "feedbackRow": "Give feedback",
+      "stickerSaved": "Saved for {{name}}",
+      "stickerRemoved": "Sticker removed for {{name}}",
       "togglePlaylist": "Show/hide playlist",
       "montageLine": "Show/hide timeline strip",
       "fullscreen": "Full screen",
