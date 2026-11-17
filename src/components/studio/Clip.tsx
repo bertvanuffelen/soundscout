@@ -11,6 +11,7 @@ import { isSequenceSampleId } from '../../utils/sequencer';
 import { getOnSoundTextClass } from '../../utils/soundColor';
 import { useSelectionStore } from '../../stores/selectionStore';
 import { useTimelineStore } from '../../stores/timelineStore';
+import { wasJustDropped } from '../../utils/microMotion';
 
 interface ClipProps {
   clip: ClipType;
@@ -201,6 +202,7 @@ export const Clip = memo(function Clip({
         absolute top-1 bottom-1 rounded-lg flex items-center gap-1 px-1.5 overflow-hidden
         ${readOnly ? 'cursor-default' : locked ? 'cursor-not-allowed' : isResizing ? 'cursor-ew-resize' : 'cursor-grab active:cursor-grabbing'} ${isResizing ? '' : 'transition-all'} select-none
         ${isDragging ? 'opacity-0' : ''}
+        ${wasJustDropped(clip.id) ? 'animate-clip-settle' : ''}
         ${isMuted ? 'grayscale opacity-40' : ''}
         ${locked ? 'opacity-75' : ''}
         ${isSelected ? 'ring-2 ring-white ring-offset-1 ring-offset-black/20 shadow-lg z-20' : 'hover:shadow-md'}

@@ -26,10 +26,10 @@ export function RecorderBar({ slots, onEject, onPreview }: RecorderBarProps) {
       <div className="flex gap-1.5 sm:gap-2 overflow-x-auto">
         {/* Leeg en gevuld vak zijn even hoog: anders groeit de balk bij het eerste geluid en verspringt de hele locatie (stagingtest 16-11). */}
         {slots.map((slot, i) => (
-          <div key={i} className="flex-1 min-w-[48px] sm:min-w-[56px]">
+          <div key={i} className="flex-1 min-w-[48px] sm:min-w-[56px]" data-recorder-slot={i} data-empty={slot ? 'false' : 'true'}>
             {slot ? (
               <div
-                className="flex flex-col items-center justify-center gap-0.5 sm:gap-1 rounded-xl p-1.5 sm:p-2 min-h-[72px] sm:min-h-[88px] transition-colors duration-150 cursor-pointer hover:bg-neutral-50 active:bg-neutral-100"
+                className="animate-slot-pop flex flex-col items-center justify-center gap-0.5 sm:gap-1 rounded-xl p-1.5 sm:p-2 min-h-[72px] sm:min-h-[88px] transition-colors duration-150 cursor-pointer hover:bg-neutral-50 active:bg-neutral-100"
                 style={{
                   backgroundColor: `${slot.color}15`,
                   borderColor: slot.color,

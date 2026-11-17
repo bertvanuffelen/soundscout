@@ -28,6 +28,7 @@ import {
   TOUCH_ACTIVATION_TOLERANCE,
   TRACK_LABEL_WIDTH_PX,
 } from '../constants/config';
+import { markDropped } from '../utils/microMotion';
 
 function generateClipId(): string {
   return `clip-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
@@ -316,10 +317,12 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
         const effectSound = active.data.current?.effectSound as EffectSound | undefined;
 
         // Smart snap will find the best position
+        const newClipId = generateClipId();
+        markDropped(newClipId);
         addClip(
           toTrackIndex,
           {
-            id: generateClipId(),
+            id: newClipId,
             sampleId: sample.id,
             startBeat,
             ...(effectSound
