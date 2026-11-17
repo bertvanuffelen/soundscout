@@ -7,7 +7,7 @@
     "gotIt": "Aan de slag!"
   },
   "landscapeHint": {
-    "message": "Draai je tablet of telefoon een kwartslag — in liggende stand heb je veel meer werkruimte."
+    "message": "Draai je scherm een kwartslag."
   },
   "common": {
     "back": "Terug",
@@ -48,7 +48,7 @@
     "loadingTheme": "Thema laden...",
     "studioShort": "Studio",
     "cityMapAlt": "Plattegrond van het thema",
-    "firstVisitHint": "Klik op een locatie om geluiden te verzamelen. Daarna maak je er in de studio een soundscape van."
+    "firstVisitHint": "Tik op een plek en verzamel geluiden."
   },
   "themeSelection": {
     "title": "Kies je wereld",
@@ -303,7 +303,7 @@
     "soloOff": "Solo uitzetten",
     "extendTimelineTitle": "Tijdlijn 8 maten langer maken (nu {{maten}} maten, max 64)",
     "shrinkTimelineTitle": "Tijdlijn 8 maten korter maken (nu {{maten}} maten, min 16)",
-    "clipToolsHint": "Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen.",
+    "clipToolsHint": "Tik op een blok om het te bewerken.",
     "addToTrack": "Voeg {{name}} toe aan tijdlijn",
     "dragToTimeline": "Sleep naar tijdlijn",
     "trim": "Inkorten",
@@ -406,7 +406,6 @@
     "namePlaceholder": "Mijn soundscape",
     "nameHint": "Tip: geen achternaam in je titel.",
     "newComposition": "Nieuwe soundscape",
-    "newCompositionConfirm": "Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt.",
     "nowPlaying": "Nu speelt...",
     "cancel": "Annuleer",
     "save": "Opslaan",
@@ -600,7 +599,7 @@
     "finish": {
       "button": "Klaar, ik stop",
       "title": "Klaar met werken?",
-      "text": "Je soundscape is ingeleverd. We halen je werk van deze computer, zodat de volgende leerling het niet ziet.",
+      "text": "Ingeleverd. Je werk gaat nu van deze computer af.",
       "code": "Later verder? Je code:"
     }
   },
@@ -2400,7 +2399,7 @@
   },
   "saveOnline": {
     "title": "Bewaar online",
-    "description": "Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder.",
+    "description": "Met een code werk je op elk apparaat verder.",
     "nameLabel": "Jouw naam (optioneel)",
     "namePlaceholder": "Bijv. Lisa of Groep 5",
     "classCodeLabel": "Klascode (optioneel)",
@@ -2880,7 +2879,7 @@
       "libraryHeading": "Sequences",
       "deleteWithClips": "Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg.",
       "playsSequence": "Speelt deze sequence (loopt rond)",
-      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn.",
+      "firstRunHint": "Zo maak je een ritme of een melodie.",
       "done": "Klaar",
       "savedToast": "{{name}} staat in je bibliotheek.",
       "emptyDiscarded": "Er stond nog niets in, dus er is niets bewaard.",

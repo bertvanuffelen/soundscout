@@ -55,6 +55,7 @@ const ThemePicker = lazy(() =>
 import { ShareCodeModal } from './share';
 import { PrivacyModal } from './PrivacyModal';
 import { NewWorkChoiceModal } from './common/NewWorkChoiceModal';
+import { DiscardWorkModal } from './common/DiscardWorkModal';
 import type { Storyboard } from '../types';
 
 export function StartScreen() {
@@ -106,12 +107,6 @@ export function StartScreen() {
   const [showNewConfirm, setShowNewConfirm] = useState(false);
   // De docent heeft de les afgerond en dit apparaat is net opgeruimd (lessonState.ts)
   const [lessonEnded] = useState(() => consumeLessonEndedNotice());
-  // Wat er weggaat bij "opnieuw beginnen": de verzamelde geluiden als blokjes
-  const librarySamples = useLibraryStore((st) => st.librarySamples);
-  const discardPreview = useMemo(
-    () => ({ shown: librarySamples.slice(0, 5), more: Math.max(0, librarySamples.length - 5) }),
-    [librarySamples],
-  );
   // Gedeeld apparaat (mockup B3): staat er werk dat niet in deze zitting is
   // gemaakt of bevestigd, dan eerst vragen van wie het is (services/sitting.ts)
   const [ownerAnswered, setOwnerAnswered] = useState(false);
@@ -571,48 +566,12 @@ export function StartScreen() {
         />
       )}
 
-      {/* Waarschuwing: actieve compositie wordt gewist (mockup B4, "weinig
-          woorden"). Laat zien wát je weggooit in plaats van het uit te leggen;
-          de knoppen zeggen wat er gebeurt. Veilige keuze = primair. */}
-      <Modal
+      {/* Waarschuwing: actieve compositie wordt gewist (mockup B4, weinig woorden) */}
+      <DiscardWorkModal
         isOpen={showNewConfirm}
-        onClose={() => setShowNewConfirm(false)}
-        title={t('start.discard.title')}
-        size="sm"
-      >
-        <div className="flex flex-wrap justify-center gap-1.5 mb-6" data-testid="discard-preview">
-          {discardPreview.shown.map((smp) => (
-            <span
-              key={smp.id}
-              className="inline-flex items-center min-h-9 px-3 rounded-lg text-sm font-extrabold text-white"
-              style={{ backgroundColor: smp.color }}
-            >
-              {t(smp.name)}
-            </span>
-          ))}
-          {discardPreview.more > 0 && (
-            <span className="inline-flex items-center min-h-9 px-3 rounded-lg text-sm font-extrabold bg-neutral-100 text-text-muted">
-              +{discardPreview.more}
-            </span>
-          )}
-        </div>
-        <div className="flex flex-col-reverse sm:flex-row gap-3">
-          <Button
-            variant="danger"
-            onClick={handleConfirmNewComposition}
-            className="flex-1"
-          >
-            {t('start.discard.confirm')}
-          </Button>
-          <Button
-            variant="primary"
-            onClick={() => setShowNewConfirm(false)}
-            className="flex-1"
-          >
-            {t('start.discard.keep')}
-          </Button>
-        </div>
-      </Modal>
+        onKeep={() => setShowNewConfirm(false)}
+        onDiscard={handleConfirmNewComposition}
+      />
 
       {/* Nieuwe compositie — begeleide wizard (modus → bijpassende keuze).
           Alleen gemount wanneer open, zodat de stap-state elke keer vers is. */}
