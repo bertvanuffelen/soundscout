@@ -225,28 +225,14 @@ describe('StartScreen (V2)', () => {
     await i18n.changeLanguage('nl');
   });
 
-  it('de stippen in het beeld zijn knoppen die een voorproefje spelen', () => {
-    const play = vi.fn().mockResolvedValue(undefined);
-    const pause = vi.fn();
-    const audios: Array<{ src: string }> = [];
-    class FakeAudio {
-      volume = 1;
-      preload = '';
-      play = play;
-      pause = pause;
-      src: string;
-      constructor(src: string) { this.src = src; audios.push(this); }
-    }
-    vi.stubGlobal('Audio', FakeAudio);
+  it('het beeld is één knop naar de wizard en maakt geen geluid', async () => {
+    const AudioSpy = vi.fn();
+    vi.stubGlobal('Audio', AudioSpy);
     render(<StartScreen />);
-    const dot = screen.getByRole('button', { name: 'Luister: Hond' });
-    fireEvent.click(dot);
-    expect(audios[0].src).toContain('hond.mp3');
-    expect(play).toHaveBeenCalled();
-    expect(dot).toHaveAttribute('aria-pressed', 'true');
-    fireEvent.click(dot);
-    expect(pause).toHaveBeenCalled();
-    expect(dot).toHaveAttribute('aria-pressed', 'false');
+    expect(screen.queryByRole('button', { name: /Luister/ })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByTestId('hero-start'));
+    expect(await screen.findByRole('dialog', { name: 'wizard' })).toBeInTheDocument();
+    expect(AudioSpy).not.toHaveBeenCalled();
     vi.unstubAllGlobals();
   });
 });

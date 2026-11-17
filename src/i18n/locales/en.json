@@ -206,8 +206,7 @@
     "languageLabel": "Language",
     "continueLabel": "Carry on where you left off",
     "keepWorking": "Keep working on your soundscape",
-    "heroListen": "Listen: {{name}}",
-    "heroListenLabel": "Listen to the farm",
+    "heroStart": "Start composing",
     "footerLabel": "More about SoundScout"
   },
   "newWork": {
