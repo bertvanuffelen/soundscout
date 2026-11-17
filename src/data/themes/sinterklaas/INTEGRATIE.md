@@ -14,8 +14,8 @@ verborgen).
 Browsercheck 17-11-2026 (dev, `?theme=sinterklaas`): NL- en EN-kaart tonen 5
 markers met de juiste plattegrond; pakjeskamer opent met beeld en 6 hotspots; een
 hotspot laadt en neemt zijn toon op; Sinterklaas staat niet in de themakiezer.
-Opvallend: de marker van de bakkerij valt op de kaart deels over het opschrift
-"De bakkerij" — meenemen bij het fijnafstemmen (`map.ts`).
+De bakkerijmarker stond over het opschrift "De bakkerij"; verschoven van 60,48
+naar 61,70 (bij de oven), gecontroleerd op de NL- en EN-kaart, breed en smal.
 
 ## Klaar
 
