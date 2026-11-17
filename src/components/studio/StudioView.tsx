@@ -32,7 +32,6 @@ import { TempoPicker } from './TempoPicker';
 import { SampleIcon } from '../../utils/iconMap';
 import { getOnSoundTextClass } from '../../utils/soundColor';
 import { Button, Modal } from '../ui';
-import { cn } from '../../utils/cn';
 import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { audioService } from '../../services/AudioService';
 import { generateClipId, generateId } from '../../utils/uuid';
@@ -91,11 +90,6 @@ export function StudioView() {
   const effectiveMode: StudioViewMode = viewMode === 'scenes' && !allowScenes ? 'split' : viewMode;
   // Mobile tab: only 'library' or 'image' (no split on small screens)
   const [mobileTab, setMobileTab] = useState<'library' | 'image'>('library');
-  // Is de bibliotheek (met de maakbalk en "Verzamel meer geluiden") te zien?
-  // Zo niet (storyboard-beeld/scènes, of de beeldtab op de telefoon), dan
-  // toont de kop een eigen terugknop naar de kaart.
-  const libraryShownDesktop = !hasStorytelling || effectiveMode === 'library' || effectiveMode === 'split';
-  const libraryShownMobile = !hasStorytelling || mobileTab === 'library';
   // Gedeelde scroll-container van de timeline (Feature F): de scène-filmstrip spiegelt hem.
   const timelineScrollRef = useRef<HTMLDivElement>(null);
 
@@ -173,6 +167,8 @@ export function StudioView() {
     (sequenceId: string) => {
       // Compositie-afspelen pauzeren vóór het wisselen van context
       if (useAudioStore.getState().isPlaying) handlePause();
+      // Een sequence die via de chip klinkt, stoppen
+      sequencerEngine.stop();
       setOpenSequenceId(sequenceId);
     },
     [handlePause, setOpenSequenceId]
@@ -212,12 +208,61 @@ export function StudioView() {
     useSequencerStore.getState().setIsPlaying(false);
   }, []);
 
+  // --- Sequence beluisteren vanaf de chip (wens Bert 17-11) ---
+  // Speelt het patroon één keer af zonder de editor te openen; nog een klik
+  // (of een andere chip) stopt het.
+  const [previewSequenceId, setPreviewSequenceId] = useState<string | null>(null);
+  const previewSeqTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const stopSequencePreview = useCallback(() => {
+    if (previewSeqTimerRef.current) clearTimeout(previewSeqTimerRef.current);
+    previewSeqTimerRef.current = null;
+    if (!useSequencerStore.getState().openSequenceId) sequencerEngine.stop();
+    setPreviewSequenceId(null);
+  }, []);
+  useEffect(() => () => { if (previewSeqTimerRef.current) clearTimeout(previewSeqTimerRef.current); }, []);
+  // De tijdlijn gaat spelen → chip-voorbeeld stoppen (nooit twee tegelijk)
+  useEffect(() => useAudioStore.subscribe((st, prev) => {
+    if (st.isPlaying && !prev.isPlaying && previewSeqTimerRef.current) stopSequencePreview();
+  }), [stopSequencePreview]);
+  const handlePreviewSequence = useCallback(async (sequenceId: string) => {
+    if (previewSequenceId === sequenceId) { stopSequencePreview(); return; }
+    stopSequencePreview();
+    const store = useSequencerStore.getState();
+    if (store.openSequenceId) return; // editor open: de transportknop speelt daar
+    const seq = store.sequences.find((sq) => sq.id === sequenceId);
+    if (!seq) return;
+    if (useAudioStore.getState().isPlaying) handlePause();
+    audioService.stopAllSamples();
+    sequencerEngine.setSamples(librarySamples);
+    const voiceId = seq.kind === 'melody' && seq.melody?.voice?.type === 'sample' ? seq.melody.voice.sampleId : null;
+    const ids = [...seq.tracks.map((tr) => tr.sampleId), voiceId].filter((id): id is string => !!id);
+    await Promise.all(ids.map((id) => {
+      const smp = librarySamples.find((x) => x.id === id);
+      return smp ? sequencerEngine.ensureBuffer(smp) : Promise.resolve();
+    }));
+    store.setActiveSequence(sequenceId);
+    await sequencerEngine.prepare(seq);
+    await sequencerEngine.start();
+    setPreviewSequenceId(sequenceId);
+    // Eén keer rond (lengte × teldur in het huidige tempo), dan stoppen
+    const seconds = seq.lengthSteps * (60 / bpm) + 0.25;
+    previewSeqTimerRef.current = setTimeout(stopSequencePreview, seconds * 1000);
+  }, [previewSequenceId, stopSequencePreview, handlePause, librarySamples, bpm]);
+
   // --- Geluidseffect (designronde nov 2026) ---
   // "+ Geluidseffect" → kies een bibliotheekgeluid → Vervormen → Klaar →
   // een eigen chip. Klik op de chip = aanpassen (ook alle geplaatste clips).
   const effectSounds = useTimelineStore((st) => st.effectSounds);
   const addEffectSound = useTimelineStore((st) => st.addEffectSound);
   const updateEffectSound = useTimelineStore((st) => st.updateEffectSound);
+  const removeEffectSound = useTimelineStore((st) => st.removeEffectSound);
+  const [effectDeleteTarget, setEffectDeleteTarget] = useState<EffectSound | null>(null);
+  const handleConfirmDeleteEffect = useCallback(() => {
+    if (!effectDeleteTarget) return;
+    removeEffectSound(effectDeleteTarget.id);
+    setStudioToast({ id: Date.now(), text: t('studio.effectSoundDeleted', { name: effectDeleteTarget.name }) });
+    setEffectDeleteTarget(null);
+  }, [effectDeleteTarget, removeEffectSound, t]);
   const effectSoundItems = useMemo(
     () => effectSounds
       .map((effectSound) => ({ effectSound, source: librarySamples.find((smp) => smp.id === effectSound.sourceSampleId) }))
@@ -482,21 +527,13 @@ export function StudioView() {
   return (
     <div className="h-dvh flex flex-col overflow-hidden bg-studio-bg md:bg-bg-app">
       {/* Navigatiebalk — donker kader (designronde nov 2026). Zelfde plek en
-          hoogte als voorheen; "terug naar de kaart" zit nu als "Verzamel meer
-          geluiden" in de maakbalk van de bibliotheek. */}
+          hoogte als voorheen. De terugknop naar de kaart staat er altijd
+          (wens Bert 17-11); "Verzamel meer geluiden" in de maakbalk doet
+          hetzelfde vanuit de bibliotheek. */}
       <div className="flex items-center gap-2 px-2 sm:px-4 py-2 sm:py-3 bg-brand-900 text-white border-b border-brand-800">
-        <Button
-          variant="secondary"
-          size="sm"
-          onClick={handleBack}
-          className={cn(
-            'items-center gap-1.5',
-            libraryShownMobile ? 'hidden' : 'inline-flex',
-            libraryShownDesktop ? 'sm:hidden' : 'sm:inline-flex',
-          )}
-        >
+        <Button variant="secondary" size="sm" onClick={handleBack} className="inline-flex items-center gap-1.5 shrink-0">
           <MapIcon className="w-4 h-4" aria-hidden="true" />
-          <span className="hidden sm:inline">{t('studio.collectMore')}</span>
+          <span className="hidden sm:inline">{t('studio.backToLocation')}</span>
           <span className="sm:hidden">{t('common.back')}</span>
         </Button>
         <h1 className="type-title text-white">{t('studio.title')}</h1>
@@ -588,6 +625,8 @@ export function StudioView() {
                   effectSounds={effectSoundItems}
                   onOpenEffectSound={handleOpenEffectSound}
                   onPreviewEffectSound={handlePreviewEffectSound}
+                  onPreviewSequence={(id) => void handlePreviewSequence(id)}
+                  previewSequenceId={previewSequenceId}
             onStopPreview={handleStopPreview}
           />
         ) : (
@@ -613,6 +652,8 @@ export function StudioView() {
                   effectSounds={effectSoundItems}
                   onOpenEffectSound={handleOpenEffectSound}
                   onPreviewEffectSound={handlePreviewEffectSound}
+                  onPreviewSequence={(id) => void handlePreviewSequence(id)}
+                  previewSequenceId={previewSequenceId}
                       onStopPreview={handleStopPreview}
                     />
                   )}
@@ -639,6 +680,8 @@ export function StudioView() {
                   effectSounds={effectSoundItems}
                   onOpenEffectSound={handleOpenEffectSound}
                   onPreviewEffectSound={handlePreviewEffectSound}
+                  onPreviewSequence={(id) => void handlePreviewSequence(id)}
+                  previewSequenceId={previewSequenceId}
                   onStopPreview={handleStopPreview}
                 />
               ) : (
@@ -775,8 +818,29 @@ export function StudioView() {
           onClose={() => setEffectTarget(null)}
           onApply={handleApplyEffectSound}
           applyLabel={t('sequencer.studio.done')}
+          onDelete={effectTarget.mode === 'edit' ? () => {
+            setEffectDeleteTarget(effectTarget.effectSound);
+            setEffectTarget(null);
+          } : undefined}
+          deleteLabel={t('studio.deleteEffectSound')}
         />
       )}
+
+      {/* Geluidseffect verwijderen: bevestigen (patroon destructieve actie) */}
+      <Modal
+        isOpen={!!effectDeleteTarget}
+        onClose={() => setEffectDeleteTarget(null)}
+        title={t('studio.deleteEffectSoundTitle', { name: effectDeleteTarget?.name ?? '' })}
+        size="sm"
+      >
+        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">{t('studio.deleteEffectSoundText')}</p>
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => setEffectDeleteTarget(null)} className="flex-1">{t('common.cancel')}</Button>
+          <Button variant="primary" onClick={handleConfirmDeleteEffect} className="flex-1 !bg-error-600 hover:!bg-error-700 !text-white" data-testid="effect-sound-delete-confirm">
+            {t('common.delete')}
+          </Button>
+        </div>
+      </Modal>
 
       <SequenceKindChooser
         isOpen={kindChooserOpen}

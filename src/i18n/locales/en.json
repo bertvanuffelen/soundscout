@@ -364,7 +364,11 @@
     "editEffectSound": "Click to change, drag to place",
     "effectSoundName": "{{name}} effect",
     "effectSoundNameN": "{{name}} effect {{number}}",
-    "effectSoundUpdated": "{{name}} has been changed, also on the timeline."
+    "effectSoundUpdated": "{{name}} has been changed, also on the timeline.",
+    "deleteEffectSound": "Delete",
+    "deleteEffectSoundTitle": "Delete {{name}}?",
+    "deleteEffectSoundText": "The sound effect disappears from your library. Anything already on the timeline stays where it is.",
+    "effectSoundDeleted": "{{name}} has been deleted."
   },
   "transport": {
     "play": "Play",

@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2460 teksten in 57 secties._
+_Stand: 2464 teksten in 57 secties._
 
 ## app
 
@@ -400,6 +400,10 @@ _Stand: 2460 teksten in 57 secties._
 | `studio.effectSoundName` | {{name}} effect | {{name}} effect |
 | `studio.effectSoundNameN` | {{name}} effect {{number}} | {{name}} effect {{number}} |
 | `studio.effectSoundUpdated` | {{name}} is aangepast, ook op de tijdlijn. | {{name}} has been changed, also on the timeline. |
+| `studio.deleteEffectSound` | Verwijderen | Delete |
+| `studio.deleteEffectSoundTitle` | {{name}} verwijderen? | Delete {{name}}? |
+| `studio.deleteEffectSoundText` | Het geluidseffect verdwijnt uit je bibliotheek. Wat al op de tijdlijn staat, blijft staan. | The sound effect disappears from your library. Anything already on the timeline stays where it is. |
+| `studio.effectSoundDeleted` | {{name}} is verwijderd. | {{name}} has been deleted. |
 
 ## transport
 

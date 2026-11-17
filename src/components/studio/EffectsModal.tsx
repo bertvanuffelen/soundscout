@@ -19,7 +19,7 @@
 
 import { memo, useState, useEffect, useCallback, useRef, type ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { X, Play, Square, RotateCcw, Rewind } from 'lucide-react';
+import { X, Play, Square, RotateCcw, Rewind, Trash2 } from 'lucide-react';
 import { Waveform } from './Waveform';
 import { audioService } from '../../services/AudioService';
 import { SampleIcon } from '../../utils/iconMap';
@@ -49,6 +49,9 @@ interface EffectsModalProps {
   onApply: (effects: Partial<ClipEffects>) => void;
   /** Tekst van de bevestigknop (geluidseffect maken/aanpassen: "Klaar") */
   applyLabel?: string;
+  /** Alleen bij een bestaand geluidseffect: knop Verwijderen (de bevestiging regelt de aanroeper) */
+  onDelete?: () => void;
+  deleteLabel?: string;
 }
 
 /** Neutrale verplichte ClipEffects-velden, alleen om de lengtefactor te berekenen */
@@ -162,6 +165,8 @@ export const EffectsModal = memo(function EffectsModal({
   onClose,
   onApply,
   applyLabel,
+  onDelete,
+  deleteLabel,
 }: EffectsModalProps) {
   const { t, i18n } = useTranslation();
   const containerRef = useRef<HTMLDivElement>(null);
@@ -613,6 +618,17 @@ export const EffectsModal = memo(function EffectsModal({
           </div>
 
           <div className="flex items-center gap-2 ml-auto">
+            {onDelete && (
+              <button
+                type="button"
+                onClick={() => { audioService.stopPreviewWithEffects(); onDelete(); }}
+                data-testid="effect-sound-delete"
+                className="inline-flex items-center gap-1.5 px-3 h-11 text-sm font-semibold text-error-600 hover:bg-error-50 rounded-lg transition-colors"
+              >
+                <Trash2 size={16} aria-hidden="true" />
+                {deleteLabel}
+              </button>
+            )}
             <button
               type="button"
               onClick={handleClose}

@@ -364,7 +364,11 @@
     "editEffectSound": "Klik om aan te passen, sleep om te plaatsen",
     "effectSoundName": "{{name}} effect",
     "effectSoundNameN": "{{name}} effect {{number}}",
-    "effectSoundUpdated": "{{name}} is aangepast, ook op de tijdlijn."
+    "effectSoundUpdated": "{{name}} is aangepast, ook op de tijdlijn.",
+    "deleteEffectSound": "Verwijderen",
+    "deleteEffectSoundTitle": "{{name}} verwijderen?",
+    "deleteEffectSoundText": "Het geluidseffect verdwijnt uit je bibliotheek. Wat al op de tijdlijn staat, blijft staan.",
+    "effectSoundDeleted": "{{name}} is verwijderd."
   },
   "transport": {
     "play": "Afspelen",

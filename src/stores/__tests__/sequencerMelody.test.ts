@@ -43,12 +43,13 @@ const store = () => useSequencerStore.getState();
 describe('melodie — hulpjes', () => {
   it('rijen: toonladder × octaven; rij 0 = grondtoon, hoger = hogere noot', () => {
     const melody = createDefaultMelodySequence('M').melody!;
-    expect(melodyRowCount(melody)).toBe(5 * MELODY_DEFAULT_OCTAVES);
+    // Diatonisch (C D E F G A B) sinds 17-11
+    expect(melodyRowCount(melody)).toBe(7 * MELODY_DEFAULT_OCTAVES);
     const names = Array.from({ length: 6 }, (_, row) => {
       const { name, octave } = midiToNoteName(melodyRowToMidi(row, melody));
       return `${name}${octave}`;
     });
-    expect(names).toEqual(['C4', 'D4', 'E4', 'G4', 'A4', 'C5']);
+    expect(names).toEqual(['C4', 'D4', 'E4', 'F4', 'G4', 'A4']);
   });
 
   it('velocityLevelOf kiest de dichtstbijzijnde stand', () => {
@@ -141,7 +142,7 @@ describe('melodie — noten, stem, octaven, swing en sterkte', () => {
 
   it('negeert vakjes/rijen buiten het raster', () => {
     expect(store().toggleMelodyNote(16, 0)).toBe('ignored');
-    expect(store().toggleMelodyNote(0, 10)).toBe('ignored');
+    expect(store().toggleMelodyNote(0, 14)).toBe('ignored');
     expect(store().toggleMelodyNote(-1, 0)).toBe('ignored');
     expect(active().melody!.notes).toEqual([]);
   });

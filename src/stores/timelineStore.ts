@@ -61,6 +61,12 @@ interface TimelineStore {
    * clip zelf blijven staan.
    */
   updateEffectSound: (id: string, patch: { name?: string; effects?: Partial<ClipEffects> }) => void;
+  /**
+   * Verwijder een geluidseffect uit de bibliotheek. Clips die er al uit
+   * geplaatst zijn blijven staan (met hun effecten), maar zijn niet meer
+   * gekoppeld.
+   */
+  removeEffectSound: (id: string) => void;
 
   /** Horizontale zoom van de timeline (widthMultiplier). Gedeeld met de studio-filmstrip (Feature F). */
   zoomLevel: number;
@@ -890,6 +896,15 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       sequences: state.sequences.length > 0 ? state.sequences : undefined,
       effectSounds: state.effectSounds.length > 0 ? state.effectSounds : undefined,
     };
+  },
+
+  removeEffectSound: (id) => {
+    set((prev) => ({
+      effectSounds: prev.effectSounds.filter((e) => e.id !== id),
+      tracks: prev.tracks.map((track) => (track.clips.some((c) => c.effectSoundId === id)
+        ? { ...track, clips: track.clips.map((c) => (c.effectSoundId === id ? { ...c, effectSoundId: undefined } : c)) }
+        : track)),
+    }));
   },
 
   addEffectSound: (effectSound) => {

@@ -63,6 +63,15 @@ describe('geluidseffecten', () => {
     expect(clips()[0].effects?.echo ?? 0).toBe(0);
   });
 
+  it('verwijderen haalt de chip weg; geplaatste clips blijven staan, ontkoppeld', () => {
+    placeFromEffect('fx1', 0);
+    useTimelineStore.getState().removeEffectSound('fx1');
+    expect(useTimelineStore.getState().effectSounds).toEqual([]);
+    expect(clips()).toHaveLength(1);
+    expect(clips()[0].effectSoundId).toBeUndefined();
+    expect(clips()[0].effects).toMatchObject({ speed: 2, reverse: true });
+  });
+
   it('gaat mee in de opgeslagen tijdlijn en blijft geldig voor het schema', () => {
     placeFromEffect('fx1', 0);
     const state = useTimelineStore.getState().getTimelineState();

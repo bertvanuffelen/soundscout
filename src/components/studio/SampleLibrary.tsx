@@ -32,6 +32,10 @@ interface SampleLibraryProps {
   onOpenEffectSound?: (effectSoundId: string) => void;
   /** Luister naar een geluidseffect (met effecten) */
   onPreviewEffectSound?: (effectSoundId: string) => void;
+  /** Luister naar een sequence vanaf de chip (aan/uit) */
+  onPreviewSequence?: (sequenceId: string) => void;
+  /** Welke sequence klinkt nu via de chip (voor de stopknop) */
+  previewSequenceId?: string | null;
 }
 
 /** Geluidseffect-chip: gestippeld in de kleur van het brongeluid, toverstaf-icoon */
@@ -134,9 +138,13 @@ function MakeBar({ onCollectMore, onAddSequence, onAddEffectSound }: Pick<Sample
 const DraggableBundle = memo(function DraggableBundle({
   sequence,
   onOpen,
+  onPreview,
+  isPlaying = false,
 }: {
   sequence: SequencerSequence;
   onOpen?: (sequenceId: string) => void;
+  onPreview?: (sequenceId: string) => void;
+  isPlaying?: boolean;
 }) {
   const { t } = useTranslation();
   const virtualSample = createSequenceSample(sequence);
@@ -182,6 +190,25 @@ const DraggableBundle = memo(function DraggableBundle({
       <span className="text-xs sm:text-sm font-semibold whitespace-nowrap text-text-main">
         {sequence.name}
       </span>
+      {onPreview && (
+        <button
+          onClick={(e) => { e.stopPropagation(); onPreview(sequence.id); }}
+          onPointerDown={(e) => e.stopPropagation()}
+          aria-pressed={isPlaying}
+          aria-label={`${t('recorder.preview')}: ${sequence.name}`}
+          data-testid="sequence-chip-preview"
+          className={`ml-0.5 sm:ml-1 w-6 h-6 sm:w-9 sm:h-9 flex items-center justify-center rounded-full cursor-pointer shrink-0 transition-colors ${
+            isPlaying
+              ? 'bg-accent-400 text-accent-900 hover:bg-accent-500'
+              : 'bg-neutral-100 hover:bg-neutral-200 active:bg-neutral-300 text-neutral-500 hover:text-neutral-700'
+          }`}
+          title={t('recorder.preview')}
+        >
+          {isPlaying
+            ? <Square className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
+            : <Play className="w-2.5 h-2.5 sm:w-3.5 sm:h-3.5" />}
+        </button>
+      )}
     </div>
   );
 });
@@ -282,6 +309,8 @@ export const SampleLibrary = memo(function SampleLibrary({
   effectSounds = [],
   onOpenEffectSound,
   onPreviewEffectSound,
+  onPreviewSequence,
+  previewSequenceId = null,
 }: SampleLibraryProps) {
   const { t } = useTranslation();
 
@@ -352,6 +381,8 @@ export const SampleLibrary = memo(function SampleLibrary({
                 key={sequence.id}
                 sequence={sequence}
                 onOpen={onOpenSequence}
+                onPreview={onPreviewSequence}
+                isPlaying={previewSequenceId === sequence.id}
               />
             ))}
           </div>

@@ -92,8 +92,13 @@ export interface SequencerTrack {
 /** 'rhythm' = het bestaande stappenraster (default) · 'melody' = notenraster */
 export type SequenceKind = 'rhythm' | 'melody';
 
-/** Pentatonische standaardtoonladder: C D E G A (semitonen boven de grondtoon) */
-export const MELODY_DEFAULT_SCALE: readonly number[] = [0, 2, 4, 7, 9];
+/**
+ * Standaardtoonladder voor NIEUWE melodieën: diatonisch (majeur) C D E F G A B,
+ * in semitonen boven de grondtoon (wens Bert 17-11; was pentatonisch C D E G A).
+ * Elke melodie bewaart haar eigen `scale`, dus bestaande melodieën blijven
+ * pentatonisch en klinken precies als voorheen.
+ */
+export const MELODY_DEFAULT_SCALE: readonly number[] = [0, 2, 4, 5, 7, 9, 11];
 /** Grondtoon van rij 0 als MIDI-noot (60 = C4) */
 export const MELODY_DEFAULT_ROOT = 60;
 /** Aantal octaven in het raster (rijen = scale.length × octaves) */

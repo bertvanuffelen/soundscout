@@ -100,15 +100,16 @@ describe('MelodyEditor', () => {
   it('rijen van hoog naar laag; tik zet de noot op de juiste rij en laat hem horen', () => {
     render(<MelodyEditor samples={library} />);
     const cells = screen.getAllByRole('button', { name: /, tel 1$/ });
-    // 2 octaven pentatonisch = 10 rijen, hoogste (A5) bovenaan
-    expect(cells).toHaveLength(10);
-    expect(cells[0]).toHaveAccessibleName('A5, tel 1');
-    expect(cells[9]).toHaveAccessibleName('C4, tel 1');
+    // 2 octaven diatonisch (C D E F G A B) = 14 rijen, hoogste (B5) bovenaan
+    expect(cells).toHaveLength(14);
+    expect(cells[0]).toHaveAccessibleName('B5, tel 1');
+    expect(cells[13]).toHaveAccessibleName('C4, tel 1');
+    expect(screen.getByRole('button', { name: 'F4, tel 1' })).toBeInTheDocument();
 
     fireEvent.click(screen.getByRole('button', { name: 'A5, tel 3' }));
-    expect(active().melody!.notes).toEqual([{ step: 2, row: 9 }]);
+    expect(active().melody!.notes).toEqual([{ step: 2, row: 12 }]);
     expect(screen.getByRole('button', { name: 'A5, tel 3, Hard' })).toHaveAttribute('aria-pressed', 'true');
-    expect(sequencerEngine.previewNote).toHaveBeenCalledWith(expect.objectContaining({ id: active().id }), 9, 1);
+    expect(sequencerEngine.previewNote).toHaveBeenCalledWith(expect.objectContaining({ id: active().id }), 12, 1);
 
     fireEvent.click(screen.getByRole('button', { name: 'C4, tel 1' }));
     expect(active().melody!.notes).toContainEqual({ step: 0, row: 0 });
@@ -123,14 +124,15 @@ describe('MelodyEditor', () => {
     expect(sequencerEngine.previewNote).not.toHaveBeenCalled();
   });
 
-  it('octaaf erbij geeft 15 rijen (bovenste = A6 = rij 14)', () => {
+  it('octaaf erbij geeft 21 rijen (bovenste = B6 = rij 20)', () => {
     render(<MelodyEditor samples={library} />);
     fireEvent.click(screen.getByRole('button', { name: 'Octaaf erbij' }));
     expect(active().melody!.octaves).toBe(3);
     const cells = screen.getAllByRole('button', { name: /, tel 1$/ });
-    expect(cells).toHaveLength(15);
+    expect(cells).toHaveLength(21);
+    expect(cells[0]).toHaveAccessibleName('B6, tel 1');
     fireEvent.click(cells[0]);
-    expect(active().melody!.notes).toEqual([{ step: 0, row: 14 }]);
+    expect(active().melody!.notes).toEqual([{ step: 0, row: 20 }]);
     expect(screen.getByRole('button', { name: 'Octaaf erbij' })).toBeDisabled();
   });
 
