@@ -388,6 +388,7 @@
     "confirmClear": "Are you sure?"
   },
   "stage": {
+    "handedInCelebration": "Handed in!",
     "title": "The Stage",
     "backToStudio": "Back to the studio",
     "playAgain": "Play again",

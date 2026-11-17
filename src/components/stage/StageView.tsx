@@ -11,7 +11,7 @@
  * stappen onder elkaar.
  */
 
-import { useState, useCallback, useEffect, useMemo } from 'react';
+import { useState, useCallback, useEffect, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { ArrowLeft, Pencil, GraduationCap, Monitor, Flag, Check, Lock } from 'lucide-react';
 import { useAppStore } from '../../stores/appStore';
@@ -48,6 +48,7 @@ import { ClassSessionBadge } from '../ui/ClassSessionBadge';
 import { NewWorkChoiceModal } from '../common/NewWorkChoiceModal';
 import { logger } from '../../utils/logger';
 import type { ActiveAssignment } from '../../lib/assignments';
+import { HandInCelebration } from './HandInCelebration';
 
 export function StageView() {
   const { t, i18n } = useTranslation();
@@ -63,6 +64,24 @@ export function StageView() {
   const receivedFeedback = useAppStore((s) => s.receivedFeedback);
   const librarySamples = useLibraryStore((s) => s.librarySamples);
   const tracks = useTimelineStore((s) => s.tracks);
+  // Viering bij inleveren (mockup A4): alleen op het moment dat een inzending
+  // in dít podiumbezoek "ingeleverd" wordt, niet bij binnenkomen met oud werk.
+  const [celebrate, setCelebrate] = useState(false);
+  const wasSynced = useRef(submissionSynced);
+  useEffect(() => {
+    const before = wasSynced.current;
+    wasSynced.current = submissionSynced;
+    if (before || !submissionSynced) return;
+    setCelebrate(true);
+    const timer = window.setTimeout(() => setCelebrate(false), 3200);
+    return () => window.clearTimeout(timer);
+  }, [submissionSynced]);
+  const celebrationColors = useMemo(() => {
+    const byId = new Map(librarySamples.map((smp) => [smp.id, smp.color]));
+    const seen = new Set<string>();
+    for (const tr of tracks) for (const c of tr.clips) { const col = byId.get(c.sampleId); if (col) seen.add(col); }
+    return [...seen];
+  }, [tracks, librarySamples]);
   const totalBeats = useTimelineStore((s) => s.totalBeats);
   const sections = useTimelineStore((s) => s.sections);
   const sequences = useTimelineStore((s) => s.sequences);
@@ -477,6 +496,8 @@ export function StageView() {
       )}
 
       {/* Feedback klasgenoten (2.6) */}
+      {celebrate && <HandInCelebration colors={celebrationColors} />}
+
       {classSession?.peerReview && submissionId && submissionSynced && (
         <PeerReviewModal
           isOpen={showPeerReview}

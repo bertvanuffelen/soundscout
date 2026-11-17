@@ -18,9 +18,6 @@ import {
   Volume2,
   Music,
   MousePointer2,
-  Sun,
-  Waves,
-  Bird,
   Play,
   type LucideIcon,
 } from 'lucide-react';
@@ -307,10 +304,14 @@ function PraatplaatPreview() {
 const SB_COLS = 12;
 const SB_ROWS = 3;
 
-const SB_SCENES: Array<{ bg: string; Icon: LucideIcon }> = [
-  { bg: 'linear-gradient(160deg,#fdeecb 0%,#f4cf90 100%)', Icon: Sun },
-  { bg: 'linear-gradient(160deg,#d7ecf5 0%,#a9d3e8 100%)', Icon: Waves },
-  { bg: 'linear-gradient(160deg,#dcefd3 0%,#b3daa0 100%)', Icon: Bird },
+// Designronde nov 2026: echte illustratie i.p.v. een leeg kleurvlak met icoon.
+// Drie uitsneden van het (toch al geladen) boerderijbeeld lezen als drie
+// beelden van één verhaal; de robotwereld hoort in elke uitleg te zitten.
+const PREVIEW_IMAGE = '/images/hero/boerderij-640.webp';
+const SB_SCENES: Array<{ pos: string }> = [
+  { pos: '8% 30%' },
+  { pos: '52% 46%' },
+  { pos: '96% 68%' },
 ];
 
 interface SbClip {
@@ -500,16 +501,13 @@ function StoryboardPreview() {
     <div ref={rootRef} className="flex flex-col gap-1.5 h-full">
       {/* drie scène-vlakken */}
       <div className="grid grid-cols-3 gap-1.5" style={{ height: '44%' }}>
-        {SB_SCENES.map(({ bg, Icon }, i) => (
+        {SB_SCENES.map(({ pos }, i) => (
           <div
             key={i}
             data-scene
-            className="relative rounded-lg overflow-hidden border border-border-subtle opacity-0"
-            style={{ background: bg }}
+            className="relative rounded-lg overflow-hidden border border-border-subtle opacity-0 bg-brand-100"
+            style={{ backgroundImage: `url(${PREVIEW_IMAGE})`, backgroundSize: '300% auto', backgroundPosition: pos }}
           >
-            <span className="absolute inset-0 flex items-center justify-center text-white/90">
-              <Icon size={18} strokeWidth={2} />
-            </span>
             <span
               className="absolute left-1 top-1 flex items-center justify-center rounded-full bg-white/90 text-text-main font-bold"
               style={{ width: 13, height: 13, fontSize: 8 }}
@@ -768,16 +766,19 @@ function VrijPreview() {
 const IMG_COLS = 12;
 const IMG_ROWS = 3;
 
-const IMG_CLIPS: SbClip[] = [
-  { row: 1, col: 1, span: 3, color: '#efc14e' },
-  { row: 2, col: 2, span: 3, color: '#29b6c9' },
-  { row: 3, col: 1, span: 2, color: '#9b59b6' },
-  { row: 1, col: 5, span: 4, color: '#e0a56e' },
-  { row: 2, col: 6, span: 3, color: '#68bf59' },
-  { row: 3, col: 4, span: 3, color: '#4c9ad6' },
-  { row: 1, col: 10, span: 3, color: '#4c9ad6' },
-  { row: 2, col: 10, span: 3, color: '#efc14e' },
-  { row: 3, col: 8, span: 4, color: '#29b6c9' },
+// Kleuren van echte boerderijgeluiden; `spot` = waar dat geluid in het beeld
+// hoort (in % van het beeldvlak). Als de afspeellijn een blok bereikt, licht
+// die plek op: zo zie je dat elk geluid ergens bij hoort.
+const IMG_CLIPS: Array<SbClip & { spot: [number, number] }> = [
+  { row: 1, col: 1, span: 3, color: '#FFC107', spot: [22, 34] },
+  { row: 2, col: 2, span: 3, color: '#0E7490', spot: [38, 70] },
+  { row: 3, col: 1, span: 2, color: '#6D28D9', spot: [10, 58] },
+  { row: 1, col: 5, span: 4, color: '#795548', spot: [60, 40] },
+  { row: 2, col: 6, span: 3, color: '#FF9800', spot: [52, 74] },
+  { row: 3, col: 4, span: 3, color: '#E74C3C', spot: [44, 26] },
+  { row: 1, col: 10, span: 3, color: '#E74C3C', spot: [88, 28] },
+  { row: 2, col: 10, span: 3, color: '#FF9800', spot: [84, 70] },
+  { row: 3, col: 8, span: 4, color: '#0E7490', spot: [72, 56] },
 ];
 
 function ImagePreview() {
@@ -788,6 +789,7 @@ function ImagePreview() {
     if (!root) return;
     const imageEl = root.querySelector<HTMLElement>('[data-image]');
     const clips = Array.from(root.querySelectorAll<HTMLElement>('[data-clip]'));
+    const ripples = Array.from(root.querySelectorAll<HTMLElement>('[data-ripple]'));
     const playhead = root.querySelector<HTMLElement>('[data-playhead]');
     const N = clips.length;
 
@@ -895,6 +897,15 @@ function ImagePreview() {
         c.style.opacity = op.toFixed(3);
         c.style.transform = `translateY(${ty.toFixed(2)}px) scale(${sc.toFixed(3)})`;
         c.style.filter = `brightness(${br.toFixed(3)})`;
+
+        // de plek in het beeld waar dit geluid bij hoort licht op
+        const ripple = ripples[i];
+        if (ripple) {
+          const g0 = PLAY_START + ((Number(c.dataset.start) - 1) / IMG_COLS) * SWEEP;
+          const q = t >= g0 && t < g0 + 760 && t < SWEEP_END ? (t - g0) / 760 : -1;
+          ripple.style.opacity = q < 0 ? '0' : (1 - q).toFixed(3);
+          ripple.style.transform = `translate(-50%,-50%) scale(${(0.4 + 1.3 * Math.max(0, q)).toFixed(3)})`;
+        }
       });
 
       // afspeellijn
@@ -920,18 +931,17 @@ function ImagePreview() {
       {/* één beeld (illustratie) */}
       <div
         data-image
-        className="relative rounded-lg overflow-hidden border border-border-subtle opacity-0"
-        style={{ height: '44%', background: 'linear-gradient(160deg,#cfe9f2 0%,#a9d3e8 52%,#dcefd3 100%)' }}
+        className="relative rounded-lg overflow-hidden border border-border-subtle opacity-0 bg-brand-100"
+        style={{ height: '44%', backgroundImage: `url(${PREVIEW_IMAGE})`, backgroundSize: 'cover', backgroundPosition: 'center 42%' }}
       >
-        <span className="absolute" style={{ top: 6, right: 12, color: '#f6b73c' }}>
-          <Sun size={18} strokeWidth={2} />
-        </span>
-        <span className="absolute" style={{ top: 11, left: 16, color: 'rgba(255,255,255,0.85)' }}>
-          <Bird size={13} strokeWidth={2} />
-        </span>
-        <span className="absolute" style={{ bottom: 7, right: 24, color: 'rgba(255,255,255,0.7)' }}>
-          <Waves size={14} strokeWidth={2} />
-        </span>
+        {IMG_CLIPS.map((clip, i) => (
+          <span
+            key={i}
+            data-ripple
+            className="absolute rounded-full opacity-0 pointer-events-none"
+            style={{ left: `${clip.spot[0]}%`, top: `${clip.spot[1]}%`, width: 26, height: 26, border: `3px solid ${clip.color}`, boxShadow: '0 0 0 2px rgba(255,255,255,0.9)' }}
+          />
+        ))}
       </div>
 
       {/* soundtrack-tijdlijn */}

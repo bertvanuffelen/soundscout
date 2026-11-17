@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2472 teksten in 57 secties._
+_Stand: 2473 teksten in 57 secties._
 
 ## app
 
@@ -429,6 +429,7 @@ _Stand: 2472 teksten in 57 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
+| `stage.handedInCelebration` | Ingeleverd! | Handed in! |
 | `stage.title` | Het Podium | The Stage |
 | `stage.backToStudio` | Terug naar Studio | Back to the studio |
 | `stage.playAgain` | Opnieuw afspelen | Play again |

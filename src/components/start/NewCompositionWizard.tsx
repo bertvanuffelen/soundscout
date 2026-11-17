@@ -46,11 +46,12 @@ interface ModeConfig {
   icon: string;
 }
 
-// Volgorde + warme kleuren gelijk aan de docentenlanding (rose/oranje/amber).
+// Eén accent voor de gekozen kaart (One Lamp Rule, Token Rule): het verschil
+// tussen de drie soorten zit in de preview erboven, niet in een eigen kleur.
 const MODES: ModeConfig[] = [
   { mode: 'free', variant: 'vrij', Icon: Music, active: 'border-accent-400 bg-accent-50', icon: 'text-accent-500' },
-  { mode: 'image', variant: 'image', Icon: ImageIcon, active: 'border-rose-400 bg-rose-50', icon: 'text-rose-500' },
-  { mode: 'storyboard', variant: 'storyboard', Icon: Film, active: 'border-orange-400 bg-orange-50', icon: 'text-orange-500' },
+  { mode: 'image', variant: 'image', Icon: ImageIcon, active: 'border-accent-400 bg-accent-50', icon: 'text-accent-500' },
+  { mode: 'storyboard', variant: 'storyboard', Icon: Film, active: 'border-accent-400 bg-accent-50', icon: 'text-accent-500' },
 ];
 
 export function NewCompositionWizard({ onClose, onStartFree, onStartStoryboard, isLoading = false }: NewCompositionWizardProps) {

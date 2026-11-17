@@ -302,6 +302,50 @@ input:focus:not(:focus-visible),
   animation: cta-pulse 2.2s ease-in-out infinite;
 }
 
+/* --- Tastbare momenten (designronde nov 2026, mockup A4) --- */
+/* Een gevuld vak in de tas "klikt" erin */
+@keyframes slot-pop {
+  0% { transform: scale(0.86); }
+  60% { transform: scale(1.06); }
+  100% { transform: scale(1); }
+}
+.animate-slot-pop { animation: slot-pop 0.32s ease-out; }
+/* Een blok landt op de tijdlijn: één kleine veer, geen stuiteren */
+@keyframes clip-settle {
+  0% { transform: translateY(-10px) scale(1.04); }
+  62% { transform: translateY(2px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+.animate-clip-settle { animation: clip-settle 0.34s ease-out; }
+/* Inleveren: podiumlicht, de eigen blokken komen omhoog, één woord */
+@keyframes handin-beam {
+  0% { opacity: 0; transform: translateX(-50%) rotate(-28deg); }
+  30% { opacity: 0.5; }
+  100% { opacity: 0.28; transform: translateX(-50%) rotate(28deg); }
+}
+@keyframes handin-bar {
+  0% { transform: scaleY(0.12); }
+  70% { transform: scaleY(1.08); }
+  100% { transform: scaleY(1); }
+}
+@keyframes handin-pill {
+  0% { opacity: 0; transform: scale(0.6); }
+  70% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes handin-fade {
+  0%, 82% { opacity: 1; }
+  100% { opacity: 0; }
+}
+.handin-overlay { animation: handin-fade 3.2s ease-in forwards; }
+.handin-beam { animation: handin-beam 2.6s ease-in-out both; }
+.handin-bar { transform-origin: 50% 100%; animation: handin-bar 0.6s cubic-bezier(.2,.9,.3,1.2) both; }
+.handin-pill { animation: handin-pill 0.5s cubic-bezier(.2,.9,.3,1.3) both; }
+@media (prefers-reduced-motion: reduce) {
+  .animate-slot-pop, .animate-clip-settle, .handin-beam, .handin-bar, .handin-pill { animation: none; }
+  .handin-beam { opacity: 0; }
+}
+
 /* --- Startscherm: zachte puls rond de decoratieve hotspot-stippen --- */
 @keyframes start-hero-pulse {
   0%, 100% { transform: scale(1); opacity: 0; }

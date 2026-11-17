@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import type { Hotspot as HotspotType, Sample } from '../../types';
 import { DEFAULT_HOTSPOT_RADIUS } from '../../constants/config';
+import { flyToBag } from '../../utils/microMotion';
 
 interface HotspotProps {
   hotspot: HotspotType;
@@ -16,8 +17,10 @@ export function Hotspot({ hotspot, sample, disabled, onCollect, onHoverStart, on
   const { t } = useTranslation();
   const [collected, setCollected] = useState(false);
 
-  const handleClick = () => {
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled || collected) return;
+    // Vóór het verzamelen: het lege vak in de tas bestaat nu nog
+    flyToBag(e.currentTarget, sample.color);
     setCollected(true);
     onCollect(sample);
   };
