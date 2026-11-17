@@ -56,6 +56,12 @@ export function useModalBehavior(
 
     const focusTimer = setTimeout(() => {
       if (!autoFocus) return;
+      // Een veld met data-autofocus gaat voor (bv. het codeveld: meteen typen)
+      const preferred = containerRef.current?.querySelector<HTMLElement>('[data-autofocus]:not([disabled])');
+      if (preferred) {
+        preferred.focus({ preventScroll: true });
+        return;
+      }
       const focusable = containerRef.current?.querySelectorAll<HTMLElement>(FOCUSABLE_SELECTOR);
       if (focusable && focusable.length > 0) {
         focusable[0].focus({ preventScroll: true });

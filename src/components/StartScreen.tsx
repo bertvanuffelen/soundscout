@@ -1,17 +1,20 @@
 /**
  * StartScreen — V2-startscherm (donkerblauw, amber accent).
  *
- * Hero met groot merk, kop en twee knoppen: primair "Nieuwe soundscape"
- * (wizard: modus → wereld), secundair "Kies een wereld" (direct vrij
- * componeren in een publiek thema). "Ik heb een code" en "Voor docenten"
- * staan rechtsboven (StartHeader). Daaronder alleen wat relevant is: verder
- * werken, podium, Mijn soundscapes, seizoensthema, docentreactie. Het beeld
- * (StartHero) is statisch: geen audio, geen Tone.js, geen canvas-lus.
+ * Merk op één regel, kop en de hoofdknoppen (designronde nov 2026):
+ *  - zonder werk: primair "Nieuwe soundscape" (wizard), dan "Ik heb een code"
+ *    (op een telefoon bovenaan: in de klas de meest gebruikte ingang) en
+ *    "Kies een wereld" (direct vrij componeren in een publiek thema);
+ *  - met werk: primair "Ga verder" (met titel · klas · tijd), dan "Nieuwe
+ *    soundscape" en "Ik heb een code".
+ * Daaronder alleen wat relevant is: podium, Mijn soundscapes, seizoensthema,
+ * docentreactie. "Voor docenten" en de taal staan rechtsboven (StartHeader).
+ * De stippen in het beeld (StartHero) spelen een kort voorproefje, zonder Tone.js.
  */
 
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
 import { useTranslation } from 'react-i18next';
-import { FolderOpen, Play, Sparkles, Compass, Mail, Loader2, Theater, Star } from 'lucide-react';
+import { FolderOpen, Play, Sparkles, Compass, Mail, Loader2, Theater, Star, KeyRound } from 'lucide-react';
 import { useAppStore } from '../stores/appStore';
 import { useTimelineStore } from '../stores/timelineStore';
 import { storageService } from '../services/StorageService';
@@ -323,7 +326,18 @@ export function StartScreen() {
   };
 
   // Strook "verder waar je was": alleen als er iets is om naar terug te gaan
-  const showContinueStrip = hasClipsInProgress || hasCompositions || !!seasonalTheme || !!feedbackNotice;
+  const showContinueStrip = (hasClipsInProgress && !!classSession) || hasCompositions || !!seasonalTheme || !!feedbackNotice;
+  // Secundaire hoofdknop: rustig, wel even groot als de primaire
+  const secondaryMain =
+    'w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg bg-white/10 hover:bg-white/20 ring-1 ring-white/30 text-white';
+  const primaryMain =
+    'w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg';
+  // Titel van de waarschuwing volgt wat de leerling wilde starten
+  const confirmTitle = pendingIntentRef.current === 'world'
+    ? t('start.chooseWorld')
+    : pendingIntentRef.current === 'seasonal' && seasonalTheme
+      ? t('start.newTheme', { name: t(seasonalTheme.name) })
+      : t('start.newComposition');
   const stripButton =
     'inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-full text-sm font-bold transition-colors';
 
@@ -335,56 +349,69 @@ export function StartScreen() {
         aria-hidden="true"
       />
 
-      <StartHeader
-        onCode={() => setShowCodeModal(true)}
-        onTeachers={() => { window.location.href = '/teacher'; }}
-      />
+      <StartHeader onTeachers={() => { window.location.href = '/teacher'; }} />
 
       <main className="relative z-10 flex-1 w-full max-w-[1440px] mx-auto px-safe [--safe-min:1rem] sm:[--safe-min:2rem] py-4 sm:py-6 short:py-2 grid grid-cols-1 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] short:grid-cols-2 gap-6 sm:gap-8 lg:gap-12 short:gap-6 items-center">
         <section className="flex flex-col items-center lg:items-start short:items-start text-center lg:text-left short:text-left gap-4 sm:gap-6 short:gap-3 min-w-0">
-          {/* Merk groot: logo + woordmerk boven de kop */}
-          <div className="flex flex-col items-center lg:items-start short:flex-row short:items-center gap-2 short:gap-3">
+          {/* Merk op één regel, op kopgrootte; het amber is voor de hoofdknop */}
+          <div className="flex items-center gap-2.5 sm:gap-3">
             <img
               src="/images/overige/logo-soundscout-white.svg"
               alt=""
               width={576}
               height={502}
-              className="h-16 sm:h-24 xl:h-28 short:h-12 w-auto drop-shadow-[0_0_24px_rgba(251,191,36,0.35)]"
+              className="h-9 sm:h-11 xl:h-12 short:h-8 w-auto"
             />
-            <p className="text-5xl sm:text-6xl xl:text-7xl short:text-4xl font-extrabold tracking-tight leading-none">
-              Sound<span className="text-accent-400">Scout</span>
+            <p className="text-2xl sm:text-3xl xl:text-4xl short:text-xl font-extrabold tracking-tight leading-none">
+              SoundScout
             </p>
           </div>
 
-          <div className="flex flex-col gap-1 sm:gap-2">
-            <h1 className="text-2xl sm:text-3xl xl:text-4xl short:text-xl font-extrabold tracking-tight leading-tight text-balance">
-              {t('start.headline')}
-            </h1>
-            <p className="text-base sm:text-lg text-brand-200 font-semibold short:hidden">
-              {t('start.tagline')}
-            </p>
-          </div>
+          <h1 className="text-3xl sm:text-4xl xl:text-5xl short:text-2xl font-extrabold tracking-tight leading-tight text-balance">
+            {t('start.headline')}
+          </h1>
 
-          {/* Hoofdknoppen: primair amber, secundair rustig */}
+          {/* Hoofdknoppen: één primaire (amber), de rest rustig maar even groot */}
           <div className="flex flex-col sm:flex-row sm:flex-wrap short:flex-row short:flex-wrap justify-center lg:justify-start short:justify-start gap-3 w-full sm:w-auto">
+            {hasClipsInProgress ? (
+              <>
+                {/* Verder werken (#64) gaat voor zodra er werk is */}
+                <Button onClick={goToStudio} size="lg" className={cn(primaryMain, 'text-left')}>
+                  <Play className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
+                  <span className="flex flex-col leading-tight min-w-0">
+                    <span>{t('start.continueComposition')}</span>
+                    {continueDetail && (
+                      <span className="text-xs font-semibold opacity-80 truncate">{continueDetail}</span>
+                    )}
+                  </span>
+                </Button>
+                <Button onClick={handleNewComposition} isLoading={isLoading} variant="ghost" size="lg" className={secondaryMain}>
+                  <Sparkles className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
+                  {isLoading ? t('start.loading') : t('start.newComposition')}
+                </Button>
+              </>
+            ) : (
+              <Button onClick={handleNewComposition} isLoading={isLoading} size="lg" className={primaryMain}>
+                <Sparkles className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
+                {isLoading ? t('start.loading') : t('start.newComposition')}
+              </Button>
+            )}
+            {/* Klascode: in de klas de eerste stap, op een telefoon daarom bovenaan */}
             <Button
-              onClick={handleNewComposition}
-              isLoading={isLoading}
-              size="lg"
-              className="w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg"
-            >
-              <Sparkles className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
-              {isLoading ? t('start.loading') : t('start.newComposition')}
-            </Button>
-            <Button
-              onClick={handleChooseWorld}
+              onClick={() => setShowCodeModal(true)}
               variant="ghost"
               size="lg"
-              className="w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg bg-white/10 hover:bg-white/20 ring-1 ring-white/30"
+              className={cn(secondaryMain, 'order-first sm:order-none short:order-none')}
             >
-              <Compass className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
-              {t('start.chooseWorld')}
+              <KeyRound className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
+              {t('start.haveCode')}
             </Button>
+            {!hasClipsInProgress && (
+              <Button onClick={handleChooseWorld} variant="ghost" size="lg" className={secondaryMain}>
+                <Compass className="w-5 h-5 mr-2 shrink-0" aria-hidden="true" />
+                {t('start.chooseWorld')}
+              </Button>
+            )}
           </div>
 
           {/* Verder waar je was — alleen wat er echt is */}
@@ -406,23 +433,6 @@ export function StartScreen() {
                     ? <Loader2 className="w-5 h-5 text-accent-700 shrink-0 animate-spin" aria-hidden="true" />
                     : <Mail className="w-5 h-5 text-accent-700 shrink-0" aria-hidden="true" />}
                   {t('studentFeedback.noticeButton', { name: feedbackNotice.compositionName })}
-                </button>
-              )}
-
-              {/* Verder werken (#64) */}
-              {hasClipsInProgress && (
-                <button
-                  type="button"
-                  onClick={goToStudio}
-                  className={cn(stripButton, 'bg-white text-brand-900 hover:bg-brand-100 text-left max-w-full')}
-                >
-                  <Play className="w-5 h-5 shrink-0 text-accent-600" aria-hidden="true" />
-                  <span className="flex flex-col leading-tight min-w-0">
-                    <span>{t('start.continueComposition')}</span>
-                    {continueDetail && (
-                      <span className="text-xs font-semibold text-brand-600 truncate">{continueDetail}</span>
-                    )}
-                  </span>
                 </button>
               )}
 
@@ -513,30 +523,31 @@ export function StartScreen() {
         />
       )}
 
-      {/* Waarschuwing: actieve compositie wordt gewist */}
+      {/* Waarschuwing: actieve compositie wordt gewist. Veilige keuze = primair;
+          opnieuw beginnen = gevaarknop (patroon "destructieve actie"). */}
       <Modal
         isOpen={showNewConfirm}
         onClose={() => setShowNewConfirm(false)}
-        title={t('start.newComposition')}
+        title={confirmTitle}
         size="sm"
       >
         <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">
           {t('start.newCompositionConfirm')}
         </p>
-        <div className="flex gap-3">
+        <div className="flex flex-col-reverse sm:flex-row gap-3">
           <Button
-            variant="secondary"
-            onClick={() => setShowNewConfirm(false)}
-            className="flex-1"
-          >
-            {t('common.cancel')}
-          </Button>
-          <Button
-            variant="primary"
+            variant="danger"
             onClick={handleConfirmNewComposition}
             className="flex-1"
           >
             {t('start.newCompositionStart')}
+          </Button>
+          <Button
+            variant="primary"
+            onClick={() => { setShowNewConfirm(false); goToStudio(); }}
+            className="flex-1"
+          >
+            {t('start.keepWorking')}
           </Button>
         </div>
       </Modal>
