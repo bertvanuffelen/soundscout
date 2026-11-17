@@ -24,6 +24,8 @@ type TeacherView = 'login' | 'register' | 'forgot-password' | 'dashboard' | 'cla
 interface WizardState {
   returnTo: 'dashboard' | 'class-detail';
   lessonCardId: string | null;
+  /** Snelle weg (mockup C1): meteen klaarzetten en de code tonen */
+  autoStart: boolean;
 }
 
 /**
@@ -57,10 +59,10 @@ export function TeacherPage() {
   // Vanaf het dashboard "Presenteren": klas openen en meteen de presentatiekeuze tonen
   const [autoPresent, setAutoPresent] = useState(false);
 
-  const openWizard = (classData: TeacherClass, returnTo: WizardState['returnTo'], lessonCardId: string | null = null) => {
+  const openWizard = (classData: TeacherClass, returnTo: WizardState['returnTo'], lessonCardId: string | null = null, autoStart = false) => {
     rememberLastClass(classData.id);
     setSelectedClass(classData);
-    setWizard({ returnTo, lessonCardId });
+    setWizard({ returnTo, lessonCardId, autoStart });
     setView('wizard');
   };
 
@@ -138,6 +140,7 @@ export function TeacherPage() {
         key={`${selectedClass.id}-${wizard.lessonCardId ?? 'eigen'}`}
         classData={selectedClass}
         initialLessonCardId={wizard.lessonCardId}
+        autoStart={wizard.autoStart}
         onCancel={() => {
           const back = wizard.returnTo;
           setWizard(null);
@@ -182,7 +185,7 @@ export function TeacherPage() {
         setAutoPresent(!!opts?.present);
         setView('class-detail');
       }}
-      onOpenWizard={(classData, lessonCardId) => openWizard(classData, 'dashboard', lessonCardId ?? null)}
+      onOpenWizard={(classData, lessonCardId, fast) => openWizard(classData, 'dashboard', lessonCardId ?? null, !!fast)}
       onLogout={() => {
         setView('login');
       }}

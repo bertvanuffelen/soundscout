@@ -12,7 +12,7 @@
  * wizardActivation (bestaande RPC's, geen migratie).
  */
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useQueryClient } from '@tanstack/react-query';
 import { queryKeys } from '../../../query/queryKeys';
@@ -56,6 +56,13 @@ interface AssignmentWizardProps {
   classData: TeacherClass;
   /** Openen met een kant-en-klare les al gekozen (vanuit Lesideeën) → start op stap 2 */
   initialLessonCardId?: string | null;
+  /**
+   * Snelle weg (mockup C1): zet de meegegeven les meteen klaar met de
+   * standaardinstellingen en ga door naar de code op het bord. Alleen als
+   * er niets te waarschuwen valt: staat er al een opdracht klaar of is het
+   * thema buiten het seizoen, dan blijft de wizard op stap 2 staan.
+   */
+  autoStart?: boolean;
   onCancel: () => void;
   /** Na stap 3: naar de klaspagina */
   onToClass: () => void;
@@ -63,7 +70,7 @@ interface AssignmentWizardProps {
 
 const EMPTY_SETTINGS: WizardSettings = { cardId: null, cardTouched: false, durationLabel: '', peerEnabled: false, praatplaatThemeId: null };
 
-export function AssignmentWizard({ classData, initialLessonCardId = null, onCancel, onToClass }: AssignmentWizardProps) {
+export function AssignmentWizard({ classData, initialLessonCardId = null, autoStart = false, onCancel, onToClass }: AssignmentWizardProps) {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
   const teacherId = useTeacherId();
@@ -79,6 +86,10 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, onCanc
   const [lessonId, setLessonId] = useState<string | null>(initialLessonCardId);
   const [settings, setSettings] = useState<WizardSettings>(EMPTY_SETTINGS);
   const [current, setCurrent] = useState<ClassAssignmentRow | null>(null);
+  const [currentLoaded, setCurrentLoaded] = useState(false);
+  const [currentFailed, setCurrentFailed] = useState(false);
+  // Snelle weg: hooguit één automatische poging
+  const autoTried = useRef(false);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [result, setResult] = useState<{ assignment: ClassAssignmentRow; partial: boolean } | null>(null);
@@ -86,7 +97,10 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, onCanc
   // Huidige opdracht (voor de vervangmelding)
   useEffect(() => {
     let cancelled = false;
-    void fetchClassAssignment(classData.id).then((row) => { if (!cancelled) setCurrent(row); });
+    void fetchClassAssignment(classData.id)
+      .then((row) => { if (!cancelled) { setCurrent(row); setCurrentLoaded(true); } })
+      // Lukt het ophalen niet, dan weten we niet of er iets vervangen wordt: niet automatisch starten
+      .catch(() => { if (!cancelled) setCurrentFailed(true); });
     return () => { cancelled = true; };
   }, [classData.id]);
 
@@ -205,6 +219,20 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, onCanc
     }
   };
 
+  // Snelle weg (mockup C1): zodra de les bekend is en vaststaat dat er niets
+  // vervangen wordt, meteen klaarzetten. Eén poging; bij een fout of een
+  // waarschuwing blijft de docent op stap 2 met alles in beeld.
+  const autoBlocked = currentFailed || (!lessonsLoading && !choice) || (currentLoaded && !!choice && (!!current || outOfSeason));
+  const autoBusy = autoStart && step === 2 && !error && !autoBlocked;
+  useEffect(() => {
+    if (!autoStart || autoTried.current || step !== 2 || !choice || !currentLoaded) return;
+    autoTried.current = true;
+    if (current || outOfSeason) return;
+    void handleActivate();
+    // handleActivate is een gewone functie in deze component; alleen reageren op de voorwaarden
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [autoStart, step, choice, currentLoaded, current, outOfSeason]);
+
   // ===================== Stap 3 =====================
   if (step === 3 && result) {
     return (
@@ -218,6 +246,18 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, onCanc
           onToClass();
         }}
       />
+    );
+  }
+
+  // Snelle weg onderweg: geen formulier laten flitsen, alleen zeggen wat er gebeurt
+  if (autoBusy) {
+    return (
+      <div className="min-h-dvh bg-bg-app flex items-center justify-center p-6" role="status" data-testid="wizard-autostart">
+        <p className="inline-flex items-center gap-3 text-lg font-bold text-text-main">
+          <Loader2 className="w-6 h-6 animate-spin text-accent-500" aria-hidden="true" />
+          {t('teacher.wizard.autoStarting')}
+        </p>
+      </div>
     );
   }
 

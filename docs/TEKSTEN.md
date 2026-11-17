@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2487 teksten in 57 secties._
+_Stand: 2490 teksten in 57 secties._
 
 ## app
 
@@ -962,6 +962,8 @@ _Stand: 2487 teksten in 57 secties._
 | `lessonCards.activateModal.successBody` | "{{title}}" staat klaar voor {{className}}. Leerlingen typen de klascode in. | "{{title}}" is ready for {{className}}. Students enter the class code. |
 | `lessonCards.activateModal.codeLabel` | Klascode | Class code |
 | `lessonCards.activateModal.chooseClassTitle` | Voor welke klas? | For which class? |
+| `lessonCards.activateModal.fast` | Zet de code op het bord | Put the code on the board |
+| `lessonCards.activateModal.adjustFirst` | Eerst aanpassen | Adjust first |
 | `lessonCards.activateModal.continue` | Verder | Continue |
 | `lessonCards.editor.newTitle` | Nieuwe leskaart | New lesson card |
 | `lessonCards.editor.editTitle` | Leskaart bewerken | Edit lesson card |
@@ -1809,6 +1811,7 @@ _Stand: 2487 teksten in 57 secties._
 | `teacher.wizard.back` | Terug | Back |
 | `teacher.wizard.activate` | Zet klaar | Set it up |
 | `teacher.wizard.activating` | Bezig met klaarzetten… | Setting up… |
+| `teacher.wizard.autoStarting` | De les wordt klaargezet… | Setting up the lesson… |
 | `teacher.wizard.chosenFor` | Voor {{className}} | For {{className}} |
 | `teacher.wizard.change` | Wijzig | Change |
 | `teacher.wizard.settingsTitle` | Instellingen | Settings |

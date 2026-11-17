@@ -1032,6 +1032,8 @@
       "successBody": "\"{{title}}\" staat klaar voor {{className}}. Leerlingen typen de klascode in.",
       "codeLabel": "Klascode",
       "chooseClassTitle": "Voor welke klas?",
+      "fast": "Zet de code op het bord",
+      "adjustFirst": "Eerst aanpassen",
       "continue": "Verder"
     },
     "editor": {
@@ -2139,6 +2141,7 @@
       "back": "Terug",
       "activate": "Zet klaar",
       "activating": "Bezig met klaarzetten…",
+      "autoStarting": "De les wordt klaargezet…",
       "chosenFor": "Voor {{className}}",
       "change": "Wijzig",
       "settingsTitle": "Instellingen",
