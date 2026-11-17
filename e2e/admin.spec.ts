@@ -145,8 +145,9 @@ test.describe('/beheer', () => {
     await expect(list.locator('[data-theme-id="kerst"]')).toContainText('Kerst');
     await expect(list.locator('[data-theme-id="kerst"]')).toContainText('Gepubliceerd');
     for (const id of ['basis', 'winterspelen', 'piraten']) await expect(list.locator(`[data-theme-id="${id}"]`)).toContainText('Ingebouwd');
-    // basis heeft bekende afstandsfouten (docs/v2/THEMES.md §2): die worden geteld
-    await expect(list.locator('[data-theme-id="basis"]')).toContainText('3 fouten');
+    // De ingebouwde thema's breken geen ontwerpregel meer (hotspots verschoven, docs/v2/THEMES.md §2)
+    await expect(list.locator('[data-theme-id="basis"]')).toContainText('Alles in orde');
+    await expect(list.locator('[data-theme-id="basis"]')).not.toContainText('fout');
   });
 
   test('hotspot buiten de veilige zone slepen: fout zichtbaar, publiceren uit', async ({ page }) => {

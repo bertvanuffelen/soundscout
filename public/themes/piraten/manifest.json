@@ -14,8 +14,8 @@
           "id": "grogkroeg-accordeon",
           "sampleId": "grogkroeg-accordeon",
           "visualHint": "pulse",
-          "x": 80.3,
-          "y": 61.8
+          "x": 84.5,
+          "y": 59.5
         },
         {
           "id": "grogkroeg-kroezen",
@@ -49,22 +49,22 @@
           "id": "grogkroeg-dobbel",
           "sampleId": "grogkroeg-dobbel",
           "visualHint": "pulse",
-          "x": 58.3,
-          "y": 92.3
+          "x": 60.4,
+          "y": 84
         },
         {
           "id": "grogkroeg-vat",
           "sampleId": "grogkroeg-vat",
           "visualHint": "pulse",
-          "x": 90.7,
-          "y": 71.2
+          "x": 94,
+          "y": 75
         },
         {
           "id": "grogkroeg-fluit",
           "sampleId": "grogkroeg-fluit",
           "visualHint": "pulse",
-          "x": 80.4,
-          "y": 51.4
+          "x": 74.5,
+          "y": 47.5
         }
       ],
       "id": "grogkroeg",
@@ -76,8 +76,8 @@
           "id": "haven-meeuwen",
           "sampleId": "haven-meeuwen",
           "visualHint": "pulse",
-          "x": 49.1,
-          "y": 12.8
+          "x": 79.5,
+          "y": 57.9
         },
         {
           "id": "haven-golven",
@@ -138,15 +138,15 @@
           "id": "schip-kanon",
           "sampleId": "schip-kanon",
           "visualHint": "pulse",
-          "x": 31,
-          "y": 74.5
+          "x": 27.5,
+          "y": 76.5
         },
         {
           "id": "schip-anker",
           "sampleId": "schip-anker",
           "visualHint": "pulse",
-          "x": 76.2,
-          "y": 88.9
+          "x": 75.5,
+          "y": 87.5
         },
         {
           "id": "schip-zeemanslied",
@@ -194,7 +194,7 @@
           "sampleId": "jungle-vogels",
           "visualHint": "pulse",
           "x": 79.7,
-          "y": 11.2
+          "y": 13
         },
         {
           "id": "jungle-waterval",
@@ -262,8 +262,8 @@
           "id": "voodoohut-windgong",
           "sampleId": "voodoohut-windgong",
           "visualHint": "pulse",
-          "x": 6,
-          "y": 34.4
+          "x": 4.5,
+          "y": 27
         },
         {
           "id": "voodoohut-fluister",

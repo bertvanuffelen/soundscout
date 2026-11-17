@@ -9,7 +9,11 @@ import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, it, expect } from 'vitest';
 import i18n from '../../i18n';
-import { LEGACY_THEMES, LEGACY_LOCALES, LEGACY_SAMPLE_KINDS, convertLegacyThemes } from '../export/legacyThemes';
+import { LEGACY_THEMES, LEGACY_LOCALES, LEGACY_SAMPLE_KINDS, LEGACY_HOTSPOT_MOVES, convertLegacyThemes } from '../export/legacyThemes';
+import { checkManifest } from '../rules';
+import basisFixture from './fixtures/legacy-basis.json';
+import winterspelenFixture from './fixtures/legacy-winterspelen.json';
+import piratenFixture from './fixtures/legacy-piraten.json';
 import { lookupKey, stableJson } from '../convert';
 import { ThemeManifestSchema } from '../manifest';
 import { manifestToThemeConfig, themeTextResources } from '../mapping';
@@ -54,6 +58,28 @@ describe.each(LEGACY_THEMES.map(({ theme }) => [theme.id, theme] as const))('the
   it('alleen de bewust gemarkeerde samples dragen een kind (V2 Fase 4)', () => {
     const kinds = Object.fromEntries(manifest.samples.filter((s) => s.kind).map((s) => [s.id, s.kind]));
     expect(kinds).toEqual(LEGACY_SAMPLE_KINDS[id] ?? {});
+  });
+
+  // V2 release: alleen de hotspots in LEGACY_HOTSPOT_MOVES staan ergens
+  // anders dan in de bevroren fixture, en alleen hun x/y.
+  it('alleen de bewust verschoven hotspots wijken af van de fixture (x/y)', () => {
+    const fixtures: Record<string, { theme: { locations: Array<{ hotspots: Array<{ id: string; x: number; y: number }> }> } }> = {
+      basis: basisFixture, winterspelen: winterspelenFixture, piraten: piratenFixture,
+    } as never;
+    const before = new Map(fixtures[id].theme.locations.flatMap((l) => l.hotspots.map((h) => [h.id, h] as const)));
+    const moved: Record<string, { x: number; y: number }> = {};
+    for (const l of manifest.locations) {
+      for (const h of l.hotspots) {
+        const old = before.get(h.id)!;
+        expect(old, h.id).toBeDefined();
+        if (old.x !== h.x || old.y !== h.y) moved[h.id] = { x: h.x, y: h.y };
+      }
+    }
+    expect(moved).toEqual(LEGACY_HOTSPOT_MOVES[id] ?? {});
+  });
+
+  it('breekt geen enkele ontwerpregel (geen fouten; het dashboard kan publiceren)', () => {
+    expect(checkManifest(manifest).filter((i) => i.severity === 'error')).toEqual([]);
   });
 
   it('manifest → ThemeConfig is gelijk aan het oorspronkelijke TS-thema', () => {

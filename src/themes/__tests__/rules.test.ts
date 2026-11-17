@@ -97,11 +97,14 @@ describe('checkManifest', () => {
 });
 
 describe('bestaande thema\'s', () => {
-  // Telling uit het Fase 3-verslag; verandert een thema, dan hier bijwerken.
+  // Fase 3 telde 15 hotspotfouten (basis 3, winterspelen 3, piraten 9); die
+  // zijn bij de V2-release verschoven (LEGACY_HOTSPOT_MOVES). Over blijven
+  // alleen duurwaarschuwingen van oude geluiden zonder type: die blokkeren
+  // niets. Verandert een thema, dan hier bijwerken.
   const expected: Record<string, Record<string, number>> = {
-    basis: { 'hotspot-spacing (error)': 3 },
-    winterspelen: { 'hotspot-safe-zone (error)': 2, 'hotspot-spacing (error)': 1, 'sample-duration (warning)': 1 },
-    piraten: { 'hotspot-safe-zone (error)': 3, 'hotspot-spacing (error)': 6, 'sample-duration (warning)': 4 },
+    basis: {},
+    winterspelen: { 'sample-duration (warning)': 1 },
+    piraten: { 'sample-duration (warning)': 4 },
   };
 
   it.each(Object.keys(expected))('%s: geen integriteitsfouten, ontwerpregels geteld', (id) => {

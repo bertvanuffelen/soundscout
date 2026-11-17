@@ -95,7 +95,7 @@ On the laptop as teacher, with the iPad as the pupil and the digibord for presen
 - [ ] **Shared computer:** log in as A, log out, log in as B. Nothing of A is visible at any moment.
 ## G. Theme platform `/beheer` — 1:40–1:55
 
-The three real themes still break the new hotspot rules, so publishing them is blocked by design. Use the prepared test pack instead: `docs/v2/staging/staging-testthema.sspack` (a small fake theme with two locations and seven generated tones, one of them an 8-second loop; it passes every dashboard check and is never shown in a picker).
+Use the prepared test pack, not a real theme (publishing a real theme here would change it for every class on the next load): `docs/v2/staging/staging-testthema.sspack` (a small fake theme with two locations and seven generated tones, one of them an 8-second loop; it passes every dashboard check and is never shown in a picker).
 
 - [ ] **As B (not an admin):** `/beheer` shows "Geen toegang".
 - [ ] **As A (admin):** the theme list shows the three real themes with their rule warnings (expected).
@@ -137,4 +137,4 @@ The three real themes still break the new hotspot rules, so publishing them is b
 
 **Does not block** (note it and fix after release): small layout details, a stretched loop that sounds slightly "processed" at 90, a slow first load, Luisterspiegel details (it is behind a flag anyway).
 
-When everything in "blocks" is OK, the remaining steps before a production release are: fixing the hotspots that break the new rules in the three real themes (see `docs/v2/PHASE-3-REPORT.md`), and cleaning up the test accounts (`docs/v2/STAGING.md` §2, step 5).
+When everything in "blocks" is OK, the remaining step before a production release is cleaning up the test accounts (the hotspots in the three real themes were fixed on 17-11-2026, see `docs/v2/THEMES.md` §2) (`docs/v2/STAGING.md` §2, step 5).
