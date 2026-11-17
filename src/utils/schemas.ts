@@ -206,6 +206,8 @@ export const PraatplaatPositionSchema = z.object({
 });
 
 export const CompositionDataSchema = z.object({
+  /** Formaat van de data (buildCompositionData.ts, migratie 046); ontbreekt bij V1-werk */
+  formatVersion: z.number().int().positive().optional(),
   tracks: z.array(TrackSchema),
   bpm: BpmSchema,
   totalBeats: z.number().positive(),
