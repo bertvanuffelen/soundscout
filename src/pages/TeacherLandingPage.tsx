@@ -340,7 +340,7 @@ function HeroSection({ onShowDemo, isLoggedIn }: { onShowDemo: () => void; isLog
           de vorm-specifieke preview leeft nu bij "Drie manieren" (G5) */}
       <div className="order-1 md:order-2 flex flex-col gap-3">
         <div className="rounded-2xl overflow-hidden border border-border-subtle bg-bg-surface shadow-lg">
-          <OnboardingAnimation />
+          <OnboardingAnimation variant="steps" />
         </div>
         <p className="text-sm sm:text-base text-text-muted text-center leading-relaxed px-2">
           {t('teacherLanding.hero.animationCaption')}

@@ -7,8 +7,9 @@
  * html-bestand. Bij een taalwissel krijgt het iframe een nieuwe src en herlaadt
  * het vanzelf.
  *
- * `OnboardingAnimation` is de dunne wrapper voor "In 4 stappen aan de slag"
- * (tutorialpagina, first-run intro bij "Nieuwe compositie", hero van /teacher).
+ * `OnboardingAnimation` is de dunne wrapper voor de uitleg "zo werkt
+ * SoundScout": voor leerlingen "Eén geluid op reis" (tutorialpagina, first-run
+ * intro, opdrachtscherm), op de hero van /teacher voorlopig "In 4 stappen".
  */
 
 import { useEffect, useRef } from 'react';
@@ -82,13 +83,26 @@ export function SoundScoutAnimation({
   );
 }
 
-export function OnboardingAnimation({ className }: { className?: string }) {
+interface OnboardingAnimationProps {
+  className?: string;
+  /**
+   * 'journey' (standaard): "Eén geluid op reis" — één opname van hotspot tot
+   * podium, voor leerlingen (first-run intro, tutorial, opdrachtscherm).
+   * 'steps': de oudere "In 4 stappen" met titelkaarten; de docentenpagina
+   * houdt die tot Bert beslist of de nieuwe daar ook komt (vraag Q1, 17-11-2026).
+   */
+  variant?: 'journey' | 'steps';
+}
+
+export function OnboardingAnimation({ className, variant = 'journey' }: OnboardingAnimationProps) {
   const { t } = useTranslation();
   return (
     <SoundScoutAnimation
-      name="onboarding-4-stappen"
+      name={variant === 'journey' ? 'reis-van-een-geluid' : 'onboarding-4-stappen'}
       title={t('tutorial.quickStart')}
       className={className}
+      // De reis is 16:9 plus een rij stappen: begin dicht bij de echte hoogte
+      initialHeight={variant === 'journey' ? 420 : 520}
     />
   );
 }

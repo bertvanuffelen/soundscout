@@ -9,7 +9,7 @@
  *    soundscape" en "Ik heb een code".
  * Daaronder alleen wat relevant is: podium, Mijn soundscapes, seizoensthema,
  * docentreactie. "Voor docenten" en de taal staan rechtsboven (StartHeader).
- * De stippen in het beeld (StartHero) spelen een kort voorproefje, zonder Tone.js.
+ * Het beeld (StartHero) is één knop naar "Nieuwe soundscape"; het startscherm is stil.
  */
 
 import { useState, useEffect, useMemo, useRef, lazy, Suspense } from 'react';
@@ -474,7 +474,7 @@ export function StartScreen() {
           )}
         </section>
 
-        <StartHero />
+        <StartHero onStart={handleNewComposition} />
       </main>
 
       <StartFooter

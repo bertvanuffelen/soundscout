@@ -206,8 +206,7 @@
     "languageLabel": "Taal",
     "continueLabel": "Verder waar je was",
     "keepWorking": "Ga verder met je soundscape",
-    "heroListen": "Luister: {{name}}",
-    "heroListenLabel": "Luister naar de kinderboerderij",
+    "heroStart": "Begin met componeren",
     "footerLabel": "Meer over SoundScout"
   },
   "newWork": {
