@@ -137,4 +137,6 @@ Use the prepared test pack, not a real theme (publishing a real theme here would
 
 **Does not block** (note it and fix after release): small layout details, a stretched loop that sounds slightly "processed" at 90, a slow first load, Luisterspiegel details (it is behind a flag anyway).
 
+See `docs/v2/RELEASE-SAFETY.md` for the mixed-version protection (migration 046), the rollback steps and the release-day list.
+
 When everything in "blocks" is OK, the remaining step before a production release is cleaning up the test accounts (the hotspots in the three real themes were fixed on 17-11-2026, see `docs/v2/THEMES.md` §2) (`docs/v2/STAGING.md` §2, step 5).

@@ -455,6 +455,12 @@ export interface SavedComposition {
  * Bevat alle informatie die nodig is om een compositie af te spelen.
  */
 export interface CompositionData {
+  /**
+   * Formaat van de data: 2 = geschreven door V2 (zie buildCompositionData.ts).
+   * Ontbreekt bij werk uit V1. De database weigert een update die een hoger
+   * formaat door een lager vervangt (migratie 046).
+   */
+  formatVersion?: number;
   /** All tracks with their clips */
   tracks: Track[];
   /** BPM (beats per minute) */

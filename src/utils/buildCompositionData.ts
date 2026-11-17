@@ -11,6 +11,22 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useAppStore } from '../stores/appStore';
 import type { CompositionData } from '../types';
 
+/**
+ * Formaat van de compositie-data (D1, release-veiligheid nov 2026).
+ *
+ * V2 schrijft dingen die V1 niet kent (melodie, geluidseffecten, tempo,
+ * snelheid/echo/filter). V1 leest zo'n soundscape zonder klagen, maar gooit
+ * die velden stil weg; slaat V1 daarna op, dan overschrijft de uitgeklede
+ * versie de online kopie. Het formaatnummer zit in elke soundscape die V2
+ * bewaart, en de database (migratie 046) weigert een update die een
+ * formaat-2-soundscape door een lager formaat zou vervangen. V1 kent het
+ * veld niet en stuurt het dus nooit mee: precies het herkenningsteken.
+ *
+ * Verhoog dit getal alleen als een nieuwere versie opnieuw data schrijft die
+ * een oudere versie stil zou weggooien.
+ */
+export const COMPOSITION_FORMAT_VERSION = 2;
+
 export interface BuildCompositionDataOptions {
   /**
    * Praatplaat-snapshot meenemen (standaard ja). Uit voor "Opslaan als
@@ -28,6 +44,7 @@ export function buildCompositionData(
   const isPraatplaatStoryboard = activeStoryboard?.id.startsWith('praatplaat-') ?? false;
 
   return {
+    formatVersion: COMPOSITION_FORMAT_VERSION,
     tracks: timeline.tracks,
     bpm: timeline.bpm,
     totalBeats: timeline.totalBeats,

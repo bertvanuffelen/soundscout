@@ -53,3 +53,34 @@ describe('buildCompositionData (B26)', () => {
     expect(data.storyboardId).toBeUndefined();
   });
 });
+
+// --- D1 (release-veiligheid): het formaatnummer -----------------------------
+import { COMPOSITION_FORMAT_VERSION } from '../buildCompositionData';
+import { CompositionDataSchema, parseCompositionData } from '../schemas';
+
+describe('formaatnummer (migratie 046)', () => {
+  beforeEach(() => {
+    useTimelineStore.getState().resetTimeline();
+    useAppStore.setState({ activeStoryboard: null, activePraatplaat: null, praatplaatPosition: null });
+  });
+
+  it('elke soundscape die V2 bewaart draagt formatVersion 2, bovenaan in de data', () => {
+    const data = buildCompositionData();
+    expect(COMPOSITION_FORMAT_VERSION).toBe(2);
+    expect(data.formatVersion).toBe(2);
+    // De database leest composition_data->'formatVersion': het moet een getal op het hoogste niveau zijn
+    expect(JSON.parse(JSON.stringify(data)).formatVersion).toBe(2);
+  });
+
+  it('het schema bewaart het nummer (anders verdwijnt het bij laden en opnieuw bewaren)', () => {
+    const parsed = CompositionDataSchema.parse(buildCompositionData());
+    expect(parsed.formatVersion).toBe(2);
+  });
+
+  it('werk uit V1 (zonder nummer) blijft gewoon geldig', () => {
+    const { formatVersion: _omit, ...v1 } = buildCompositionData();
+    void _omit;
+    expect(parseCompositionData(v1)).not.toBeNull();
+    expect(CompositionDataSchema.parse(v1).formatVersion).toBeUndefined();
+  });
+});
