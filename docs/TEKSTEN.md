@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2464 teksten in 57 secties._
+_Stand: 2467 teksten in 57 secties._
 
 ## app
 
@@ -235,6 +235,9 @@ _Stand: 2464 teksten in 57 secties._
 | `start.aboutLink` | Over SoundScout | About SoundScout |
 | `start.languageLabel` | Taal | Language |
 | `start.continueLabel` | Verder waar je was | Carry on where you left off |
+| `start.keepWorking` | Ga verder met je soundscape | Keep working on your soundscape |
+| `start.heroListen` | Luister: {{name}} | Listen: {{name}} |
+| `start.heroListenLabel` | Luister naar de kinderboerderij | Listen to the farm |
 | `start.footerLabel` | Meer over SoundScout | More about SoundScout |
 
 ## newWork
