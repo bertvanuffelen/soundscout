@@ -1,0 +1,34 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>SoundScout — De klascode op het bord</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preload" href="/fonts/nunito/nunito-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/nunito.css">
+<style>
+  /* ===================================================================
+     SOUNDSCOUT — "De klascode op het bord" (designronde nov 2026)
+     Het moment waar een docent het meest over twijfelt: krijg ik 30 kinderen
+     erin? Het digibord (Workshop Night) toont de code van vier cijfers; de
+     apparaten in de klas lichten één voor één op en de teller loopt mee.
+     Stil. Eén rAF-klok (t = (now - start) % PERIOD), stilstaand eindbeeld bij
+     prefers-reduced-motion, maten in --u (1% van de podiumbreedte).
+     Tekst staat in de JS (TEXTS), taal via ?lang=nl|en.
+     =================================================================== */
+  :root{ --ss-font:'Nunito',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; --amber:#FBBF24; --amber-ink:#78350F; --night:#0F172A; --slate:#1E293B; --mist:#CBD5E1; --u:8px; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:transparent; font-family:var(--ss-font); }
+  .film{ max-width:940px; margin:0 auto; }
+  .stage{ position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:var(--night); color:#fff; box-shadow:0 8px 30px rgba(20,30,50,.18); }
+  .stage *{ position:absolute; }
+  .glow{ inset:0; background:radial-gradient(ellipse at top right,#334155,transparent 55%); opacity:.6; }
+  .go{ left:0; right:0; top:9%; text-align:center; color:var(--mist); font-weight:700; font-size:calc(var(--u)*2.6); }
+  .digit{ top:19%; width:11%; height:27%; border-radius:calc(var(--u)*2); background:var(--slate); border:calc(var(--u)*.25) solid rgba(255,255,255,.16); display:flex; align-items:center; justify-content:center; font-weight:800; font-size:calc(var(--u)*11); font-variant-numeric:tabular-nums; }
+  .digit span{ position:static; }
+  .dev{ width:8.4%; height:10.5%; border-radius:calc(var(--u)*1.1); border:calc(var(--u)*.3) solid rgba(255,255,255,.28); display:flex; align-items:center; justify-content:center; }
+  .dev svg{ position:static; width:calc(var(--u)*3.4); height:calc(var(--u)*3.4); opacity:0; }
+  .count{ left:0; right:0; bottom:5%; text-align:center; color:var(--mist); font-weight:700; font-size:calc(var(--u)*2.4); }
+  .count b{ position:static; color:#fff; font-weight:800; font-variant-numeric:tabular-nums; }
+  .all{ left:50%; bottom:4%; transform:translateX(-50%); background:var(--amber); color:var(--amber-ink); font-weight:800; font-size:calc(var(--u)*2.3); padding:calc(var(--u)*.8) calc(var(--u)*2.4); border-radius:999px; white-space:nowrap; opacity:0; }
+</style>
+<div class="film"><div class="stage" id="stage" role="img"></div></div>
+<script src="klascode-op-het-bord.js"></script>

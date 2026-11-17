@@ -197,8 +197,11 @@ Losse, herhalende uitleg-animaties in de huisstijl (Nunito, egale kleuren, Lucid
 
 | Bestand | Waar gebruikt |
 |---|---|
-| `onboarding-4-stappen.{html,js}` | TutorialScreen, first-run intro bij "Nieuwe compositie", hero van `/teacher` |
-| `sequencer-uitleg.{html,js}` | Handleidingsectie "De sequencer" (4 acts: raster → kliks → afspeellijn 2 rondes → blokje naar de tijdlijn) |
+| `onboarding-4-stappen.{html,js}` | hero van `/teacher` (leerlingen zien sinds nov 2026 `reis-van-een-geluid`) |
+| `reis-van-een-geluid.{html,js}` | "Eén geluid op reis": first-run intro, TutorialScreen, opdrachtscherm (leerlingen; vier blokken van hotspot → tas → tijdlijn → podium) |
+| `sequencer-ritme-melodie.{html,js}` | Handleidingsectie "De sequencer" en `/teacher` (4 acts: kies → ritme → melodie → op de tijdlijn) |
+| `klascode-op-het-bord.{html,js}` | `/teacher`, "Zo zet je een klas op" |
+| `feedback-cirkel.{html,js}` | `/teacher`, "De feedback-cirkel" |
 
 Inbedden via `SoundScoutAnimation` (`src/components/common/OnboardingAnimation.tsx`): iframe met `name`+`title`, hoogte-sync via ResizeObserver op **`doc.body`** (niet `documentElement` — dat is minstens de viewporthoogte en kan dus nooit krimpen). `OnboardingAnimation` is de dunne wrapper voor de onboarding. Een handleidingsectie krijgt een animatie via het optionele veld `animation` in `SECTIONS` (TeacherGuideScreen).
 

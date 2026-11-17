@@ -85,7 +85,7 @@ const SECTIONS: GuideSection[] = [
     id: 'sequencer',
     titleKey: 'teacher.guide.sections.sequencer.title',
     contentKey: 'teacher.guide.sections.sequencer.content',
-    animation: 'sequencer-uitleg',
+    animation: 'sequencer-ritme-melodie',
   },
   {
     id: 'templates',

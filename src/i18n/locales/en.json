@@ -2546,6 +2546,7 @@
     },
     "steps": {
       "title": "How to set up a class",
+      "animationTitle": "Animation: the class code on the board",
       "step1": {
         "title": "Create a class",
         "description": "You get a four-digit class code straight away."
@@ -2609,6 +2610,7 @@
     },
     "feedbackCycle": {
       "title": "The feedback loop",
+      "animationTitle": "Animation: the feedback cycle",
       "subtitle": "From assignment to improving — without student accounts.",
       "steps": {
         "assign": "Assignment",

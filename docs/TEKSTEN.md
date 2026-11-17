@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2470 teksten in 57 secties._
+_Stand: 2472 teksten in 57 secties._
 
 ## app
 
@@ -2185,6 +2185,7 @@ _Stand: 2470 teksten in 57 secties._
 | `teacherLanding.compose.captions.storyboard` | Een verhaal in drie tot vier scènes — leerlingen maken een soundtrack per beeld. | A story in three to four scenes — students make a soundtrack for each image. |
 | `teacherLanding.compose.captions.vrij` | Een klankcompositie zonder beeld — leerlingen bouwen vrij op de tijdlijn. | A sound composition without an image — students build freely on the timeline. |
 | `teacherLanding.steps.title` | Zo zet je een klas op | How to set up a class |
+| `teacherLanding.steps.animationTitle` | Animatie: de klascode op het bord | Animation: the class code on the board |
 | `teacherLanding.steps.step1.title` | Maak een klas | Create a class |
 | `teacherLanding.steps.step1.description` | Je krijgt meteen een klascode van vier cijfers. | You get a four-digit class code straight away. |
 | `teacherLanding.steps.step2.title` | Kies een opdracht | Choose an assignment |
@@ -2222,6 +2223,7 @@ _Stand: 2470 teksten in 57 secties._
 | `teacherLanding.usp.feedback.title` | Feedback die de cirkel rondmaakt | Feedback that closes the loop |
 | `teacherLanding.usp.feedback.description` | Jij geeft stickers, sterren en een bericht; klasgenoten geven elkaar anoniem complimenten via jouw feedbackkaart. | You give stickers, stars and a message; classmates give each other anonymous compliments using your feedback card. |
 | `teacherLanding.feedbackCycle.title` | De feedback-cirkel | The feedback loop |
+| `teacherLanding.feedbackCycle.animationTitle` | Animatie: de feedback-cirkel | Animation: the feedback cycle |
 | `teacherLanding.feedbackCycle.subtitle` | Van opdracht tot verbeteren — zonder leerlingaccounts. | From assignment to improving — without student accounts. |
 | `teacherLanding.feedbackCycle.steps.assign` | Opdracht | Assignment |
 | `teacherLanding.feedbackCycle.steps.create` | Maken | Create |
