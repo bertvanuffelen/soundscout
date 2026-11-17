@@ -154,7 +154,55 @@
       }
     },
     "seasonBadge": "available again in {{month}}",
-    "seasonSuffix": "(out of season)"
+    "seasonSuffix": "(out of season)",
+    "sinterklaas": {
+      "name": "Sinterklaas",
+      "description": "Steamboat, rooftops, present room, bakery and living room: help St Nicholas!",
+      "locations": {
+        "stoomboot": "The Steamboat",
+        "stoomboot_desc": "The boat docks at the decorated quay",
+        "dak": "On the Rooftops",
+        "dak_desc": "The horse steps across the roofs by moonlight",
+        "pakjeskamer": "The Present Room",
+        "pakjeskamer_desc": "Where every present gets wrapped",
+        "bakkerij": "The Pepernoten Bakery",
+        "bakkerij_desc": "The helper robots bake pepernoten",
+        "huiskamer": "The Living Room",
+        "huiskamer_desc": "Present evening: the shoe is ready"
+      },
+      "samples": {
+        "stoomboot-fluit": "Steam whistle",
+        "stoomboot-machine": "Steam engine",
+        "stoomboot-golven": "Waves",
+        "stoomboot-bel": "Ship's bell",
+        "stoomboot-juichen": "Cheering",
+        "stoomboot-fanfare": "Brass band",
+        "dak-hoeven": "Horse hooves",
+        "dak-hinnik": "Neigh",
+        "dak-wind": "Wind",
+        "dak-schoorsteen": "Present down the chimney",
+        "dak-torenklok": "Tower bell",
+        "dak-sluipen": "Tiptoe music",
+        "pakjeskamer-papier": "Wrapping paper",
+        "pakjeskamer-plakband": "Sticky tape",
+        "pakjeskamer-schaar": "Scissors",
+        "pakjeskamer-lopendeband": "Conveyor belt",
+        "pakjeskamer-inpakmachine": "Wrapping machine",
+        "pakjeskamer-speeldoos": "Music box",
+        "bakkerij-deeg": "Kneading dough",
+        "bakkerij-strooien": "Scattering pepernoten",
+        "bakkerij-ovenbel": "Oven bell",
+        "bakkerij-deegmachine": "Dough mixer",
+        "bakkerij-knabbelen": "Crunching",
+        "bakkerij-ritme": "Baking beat",
+        "huiskamer-klop": "Knock on the door",
+        "huiskamer-deurbel": "Doorbell",
+        "huiskamer-haard": "Fireplace",
+        "huiskamer-voetstappen": "Footsteps",
+        "huiskamer-zak": "Sack of presents",
+        "huiskamer-piano": "Piano"
+      }
+    }
   },
   "start": {
     "startGame": "Start Game",
