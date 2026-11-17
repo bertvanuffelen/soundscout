@@ -22,6 +22,7 @@ import type { Template, CompositionData, ActivePraatplaat, PraatplaatPosition, S
 import type { SavedOnlineComposition } from '../lib/submissions';
 import { storageService } from '../services/StorageService';
 import i18n from '../i18n';
+import { logUsageEvent, logCompositionStarted } from './usageStats';
 
 /**
  * Payload voor `hydrateCompositionContext`: alle velden van een compositie die
@@ -125,6 +126,7 @@ export async function initializeNewComposition(
   options: InitCompositionOptions
 ): Promise<boolean> {
   const { themeId, onAudioInitFailed } = options;
+  logCompositionStarted();
 
   // Stap 1: Stel thema in (wacht op het manifest als het thema nog niet geladen is)
   await useThemeStore.getState().setTheme(themeId);
@@ -190,6 +192,7 @@ export async function initializeCompositionFromStoryboard(
   options: { onAudioInitFailed?: (error: unknown) => void } = {},
 ): Promise<boolean> {
   const mode: ComposeMode = storyboard.images.length === 1 ? 'image' : 'storyboard';
+  logCompositionStarted();
 
   // 1. Thema impliciet uit storyboard
   await useThemeStore.getState().setTheme(storyboard.themeId);
@@ -248,6 +251,7 @@ export async function initializeCompositionFromStoryboard(
  */
 export async function initializeFromTemplate(template: Template): Promise<void> {
   const { compositionData } = template;
+  logCompositionStarted();
 
   // Bewaarcode-context hoort bij de VORIGE compositie — anders overschrijft
   // de auto-sync die online compositie met dit nieuwe werk (AUD-09).
@@ -338,6 +342,7 @@ export async function lookupAndRouteAssignment(
       if (klass === null) return 'notFound';
     }
     useAppStore.getState().goToAssignmentLanding({ classCode, assignment, member });
+    logUsageEvent('class_code_entered');
     return 'ok';
   } catch (err) {
     logger.error('lookupAndRouteAssignment failed:', err);

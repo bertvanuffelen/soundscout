@@ -10,6 +10,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import type { Track, Sample } from '../types';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
+import { logUsageEvent } from '../utils/usageStats';
 
 export type ExportState = 'idle' | 'exporting' | 'success' | 'error';
 
@@ -82,6 +83,7 @@ export function useAudioExport(
         downloadBlob(blob, finalFilename);
 
         setExportState('success');
+        logUsageEvent('mp3_export');
         logger.info('MP3 export successful', { filename: finalFilename });
 
         // Auto-reset after success

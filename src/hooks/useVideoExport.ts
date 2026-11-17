@@ -14,6 +14,7 @@ import { useTimelineStore } from '../stores/timelineStore';
 import type { Track, Sample, Section, Storyboard } from '../types';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
+import { logUsageEvent } from '../utils/usageStats';
 
 export type VideoExportState = 'idle' | 'exporting' | 'success' | 'error' | 'unsupported';
 
@@ -133,6 +134,7 @@ export function useVideoExport(
         downloadBlob(result.blob, finalFilename);
 
         setVideoExportState('success');
+        logUsageEvent('video_export');
         logger.info('[useVideoExport] Video export successful', {
           filename: finalFilename,
           engine: result.engineName,

@@ -26,6 +26,7 @@ import { generateRandomName } from '../utils/randomNames';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
+import { logUsageEvent } from '../utils/usageStats';
 
 type Feedback = { type: 'success' | 'error'; message: string } | null;
 
@@ -220,6 +221,7 @@ export function useStageSave() {
       }
       useAppStore.getState().setSubmissionId(returnedId);
       useAppStore.getState().setSubmissionSynced(true);
+      logUsageEvent('composition_submitted');
       clientIdRef.current = returnedId;
       if (saveCode) {
         setClassSaveCode(saveCode);
