@@ -11,7 +11,7 @@
 
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, Grid3x3, Minus, Music, Pencil, Plus, Trash2, X } from 'lucide-react';
+import { Check, Copy, Grid3x3, Minus, Music, Pencil, Plus, Trash2, X } from 'lucide-react';
 import { Button, Modal } from '../ui';
 import TipModal from '../ui/TipModal';
 import { hasSeenFirstRun, markFirstRunSeen } from '../../utils/firstRun';
@@ -23,7 +23,6 @@ import { sequenceSampleId } from '../../utils/sequencer';
 import { SEQUENCE_COLOR } from '../../types/sequencer';
 import SequencerGrid from './SequencerGrid';
 import MelodyEditor from './MelodyEditor';
-import SequenceKindTabs from './SequenceKindTabs';
 import {
   SEQ_MAX_STEPS,
   SEQ_MIN_STEPS,
@@ -35,11 +34,14 @@ interface StudioSequencerPanelProps {
   samples: Sample[];
   /** Vrije modus = ruimere hoogte (zelfde regel als de Timeline) */
   isFreeMode: boolean;
+  /** Sluiten via Klaar / ✕ / tab Tijdlijn (studio: lege sequence niet bewaren + bevestiging) */
+  onDone?: () => void;
 }
 
 export default function StudioSequencerPanel({
   samples,
   isFreeMode,
+  onDone,
 }: StudioSequencerPanelProps) {
   const { t } = useTranslation();
   const setOpenSequenceId = useSequencerStore((s) => s.setOpenSequenceId);
@@ -98,6 +100,7 @@ export default function StudioSequencerPanel({
   const isMelody = sequence.kind === 'melody';
 
   const closeTab = () => {
+    if (onDone) { onDone(); return; }
     sequencerEngine.stop();
     setIsPlaying(false);
     setOpenSequenceId(null);
@@ -156,12 +159,12 @@ export default function StudioSequencerPanel({
         <button
           type="button"
           onClick={closeTab}
-          className="text-[10px] sm:text-xs font-bold text-text-muted uppercase tracking-wide px-2 py-1 rounded-md hover:bg-neutral-100 shrink-0"
+          className="type-label text-text-muted px-2 py-1 rounded-md hover:bg-neutral-100 shrink-0"
         >
           {t('studio.timeline')}
         </button>
         <span
-          className="flex items-center gap-1 px-2 py-1 rounded-md text-[10px] sm:text-xs font-bold shrink-0 max-w-40 text-text-main"
+          className="flex items-center gap-1 px-2 py-1 rounded-md text-xs font-extrabold shrink-0 max-w-40 text-text-main"
           style={{ backgroundColor: `${sequence.color ?? SEQUENCE_COLOR}33` }}
         >
           {isMelody ? (
@@ -180,15 +183,10 @@ export default function StudioSequencerPanel({
           </button>
         </span>
 
-        {/* Ritme | Melodie (V2 Fase 4) */}
-        <SequenceKindTabs
-          sequence={sequence}
-          onCreated={(id) => {
-            sequencerEngine.stop();
-            setIsPlaying(false);
-            setOpenSequenceId(id);
-          }}
-        />
+        {/* Soort: vast per sequence (designronde nov 2026 — geen tabs meer) */}
+        <span className="type-label text-text-muted shrink-0 px-1">
+          {isMelody ? t('melodie.tabs.melody') : t('melodie.tabs.rhythm')}
+        </span>
 
         <div className="flex-1" />
 
@@ -236,7 +234,7 @@ export default function StudioSequencerPanel({
         >
           <Minus size={14} aria-hidden />
         </button>
-        <span className="text-[10px] sm:text-xs font-semibold text-text-muted tabular-nums whitespace-nowrap">
+        <span className="text-xs font-semibold text-text-muted tabular-nums whitespace-nowrap">
           {t('sequencer.length.bars', {
             beats: sequence.lengthSteps,
             bars: sequence.lengthSteps / 4,
@@ -251,7 +249,25 @@ export default function StudioSequencerPanel({
         >
           <Plus size={14} aria-hidden />
         </button>
+
+        <span className="w-px h-4 bg-border-subtle mx-1" aria-hidden />
+
+        {/* Klaar: terug naar de tijdlijn (alles is al bewaard) */}
+        <button
+          type="button"
+          onClick={closeTab}
+          data-testid="sequencer-done"
+          className="type-body font-extrabold inline-flex items-center gap-1.5 rounded-full bg-accent-400 hover:bg-accent-500 text-accent-900 px-4 min-h-11 shrink-0"
+        >
+          <Check size={16} aria-hidden />
+          {t('sequencer.studio.done')}
+        </button>
       </div>
+
+      {/* Lege sequence? Zeg dat hij niet bewaard wordt */}
+      {(isMelody ? (sequence.melody?.notes.length ?? 0) === 0 : sequence.tracks.every((tr) => tr.steps.every((st) => !st))) && (
+        <p className="text-xs text-text-muted px-2 sm:px-4 pt-1.5">{t('sequencer.studio.emptyHint')}</p>
+      )}
 
       {/* --- Grid (zelfde plek als de tijdlijnsporen) --- */}
       <div

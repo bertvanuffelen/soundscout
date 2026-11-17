@@ -1,8 +1,8 @@
 /**
  * V2 Fase 4 — de Melodie-tab in de studio, van begin tot export.
  *
- * Sequence toevoegen → tab Melodie → noten zetten → synthklank kiezen →
- * swing → tab sluiten (chip in de bibliotheek) → op de tijdlijn zetten
+ * "+ Sequence" → kiezen: Melodie → noten zetten → synthklank kiezen →
+ * swing → Klaar (chip in de bibliotheek) → op de tijdlijn zetten
  * (via de store, deterministisch — zelfde patroon als layout.spec.ts) →
  * afspelen (afspeellijn loopt, geen consolefouten) → via de clip heropenen
  * (noten staan er nog) → export-render + validator.
@@ -40,12 +40,12 @@ test('melodie: maken, plaatsen, afspelen, heropenen en exporteren', async ({ pag
   await prepare(page);
   await toStudio(page);
 
-  // --- Sequence toevoegen en naar Melodie ---
-  await page.getByTitle('Sequence toevoegen').click();
+  // --- "+ Sequence" → kiezen: Melodie (designronde nov 2026: soort vast, geen tabs) ---
+  await page.getByTestId('make-sequence').click();
+  await page.getByTestId('choose-melody').click();
   const panel = page.getByRole('region', { name: 'Sequencer Lab' });
   await panel.waitFor();
-  await panel.getByRole('tab', { name: 'Melodie' }).click();
-  await expect(panel.getByRole('tab', { name: 'Melodie' })).toHaveAttribute('aria-selected', 'true');
+  await expect(panel.getByText('Melodie', { exact: true })).toBeVisible();
 
   // --- Noten zetten ---
   for (const name of ['C4, tel 1', 'E4, tel 3', 'G4, tel 5', 'A5, tel 7']) {
@@ -80,7 +80,7 @@ test('melodie: maken, plaatsen, afspelen, heropenen en exporteren', async ({ pag
   // --- Tab sluiten → chip in de bibliotheek ---
   await panel.getByRole('button', { name: 'Sequencer sluiten' }).click();
   await expect(panel).toBeHidden();
-  const chip = page.getByTitle('Patroon bewerken').filter({ hasText: 'Sequence 1' }).first();
+  const chip = page.getByTitle('Patroon bewerken').filter({ hasText: 'Melodie 1' }).first();
   await expect(chip).toBeVisible();
 
   // --- Op de tijdlijn zetten (store) ---
@@ -109,7 +109,7 @@ test('melodie: maken, plaatsen, afspelen, heropenen en exporteren', async ({ pag
   await clip.click();
   await page.getByRole('button', { name: 'Patroon bewerken' }).click();
   await panel.waitFor();
-  await expect(panel.getByRole('tab', { name: 'Melodie' })).toHaveAttribute('aria-selected', 'true');
+  await expect(panel.getByText('Melodie', { exact: true })).toBeVisible();
   for (const name of ['C4, tel 1, Hard', 'E4, tel 3, Hard', 'G4, tel 5, Hard', 'A5, tel 7, Hard']) {
     await expect(panel.getByRole('button', { name, exact: true })).toHaveAttribute('aria-pressed', 'true');
   }
@@ -144,13 +144,28 @@ test('melodie: maken, plaatsen, afspelen, heropenen en exporteren', async ({ pag
   expect(consoleErrors).toEqual([]);
 });
 
-test('melodie: tab wisselen op een gevuld ritme vraagt om een nieuwe sequence', async ({ page }) => {
+test('sequence: eerst kiezen, een lege wordt niet bewaard, een gevulde wel', async ({ page }) => {
   await prepare(page);
   await toStudio(page);
-  await page.getByTitle('Sequence toevoegen').click();
   const panel = page.getByRole('region', { name: 'Sequencer Lab' });
+  const kinds = () => page.evaluate(async () => {
+    const { useTimelineStore } = await import('/src/stores/timelineStore.ts');
+    return useTimelineStore.getState().sequences.map((s) => s.kind ?? 'rhythm');
+  });
+
+  // Leeg sluiten met Klaar: niets bewaard, geen chip
+  await page.getByTestId('make-sequence').click();
+  await page.getByTestId('choose-rhythm').click();
   await panel.waitFor();
-  // Ritme vullen: eerste spoor een geluid geven en een stap aanzetten
+  await expect(panel.getByRole('tab')).toHaveCount(0);
+  await page.getByTestId('sequencer-done').click();
+  await expect(page.getByTestId('studio-toast')).toContainText('niets bewaard');
+  expect(await kinds()).toEqual([]);
+
+  // Gevuld: bewaard als chip
+  await page.getByTestId('make-sequence').click();
+  await page.getByTestId('choose-rhythm').click();
+  await panel.waitFor();
   await page.evaluate(async () => {
     const { useSequencerStore } = await import('/src/stores/sequencerStore.ts');
     const { useLibraryStore } = await import('/src/stores/libraryStore.ts');
@@ -159,13 +174,7 @@ test('melodie: tab wisselen op een gevuld ritme vraagt om een nieuwe sequence', 
     s.setTrackSample(track.id, useLibraryStore.getState().librarySamples[0].id);
     s.toggleStep(track.id, 0);
   });
-  await panel.getByRole('tab', { name: 'Melodie' }).click();
-  const dialog = page.getByRole('dialog');
-  await dialog.getByRole('button', { name: 'Nieuwe melodie' }).click();
-  await expect(panel.getByRole('tab', { name: 'Melodie' })).toHaveAttribute('aria-selected', 'true');
-  const kinds = await page.evaluate(async () => {
-    const { useTimelineStore } = await import('/src/stores/timelineStore.ts');
-    return useTimelineStore.getState().sequences.map((s) => s.kind ?? 'rhythm');
-  });
-  expect(kinds).toEqual(['rhythm', 'melody']);
+  await page.getByTestId('sequencer-done').click();
+  await expect(page.getByTestId('studio-toast')).toContainText('staat in je bibliotheek');
+  expect(await kinds()).toEqual(['rhythm']);
 });

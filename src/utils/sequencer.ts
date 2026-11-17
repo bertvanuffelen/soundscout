@@ -148,7 +148,7 @@ export function createDefaultSequence(
 }
 
 /**
- * Maak een verse melodie-sequence (V2 Fase 4): pentatonisch raster (C D E G A,
+ * Maak een verse melodie-sequence (V2 Fase 4): diatonisch raster (C D E F G A B,
  * twee octaven vanaf C4), lege noten, 16 vakjes. Houdt bewust één leeg
  * ritmespoor in `tracks` (schema-eis ≥1), zodat een oudere client hem als
  * stille ritme-sequence leest in plaats van de compositie af te keuren.

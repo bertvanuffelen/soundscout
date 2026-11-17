@@ -24,6 +24,8 @@ interface Props {
   initial?: Fx;
   onClose: () => void;
   onApply: (fx: Fx, buffer: AudioBuffer | null) => void;
+  /** Tekst van de bevestigknop (studio-ontwerp nov: "Klaar") */
+  applyLabel?: string;
 }
 
 const SPEEDS: Array<[number, string]> = [[0.5, '½×'], [0.75, '¾×'], [1, '1×'], [1.5, '1½×'], [2, '2×']];
@@ -66,7 +68,7 @@ function Slider({ label, value, display, min, max, step, left, right, neutral = 
   );
 }
 
-export default function FxModal({ sound, initial, onClose, onApply }: Props) {
+export default function FxModal({ sound, initial, onClose, onApply, applyLabel = 'Toepassen' }: Props) {
   const [fx, setFx] = useState<Fx>(initial ?? NO_FX);
   const [rendered, setRendered] = useState<AudioBuffer | null>(null);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -241,7 +243,7 @@ export default function FxModal({ sound, initial, onClose, onApply }: Props) {
               onClick={() => { stop(); onApply(fx, hasFx(fx) ? rendered : null); }}
               className="px-4 py-1.5 text-sm font-medium text-text-main bg-accent-400 hover:bg-accent-500 disabled:opacity-50 disabled:cursor-not-allowed rounded-lg transition-colors"
             >
-              Toepassen
+              {applyLabel}
             </button>
           </div>
         </div>

@@ -35,6 +35,7 @@ export function buildCompositionData(
     samples: useLibraryStore.getState().librarySamples,
     sections: timeline.sections,
     sequences: timeline.sequences,
+    effectSounds: timeline.effectSounds,
     // Zonder praatplaat-snapshot is een praatplaat-storyboard-id onherleidbaar
     storyboardId: !includePraatplaat && isPraatplaatStoryboard ? undefined : activeStoryboard?.id,
     praatplaat: includePraatplaat ? activePraatplaat ?? undefined : undefined,

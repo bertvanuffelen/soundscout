@@ -479,15 +479,19 @@ export const useSequencerStore = create<SequencerStore>()((set, get) => {
     deleteSequence: (id, fallbackName) => {
       set((state) => {
         let sequences = state.sequences.filter((seq) => seq.id !== id);
-        // Nooit met lege lijst achterblijven — vervang door een verse default
-        if (sequences.length === 0) {
+        // Lab: nooit met een lege lijst achterblijven — vervang door een verse
+        // default. Studio NIET: daar verscheen die verse lege sequence als chip
+        // in de bibliotheek ("er komt vanzelf een lege sequence", stagingtest
+        // 16-11). Een compositie zonder sequences is gewoon geldig.
+        if (sequences.length === 0 && state.mode === 'lab') {
           sequences = [createDefaultSequence(fallbackName)];
         }
         const activeSequenceId =
           state.activeSequenceId === id
-            ? sequences[0].id
+            ? (sequences[0]?.id ?? null)
             : state.activeSequenceId;
-        return { sequences, activeSequenceId };
+        const openSequenceId = state.openSequenceId === id ? null : state.openSequenceId;
+        return { sequences, activeSequenceId, openSequenceId };
       });
       persistSequences(get().mode, () => get().sequences);
     },

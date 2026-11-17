@@ -61,7 +61,7 @@ export default function MelodyVoiceModal({
                   type="button"
                   onClick={() => onSelectSynth(preset)}
                   aria-pressed={selected}
-                  className="flex-1 min-h-11 rounded-lg bg-accent-400 hover:bg-accent-500 text-accent-900 text-sm font-bold px-2"
+                  className="flex-1 min-h-11 rounded-lg bg-accent-400 hover:bg-accent-500 text-accent-900 text-sm font-extrabold px-2"
                 >
                   {label}
                 </button>
@@ -76,7 +76,7 @@ export default function MelodyVoiceModal({
           disabled={!hasLibrarySounds}
           aria-pressed={voice.type === 'sample'}
           className={cn(
-            'min-h-11 rounded-xl border-2 border-dashed px-3 flex items-center justify-center gap-2 text-sm font-bold',
+            'min-h-11 rounded-xl border-2 border-dashed px-3 flex items-center justify-center gap-2 text-sm font-extrabold',
             'disabled:opacity-50 disabled:cursor-not-allowed',
             voice.type === 'sample'
               ? 'border-accent-500 text-text-main'

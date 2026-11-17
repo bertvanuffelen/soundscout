@@ -29,6 +29,7 @@ import { MapScreen, LocationScreen } from './v2-mockup/Explore';
 import Studio, { type StagePayload, type StudioClip } from './v2-mockup/Studio';
 import Podium from './v2-mockup/Podium';
 import AdminDemo from './v2-mockup/AdminDemo';
+import StudioOntwerp from './v2-mockup/StudioOntwerp';
 import { sampleToSound, type MockSound } from './v2-mockup/shared';
 import { DEFAULT_QUESTIONS, type MirrorQuestion, type MockSequence } from './v2-mockup/engine';
 
@@ -49,7 +50,18 @@ const KEYFRAMES = `
 @media (prefers-reduced-motion: reduce) { [class*="animate-[mock-"] { animation: none !important; } }
 `;
 
+/**
+ * /v2-mockup?view=studio-ontwerp — het studio-ontwerp van de designronde
+ * (november 2026): vaste maakbalk, sequencer-flow met "Klaar", Geluidseffect,
+ * één letterschaal en een donker kader. Zonder parameter: de hele reis.
+ */
 export default function V2Mockup() {
+  const view = new URLSearchParams(window.location.search).get('view');
+  if (view === 'studio-ontwerp') return <StudioOntwerp />;
+  return <JourneyMockup />;
+}
+
+function JourneyMockup() {
   const { t } = useTranslation();
   const [screen, setScreen] = useState<Screen>('landing');
   const [theme, setTheme] = useState<ThemeConfig>(() => getTheme(DEFAULT_THEME_ID)!);

@@ -81,7 +81,7 @@ export default function TrackControls({
               onClick={() => onSetMode(mode)}
               aria-pressed={track.mode === mode}
               className={cn(
-                'px-1.5 py-1 text-[10px] font-bold leading-none min-h-7',
+                'px-1.5 py-1 text-xs font-extrabold leading-none min-h-7',
                 track.mode === mode
                   ? 'bg-accent-400 text-accent-900'
                   : 'bg-white text-text-muted hover:bg-neutral-50'

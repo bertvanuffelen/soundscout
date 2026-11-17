@@ -18,10 +18,10 @@ import {
   type DragMoveEvent,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { useTimelineStore } from '../stores/timelineStore';
+import { useTimelineStore, NEUTRAL_CLIP_EFFECTS } from '../stores/timelineStore';
 import { useAppStore } from '../stores/appStore';
 import { secondsToBeats, getClipDurationBeats } from '../utils/audio';
-import type { Clip, Sample } from '../types';
+import type { Clip, EffectSound, Sample } from '../types';
 import {
   POINTER_ACTIVATION_DISTANCE,
   TOUCH_ACTIVATION_DELAY_MS,
@@ -311,6 +311,9 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
 
         const sample = active.data.current?.sample as Sample | undefined;
         if (!sample) return;
+        // Geluidseffect-chip (designronde nov 2026): een gewone clip van het
+        // brongeluid, mét de effecten en de koppeling naar het geluidseffect
+        const effectSound = active.data.current?.effectSound as EffectSound | undefined;
 
         // Smart snap will find the best position
         addClip(
@@ -319,6 +322,9 @@ export function useStudioDnD({ samples }: UseStudioDnDOptions) {
             id: generateClipId(),
             sampleId: sample.id,
             startBeat,
+            ...(effectSound
+              ? { effects: { ...NEUTRAL_CLIP_EFFECTS, ...effectSound.effects }, effectSoundId: effectSound.id, label: effectSound.name.slice(0, 30) }
+              : {}),
           },
           samples,
         );

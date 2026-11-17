@@ -40,6 +40,15 @@ import {
   resolveSampleKind,
 } from '../../utils/sampleKinds';
 import { createDefaultMelodySequence, createSequenceSample } from '../../utils/sequencer';
+
+// Deze motortests rekenen met het pentatonische raster (C D E G A). Sinds
+// 17-11 is de standaard voor nieuwe melodieën diatonisch; bestaande
+// melodieën houden hun eigen `scale`. Daarom hier expliciet pentatonisch.
+const PENTATONIC = [0, 2, 4, 7, 9];
+function pentatonicMelody(...args: Parameters<typeof createDefaultMelodySequence>) {
+  const seq = createDefaultMelodySequence(...args);
+  return { ...seq, melody: { ...seq.melody!, scale: [...PENTATONIC] } };
+}
 import {
   ClipEffectsSchema,
   CompositionDataSchema,
@@ -108,7 +117,7 @@ describe('loop of sfx', () => {
   });
 
   it('sequence-samples volgen het tempo: altijd lengthSteps tellen breed', () => {
-    const seq = { ...createDefaultMelodySequence('m'), lengthSteps: 12 };
+    const seq = { ...pentatonicMelody('m'), lengthSteps: 12 };
     const virtual = createSequenceSample(seq);
     expect(resolveSampleKind(virtual)).toBe('loop');
     for (const bpm of [90, 120, 135]) {
@@ -275,6 +284,14 @@ describe('ritme: swing en aanslagsterkte', () => {
 });
 
 describe('melodie', () => {
+  it('nieuwe melodie: diatonisch (C D E F G A B); een bewaarde pentatonische blijft pentatonisch', () => {
+    const fresh = createDefaultMelodySequence('m');
+    expect(fresh.melody!.scale).toEqual([0, 2, 4, 5, 7, 9, 11]);
+    expect([0, 3, 6, 7].map((r) => melodyRowToSemitones(r, fresh.melody!.scale))).toEqual([0, 5, 11, 12]);
+    const saved = pentatonicMelody('oud');
+    expect([0, 3, 4, 5].map((r) => melodyRowToSemitones(r, saved.melody!.scale))).toEqual([0, 7, 9, 12]);
+  });
+
   it('pentatonisch raster: C D E G A, daarna het volgende octaaf', () => {
     const scale = [0, 2, 4, 7, 9];
     expect([0, 1, 2, 3, 4, 5, 6, 9].map((r) => melodyRowToSemitones(r, scale))).toEqual([0, 2, 4, 7, 9, 12, 14, 21]);
@@ -282,7 +299,7 @@ describe('melodie', () => {
   });
 
   it('synth-stem: elke noot wordt een synthetische sample-id', () => {
-    const seq = createDefaultMelodySequence('m', { type: 'synth', preset: 'pluck' });
+    const seq = pentatonicMelody('m', { type: 'synth', preset: 'pluck' });
     seq.melody!.notes = [{ step: 0, row: 0 }, { step: 2, row: 7, length: 2, velocity: 0.5 }];
     const events = generatePatternEvents(seq, []);
     expect(events.map((e) => e.sampleId)).toEqual([synthSampleId('pluck', 60), synthSampleId('pluck', 76)]);
@@ -293,7 +310,7 @@ describe('melodie', () => {
 
   it('bibliotheekstem: pitch-recept = noot − baseNote, lengte afgekapt op het geluid', () => {
     const voiceSample = sample('fluit', 0.75);
-    const seq = createDefaultMelodySequence('m', { type: 'sample', sampleId: 'fluit', baseNote: 62 });
+    const seq = pentatonicMelody('m', { type: 'sample', sampleId: 'fluit', baseNote: 62 });
     seq.melody!.notes = [{ step: 1, row: 1, length: 4 }];
     const [event] = generatePatternEvents(seq, [voiceSample]);
     // rij 1 = D4 = 62 = baseNote → 0 semitonen → neutraal, geen bake
@@ -302,14 +319,14 @@ describe('melodie', () => {
   });
 
   it('bibliotheekstem transponeert', () => {
-    const seq = createDefaultMelodySequence('m', { type: 'sample', sampleId: 'fluit' });
+    const seq = pentatonicMelody('m', { type: 'sample', sampleId: 'fluit' });
     seq.melody!.notes = [{ step: 0, row: 3 }];
     const [event] = generatePatternEvents(seq, [sample('fluit', 2)]);
     expect(event.recipe?.pitch).toBe(7);
   });
 
   it('swing en velocity werken ook in een melodie', () => {
-    const seq = createDefaultMelodySequence('m');
+    const seq = pentatonicMelody('m');
     seq.swing = 0.5;
     seq.melody!.notes = [{ step: 1, row: 0, velocity: 0.25 }];
     const [event] = generatePatternEvents(seq, []);
@@ -318,7 +335,7 @@ describe('melodie', () => {
   });
 
   it('melodie op de tijdlijn wordt gewone ClipEvents (zelfde pad als ritme)', () => {
-    const seq = createDefaultMelodySequence('m', { type: 'synth', preset: 'soft' });
+    const seq = pentatonicMelody('m', { type: 'synth', preset: 'soft' });
     seq.melody!.notes = [{ step: 0, row: 0 }, { step: 3, row: 4 }];
     const { events } = generateClipEvents([track(clip({ sampleId: `seq:${seq.id}` }))], [], { bpm: 120, sequences: [seq] });
     expect(events).toHaveLength(2);
@@ -326,7 +343,7 @@ describe('melodie', () => {
   });
 
   it('gemute melodie of noten buiten het raster: geen events', () => {
-    const seq = createDefaultMelodySequence('m');
+    const seq = pentatonicMelody('m');
     seq.melody!.notes = [{ step: 0, row: 10 }, { step: 99, row: 0 }];
     expect(generatePatternEvents(seq, [])).toEqual([]);
     seq.melody!.notes = [{ step: 0, row: 0 }];
@@ -410,7 +427,7 @@ describe('schema: oude data laadt neutraal, rommel crasht niet', () => {
     expect(parsedOld.kind).toBeUndefined();
     expect(generatePatternEvents(parsedOld as SequencerSequence, [SFX])).toHaveLength(4);
 
-    const melody = createDefaultMelodySequence('m', { type: 'sample', sampleId: 'fluit' });
+    const melody = pentatonicMelody('m', { type: 'sample', sampleId: 'fluit' });
     melody.melody!.notes = [{ step: 0, row: 3, velocity: 0.5 }];
     melody.swing = 0.3;
     expect(SequencerSequenceSchema.parse(melody)).toEqual(melody);

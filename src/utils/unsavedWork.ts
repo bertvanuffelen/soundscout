@@ -14,8 +14,10 @@ import { randomTitle } from './randomTitles';
 import i18n from '../i18n';
 import { DEFAULT_BPM } from '../constants/config';
 
-function timelineKey(t: { tracks: unknown; sections?: unknown; sequences?: unknown; bpm?: number }): string {
+function timelineKey(t: { tracks: unknown; sections?: unknown; sequences?: unknown; effectSounds?: unknown[]; bpm?: number }): string {
   const key: unknown[] = [t.tracks, t.sections ?? [], t.sequences ?? []];
+  // Geluidseffecten alleen als ze er zijn (sleutels van bestaand werk blijven gelijk)
+  if (t.effectSounds?.length) key.push(t.effectSounds);
   // Tempo (V2 Fase 4) telt mee, maar alleen als het niet de standaard is:
   // zo blijven sleutels van bestaand werk (altijd 120) gelijk.
   if (t.bpm !== undefined && t.bpm !== DEFAULT_BPM) key.push(t.bpm);

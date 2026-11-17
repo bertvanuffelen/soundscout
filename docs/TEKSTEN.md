@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2438 teksten in 57 secties._
+_Stand: 2464 teksten in 57 secties._
 
 ## app
 
@@ -388,6 +388,22 @@ _Stand: 2438 teksten in 57 secties._
 | `studio.sections.needsPlayhead` | Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn) | Move the playhead to where the section should end first (press play or click the timeline). |
 | `studio.sections.barLabel` | Secties | Sections |
 | `studio.startBeat` | Begint op tel {{beat}} | Starts on beat {{beat}} |
+| `studio.collectMore` | Verzamel meer geluiden | Collect more sounds |
+| `studio.collectMoreShort` | Verzamelen | Collect |
+| `studio.makeBar` | Maken | Create |
+| `studio.addSequenceShort` | Sequence | Sequence |
+| `studio.addEffectSound` | Geluidseffect | Sound effect |
+| `studio.addEffectSoundShort` | Effect | Effect |
+| `studio.effectPickerTitle` | Van welk geluid maak je een effect? | Which sound do you want to make an effect from? |
+| `studio.effectPickerHint` | Het oude geluid blijft gewoon staan. Je effect wordt een nieuw geluid. | The original sound stays where it is. Your effect becomes a new sound. |
+| `studio.editEffectSound` | Klik om aan te passen, sleep om te plaatsen | Click to change, drag to place |
+| `studio.effectSoundName` | {{name}} effect | {{name}} effect |
+| `studio.effectSoundNameN` | {{name}} effect {{number}} | {{name}} effect {{number}} |
+| `studio.effectSoundUpdated` | {{name}} is aangepast, ook op de tijdlijn. | {{name}} has been changed, also on the timeline. |
+| `studio.deleteEffectSound` | Verwijderen | Delete |
+| `studio.deleteEffectSoundTitle` | {{name}} verwijderen? | Delete {{name}}? |
+| `studio.deleteEffectSoundText` | Het geluidseffect verdwijnt uit je bibliotheek. Wat al op de tijdlijn staat, blijft staan. | The sound effect disappears from your library. Anything already on the timeline stays where it is. |
+| `studio.effectSoundDeleted` | {{name}} is verwijderd. | {{name}} has been deleted. |
 
 ## transport
 
@@ -2371,6 +2387,8 @@ _Stand: 2438 teksten in 57 secties._
 | `sequencer.sequences.untitled` | Sequence {{number}} | Sequence {{number}} |
 | `sequencer.sequences.copySuffix` |  (kopie) |  (copy) |
 | `sequencer.sequences.namePlaceholder` | Naam van je sequence | Name of your sequence |
+| `sequencer.sequences.untitledRhythm` | Ritme {{number}} | Rhythm {{number}} |
+| `sequencer.sequences.untitledMelody` | Melodie {{number}} | Melody {{number}} |
 | `sequencer.studio.addSequence` | Sequence toevoegen | Add sequence |
 | `sequencer.studio.editPattern` | Patroon bewerken | Edit pattern |
 | `sequencer.studio.closeTab` | Sequencer sluiten | Close sequencer |
@@ -2378,6 +2396,14 @@ _Stand: 2438 teksten in 57 secties._
 | `sequencer.studio.deleteWithClips` | Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg. | This sequence is still on the timeline. Deleting it also removes those blocks. |
 | `sequencer.studio.playsSequence` | Speelt deze sequence (loopt rond) | Plays this sequence (loops) |
 | `sequencer.studio.firstRunHint` | In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn. | In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline. |
+| `sequencer.studio.done` | Klaar | Done |
+| `sequencer.studio.savedToast` | {{name}} staat in je bibliotheek. | {{name}} is in your library. |
+| `sequencer.studio.emptyDiscarded` | Er stond nog niets in, dus er is niets bewaard. | It was still empty, so nothing was saved. |
+| `sequencer.studio.chooseTitle` | Wat wil je maken? | What do you want to make? |
+| `sequencer.studio.chooseRhythmText` | Een beat met geluiden uit je bibliotheek. | A beat with sounds from your library. |
+| `sequencer.studio.chooseMelodyText` | Een melodie met tonen die altijd mooi klinken. | A melody with notes that always sound good. |
+| `sequencer.studio.chooseHint` | Je kiest één keer. Wil je daarna het andere? Maak dan een nieuwe sequence. | You choose once. Want the other one later? Make a new sequence. |
+| `sequencer.studio.emptyHint` | Klik in de vakjes. Een lege sequence wordt niet bewaard. | Click the boxes. An empty sequence is not saved. |
 
 ## about
 

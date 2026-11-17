@@ -305,6 +305,8 @@ export interface TimelineState {
   sections?: Section[];
   /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed in de compositie */
   sequences?: import('./sequencer').SequencerSequence[];
+  /** Geluidseffecten (designronde nov 2026) — chips in de bibliotheek */
+  effectSounds?: EffectSound[];
 }
 
 export interface Track {
@@ -357,6 +359,26 @@ export interface Clip {
   loop?: boolean;
   /** Total clip width in beats when looping. Only meaningful when loop=true. */
   loopDurationBeats?: number;
+
+  /**
+   * Geplaatst vanuit dit geluidseffect (designronde nov 2026). Past de
+   * leerling het geluidseffect later aan, dan krijgen alle clips met deze
+   * id de nieuwe effecten. Vervormen op de clip zelf maakt de koppeling los.
+   */
+  effectSoundId?: string;
+}
+
+/**
+ * Geluidseffect (designronde nov 2026): een bewaard recept "dit geluid uit de
+ * bibliotheek + deze Vervormen-instellingen", als eigen chip in de
+ * bibliotheek. Plaatsen maakt een gewone clip van het brongeluid met deze
+ * effecten (audio, export en opslag van clips blijven ongewijzigd).
+ */
+export interface EffectSound {
+  id: string;
+  name: string;
+  sourceSampleId: string;
+  effects: Partial<ClipEffects>;
 }
 
 // --- Game State ---
@@ -456,6 +478,8 @@ export interface CompositionData {
   praatplaatPosition?: PraatplaatPosition;
   /** Sequencer-patronen (fase 2) — levend bewerkbaar, geëmbed */
   sequences?: import('./sequencer').SequencerSequence[];
+  /** Geluidseffecten (designronde nov 2026) — chips in de bibliotheek */
+  effectSounds?: EffectSound[];
 }
 
 // --- Template (Fase 5 - Docent-aangemaakt sjabloon) ---

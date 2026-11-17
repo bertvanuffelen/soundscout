@@ -74,11 +74,12 @@ export const TempoPicker = memo(function TempoPicker() {
         data-testid="tempo-button"
         className={cn(
           'h-11 min-w-11 px-2.5 flex flex-col items-center justify-center rounded-full shadow-sm transition-all leading-none',
-          'bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 active:scale-95 text-text-main',
-          'disabled:bg-neutral-100 disabled:text-text-muted disabled:cursor-not-allowed disabled:active:scale-100',
+          // Donker kader (designronde nov 2026): staat in de afspeelbalk van de studio
+          'bg-brand-800 hover:bg-brand-700 active:bg-brand-600 active:scale-95 text-white',
+          'disabled:bg-brand-800/60 disabled:text-brand-500 disabled:cursor-not-allowed disabled:active:scale-100',
         )}
       >
-        <span className="text-xs font-semibold text-text-muted">{t('tempo.title')}</span>
+        <span className="text-xs font-semibold text-brand-300">{t('tempo.title')}</span>
         <span className="text-sm font-extrabold tabular-nums">{bpm}</span>
       </button>
 
@@ -105,7 +106,7 @@ export const TempoPicker = memo(function TempoPicker() {
                   }}
                   className={cn(
                     'w-full min-h-11 flex items-center gap-2 px-2 rounded-lg text-sm text-text-main transition-colors',
-                    selected ? 'bg-accent-100 font-bold' : 'hover:bg-neutral-100',
+                    selected ? 'bg-accent-100 font-extrabold' : 'hover:bg-neutral-100',
                   )}
                 >
                   <span className="flex-1 text-left">{t(TEMPO_WORD_KEYS[option])}</span>

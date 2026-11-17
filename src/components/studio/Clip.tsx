@@ -247,7 +247,7 @@ export const Clip = memo(function Clip({
         ) : (
           <SampleIcon name={sample.icon} size={14} className={`shrink-0 ${onSoundText}`} />
         )}
-        <span className={`text-xs font-bold truncate leading-tight ${onSoundText}`}>
+        <span className={`text-xs font-extrabold truncate leading-tight ${onSoundText}`}>
           {clip.label || t(sample.name)}
         </span>
       </div>

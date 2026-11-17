@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import type { Clip, Track, Section, Sample, TimelineState } from '../types';
+import type { Clip, ClipEffects, EffectSound, Track, Section, Sample, TimelineState } from '../types';
 import { SECTION_COLORS } from '../types';
 import {
   DEFAULT_BPM,
@@ -51,6 +51,22 @@ interface TimelineStore {
   setSequences: (
     sequences: import('../types/sequencer').SequencerSequence[]
   ) => void;
+
+  /** Geluidseffecten (designronde nov 2026) — chips in de bibliotheek, mee-opgeslagen */
+  effectSounds: EffectSound[];
+  addEffectSound: (effectSound: EffectSound) => void;
+  /**
+   * Werk een geluidseffect bij. Bij nieuwe effecten krijgen ook alle clips die
+   * eruit geplaatst zijn (effectSoundId) die effecten — volume en mute van de
+   * clip zelf blijven staan.
+   */
+  updateEffectSound: (id: string, patch: { name?: string; effects?: Partial<ClipEffects> }) => void;
+  /**
+   * Verwijder een geluidseffect uit de bibliotheek. Clips die er al uit
+   * geplaatst zijn blijven staan (met hun effecten), maar zijn niet meer
+   * gekoppeld.
+   */
+  removeEffectSound: (id: string) => void;
 
   /** Horizontale zoom van de timeline (widthMultiplier). Gedeeld met de studio-filmstrip (Feature F). */
   zoomLevel: number;
@@ -193,6 +209,14 @@ interface TimelineStore {
   selectHasNoClips: () => boolean;
 }
 
+/** Neutrale verplichte clip-effecten (basis voor een geluidseffect op een clip) */
+export const NEUTRAL_CLIP_EFFECTS: ClipEffects = { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 };
+
+/** Alleen volume en/of mute gewijzigd (clipbalk) — dan blijft een clip aan zijn geluidseffect gekoppeld */
+function isOnlyVolumeOrMute(effects: Partial<ClipEffects>): boolean {
+  return Object.keys(effects).every((k) => k === 'volume' || k === 'mute');
+}
+
 export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   tracks: createEmptyTracks(),
   bpm: DEFAULT_BPM,
@@ -200,6 +224,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
   isLooping: false,
   sections: [],
   sequences: [],
+  effectSounds: [],
   // Init net als de oude lokale Timeline-state: mobiel ingezoomd, desktop fit-all.
   zoomLevel: (typeof window !== 'undefined' && window.innerWidth < 640)
     ? ZOOM_DEFAULT_MOBILE
@@ -709,6 +734,9 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
                 if (clip.id !== clipId) return clip;
                 const merged: Clip = {
                   ...clip,
+                  // Vervormen op de clip zelf → los van het geluidseffect
+                  // (volume/mute via de clipbalk laten de koppeling staan)
+                  effectSoundId: isOnlyVolumeOrMute(effects) ? clip.effectSoundId : undefined,
                   effects: {
                     ...(clip.effects ?? { volume: 0, pitch: 0, reverb: 0, fadeIn: 0, fadeOut: 0 }),
                     ...effects,
@@ -760,6 +788,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       isLooping: false,
       sections: [],
       sequences: [],
+      effectSounds: [],
       soloTrackIndex: null,
       loopRegion: null,
       savedLoopRegion: null,
@@ -848,6 +877,7 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       isLooping: timeline.isLooping,
       sections: timeline.sections ?? [],
       sequences: timeline.sequences ?? [],
+      effectSounds: timeline.effectSounds ?? [],
       soloTrackIndex: null,
       loopRegion: null,
       savedLoopRegion: null,
@@ -864,7 +894,47 @@ export const useTimelineStore = create<TimelineStore>()((set, get) => ({
       isLooping: state.isLooping,
       sections: state.sections.length > 0 ? state.sections : undefined,
       sequences: state.sequences.length > 0 ? state.sequences : undefined,
+      effectSounds: state.effectSounds.length > 0 ? state.effectSounds : undefined,
     };
+  },
+
+  removeEffectSound: (id) => {
+    set((prev) => ({
+      effectSounds: prev.effectSounds.filter((e) => e.id !== id),
+      tracks: prev.tracks.map((track) => (track.clips.some((c) => c.effectSoundId === id)
+        ? { ...track, clips: track.clips.map((c) => (c.effectSoundId === id ? { ...c, effectSoundId: undefined } : c)) }
+        : track)),
+    }));
+  },
+
+  addEffectSound: (effectSound) => {
+    set((prev) => ({ effectSounds: [...prev.effectSounds, effectSound] }));
+  },
+
+  updateEffectSound: (id, patch) => {
+    set((prev) => {
+      const current = prev.effectSounds.find((e) => e.id === id);
+      if (!current) return prev;
+      const next: EffectSound = {
+        ...current,
+        ...(patch.name !== undefined ? { name: patch.name } : {}),
+        ...(patch.effects ? { effects: { ...current.effects, ...patch.effects } } : {}),
+      };
+      const effectSounds = prev.effectSounds.map((e) => (e.id === id ? next : e));
+      if (!patch.effects) return { effectSounds };
+      const tracks = prev.tracks.map((track) => ({
+        ...track,
+        clips: track.clips.map((clip) => {
+          if (clip.effectSoundId !== id) return clip;
+          const base = clip.effects ?? NEUTRAL_CLIP_EFFECTS;
+          return {
+            ...clip,
+            effects: { ...base, ...next.effects, volume: base.volume, mute: base.mute },
+          };
+        }),
+      }));
+      return { effectSounds, tracks, audioVersion: prev.audioVersion + 1 };
+    });
   },
 
   setSequences: (sequences) => {

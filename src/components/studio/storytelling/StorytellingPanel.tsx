@@ -221,7 +221,7 @@ export function StorytellingPanel({ className = '' }: { className?: string }) {
               <ChevronRight size={18} />
             </button>
             {/* Position indicator overlay */}
-            <span className="absolute bottom-1.5 right-1.5 text-[10px] text-white/70 bg-black/30 rounded-full px-2 py-0.5 backdrop-blur-sm">
+            <span className="absolute bottom-1.5 right-1.5 text-xs text-white/70 bg-black/30 rounded-full px-2 py-0.5 backdrop-blur-sm">
               {displayIndex + 1} / {imageCount}
             </span>
           </>

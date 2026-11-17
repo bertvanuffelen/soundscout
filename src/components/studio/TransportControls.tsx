@@ -64,7 +64,7 @@ export const TransportControls = memo(function TransportControls({
     : t('transport.loop');
 
   return (
-    <div className="flex items-center gap-2 px-2 sm:px-4 py-2 sm:py-3 bg-white/90 md:bg-bg-surface border-t border-border-subtle pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+    <div className="flex items-center gap-2 px-2 sm:px-4 py-2 sm:py-3 bg-brand-900 border-t border-brand-800 pb-[max(0.5rem,env(safe-area-inset-bottom))] sm:pb-[max(0.75rem,env(safe-area-inset-bottom))]">
       {/* Drie zones: lege linkerkant · knoppen in het midden · extra rechts.
           De zijkanten delen de ruimte, zodat het midden gecentreerd blijft en
           extra bediening (tempo) nooit over de knoppen heen valt. */}
@@ -77,8 +77,8 @@ export const TransportControls = memo(function TransportControls({
         aria-label={isPlaying ? t('transport.pause') : t('transport.play')}
         className={cn(
           'w-11 h-11 sm:w-12 sm:h-12 flex items-center justify-center rounded-full shadow-md transition-all cursor-pointer',
-          'bg-accent-500 hover:bg-accent-600 active:bg-accent-700 active:scale-95 text-white',
-          'disabled:bg-neutral-300 disabled:cursor-not-allowed disabled:active:scale-100'
+          'bg-accent-400 hover:bg-accent-500 active:bg-accent-600 active:scale-95 text-accent-900',
+          'disabled:bg-brand-700 disabled:text-brand-400 disabled:cursor-not-allowed disabled:active:scale-100'
         )}
         title={isPlaying ? t('transport.pause') : t('transport.play')}
       >
@@ -92,8 +92,8 @@ export const TransportControls = memo(function TransportControls({
         aria-label={t('transport.rewind')}
         className={cn(
           'w-11 h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer',
-          'bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 active:scale-95 text-neutral-600',
-          'disabled:bg-neutral-100 disabled:text-neutral-400 disabled:cursor-not-allowed disabled:active:scale-100'
+          'bg-brand-800 hover:bg-brand-700 active:bg-brand-600 active:scale-95 text-white',
+          'disabled:bg-brand-800/60 disabled:text-brand-500 disabled:cursor-not-allowed disabled:active:scale-100'
         )}
         title={t('transport.rewind')}
       >
@@ -110,7 +110,7 @@ export const TransportControls = memo(function TransportControls({
             'w-11 h-11 flex items-center justify-center rounded-full shadow-sm transition-all cursor-pointer active:scale-95',
             isLooping
               ? 'bg-accent-400 hover:bg-accent-500 active:bg-accent-600 text-accent-900'
-              : 'bg-neutral-200 hover:bg-neutral-300 active:bg-neutral-400 text-neutral-600'
+              : 'bg-brand-800 hover:bg-brand-700 active:bg-brand-600 text-white'
           )}
           title={loopTitle}
         >
@@ -153,7 +153,7 @@ export const TransportControls = memo(function TransportControls({
                 {t('transport.loopSection')}
               </button>
               {!canLoopSection && (
-                <p className="text-[11px] text-text-muted px-2 pt-0.5 pb-1">{t('transport.loopSectionHint')}</p>
+                <p className="text-xs text-text-muted px-2 pt-0.5 pb-1">{t('transport.loopSectionHint')}</p>
               )}
             </div>
           </>

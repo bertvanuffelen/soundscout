@@ -352,7 +352,23 @@
       "needsPlayhead": "Zet de afspeellijn eerst op de plek waar het deel moet eindigen (speel af of klik op de tijdlijn)",
       "barLabel": "Secties"
     },
-    "startBeat": "Begint op tel {{beat}}"
+    "startBeat": "Begint op tel {{beat}}",
+    "collectMore": "Verzamel meer geluiden",
+    "collectMoreShort": "Verzamelen",
+    "makeBar": "Maken",
+    "addSequenceShort": "Sequence",
+    "addEffectSound": "Geluidseffect",
+    "addEffectSoundShort": "Effect",
+    "effectPickerTitle": "Van welk geluid maak je een effect?",
+    "effectPickerHint": "Het oude geluid blijft gewoon staan. Je effect wordt een nieuw geluid.",
+    "editEffectSound": "Klik om aan te passen, sleep om te plaatsen",
+    "effectSoundName": "{{name}} effect",
+    "effectSoundNameN": "{{name}} effect {{number}}",
+    "effectSoundUpdated": "{{name}} is aangepast, ook op de tijdlijn.",
+    "deleteEffectSound": "Verwijderen",
+    "deleteEffectSoundTitle": "{{name}} verwijderen?",
+    "deleteEffectSoundText": "Het geluidseffect verdwijnt uit je bibliotheek. Wat al op de tijdlijn staat, blijft staan.",
+    "effectSoundDeleted": "{{name}} is verwijderd."
   },
   "transport": {
     "play": "Afspelen",
@@ -2821,7 +2837,9 @@
       "deleteConfirm": "Weet je zeker dat je \"{{name}}\" wilt verwijderen?",
       "untitled": "Sequence {{number}}",
       "copySuffix": " (kopie)",
-      "namePlaceholder": "Naam van je sequence"
+      "namePlaceholder": "Naam van je sequence",
+      "untitledRhythm": "Ritme {{number}}",
+      "untitledMelody": "Melodie {{number}}"
     },
     "studio": {
       "addSequence": "Sequence toevoegen",
@@ -2830,7 +2848,15 @@
       "libraryHeading": "Sequences",
       "deleteWithClips": "Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg.",
       "playsSequence": "Speelt deze sequence (loopt rond)",
-      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn."
+      "firstRunHint": "In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn.",
+      "done": "Klaar",
+      "savedToast": "{{name}} staat in je bibliotheek.",
+      "emptyDiscarded": "Er stond nog niets in, dus er is niets bewaard.",
+      "chooseTitle": "Wat wil je maken?",
+      "chooseRhythmText": "Een beat met geluiden uit je bibliotheek.",
+      "chooseMelodyText": "Een melodie met tonen die altijd mooi klinken.",
+      "chooseHint": "Je kiest één keer. Wil je daarna het andere? Maak dan een nieuwe sequence.",
+      "emptyHint": "Klik in de vakjes. Een lege sequence wordt niet bewaard."
     }
   },
   "about": {

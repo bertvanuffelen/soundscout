@@ -75,10 +75,10 @@ export const EditToolbar = memo(function EditToolbar({
           style={{ backgroundColor: sample.color }}
         />
         <SampleIcon name={sample.icon} size={14} className="text-neutral-600 shrink-0" />
-        <span className="text-xs font-medium text-neutral-700 max-w-24 truncate">
+        <span className="text-xs font-semibold text-neutral-700 max-w-24 truncate">
           {t(sample.name)}
         </span>
-        <span className="text-[10px] text-neutral-400 inline-flex items-center gap-0.5">
+        <span className="text-xs text-neutral-400 inline-flex items-center gap-0.5">
           {duration.toFixed(1)}s
           {isTrimmed && <Scissors size={10} aria-hidden="true" />}
         </span>

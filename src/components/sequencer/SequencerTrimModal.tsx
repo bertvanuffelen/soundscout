@@ -216,7 +216,7 @@ export default function SequencerTrimModal({
       {/* Tijd + vakjes-indicatie */}
       <div className="flex justify-between items-center mt-3 mb-5 text-xs">
         <span className="text-text-muted font-mono">{trimStart.toFixed(2)}s</span>
-        <span className="font-medium text-text-main bg-neutral-100 px-2 py-0.5 rounded">
+        <span className="font-semibold text-text-main bg-neutral-100 px-2 py-0.5 rounded">
           {trimDuration.toFixed(2)}s ·{' '}
           {t('sequencer.trim.cells', { cells: stepSpanCells(trimDuration, bpm) })}
         </span>

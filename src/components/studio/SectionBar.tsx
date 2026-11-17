@@ -156,7 +156,7 @@ export const SectionBar = memo(function SectionBar({
                 title={segmentLabel || undefined}
               >
                 {section.label && (
-                  <span className="text-[9px] font-bold text-neutral-700 truncate px-1 select-none">
+                  <span className="text-xs font-extrabold text-neutral-700 truncate px-1 select-none">
                     {segmentLabel}
                   </span>
                 )}
@@ -169,7 +169,7 @@ export const SectionBar = memo(function SectionBar({
                 title={segmentLabel || undefined}
               >
                 {section.label && (
-                  <span className="text-[9px] font-bold text-neutral-700 truncate px-1 select-none">
+                  <span className="text-xs font-extrabold text-neutral-700 truncate px-1 select-none">
                     {segmentLabel}
                   </span>
                 )}

@@ -208,6 +208,15 @@
 /* --- Compacte icoonknop: zichtbaar 28–32px, raakvlak 44px via ::after ---
    Eén definitie voor alle werkbalkknoppen (stond 17× uitgeschreven in de
    tijdlijn). Zie ook components/ui/IconButton.tsx. */
+/* --- Letterschaal studio (designronde nov 2026) ---------------------------
+   Vier stijlen, twee diktes (600/800), niets kleiner dan 12 px. Gebruik deze
+   in de studio en de sequencer in plaats van losse text-[Npx]-maten
+   (bewaakt door src/components/studio/__tests__/typeScale.test.ts). */
+@utility type-label { font-size: 0.75rem; line-height: 1rem; font-weight: 800; text-transform: uppercase; letter-spacing: 0.025em; }
+@utility type-body { font-size: 0.875rem; line-height: 1.25rem; font-weight: 600; }
+@utility type-head { font-size: 1rem; line-height: 1.5rem; font-weight: 800; }
+@utility type-title { font-size: 1.25rem; line-height: 1.75rem; font-weight: 800; letter-spacing: -0.01em; }
+
 @utility icon-btn {
   @apply relative flex items-center justify-center min-w-[28px] min-h-[28px] sm:min-w-[32px] sm:min-h-[32px] after:absolute after:content-[''] after:-inset-2 sm:after:-inset-1.5;
 }

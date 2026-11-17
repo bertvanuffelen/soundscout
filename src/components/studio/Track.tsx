@@ -144,7 +144,7 @@ export const Track = memo(function Track({
         className="absolute left-0 top-0 bottom-0 w-4 sm:w-6 flex flex-col items-center justify-center border-r border-neutral-200 z-10 gap-0.5"
         style={track.color ? { backgroundColor: `${track.color}25` } : { backgroundColor: 'var(--color-bg-surface)' }}
       >
-        <span className="text-[8px] sm:text-[10px] font-bold text-neutral-400" aria-hidden="true">
+        <span className="text-xs font-extrabold text-neutral-400" aria-hidden="true">
           {trackIndex + 1}
         </span>
         {/* Volume icon — only in edit mode */}
