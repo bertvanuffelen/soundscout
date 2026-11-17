@@ -24,6 +24,7 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { readWorkInProgress } from '../services/workInProgress';
 import { isOwnSitting, markOwnSitting } from '../services/sitting';
 import { setWorkAside } from '../utils/finishSession';
+import { consumeLessonEndedNotice } from '../lib/lessonState';
 import {
   initializeNewComposition,
   initializeCompositionFromStoryboard,
@@ -103,6 +104,8 @@ export function StartScreen() {
   const pendingSaveCode = useAppStore((s) => s.pendingSaveCode);
   const [showCodeModal, setShowCodeModal] = useState(() => !!pendingSaveCode);
   const [showNewConfirm, setShowNewConfirm] = useState(false);
+  // De docent heeft de les afgerond en dit apparaat is net opgeruimd (lessonState.ts)
+  const [lessonEnded] = useState(() => consumeLessonEndedNotice());
   // Wat er weggaat bij "opnieuw beginnen": de verzamelde geluiden als blokjes
   const librarySamples = useLibraryStore((st) => st.librarySamples);
   const discardPreview = useMemo(
@@ -386,6 +389,12 @@ export function StartScreen() {
           <h1 className="text-3xl sm:text-4xl xl:text-5xl short:text-2xl font-extrabold tracking-tight leading-tight text-balance">
             {t('start.headline')}
           </h1>
+
+          {lessonEnded && (
+            <p role="status" data-testid="lesson-ended" className="inline-flex items-center min-h-11 rounded-full bg-white/10 ring-1 ring-white/25 px-4 text-sm font-bold">
+              {t('start.lessonEnded')}
+            </p>
+          )}
 
           {needsOwnerCheck ? (
             /* Gedeeld apparaat (mockup B3): eerst vragen van wie dit werk is */
