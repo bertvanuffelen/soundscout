@@ -154,7 +154,55 @@
       }
     },
     "seasonBadge": "weer beschikbaar in {{month}}",
-    "seasonSuffix": "(buiten seizoen)"
+    "seasonSuffix": "(buiten seizoen)",
+    "sinterklaas": {
+      "name": "Sinterklaas",
+      "description": "Stoomboot, daken, pakjeskamer, bakkerij en huiskamer: help de Sint!",
+      "locations": {
+        "stoomboot": "De stoomboot",
+        "stoomboot_desc": "De boot legt aan bij de versierde kade",
+        "dak": "Op het dak",
+        "dak_desc": "Het paard stapt over de daken bij maanlicht",
+        "pakjeskamer": "De pakjeskamer",
+        "pakjeskamer_desc": "Hier worden alle pakjes ingepakt",
+        "bakkerij": "De pepernotenbakkerij",
+        "bakkerij_desc": "De Pieten bakken pepernoten",
+        "huiskamer": "De huiskamer",
+        "huiskamer_desc": "Pakjesavond: de schoen staat klaar"
+      },
+      "samples": {
+        "stoomboot-fluit": "Stoomfluit",
+        "stoomboot-machine": "Stoommachine",
+        "stoomboot-golven": "Golven",
+        "stoomboot-bel": "Scheepsbel",
+        "stoomboot-juichen": "Juichen",
+        "stoomboot-fanfare": "Fanfare",
+        "dak-hoeven": "Paardenhoeven",
+        "dak-hinnik": "Hinniken",
+        "dak-wind": "Wind",
+        "dak-schoorsteen": "Pakje door de schoorsteen",
+        "dak-torenklok": "Torenklok",
+        "dak-sluipen": "Sluipmuziek",
+        "pakjeskamer-papier": "Inpakpapier",
+        "pakjeskamer-plakband": "Plakband",
+        "pakjeskamer-schaar": "Schaar",
+        "pakjeskamer-lopendeband": "Lopende band",
+        "pakjeskamer-inpakmachine": "Inpakmachine",
+        "pakjeskamer-speeldoos": "Speeldoos",
+        "bakkerij-deeg": "Deeg kneden",
+        "bakkerij-strooien": "Pepernoten strooien",
+        "bakkerij-ovenbel": "Ovenbel",
+        "bakkerij-deegmachine": "Deegmachine",
+        "bakkerij-knabbelen": "Knabbelen",
+        "bakkerij-ritme": "Bakritme",
+        "huiskamer-klop": "Klop op de deur",
+        "huiskamer-deurbel": "Deurbel",
+        "huiskamer-haard": "Open haard",
+        "huiskamer-voetstappen": "Voetstappen",
+        "huiskamer-zak": "Zak met pakjes",
+        "huiskamer-piano": "Piano"
+      }
+    }
   },
   "start": {
     "startGame": "Start Spel",

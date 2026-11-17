@@ -10,6 +10,7 @@ import type { Storyboard } from '../../types';
 import { basisTheme } from './basis';
 import { winterspelenTheme } from './winterspelen';
 import { piratenTheme } from './piraten';
+import { sinterklaasTheme } from './sinterklaas';
 import { praatplaatImages, isAvailableForStudent } from '../praatplaatImages';
 import { storyboards as allStoryboards, getStoryboardsForTheme } from '../storyboards';
 
@@ -24,6 +25,7 @@ const themes: Record<string, ThemeConfig> = {
   basis: basisTheme,
   winterspelen: winterspelenTheme,
   piraten: piratenTheme,
+  sinterklaas: sinterklaasTheme,
 };
 
 /** Default theme ID (used when no URL param or invalid param) */
