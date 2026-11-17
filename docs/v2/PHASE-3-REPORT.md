@@ -46,7 +46,7 @@
 
 ## Things to know
 
-- **The design rules flag the existing themes.** Hotspots outside the safe zone (winter 2, pirates 3) and overlapping hotspots at the smallest scene (city 3 pairs, winter 1, pirates 6). The app loads them as before; the dashboard blocks *publishing* a theme with these errors, so they must be fixed before a theme is republished through it.
+- **The design rules flag the existing themes.** Hotspots outside the safe zone (winter 2, pirates 3) and overlapping hotspots at the smallest scene (city 3 pairs, winter 1, pirates 6). The app loads them as before; the dashboard blocks *publishing* a theme with these errors, so they must be fixed before a theme is republished through it. *Update 17-11-2026: fixed; all 15 hotspots moved, see `docs/v2/THEMES.md` §2.*
 - **Rollback affects running assignments.** Compositions do not yet store the theme version they were made with, so a rollback or republish changes a theme for everyone on their next load.
 - **Not built in the dashboard:** "new theme" and "add location" from scratch (themes come in by importing a pack), image derivatives (AVIF/WebP) and a loudness check, and the mockup sections Storyboards & platen, Leskaarten and Reflectievragen.
 - **The content track's pack format differs from schema v1** in several fields (visibility, texts per item, nested samples, image variants, loop metadata, extra credit fields). The table is in `docs/v2/ADMIN-DASHBOARD.md` §6; the two must be aligned before the Sinterklaas pack is imported.

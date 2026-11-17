@@ -100,8 +100,8 @@
           "radius": 8,
           "sampleId": "speeltuin-zandbak",
           "visualHint": "pulse",
-          "x": 22.9,
-          "y": 67.6
+          "x": 20,
+          "y": 62
         },
         {
           "id": "speeltuin-robot",
@@ -134,8 +134,8 @@
           "radius": 8,
           "sampleId": "gymzaal-fluitje",
           "visualHint": "pulse",
-          "x": 67.1,
-          "y": 57.8
+          "x": 68,
+          "y": 58.2
         },
         {
           "id": "gymzaal-karate",
@@ -260,8 +260,8 @@
           "radius": 8,
           "sampleId": "klaslokaal-lachen-emoji",
           "visualHint": "pulse",
-          "x": 54.8,
-          "y": 82.7
+          "x": 61.5,
+          "y": 86
         },
         {
           "id": "klaslokaal-schilderen",

@@ -101,8 +101,8 @@
           "radius": 8,
           "sampleId": "bobslee-drone",
           "visualHint": "pulse",
-          "x": 55.8,
-          "y": 7.3
+          "x": 30.5,
+          "y": 73.5
         },
         {
           "id": "bobslee-curlingisnext",
@@ -131,8 +131,8 @@
           "radius": 8,
           "sampleId": "skipiste-publiek",
           "visualHint": "pulse",
-          "x": 43.1,
-          "y": 67.1
+          "x": 45,
+          "y": 64
         },
         {
           "id": "skipiste-robot-beeps",
@@ -185,8 +185,8 @@
           "radius": 8,
           "sampleId": "ijsarena-go-team-robo",
           "visualHint": "pulse",
-          "x": 62.2,
-          "y": 91.2
+          "x": 60.5,
+          "y": 84.5
         },
         {
           "id": "ijsarena-alarm",

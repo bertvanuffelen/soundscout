@@ -152,7 +152,12 @@ describe('overzicht', () => {
   it('database-thema vervangt het statische; concept, telling en terugzet-doelen', () => {
     const w1 = { ...winter, version: 1, assetBase: undefined };
     const w2 = { ...winter, version: 2 };
-    const w3 = { ...winter, version: 3 };
+    // Het concept zet één hotspot boven de veilige zone, zodat de telling iets te tellen heeft.
+    const w3 = {
+      ...winter,
+      version: 3,
+      locations: winter.locations.map((l, i) => (i === 0 ? { ...l, hotspots: l.hotspots.map((h, j) => (j === 0 ? { ...h, y: 5 } : h)) } : l)),
+    };
     const rows = buildAdminRows(
       { themes: [{ ...row, id: 'winterspelen', published_version: 2 }], versions: [v('winterspelen', 1, true, w1), v('winterspelen', 2, true, w2), v('winterspelen', 3, false, w3)] },
       [{ manifest: winter, url: '/themes/winterspelen/manifest.json' }, { manifest: ThemeManifestSchema.parse(makeManifest('los')), url: '/themes/los/manifest.json' }],
@@ -162,7 +167,7 @@ describe('overzicht', () => {
     expect(w.source).toBe('database');
     expect(w.latest.version).toBe(3);
     expect(w.hasDraft).toBe(true);
-    expect(w.errors).toBeGreaterThan(0); // winterspelen heeft bekende veilige-zone-fouten (THEMES.md §2)
+    expect(w.errors).toBeGreaterThan(0); // de hotspot boven de veilige zone in het concept
     expect(rollbackTargets(w)).toEqual([1]);
     expect(rows.find((r) => r.id === 'los')?.source).toBe('static');
     expect(rows[0].id).toBe('winterspelen'); // sort 5 eerst

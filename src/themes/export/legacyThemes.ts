@@ -45,6 +45,54 @@ export const LEGACY_SAMPLE_KINDS: Record<string, Record<string, 'loop' | 'sfx'>>
   },
 };
 
+/**
+ * V2 release (17-11-2026) — tweede bewuste uitbreiding: hotspots die de
+ * ontwerpregels braken (veilige zone 12–88 %, 44 px afstand op de kleinste
+ * scène, zie src/themes/rules.ts) zijn verschoven. Elke nieuwe plek is op het
+ * scènebeeld gekozen: hetzelfde voorwerp, of een gelijk voorwerp in hetzelfde
+ * beeld (de drone in bobslee, de meeuw in haven). Alleen x/y wijzigt; ids,
+ * samples en teksten blijven, dus opgeslagen composities merken niets.
+ */
+export const LEGACY_HOTSPOT_MOVES: Record<string, Record<string, { x: number; y: number }>> = {
+  basis: {
+    'gymzaal-fluitje': { x: 68.0, y: 58.2 },            // was 67.1/57.8 — te dicht bij "vallen"
+    'klaslokaal-lachen-emoji': { x: 61.5, y: 86.0 },    // was 54.8/82.7 — nu op de lachende robot, los van "tekenen"
+    'speeltuin-zandbak': { x: 20.0, y: 62.0 },          // was 22.9/67.6 — hoger in de zandbak, los van "vissen"
+  },
+  winterspelen: {
+    'bobslee-drone': { x: 30.5, y: 73.5 },              // was 55.8/7.3 (boven de veilige zone) — de drone bij "Curling is next"
+    'skipiste-publiek': { x: 45.0, y: 64.0 },           // was 43.1/67.1 — te dicht bij "robot-beeps"
+    'ijsarena-go-team-robo': { x: 60.5, y: 84.5 },      // was 62.2/91.2 (onder de veilige zone) — op het bordje
+  },
+  piraten: {
+    'grogkroeg-dobbel': { x: 60.4, y: 84.0 },           // was 58.3/92.3 — de dobbelsteen in de hand
+    'grogkroeg-fluit': { x: 74.5, y: 47.5 },            // was 80.4/51.4 — links van het hoofd, bij de fluit
+    'grogkroeg-accordeon': { x: 84.5, y: 59.5 },        // was 80.3/61.8 — rechterkant van de accordeon
+    'grogkroeg-vat': { x: 94.0, y: 75.0 },              // was 90.7/71.2 — verder op het liggende vat
+    'haven-meeuwen': { x: 79.5, y: 57.9 },              // was 49.1/12.8 — de meeuw met de vis, rechts
+    'schip-anker': { x: 75.5, y: 87.5 },                // was 76.2/88.9 — de ring van het anker
+    'schip-kanon': { x: 27.5, y: 76.5 },                // was 31/74.5 — op de loop, los van "zeemanslied"
+    'jungle-vogels': { x: 79.7, y: 13.0 },              // was 79.7/11.2 — net in de veilige zone, op de tak
+    'voodoohut-windgong': { x: 4.5, y: 27.0 },          // was 6/34.4 — hoger in de windgong, los van "gefluister"
+  },
+};
+
+/** Fixture + LEGACY_HOTSPOT_MOVES (zonder de fixture zelf te muteren). */
+function withHotspotMoves(entry: { theme: ThemeConfig; sort: number }): { theme: ThemeConfig; sort: number } {
+  const moves = LEGACY_HOTSPOT_MOVES[entry.theme.id];
+  if (!moves) return entry;
+  return {
+    ...entry,
+    theme: {
+      ...entry.theme,
+      locations: entry.theme.locations.map((l) => ({
+        ...l,
+        hotspots: l.hotspots.map((h) => (moves[h.id] ? { ...h, ...moves[h.id] } : h)),
+      })),
+    },
+  };
+}
+
 /** Fixture + LEGACY_SAMPLE_KINDS (zonder de fixture zelf te muteren). */
 function withSampleKinds(entry: { theme: ThemeConfig; sort: number }): { theme: ThemeConfig; sort: number } {
   const kinds = LEGACY_SAMPLE_KINDS[entry.theme.id];
@@ -63,7 +111,7 @@ export const LEGACY_THEMES: Array<{ theme: ThemeConfig; sort: number }> = [
   basisFixture as unknown as { theme: ThemeConfig; sort: number },
   winterspelenFixture as unknown as { theme: ThemeConfig; sort: number },
   piratenFixture as unknown as { theme: ThemeConfig; sort: number },
-].map(withSampleKinds);
+].map(withSampleKinds).map(withHotspotMoves);
 
 export const LEGACY_LOCALES = { nl, en } as { nl: Record<string, unknown>; en: Record<string, unknown> };
 

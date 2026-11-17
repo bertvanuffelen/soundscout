@@ -65,14 +65,16 @@ Media did not move: `assetBase: "/"` keeps `audio/themes/...` and `images/themes
 |---|---|---|
 | integrity: duplicate id, hotspot → unknown sample, map → unknown location, missing nl text | error, **loader refuses** | 0 / 0 / 0 |
 | location without map position | error | 0 / 0 / 0 |
-| hotspot outside safe zone 12–88 % vertical | error | 0 / 2 / 3 |
-| hotspots overlap on the smallest scene (373×210 px, 44 px targets) | error | 3 / 1 / 6 |
+| hotspot outside safe zone 12–88 % vertical | error | 0 / 0 / 0 (was 0 / 2 / 3) |
+| hotspots overlap on the smallest scene (373×210 px, 44 px targets) | error | 0 / 0 / 0 (was 3 / 1 / 6) |
 | map markers overlap on the smallest scene | warning | 0 / 0 / 0 |
 | sfx outside 2–8 s, loop ≠ 8.0 s (kind known) | error | n/a (no kind recorded) |
 | duration outside 2–8 s, kind unknown | warning | 0 / 1 / 4 |
 | missing translation, sample without/with multiple hotspots, hotspot in another location than its sample | warning | 0 / 0 / 0 |
 
 Design rules (safe zone, spacing, duration) are for the dashboard to enforce on new work; the loader only refuses integrity errors, so the existing themes keep working.
+
+**Fixed before the V2 release (17-11-2026).** The 15 hotspot errors of the migrated themes are resolved by moving those hotspots. Each new position was chosen on the scene picture (the same object, or an identical one in the same picture). The moves are an explicit list, `LEGACY_HOTSPOT_MOVES` in `src/themes/export/legacyThemes.ts`, on top of the frozen fixtures; the equivalence test checks that exactly these hotspots, and only their x/y, differ. Ids, samples and texts are unchanged, so saved compositions are unaffected. All three themes can now be published through the dashboard.
 
 ## 3. How the app resolves a theme
 
