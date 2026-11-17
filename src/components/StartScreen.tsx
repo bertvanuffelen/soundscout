@@ -22,6 +22,8 @@ import { useCompositionsVersion } from '../hooks/useCompositionsVersion';
 import { useDarkPage } from '../hooks/useDarkPage';
 import { useLibraryStore } from '../stores/libraryStore';
 import { readWorkInProgress } from '../services/workInProgress';
+import { isOwnSitting, markOwnSitting } from '../services/sitting';
+import { setWorkAside } from '../utils/finishSession';
 import {
   initializeNewComposition,
   initializeCompositionFromStoryboard,
@@ -101,6 +103,25 @@ export function StartScreen() {
   const pendingSaveCode = useAppStore((s) => s.pendingSaveCode);
   const [showCodeModal, setShowCodeModal] = useState(() => !!pendingSaveCode);
   const [showNewConfirm, setShowNewConfirm] = useState(false);
+  // Wat er weggaat bij "opnieuw beginnen": de verzamelde geluiden als blokjes
+  const librarySamples = useLibraryStore((st) => st.librarySamples);
+  const discardPreview = useMemo(
+    () => ({ shown: librarySamples.slice(0, 5), more: Math.max(0, librarySamples.length - 5) }),
+    [librarySamples],
+  );
+  // Gedeeld apparaat (mockup B3): staat er werk dat niet in deze zitting is
+  // gemaakt of bevestigd, dan eerst vragen van wie het is (services/sitting.ts)
+  const [ownerAnswered, setOwnerAnswered] = useState(false);
+  const needsOwnerCheck = hasClipsInProgress && !ownerAnswered && !isOwnSitting();
+  const handleOwnerMine = () => {
+    markOwnSitting();
+    setOwnerAnswered(true);
+    goToStudio();
+  };
+  const handleOwnerOther = () => {
+    setWorkAside();
+    setOwnerAnswered(true);
+  };
 
   // Donkere pagina-achtergrond (geen witte rand bij doorveren)
   useDarkPage();
@@ -327,19 +348,14 @@ export function StartScreen() {
 
   // Strook "verder waar je was": alleen als er iets is om naar terug te gaan
   const showContinueStrip = (hasClipsInProgress && !!classSession) || hasCompositions || !!seasonalTheme || !!feedbackNotice;
+  const stripButton =
+    'inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-full text-sm font-bold transition-colors';
   // Secundaire hoofdknop: rustig, wel even groot als de primaire
   const secondaryMain =
     'w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg bg-white/10 hover:bg-white/20 ring-1 ring-white/30 text-white';
   const primaryMain =
     'w-full sm:w-auto lg:px-6 lg:text-lg 2xl:px-8 2xl:text-xl short:w-auto short:min-h-12 short:py-2 short:text-lg';
-  // Titel van de waarschuwing volgt wat de leerling wilde starten
-  const confirmTitle = pendingIntentRef.current === 'world'
-    ? t('start.chooseWorld')
-    : pendingIntentRef.current === 'seasonal' && seasonalTheme
-      ? t('start.newTheme', { name: t(seasonalTheme.name) })
-      : t('start.newComposition');
-  const stripButton =
-    'inline-flex items-center gap-2 min-h-11 px-4 py-2 rounded-full text-sm font-bold transition-colors';
+
 
   return (
     <div className="relative min-h-dvh bg-brand-900 text-white flex flex-col overflow-x-hidden">
@@ -371,6 +387,27 @@ export function StartScreen() {
             {t('start.headline')}
           </h1>
 
+          {needsOwnerCheck ? (
+            /* Gedeeld apparaat (mockup B3): eerst vragen van wie dit werk is */
+            <div
+              role="group"
+              aria-label={t('start.ownerCheck.title')}
+              data-testid="owner-check"
+              className="flex flex-col gap-3 w-full sm:w-auto sm:min-w-[340px] rounded-3xl bg-white/10 ring-1 ring-white/20 p-4 sm:p-5 text-left"
+            >
+              <p className="text-lg sm:text-xl font-extrabold">{t('start.ownerCheck.title')}</p>
+              {continueDetail && (
+                <p className="rounded-xl bg-white/10 px-3 py-2 text-sm font-semibold text-brand-100 truncate">{continueDetail}</p>
+              )}
+              <Button onClick={handleOwnerMine} size="lg" className="w-full">
+                {t('start.ownerCheck.mine')}
+              </Button>
+              <Button onClick={handleOwnerOther} variant="ghost" size="lg" className="w-full bg-white/10 hover:bg-white/20 ring-1 ring-white/30 text-white">
+                {t('start.ownerCheck.other')}
+              </Button>
+            </div>
+          ) : (
+            <>
           {/* Hoofdknoppen: één primaire (amber), de rest rustig maar even groot */}
           <div className="flex flex-col sm:flex-row sm:flex-wrap short:flex-row short:flex-wrap justify-center lg:justify-start short:justify-start gap-3 w-full sm:w-auto">
             {hasClipsInProgress ? (
@@ -472,6 +509,8 @@ export function StartScreen() {
               )}
             </div>
           )}
+            </>
+          )}
         </section>
 
         <StartHero onStart={handleNewComposition} />
@@ -523,31 +562,45 @@ export function StartScreen() {
         />
       )}
 
-      {/* Waarschuwing: actieve compositie wordt gewist. Veilige keuze = primair;
-          opnieuw beginnen = gevaarknop (patroon "destructieve actie"). */}
+      {/* Waarschuwing: actieve compositie wordt gewist (mockup B4, "weinig
+          woorden"). Laat zien wát je weggooit in plaats van het uit te leggen;
+          de knoppen zeggen wat er gebeurt. Veilige keuze = primair. */}
       <Modal
         isOpen={showNewConfirm}
         onClose={() => setShowNewConfirm(false)}
-        title={confirmTitle}
+        title={t('start.discard.title')}
         size="sm"
       >
-        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">
-          {t('start.newCompositionConfirm')}
-        </p>
+        <div className="flex flex-wrap justify-center gap-1.5 mb-6" data-testid="discard-preview">
+          {discardPreview.shown.map((smp) => (
+            <span
+              key={smp.id}
+              className="inline-flex items-center min-h-9 px-3 rounded-lg text-sm font-extrabold text-white"
+              style={{ backgroundColor: smp.color }}
+            >
+              {t(smp.name)}
+            </span>
+          ))}
+          {discardPreview.more > 0 && (
+            <span className="inline-flex items-center min-h-9 px-3 rounded-lg text-sm font-extrabold bg-neutral-100 text-text-muted">
+              +{discardPreview.more}
+            </span>
+          )}
+        </div>
         <div className="flex flex-col-reverse sm:flex-row gap-3">
           <Button
             variant="danger"
             onClick={handleConfirmNewComposition}
             className="flex-1"
           >
-            {t('start.newCompositionStart')}
+            {t('start.discard.confirm')}
           </Button>
           <Button
             variant="primary"
-            onClick={() => { setShowNewConfirm(false); goToStudio(); }}
+            onClick={() => setShowNewConfirm(false)}
             className="flex-1"
           >
-            {t('start.keepWorking')}
+            {t('start.discard.keep')}
           </Button>
         </div>
       </Modal>

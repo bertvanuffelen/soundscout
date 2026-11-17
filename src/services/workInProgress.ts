@@ -19,6 +19,7 @@ import { useLibraryStore } from '../stores/libraryStore';
 import { useThemeStore } from '../stores/themeStore';
 import { TimelineStateSchema, SampleSchema } from '../utils/schemas';
 import { logger } from '../utils/logger';
+import { markOwnSitting } from './sitting';
 import type { AppStore } from '../stores/appStore';
 
 const KEY = 'soundscout:wip';
@@ -163,6 +164,9 @@ export function startWorkInProgressPersistence(): () => void {
 
   let timer: ReturnType<typeof setTimeout> | null = null;
   const schedule = () => {
+    // Er verandert iets in deze tab: dit kind is aan het werk (sitting.ts).
+    // Het terugzetten hierboven gebeurde vóór deze abonnementen en telt niet.
+    markOwnSitting();
     if (timer) clearTimeout(timer);
     timer = setTimeout(() => {
       timer = null;

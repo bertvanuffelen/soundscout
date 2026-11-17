@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2473 teksten in 57 secties._
+_Stand: 2477 teksten in 57 secties._
 
 ## app
 
@@ -201,8 +201,6 @@ _Stand: 2473 teksten in 57 secties._
 | `start.introTitle` | Zo werkt SoundScout | How SoundScout works |
 | `start.introStart` | Aan de slag | Get started |
 | `start.newTheme` | Nieuw thema: {{name}} | New theme: {{name}} |
-| `start.newCompositionConfirm` | Je werkt al aan een soundscape. Als je een nieuwe begint, ben je je verzamelde geluiden en je huidige soundscape kwijt. | You already have a soundscape in progress. If you start a new one, you will lose your collected sounds and your current soundscape. |
-| `start.newCompositionStart` | Opnieuw beginnen | Start over |
 | `start.haveCode` | Ik heb een code | I have a code |
 | `start.backToChoices` | Terug | Back |
 | `start.howItWorks` | Hoe werkt het? | How does it work? |
@@ -235,7 +233,13 @@ _Stand: 2473 teksten in 57 secties._
 | `start.aboutLink` | Over SoundScout | About SoundScout |
 | `start.languageLabel` | Taal | Language |
 | `start.continueLabel` | Verder waar je was | Carry on where you left off |
-| `start.keepWorking` | Ga verder met je soundscape | Keep working on your soundscape |
+| `start.discard.title` | Deze gooi je weg | You will throw these away |
+| `start.discard.keep` | Bewaren | Keep |
+| `start.discard.confirm` | Weggooien | Throw away |
+| `start.ownerCheck.title` | Hier staat nog een soundscape | There is still a soundscape here |
+| `start.ownerCheck.mine` | Die is van mij | That one is mine |
+| `start.ownerCheck.other` | Ik ben iemand anders | I am someone else |
+| `start.ownerCheck.asideName` | Soundscape van eerder | Earlier soundscape |
 | `start.heroStart` | Begin met componeren | Start composing |
 | `start.footerLabel` | Meer over SoundScout | More about SoundScout |
 
