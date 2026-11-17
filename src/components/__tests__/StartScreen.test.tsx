@@ -124,30 +124,33 @@ describe('StartScreen (V2)', () => {
     await waitFor(() => expect(initializeNewComposition).toHaveBeenCalledWith({ themeId: 'basis' }));
   });
 
-  it('met werk: strook met "Ga verder" en waarschuwing bij nieuwe soundscape', async () => {
+  it('met werk: "Ga verder" is de primaire knop; "Kies een wereld" verdwijnt', () => {
     withWork();
     render(<StartScreen />);
-    expect(screen.getByRole('group', { name: 'Verder waar je was' })).toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: /Ga verder/ }));
+    const buttons = screen.getAllByRole('button').map((b) => b.textContent ?? '');
+    // Volgorde in de DOM: Ga verder vóór Nieuwe soundscape
+    expect(buttons.findIndex((b) => b.startsWith('Ga verder'))).toBeLessThan(buttons.indexOf('Nieuwe soundscape'));
+    expect(screen.queryByRole('button', { name: 'Kies een wereld' })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole('button', { name: /^Ga verder/ }));
     expect(useAppStore.getState().currentScreen).toBe('studio');
+  });
 
-    useAppStore.setState({ currentScreen: 'start' });
+  it('met werk: waarschuwing met veilige primaire knop; opnieuw beginnen opent de wizard', async () => {
+    withWork();
+    render(<StartScreen />);
     fireEvent.click(screen.getByRole('button', { name: 'Nieuwe soundscape' }));
     expect(screen.getByText(/Je werkt al aan een soundscape/)).toBeInTheDocument();
     expect(screen.queryByRole('dialog', { name: 'wizard' })).not.toBeInTheDocument();
+
+    // Ga verder met je soundscape = terug naar de studio, niets gewist
+    fireEvent.click(screen.getByRole('button', { name: 'Ga verder met je soundscape' }));
+    expect(useAppStore.getState().currentScreen).toBe('studio');
+    expect(screen.queryByText(/Je werkt al aan een soundscape/)).not.toBeInTheDocument();
+
+    useAppStore.setState({ currentScreen: 'start' });
+    fireEvent.click(screen.getByRole('button', { name: 'Nieuwe soundscape' }));
     fireEvent.click(screen.getByRole('button', { name: 'Opnieuw beginnen' }));
     expect(await screen.findByRole('dialog', { name: 'wizard' })).toBeInTheDocument();
-  });
-
-  it('met werk: "Kies een wereld" waarschuwt eerst en opent daarna de wereldkiezer', async () => {
-    withWork();
-    render(<StartScreen />);
-    fireEvent.click(screen.getByRole('button', { name: 'Kies een wereld' }));
-    expect(screen.getByText(/Je werkt al aan een soundscape/)).toBeInTheDocument();
-    expect(screen.queryByRole('dialog', { name: 'Kies je wereld' })).not.toBeInTheDocument();
-    fireEvent.click(screen.getByRole('button', { name: 'Opnieuw beginnen' }));
-    expect(await screen.findByRole('dialog', { name: 'Kies je wereld' })).toBeInTheDocument();
-    expect(screen.queryByRole('dialog', { name: 'wizard' })).not.toBeInTheDocument();
   });
 
   it('in een klas met werk: ook het podium staat in de strook', () => {
@@ -181,6 +184,8 @@ describe('StartScreen (V2)', () => {
     render(<StartScreen />);
     fireEvent.click(screen.getByRole('button', { name: /Nieuw thema/ }));
     expect(initializeNewComposition).not.toHaveBeenCalled();
+    // De titel van de waarschuwing noemt wat je wilde starten
+    expect(screen.getByRole('dialog', { name: /Nieuw thema/ })).toBeInTheDocument();
     fireEvent.click(screen.getByRole('button', { name: 'Opnieuw beginnen' }));
     await waitFor(() => expect(initializeNewComposition).toHaveBeenCalledWith({ themeId: 'seizoen' }));
     expect(screen.queryByRole('dialog', { name: 'wizard' })).not.toBeInTheDocument();
@@ -218,5 +223,30 @@ describe('StartScreen (V2)', () => {
     expect(await screen.findByRole('button', { name: 'New soundscape' })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'English' })).toHaveAttribute('aria-pressed', 'true');
     await i18n.changeLanguage('nl');
+  });
+
+  it('de stippen in het beeld zijn knoppen die een voorproefje spelen', () => {
+    const play = vi.fn().mockResolvedValue(undefined);
+    const pause = vi.fn();
+    const audios: Array<{ src: string }> = [];
+    class FakeAudio {
+      volume = 1;
+      preload = '';
+      play = play;
+      pause = pause;
+      src: string;
+      constructor(src: string) { this.src = src; audios.push(this); }
+    }
+    vi.stubGlobal('Audio', FakeAudio);
+    render(<StartScreen />);
+    const dot = screen.getByRole('button', { name: 'Luister: Hond' });
+    fireEvent.click(dot);
+    expect(audios[0].src).toContain('hond.mp3');
+    expect(play).toHaveBeenCalled();
+    expect(dot).toHaveAttribute('aria-pressed', 'true');
+    fireEvent.click(dot);
+    expect(pause).toHaveBeenCalled();
+    expect(dot).toHaveAttribute('aria-pressed', 'false');
+    vi.unstubAllGlobals();
   });
 });

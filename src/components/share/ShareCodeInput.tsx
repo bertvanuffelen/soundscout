@@ -309,6 +309,13 @@ export function ShareCodeInput({ initialCode = null }: ShareCodeInputProps = {})
           <input
             id="share-code-input"
             type="text"
+            data-autofocus
+            autoCapitalize="characters"
+            autoComplete="off"
+            autoCorrect="off"
+            spellCheck={false}
+            // 8 tekens + ruimte voor een geplakte spatie/streep (handleChange haalt die weg)
+            maxLength={12}
             value={code}
             onChange={(e) => handleChange(e.target.value)}
             placeholder={t('share.listenPlaceholder')}

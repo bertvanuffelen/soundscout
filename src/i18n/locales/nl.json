@@ -205,6 +205,9 @@
     "aboutLink": "Over SoundScout",
     "languageLabel": "Taal",
     "continueLabel": "Verder waar je was",
+    "keepWorking": "Ga verder met je soundscape",
+    "heroListen": "Luister: {{name}}",
+    "heroListenLabel": "Luister naar de kinderboerderij",
     "footerLabel": "Meer over SoundScout"
   },
   "newWork": {

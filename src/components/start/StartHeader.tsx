@@ -1,14 +1,14 @@
 /**
- * StartHeader — bovenbalk van het startscherm (V2): taalkeuze, "Voor docenten"
- * en "Ik heb een code" rechtsboven, rustig weggezet naast de grote hoofdknoppen.
+ * StartHeader — bovenbalk van het startscherm (V2): taalkeuze en "Voor docenten"
+ * rechtsboven. "Ik heb een code" staat sinds de designronde (nov 2026) bij de
+ * hoofdknoppen: in de klas is dat de meest gebruikte ingang.
  */
 
 import { useTranslation } from 'react-i18next';
-import { GraduationCap, KeyRound } from 'lucide-react';
+import { GraduationCap } from 'lucide-react';
 import { cn } from '../../utils/cn';
 
 interface StartHeaderProps {
-  onCode: () => void;
   onTeachers: () => void;
 }
 
@@ -17,7 +17,7 @@ const LANGS = [
   { code: 'en', label: 'EN', name: 'English' },
 ] as const;
 
-export function StartHeader({ onCode, onTeachers }: StartHeaderProps) {
+export function StartHeader({ onTeachers }: StartHeaderProps) {
   const { t, i18n } = useTranslation();
   const current = (i18n.resolvedLanguage ?? i18n.language ?? 'nl').startsWith('en') ? 'en' : 'nl';
 
@@ -53,14 +53,6 @@ export function StartHeader({ onCode, onTeachers }: StartHeaderProps) {
         <span className="sr-only sm:not-sr-only">{t('start.forTeachers')}</span>
       </button>
 
-      <button
-        type="button"
-        onClick={onCode}
-        className="inline-flex items-center gap-2 h-11 px-4 rounded-full bg-white/10 ring-1 ring-white/25 hover:bg-white/20 text-sm font-bold text-white transition-colors"
-      >
-        <KeyRound className="w-4 h-4 shrink-0" aria-hidden="true" />
-        {t('start.haveCode')}
-      </button>
     </header>
   );
 }
