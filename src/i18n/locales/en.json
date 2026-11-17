@@ -215,6 +215,7 @@
       "asideName": "Earlier soundscape"
     },
     "heroStart": "Start composing",
+    "lessonEnded": "The lesson has ended.",
     "footerLabel": "More about SoundScout"
   },
   "newWork": {
@@ -1571,7 +1572,7 @@
               "type": "heading",
               "text": "Shared computers"
             },
-            "On a shared computer you may see the previous student's work. After handing in, the stage shows an 'I'm done' button: it removes the work, the code and the feedback from this device. The handed-in work stays safe with you. Unfinished work is forgotten by the app after 12 hours. Ask students in a computer room to always choose 'I'm done' when they leave."
+            "On a shared computer you may see the previous student's work. After handing in, the stage shows an 'I'm done' button: it removes the work, the code and the feedback from this device. The handed-in work stays safe with you. Unfinished work is forgotten by the app after 12 hours. Ask students in a computer room to always choose 'I'm done' when they leave. You can also clear up yourself: 'End the lesson' on the During the lesson tab clears the workspace on every device in the class. Work that was handed in or saved stays."
           ]
         },
         "classroom-tips": {
@@ -2210,6 +2211,15 @@
       "live": {
         "title": "Who is done?",
         "autoRefresh": "refreshes automatically",
+        "endLesson": {
+          "button": "End the lesson",
+          "title": "End the lesson?",
+          "body": "{{done}} of {{total}} have handed in. Ending clears the workspace on every device in this class. Work that was handed in or saved stays.",
+          "bodyEmpty": "Ending clears the workspace on every device in this class. Work that was handed in or saved stays.",
+          "confirm": "End the lesson",
+          "done": "The lesson has ended. Devices clear up as soon as they are opened again.",
+          "error": "Ending the lesson did not work. Please try again."
+        },
         "submitted": "handed in",
         "wip": "still working",
         "emptySubmitted": "Nothing handed in yet. Put the code on the board: students type {{code}}.",

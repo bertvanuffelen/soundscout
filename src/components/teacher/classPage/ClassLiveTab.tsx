@@ -15,6 +15,9 @@ import { submissionSortTime } from '../../../lib/submissionDisplay';
 import { useAgeLabel } from './useAgeLabel';
 import { STATUS_CHIP } from './statusChip';
 import { cn } from '../../../utils/cn';
+import { DoorClosed } from 'lucide-react';
+import { Button } from '../../ui/Button';
+import { Modal } from '../../ui/Modal';
 
 interface ClassLiveTabProps {
   submitted: Submission[];
@@ -24,10 +27,34 @@ interface ClassLiveTabProps {
   activeName: string | null;
   classCode: string;
   onOpen: (s: Submission) => void;
+  /**
+   * "Les afronden" (migratie 045): maakt het werkblad leeg op alle apparaten
+   * van deze klas. Gooit bij een fout een Error met een leesbare melding.
+   */
+  onEndLesson?: () => Promise<void>;
 }
 
-export function ClassLiveTab({ submitted, workInProgress, newCount, activeName, classCode, onOpen }: ClassLiveTabProps) {
+export function ClassLiveTab({ submitted, workInProgress, newCount, activeName, classCode, onOpen, onEndLesson }: ClassLiveTabProps) {
   const { t } = useTranslation();
+  const [endOpen, setEndOpen] = useState(false);
+  const [endBusy, setEndBusy] = useState(false);
+  const [endError, setEndError] = useState<string | null>(null);
+  const [endDone, setEndDone] = useState(false);
+  const total = submitted.length + workInProgress.length;
+  const handleEndLesson = async () => {
+    if (!onEndLesson) return;
+    setEndBusy(true);
+    setEndError(null);
+    try {
+      await onEndLesson();
+      setEndDone(true);
+      setEndOpen(false);
+    } catch (err) {
+      setEndError(err instanceof Error ? err.message : t('teacher.classPage.live.endLesson.error'));
+    } finally {
+      setEndBusy(false);
+    }
+  };
   const ageLabel = useAgeLabel();
   const [filter, setFilter] = useState<'in' | 'wip'>('in');
   const list = filter === 'in' ? submitted : workInProgress;
@@ -108,6 +135,31 @@ export function ClassLiveTab({ submitted, workInProgress, newCount, activeName, 
         {t('teacher.classPage.live.sortNote')}
         {activeName && <> {t('teacher.classPage.live.activeOnlyNote', { name: activeName })}</>}
       </p>
+
+      {/* Les afronden: één knop aan het eind van de les (mockup B3) */}
+      {onEndLesson && (
+        <div className="mt-5 flex flex-wrap items-center gap-3 border-t border-border-subtle pt-4">
+          <Button variant="secondary" onClick={() => { setEndDone(false); setEndError(null); setEndOpen(true); }}>
+            <DoorClosed className="w-4 h-4 mr-1.5" aria-hidden="true" />
+            {t('teacher.classPage.live.endLesson.button')}
+          </Button>
+          {endDone && (
+            <p role="status" className="text-sm font-semibold text-success-700">{t('teacher.classPage.live.endLesson.done')}</p>
+          )}
+        </div>
+      )}
+      <Modal isOpen={endOpen} onClose={() => setEndOpen(false)} title={t('teacher.classPage.live.endLesson.title')} size="sm">
+        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">
+          {total > 0
+            ? t('teacher.classPage.live.endLesson.body', { done: submitted.length, total })
+            : t('teacher.classPage.live.endLesson.bodyEmpty')}
+        </p>
+        {endError && <p role="alert" className="text-error-600 text-sm text-center mb-4">{endError}</p>}
+        <div className="flex gap-3">
+          <Button variant="secondary" onClick={() => setEndOpen(false)} className="flex-1" disabled={endBusy}>{t('common.cancel')}</Button>
+          <Button variant="primary" onClick={handleEndLesson} className="flex-1" isLoading={endBusy}>{t('teacher.classPage.live.endLesson.confirm')}</Button>
+        </div>
+      </Modal>
     </section>
   );
 }

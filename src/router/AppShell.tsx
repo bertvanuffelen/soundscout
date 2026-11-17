@@ -22,6 +22,7 @@ import { queryClient } from '../query/queryClient';
 import { QueryAuthSync } from '../query/QueryAuthSync';
 import LandscapeHint from '../components/ui/LandscapeHint';
 import { ThemePreviewBanner } from '../components/common/ThemePreviewBanner';
+import { syncLessonState } from '../lib/lessonState';
 
 function AppContent() {
   const { t } = useTranslation();
@@ -65,6 +66,19 @@ function AppContent() {
     logUsageEvent('app_start');
     installErrorCounter();
   }, []);
+
+  // "Les afronden" (migratie 045): heeft de docent de les afgerond sinds dit
+  // kind begon, dan ruimt dit apparaat zijn werkblad op. Controle bij het
+  // openen, bij het koppelen aan een klas en bij terugkomen op het tabblad;
+  // nooit midden in het werk op een zichtbaar tabblad.
+  const classCode = useAppStore((s) => s.classSession?.classCode ?? null);
+  useEffect(() => {
+    if (!classCode) return;
+    void syncLessonState();
+    const onVisible = () => { if (document.visibilityState === 'visible') void syncLessonState(); };
+    document.addEventListener('visibilitychange', onVisible);
+    return () => document.removeEventListener('visibilitychange', onVisible);
+  }, [classCode]);
 
   // Tel schermmijlpalen (eenmalig per sessie, alleen aggregaat per dag)
   useEffect(() => {

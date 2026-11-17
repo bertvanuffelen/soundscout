@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2477 teksten in 57 secties._
+_Stand: 2485 teksten in 57 secties._
 
 ## app
 
@@ -241,6 +241,7 @@ _Stand: 2477 teksten in 57 secties._
 | `start.ownerCheck.other` | Ik ben iemand anders | I am someone else |
 | `start.ownerCheck.asideName` | Soundscape van eerder | Earlier soundscape |
 | `start.heroStart` | Begin met componeren | Start composing |
+| `start.lessonEnded` | De les is afgerond. | The lesson has ended. |
 | `start.footerLabel` | Meer over SoundScout | More about SoundScout |
 
 ## newWork
@@ -1379,7 +1380,7 @@ _Stand: 2477 teksten in 57 secties._
 | `teacher.guide.sections.save-codes.content.11` | Een leerlingcode is net zo persoonlijk als een wachtwoord: vraag leerlingen het kaartje goed te bewaren en niet te delen. Na te veel foute pogingen vanaf één netwerk wordt dat netwerk tijdelijk geblokkeerd; een hele school achter één netwerk kan gewoon inloggen. | A student code is as personal as a password: ask students to keep the card safe and not share it. After too many failed attempts from one network, that network is blocked for a while; a whole school behind one network can still log in. |
 | `teacher.guide.sections.save-codes.content.12.type` | heading | heading |
 | `teacher.guide.sections.save-codes.content.12.text` | Gedeelde computers | Shared computers |
-| `teacher.guide.sections.save-codes.content.13` | Op een gedeelde computer zie je soms het werk van de vorige leerling. Na het inleveren staat op het podium de knop 'Klaar, ik stop': die haalt het werk, de code en de feedback van dit apparaat. Het ingeleverde werk blijft veilig bij jou staan. Werk dat nog niet is afgerond, vergeet de app na 12 uur. Vraag leerlingen op een computerlokaal om altijd 'Klaar, ik stop' te kiezen als ze weggaan. | On a shared computer you may see the previous student's work. After handing in, the stage shows an 'I'm done' button: it removes the work, the code and the feedback from this device. The handed-in work stays safe with you. Unfinished work is forgotten by the app after 12 hours. Ask students in a computer room to always choose 'I'm done' when they leave. |
+| `teacher.guide.sections.save-codes.content.13` | Op een gedeelde computer zie je soms het werk van de vorige leerling. Na het inleveren staat op het podium de knop 'Klaar, ik stop': die haalt het werk, de code en de feedback van dit apparaat. Het ingeleverde werk blijft veilig bij jou staan. Werk dat nog niet is afgerond, vergeet de app na 12 uur. Vraag leerlingen op een computerlokaal om altijd 'Klaar, ik stop' te kiezen als ze weggaan. Zelf opruimen kan ook: 'Les afronden' op de tab Tijdens de les maakt het werkblad leeg op alle apparaten van de klas. Ingeleverd en bewaard werk blijft staan. | On a shared computer you may see the previous student's work. After handing in, the stage shows an 'I'm done' button: it removes the work, the code and the feedback from this device. The handed-in work stays safe with you. Unfinished work is forgotten by the app after 12 hours. Ask students in a computer room to always choose 'I'm done' when they leave. You can also clear up yourself: 'End the lesson' on the During the lesson tab clears the workspace on every device in the class. Work that was handed in or saved stays. |
 | `teacher.guide.sections.classroom-tips.title` | Tips voor de klas | Classroom tips |
 | `teacher.guide.sections.classroom-tips.content.0.type` | heading | heading |
 | `teacher.guide.sections.classroom-tips.content.0.text` | Koptelefoons | Headphones |
@@ -1866,6 +1867,13 @@ _Stand: 2477 teksten in 57 secties._
 | `teacher.classPage.prepare.stopAssignment` | Opdracht stoppen… | Stop assignment… |
 | `teacher.classPage.live.title` | Wie is klaar? | Who is done? |
 | `teacher.classPage.live.autoRefresh` | ververst vanzelf | refreshes automatically |
+| `teacher.classPage.live.endLesson.button` | Les afronden | End the lesson |
+| `teacher.classPage.live.endLesson.title` | Les afronden? | End the lesson? |
+| `teacher.classPage.live.endLesson.body` | {{done}} van {{total}} hebben ingeleverd. Afronden maakt het werkblad leeg op alle apparaten van deze klas. Ingeleverd en bewaard werk blijft staan. | {{done}} of {{total}} have handed in. Ending clears the workspace on every device in this class. Work that was handed in or saved stays. |
+| `teacher.classPage.live.endLesson.bodyEmpty` | Afronden maakt het werkblad leeg op alle apparaten van deze klas. Ingeleverd en bewaard werk blijft staan. | Ending clears the workspace on every device in this class. Work that was handed in or saved stays. |
+| `teacher.classPage.live.endLesson.confirm` | Les afronden | End the lesson |
+| `teacher.classPage.live.endLesson.done` | De les is afgerond. Apparaten ruimen op zodra ze weer geopend worden. | The lesson has ended. Devices clear up as soon as they are opened again. |
+| `teacher.classPage.live.endLesson.error` | De les afronden lukte niet. Probeer het opnieuw. | Ending the lesson did not work. Please try again. |
 | `teacher.classPage.live.submitted` | ingeleverd | handed in |
 | `teacher.classPage.live.wip` | nog bezig | still working |
 | `teacher.classPage.live.emptySubmitted` | Nog niets ingeleverd. Zet de code op het bord: leerlingen typen {{code}} in. | Nothing handed in yet. Put the code on the board: students type {{code}}. |

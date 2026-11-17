@@ -215,6 +215,7 @@
       "asideName": "Soundscape van eerder"
     },
     "heroStart": "Begin met componeren",
+    "lessonEnded": "De les is afgerond.",
     "footerLabel": "Meer over SoundScout"
   },
   "newWork": {
@@ -1570,7 +1571,7 @@
               "type": "heading",
               "text": "Gedeelde computers"
             },
-            "Op een gedeelde computer zie je soms het werk van de vorige leerling. Na het inleveren staat op het podium de knop 'Klaar, ik stop': die haalt het werk, de code en de feedback van dit apparaat. Het ingeleverde werk blijft veilig bij jou staan. Werk dat nog niet is afgerond, vergeet de app na 12 uur. Vraag leerlingen op een computerlokaal om altijd 'Klaar, ik stop' te kiezen als ze weggaan."
+            "Op een gedeelde computer zie je soms het werk van de vorige leerling. Na het inleveren staat op het podium de knop 'Klaar, ik stop': die haalt het werk, de code en de feedback van dit apparaat. Het ingeleverde werk blijft veilig bij jou staan. Werk dat nog niet is afgerond, vergeet de app na 12 uur. Vraag leerlingen op een computerlokaal om altijd 'Klaar, ik stop' te kiezen als ze weggaan. Zelf opruimen kan ook: 'Les afronden' op de tab Tijdens de les maakt het werkblad leeg op alle apparaten van de klas. Ingeleverd en bewaard werk blijft staan."
           ]
         },
         "classroom-tips": {
@@ -2209,6 +2210,15 @@
       "live": {
         "title": "Wie is klaar?",
         "autoRefresh": "ververst vanzelf",
+        "endLesson": {
+          "button": "Les afronden",
+          "title": "Les afronden?",
+          "body": "{{done}} van {{total}} hebben ingeleverd. Afronden maakt het werkblad leeg op alle apparaten van deze klas. Ingeleverd en bewaard werk blijft staan.",
+          "bodyEmpty": "Afronden maakt het werkblad leeg op alle apparaten van deze klas. Ingeleverd en bewaard werk blijft staan.",
+          "confirm": "Les afronden",
+          "done": "De les is afgerond. Apparaten ruimen op zodra ze weer geopend worden.",
+          "error": "De les afronden lukte niet. Probeer het opnieuw."
+        },
         "submitted": "ingeleverd",
         "wip": "nog bezig",
         "emptySubmitted": "Nog niets ingeleverd. Zet de code op het bord: leerlingen typen {{code}} in.",

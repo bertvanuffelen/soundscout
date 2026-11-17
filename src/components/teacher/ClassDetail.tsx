@@ -43,6 +43,7 @@ import { Modal } from '../ui/Modal';
 import { TeacherPageHeader } from './common';
 import { cn } from '../../utils/cn';
 import { logger } from '../../utils/logger';
+import { endLesson } from '../../lib/lessonState';
 
 type ClassTab = 'klaar' | 'bezig' | 'terug';
 
@@ -480,6 +481,7 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
                 newCount={newCount}
                 activeName={activeAssignment?.assignmentName ?? null}
                 classCode={classData.code}
+                onEndLesson={() => endLesson(classData.id).then(() => undefined)}
                 onOpen={(s) => {
                   if (s.submitted_at || !s.save_code) setShowFeedback({ submissionId: s.id });
                   else setSelectedSubmission(s);
