@@ -39,7 +39,7 @@ interface TeacherDashboardProps {
   /** Klas openen, optioneel op een tabblad en/of meteen presenteren */
   onSelectClass: (classData: TeacherClass, tab?: 'klaar' | 'bezig' | 'terug', opts?: { present?: boolean }) => void;
   /** Opdracht-wizard openen voor een klas (optioneel met een les al gekozen) */
-  onOpenWizard: (classData: TeacherClass, lessonCardId?: string | null) => void;
+  onOpenWizard: (classData: TeacherClass, lessonCardId?: string | null, fast?: boolean) => void;
   onLogout: () => void;
   onBack?: () => void;
 }
@@ -431,7 +431,7 @@ export function TeacherDashboard({ onSelectClass, onOpenWizard, onLogout, onBack
             classes={classes}
             onCreateClass={createClass}
             initialSelectKey={initialLessonKey}
-            onContinueToWizard={(cls, lessonCardId) => onOpenWizard(cls, lessonCardId)}
+            onContinueToWizard={(cls, lessonCardId, fast) => onOpenWizard(cls, lessonCardId, fast)}
           />
         )}
       </main>

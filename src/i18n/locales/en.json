@@ -1033,6 +1033,8 @@
       "successBody": "\"{{title}}\" is ready for {{className}}. Students enter the class code.",
       "codeLabel": "Class code",
       "chooseClassTitle": "For which class?",
+      "fast": "Put the code on the board",
+      "adjustFirst": "Adjust first",
       "continue": "Continue"
     },
     "editor": {
@@ -2140,6 +2142,7 @@
       "back": "Back",
       "activate": "Set it up",
       "activating": "Setting up…",
+      "autoStarting": "Setting up the lesson…",
       "chosenFor": "For {{className}}",
       "change": "Change",
       "settingsTitle": "Settings",

@@ -29,7 +29,7 @@ interface LessonCardsTabProps {
   /** builtin_key van een leskaart om standaard te selecteren (landing-deeplink). */
   initialSelectKey?: string | null;
   /** Verder in de opdracht-wizard (stap 2) met deze les voor deze klas */
-  onContinueToWizard: (classData: TeacherClass, lessonCardId: string) => void;
+  onContinueToWizard: (classData: TeacherClass, lessonCardId: string, fast: boolean) => void;
 }
 
 
@@ -266,7 +266,7 @@ export function LessonCardsTab({ classes, onCreateClass, initialSelectKey, onCon
         lessonCard={activateCard}
         classes={classes}
         onCreateClass={onCreateClass}
-        onContinue={(cls, card) => { setActivateCard(null); onContinueToWizard(cls, card.id); }}
+        onContinue={(cls, card, fast) => { setActivateCard(null); onContinueToWizard(cls, card.id, fast); }}
       />
 
       {/* Zachte seizoensbevestiging (nooit blokkeren) */}

@@ -1,10 +1,13 @@
 /**
  * ActivateLessonCardModal — kies de klas voor een leskaart (vanuit Lesideeën).
  *
- * De docent kiest een bestaande klas óf maakt een nieuwe klas; daarna gaat
- * het verder in de opdracht-wizard op stap 2 ("Controleer & pas aan") met
- * deze les al ingevuld, en daarna de code op het bord (ontwerp ronde 3b).
- * Activeren zelf gebeurt dus niet meer hier.
+ * De docent kiest een bestaande klas óf maakt een nieuwe klas. Daarna twee
+ * wegen (designronde nov 2026, mockup C1):
+ *  - "Zet de code op het bord" (snel): de wizard zet de les met de
+ *    standaardinstellingen klaar en toont meteen de klascode;
+ *  - "Eerst aanpassen": de wizard opent op stap 2 ("Controleer & pas aan").
+ * Activeren zelf gebeurt in de wizard, niet hier. De snelle weg vervangt
+ * nooit blind een lopende opdracht: dan stopt de wizard toch op stap 2.
  */
 
 import { useEffect, useState } from 'react';
@@ -23,8 +26,8 @@ interface ActivateLessonCardModalProps {
   lessonCard: LessonCard | null;
   classes: TeacherClass[];
   onCreateClass: (name: string) => Promise<TeacherClass>;
-  /** Verder naar de wizard (stap 2) voor deze klas */
-  onContinue: (classData: TeacherClass, lessonCard: LessonCard) => void;
+  /** Verder naar de wizard voor deze klas; `fast` = meteen klaarzetten en de code tonen */
+  onContinue: (classData: TeacherClass, lessonCard: LessonCard, fast: boolean) => void;
 }
 
 const NEW_CLASS = '__new__';
@@ -56,7 +59,7 @@ export function ActivateLessonCardModal({
   const isNew = choice === NEW_CLASS;
   const lessonTitle = localizeLessonCard(t, lessonCard).title;
 
-  const handleConfirm = async () => {
+  const handleConfirm = async (fast: boolean) => {
     setSaving(true);
     setError(null);
     try {
@@ -77,7 +80,7 @@ export function ActivateLessonCardModal({
         setSaving(false);
         return;
       }
-      onContinue(target, lessonCard);
+      onContinue(target, lessonCard, fast);
     } catch (err) {
       logger.error('Klas kiezen/maken voor leskaart mislukt:', err);
       setError(err instanceof Error ? err.message : t('lessonCards.activateModal.error'));
@@ -157,19 +160,24 @@ export function ActivateLessonCardModal({
             )}
           </div>
 
-          <div className="flex gap-3">
-            <Button variant="secondary" onClick={onClose} className="flex-1" disabled={saving}>
-              {t('common.cancel')}
-            </Button>
+          <div className="flex flex-col gap-3">
             <Button
               variant="primary"
-              onClick={handleConfirm}
+              onClick={() => handleConfirm(true)}
               disabled={saving}
-              className="flex-1 inline-flex items-center justify-center gap-1"
+              className="w-full inline-flex items-center justify-center gap-1"
             >
-              {t('lessonCards.activateModal.continue')}
+              {t('lessonCards.activateModal.fast')}
               {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <ArrowRight className="w-4 h-4" />}
             </Button>
+            <div className="flex gap-3">
+              <Button variant="secondary" onClick={onClose} className="flex-1" disabled={saving}>
+                {t('common.cancel')}
+              </Button>
+              <Button variant="secondary" onClick={() => handleConfirm(false)} className="flex-1" disabled={saving}>
+                {t('lessonCards.activateModal.adjustFirst')}
+              </Button>
+            </div>
           </div>
         </>
     </Modal>
