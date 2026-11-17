@@ -299,6 +299,7 @@ export default function StudioSequencerPanel({
         isOpen={showFirstRunHint}
         onDismiss={dismissFirstRunHint}
         text={t('sequencer.studio.firstRunHint')}
+        animation="sequencer-ritme-melodie"
       />
 
       {/* --- Hernoemen --- */}
