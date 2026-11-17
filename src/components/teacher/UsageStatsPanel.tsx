@@ -23,16 +23,20 @@ interface UsageStatsPanelProps {
 // Vaste volgorde = de allowlist van migration 025 (leesbaarheid boven alfabet)
 const EVENT_ORDER = [
   'app_start',
+  'class_code_entered',
   'composition_started',
+  'first_sound_20s',
+  'first_sound_60s',
+  'first_sound_slow',
   'stage_reached',
   'composition_saved',
   'composition_submitted',
   'save_code_created',
-  'class_code_entered',
   'share_link_created',
   'mp3_export',
   'video_export',
   'teacher_dashboard_opened',
+  'client_error',
 ] as const;
 
 function isoDaysAgo(days: number): string {

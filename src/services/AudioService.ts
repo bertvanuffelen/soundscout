@@ -58,6 +58,7 @@ import {
   buildLimiterProcessorCode,
   applyLimiterToChannels,
 } from './masterLimiter';
+import { logFirstSound } from '../utils/usageStats';
 
 type BeatUpdateCallback = (beat: number) => void;
 
@@ -237,6 +238,7 @@ export class AudioService {
   // ==========================================================================
 
   playSample(sampleId: string): void {
+    logFirstSound();
     const player = this.players.get(sampleId);
     if (!player || !player.loaded) {
       // Door het geheugenbudget opgeruimd? Dan transparant herladen en

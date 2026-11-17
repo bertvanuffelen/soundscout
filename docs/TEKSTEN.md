@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2464 teksten in 57 secties._
+_Stand: 2468 teksten in 57 secties._
 
 ## app
 
@@ -1753,6 +1753,10 @@ _Stand: 2464 teksten in 57 secties._
 | `teacher.stats.events.mp3_export` | MP3-exports | MP3 exports |
 | `teacher.stats.events.video_export` | Video-exports | Video exports |
 | `teacher.stats.events.teacher_dashboard_opened` | Docentendashboard geopend | Teacher dashboard opened |
+| `teacher.stats.events.client_error` | Sessies met een fout | Sessions with an error |
+| `teacher.stats.events.first_sound_20s` | Eerste geluid binnen 20 seconden | First sound within 20 seconds |
+| `teacher.stats.events.first_sound_60s` | Eerste geluid binnen 1 minuut | First sound within 1 minute |
+| `teacher.stats.events.first_sound_slow` | Eerste geluid na meer dan 1 minuut | First sound after more than 1 minute |
 | `teacher.share.button` | Delen | Share |
 | `teacher.share.chooseTitle` | Wat wil je delen? | What do you want to share? |
 | `teacher.share.chooseDescription` | Van een praatplaat kun je twee dingen delen: het bord om op te klikken, of de composities als afspeellijst. | A sound map can be shared two ways: the board to click on, or the compositions as a playlist. |

@@ -2058,7 +2058,11 @@
         "share_link_created": "Share links created",
         "mp3_export": "MP3 exports",
         "video_export": "Video exports",
-        "teacher_dashboard_opened": "Teacher dashboard opened"
+        "teacher_dashboard_opened": "Teacher dashboard opened",
+        "client_error": "Sessions with an error",
+        "first_sound_20s": "First sound within 20 seconds",
+        "first_sound_60s": "First sound within 1 minute",
+        "first_sound_slow": "First sound after more than 1 minute"
       }
     },
     "share": {

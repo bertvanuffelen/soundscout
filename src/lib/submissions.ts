@@ -16,6 +16,7 @@ import { parseCompositionData, CompositionDataSchema } from '../utils/schemas';
 import { logger } from '../utils/logger';
 import i18n from '../i18n';
 import type { CompositionData } from '../types';
+import { logUsageEvent } from '../utils/usageStats';
 
 interface SubmitCompositionParams {
   classCode: string;
@@ -337,6 +338,7 @@ export async function shareComposition(
     throw new Error(i18n.t('submissions.shareLinkError'));
   }
 
+  logUsageEvent('share_link_created');
   return data as string;
 }
 
@@ -449,6 +451,7 @@ export async function saveCompositionOnline(
   }
 
   const result = data[0] as { save_code: string; save_secret: string };
+  logUsageEvent('save_code_created');
   return {
     saveCode: result.save_code,
     saveSecret: result.save_secret,

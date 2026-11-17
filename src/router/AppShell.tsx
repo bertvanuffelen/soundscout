@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next';
 import { useAppStore } from '../stores/appStore';
 import { useThemeStore } from '../stores/themeStore';
 import { useDevFlagsStore } from '../stores/devFlagsStore';
-import { logUsageEvent } from '../utils/usageStats';
+import { logUsageEvent, installErrorCounter } from '../utils/usageStats';
 import { useLeaveGuard } from '../hooks/useLeaveGuard';
 import { startWorkInProgressPersistence } from '../services/workInProgress';
 import { QueryClientProvider } from '@tanstack/react-query';
@@ -63,6 +63,7 @@ function AppContent() {
   // Anonieme sessieteller (cookieloos, geen persoonsgegevens — zie usageStats)
   useEffect(() => {
     logUsageEvent('app_start');
+    installErrorCounter();
   }, []);
 
   // Tel schermmijlpalen (eenmalig per sessie, alleen aggregaat per dag)

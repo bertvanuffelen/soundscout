@@ -32,6 +32,7 @@ import {
   parseUserPreferences,
   parseLibraryState,
 } from '../utils/schemas';
+import { logUsageEvent } from '../utils/usageStats';
 
 // Current storage version for migrations (reserved for future use)
 // const STORAGE_VERSION = 1;
@@ -192,6 +193,7 @@ class StorageServiceImpl {
     }
 
     logger.info('Composition saved', { id: newComposition.id, name });
+    logUsageEvent('composition_saved');
     return newComposition;
   }
 

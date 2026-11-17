@@ -23,7 +23,13 @@ export type UsageEvent =
   | 'share_link_created'
   | 'save_code_created'
   | 'class_code_entered'
-  | 'teacher_dashboard_opened';
+  | 'teacher_dashboard_opened'
+  // Migratie 044: fouten en "tijd tot het eerste geluid" (in drie emmers,
+  // zodat er nog steeds alleen een teller per dag wordt bewaard)
+  | 'client_error'
+  | 'first_sound_20s'
+  | 'first_sound_60s'
+  | 'first_sound_slow';
 
 // Per sessie elk event maar één keer tellen — we willen gebruik meten,
 // geen gedrag volgen.
@@ -54,4 +60,52 @@ export function logUsageEvent(event: UsageEvent): void {
     // Statistiek mag nooit een gebruikersflow breken of ruis geven
     logger.debug('usageStats:', err);
   });
+}
+
+// --- Tijd tot het eerste geluid ---------------------------------------------
+
+let compositionStartedAt: number | null = null;
+
+/** Een leerling begint een nieuwe soundscape: telt de start en zet de klok. */
+export function logCompositionStarted(): void {
+  compositionStartedAt = performance.now();
+  logUsageEvent('composition_started');
+}
+
+/**
+ * Het eerste geluid dat klinkt na de start van een soundscape. Verstuurd
+ * wordt alleen in welke emmer het viel (≤ 20 s, ≤ 60 s, langer), nooit de
+ * tijd zelf. Zonder gestarte soundscape (docent, presentatie) telt het niet.
+ */
+export function logFirstSound(): void {
+  if (compositionStartedAt === null) return;
+  const seconds = (performance.now() - compositionStartedAt) / 1000;
+  compositionStartedAt = null;
+  logUsageEvent(seconds <= 20 ? 'first_sound_20s' : seconds <= 60 ? 'first_sound_60s' : 'first_sound_slow');
+}
+
+// --- Foutenteller -----------------------------------------------------------
+
+let errorCounterInstalled = false;
+
+/**
+ * Telt sessies waarin een onverwachte fout optrad (hooguit één per sessie).
+ * Er gaat niets over de fout zelf naar de server: geen melding, geen stack,
+ * geen pagina. De details staan alleen in de console van dat apparaat.
+ */
+export function installErrorCounter(): void {
+  if (errorCounterInstalled || typeof window === 'undefined') return;
+  errorCounterInstalled = true;
+  window.addEventListener('error', (e) => {
+    // Mislukte afbeelding/geluid (resource-fout) is geen crash
+    if (!(e instanceof ErrorEvent)) return;
+    logUsageEvent('client_error');
+  });
+  window.addEventListener('unhandledrejection', () => logUsageEvent('client_error'));
+}
+
+/** Alleen voor tests. */
+export function resetUsageStatsForTests(): void {
+  sentThisSession.clear();
+  compositionStartedAt = null;
 }

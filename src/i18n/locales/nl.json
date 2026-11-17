@@ -2057,7 +2057,11 @@
         "share_link_created": "Deellinks gemaakt",
         "mp3_export": "MP3-exports",
         "video_export": "Video-exports",
-        "teacher_dashboard_opened": "Docentendashboard geopend"
+        "teacher_dashboard_opened": "Docentendashboard geopend",
+        "client_error": "Sessies met een fout",
+        "first_sound_20s": "Eerste geluid binnen 20 seconden",
+        "first_sound_60s": "Eerste geluid binnen 1 minuut",
+        "first_sound_slow": "Eerste geluid na meer dan 1 minuut"
       }
     },
     "share": {
