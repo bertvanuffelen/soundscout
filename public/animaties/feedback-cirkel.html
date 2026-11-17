@@ -1,0 +1,35 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>SoundScout — De feedback-cirkel</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="preload" href="/fonts/nunito/nunito-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+<link rel="stylesheet" href="/fonts/nunito.css">
+<style>
+  /* ===================================================================
+     SOUNDSCOUT — "De feedback-cirkel" (designronde nov 2026)
+     Eén soundscape reist de cirkel rond: Opdracht → Maken → Inleveren →
+     Feedback → Verbeteren. Bij Maken komen er geluidsblokken bij, bij
+     Feedback verschijnen sticker en sterren, bij Verbeteren komt er nog een
+     blok bij. Stil. Eén rAF-klok (t = (now - start) % PERIOD), stilstaand
+     eindbeeld bij prefers-reduced-motion, maten in --u (1% van de breedte).
+     Tekst staat in de JS (TEXTS), taal via ?lang=nl|en.
+     =================================================================== */
+  :root{ --ss-font:'Nunito',-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif; --amber:#FBBF24; --amber-pressed:#F59E0B; --amber-ink:#78350F; --wash:#FFFBEB; --hairline:#E2E8F0; --ink:#1E293B; --muted:#64748B; --u:8px; }
+  *{ box-sizing:border-box; }
+  body{ margin:0; background:transparent; font-family:var(--ss-font); color:var(--ink); }
+  .film{ max-width:940px; margin:0 auto; }
+  .stage{ position:relative; width:100%; aspect-ratio:16/9; border-radius:16px; overflow:hidden; background:#fff; border:1px solid var(--hairline); }
+  .stage *{ position:absolute; }
+  .ring{ left:30%; top:16.4%; width:40%; height:71.2%; border-radius:50%; border:calc(var(--u)*.35) dashed var(--hairline); }
+  .node{ transform:translate(-50%,-50%); background:#fff; border:calc(var(--u)*.3) solid var(--hairline); border-radius:calc(var(--u)*1.6); padding:calc(var(--u)*.8) calc(var(--u)*1.8); font-weight:800; font-size:calc(var(--u)*2.1); white-space:nowrap; }
+  .node.on{ border-color:var(--amber); background:var(--wash); }
+  .work{ transform:translate(-50%,-50%); display:flex; gap:calc(var(--u)*.5); padding:calc(var(--u)*.6); border-radius:calc(var(--u)*1.2); background:#fff; box-shadow:0 calc(var(--u)*.5) calc(var(--u)*1.4) rgba(0,0,0,.18); }
+  .work b{ position:static; height:calc(var(--u)*2.6); border-radius:calc(var(--u)*.6); width:0; }
+  .badge{ left:50%; top:52%; transform:translate(-50%,-50%); text-align:center; font-weight:800; font-size:calc(var(--u)*2.1); opacity:0; white-space:nowrap; }
+  .badge div, .badge span{ position:static; }
+  .badge .stars{ display:flex; justify-content:center; gap:calc(var(--u)*.6); margin-bottom:calc(var(--u)*.8); }
+  .badge svg{ position:static; width:calc(var(--u)*4.4); height:calc(var(--u)*4.4); }
+  .badge .sticker{ display:inline-block; background:var(--amber); color:var(--amber-ink); border-radius:999px; padding:calc(var(--u)*.6) calc(var(--u)*1.8); }
+</style>
+<div class="film"><div class="stage" id="stage" role="img"></div></div>
+<script src="feedback-cirkel.js"></script>

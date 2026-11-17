@@ -432,7 +432,7 @@ test.describe('statische pagina\'s', () => {
     });
   }
 
-  for (const path of ['/privacy/index.html', '/privacy/en/index.html', '/animaties/onboarding-4-stappen.html', '/animaties/sequencer-uitleg.html']) {
+  for (const path of ['/privacy/index.html', '/privacy/en/index.html', '/animaties/onboarding-4-stappen.html', '/animaties/reis-van-een-geluid.html', '/animaties/sequencer-ritme-melodie.html', '/animaties/klascode-op-het-bord.html', '/animaties/feedback-cirkel.html']) {
     test(`${path} wordt als bestand geserveerd`, async ({ request }) => {
       const response = await request.get(path);
       expect(response.status()).toBe(200);

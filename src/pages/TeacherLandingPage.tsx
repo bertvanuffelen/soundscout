@@ -16,10 +16,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import {
-  FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft,
-  Lock, GraduationCap, BadgeCheck, MonitorPlay, MessagesSquare, ClipboardList,
-  Send, Star, RefreshCw, ShieldCheck, ChevronDown, Sparkles, Rocket, Grid3x3, LogIn,
-  type LucideIcon,
+  FileDown, Film, Music, MapPin, FileText, Play, Loader2, ArrowRight, ArrowLeft, Lock, GraduationCap, BadgeCheck, MonitorPlay, MessagesSquare, ShieldCheck, ChevronDown, Sparkles, Rocket, Grid3x3, LogIn, type LucideIcon,
 } from 'lucide-react';
 import { Button, Card, LanguageSwitcher } from '../components/ui';
 import { SegmentedTabs } from '../components/teacher/common/SegmentedTabs';
@@ -419,7 +416,7 @@ function SequencerSection() {
 
       <Card padding="lg" className="overflow-hidden">
         <SoundScoutAnimation
-          name="sequencer-uitleg"
+          name="sequencer-ritme-melodie"
           title={t('teacherLanding.sequencer.animationTitle')}
           initialHeight={420}
         />
@@ -447,14 +444,6 @@ function SequencerSection() {
 }
 
 // --- Sectie: De feedback-cirkel (slanke band — docent- + peer-feedback) ---
-const CYCLE_STEPS = [
-  { key: 'assign', Icon: ClipboardList },
-  { key: 'create', Icon: Music },
-  { key: 'submit', Icon: Send },
-  { key: 'feedback', Icon: Star },
-  { key: 'improve', Icon: RefreshCw },
-] as const;
-
 function FeedbackCycleSection() {
   const { t } = useTranslation();
   return (
@@ -467,21 +456,14 @@ function FeedbackCycleSection() {
           {t('teacherLanding.feedbackCycle.subtitle')}
         </p>
       </div>
-      <div className="flex flex-wrap sm:flex-nowrap items-stretch justify-center gap-2">
-        {CYCLE_STEPS.map(({ key, Icon }, i) => (
-          <div key={key} className="flex items-center gap-2 flex-1 min-w-[100px]">
-            <div className="flex-1 bg-accent-50 border border-accent-200 rounded-2xl px-3 py-4 text-center">
-              <Icon className="w-5 h-5 text-accent-700 mx-auto mb-1.5" />
-              <p className="text-xs sm:text-sm font-bold text-accent-800">
-                {t(`teacherLanding.feedbackCycle.steps.${key}`)}
-              </p>
-            </div>
-            {i < CYCLE_STEPS.length - 1 && (
-              <ArrowRight className="w-4 h-4 text-text-muted shrink-0 hidden sm:block" />
-            )}
-          </div>
-        ))}
-      </div>
+      {/* Eén soundscape reist de cirkel rond (designronde nov 2026) */}
+      <Card padding="lg" className="overflow-hidden max-w-3xl mx-auto w-full">
+        <SoundScoutAnimation
+          name="feedback-cirkel"
+          title={t('teacherLanding.feedbackCycle.animationTitle')}
+          initialHeight={360}
+        />
+      </Card>
       <p className="text-center text-sm sm:text-base text-text-muted max-w-3xl mx-auto leading-relaxed">
         {t('teacherLanding.feedbackCycle.description')}
       </p>
@@ -760,6 +742,14 @@ function StepsSection({ isLoggedIn }: { isLoggedIn: boolean }) {
       <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-center">
         {t('teacherLanding.steps.title')}
       </h2>
+      {/* Het moment zelf: de code op het bord, de klas komt binnen (designronde nov 2026) */}
+      <div className="max-w-3xl mx-auto w-full">
+        <SoundScoutAnimation
+          name="klascode-op-het-bord"
+          title={t('teacherLanding.steps.animationTitle')}
+          initialHeight={360}
+        />
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {steps.map((step, i) => (
           <Card key={step} padding="lg" className="flex flex-col gap-3">

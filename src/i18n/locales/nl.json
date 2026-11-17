@@ -2545,6 +2545,7 @@
     },
     "steps": {
       "title": "Zo zet je een klas op",
+      "animationTitle": "Animatie: de klascode op het bord",
       "step1": {
         "title": "Maak een klas",
         "description": "Je krijgt meteen een klascode van vier cijfers."
@@ -2608,6 +2609,7 @@
     },
     "feedbackCycle": {
       "title": "De feedback-cirkel",
+      "animationTitle": "Animatie: de feedback-cirkel",
       "subtitle": "Van opdracht tot verbeteren — zonder leerlingaccounts.",
       "steps": {
         "assign": "Opdracht",
