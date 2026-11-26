@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2509 teksten in 57 secties._
+_Stand: 2510 teksten in 57 secties._
 
 ## app
 
@@ -951,7 +951,7 @@ _Stand: 2509 teksten in 57 secties._
 | `lessonCards.builtin.sinterklaas.phases.0.name` | Oriënteren | Orient |
 | `lessonCards.builtin.sinterklaas.phases.0.text` | Bekijk samen de plaat. Wat hoor je op elke plek? | Look at the picture together. What do you hear in each spot? |
 | `lessonCards.builtin.sinterklaas.phases.1.name` | Onderzoeken | Explore |
-| `lessonCards.builtin.sinterklaas.phases.1.text` | Kies één plek en verzamel zes geluiden. | Choose one spot and collect six sounds. |
+| `lessonCards.builtin.sinterklaas.phases.1.text` | Kies één plek. Verzamel zes geluiden die jij erbij vindt passen. | Choose one spot. Collect six sounds that you think fit it. |
 | `lessonCards.builtin.sinterklaas.phases.2.name` | Uitvoeren | Perform |
 | `lessonCards.builtin.sinterklaas.phases.2.text` | Begin zacht, bouw op in lagen en lever in. | Start quietly, build up in layers and hand in. |
 | `lessonCards.builtin.sinterklaas.phases.3.name` | Evalueren | Evaluate |
@@ -2011,6 +2011,7 @@ _Stand: 2509 teksten in 57 secties._
 | `praatplaatImages.robotfabriek` | Robotfabriek | Robot Factory |
 | `praatplaatImages.sportveld` | Sportveld | Sports Field |
 | `praatplaatImages.piratenmarkt` | Piratenmarkt | Pirate market |
+| `praatplaatImages.sinterklaasPaleis` | Het Sinterklaaspaleis | The Sinterklaas palace |
 
 ## praatplaat
 

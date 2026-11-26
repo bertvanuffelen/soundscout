@@ -1025,7 +1025,7 @@
           },
           {
             "name": "Explore",
-            "text": "Choose one spot and collect six sounds."
+            "text": "Choose one spot. Collect six sounds that you think fit it."
           },
           {
             "name": "Perform",
@@ -2385,7 +2385,8 @@
     "koningsdag": "King's Day",
     "robotfabriek": "Robot Factory",
     "sportveld": "Sports Field",
-    "piratenmarkt": "Pirate market"
+    "piratenmarkt": "Pirate market",
+    "sinterklaasPaleis": "The Sinterklaas palace"
   },
   "praatplaat": {
     "select": {

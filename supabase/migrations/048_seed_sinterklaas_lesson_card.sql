@@ -27,8 +27,10 @@
 
 DO $$
 DECLARE
-  -- De praatplaat van deze les: het Sinterklaaspaleis (besluit Bert 26-11-2026,
-  -- versie 6). De definitieve bewerking komt op hetzelfde pad te staan.
+  -- De praatplaat van deze les: het Sinterklaaspaleis (besluit Bert 26-11-2026).
+  -- Het bestand is nu kandidaat v6; welke versie definitief is moet Bert nog
+  -- bevestigen. De definitieve komt op hetzelfde pad te staan. Zelfde beeld als
+  -- catalogus-entry `pp-sinterklaas-paleis` in src/data/praatplaatImages.ts.
   v_image CONSTANT TEXT := '/images/praatplaten/sinterklaas-paleis.jpg';
 BEGIN
   INSERT INTO public.lesson_cards (
@@ -53,7 +55,7 @@ BEGIN
     'Leerlingen maken een soundscape van één plek uit het Sinterklaasverhaal en ervaren hoe volgorde en lagen spanning opbouwen.',
     jsonb_build_array(
       jsonb_build_object('name', 'Oriënteren', 'text', 'Bekijk samen de plaat. Wat hoor je op elke plek?'),
-      jsonb_build_object('name', 'Onderzoeken', 'text', 'Kies één plek en verzamel zes geluiden.'),
+      jsonb_build_object('name', 'Onderzoeken', 'text', 'Kies één plek. Verzamel zes geluiden die jij erbij vindt passen.'),
       jsonb_build_object('name', 'Uitvoeren', 'text', 'Begin zacht, bouw op in lagen en lever in.'),
       jsonb_build_object('name', 'Evalueren', 'text', 'De klas raadt de plek. Waar hoorde je dat aan?')
     ),

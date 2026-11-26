@@ -10,6 +10,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import nl from '../../i18n/locales/nl.json';
 import en from '../../i18n/locales/en.json';
+import { praatplaatImages } from '../../data/praatplaatImages';
 
 const root = resolve(__dirname, '../../..');
 const seed = readFileSync(resolve(root, 'supabase/migrations/048_seed_sinterklaas_lesson_card.sql'), 'utf8');
@@ -27,6 +28,12 @@ describe('leskaart sinterklaas', () => {
 
   it('de /les-pagina gebruikt dezelfde plaat', () => {
     expect(lesPages.keys.find((k) => k.key === 'sinterklaas')?.cover).toBe(image);
+  });
+
+  it('de plaat staat ook in de praatplaat-catalogus, met het Sinterklaas-geluidenthema', () => {
+    const entry = praatplaatImages.find((img) => img.id === 'pp-sinterklaas-paleis');
+    expect(entry?.imageUrl).toBe(image);
+    expect(entry?.themeId).toBe('sinterklaas');
   });
 
   it('de seed zet de les volledig klaar: thema, plekken verborgen, 1 les', () => {

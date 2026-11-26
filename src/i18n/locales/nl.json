@@ -1024,7 +1024,7 @@
           },
           {
             "name": "Onderzoeken",
-            "text": "Kies één plek en verzamel zes geluiden."
+            "text": "Kies één plek. Verzamel zes geluiden die jij erbij vindt passen."
           },
           {
             "name": "Uitvoeren",
@@ -2384,7 +2384,8 @@
     "koningsdag": "Koningsdag",
     "robotfabriek": "Robotfabriek",
     "sportveld": "Sportveld",
-    "piratenmarkt": "Piratenmarkt"
+    "piratenmarkt": "Piratenmarkt",
+    "sinterklaasPaleis": "Het Sinterklaaspaleis"
   },
   "praatplaat": {
     "select": {
