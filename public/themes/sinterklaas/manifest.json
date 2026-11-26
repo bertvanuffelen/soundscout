@@ -1,0 +1,743 @@
+{
+  "assetBase": "/",
+  "colors": {
+    "accent": "#F2B632",
+    "mapBackground": "#FBEFD5",
+    "primary": "#B3261E"
+  },
+  "id": "sinterklaas",
+  "isPublic": true,
+  "locations": [
+    {
+      "hotspots": [
+        {
+          "id": "stoomboot-fluit",
+          "sampleId": "stoomboot-fluit",
+          "visualHint": "pulse",
+          "x": 25,
+          "y": 25
+        },
+        {
+          "id": "stoomboot-machine",
+          "sampleId": "stoomboot-machine",
+          "visualHint": "pulse",
+          "x": 24,
+          "y": 62
+        },
+        {
+          "id": "stoomboot-golven",
+          "sampleId": "stoomboot-golven",
+          "visualHint": "pulse",
+          "x": 12,
+          "y": 85
+        },
+        {
+          "id": "stoomboot-bel",
+          "sampleId": "stoomboot-bel",
+          "visualHint": "pulse",
+          "x": 63,
+          "y": 42
+        },
+        {
+          "id": "stoomboot-juichen",
+          "sampleId": "stoomboot-juichen",
+          "visualHint": "pulse",
+          "x": 80,
+          "y": 48
+        },
+        {
+          "id": "stoomboot-plons",
+          "sampleId": "stoomboot-plons",
+          "visualHint": "pulse",
+          "x": 42,
+          "y": 81
+        },
+        {
+          "id": "stoomboot-fanfare",
+          "sampleId": "stoomboot-fanfare",
+          "visualHint": "pulse",
+          "x": 90,
+          "y": 60
+        }
+      ],
+      "id": "stoomboot",
+      "image": "images/themes/sinterklaas/stoomboot.jpg"
+    },
+    {
+      "hotspots": [
+        {
+          "id": "dak-hoeven",
+          "sampleId": "dak-hoeven",
+          "visualHint": "pulse",
+          "x": 50,
+          "y": 60
+        },
+        {
+          "id": "dak-hinnik",
+          "sampleId": "dak-hinnik",
+          "visualHint": "pulse",
+          "x": 61,
+          "y": 37
+        },
+        {
+          "id": "dak-wind",
+          "sampleId": "dak-wind",
+          "visualHint": "pulse",
+          "x": 27,
+          "y": 17
+        },
+        {
+          "id": "dak-schoorsteen",
+          "sampleId": "dak-schoorsteen",
+          "visualHint": "pulse",
+          "x": 73,
+          "y": 43
+        },
+        {
+          "id": "dak-torenklok",
+          "sampleId": "dak-torenklok",
+          "visualHint": "pulse",
+          "x": 86,
+          "y": 17
+        },
+        {
+          "id": "dak-kat",
+          "sampleId": "dak-kat",
+          "visualHint": "pulse",
+          "x": 94,
+          "y": 56
+        },
+        {
+          "id": "dak-sluipen",
+          "sampleId": "dak-sluipen",
+          "visualHint": "pulse",
+          "x": 15,
+          "y": 80
+        }
+      ],
+      "id": "dak",
+      "image": "images/themes/sinterklaas/dak.jpg"
+    },
+    {
+      "hotspots": [
+        {
+          "id": "pakjeskamer-papier",
+          "sampleId": "pakjeskamer-papier",
+          "visualHint": "pulse",
+          "x": 13,
+          "y": 32
+        },
+        {
+          "id": "pakjeskamer-plakband",
+          "sampleId": "pakjeskamer-plakband",
+          "visualHint": "pulse",
+          "x": 33,
+          "y": 62
+        },
+        {
+          "id": "pakjeskamer-schaar",
+          "sampleId": "pakjeskamer-schaar",
+          "visualHint": "pulse",
+          "x": 44,
+          "y": 74
+        },
+        {
+          "id": "pakjeskamer-lopendeband",
+          "sampleId": "pakjeskamer-lopendeband",
+          "visualHint": "pulse",
+          "x": 62,
+          "y": 55
+        },
+        {
+          "id": "pakjeskamer-inpakmachine",
+          "sampleId": "pakjeskamer-inpakmachine",
+          "visualHint": "pulse",
+          "x": 82,
+          "y": 52
+        },
+        {
+          "id": "pakjeskamer-hond",
+          "sampleId": "pakjeskamer-hond",
+          "visualHint": "pulse",
+          "x": 81,
+          "y": 84
+        },
+        {
+          "id": "pakjeskamer-speeldoos",
+          "sampleId": "pakjeskamer-speeldoos",
+          "visualHint": "pulse",
+          "x": 90,
+          "y": 22
+        }
+      ],
+      "id": "pakjeskamer",
+      "image": "images/themes/sinterklaas/pakjeskamer.jpg"
+    },
+    {
+      "hotspots": [
+        {
+          "id": "bakkerij-deeg",
+          "sampleId": "bakkerij-deeg",
+          "visualHint": "pulse",
+          "x": 15,
+          "y": 45
+        },
+        {
+          "id": "bakkerij-strooien",
+          "sampleId": "bakkerij-strooien",
+          "visualHint": "pulse",
+          "x": 52,
+          "y": 22
+        },
+        {
+          "id": "bakkerij-ovenbel",
+          "sampleId": "bakkerij-ovenbel",
+          "visualHint": "pulse",
+          "x": 75,
+          "y": 20
+        },
+        {
+          "id": "bakkerij-deegmachine",
+          "sampleId": "bakkerij-deegmachine",
+          "visualHint": "pulse",
+          "x": 31,
+          "y": 40
+        },
+        {
+          "id": "bakkerij-knabbelen",
+          "sampleId": "bakkerij-knabbelen",
+          "visualHint": "pulse",
+          "x": 73,
+          "y": 70
+        },
+        {
+          "id": "bakkerij-niezen",
+          "sampleId": "bakkerij-niezen",
+          "visualHint": "pulse",
+          "x": 36,
+          "y": 76
+        },
+        {
+          "id": "bakkerij-ritme",
+          "sampleId": "bakkerij-ritme",
+          "visualHint": "pulse",
+          "x": 52,
+          "y": 58
+        }
+      ],
+      "id": "bakkerij",
+      "image": "images/themes/sinterklaas/bakkerij.jpg"
+    },
+    {
+      "hotspots": [
+        {
+          "id": "huiskamer-klop",
+          "sampleId": "huiskamer-klop",
+          "visualHint": "pulse",
+          "x": 8,
+          "y": 40
+        },
+        {
+          "id": "huiskamer-deurbel",
+          "sampleId": "huiskamer-deurbel",
+          "visualHint": "pulse",
+          "x": 17,
+          "y": 17
+        },
+        {
+          "id": "huiskamer-haard",
+          "sampleId": "huiskamer-haard",
+          "visualHint": "pulse",
+          "x": 43,
+          "y": 48
+        },
+        {
+          "id": "huiskamer-voetstappen",
+          "sampleId": "huiskamer-voetstappen",
+          "visualHint": "pulse",
+          "x": 86,
+          "y": 40
+        },
+        {
+          "id": "huiskamer-zak",
+          "sampleId": "huiskamer-zak",
+          "visualHint": "pulse",
+          "x": 64,
+          "y": 72
+        },
+        {
+          "id": "huiskamer-klok",
+          "sampleId": "huiskamer-klok",
+          "visualHint": "pulse",
+          "x": 55,
+          "y": 24
+        },
+        {
+          "id": "huiskamer-piano",
+          "sampleId": "huiskamer-piano",
+          "visualHint": "pulse",
+          "x": 26,
+          "y": 40
+        }
+      ],
+      "id": "huiskamer",
+      "image": "images/themes/sinterklaas/huiskamer.jpg"
+    }
+  ],
+  "map": {
+    "image": {
+      "en": "images/themes/sinterklaas/plattegrond-en.jpg",
+      "nl": "images/themes/sinterklaas/plattegrond.jpg"
+    },
+    "positions": [
+      {
+        "locationId": "stoomboot",
+        "x": 17,
+        "y": 62
+      },
+      {
+        "locationId": "dak",
+        "x": 48,
+        "y": 22
+      },
+      {
+        "locationId": "pakjeskamer",
+        "x": 78,
+        "y": 35
+      },
+      {
+        "locationId": "bakkerij",
+        "x": 61,
+        "y": 70
+      },
+      {
+        "locationId": "huiskamer",
+        "x": 82,
+        "y": 72
+      }
+    ]
+  },
+  "samples": [
+    {
+      "color": "#B3261E",
+      "duration": 3.14,
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-fluit.mp3",
+      "icon": "Ship",
+      "id": "stoomboot-fluit",
+      "locationId": "stoomboot"
+    },
+    {
+      "color": "#78716C",
+      "duration": 6.0,
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-machine.mp3",
+      "icon": "Cog",
+      "id": "stoomboot-machine",
+      "locationId": "stoomboot"
+    },
+    {
+      "color": "#0E7490",
+      "duration": 7.0,
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-golven.mp3",
+      "icon": "Waves",
+      "id": "stoomboot-golven",
+      "locationId": "stoomboot"
+    },
+    {
+      "color": "#F2B632",
+      "duration": 2.01,
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-bel.mp3",
+      "icon": "Bell",
+      "id": "stoomboot-bel",
+      "locationId": "stoomboot"
+    },
+    {
+      "color": "#DB2777",
+      "duration": 6.2,
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-juichen.mp3",
+      "icon": "PartyPopper",
+      "id": "stoomboot-juichen",
+      "locationId": "stoomboot"
+    },
+    {
+      "color": "#38BDF8",
+      "duration": 2.12,
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-plons.mp3",
+      "icon": "Droplet",
+      "id": "stoomboot-plons",
+      "locationId": "stoomboot"
+    },
+    {
+      "color": "#EA580C",
+      "duration": 8,
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-fanfare.mp3",
+      "icon": "Music",
+      "id": "stoomboot-fanfare",
+      "locationId": "stoomboot",
+      "kind": "loop"
+    },
+    {
+      "color": "#A8A29E",
+      "duration": 7.48,
+      "file": "audio/themes/sinterklaas/dak/dak-hoeven.mp3",
+      "icon": "Footprints",
+      "id": "dak-hoeven",
+      "locationId": "dak"
+    },
+    {
+      "color": "#D6A35C",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/dak/dak-hinnik.mp3",
+      "icon": "AudioWaveform",
+      "id": "dak-hinnik",
+      "locationId": "dak"
+    },
+    {
+      "color": "#7DD3FC",
+      "duration": 8.0,
+      "file": "audio/themes/sinterklaas/dak/dak-wind.mp3",
+      "icon": "Wind",
+      "id": "dak-wind",
+      "locationId": "dak"
+    },
+    {
+      "color": "#B3261E",
+      "duration": 3.0,
+      "file": "audio/themes/sinterklaas/dak/dak-schoorsteen.mp3",
+      "icon": "Gift",
+      "id": "dak-schoorsteen",
+      "locationId": "dak"
+    },
+    {
+      "color": "#F2B632",
+      "duration": 6.5,
+      "file": "audio/themes/sinterklaas/dak/dak-torenklok.mp3",
+      "icon": "Bell",
+      "id": "dak-torenklok",
+      "locationId": "dak"
+    },
+    {
+      "color": "#94A3B8",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/dak/dak-kat.mp3",
+      "icon": "Cat",
+      "id": "dak-kat",
+      "locationId": "dak"
+    },
+    {
+      "color": "#6D28D9",
+      "duration": 8,
+      "file": "audio/themes/sinterklaas/dak/dak-sluipen.mp3",
+      "icon": "Music",
+      "id": "dak-sluipen",
+      "locationId": "dak",
+      "kind": "loop"
+    },
+    {
+      "color": "#DB2777",
+      "duration": 5.49,
+      "file": "audio/themes/sinterklaas/pakjeskamer/pakjeskamer-papier.mp3",
+      "icon": "Package",
+      "id": "pakjeskamer-papier",
+      "locationId": "pakjeskamer"
+    },
+    {
+      "color": "#F2B632",
+      "duration": 4.47,
+      "file": "audio/themes/sinterklaas/pakjeskamer/pakjeskamer-plakband.mp3",
+      "icon": "Disc3",
+      "id": "pakjeskamer-plakband",
+      "locationId": "pakjeskamer"
+    },
+    {
+      "color": "#0E7490",
+      "duration": 3.82,
+      "file": "audio/themes/sinterklaas/pakjeskamer/pakjeskamer-schaar.mp3",
+      "icon": "Scissors",
+      "id": "pakjeskamer-schaar",
+      "locationId": "pakjeskamer"
+    },
+    {
+      "color": "#78716C",
+      "duration": 5.0,
+      "file": "audio/themes/sinterklaas/pakjeskamer/pakjeskamer-lopendeband.mp3",
+      "icon": "Cog",
+      "id": "pakjeskamer-lopendeband",
+      "locationId": "pakjeskamer"
+    },
+    {
+      "color": "#CA8A04",
+      "duration": 3.26,
+      "file": "audio/themes/sinterklaas/pakjeskamer/pakjeskamer-inpakmachine.mp3",
+      "icon": "Bot",
+      "id": "pakjeskamer-inpakmachine",
+      "locationId": "pakjeskamer"
+    },
+    {
+      "color": "#A8A29E",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/pakjeskamer/pakjeskamer-hond.mp3",
+      "icon": "Dog",
+      "id": "pakjeskamer-hond",
+      "locationId": "pakjeskamer"
+    },
+    {
+      "color": "#B3261E",
+      "duration": 8,
+      "file": "audio/themes/sinterklaas/pakjeskamer/pakjeskamer-speeldoos.mp3",
+      "icon": "Music",
+      "id": "pakjeskamer-speeldoos",
+      "locationId": "pakjeskamer",
+      "kind": "loop"
+    },
+    {
+      "color": "#D6A35C",
+      "duration": 5.8,
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-deeg.mp3",
+      "icon": "Hand",
+      "id": "bakkerij-deeg",
+      "locationId": "bakkerij"
+    },
+    {
+      "color": "#92400E",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-strooien.mp3",
+      "icon": "Cookie",
+      "id": "bakkerij-strooien",
+      "locationId": "bakkerij"
+    },
+    {
+      "color": "#F2B632",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-ovenbel.mp3",
+      "icon": "Bell",
+      "id": "bakkerij-ovenbel",
+      "locationId": "bakkerij"
+    },
+    {
+      "color": "#78716C",
+      "duration": 5.0,
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-deegmachine.mp3",
+      "icon": "Cog",
+      "id": "bakkerij-deegmachine",
+      "locationId": "bakkerij"
+    },
+    {
+      "color": "#B3261E",
+      "duration": 4.6,
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-knabbelen.mp3",
+      "icon": "SmilePlus",
+      "id": "bakkerij-knabbelen",
+      "locationId": "bakkerij"
+    },
+    {
+      "color": "#E7E5E4",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-niezen.mp3",
+      "icon": "Wind",
+      "id": "bakkerij-niezen",
+      "locationId": "bakkerij"
+    },
+    {
+      "color": "#EA580C",
+      "duration": 8,
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-ritme.mp3",
+      "icon": "Music",
+      "id": "bakkerij-ritme",
+      "locationId": "bakkerij",
+      "kind": "loop"
+    },
+    {
+      "color": "#92400E",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/huiskamer/huiskamer-klop.mp3",
+      "icon": "DoorOpen",
+      "id": "huiskamer-klop",
+      "locationId": "huiskamer"
+    },
+    {
+      "color": "#F2B632",
+      "duration": 4.49,
+      "file": "audio/themes/sinterklaas/huiskamer/huiskamer-deurbel.mp3",
+      "icon": "BellRing",
+      "id": "huiskamer-deurbel",
+      "locationId": "huiskamer"
+    },
+    {
+      "color": "#EA580C",
+      "duration": 7.0,
+      "file": "audio/themes/sinterklaas/huiskamer/huiskamer-haard.mp3",
+      "icon": "Flame",
+      "id": "huiskamer-haard",
+      "locationId": "huiskamer"
+    },
+    {
+      "color": "#6D28D9",
+      "duration": 7.3,
+      "file": "audio/themes/sinterklaas/huiskamer/huiskamer-voetstappen.mp3",
+      "icon": "Footprints",
+      "id": "huiskamer-voetstappen",
+      "locationId": "huiskamer"
+    },
+    {
+      "color": "#B3261E",
+      "duration": 2.0,
+      "file": "audio/themes/sinterklaas/huiskamer/huiskamer-zak.mp3",
+      "icon": "Gift",
+      "id": "huiskamer-zak",
+      "locationId": "huiskamer"
+    },
+    {
+      "color": "#78716C",
+      "duration": 6.0,
+      "file": "audio/themes/sinterklaas/huiskamer/huiskamer-klok.mp3",
+      "icon": "Clock",
+      "id": "huiskamer-klok",
+      "locationId": "huiskamer"
+    },
+    {
+      "color": "#1E3A8A",
+      "duration": 8,
+      "file": "audio/themes/sinterklaas/huiskamer/huiskamer-piano.mp3",
+      "icon": "Piano",
+      "id": "huiskamer-piano",
+      "locationId": "huiskamer",
+      "kind": "loop"
+    }
+  ],
+  "schemaVersion": 1,
+  "season": {
+    "from": "11-10",
+    "until": "12-06"
+  },
+  "sort": 15,
+  "status": "published",
+  "texts": {
+    "en": {
+      "description": "Steamboat, rooftops, present room, bakery and living room: help St Nicholas!",
+      "locations": {
+        "stoomboot": {
+          "description": "The boat docks at the decorated quay",
+          "name": "The Steamboat"
+        },
+        "dak": {
+          "description": "The horse steps across the roofs by moonlight",
+          "name": "On the Rooftops"
+        },
+        "pakjeskamer": {
+          "description": "Where every present gets wrapped",
+          "name": "The Present Room"
+        },
+        "bakkerij": {
+          "description": "The helper robots bake pepernoten",
+          "name": "The Pepernoten Bakery"
+        },
+        "huiskamer": {
+          "description": "Present evening: the shoe is ready",
+          "name": "The Living Room"
+        }
+      },
+      "name": "St Nicholas",
+      "samples": {
+        "stoomboot-fluit": "Steam whistle",
+        "stoomboot-machine": "Steam engine",
+        "stoomboot-golven": "Waves",
+        "stoomboot-bel": "Ship's bell",
+        "stoomboot-juichen": "Cheering",
+        "stoomboot-plons": "Splash",
+        "stoomboot-fanfare": "Brass band",
+        "dak-hoeven": "Horse hooves",
+        "dak-hinnik": "Neigh",
+        "dak-wind": "Wind",
+        "dak-schoorsteen": "Present down the chimney",
+        "dak-torenklok": "Tower bell",
+        "dak-kat": "Cat",
+        "dak-sluipen": "Tiptoe music",
+        "pakjeskamer-papier": "Wrapping paper",
+        "pakjeskamer-plakband": "Sticky tape",
+        "pakjeskamer-schaar": "Scissors",
+        "pakjeskamer-lopendeband": "Conveyor belt",
+        "pakjeskamer-inpakmachine": "Wrapping machine",
+        "pakjeskamer-hond": "Dog",
+        "pakjeskamer-speeldoos": "Music box",
+        "bakkerij-deeg": "Kneading dough",
+        "bakkerij-strooien": "Scattering pepernoten",
+        "bakkerij-ovenbel": "Oven bell",
+        "bakkerij-deegmachine": "Dough mixer",
+        "bakkerij-knabbelen": "Crunching",
+        "bakkerij-niezen": "Sneeze",
+        "bakkerij-ritme": "Baking beat",
+        "huiskamer-klop": "Knock on the door",
+        "huiskamer-deurbel": "Doorbell",
+        "huiskamer-haard": "Fireplace",
+        "huiskamer-voetstappen": "Footsteps",
+        "huiskamer-zak": "Sack of presents",
+        "huiskamer-klok": "Grandfather clock",
+        "huiskamer-piano": "Piano"
+      }
+    },
+    "nl": {
+      "description": "Stoomboot, daken, pakjeskamer, bakkerij en huiskamer: help de Sint!",
+      "locations": {
+        "stoomboot": {
+          "description": "De boot legt aan bij de versierde kade",
+          "name": "De stoomboot"
+        },
+        "dak": {
+          "description": "Het paard stapt over de daken bij maanlicht",
+          "name": "Op het dak"
+        },
+        "pakjeskamer": {
+          "description": "Hier worden alle pakjes ingepakt",
+          "name": "De pakjeskamer"
+        },
+        "bakkerij": {
+          "description": "De Pieten bakken pepernoten",
+          "name": "De pepernotenbakkerij"
+        },
+        "huiskamer": {
+          "description": "Pakjesavond: de schoen staat klaar",
+          "name": "De huiskamer"
+        }
+      },
+      "name": "Sinterklaas",
+      "samples": {
+        "stoomboot-fluit": "Stoomfluit",
+        "stoomboot-machine": "Stoommachine",
+        "stoomboot-golven": "Golven",
+        "stoomboot-bel": "Scheepsbel",
+        "stoomboot-juichen": "Juichen",
+        "stoomboot-plons": "Plons",
+        "stoomboot-fanfare": "Fanfare",
+        "dak-hoeven": "Paardenhoeven",
+        "dak-hinnik": "Hinniken",
+        "dak-wind": "Wind",
+        "dak-schoorsteen": "Pakje door de schoorsteen",
+        "dak-torenklok": "Torenklok",
+        "dak-kat": "Kat",
+        "dak-sluipen": "Sluipmuziek",
+        "pakjeskamer-papier": "Inpakpapier",
+        "pakjeskamer-plakband": "Plakband",
+        "pakjeskamer-schaar": "Schaar",
+        "pakjeskamer-lopendeband": "Lopende band",
+        "pakjeskamer-inpakmachine": "Inpakmachine",
+        "pakjeskamer-hond": "Hond",
+        "pakjeskamer-speeldoos": "Speeldoos",
+        "bakkerij-deeg": "Deeg kneden",
+        "bakkerij-strooien": "Pepernoten strooien",
+        "bakkerij-ovenbel": "Ovenbel",
+        "bakkerij-deegmachine": "Deegmachine",
+        "bakkerij-knabbelen": "Knabbelen",
+        "bakkerij-niezen": "Niezen",
+        "bakkerij-ritme": "Bakritme",
+        "huiskamer-klop": "Klop op de deur",
+        "huiskamer-deurbel": "Deurbel",
+        "huiskamer-haard": "Open haard",
+        "huiskamer-voetstappen": "Voetstappen",
+        "huiskamer-zak": "Zak met pakjes",
+        "huiskamer-klok": "Staande klok",
+        "huiskamer-piano": "Piano"
+      }
+    }
+  },
+  "version": 1
+}

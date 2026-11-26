@@ -74,6 +74,14 @@ export const praatplaatImages: PraatplaatImage[] = [
     availableFor: 'both',
     themeId: 'piraten',
   },
+  {
+    id: 'pp-sinterklaaspaleis',
+    nameKey: 'praatplaatImages.sinterklaaspaleis',
+    imageUrl: '/images/praatplaten/sinterklaaspaleis.jpg',
+    category: 'feest',
+    availableFor: 'both',
+    themeId: 'sinterklaas',
+  },
 ];
 
 /**

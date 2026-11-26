@@ -40,6 +40,18 @@ import {
   Droplet,
   Bug,
   Skull,
+  // Sinterklaas samples
+  Ship,
+  Cog,
+  PartyPopper,
+  Footprints,
+  Gift,
+  Clock,
+  Scissors,
+  Hand,
+  Cookie,
+  BellRing,
+  Flame,
   // Sequencer-bundels (fase 2)
   Grid3x3,
 } from 'lucide-react';
@@ -85,6 +97,18 @@ const sampleIconMap: Record<string, LucideIcon> = {
   Droplet,
   Bug,
   Skull,
+  // Sinterklaas samples
+  Ship,
+  Cog,
+  PartyPopper,
+  Footprints,
+  Gift,
+  Clock,
+  Scissors,
+  Hand,
+  Cookie,
+  BellRing,
+  Flame,
   // Sequencer-bundels (fase 2)
   Grid3x3,
 };

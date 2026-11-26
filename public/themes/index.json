@@ -115,6 +115,107 @@
     {
       "assetBase": "/",
       "colors": {
+        "accent": "#F2B632",
+        "mapBackground": "#FBEFD5",
+        "primary": "#B3261E"
+      },
+      "id": "sinterklaas",
+      "isPublic": true,
+      "locationCount": 5,
+      "locations": [
+        {
+          "id": "stoomboot",
+          "image": "images/themes/sinterklaas/stoomboot.jpg"
+        },
+        {
+          "id": "dak",
+          "image": "images/themes/sinterklaas/dak.jpg"
+        },
+        {
+          "id": "pakjeskamer",
+          "image": "images/themes/sinterklaas/pakjeskamer.jpg"
+        },
+        {
+          "id": "bakkerij",
+          "image": "images/themes/sinterklaas/bakkerij.jpg"
+        },
+        {
+          "id": "huiskamer",
+          "image": "images/themes/sinterklaas/huiskamer.jpg"
+        }
+      ],
+      "manifest": "sinterklaas/manifest.json",
+      "map": {
+        "image": {
+          "en": "images/themes/sinterklaas/plattegrond-en.jpg",
+          "nl": "images/themes/sinterklaas/plattegrond.jpg"
+        }
+      },
+      "sampleCount": 35,
+      "season": {
+        "from": "11-10",
+        "until": "12-06"
+      },
+      "sort": 15,
+      "texts": {
+        "en": {
+          "description": "Steamboat, rooftops, present room, bakery and living room: help St Nicholas!",
+          "locations": {
+            "bakkerij": {
+              "description": "The helper robots bake pepernoten",
+              "name": "The Pepernoten Bakery"
+            },
+            "dak": {
+              "description": "The horse steps across the roofs by moonlight",
+              "name": "On the Rooftops"
+            },
+            "huiskamer": {
+              "description": "Present evening: the shoe is ready",
+              "name": "The Living Room"
+            },
+            "pakjeskamer": {
+              "description": "Where every present gets wrapped",
+              "name": "The Present Room"
+            },
+            "stoomboot": {
+              "description": "The boat docks at the decorated quay",
+              "name": "The Steamboat"
+            }
+          },
+          "name": "St Nicholas"
+        },
+        "nl": {
+          "description": "Stoomboot, daken, pakjeskamer, bakkerij en huiskamer: help de Sint!",
+          "locations": {
+            "bakkerij": {
+              "description": "De Pieten bakken pepernoten",
+              "name": "De pepernotenbakkerij"
+            },
+            "dak": {
+              "description": "Het paard stapt over de daken bij maanlicht",
+              "name": "Op het dak"
+            },
+            "huiskamer": {
+              "description": "Pakjesavond: de schoen staat klaar",
+              "name": "De huiskamer"
+            },
+            "pakjeskamer": {
+              "description": "Hier worden alle pakjes ingepakt",
+              "name": "De pakjeskamer"
+            },
+            "stoomboot": {
+              "description": "De boot legt aan bij de versierde kade",
+              "name": "De stoomboot"
+            }
+          },
+          "name": "Sinterklaas"
+        }
+      },
+      "version": 1
+    },
+    {
+      "assetBase": "/",
+      "colors": {
         "accent": "#60A5FA",
         "mapBackground": "#E0F2FE",
         "primary": "#3B82F6"

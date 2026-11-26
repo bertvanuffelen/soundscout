@@ -63,8 +63,42 @@ const PIRATEN_SOUNDS: SoundCredit[] = [
   { title: 'wind chimes - single 03', author: 'Anthousai', ...CC0, sourceUrl: 'https://freesound.org/people/Anthousai/sounds/398492/' },
 ];
 
+/** Thema Sinterklaas — Freesound (bron: docs/themes/sinterklaas-BRONNEN.md) */
+const SINTERKLAAS_SOUNDS: SoundCredit[] = [
+  { title: "Steam Whistle", author: "Bidone", ...CC0, sourceUrl: 'https://freesound.org/people/Bidone/sounds/71778/' },
+  { title: "Running ship steam engine", author: "derplayer", ...CC0, sourceUrl: 'https://freesound.org/people/derplayer/sounds/587171/' },
+  { title: "Water lapping on lake Pukaki,South Island,New Zealand", author: "laughatlantic", ...CC0, sourceUrl: 'https://freesound.org/people/laughatlantic/sounds/528067/' },
+  { title: "Ship Bell Single Ring", author: "Sojan", ...CC0, sourceUrl: 'https://freesound.org/people/Sojan/sounds/353233/' },
+  { title: "Children Cheering Inside School", author: "Moulaythami", ...CC0, sourceUrl: 'https://freesound.org/people/Moulaythami/sounds/640855/' },
+  { title: "Big Water Splash", author: "qubodup", ...CC0, sourceUrl: 'https://freesound.org/people/qubodup/sounds/442773/' },
+  { title: "SFX - Horse - Walk", author: "MrFizzywig", ...CC0, sourceUrl: 'https://freesound.org/people/MrFizzywig/sounds/581833/' },
+  { title: "horse neigh shortened", author: "shadoWisp", ...CC0, sourceUrl: 'https://freesound.org/people/shadoWisp/sounds/269571/' },
+  { title: "Wind", author: "egomassive", ...CC0, sourceUrl: 'https://freesound.org/people/egomassive/sounds/536776/' },
+  { title: "1pm church-bell inside recorded 190413_1356", author: "klankbeeld", ...CC_BY_4, sourceUrl: 'https://freesound.org/people/klankbeeld/sounds/571607/' },
+  { title: "cat meow", author: "tuberatanka", ...CC0, sourceUrl: 'https://freesound.org/people/tuberatanka/sounds/110011/' },
+  { title: "Paper Bag and Bottle Wrap Up FF390", author: "martinimeniscus", ...CC0, sourceUrl: 'https://freesound.org/people/martinimeniscus/sounds/199346/' },
+  { title: "Ripping/unravelling packaging tape", author: "elle-trudgett", ...CC0, sourceUrl: 'https://freesound.org/people/elle-trudgett/sounds/151446/' },
+  { title: "scissors cutting paper", author: "Kiyoshiakira", ...CC0, sourceUrl: 'https://freesound.org/people/Kiyoshiakira/sounds/436769/' },
+  { title: "Animal Dog Bark 21", author: "abhisheky948", ...CC0, sourceUrl: 'https://freesound.org/people/abhisheky948/sounds/625496/' },
+  { title: "Baking bread (SoundAction 052)", author: "alexarje", ...CC_BY_4, sourceUrl: 'https://freesound.org/people/alexarje/sounds/721734/' },
+  { title: "Nuts Drop Hazelnut", author: "EminYILDIRIM", ...CC0, sourceUrl: 'https://freesound.org/people/EminYILDIRIM/sounds/536089/' },
+  { title: "Ringing bell - happy", author: "domrodrig", ...CC0, sourceUrl: 'https://freesound.org/people/domrodrig/sounds/116779/' },
+  { title: "Crunchy cookie eating", author: "Morgan169", ...CC0, sourceUrl: 'https://freesound.org/people/Morgan169/sounds/362024/' },
+  { title: "Sneeze 03", author: "SoundCollectah", ...CC0, sourceUrl: 'https://freesound.org/people/SoundCollectah/sounds/167640/' },
+  { title: "Knock_3b", author: "deleted_user_2104797", ...CC0, sourceUrl: 'https://freesound.org/people/deleted_user_2104797/sounds/144946/' },
+  { title: "bel1", author: "eliasheuninck", ...CC0, sourceUrl: 'https://freesound.org/people/eliasheuninck/sounds/2539/' },
+  { title: "fire-crackling", author: "jmehlferber", ...CC0, sourceUrl: 'https://freesound.org/people/jmehlferber/sounds/370938/' },
+  { title: "Footsteps Wooden Stairs Squeaking 1", author: "RutgerMuller", ...CC0, sourceUrl: 'https://freesound.org/people/RutgerMuller/sounds/51149/' },
+  { title: "Luggage Drop 3", author: "stephenbist", ...CC0, sourceUrl: 'https://freesound.org/people/stephenbist/sounds/434783/' },
+  { title: "Old clock tick-tock", author: "Duasun", ...CC0, sourceUrl: 'https://freesound.org/people/Duasun/sounds/323626/' },
+  { title: 'pot2', author: 'vacuumfan7072', ...CC0, sourceUrl: 'https://freesound.org/people/vacuumfan7072/sounds/505714/' },
+  { title: 'Wood block hit', author: 'thomasjaunism', ...CC0, sourceUrl: 'https://freesound.org/people/thomasjaunism/sounds/218460/' },
+  { title: 'Hit to the can', author: 'lmr9', ...CC0, sourceUrl: 'https://freesound.org/people/lmr9/sounds/178183/' },
+];
+
 export const THEME_CREDITS: ThemeCredits[] = [
   { themeId: 'piraten', nameKey: 'themes.piraten.name', sounds: PIRATEN_SOUNDS },
+  { themeId: 'sinterklaas', nameKey: 'themes.sinterklaas.name', sounds: SINTERKLAAS_SOUNDS },
 ];
 
 /** Alle vermelde geluiden, over thema's heen. */
