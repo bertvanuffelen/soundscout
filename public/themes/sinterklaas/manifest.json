@@ -328,7 +328,7 @@
     },
     {
       "color": "#78716C",
-      "duration": 6.0,
+      "duration": 7.7,
       "file": "audio/themes/sinterklaas/stoomboot/stoomboot-machine.mp3",
       "icon": "Cog",
       "id": "stoomboot-machine",
@@ -409,7 +409,7 @@
     },
     {
       "color": "#F2B632",
-      "duration": 6.5,
+      "duration": 4.98,
       "file": "audio/themes/sinterklaas/dak/dak-torenklok.mp3",
       "icon": "Bell",
       "id": "dak-torenklok",
@@ -515,7 +515,7 @@
     },
     {
       "color": "#78716C",
-      "duration": 5.0,
+      "duration": 6.0,
       "file": "audio/themes/sinterklaas/bakkerij/bakkerij-deegmachine.mp3",
       "icon": "Cog",
       "id": "bakkerij-deegmachine",
@@ -572,7 +572,7 @@
     },
     {
       "color": "#6D28D9",
-      "duration": 7.3,
+      "duration": 6.59,
       "file": "audio/themes/sinterklaas/huiskamer/huiskamer-voetstappen.mp3",
       "icon": "Footprints",
       "id": "huiskamer-voetstappen",
