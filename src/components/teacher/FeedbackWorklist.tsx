@@ -20,6 +20,7 @@ import type { FeedbackSticker } from '../../lib/submissions';
 import { getSubmissionShape, submissionSortTime } from '../../lib/submissionDisplay';
 import { STICKER_ICONS, STICKER_KEYS } from '../../utils/stickerMap';
 import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
+import { useSampleThemes } from '../../hooks/useSampleThemes';
 import { useDerivedBeat } from '../../hooks/useBeatFrame';
 import { getActiveImageIndex } from '../../utils/storytelling';
 import { normalizeBpm } from '../../utils/audio';
@@ -308,6 +309,8 @@ function FeedbackDetail({ submission, assignmentName, onSave, onDelete, nameById
   const { t } = useTranslation();
   const ageLabel = useAgeLabel();
   const data = submission.composition_data ?? null;
+  // Geluidsnamen van niet-basis-thema's (anders staat de ruwe sleutel in beeld)
+  useSampleThemes(data?.samples);
   const shape = getSubmissionShape(submission);
   const playback = useCompositionPlayback(data, { respectLoop: true });
   const isPlaying = playback.state === 'playing';

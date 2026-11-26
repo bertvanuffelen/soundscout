@@ -71,6 +71,7 @@ import { resolveStoryboard } from '../../utils/resolveStoryboard';
 import { cn } from '../../utils/cn';
 import { withSequenceSamples } from '../../utils/sequencer';
 import { isSpotVisible, toggleRevealed } from '../../utils/spotVisibility';
+import { useSampleThemes } from '../../hooks/useSampleThemes';
 
 export type PresentationMode = 'teacher-present' | 'teacher-review' | 'public' | 'peer';
 
@@ -171,6 +172,13 @@ export function PresentationSurface({
   const announceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Auto-play na een (auto-)wissel zodra de samples geladen zijn
   const pendingAutoPlayRef = useRef(false);
+
+  // Geluidsnamen van niet-basis-thema's: laad de thema's van de hele playlist
+  const playlistSamples = useMemo(
+    () => playlist.flatMap((s) => s.composition_data?.samples ?? []),
+    [playlist],
+  );
+  useSampleThemes(playlistSamples);
 
   // Raad-de-plek: wat de docent in deze presentatie al onthuld heeft
   // (sessie-state, bewust niet opgeslagen — de instelling zelf blijft "uit").

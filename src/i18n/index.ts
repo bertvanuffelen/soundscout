@@ -32,6 +32,12 @@ i18n.use(initReactI18next).init({
   interpolation: {
     escapeValue: false,
   },
+  // Thema-teksten komen later binnen (i18n.addResources na loadTheme): laat
+  // elk onderdeel met useTranslation dan opnieuw tekenen. Zonder dit bleef een
+  // geluidsnaam de ruwe sleutel tot er toevallig iets anders opnieuw tekende.
+  react: {
+    bindI18nStore: 'added',
+  },
 });
 
 // Sync direct bij het laden: het languageChanged-event vuurt niet bij init, waardoor
