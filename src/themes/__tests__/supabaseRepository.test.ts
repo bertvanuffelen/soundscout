@@ -137,7 +137,7 @@ describe('samenvoegen met de statische thema\'s', () => {
 describe('terugvallen: de leerling-app breekt nooit door de beheer-backend', () => {
   it('Supabase niet ingesteld → alleen statisch', async () => {
     const ids = (await repo(null).listThemes()).map((t) => t.id);
-    expect(ids.sort()).toEqual(['basis', 'piraten', 'winterspelen']);
+    expect(ids.sort()).toEqual(['basis', 'piraten', 'sinterklaas', 'winterspelen']);
   });
 
   it('migratie nog niet gedraaid → statisch, en niet elke keer opnieuw proberen', async () => {

@@ -29,6 +29,24 @@ async function pickerThemes(page: Page): Promise<string[]> {
   return dialog.locator('h3').allInnerTexts();
 }
 
+interface IndexTheme { id: string; isPublic: boolean; sort?: number; season?: { from: string; until: string }; texts: { nl: { name: string } } }
+
+/** Zelfde seizoenslogica als de app: from..until, ook over de jaargrens heen. */
+function inSeason(season: { from: string; until: string } | undefined, today: string): boolean {
+  if (!season) return true;
+  return season.from <= season.until
+    ? today >= season.from && today <= season.until
+    : today >= season.from || today <= season.until;
+}
+
+/** Wat de leerling-kiezer vandaag hoort te tonen: publiek, in seizoen, op `sort`. */
+function expectedPicker(themes: IndexTheme[], today: string): string[] {
+  return themes
+    .filter((t) => t.isPublic && inSeason(t.season, today))
+    .sort((a, b) => (a.sort ?? 0) - (b.sort ?? 0))
+    .map((t) => t.texts.nl.name);
+}
+
 function mmdd(date: Date): string {
   return `${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
 }
@@ -57,7 +75,12 @@ test('/?theme=winterspelen laadt de winterkaart uit het manifest', async ({ page
 test('de themakiezer toont dezelfde thema\'s als voorheen; piraten blijft verborgen', async ({ page }) => {
   await page.goto('/');
   await openThemePicker(page);
-  expect(await pickerThemes(page)).toEqual(['De Stad', 'Winterspelen']);
+  // Echte seizoensthema's (zoals Sinterklaas) horen er alleen in hun seizoen bij: leid dat af uit de index.
+  const index = JSON.parse(readFileSync('public/themes/index.json', 'utf8'));
+  const shown = await pickerThemes(page);
+  expect([...shown].sort()).toEqual(expectedPicker(index.themes, mmdd(new Date())).sort());
+  expect(shown).toEqual(expect.arrayContaining(['De Stad', 'Winterspelen']));
+  expect(shown).not.toContain('Piraten');
 });
 
 test('een nieuw thema in de index verschijnt zonder code; buiten seizoen niet', async ({ page }) => {
@@ -88,5 +111,8 @@ test('een nieuw thema in de index verschijnt zonder code; buiten seizoen niet', 
   })).toBe(true);
 
   await openThemePicker(page);
-  expect(await pickerThemes(page)).toEqual(['De Stad', 'Winterspelen', 'Testseizoen']);
+  const shown = await pickerThemes(page);
+  expect(shown).toEqual(expectedPicker(index.themes, mmdd(today)));
+  expect(shown).toContain('Testseizoen');
+  expect(shown).not.toContain('Buiten seizoen');
 });

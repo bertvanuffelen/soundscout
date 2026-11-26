@@ -16,6 +16,10 @@ interface HotspotProps {
 export function Hotspot({ hotspot, sample, disabled, onCollect, onHoverStart, onHoverEnd }: HotspotProps) {
   const { t } = useTranslation();
   const [collected, setCollected] = useState(false);
+  // Een thema mag rondjes kleiner maken (drukke platen met veel bronnen), nooit
+  // groter: oudere manifesten hebben grote radius-waarden die altijd genegeerd
+  // werden. De aanraakmaat van 44 px blijft hoe dan ook de ondergrens.
+  const radius = Math.min(hotspot.radius ?? DEFAULT_HOTSPOT_RADIUS, DEFAULT_HOTSPOT_RADIUS);
 
   const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     if (disabled || collected) return;
@@ -48,7 +52,7 @@ export function Hotspot({ hotspot, sample, disabled, onCollect, onHoverStart, on
       style={{
         left: `${hotspot.x}%`,
         top: `${hotspot.y}%`,
-        width: `${DEFAULT_HOTSPOT_RADIUS * 2}%`,
+        width: `${radius * 2}%`,
         minWidth: '44px',
         minHeight: '44px',
         aspectRatio: '1 / 1',
