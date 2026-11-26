@@ -1,5 +1,5 @@
 {
-  "comment": "Niet-i18n-velden per ingebouwde leskaart voor de statische /les/<key>-pagina's. Houd dit in sync met de seed-migraties (020/023) en LANDING_LESSON_KEYS in TeacherLandingPage.tsx. Teksten (title/level/goal/phases) komen uit src/i18n/locales/nl.json → lessonCards.builtin.<key>.",
+  "comment": "Niet-i18n-velden per ingebouwde leskaart voor de statische /les/<key>-pagina's. Houd dit in sync met de seed-migraties (020/023/048) en LANDING_LESSON_KEYS in TeacherLandingPage.tsx. Teksten (title/level/goal/phases) komen uit src/i18n/locales/nl.json → lessonCards.builtin.<key>.",
   "baseUrl": "https://soundscout.nl",
   "keys": [
     {
@@ -24,6 +24,12 @@
       "key": "drumbeat",
       "cover": null,
       "typeLabel": "Template",
+      "pdf": null
+    },
+    {
+      "key": "sinterklaas",
+      "cover": "/images/praatplaten/sinterklaaspaleis.jpg",
+      "typeLabel": "Praatplaat",
       "pdf": null
     }
   ]

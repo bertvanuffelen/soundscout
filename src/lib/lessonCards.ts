@@ -44,6 +44,11 @@ export interface LessonCard {
   // Opdrachtkaart (verwijzing OF inline)
   cardId: string | null;
   cardInline: OpdrachtkaartContent | null;
+  // Opdracht-instellingen die de leskaart meegeeft bij activeren (migratie 047)
+  /** Praatplaat: plekken op de plaat? null = standaard (tonen). */
+  showSpots: boolean | null;
+  /** Tijdsduur voor leerlingen, bijv. "1 les". null = niet instellen. */
+  durationLabel: string | null;
   // Presentatie-metadata (letterlijke tekst)
   title: string;
   level: string | null;
@@ -133,6 +138,9 @@ export interface LessonCardInput {
   freeThemeId?: string | null;
   cardId?: string | null;
   cardInline?: OpdrachtkaartContent | null;
+  /** Alleen meesturen als de waarde gezet is (kolommen uit migratie 047) */
+  showSpots?: boolean | null;
+  durationLabel?: string | null;
   title: string;
   level?: string | null;
   lessonGoal?: string | null;
@@ -141,8 +149,10 @@ export interface LessonCardInput {
   pdfUrl?: string | null;
 }
 
-const SELECT_COLS =
-  'id, teacher_id, builtin_key, assignment_type, template_id, praatplaat_ref, pp_theme_id, pp_location_id, pp_image_url, storyboard_ref, free_theme_id, card_id, card_inline, title, level, lesson_goal, phases, cover_image, pdf_url, created_at';
+// '*' i.p.v. een kolomlijst: de preset-kolommen show_spots/duration_label
+// (migratie 047) bestaan op een oudere database nog niet; met een vaste lijst
+// zou dan de hele leskaartenlijst falen.
+const SELECT_COLS = '*';
 
 interface RawLessonCard {
   id: string;
@@ -158,6 +168,8 @@ interface RawLessonCard {
   free_theme_id: string | null;
   card_id: string | null;
   card_inline: unknown;
+  show_spots?: boolean | null;
+  duration_label?: string | null;
   title: string;
   level: string | null;
   lesson_goal: string | null;
@@ -207,6 +219,8 @@ function mapRow(row: RawLessonCard): LessonCard {
     freeThemeId: row.free_theme_id,
     cardId: row.card_id,
     cardInline: parseCardInline(row.card_inline),
+    showSpots: typeof row.show_spots === 'boolean' ? row.show_spots : null,
+    durationLabel: row.duration_label?.trim() || null,
     title: row.title,
     level: row.level,
     lessonGoal: row.lesson_goal,
@@ -220,6 +234,10 @@ function mapRow(row: RawLessonCard): LessonCard {
 /** Snake-case payload voor insert/update (alleen relevante resource-velden). */
 function toRow(input: LessonCardInput): Record<string, unknown> {
   return {
+    // Preset-kolommen (047) alleen meesturen als ze gezet zijn: zo blijft
+    // opslaan werken op een database zonder die kolommen.
+    ...(input.showSpots != null ? { show_spots: input.showSpots } : {}),
+    ...(input.durationLabel ? { duration_label: input.durationLabel.trim().slice(0, 60) } : {}),
     assignment_type: input.assignmentType,
     template_id: input.templateId ?? null,
     praatplaat_ref: input.praatplaatRef ?? null,

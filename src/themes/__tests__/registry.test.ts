@@ -35,7 +35,7 @@ function seasonal(): ThemeManifest {
 function fakeRepository(extra: ThemeManifest[]) {
   const index: ThemeIndex = {
     schemaVersion: 1,
-    themes: [...realIndex.themes, ...extra.map((m) => manifestToIndexEntry(m, `${m.id}/manifest.json`))],
+    themes: [...realIndex.themes.filter((t) => !extra.some((m) => m.id === t.id)), ...extra.map((m) => manifestToIndexEntry(m, `${m.id}/manifest.json`))],
   };
   const files: Record<string, unknown> = { '/themes/index.json': index };
   for (const m of extra) files[`/themes/${m.id}/manifest.json`] = m;

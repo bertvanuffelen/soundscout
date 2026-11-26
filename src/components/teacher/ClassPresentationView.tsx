@@ -33,9 +33,11 @@ interface ClassPresentationViewProps {
    * het gedeelde album deed dit al wél, de docent-presentatie niet).
    */
   interactiveBoard?: { imageUrl: string; name: string } | null;
+  /** Raad-de-plek (migratie 047): inzendingen waarvan de plek verborgen is */
+  hiddenSpotIds?: ReadonlySet<string> | null;
 }
 
-export function ClassPresentationView({ playlist, onClose, onSetFeedback, classId, onRefresh, interactiveBoard = null }: ClassPresentationViewProps) {
+export function ClassPresentationView({ playlist, onClose, onSetFeedback, classId, onRefresh, interactiveBoard = null, hiddenSpotIds = null }: ClassPresentationViewProps) {
   const [peerStars, setPeerStars] = useState<Map<string, number> | undefined>(undefined);
 
   useEffect(() => {
@@ -56,6 +58,7 @@ export function ClassPresentationView({ playlist, onClose, onSetFeedback, classI
       peerStars={peerStars}
       onRefresh={onRefresh}
       interactiveBoard={interactiveBoard}
+      hiddenSpotIds={hiddenSpotIds}
     />
   );
 }

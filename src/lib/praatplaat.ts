@@ -375,13 +375,16 @@ export interface SharedPraatplaatData {
     theme_id: string;
     location_id: string;
   };
+  /** "Plekken tonen" van de opdracht (migratie 047); ontbreekt op oudere databases = tonen */
+  show_spots?: boolean;
   submissions: Array<{
     id: string;
     student_name: string;
     composition_name: string;
     composition_data: CompositionData;
-    position_x: number;
-    position_y: number;
+    /** null als de plekken verborgen zijn (de server laat ze dan weg) */
+    position_x: number | null;
+    position_y: number | null;
     created_at: string;
   }>;
 }

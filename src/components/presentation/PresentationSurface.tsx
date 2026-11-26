@@ -31,6 +31,11 @@
  *     op een smal scherm < 640px: dan dicht en als overlay), `announcing`
  *     (default aan in teacher-present).
  *   • fullscreen-effect: klapt montage + zijpaneel dicht bij het ingaan.
+ *   • `hiddenSpotIds` (raad-de-plek, migratie 047) — inzendingen waarvan de
+ *     plek NIET op de plaat staat. Docent-modi krijgen "Toon plek" / "Alle
+ *     plekken" in de onderbalk; peer en public kunnen niet onthullen. Het
+ *     zijpaneel blijft dan open in fullscreen (het is de enige weg naar een
+ *     soundscape zolang er geen plekken op de plaat staan).
  *   • `immersive` (fullscreen + beeld-vorm + montage dicht) — kaart, beeldzone
  *     en titelregel donker, zodat alleen het beeld oplicht op het digibord.
  * Een echte centrale MODE_CONFIG-tabel is een latere verbetering (zie
@@ -42,7 +47,7 @@ import { useTranslation } from 'react-i18next';
 import {
   X, Play, Pause, SkipBack, ListMusic, Loader2,
   Repeat, Star, PanelRightClose, PanelRightOpen, Music, Rows3,
-  Maximize, Minimize, Film, ImageIcon, AlertCircle, RefreshCw,
+  Maximize, Minimize, Film, ImageIcon, AlertCircle, RefreshCw, MapPin, MapPinned,
 } from 'lucide-react';
 import type { Submission } from '../../hooks/useSubmissions';
 import { getReviewStatus } from '../../hooks/useSubmissions';
@@ -65,6 +70,8 @@ import { normalizeBpm } from '../../utils/audio';
 import { resolveStoryboard } from '../../utils/resolveStoryboard';
 import { cn } from '../../utils/cn';
 import { withSequenceSamples } from '../../utils/sequencer';
+import { isSpotVisible, toggleRevealed } from '../../utils/spotVisibility';
+import { useSampleThemes } from '../../hooks/useSampleThemes';
 
 export type PresentationMode = 'teacher-present' | 'teacher-review' | 'public' | 'peer';
 
@@ -93,6 +100,12 @@ interface PresentationSurfaceProps {
   /** Ververs de playlist-bron (I7): toont een ververs-knop in de kopbalk;
    *  de eigenaar pollt daarnaast zelf en levert nieuwe items via `playlist`. */
   onRefresh?: () => void;
+  /**
+   * Raad-de-plek (migratie 047): ids van inzendingen waarvan de plek verborgen
+   * is ("Plekken tonen" uit). Die plekken staan nergens op de plaat tot de
+   * docent ze onthult; in peer/public is er geen onthul-knop.
+   */
+  hiddenSpotIds?: ReadonlySet<string> | null;
 }
 
 // Kort genoeg om niet te storen (de donkere overlay dimt ook de montagelijn —
@@ -132,6 +145,7 @@ export function PresentationSurface({
   respectLoop = false,
   interactiveBoard = null,
   onRefresh,
+  hiddenSpotIds = null,
 }: PresentationSurfaceProps) {
   const { t } = useTranslation();
 
@@ -158,6 +172,29 @@ export function PresentationSurface({
   const announceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Auto-play na een (auto-)wissel zodra de samples geladen zijn
   const pendingAutoPlayRef = useRef(false);
+
+  // Geluidsnamen van niet-basis-thema's: laad de thema's van de hele playlist
+  const playlistSamples = useMemo(
+    () => playlist.flatMap((s) => s.composition_data?.samples ?? []),
+    [playlist],
+  );
+  useSampleThemes(playlistSamples);
+
+  // Raad-de-plek: wat de docent in deze presentatie al onthuld heeft
+  // (sessie-state, bewust niet opgeslagen — de instelling zelf blijft "uit").
+  const [revealedIds, setRevealedIds] = useState<ReadonlySet<string>>(() => new Set());
+  const [revealAll, setRevealAll] = useState(false);
+  const spotVisible = useCallback(
+    (id: string) => isSpotVisible(id, hiddenSpotIds, { revealAll, revealedIds }),
+    [hiddenSpotIds, revealAll, revealedIds],
+  );
+  // Zijn er in deze playlist plekken die verborgen kúnnen zijn?
+  const hasHiddenSpots = useMemo(
+    () => !!hiddenSpotIds && playlist.some((s) => hiddenSpotIds.has(s.id) && !!s.composition_data?.praatplaatPosition),
+    [hiddenSpotIds, playlist],
+  );
+  // In fullscreen het zijpaneel open laten zolang de lijst de enige ingang is
+  const keepSidebarRef = useRef(false);
 
   const current = playlist[index];
   const data = current?.composition_data;
@@ -283,7 +320,10 @@ export function PresentationSurface({
   // visual: showTimeline valt dan terug op !hasVisual (tijdlijn blijft zichtbaar).
   useEffect(() => {
     if (!isFullscreen) return;
-    const timer = setTimeout(() => { setMontageOpen(false); setSidebarOpen(false); }, 0);
+    const timer = setTimeout(() => {
+      setMontageOpen(false);
+      if (!keepSidebarRef.current) setSidebarOpen(false);
+    }, 0);
     return () => clearTimeout(timer);
   }, [isFullscreen]);
 
@@ -302,12 +342,13 @@ export function PresentationSurface({
     return () => window.removeEventListener('keydown', onKey);
   }, [handlePlayPause, goTo, playbackState, toggleFullscreen]);
 
-  // Alle praatplaat-posities (snapshots) voor de kaart-visual
+  // Alle praatplaat-posities (snapshots) voor de kaart-visual — zonder de
+  // plekken die verborgen zijn (raad-de-plek)
   const praatplaatSpots = useMemo(() =>
     playlist
       .map((s, i) => ({ i, pos: s.composition_data?.praatplaatPosition, id: s.id }))
-      .filter((x): x is { i: number; pos: { x: number; y: number }; id: string } => !!x.pos),
-  [playlist]);
+      .filter((x): x is { i: number; pos: { x: number; y: number }; id: string } => !!x.pos && spotVisible(x.id)),
+  [playlist, spotVisible]);
 
   // --- Bord-stand (M5): geclusterde klikbare spots over de hele playlist ---
   const [dropdownCluster, setDropdownCluster] = useState<SpotCluster<BoardSpotItem> | null>(null);
@@ -316,13 +357,14 @@ export function PresentationSurface({
     const positioned: BoardSpotItem[] = playlist
       .map((s, i) => {
         const pos = s.composition_data?.praatplaatPosition;
-        return pos
+        // Verborgen plek = geen spot, dus ook geen tooltip of clusterkeuze
+        return pos && spotVisible(s.id)
           ? { index: i, id: s.id, student_name: s.student_name, position_x: pos.x, position_y: pos.y }
           : null;
       })
       .filter((p): p is BoardSpotItem => p !== null);
     return clusterSubmissions(positioned);
-  }, [interactiveBoard, playlist]);
+  }, [interactiveBoard, playlist, spotVisible]);
 
   const handleBoardItem = useCallback((item: BoardSpotItem) => {
     setDropdownCluster(null);
@@ -355,6 +397,26 @@ export function PresentationSurface({
       sampleCount: data?.samples?.length ?? 0,
     };
   }, [mode, current, data, t]);
+
+  // --- Raad-de-plek: onthullen (alleen docent-modi) ---
+  const canReveal = isTeacherMode && hasHiddenSpots;
+  const currentSpotHidden = !!current
+    && !!hiddenSpotIds?.has(current.id)
+    && !!current.composition_data?.praatplaatPosition;
+  const currentRevealed = !!current && currentSpotHidden && spotVisible(current.id);
+  useEffect(() => {
+    keepSidebarRef.current = hasHiddenSpots && !revealAll;
+  }, [hasHiddenSpots, revealAll]);
+
+  const handleRevealCurrent = useCallback(() => {
+    setDropdownCluster(null);
+    setRevealedIds((prev) => toggleRevealed(prev, playlist[indexRef.current]?.id ?? ''));
+  }, [playlist]);
+
+  const handleRevealAll = useCallback(() => {
+    setDropdownCluster(null);
+    setRevealAll((v) => !v);
+  }, []);
 
   if (!current) return null;
 
@@ -630,7 +692,7 @@ export function PresentationSurface({
           )}
 
           {/* Onderbalk: transport + toggles */}
-          <div className="flex items-center justify-center gap-3 px-4 py-3 shrink-0">
+          <div className="flex flex-wrap items-center justify-center gap-x-3 gap-y-2 px-4 py-3 shrink-0">
             {/* Terug naar het begin — zelfde betekenis als in de studio en op
                 het podium (wens Bert 19-7). Wisselen van compositie doe je in
                 het zijpaneel, met ←/→ of via Doorspelen; de transportknoppen
@@ -658,7 +720,7 @@ export function PresentationSurface({
                 <Play className="w-6 h-6 ml-0.5" aria-hidden="true" />
               )}
             </button>
-            {(hasPlaylistUi || (isTeacherMode && onSetFeedback)) && (
+            {(hasPlaylistUi || canReveal || (isTeacherMode && onSetFeedback)) && (
               <div className="w-px h-8 bg-brand-700 mx-1" aria-hidden="true" />
             )}
 
@@ -674,6 +736,36 @@ export function PresentationSurface({
               >
                 <Repeat className="w-4 h-4" aria-hidden="true" />
                 {t('teacher.presentation.autoAdvance')}
+              </button>
+            )}
+            {/* Raad-de-plek: de klas heeft geraden → toon de plek van déze
+                soundscape; aan het eind alle plekken. Grote tikdoelen: dit
+                gebeurt op het digibord, met een vinger. */}
+            {canReveal && currentSpotHidden && (
+              <button
+                onClick={handleRevealCurrent}
+                disabled={revealAll}
+                aria-pressed={currentRevealed}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-4 min-h-11 rounded-full text-sm font-bold transition-colors disabled:opacity-60',
+                  currentRevealed ? 'bg-accent-400 text-accent-900' : 'bg-white text-brand-900 hover:bg-accent-100'
+                )}
+              >
+                <MapPin className="w-4 h-4" aria-hidden="true" />
+                {t(currentRevealed && !revealAll ? 'teacher.presentation.hideSpot' : 'teacher.presentation.revealSpot')}
+              </button>
+            )}
+            {canReveal && playlist.length > 1 && (
+              <button
+                onClick={handleRevealAll}
+                aria-pressed={revealAll}
+                className={cn(
+                  'inline-flex items-center gap-1.5 px-4 min-h-11 rounded-full text-sm font-bold transition-colors',
+                  revealAll ? 'bg-accent-400 text-accent-900' : 'bg-brand-800 text-brand-300 hover:text-white'
+                )}
+              >
+                <MapPinned className="w-4 h-4" aria-hidden="true" />
+                {t('teacher.presentation.revealAll')}
               </button>
             )}
             {isTeacherMode && onSetFeedback && (

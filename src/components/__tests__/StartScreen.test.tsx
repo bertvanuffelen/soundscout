@@ -40,7 +40,8 @@ vi.mock('../../data/themes', async (importOriginal) => {
   return {
     ...actual,
     getPublicThemes: () => {
-      const list = actual.getPublicThemes();
+      // Echte seizoensthema's (zoals Sinterklaas) eruit: de test mag niet van de echte datum afhangen.
+      const list = actual.getPublicThemes().filter((t) => !t.activeFrom);
       if (!withSeasonal) return list;
       return [...list, { ...list[0], id: 'seizoen', name: 'Winterwonderland', activeFrom: '12-01', activeUntil: '02-28' }];
     },

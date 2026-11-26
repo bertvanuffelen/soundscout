@@ -82,6 +82,9 @@ export interface ClassSession {
   durationLabel?: string | null;
   /** Mag de leerling zelf een titel typen? (migratie 037; ontbreekt = ja) */
   studentsTypeTitle?: boolean;
+  /** Praatplaat: staan de plekken op de plaat? (migratie 047; ontbreekt = ja).
+   *  Nee = bij "Luister naar klasgenoten" geen plek op de plaat. */
+  showSpots?: boolean;
   /** Ingelogd met een leerlingcode (migratie 038): vaste schuilnaam */
   member?: ClassMemberIdentity;
 }
@@ -157,8 +160,12 @@ export interface Hotspot {
   id: string;
   x: number; // percentage (0-100)
   y: number; // percentage (0-100)
-  /** @deprecated Now uses universal DEFAULT_HOTSPOT_RADIUS from config.ts */
-  radius?: number; // percentage of container width (optional, ignored)
+  /**
+   * Straal in procent van de scènebreedte. Alleen een waarde KLEINER dan
+   * DEFAULT_HOTSPOT_RADIUS (config.ts) telt; grotere waarden worden genegeerd
+   * (oudere manifesten). Minimaal 44 px blijft altijd gelden.
+   */
+  radius?: number;
   sampleId: string;
   visualHint: VisualHint;
 }

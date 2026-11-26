@@ -19,11 +19,13 @@ function deps(over: Partial<ActivationDeps> = {}): ActivationDeps {
     updateAssignmentCard: vi.fn().mockResolvedValue(undefined),
     updatePraatplaatTheme: vi.fn().mockResolvedValue(undefined),
     setAssignmentPeerReview: vi.fn().mockResolvedValue(undefined),
+    fetchShowSpots: vi.fn().mockResolvedValue(true),
+    updateShowSpots: vi.fn().mockResolvedValue(undefined),
     ...over,
   };
 }
 
-const base: WizardSettings = { cardId: null, cardTouched: false, durationLabel: '', peerEnabled: false, praatplaatThemeId: null };
+const base: WizardSettings = { cardId: null, cardTouched: false, durationLabel: '', peerEnabled: false, praatplaatThemeId: null, showSpots: null };
 
 describe('activateFromWizard', () => {
   it('activeert een praatplaat met het gekozen thema en de kaart, zonder extra stappen', async () => {
@@ -70,6 +72,56 @@ describe('activateFromWizard', () => {
     const d = deps({ activateAssignment: vi.fn().mockRejectedValue(new Error('rls')) });
     await expect(activateFromWizard('c1', { kind: 'template', templateId: 'tp1' }, base, d)).rejects.toThrow('rls');
     expect(d.fetchClassAssignment).not.toHaveBeenCalled();
+  });
+
+  describe('plekken tonen (047)', () => {
+    const entry = { name: 'Robotfabriek', themeId: 'basis', locationId: 'pp-robotfabriek', imageUrl: '/x.jpg' };
+    const lesson = { kind: 'lesson', lessonCardId: 'l1', type: 'praatplaat' } as const;
+
+    it('eigen praatplaat, niets gekozen, opdracht staat al op tonen: niets zetten', async () => {
+      const d = deps();
+      const res = await activateFromWizard('c1', { kind: 'praatplaat', entry }, base, d);
+      expect(d.updateShowSpots).not.toHaveBeenCalled();
+      expect(res.failedSettings).toEqual([]);
+    });
+
+    it('eigen praatplaat met plekken uit: na het activeren op verborgen zetten', async () => {
+      const d = deps();
+      await activateFromWizard('c1', { kind: 'praatplaat', entry }, { ...base, showSpots: false }, d);
+      expect(d.updateShowSpots).toHaveBeenCalledWith('a1', false);
+    });
+
+    it('heractiveerde opdracht stond nog op verborgen: terug naar tonen', async () => {
+      const d = deps({ fetchShowSpots: vi.fn().mockResolvedValue(false) });
+      await activateFromWizard('c1', { kind: 'praatplaat', entry }, base, d);
+      expect(d.updateShowSpots).toHaveBeenCalledWith('a1', true);
+    });
+
+    it('kant-en-klare les: de stand van de les blijft staan tenzij de docent hem omzet', async () => {
+      const d = deps({ fetchShowSpots: vi.fn().mockResolvedValue(false) });
+      await activateFromWizard('c1', lesson, { ...base, praatplaatThemeId: 'basis' }, d);
+      expect(d.fetchShowSpots).not.toHaveBeenCalled();
+      expect(d.updateShowSpots).not.toHaveBeenCalled();
+
+      const d2 = deps({ fetchShowSpots: vi.fn().mockResolvedValue(false) });
+      await activateFromWizard('c1', lesson, { ...base, praatplaatThemeId: 'basis', showSpots: true }, d2);
+      expect(d2.updateShowSpots).toHaveBeenCalledWith('a1', true);
+    });
+
+    it('kolom bestaat nog niet: tonen is stil goed, verbergen wordt gemeld', async () => {
+      const d = deps({ fetchShowSpots: vi.fn().mockResolvedValue(null) });
+      const shown = await activateFromWizard('c1', { kind: 'praatplaat', entry }, base, d);
+      expect(shown.failedSettings).toEqual([]);
+      const hiddenRes = await activateFromWizard('c1', { kind: 'praatplaat', entry }, { ...base, showSpots: false }, d);
+      expect(hiddenRes.failedSettings).toEqual(['spots']);
+      expect(d.updateShowSpots).not.toHaveBeenCalled();
+    });
+
+    it('andere vormen raken de instelling niet aan', async () => {
+      const d = deps({ fetchClassAssignment: vi.fn().mockResolvedValue(row({ type: 'free', praatplaatId: null })) });
+      await activateFromWizard('c1', { kind: 'free', themeId: 'basis' }, { ...base, showSpots: false }, d);
+      expect(d.fetchShowSpots).not.toHaveBeenCalled();
+    });
   });
 
   it('choiceType geeft de vorm van elke keuze', () => {

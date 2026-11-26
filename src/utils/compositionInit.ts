@@ -367,6 +367,7 @@ export function classSessionFromAssignment(
     card: assignment.card,
     durationLabel: assignment.durationLabel,
     studentsTypeTitle: assignment.studentsTypeTitle,
+    showSpots: assignment.showSpots,
   };
   if (assignment.type === 'template' && assignment.template) {
     return { ...base, assignmentType: 'template', assignmentId: assignment.template.id, assignmentName: assignment.template.name };
@@ -428,6 +429,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+    showSpots: assignment.showSpots,
       member: memberIdentity,
       assignmentType: 'template',
       assignmentId: assignment.template.id,
@@ -447,6 +449,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+    showSpots: assignment.showSpots,
       member: memberIdentity,
       assignmentType: 'praatplaat',
       assignmentId: assignment.praatplaat.id,
@@ -499,6 +502,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+    showSpots: assignment.showSpots,
       member: memberIdentity,
       assignmentType: 'storyboard',
       assignmentId: assignment.storyboard.ref,
@@ -520,6 +524,7 @@ export async function activatePendingAssignment(): Promise<void> {
       card: assignment.card,
       durationLabel: assignment.durationLabel,
       studentsTypeTitle: assignment.studentsTypeTitle,
+    showSpots: assignment.showSpots,
       member: memberIdentity,
       assignmentType: 'free',
       assignmentId: assignment.free.themeId,
