@@ -91,8 +91,11 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
     composition_name: sub.composition_name,
     composition_data: {
       ...sub.composition_data,
+      // Bij "Plekken tonen: uit" stuurt de server geen posities mee (047)
       praatplaatPosition: sub.composition_data?.praatplaatPosition
-        ?? { x: sub.position_x, y: sub.position_y },
+        ?? (sub.position_x != null && sub.position_y != null
+          ? { x: sub.position_x, y: sub.position_y }
+          : undefined),
     },
     created_at: sub.created_at,
   }));
@@ -253,6 +256,9 @@ export function SharedPraatplaatViewer({ code, onBack }: SharedPraatplaatViewerP
       onClose={onBack}
       interactiveBoard={{ imageUrl: data.praatplaat.image_url, name: data.praatplaat.name }}
       respectLoop
+      /* Raad-de-plek: publiek geen plekken en geen onthul-knop — de plaat met
+         de lijst ernaast. De server stuurt de posities dan ook niet mee. */
+      hiddenSpotIds={data.show_spots === false ? new Set(playlist.map((s) => s.id)) : null}
     />
   );
 }

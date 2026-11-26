@@ -16,7 +16,7 @@
     "teksten:export": "node scripts/export-teksten.mjs",
     "teksten:import": "node scripts/import-teksten.mjs",
     "handboek": "node scripts/generate-handboek.mjs",
-    "test:db": "node supabase/tests/036/tests036.mjs && node supabase/tests/043/tests043.mjs && node supabase/tests/045/tests045.mjs && node supabase/tests/046/tests046.mjs",
+    "test:db": "node supabase/tests/036/tests036.mjs && node supabase/tests/043/tests043.mjs && node supabase/tests/045/tests045.mjs && node supabase/tests/046/tests046.mjs && node supabase/tests/047/tests047.mjs",
     "e2e": "playwright test",
     "e2e:baseline": "playwright test e2e/layout.spec.ts --update-snapshots",
     "e2e:golden": "UPDATE_GOLDEN=1 playwright test e2e/audio-golden.spec.ts",

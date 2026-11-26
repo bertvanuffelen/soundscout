@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2490 teksten in 57 secties._
+_Stand: 2509 teksten in 57 secties._
 
 ## app
 
@@ -37,7 +37,7 @@ _Stand: 2490 teksten in 57 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
-| `landscapeHint.message` | Draai je tablet of telefoon een kwartslag — in liggende stand heb je veel meer werkruimte. | Turn your tablet or phone sideways — landscape gives you a lot more room to work. |
+| `landscapeHint.message` | Draai je scherm een kwartslag. | Turn your screen sideways. |
 
 ## common
 
@@ -85,7 +85,7 @@ _Stand: 2490 teksten in 57 secties._
 | `map.loadingTheme` | Thema laden... | Loading theme... |
 | `map.studioShort` | Studio | Studio |
 | `map.cityMapAlt` | Plattegrond van het thema | Theme map |
-| `map.firstVisitHint` | Klik op een locatie om geluiden te verzamelen. Daarna maak je er in de studio een soundscape van. | Click a location to collect sounds. Then turn them into a soundscape in the studio. |
+| `map.firstVisitHint` | Tik op een plek en verzamel geluiden. | Tap a place and collect sounds. |
 
 ## themeSelection
 
@@ -340,7 +340,7 @@ _Stand: 2490 teksten in 57 secties._
 | `studio.soloOff` | Solo uitzetten | Turn solo off |
 | `studio.extendTimelineTitle` | Tijdlijn 8 maten langer maken (nu {{maten}} maten, max 64) | Make the timeline 8 bars longer (currently {{maten}} bars, max 64) |
 | `studio.shrinkTimelineTitle` | Tijdlijn 8 maten korter maken (nu {{maten}} maten, min 16) | Make the timeline 8 bars shorter (currently {{maten}} bars, min 16) |
-| `studio.clipToolsHint` | Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen. | Tip: click a clip on the timeline to trim it, add effects or change the volume. |
+| `studio.clipToolsHint` | Tik op een blok om het te bewerken. | Tap a block to edit it. |
 | `studio.addToTrack` | Voeg {{name}} toe aan tijdlijn | Add {{name}} to timeline |
 | `studio.dragToTimeline` | Sleep naar tijdlijn | Drag to timeline |
 | `studio.trim` | Inkorten | Trim |
@@ -443,7 +443,6 @@ _Stand: 2490 teksten in 57 secties._
 | `stage.namePlaceholder` | Mijn soundscape | My soundscape |
 | `stage.nameHint` | Tip: geen achternaam in je titel. | Tip: don't include your last name in the title. |
 | `stage.newComposition` | Nieuwe soundscape | New soundscape |
-| `stage.newCompositionConfirm` | Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt. | Are you sure you want to start over? You will lose your collected sounds and your soundscape. |
 | `stage.nowPlaying` | Nu speelt... | Now playing... |
 | `stage.cancel` | Annuleer | Cancel |
 | `stage.save` | Opslaan | Save |
@@ -609,7 +608,7 @@ _Stand: 2490 teksten in 57 secties._
 | `podium.assignmentChanged` | Je docent heeft de opdracht veranderd. Maak deze soundscape af, of kies "Nieuwe soundscape" voor de nieuwe opdracht. | Your teacher has changed the assignment. Finish this soundscape, or choose "New soundscape" for the new assignment. |
 | `podium.finish.button` | Klaar, ik stop | I'm done |
 | `podium.finish.title` | Klaar met werken? | Finished working? |
-| `podium.finish.text` | Je soundscape is ingeleverd. We halen je werk van deze computer, zodat de volgende leerling het niet ziet. | Your soundscape has been handed in. We'll remove your work from this computer, so the next student can't see it. |
+| `podium.finish.text` | Ingeleverd. Je werk gaat nu van deze computer af. | Handed in. Your work now leaves this computer. |
 | `podium.finish.code` | Later verder? Je code: | Want to continue later? Your code: |
 
 ## editor
@@ -847,6 +846,10 @@ _Stand: 2490 teksten in 57 secties._
 | `assignments.typeTitleLabel` | Leerlingen typen zelf een titel | Students type their own title |
 | `assignments.typeTitleOn` | Aan: leerlingen kiezen hun titel. | On: students choose their title. |
 | `assignments.typeTitleOff` | Uit: de app kiest een titel (geen namen in titels). | Off: the app picks a title (no names in titles). |
+| `assignments.showSpotsLabel` | Plekken tonen op de plaat | Show spots on the picture |
+| `assignments.showSpotsHint` | Uit: de klas raadt de plek. | Off: the class guesses the spot. |
+| `assignments.showSpotsOn` | Aan: elke plek staat op de plaat. | On: every spot is on the picture. |
+| `assignments.showSpotsOff` | Uit: lijst naast de plaat. Jij toont de plek. | Off: list beside the picture. You reveal the spot. |
 
 ## assignmentCards
 
@@ -941,6 +944,17 @@ _Stand: 2490 teksten in 57 secties._
 | `lessonCards.builtin.drumbeat.phases.2.text` | inleveren en de variaties klassikaal vergelijken. | submit and compare the variations in class. |
 | `lessonCards.builtin.drumbeat.phases.3.name` | Evalueren | Evaluate |
 | `lessonCards.builtin.drumbeat.phases.3.text` | bespreek hoe elke variatie het ritme verandert. | discuss how each variation changes the rhythm. |
+| `lessonCards.builtin.sinterklaas.title` | Sinterklaas: hoe klinkt pakjesavond? | Sinterklaas: what does present night sound like? |
+| `lessonCards.builtin.sinterklaas.level` | Groep 5–6 | Ages 8–10 |
+| `lessonCards.builtin.sinterklaas.goal` | Leerlingen maken een soundscape van één plek uit het Sinterklaasverhaal en ervaren hoe volgorde en lagen spanning opbouwen. | Pupils make a soundscape of one spot from the Sinterklaas story and discover how order and layers build suspense. |
+| `lessonCards.builtin.sinterklaas.phases.0.name` | Oriënteren | Orient |
+| `lessonCards.builtin.sinterklaas.phases.0.text` | Bekijk samen de plaat. Wat hoor je op elke plek? | Look at the picture together. What do you hear in each spot? |
+| `lessonCards.builtin.sinterklaas.phases.1.name` | Onderzoeken | Explore |
+| `lessonCards.builtin.sinterklaas.phases.1.text` | Kies één plek. Verzamel zes geluiden die jij erbij vindt passen. | Choose one spot. Collect six sounds that you think fit it. |
+| `lessonCards.builtin.sinterklaas.phases.2.name` | Uitvoeren | Perform |
+| `lessonCards.builtin.sinterklaas.phases.2.text` | Begin zacht, bouw op in lagen en lever in. | Start quietly, build up in layers and hand in. |
+| `lessonCards.builtin.sinterklaas.phases.3.name` | Evalueren | Evaluate |
+| `lessonCards.builtin.sinterklaas.phases.3.text` | De klas raadt de plek. Waar hoorde je dat aan? | The class guesses the spot. What gave it away? |
 | `lessonCards.sectionSubtitle` | Kant-en-klare lessen: kies er een, kies een klas en controleer wat je leerlingen zien. Maak ook je eigen leskaarten. | Ready-made lessons: pick one, choose a class and check what your students will see. Or create your own. |
 | `lessonCards.newButton` | Nieuwe leskaart | New lesson card |
 | `lessonCards.builtinBadge` | Ingebouwd | Built-in |
@@ -1203,6 +1217,7 @@ _Stand: 2490 teksten in 57 secties._
 | `errors.assignments.praatplaatTheme` | Kon het thema van de praatplaat niet wijzigen | Could not change the sound map's theme |
 | `errors.assignments.delete` | Deze opdracht kon niet uit je overzicht worden gehaald. | This assignment could not be removed from your overview. |
 | `errors.assignments.titleSetting` | Kon de titelinstelling niet opslaan | Could not save the title setting |
+| `errors.assignments.showSpots` | Kon "Plekken tonen" niet opslaan | Could not save "Show spots" |
 | `errors.classes.load` | Kon klassen niet laden | Could not load your classes |
 | `errors.classes.code` | Kon klas-code niet genereren | Could not generate a class code |
 | `errors.classes.codeInvalid` | Ongeldige klas-code ontvangen van de server | Received an invalid class code from the server |
@@ -1602,6 +1617,9 @@ _Stand: 2490 teksten in 57 secties._
 | `teacher.presentation.status.reviewed` | Beoordeeld | Reviewed |
 | `teacher.presentation.openMontage` | Open montage | Open timeline |
 | `teacher.presentation.closeMontage` | Sluit montage | Close timeline |
+| `teacher.presentation.revealSpot` | Toon plek | Show spot |
+| `teacher.presentation.hideSpot` | Verberg plek | Hide spot |
+| `teacher.presentation.revealAll` | Alle plekken | All spots |
 | `teacher.peerOverview.title` | Wat klasgenoten ervan vonden | What classmates thought |
 | `teacher.peerOverview.openButton` | Feedback-overzicht | Feedback overview |
 | `teacher.peerOverview.empty` | Nog geen beoordelingen van klasgenoten. Zet "Peer feedback" aan bij de actieve opdracht. | No peer reviews yet. Enable "Peer feedback" on the active assignment. |
@@ -1992,6 +2010,7 @@ _Stand: 2490 teksten in 57 secties._
 | `praatplaatImages.robotfabriek` | Robotfabriek | Robot Factory |
 | `praatplaatImages.sportveld` | Sportveld | Sports Field |
 | `praatplaatImages.piratenmarkt` | Piratenmarkt | Pirate market |
+| `praatplaatImages.sinterklaasPaleis` | Het Sinterklaaspaleis | St Nicholas' Palace |
 
 ## praatplaat
 
@@ -2048,7 +2067,7 @@ _Stand: 2490 teksten in 57 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `saveOnline.title` | Bewaar online | Save online |
-| `saveOnline.description` | Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder. | Save your soundscape online and get a code. Use it to keep working on any device. |
+| `saveOnline.description` | Met een code werk je op elk apparaat verder. | With a code you can carry on on any device. |
 | `saveOnline.nameLabel` | Jouw naam (optioneel) | Your name (optional) |
 | `saveOnline.namePlaceholder` | Bijv. Lisa of Groep 5 | e.g. Lisa |
 | `saveOnline.classCodeLabel` | Klascode (optioneel) | Class code (optional) |
@@ -2421,7 +2440,7 @@ _Stand: 2490 teksten in 57 secties._
 | `sequencer.studio.libraryHeading` | Sequences | Sequences |
 | `sequencer.studio.deleteWithClips` | Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg. | This sequence is still on the timeline. Deleting it also removes those blocks. |
 | `sequencer.studio.playsSequence` | Speelt deze sequence (loopt rond) | Plays this sequence (loops) |
-| `sequencer.studio.firstRunHint` | In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn. | In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline. |
+| `sequencer.studio.firstRunHint` | Zo maak je een ritme of een melodie. | This is how you make a rhythm or a melody. |
 | `sequencer.studio.done` | Klaar | Done |
 | `sequencer.studio.savedToast` | {{name}} staat in je bibliotheek. | {{name}} is in your library. |
 | `sequencer.studio.emptyDiscarded` | Er stond nog niets in, dus er is niets bewaard. | It was still empty, so nothing was saved. |

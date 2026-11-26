@@ -15,7 +15,7 @@ const SESSION: ClassSession = {
 
 const fresh = (extra: Partial<ActiveAssignment> = {}): ActiveAssignment => ({
   type: 'free', classId: 'c1', className: 'Groep 6b', card: null, peerReview: null,
-  durationLabel: null, studentsTypeTitle: true, free: { themeId: 'basis', themeName: 'Basis' }, ...extra,
+  durationLabel: null, studentsTypeTitle: true, showSpots: true, free: { themeId: 'basis', themeName: 'Basis' }, ...extra,
 });
 
 describe('mergeLiveAssignment', () => {
