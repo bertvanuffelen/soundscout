@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2510 teksten in 57 secties._
+_Stand: 2509 teksten in 57 secties._
 
 ## app
 
@@ -37,7 +37,7 @@ _Stand: 2510 teksten in 57 secties._
 
 | Sleutel | NL | EN |
 |---|---|---|
-| `landscapeHint.message` | Draai je tablet of telefoon een kwartslag — in liggende stand heb je veel meer werkruimte. | Turn your tablet or phone sideways — landscape gives you a lot more room to work. |
+| `landscapeHint.message` | Draai je scherm een kwartslag. | Turn your screen sideways. |
 
 ## common
 
@@ -85,7 +85,7 @@ _Stand: 2510 teksten in 57 secties._
 | `map.loadingTheme` | Thema laden... | Loading theme... |
 | `map.studioShort` | Studio | Studio |
 | `map.cityMapAlt` | Plattegrond van het thema | Theme map |
-| `map.firstVisitHint` | Klik op een locatie om geluiden te verzamelen. Daarna maak je er in de studio een soundscape van. | Click a location to collect sounds. Then turn them into a soundscape in the studio. |
+| `map.firstVisitHint` | Tik op een plek en verzamel geluiden. | Tap a place and collect sounds. |
 
 ## themeSelection
 
@@ -340,7 +340,7 @@ _Stand: 2510 teksten in 57 secties._
 | `studio.soloOff` | Solo uitzetten | Turn solo off |
 | `studio.extendTimelineTitle` | Tijdlijn 8 maten langer maken (nu {{maten}} maten, max 64) | Make the timeline 8 bars longer (currently {{maten}} bars, max 64) |
 | `studio.shrinkTimelineTitle` | Tijdlijn 8 maten korter maken (nu {{maten}} maten, min 16) | Make the timeline 8 bars shorter (currently {{maten}} bars, min 16) |
-| `studio.clipToolsHint` | Tip: klik op een blok in de tijdlijn om te knippen, effecten toe te voegen of het volume aan te passen. | Tip: click a clip on the timeline to trim it, add effects or change the volume. |
+| `studio.clipToolsHint` | Tik op een blok om het te bewerken. | Tap a block to edit it. |
 | `studio.addToTrack` | Voeg {{name}} toe aan tijdlijn | Add {{name}} to timeline |
 | `studio.dragToTimeline` | Sleep naar tijdlijn | Drag to timeline |
 | `studio.trim` | Inkorten | Trim |
@@ -443,7 +443,6 @@ _Stand: 2510 teksten in 57 secties._
 | `stage.namePlaceholder` | Mijn soundscape | My soundscape |
 | `stage.nameHint` | Tip: geen achternaam in je titel. | Tip: don't include your last name in the title. |
 | `stage.newComposition` | Nieuwe soundscape | New soundscape |
-| `stage.newCompositionConfirm` | Weet je zeker dat je opnieuw wilt beginnen? Je verzamelde geluiden en je soundscape ben je dan kwijt. | Are you sure you want to start over? You will lose your collected sounds and your soundscape. |
 | `stage.nowPlaying` | Nu speelt... | Now playing... |
 | `stage.cancel` | Annuleer | Cancel |
 | `stage.save` | Opslaan | Save |
@@ -609,7 +608,7 @@ _Stand: 2510 teksten in 57 secties._
 | `podium.assignmentChanged` | Je docent heeft de opdracht veranderd. Maak deze soundscape af, of kies "Nieuwe soundscape" voor de nieuwe opdracht. | Your teacher has changed the assignment. Finish this soundscape, or choose "New soundscape" for the new assignment. |
 | `podium.finish.button` | Klaar, ik stop | I'm done |
 | `podium.finish.title` | Klaar met werken? | Finished working? |
-| `podium.finish.text` | Je soundscape is ingeleverd. We halen je werk van deze computer, zodat de volgende leerling het niet ziet. | Your soundscape has been handed in. We'll remove your work from this computer, so the next student can't see it. |
+| `podium.finish.text` | Ingeleverd. Je werk gaat nu van deze computer af. | Handed in. Your work now leaves this computer. |
 | `podium.finish.code` | Later verder? Je code: | Want to continue later? Your code: |
 
 ## editor
@@ -2068,7 +2067,7 @@ _Stand: 2510 teksten in 57 secties._
 | Sleutel | NL | EN |
 |---|---|---|
 | `saveOnline.title` | Bewaar online | Save online |
-| `saveOnline.description` | Bewaar je soundscape online en krijg een code. Met die code werk je op elk apparaat verder. | Save your soundscape online and get a code. Use it to keep working on any device. |
+| `saveOnline.description` | Met een code werk je op elk apparaat verder. | With a code you can carry on on any device. |
 | `saveOnline.nameLabel` | Jouw naam (optioneel) | Your name (optional) |
 | `saveOnline.namePlaceholder` | Bijv. Lisa of Groep 5 | e.g. Lisa |
 | `saveOnline.classCodeLabel` | Klascode (optioneel) | Class code (optional) |
@@ -2441,7 +2440,7 @@ _Stand: 2510 teksten in 57 secties._
 | `sequencer.studio.libraryHeading` | Sequences | Sequences |
 | `sequencer.studio.deleteWithClips` | Deze sequence staat nog op de montagelijn. Verwijderen haalt ook die blokken weg. | This sequence is still on the timeline. Deleting it also removes those blocks. |
 | `sequencer.studio.playsSequence` | Speelt deze sequence (loopt rond) | Plays this sequence (loops) |
-| `sequencer.studio.firstRunHint` | In de sequencer maak je een ritme dat zichzelf herhaalt. Elk vakje is één tel: klik een vakje aan en je hoort het geluid op dat moment. Kies per spoor een geluid uit je bibliotheek. Met de tab Melodie maak je een deuntje met noten. Klaar? Sleep je sequence vanuit de bibliotheek naar de tijdlijn. | In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline. |
+| `sequencer.studio.firstRunHint` | Zo maak je een ritme of een melodie. | This is how you make a rhythm or a melody. |
 | `sequencer.studio.done` | Klaar | Done |
 | `sequencer.studio.savedToast` | {{name}} staat in je bibliotheek. | {{name}} is in your library. |
 | `sequencer.studio.emptyDiscarded` | Er stond nog niets in, dus er is niets bewaard. | It was still empty, so nothing was saved. |

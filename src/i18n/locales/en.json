@@ -7,7 +7,7 @@
     "gotIt": "Got it!"
   },
   "landscapeHint": {
-    "message": "Turn your tablet or phone sideways — landscape gives you a lot more room to work."
+    "message": "Turn your screen sideways."
   },
   "common": {
     "back": "Back",
@@ -48,7 +48,7 @@
     "loadingTheme": "Loading theme...",
     "studioShort": "Studio",
     "cityMapAlt": "Theme map",
-    "firstVisitHint": "Click a location to collect sounds. Then turn them into a soundscape in the studio."
+    "firstVisitHint": "Tap a place and collect sounds."
   },
   "themeSelection": {
     "title": "Choose your world",
@@ -303,7 +303,7 @@
     "soloOff": "Turn solo off",
     "extendTimelineTitle": "Make the timeline 8 bars longer (currently {{maten}} bars, max 64)",
     "shrinkTimelineTitle": "Make the timeline 8 bars shorter (currently {{maten}} bars, min 16)",
-    "clipToolsHint": "Tip: click a clip on the timeline to trim it, add effects or change the volume.",
+    "clipToolsHint": "Tap a block to edit it.",
     "addToTrack": "Add {{name}} to timeline",
     "dragToTimeline": "Drag to timeline",
     "trim": "Trim",
@@ -406,7 +406,6 @@
     "namePlaceholder": "My soundscape",
     "nameHint": "Tip: don't include your last name in the title.",
     "newComposition": "New soundscape",
-    "newCompositionConfirm": "Are you sure you want to start over? You will lose your collected sounds and your soundscape.",
     "nowPlaying": "Now playing...",
     "cancel": "Cancel",
     "save": "Save",
@@ -600,7 +599,7 @@
     "finish": {
       "button": "I'm done",
       "title": "Finished working?",
-      "text": "Your soundscape has been handed in. We'll remove your work from this computer, so the next student can't see it.",
+      "text": "Handed in. Your work now leaves this computer.",
       "code": "Want to continue later? Your code:"
     }
   },
@@ -2433,7 +2432,7 @@
   },
   "saveOnline": {
     "title": "Save online",
-    "description": "Save your soundscape online and get a code. Use it to keep working on any device.",
+    "description": "With a code you can carry on on any device.",
     "nameLabel": "Your name (optional)",
     "namePlaceholder": "e.g. Lisa",
     "classCodeLabel": "Class code (optional)",
@@ -2913,7 +2912,7 @@
       "libraryHeading": "Sequences",
       "deleteWithClips": "This sequence is still on the timeline. Deleting it also removes those blocks.",
       "playsSequence": "Plays this sequence (loops)",
-      "firstRunHint": "In the sequencer you build a rhythm that repeats itself. Each cell is one beat: click a cell and you hear the sound at that moment. Pick a sound from your library for every track. Use the Melody tab to make a tune with notes. Done? Drag your sequence from the library onto the timeline.",
+      "firstRunHint": "This is how you make a rhythm or a melody.",
       "done": "Done",
       "savedToast": "{{name}} is in your library.",
       "emptyDiscarded": "It was still empty, so nothing was saved.",
