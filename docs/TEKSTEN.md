@@ -2011,7 +2011,7 @@ _Stand: 2510 teksten in 57 secties._
 | `praatplaatImages.robotfabriek` | Robotfabriek | Robot Factory |
 | `praatplaatImages.sportveld` | Sportveld | Sports Field |
 | `praatplaatImages.piratenmarkt` | Piratenmarkt | Pirate market |
-| `praatplaatImages.sinterklaasPaleis` | Het Sinterklaaspaleis | The Sinterklaas palace |
+| `praatplaatImages.sinterklaasPaleis` | Het Sinterklaaspaleis | St Nicholas' Palace |
 
 ## praatplaat
 

@@ -77,7 +77,7 @@ export const praatplaatImages: PraatplaatImage[] = [
   {
     // De plaat van de kant-en-klare Sinterklaasles (migratie 048). Alleen in
     // de docent-catalogus, en pas zichtbaar zodra het thema `sinterklaas`
-    // publiek is. Versie 11, nog goed te keuren door Bert; een nieuwe versie komt op hetzelfde pad.
+    // publiek is. Versie 11, goedgekeurd door Bert op 26-11-2026 (definitief).
     id: 'pp-sinterklaas-paleis',
     nameKey: 'praatplaatImages.sinterklaasPaleis',
     imageUrl: '/images/praatplaten/sinterklaaspaleis.jpg',
