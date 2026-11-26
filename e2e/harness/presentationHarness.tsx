@@ -86,7 +86,7 @@ export function mountGuessBoard(options: { hidden?: boolean; mode?: 'teacher-pre
       playlist={playlist}
       mode={mode}
       onClose={() => undefined}
-      interactiveBoard={{ imageUrl: '/images/praatplaten/sinterklaas-paleis.jpg', name: 'Het Sinterklaaspaleis' }}
+      interactiveBoard={{ imageUrl: '/images/praatplaten/sinterklaaspaleis.jpg', name: 'Het Sinterklaaspaleis' }}
       hiddenSpotIds={hidden ? new Set(playlist.map((s) => s.id)) : null}
     />,
   );

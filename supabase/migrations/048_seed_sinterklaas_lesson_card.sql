@@ -28,10 +28,10 @@
 DO $$
 DECLARE
   -- De praatplaat van deze les: het Sinterklaaspaleis (besluit Bert 26-11-2026).
-  -- Het bestand is nu kandidaat v6; welke versie definitief is moet Bert nog
-  -- bevestigen. De definitieve komt op hetzelfde pad te staan. Zelfde beeld als
+  -- Het bestand is nu versie 11; die moet Bert nog goedkeuren (zelfde pad bij een
+  -- nieuwe versie). Zelfde beeld als
   -- catalogus-entry `pp-sinterklaas-paleis` in src/data/praatplaatImages.ts.
-  v_image CONSTANT TEXT := '/images/praatplaten/sinterklaas-paleis.jpg';
+  v_image CONSTANT TEXT := '/images/praatplaten/sinterklaaspaleis.jpg';
 BEGIN
   INSERT INTO public.lesson_cards (
     builtin_key, assignment_type,
