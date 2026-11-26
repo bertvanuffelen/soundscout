@@ -660,7 +660,7 @@
     },
     {
       "color": "#1E3A8A",
-      "duration": 2.0,
+      "duration": 2.52,
       "file": "audio/themes/sinterklaas/stoomboot/stoomboot-camera.mp3",
       "icon": "Camera",
       "id": "stoomboot-camera",
@@ -684,7 +684,7 @@
     },
     {
       "color": "#CA8A04",
-      "duration": 2.86,
+      "duration": 5.35,
       "file": "audio/themes/sinterklaas/stoomboot/stoomboot-pakjes.mp3",
       "icon": "Package",
       "id": "stoomboot-pakjes",
@@ -765,7 +765,7 @@
     },
     {
       "color": "#92400E",
-      "duration": 7.49,
+      "duration": 6.54,
       "file": "audio/themes/sinterklaas/dak/dak-ladder.mp3",
       "icon": "Footprints",
       "id": "dak-ladder",
@@ -1072,7 +1072,7 @@
     },
     {
       "color": "#DB2777",
-      "duration": 3.48,
+      "duration": 4.56,
       "file": "audio/themes/sinterklaas/huiskamer/huiskamer-papier.mp3",
       "icon": "Scroll",
       "id": "huiskamer-papier",
