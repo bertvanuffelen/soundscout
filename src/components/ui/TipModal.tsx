@@ -11,22 +11,35 @@ import { useTranslation } from 'react-i18next';
 import { Lightbulb } from 'lucide-react';
 import { Modal } from './Modal';
 import { Button } from './Button';
+import { SoundScoutAnimation } from '../common/OnboardingAnimation';
 
 interface TipModalProps {
   isOpen: boolean;
   onDismiss: () => void;
   /** De tip-tekst (al vertaald) */
   text: string;
+  /**
+   * Uitleg-animatie uit public/animaties/ (bestandsnaam zonder extensie) die
+   * de tekst vervangt als uitleg (mockup B4: laten zien in plaats van
+   * uitleggen). De tekst wordt dan één korte regel eronder.
+   */
+  animation?: string;
 }
 
-export default function TipModal({ isOpen, onDismiss, text }: TipModalProps) {
+export default function TipModal({ isOpen, onDismiss, text, animation }: TipModalProps) {
   const { t } = useTranslation();
   return (
-    <Modal isOpen={isOpen} onClose={onDismiss} title={t('tips.title')} size="sm">
+    <Modal isOpen={isOpen} onClose={onDismiss} title={t('tips.title')} size={animation ? 'lg' : 'sm'}>
       <div className="flex flex-col items-center text-center gap-4">
-        <div className="w-14 h-14 rounded-full bg-accent-100 flex items-center justify-center">
-          <Lightbulb className="w-7 h-7 text-accent-600" aria-hidden="true" />
-        </div>
+        {animation ? (
+          <div className="w-full rounded-2xl overflow-hidden" data-testid="tip-animation">
+            <SoundScoutAnimation name={animation} title={text} initialHeight={320} />
+          </div>
+        ) : (
+          <div className="w-14 h-14 rounded-full bg-accent-100 flex items-center justify-center">
+            <Lightbulb className="w-7 h-7 text-accent-600" aria-hidden="true" />
+          </div>
+        )}
         <p className="text-text-main leading-relaxed">{text}</p>
         <Button variant="primary" onClick={onDismiss} className="w-full sm:w-auto sm:min-w-[160px]">
           {t('tips.gotIt')}
