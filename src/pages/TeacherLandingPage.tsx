@@ -806,7 +806,7 @@ const LESSON_TYPE_TAG: Record<AssignmentType, { labelKey: string; classes: strin
  * hier hoeven te staan. Het dashboard toont altijd alles. Volgorde hier =
  * volgorde op de pagina.
  */
-const LANDING_LESSON_KEYS = ['robotfabriek', 'verspringen', 'vrij-basis', 'drumbeat'];
+const LANDING_LESSON_KEYS = ['sinterklaas', 'robotfabriek', 'verspringen', 'vrij-basis', 'drumbeat'];
 
 function LessonsSection() {
   const { t } = useTranslation();
