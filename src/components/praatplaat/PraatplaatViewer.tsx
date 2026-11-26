@@ -9,7 +9,7 @@
  * voorstadia (laden / fout / leeg / preview zonder klas).
  */
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { X, Loader2 } from 'lucide-react';
 import { getPraatplaatSubmissions } from '../../lib/praatplaat';
@@ -23,10 +23,12 @@ interface PraatplaatViewerProps {
   praatplaat: PraatplaatRow;
   /** Als classId is opgegeven, worden alleen submissions van die klas getoond. Zonder: alleen de afbeelding. */
   classId?: string;
+  /** Raad-de-plek (migratie 047): plekken niet op de plaat tot de docent ze onthult */
+  hideSpots?: boolean;
   onClose: () => void;
 }
 
-export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatViewerProps) {
+export function PraatplaatViewer({ praatplaat, classId, hideSpots = false, onClose }: PraatplaatViewerProps) {
   const { t } = useTranslation();
 
   const [playlist, setPlaylist] = useState<Submission[] | null>(null);
@@ -68,6 +70,11 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
   useEffect(() => {
     fetchData();
   }, [fetchData]);
+
+  const hiddenSpotIds = useMemo(
+    () => (hideSpots && playlist ? new Set(playlist.map((s) => s.id)) : null),
+    [hideSpots, playlist],
+  );
 
   // --- Voorstadia: laden / fout / leeg (surface vereist ≥1 item) ---
   if (loading || error || !playlist || playlist.length === 0) {
@@ -128,6 +135,7 @@ export function PraatplaatViewer({ praatplaat, classId, onClose }: PraatplaatVie
       mode="teacher-present"
       onClose={onClose}
       interactiveBoard={{ imageUrl: praatplaat.image_url, name: praatplaat.name }}
+      hiddenSpotIds={hiddenSpotIds}
     />
   );
 }

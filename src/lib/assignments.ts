@@ -62,6 +62,9 @@ export interface ActiveAssignment {
   durationLabel: string | null;
   /** Mogen leerlingen zelf een titel typen? (migratie 037, standaard ja) */
   studentsTypeTitle: boolean;
+  /** Praatplaat: staan de gekozen plekken op de plaat? (migratie 047, standaard ja).
+   *  Nee = raad-de-plek: de leerling ziet bij klasgenoten geen plek. */
+  showSpots: boolean;
   // Template fields (present when type = 'template')
   template?: Template;
   // Praatplaat fields (present when type = 'praatplaat')
@@ -251,6 +254,8 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
       : null;
     // Titelinstelling (migratie 037) — ontbreekt op oudere databases → aan
     const studentsTypeTitle = payload.students_type_title !== false;
+    // Plekken tonen (migratie 047) — ontbreekt op oudere databases → tonen
+    const showSpots = payload.show_spots !== false;
     // Peer-review (migratie 027/028) — kolom ontbreekt op oudere databases
     const peerReview: PeerReviewConfig | null =
       row.peer_review?.enabled && Array.isArray(row.peer_review.chips)
@@ -277,6 +282,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         peerReview,
         durationLabel,
         studentsTypeTitle,
+        showSpots,
         template: {
           id: String(payload.template_id ?? ''),
           name: (payload.name as string) || '',
@@ -299,6 +305,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         peerReview,
         durationLabel,
         studentsTypeTitle,
+        showSpots,
         praatplaat: {
           id: String(payload.praatplaat_id ?? ''),
           name: (payload.name as string) || '',
@@ -320,6 +327,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         peerReview,
         durationLabel,
         studentsTypeTitle,
+        showSpots,
         storyboard,
       };
     }
@@ -335,6 +343,7 @@ export async function getActiveAssignment(classCode: string): Promise<ActiveAssi
         peerReview,
         durationLabel,
         studentsTypeTitle,
+        showSpots,
         free: { themeId, themeName: themeDisplayName(themeId) },
       };
     }
@@ -591,6 +600,68 @@ export async function updateStudentsTypeTitle(assignmentId: string, value: boole
   if (error) {
     logger.error('updateStudentsTypeTitle error:', sanitizeError(error));
     throw new Error(i18n.t('errors.assignments.titleSetting'));
+  }
+}
+
+/** Plekken-instelling van één praatplaat-opdracht (migratie 047). */
+export interface SpotSetting {
+  assignmentId: string;
+  praatplaatId: string;
+  showSpots: boolean;
+}
+
+/**
+ * Lees "Plekken tonen" voor alle praatplaat-opdrachten van een klas (actief
+ * én historie). Geeft `null` als de kolom nog niet bestaat (migratie 047 niet
+ * gedraaid): dan toont de app geen schakelaar en staan de plekken gewoon op
+ * de plaat, zoals altijd.
+ */
+export async function fetchSpotSettings(classId: string): Promise<SpotSetting[] | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('class_assignments')
+    .select('id, praatplaat_id, show_spots')
+    .eq('class_id', classId)
+    .eq('assignment_type', 'praatplaat');
+  if (error || !data) return null;
+  return (data as Array<{ id: string; praatplaat_id: string | null; show_spots?: unknown }>)
+    .filter((row) => !!row.praatplaat_id)
+    .map((row) => ({
+      assignmentId: row.id,
+      praatplaatId: row.praatplaat_id as string,
+      showSpots: row.show_spots !== false,
+    }));
+}
+
+/**
+ * Lees "Plekken tonen" van één opdracht (migratie 047). `null` als de kolom
+ * nog niet bestaat: dan toont de app geen schakelaar.
+ */
+export async function fetchShowSpots(assignmentId: string): Promise<boolean | null> {
+  const supabase = await getSupabase();
+  const { data, error } = await supabase
+    .from('class_assignments')
+    .select('show_spots')
+    .eq('id', assignmentId)
+    .maybeSingle();
+  if (error || !data) return null;
+  const value = (data as { show_spots?: unknown }).show_spots;
+  return typeof value === 'boolean' ? value : null;
+}
+
+/**
+ * Zet "Plekken tonen" (migratie 047). Docent-eigendom via de UPDATE-RLS-
+ * policy (006/036), net als de tijdsduur en de titelinstelling.
+ */
+export async function updateShowSpots(assignmentId: string, value: boolean): Promise<void> {
+  const supabase = await getSupabase();
+  const { error } = await supabase
+    .from('class_assignments')
+    .update({ show_spots: value })
+    .eq('id', assignmentId);
+  if (error) {
+    logger.error('updateShowSpots error:', sanitizeError(error));
+    throw new Error(i18n.t('errors.assignments.showSpots'));
   }
 }
 

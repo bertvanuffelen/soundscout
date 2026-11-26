@@ -504,6 +504,7 @@ export function StageView() {
           classCode={classSession.classCode}
           ownSubmissionId={submissionId}
           chips={classSession.peerReview.chips}
+          hideSpots={classSession.showSpots === false}
           onReviewed={() => setPeerDoneState(setPeerDone(submissionId, getPeerDone(submissionId) + 1))}
           onCapReached={() => setPeerDoneState(setPeerDone(submissionId, 3))}
         />

@@ -24,6 +24,7 @@ import { useAssignmentCards } from '../../../hooks/useAssignmentCards';
 import { useLessonCards } from '../../../hooks/useLessonCards';
 import {
   activateAssignment, fetchClassAssignment, updateAssignmentCard, updateAssignmentDuration,
+  fetchShowSpots, updateShowSpots,
   type AssignmentType, type ClassAssignmentRow,
 } from '../../../lib/assignments';
 import { activatePraatplaatFromCatalog, updatePraatplaatTheme } from '../../../lib/praatplaat';
@@ -68,7 +69,7 @@ interface AssignmentWizardProps {
   onToClass: () => void;
 }
 
-const EMPTY_SETTINGS: WizardSettings = { cardId: null, cardTouched: false, durationLabel: '', peerEnabled: false, praatplaatThemeId: null };
+const EMPTY_SETTINGS: WizardSettings = { cardId: null, cardTouched: false, durationLabel: '', peerEnabled: false, praatplaatThemeId: null, showSpots: null };
 
 export function AssignmentWizard({ classData, initialLessonCardId = null, autoStart = false, onCancel, onToClass }: AssignmentWizardProps) {
   const { t } = useTranslation();
@@ -178,6 +179,9 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, autoSt
       cardId: null,
       cardTouched: false,
       praatplaatThemeId: card.assignmentType === 'praatplaat' ? (card.ppThemeId ?? DEFAULT_THEME_ID) : null,
+      // De les geeft tijdsduur en plekken-stand mee (047); null = stand van de les
+      durationLabel: card.durationLabel ?? '',
+      showSpots: null,
     }));
   };
 
@@ -186,7 +190,11 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, autoSt
     if (!initialLessonCardId || !selectedLesson || settings.praatplaatThemeId) return;
     if (selectedLesson.assignmentType !== 'praatplaat') return;
     const timer = setTimeout(() => {
-      setSettings((s) => ({ ...s, praatplaatThemeId: selectedLesson.ppThemeId ?? DEFAULT_THEME_ID }));
+      setSettings((s) => ({
+        ...s,
+        praatplaatThemeId: selectedLesson.ppThemeId ?? DEFAULT_THEME_ID,
+        durationLabel: s.durationLabel || (selectedLesson.durationLabel ?? ''),
+      }));
     }, 0);
     return () => clearTimeout(timer);
   }, [initialLessonCardId, selectedLesson, settings.praatplaatThemeId]);
@@ -205,6 +213,8 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, autoSt
         updateAssignmentCard,
         updatePraatplaatTheme,
         setAssignmentPeerReview,
+        fetchShowSpots,
+        updateShowSpots,
       });
       // V2-cache: de wizard schrijft rechtstreeks naar de database; laat de
       // klaspagina (opdracht, inzendingen) daarna vers ophalen.
@@ -380,6 +390,7 @@ export function AssignmentWizard({ classData, initialLessonCardId = null, autoSt
               />
             ) : (
               <StepCheck
+                lessonShowSpots={tab === 'lesson' ? selectedLesson?.showSpots ?? null : null}
                 className={classData.name}
                 display={display}
                 type={type}
@@ -583,10 +594,11 @@ interface StepCheckProps {
   onSettings: (s: WizardSettings) => void;
   ownCards: import('../../../types').Opdrachtkaart[];
   fromLesson: boolean;
+  lessonShowSpots: boolean | null;
   onChange: () => void;
 }
 
-function StepCheck({ className, display, type, outOfSeason, settings, onSettings, ownCards, fromLesson, onChange }: StepCheckProps) {
+function StepCheck({ className, display, type, outOfSeason, settings, onSettings, ownCards, fromLesson, lessonShowSpots, onChange }: StepCheckProps) {
   const { t } = useTranslation();
   if (!display || !type) {
     return <div className="py-10 text-center"><Loader2 className="w-6 h-6 text-accent-500 animate-spin mx-auto" aria-hidden="true" /></div>;
@@ -629,6 +641,7 @@ function StepCheck({ className, display, type, outOfSeason, settings, onSettings
           ownCards={ownCards}
           themes={assignableThemes}
           fromLesson={fromLesson}
+          lessonShowSpots={lessonShowSpots}
         />
       </div>
     </>

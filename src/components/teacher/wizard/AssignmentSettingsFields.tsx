@@ -20,14 +20,17 @@ interface AssignmentSettingsFieldsProps {
   themes: ThemeSummary[];
   /** true = kant-en-klare les: de les levert zelf de uitleg */
   fromLesson: boolean;
+  /** Plekken-stand die de gekozen les meegeeft (047); geldt tot de docent hem omzet */
+  lessonShowSpots?: boolean | null;
 }
 
 const fieldRow = 'grid sm:grid-cols-[220px_1fr] gap-2 sm:gap-4 items-center py-3 border-t border-border-subtle';
 const inputCls = 'w-full max-w-sm px-3 py-2 text-sm border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none bg-bg-surface text-text-main';
 
-export function AssignmentSettingsFields({ type, values, onChange, ownCards, themes, fromLesson }: AssignmentSettingsFieldsProps) {
+export function AssignmentSettingsFields({ type, values, onChange, ownCards, themes, fromLesson, lessonShowSpots = null }: AssignmentSettingsFieldsProps) {
   const { t } = useTranslation();
   const set = (patch: Partial<WizardSettings>) => onChange({ ...values, ...patch });
+  const spotsOn = values.showSpots ?? lessonShowSpots ?? true;
 
   return (
     <div>
@@ -59,6 +62,40 @@ export function AssignmentSettingsFields({ type, values, onChange, ownCards, the
           >
             {themes.map((th) => <option key={th.id} value={th.id}>{t(th.name)}</option>)}
           </select>
+        </div>
+      )}
+
+      {/* Plekken tonen — alleen bij een praatplaat (migratie 047). Uit = de
+          klas raadt de plek; de docent onthult tijdens het presenteren. */}
+      {type === 'praatplaat' && (
+        <div className={fieldRow}>
+          <div>
+            <p className="text-sm font-semibold text-text-main">{t('assignments.showSpotsLabel')}</p>
+            <p className="text-xs text-text-muted">{t('assignments.showSpotsHint')}</p>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={spotsOn}
+              aria-label={t('assignments.showSpotsLabel')}
+              onClick={() => set({ showSpots: !spotsOn })}
+              className={cn(
+                'relative w-11 h-6 rounded-full transition-colors shrink-0',
+                spotsOn ? 'bg-accent-400' : 'bg-neutral-300',
+              )}
+            >
+              <span
+                className={cn(
+                  'absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all',
+                  spotsOn ? 'left-[22px]' : 'left-0.5',
+                )}
+              />
+            </button>
+            <span className="text-xs text-text-muted">
+              {spotsOn ? t('assignments.showSpotsOn') : t('assignments.showSpotsOff')}
+            </span>
+          </div>
         </div>
       )}
 

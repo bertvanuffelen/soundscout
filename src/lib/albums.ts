@@ -26,6 +26,8 @@ export interface SharedAlbumData {
   image_url: string | null;
   storyboard_ref: string | null;
   free_theme_id: string | null;
+  /** "Plekken tonen" van de opdracht (migratie 047); ontbreekt op oudere databases = tonen */
+  show_spots?: boolean;
   submissions: Array<{
     id: string;
     student_name: string;

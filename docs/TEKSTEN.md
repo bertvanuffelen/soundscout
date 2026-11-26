@@ -18,7 +18,7 @@
 - `\|` is een echte pipe in de tekst.
 - Een lege cel betekent: leeg laten in de app (zelden nodig).
 
-_Stand: 2489 teksten in 57 secties._
+_Stand: 2509 teksten in 57 secties._
 
 ## app
 
@@ -846,6 +846,10 @@ _Stand: 2489 teksten in 57 secties._
 | `assignments.typeTitleLabel` | Leerlingen typen zelf een titel | Students type their own title |
 | `assignments.typeTitleOn` | Aan: leerlingen kiezen hun titel. | On: students choose their title. |
 | `assignments.typeTitleOff` | Uit: de app kiest een titel (geen namen in titels). | Off: the app picks a title (no names in titles). |
+| `assignments.showSpotsLabel` | Plekken tonen op de plaat | Show spots on the picture |
+| `assignments.showSpotsHint` | Uit: de klas raadt de plek. | Off: the class guesses the spot. |
+| `assignments.showSpotsOn` | Aan: elke plek staat op de plaat. | On: every spot is on the picture. |
+| `assignments.showSpotsOff` | Uit: lijst naast de plaat. Jij toont de plek. | Off: list beside the picture. You reveal the spot. |
 
 ## assignmentCards
 
@@ -940,6 +944,17 @@ _Stand: 2489 teksten in 57 secties._
 | `lessonCards.builtin.drumbeat.phases.2.text` | inleveren en de variaties klassikaal vergelijken. | submit and compare the variations in class. |
 | `lessonCards.builtin.drumbeat.phases.3.name` | Evalueren | Evaluate |
 | `lessonCards.builtin.drumbeat.phases.3.text` | bespreek hoe elke variatie het ritme verandert. | discuss how each variation changes the rhythm. |
+| `lessonCards.builtin.sinterklaas.title` | Sinterklaas: hoe klinkt pakjesavond? | Sinterklaas: what does present night sound like? |
+| `lessonCards.builtin.sinterklaas.level` | Groep 5–6 | Ages 8–10 |
+| `lessonCards.builtin.sinterklaas.goal` | Leerlingen maken een soundscape van één plek uit het Sinterklaasverhaal en ervaren hoe volgorde en lagen spanning opbouwen. | Pupils make a soundscape of one spot from the Sinterklaas story and discover how order and layers build suspense. |
+| `lessonCards.builtin.sinterklaas.phases.0.name` | Oriënteren | Orient |
+| `lessonCards.builtin.sinterklaas.phases.0.text` | Bekijk samen de plaat. Wat hoor je op elke plek? | Look at the picture together. What do you hear in each spot? |
+| `lessonCards.builtin.sinterklaas.phases.1.name` | Onderzoeken | Explore |
+| `lessonCards.builtin.sinterklaas.phases.1.text` | Kies één plek. Verzamel zes geluiden die jij erbij vindt passen. | Choose one spot. Collect six sounds that you think fit it. |
+| `lessonCards.builtin.sinterklaas.phases.2.name` | Uitvoeren | Perform |
+| `lessonCards.builtin.sinterklaas.phases.2.text` | Begin zacht, bouw op in lagen en lever in. | Start quietly, build up in layers and hand in. |
+| `lessonCards.builtin.sinterklaas.phases.3.name` | Evalueren | Evaluate |
+| `lessonCards.builtin.sinterklaas.phases.3.text` | De klas raadt de plek. Waar hoorde je dat aan? | The class guesses the spot. What gave it away? |
 | `lessonCards.sectionSubtitle` | Kant-en-klare lessen: kies er een, kies een klas en controleer wat je leerlingen zien. Maak ook je eigen leskaarten. | Ready-made lessons: pick one, choose a class and check what your students will see. Or create your own. |
 | `lessonCards.newButton` | Nieuwe leskaart | New lesson card |
 | `lessonCards.builtinBadge` | Ingebouwd | Built-in |
@@ -1202,6 +1217,7 @@ _Stand: 2489 teksten in 57 secties._
 | `errors.assignments.praatplaatTheme` | Kon het thema van de praatplaat niet wijzigen | Could not change the sound map's theme |
 | `errors.assignments.delete` | Deze opdracht kon niet uit je overzicht worden gehaald. | This assignment could not be removed from your overview. |
 | `errors.assignments.titleSetting` | Kon de titelinstelling niet opslaan | Could not save the title setting |
+| `errors.assignments.showSpots` | Kon "Plekken tonen" niet opslaan | Could not save "Show spots" |
 | `errors.classes.load` | Kon klassen niet laden | Could not load your classes |
 | `errors.classes.code` | Kon klas-code niet genereren | Could not generate a class code |
 | `errors.classes.codeInvalid` | Ongeldige klas-code ontvangen van de server | Received an invalid class code from the server |
@@ -1601,6 +1617,9 @@ _Stand: 2489 teksten in 57 secties._
 | `teacher.presentation.status.reviewed` | Beoordeeld | Reviewed |
 | `teacher.presentation.openMontage` | Open montage | Open timeline |
 | `teacher.presentation.closeMontage` | Sluit montage | Close timeline |
+| `teacher.presentation.revealSpot` | Toon plek | Show spot |
+| `teacher.presentation.hideSpot` | Verberg plek | Hide spot |
+| `teacher.presentation.revealAll` | Alle plekken | All spots |
 | `teacher.peerOverview.title` | Wat klasgenoten ervan vonden | What classmates thought |
 | `teacher.peerOverview.openButton` | Feedback-overzicht | Feedback overview |
 | `teacher.peerOverview.empty` | Nog geen beoordelingen van klasgenoten. Zet "Peer feedback" aan bij de actieve opdracht. | No peer reviews yet. Enable "Peer feedback" on the active assignment. |
@@ -1991,6 +2010,7 @@ _Stand: 2489 teksten in 57 secties._
 | `praatplaatImages.robotfabriek` | Robotfabriek | Robot Factory |
 | `praatplaatImages.sportveld` | Sportveld | Sports Field |
 | `praatplaatImages.piratenmarkt` | Piratenmarkt | Pirate market |
+| `praatplaatImages.sinterklaasPaleis` | Het Sinterklaaspaleis | St Nicholas' Palace |
 
 ## praatplaat
 

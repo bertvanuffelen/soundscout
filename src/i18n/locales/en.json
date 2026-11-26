@@ -853,7 +853,11 @@
     "historyDeleteConfirm": "\"{{name}}\" disappears from Previous assignments.\n\nYour students' compositions are kept — you'll still find them with the submissions. Note: a shared album of this assignment will stop working.",
     "typeTitleLabel": "Students type their own title",
     "typeTitleOn": "On: students choose their title.",
-    "typeTitleOff": "Off: the app picks a title (no names in titles)."
+    "typeTitleOff": "Off: the app picks a title (no names in titles).",
+    "showSpotsLabel": "Show spots on the picture",
+    "showSpotsHint": "Off: the class guesses the spot.",
+    "showSpotsOn": "On: every spot is on the picture.",
+    "showSpotsOff": "Off: list beside the picture. You reveal the spot."
   },
   "assignmentCards": {
     "sectionTitle": "Instructions & assignment cards for students",
@@ -1006,6 +1010,29 @@
           {
             "name": "Evaluate",
             "text": "discuss how each variation changes the rhythm."
+          }
+        ]
+      },
+      "sinterklaas": {
+        "title": "Sinterklaas: what does present night sound like?",
+        "level": "Ages 8–10",
+        "goal": "Pupils make a soundscape of one spot from the Sinterklaas story and discover how order and layers build suspense.",
+        "phases": [
+          {
+            "name": "Orient",
+            "text": "Look at the picture together. What do you hear in each spot?"
+          },
+          {
+            "name": "Explore",
+            "text": "Choose one spot. Collect six sounds that you think fit it."
+          },
+          {
+            "name": "Perform",
+            "text": "Start quietly, build up in layers and hand in."
+          },
+          {
+            "name": "Evaluate",
+            "text": "The class guesses the spot. What gave it away?"
           }
         ]
       }
@@ -1267,7 +1294,8 @@
       "card": "Could not update the assignment card",
       "praatplaatTheme": "Could not change the sound map's theme",
       "delete": "This assignment could not be removed from your overview.",
-      "titleSetting": "Could not save the title setting"
+      "titleSetting": "Could not save the title setting",
+      "showSpots": "Could not save \"Show spots\""
     },
     "classes": {
       "load": "Could not load your classes",
@@ -1883,7 +1911,10 @@
         "reviewed": "Reviewed"
       },
       "openMontage": "Open timeline",
-      "closeMontage": "Close timeline"
+      "closeMontage": "Close timeline",
+      "revealSpot": "Show spot",
+      "hideSpot": "Hide spot",
+      "revealAll": "All spots"
     },
     "peerOverview": {
       "title": "What classmates thought",
@@ -2353,7 +2384,8 @@
     "koningsdag": "King's Day",
     "robotfabriek": "Robot Factory",
     "sportveld": "Sports Field",
-    "piratenmarkt": "Pirate market"
+    "piratenmarkt": "Pirate market",
+    "sinterklaasPaleis": "St Nicholas' Palace"
   },
   "praatplaat": {
     "select": {

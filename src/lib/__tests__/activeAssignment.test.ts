@@ -37,6 +37,13 @@ describe('getActiveAssignment — titelinstelling (037)', () => {
     expect(a?.durationLabel).toBe('2 lessen');
   });
 
+  it('leest show_spots = false (047) en valt terug op tonen als het veld ontbreekt', async () => {
+    rpc.mockResolvedValue(row({ show_spots: false }));
+    expect((await getActiveAssignment('4821'))?.showSpots).toBe(false);
+    rpc.mockResolvedValue(row({}));
+    expect((await getActiveAssignment('4821'))?.showSpots).toBe(true);
+  });
+
   it('valt terug op "aan" als het veld ontbreekt', async () => {
     rpc.mockResolvedValue(row({}));
     const a = await getActiveAssignment('4821');
