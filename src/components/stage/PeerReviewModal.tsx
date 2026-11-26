@@ -32,11 +32,13 @@ interface PeerReviewModalProps {
   onReviewed?: () => void;
   /** Server meldt: maximum bereikt — telt als klaar */
   onCapReached?: () => void;
+  /** Raad-de-plek (migratie 047): toon de plek van klasgenoten niet */
+  hideSpots?: boolean;
 }
 
 type Phase = 'loading' | 'empty' | 'reviewing' | 'done' | 'error' | 'blocked';
 
-export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, chips, onReviewed, onCapReached }: PeerReviewModalProps) {
+export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, chips, onReviewed, onCapReached, hideSpots = false }: PeerReviewModalProps) {
   const { t, i18n } = useTranslation();
   const [phase, setPhase] = useState<Phase>('loading');
   const [items, setItems] = useState<PeerReviewItem[]>([]);
@@ -219,6 +221,8 @@ export function PeerReviewModal({ isOpen, onClose, classCode, ownSubmissionId, c
         mode="peer"
         onClose={handleClose}
         ratingSlot={ratingSlot}
+        /* Raad-de-plek (047): klasgenoten zien de plek niet vóór het raden */
+        hiddenSpotIds={hideSpots ? new Set(playlist.map((s) => s.id)) : null}
       />
     );
   }

@@ -12,7 +12,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Check } from 'lucide-react';
 import type { ClassAssignmentRow } from '../../lib/assignments';
-import { updateAssignmentCard, updateAssignmentDuration, fetchStudentsTypeTitle, updateStudentsTypeTitle } from '../../lib/assignments';
+import { updateAssignmentCard, updateAssignmentDuration, fetchStudentsTypeTitle, updateStudentsTypeTitle, fetchShowSpots, updateShowSpots } from '../../lib/assignments';
 import { cn } from '../../utils/cn';
 import { updatePraatplaatTheme } from '../../lib/praatplaat';
 import { useAssignmentCards } from '../../hooks/useAssignmentCards';
@@ -30,7 +30,7 @@ interface LiveAssignmentSettingsProps {
   compact?: boolean;
 }
 
-type Field = 'card' | 'theme' | 'duration' | 'title';
+type Field = 'card' | 'theme' | 'duration' | 'title' | 'spots';
 
 const inputCls = 'w-full px-3 py-2 text-sm border-2 border-border-subtle rounded-xl focus:ring-2 focus:ring-accent-400 focus:border-accent-400 outline-none bg-bg-surface text-text-main';
 
@@ -53,6 +53,18 @@ export function LiveAssignmentSettings({ assignment, onChanged, compact = false 
     });
     return () => { cancelled = true; };
   }, [assignment.id]);
+
+  // Plekken tonen (migratie 047, raad-de-plek): alleen bij een praatplaat;
+  // null = kolom bestaat (nog) niet → verborgen
+  const [showSpots, setShowSpots] = useState<boolean | null>(null);
+  useEffect(() => {
+    if (assignment.type !== 'praatplaat') return;
+    let cancelled = false;
+    void fetchShowSpots(assignment.id).then((value) => {
+      if (!cancelled) setShowSpots(value);
+    });
+    return () => { cancelled = true; };
+  }, [assignment.id, assignment.type]);
 
   const save = async (field: Field, fn: () => Promise<void>) => {
     setError(null);
@@ -148,6 +160,48 @@ export function LiveAssignmentSettings({ assignment, onChanged, compact = false 
           {savedTick('duration')}
         </div>
       </div>
+
+      {/* Plekken tonen (migratie 047). Uit = de klas raadt de plek; werkt
+          direct, ook midden in de les. */}
+      {assignment.type === 'praatplaat' && showSpots !== null && (
+        <div className={row}>
+          <span id={`ls-spots-${assignment.id}`} className="text-sm font-semibold text-text-main">
+            {t('assignments.showSpotsLabel')}
+          </span>
+          <div className="flex items-center gap-2 flex-wrap">
+            <button
+              type="button"
+              role="switch"
+              aria-checked={showSpots}
+              aria-labelledby={`ls-spots-${assignment.id}`}
+              onClick={() => {
+                const next = !showSpots;
+                setShowSpots(next);
+                void save('spots', async () => {
+                  try {
+                    await updateShowSpots(assignment.id, next);
+                  } catch (err) {
+                    setShowSpots(!next);
+                    throw err;
+                  }
+                });
+              }}
+              className="inline-flex items-center min-h-[44px]"
+            >
+              <span
+                className={cn('relative inline-block w-11 h-6 rounded-full transition-colors', showSpots ? 'bg-accent-500' : 'bg-neutral-300')}
+                aria-hidden="true"
+              >
+                <span className={cn('absolute top-0.5 w-5 h-5 bg-white rounded-full shadow transition-all', showSpots ? 'left-[22px]' : 'left-0.5')} />
+              </span>
+            </button>
+            <span className="text-xs text-text-muted">
+              {showSpots ? t('assignments.showSpotsOn') : t('assignments.showSpotsOff')}
+            </span>
+            {savedTick('spots')}
+          </div>
+        </div>
+      )}
 
       {/* Leerlingen typen zelf een titel (migratie 037). Uit = de app kiest
           een titel, zodat er geen namen in titels komen (AVG). */}

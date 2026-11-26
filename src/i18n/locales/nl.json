@@ -853,7 +853,11 @@
     "historyDeleteConfirm": "\"{{name}}\" verdwijnt uit Eerdere opdrachten.\n\nDe composities van je leerlingen blijven gewoon bewaard — die vind je terug bij de inzendingen. Let op: een gedeeld album van déze opdracht werkt daarna niet meer.",
     "typeTitleLabel": "Leerlingen typen zelf een titel",
     "typeTitleOn": "Aan: leerlingen kiezen hun titel.",
-    "typeTitleOff": "Uit: de app kiest een titel (geen namen in titels)."
+    "typeTitleOff": "Uit: de app kiest een titel (geen namen in titels).",
+    "showSpotsLabel": "Plekken tonen op de plaat",
+    "showSpotsHint": "Uit: de klas raadt de plek.",
+    "showSpotsOn": "Aan: elke plek staat op de plaat.",
+    "showSpotsOff": "Uit: lijst naast de plaat. Jij toont de plek."
   },
   "assignmentCards": {
     "sectionTitle": "Uitleg & opdrachtkaarten voor leerlingen",
@@ -1006,6 +1010,29 @@
           {
             "name": "Evalueren",
             "text": "bespreek hoe elke variatie het ritme verandert."
+          }
+        ]
+      },
+      "sinterklaas": {
+        "title": "Sinterklaas: hoe klinkt pakjesavond?",
+        "level": "Groep 5–6",
+        "goal": "Leerlingen maken een soundscape van één plek uit het Sinterklaasverhaal en ervaren hoe volgorde en lagen spanning opbouwen.",
+        "phases": [
+          {
+            "name": "Oriënteren",
+            "text": "Bekijk samen de plaat. Wat hoor je op elke plek?"
+          },
+          {
+            "name": "Onderzoeken",
+            "text": "Kies één plek en verzamel zes geluiden."
+          },
+          {
+            "name": "Uitvoeren",
+            "text": "Begin zacht, bouw op in lagen en lever in."
+          },
+          {
+            "name": "Evalueren",
+            "text": "De klas raadt de plek. Waar hoorde je dat aan?"
           }
         ]
       }
@@ -1267,7 +1294,8 @@
       "card": "Kon de opdrachtkaart niet bijwerken",
       "praatplaatTheme": "Kon het thema van de praatplaat niet wijzigen",
       "delete": "Deze opdracht kon niet uit je overzicht worden gehaald.",
-      "titleSetting": "Kon de titelinstelling niet opslaan"
+      "titleSetting": "Kon de titelinstelling niet opslaan",
+      "showSpots": "Kon \"Plekken tonen\" niet opslaan"
     },
     "classes": {
       "load": "Kon klassen niet laden",
@@ -1883,7 +1911,10 @@
         "reviewed": "Beoordeeld"
       },
       "openMontage": "Open montage",
-      "closeMontage": "Sluit montage"
+      "closeMontage": "Sluit montage",
+      "revealSpot": "Toon plek",
+      "hideSpot": "Verberg plek",
+      "revealAll": "Alle plekken"
     },
     "peerOverview": {
       "title": "Wat klasgenoten ervan vonden",
