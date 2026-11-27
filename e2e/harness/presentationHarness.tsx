@@ -57,3 +57,37 @@ export function mountPresentation(): void {
     </Profiler>,
   );
 }
+
+/**
+ * Raad-de-plek (migratie 047): het praatplaat-bord in docent-presentatie met
+ * "Plekken tonen" uit. Drie inzendingen op verschillende plekken, waarvan twee
+ * dicht bij elkaar (cluster). `hidden: false` geeft het bestaande bord mét
+ * plekken, als vergelijking.
+ */
+export function mountGuessBoard(options: { hidden?: boolean; mode?: 'teacher-present' | 'public' } = {}): void {
+  const { hidden = true, mode = 'teacher-present' } = options;
+  const ids = basisSamples.slice(0, 3).map((s) => s.id);
+  const item = (id: string, name: string, title: string, x: number, y: number): Submission => ({
+    id, student_name: name, composition_name: title, created_at: '2026-11-26T10:00:00Z',
+    composition_data: { ...composition(ids.slice(0, 2), 8), praatplaatPosition: { x, y } },
+  });
+  const playlist: Submission[] = [
+    item('a', 'Robin', 'Eerste', 0.2, 0.3),
+    item('b', 'Sam', 'Tweede', 0.7, 0.6),
+    item('c', 'Noor', 'Derde', 0.72, 0.62),
+  ];
+
+  const host = document.createElement('div');
+  host.id = 'presentation-harness';
+  document.body.appendChild(host);
+
+  createRoot(host).render(
+    <PresentationSurface
+      playlist={playlist}
+      mode={mode}
+      onClose={() => undefined}
+      interactiveBoard={{ imageUrl: '/images/praatplaten/sinterklaaspaleis.jpg', name: 'Het Sinterklaaspaleis' }}
+      hiddenSpotIds={hidden ? new Set(playlist.map((s) => s.id)) : null}
+    />,
+  );
+}

@@ -59,7 +59,7 @@ const card = (id: string, title = `Kaart ${id}`): Opdrachtkaart =>
 const lesson = (id: string, isBuiltin = false, title = `Les ${id}`): LessonCard => ({
   id, isBuiltin, builtinKey: isBuiltin ? id : null, assignmentType: 'free',
   templateId: null, praatplaatRef: null, ppThemeId: null, ppLocationId: null, ppImageUrl: null,
-  storyboardRef: null, freeThemeId: 'basis', cardId: null, cardInline: null,
+  storyboardRef: null, freeThemeId: 'basis', cardId: null, cardInline: null, showSpots: null, durationLabel: null,
   title, level: null, lessonGoal: null, phases: [], coverImage: null, pdfUrl: null, createdAt: '2026-11-01',
 });
 const plaat = (id: string, is_active = false): PraatplaatRow => ({

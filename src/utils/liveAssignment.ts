@@ -43,10 +43,11 @@ export function mergeLiveAssignment(
     durationLabel: fresh.durationLabel,
     peerReview: fresh.peerReview,
     studentsTypeTitle: fresh.studentsTypeTitle,
+    showSpots: fresh.showSpots,
   };
   const updated = !sameJson(
-    [current.className, current.card, current.durationLabel, current.peerReview, current.studentsTypeTitle],
-    [next.className, next.card, next.durationLabel, next.peerReview, next.studentsTypeTitle],
+    [current.className, current.card, current.durationLabel, current.peerReview, current.studentsTypeTitle, current.showSpots ?? true],
+    [next.className, next.card, next.durationLabel, next.peerReview, next.studentsTypeTitle, next.showSpots ?? true],
   );
   return { session: updated ? next : current, updated, assignmentChanged: false };
 }

@@ -20,6 +20,7 @@ import type { FeedbackSticker } from '../../lib/submissions';
 import { getSubmissionShape, submissionSortTime } from '../../lib/submissionDisplay';
 import { STICKER_ICONS, STICKER_KEYS } from '../../utils/stickerMap';
 import { useCompositionPlayback } from '../../hooks/useCompositionPlayback';
+import { useSampleThemes } from '../../hooks/useSampleThemes';
 import { useDerivedBeat } from '../../hooks/useBeatFrame';
 import { getActiveImageIndex } from '../../utils/storytelling';
 import { normalizeBpm } from '../../utils/audio';
@@ -50,6 +51,8 @@ interface FeedbackWorklistProps {
   onSetFeedback: (id: string, feedback: FeedbackValue) => Promise<void>;
   onMarkSeen: (id: string) => Promise<void> | void;
   onDelete: (id: string) => void;
+  /** Raad-de-plek (migratie 047): inzendingen waarvan de plek verborgen is */
+  hiddenSpotIds?: ReadonlySet<string> | null;
 }
 
 /** Smal scherm (telefoon): uitklappen onder de kaart i.p.v. twee kolommen */
@@ -68,7 +71,7 @@ function useIsNarrow(): boolean {
 
 export function FeedbackWorklist({
   classData, submissions, assignments, activeAssignmentId, initialSubmissionId = null,
-  onBack, onSetFeedback, onMarkSeen, onDelete,
+  onBack, onSetFeedback, onMarkSeen, onDelete, hiddenSpotIds = null,
 }: FeedbackWorklistProps) {
   const { t } = useTranslation();
   const ageLabel = useAgeLabel();
@@ -253,6 +256,7 @@ export function FeedbackWorklist({
                       onSave={(v) => handleSave(s.id, v)}
                       onDelete={() => onDelete(s.id)}
                       nameById={nameById}
+                      hideSpot={!!hiddenSpotIds?.has(s.id)}
                     />
                   </div>
                 )}
@@ -274,6 +278,7 @@ export function FeedbackWorklist({
                   onSave={(v) => handleSave(current.id, v)}
                   onDelete={() => onDelete(current.id)}
                   nameById={nameById}
+                  hideSpot={!!hiddenSpotIds?.has(current.id)}
                 />
               ) : (
                 <p className="text-text-muted text-sm py-10 text-center">{t('teacher.feedbackScreen.pick')}</p>
@@ -296,12 +301,16 @@ interface FeedbackDetailProps {
   onSave: (value: FeedbackValue) => Promise<void>;
   onDelete: () => void;
   nameById: Map<string, string>;
+  /** Raad-de-plek (migratie 047): de plek van deze inzending niet tonen */
+  hideSpot?: boolean;
 }
 
-function FeedbackDetail({ submission, assignmentName, onSave, onDelete, nameById }: FeedbackDetailProps) {
+function FeedbackDetail({ submission, assignmentName, onSave, onDelete, nameById, hideSpot = false }: FeedbackDetailProps) {
   const { t } = useTranslation();
   const ageLabel = useAgeLabel();
   const data = submission.composition_data ?? null;
+  // Geluidsnamen van niet-basis-thema's (anders staat de ruwe sleutel in beeld)
+  useSampleThemes(data?.samples);
   const shape = getSubmissionShape(submission);
   const playback = useCompositionPlayback(data, { respectLoop: true });
   const isPlaying = playback.state === 'playing';
@@ -355,7 +364,7 @@ function FeedbackDetail({ submission, assignmentName, onSave, onDelete, nameById
     visual = (
       <div className="relative rounded-xl overflow-hidden">
         <img src={data.praatplaat.imageUrl} alt="" className="w-full block" />
-        {pos && (
+        {pos && !hideSpot && (
           <span
             className="absolute w-6 h-6 -translate-x-1/2 -translate-y-1/2 rounded-full bg-accent-400 border-[3px] border-white shadow-[0_0_0_3px_var(--color-accent-400)]"
             style={{ left: `${pos.x * 100}%`, top: `${pos.y * 100}%` }}
@@ -390,7 +399,7 @@ function FeedbackDetail({ submission, assignmentName, onSave, onDelete, nameById
 
   return (
     <div>
-      {assignmentName && <p className="text-xs text-text-muted">{assignmentName}{shape === 'praatplaat' ? ` · ${t('teacher.feedbackScreen.spot')}` : ''}</p>}
+      {assignmentName && <p className="text-xs text-text-muted">{assignmentName}{shape === 'praatplaat' && !hideSpot ? ` · ${t('teacher.feedbackScreen.spot')}` : ''}</p>}
       <h2 className="text-xl sm:text-2xl font-extrabold text-text-main">{submission.composition_name}</h2>
       <p className="text-sm text-text-muted mb-3">
         {t('teacher.feedbackScreen.by', { name: submission.student_name })} · {t('teacher.feedbackScreen.submitted', { time: ageLabel(Date.parse(submission.submitted_at ?? submission.created_at)) })}

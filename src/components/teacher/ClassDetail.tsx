@@ -18,7 +18,9 @@ import { useClasses, type TeacherClass } from '../../hooks/useClasses';
 import { useSubmissions, getReviewStatus } from '../../hooks/useSubmissions';
 import type { Submission } from '../../hooks/useSubmissions';
 import { useClassAssignment } from '../../hooks/useClassAssignment';
-import { submissionMatchesAssignment } from '../../lib/assignments';
+import { submissionMatchesAssignment, fetchSpotSettings } from '../../lib/assignments';
+import type { SpotSetting } from '../../lib/assignments';
+import { hiddenSpotIdsFor, spotsHiddenForPraatplaat } from '../../utils/spotVisibility';
 import type { ClassAssignmentRow } from '../../lib/assignments';
 import { getClassDeletionWarning } from '../../lib/retention';
 import { getPeerStarsForClass } from '../../lib/peerFeedback';
@@ -79,6 +81,25 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
     removeFromHistory,
     refetch: refetchAssignment,
   } = useClassAssignment(classData.id);
+
+  // Plekken tonen (migratie 047, raad-de-plek): per praatplaat-opdracht van
+  // deze klas, actief én historie. null = kolom bestaat nog niet → de plekken
+  // staan op de plaat, zoals altijd. spotsTick: opnieuw lezen na een wijziging
+  // in de live-instellingen.
+  const [spotSettings, setSpotSettings] = useState<SpotSetting[] | null>(null);
+  const [spotsTick, setSpotsTick] = useState(0);
+  useEffect(() => {
+    let cancelled = false;
+    void fetchSpotSettings(classData.id).then((rows) => {
+      if (!cancelled) setSpotSettings(rows);
+    });
+    return () => { cancelled = true; };
+  }, [classData.id, activeAssignment?.id, pastAssignments.length, spotsTick]);
+  // Inzendingen waarvan de plek verborgen is — voor élk docentscherm
+  const hiddenSpotIds = useMemo(
+    () => hiddenSpotIdsFor(submissions, spotSettings),
+    [submissions, spotSettings],
+  );
 
   // --- Weergave ---
   const [tabChoice, setTabChoice] = useState<ClassTab | null>(initialTab);
@@ -297,6 +318,7 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
           onSetFeedback={setFeedback}
           onMarkSeen={markSeen}
           onDelete={(id) => setDeleteConfirmId(id)}
+          hiddenSpotIds={hiddenSpotIds}
         />
         <DeleteSubmissionModal
           open={!!deleteConfirmId}
@@ -451,7 +473,7 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
                   onStudentView={() => setShowStudentView(true)}
                   onStop={() => setShowStopModal(true)}
                   onDeleteClass={() => setShowDeleteClass(true)}
-                  onSettingsChanged={() => void refetchAssignment()}
+                  onSettingsChanged={() => { void refetchAssignment(); setSpotsTick((n) => n + 1); }}
                 />
               ) : (
                 <div className="rounded-2xl border border-border-subtle bg-bg-surface p-4 flex items-center justify-between gap-3 flex-wrap">
@@ -609,6 +631,7 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
               ? { imageUrl: activeAssignment.imageUrl, name: activeAssignment.assignmentName }
               : null
           }
+          hiddenSpotIds={hiddenSpotIds}
         />
       )}
 
@@ -619,11 +642,17 @@ export function ClassDetail({ classData, onBack, onOpenWizard, initialTab = null
           onClose={() => setSelectedSubmission(null)}
           onSetFeedback={(feedback) => setFeedback(selectedSubmission.id, feedback)}
           onMarkSeen={() => markSeen(selectedSubmission.id)}
+          hideSpot={hiddenSpotIds.has(selectedSubmission.id)}
         />
       )}
 
       {viewingPraatplaat && (
-        <PraatplaatViewer praatplaat={viewingPraatplaat} classId={classData.id} onClose={() => setViewingPraatplaat(null)} />
+        <PraatplaatViewer
+          praatplaat={viewingPraatplaat}
+          classId={classData.id}
+          hideSpots={spotsHiddenForPraatplaat(viewingPraatplaat.id, spotSettings)}
+          onClose={() => setViewingPraatplaat(null)}
+        />
       )}
 
       {shareTarget && (

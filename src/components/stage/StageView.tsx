@@ -49,6 +49,7 @@ import { NewWorkChoiceModal } from '../common/NewWorkChoiceModal';
 import { logger } from '../../utils/logger';
 import type { ActiveAssignment } from '../../lib/assignments';
 import { HandInCelebration } from './HandInCelebration';
+import { DiscardWorkModal } from '../common/DiscardWorkModal';
 
 export function StageView() {
   const { t, i18n } = useTranslation();
@@ -471,13 +472,11 @@ export function StageView() {
       </Modal>
 
       {/* Zonder klas: bevestiging opnieuw beginnen */}
-      <Modal isOpen={showNewModal && !classSession} onClose={() => setShowNewModal(false)} title={t('stage.newComposition')} size="sm">
-        <p className="text-text-muted text-sm mb-6 leading-relaxed text-center">{t('stage.newCompositionConfirm')}</p>
-        <div className="flex gap-3">
-          <Button variant="secondary" onClick={() => setShowNewModal(false)} className="flex-1">{t('stage.cancel')}</Button>
-          <Button variant="primary" onClick={handleNewComposition} className="flex-1">{t('stage.newComposition')}</Button>
-        </div>
-      </Modal>
+      <DiscardWorkModal
+        isOpen={showNewModal && !classSession}
+        onKeep={() => setShowNewModal(false)}
+        onDiscard={handleNewComposition}
+      />
 
       {/* Luister: schermvullende presentatie van de live soundscape (2.4) */}
       {showPresentation && (
@@ -505,6 +504,7 @@ export function StageView() {
           classCode={classSession.classCode}
           ownSubmissionId={submissionId}
           chips={classSession.peerReview.chips}
+          hideSpots={classSession.showSpots === false}
           onReviewed={() => setPeerDoneState(setPeerDone(submissionId, getPeerDone(submissionId) + 1))}
           onCapReached={() => setPeerDoneState(setPeerDone(submissionId, 3))}
         />

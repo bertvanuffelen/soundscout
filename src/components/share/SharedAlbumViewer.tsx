@@ -208,6 +208,8 @@ export function SharedAlbumViewer({ code, onBack }: SharedAlbumViewerProps) {
           : null
       }
       respectLoop
+      /* Raad-de-plek: publiek geen plekken en geen onthul-knop (047) */
+      hiddenSpotIds={data.show_spots === false ? new Set(playlist.map((s) => s.id)) : null}
     />
   );
 }
