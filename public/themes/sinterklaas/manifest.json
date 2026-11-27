@@ -59,12 +59,12 @@
           "y": 81
         },
         {
-          "id": "stoomboot-fanfare",
+          "id": "stoomboot-tuba",
           "radius": 2.75,
-          "sampleId": "stoomboot-fanfare",
+          "sampleId": "stoomboot-tuba",
           "visualHint": "pulse",
-          "x": 90,
-          "y": 60
+          "x": 92,
+          "y": 43
         },
         {
           "id": "stoomboot-kolen",
@@ -169,28 +169,44 @@
           "y": 56
         },
         {
-          "id": "dak-sluipen",
+          "id": "dak-contrabas",
           "radius": 2.75,
-          "sampleId": "dak-sluipen",
+          "sampleId": "dak-contrabas",
           "visualHint": "pulse",
-          "x": 15,
-          "y": 80
+          "x": 7,
+          "y": 78
+        },
+        {
+          "id": "dak-trompet",
+          "radius": 2.75,
+          "sampleId": "dak-trompet",
+          "visualHint": "pulse",
+          "x": 30,
+          "y": 74
+        },
+        {
+          "id": "dak-trommel",
+          "radius": 2.75,
+          "sampleId": "dak-trommel",
+          "visualHint": "pulse",
+          "x": 19,
+          "y": 84
         },
         {
           "id": "dak-sneeuw",
           "radius": 2.75,
           "sampleId": "dak-sneeuw",
           "visualHint": "pulse",
-          "x": 36,
-          "y": 62
+          "x": 38,
+          "y": 58
         },
         {
           "id": "dak-ladder",
           "radius": 2.75,
           "sampleId": "dak-ladder",
           "visualHint": "pulse",
-          "x": 39,
-          "y": 84
+          "x": 40,
+          "y": 86
         },
         {
           "id": "dak-dakpan",
@@ -389,9 +405,9 @@
           "y": 76
         },
         {
-          "id": "bakkerij-ritme",
+          "id": "bakkerij-lepels",
           "radius": 2.75,
-          "sampleId": "bakkerij-ritme",
+          "sampleId": "bakkerij-lepels",
           "visualHint": "pulse",
           "x": 52,
           "y": 58
@@ -644,9 +660,9 @@
     {
       "color": "#EA580C",
       "duration": 8,
-      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-fanfare.mp3",
+      "file": "audio/themes/sinterklaas/stoomboot/stoomboot-tuba.mp3",
       "icon": "Music",
-      "id": "stoomboot-fanfare",
+      "id": "stoomboot-tuba",
       "locationId": "stoomboot",
       "kind": "loop"
     },
@@ -749,9 +765,27 @@
     {
       "color": "#6D28D9",
       "duration": 8,
-      "file": "audio/themes/sinterklaas/dak/dak-sluipen.mp3",
-      "icon": "Music",
-      "id": "dak-sluipen",
+      "file": "audio/themes/sinterklaas/dak/dak-contrabas.mp3",
+      "icon": "Guitar",
+      "id": "dak-contrabas",
+      "locationId": "dak",
+      "kind": "loop"
+    },
+    {
+      "color": "#F2B632",
+      "duration": 8,
+      "file": "audio/themes/sinterklaas/dak/dak-trompet.mp3",
+      "icon": "Megaphone",
+      "id": "dak-trompet",
+      "locationId": "dak",
+      "kind": "loop"
+    },
+    {
+      "color": "#B3261E",
+      "duration": 8,
+      "file": "audio/themes/sinterklaas/dak/dak-trommel.mp3",
+      "icon": "Drum",
+      "id": "dak-trommel",
       "locationId": "dak",
       "kind": "loop"
     },
@@ -959,9 +993,9 @@
     {
       "color": "#EA580C",
       "duration": 8,
-      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-ritme.mp3",
-      "icon": "Music",
-      "id": "bakkerij-ritme",
+      "file": "audio/themes/sinterklaas/bakkerij/bakkerij-lepels.mp3",
+      "icon": "Utensils",
+      "id": "bakkerij-lepels",
       "locationId": "bakkerij",
       "kind": "loop"
     },
@@ -1159,7 +1193,7 @@
         "stoomboot-bel": "Ship's bell",
         "stoomboot-juichen": "Cheering",
         "stoomboot-plons": "Splash",
-        "stoomboot-fanfare": "Brass band",
+        "stoomboot-tuba": "Tuba",
         "stoomboot-kolen": "Shovelling coal",
         "stoomboot-camera": "Camera",
         "stoomboot-hond": "Dog",
@@ -1172,7 +1206,9 @@
         "dak-schoorsteen": "Present down the chimney",
         "dak-torenklok": "Tower bell",
         "dak-kat": "Cat",
-        "dak-sluipen": "Tiptoe music",
+        "dak-contrabas": "Double bass",
+        "dak-trompet": "Trumpet",
+        "dak-trommel": "Drum",
         "dak-sneeuw": "Sliding snow",
         "dak-ladder": "Ladder",
         "dak-dakpan": "Falling roof tile",
@@ -1185,7 +1221,7 @@
         "pakjeskamer-lopendeband": "Conveyor belt",
         "pakjeskamer-inpakmachine": "Wrapping machine",
         "pakjeskamer-hond": "Dog",
-        "pakjeskamer-speeldoos": "Music box",
+        "pakjeskamer-speeldoos": "Glockenspiel",
         "pakjeskamer-weegschaal": "Scales",
         "pakjeskamer-trein": "Toy train",
         "pakjeskamer-hobbelpaard": "Rocking horse",
@@ -1198,7 +1234,7 @@
         "bakkerij-deegmachine": "Dough mixer",
         "bakkerij-knabbelen": "Crunching",
         "bakkerij-niezen": "Sneeze",
-        "bakkerij-ritme": "Baking beat",
+        "bakkerij-lepels": "Wooden spoons",
         "bakkerij-muis": "Mouse",
         "bakkerij-deegroller": "Rolling pin",
         "bakkerij-bakplaat": "Oven door",
@@ -1252,7 +1288,7 @@
         "stoomboot-bel": "Scheepsbel",
         "stoomboot-juichen": "Juichen",
         "stoomboot-plons": "Plons",
-        "stoomboot-fanfare": "Fanfare",
+        "stoomboot-tuba": "Tuba",
         "stoomboot-kolen": "Kolen scheppen",
         "stoomboot-camera": "Fotocamera",
         "stoomboot-hond": "Hond",
@@ -1265,7 +1301,9 @@
         "dak-schoorsteen": "Pakje door de schoorsteen",
         "dak-torenklok": "Torenklok",
         "dak-kat": "Kat",
-        "dak-sluipen": "Sluipmuziek",
+        "dak-contrabas": "Contrabas",
+        "dak-trompet": "Trompet",
+        "dak-trommel": "Trommel",
         "dak-sneeuw": "Sneeuw glijdt",
         "dak-ladder": "Ladder",
         "dak-dakpan": "Dakpan valt",
@@ -1278,7 +1316,7 @@
         "pakjeskamer-lopendeband": "Lopende band",
         "pakjeskamer-inpakmachine": "Inpakmachine",
         "pakjeskamer-hond": "Hond",
-        "pakjeskamer-speeldoos": "Speeldoos",
+        "pakjeskamer-speeldoos": "Klokkenspel",
         "pakjeskamer-weegschaal": "Weegschaal",
         "pakjeskamer-trein": "Speelgoedtrein",
         "pakjeskamer-hobbelpaard": "Hobbelpaard",
@@ -1291,7 +1329,7 @@
         "bakkerij-deegmachine": "Deegmachine",
         "bakkerij-knabbelen": "Knabbelen",
         "bakkerij-niezen": "Niezen",
-        "bakkerij-ritme": "Bakritme",
+        "bakkerij-lepels": "Lepels",
         "bakkerij-muis": "Muis",
         "bakkerij-deegroller": "Deegroller",
         "bakkerij-bakplaat": "Ovendeur",

@@ -120,9 +120,6 @@ const SINTERKLAAS_SOUNDS: SoundCredit[] = [
   { title: "Cup Stir Making Tea", author: "Glitchedtones", ...CC0, sourceUrl: 'https://freesound.org/people/Glitchedtones/sounds/322393/' },
   { title: "Creaking Chair straining under stress long slow stress strain", author: "MattRuthSound", ...CC_BY_4, sourceUrl: 'https://freesound.org/people/MattRuthSound/sounds/528986/' },
   { title: "Squeaky door opened quickly", author: "CastIronCarousel", ...CC0, sourceUrl: 'https://freesound.org/people/CastIronCarousel/sounds/216878/' },
-  { title: 'pot2', author: 'vacuumfan7072', ...CC0, sourceUrl: 'https://freesound.org/people/vacuumfan7072/sounds/505714/' },
-  { title: 'Wood block hit', author: 'thomasjaunism', ...CC0, sourceUrl: 'https://freesound.org/people/thomasjaunism/sounds/218460/' },
-  { title: 'Hit to the can', author: 'lmr9', ...CC0, sourceUrl: 'https://freesound.org/people/lmr9/sounds/178183/' },
 ];
 
 export const THEME_CREDITS: ThemeCredits[] = [
