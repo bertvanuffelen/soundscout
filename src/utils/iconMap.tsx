@@ -69,6 +69,8 @@ import {
   Coffee,
   Armchair,
   DoorClosed,
+  Drum,
+  Utensils,
   // Sequencer-bundels (fase 2)
   Grid3x3,
 } from 'lucide-react';
@@ -143,6 +145,8 @@ const sampleIconMap: Record<string, LucideIcon> = {
   Coffee,
   Armchair,
   DoorClosed,
+  Drum,
+  Utensils,
   // Sequencer-bundels (fase 2)
   Grid3x3,
 };

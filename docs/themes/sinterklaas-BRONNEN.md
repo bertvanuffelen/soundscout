@@ -3,12 +3,9 @@
 Ronde 1 (35 geluiden) en ronde 2 (26-11-2026: zes extra effectgeluiden per locatie, op wens van Bert).
 Zes keuzes uit ronde 1 zijn na Berts luistersessie gewisseld: stoomboot-machine, dak-torenklok,
 bakkerij-deegmachine, bakkerij-niezen, huiskamer-klop en huiskamer-voetstappen.
-Na de tweede luistersessie zijn er nog vijf gewisseld: stoomboot-camera, stoomboot-pakjes,
-dak-ladder, bakkerij-muis en huiskamer-papier.
 
-65 geluiden: 55 van [Freesound](https://freesound.org) (alleen CC0 en CC BY, nooit NC of ND),
-5 gegenereerd met Higgsfield (`mirelo_text_to_audio`), 5 muziekloops zelf gemaakt
-(synthese in code; het bakritme is gesequenced uit drie CC0-slagen, zie onderaan).
+67 geluiden: 55 van [Freesound](https://freesound.org) (alleen CC0 en CC BY, nooit NC of ND),
+5 gegenereerd met Higgsfield (`mirelo_text_to_audio`), 7 muziekloops uit Suno (stems, door Bert gemaakt op 27-11-2026).
 CC BY vereist naamsvermelding; die staat ook in `src/data/credits.ts` (colofon op /over).
 
 Verwerking (alle bestanden): venster gekozen, bij losse geluiden de stilte aan begin en eind
@@ -78,18 +75,17 @@ eraf (drempel −45 dB), vaste gain naar −15 LUFS short-term-max met plafond �
 | `huiskamer-thee.mp3` | Cup Stir Making Tea.wav | Glitchedtones | CC0 1.0 | https://freesound.org/people/Glitchedtones/sounds/322393/ | venster 0.02–6.73 s, stilte-trim, gain +12.5 dB, limiter, fades, stereo 44,1 kHz 128 kbps |
 | `huiskamer-stoel.mp3` | Creaking Chair straining under stress long slow stress strain.wav | MattRuthSound | CC BY 4.0 | https://freesound.org/people/MattRuthSound/sounds/528986/ | venster 0.00–3.42 s, stilte-trim, gain +11.9 dB, limiter, fades, stereo 44,1 kHz 128 kbps |
 | `huiskamer-deur.mp3` | Squeaky door opened quickly.wav | CastIronCarousel | CC0 1.0 | https://freesound.org/people/CastIronCarousel/sounds/216878/ | venster 0.06–2.46 s, stilte-trim, gain +17.5 dB, limiter, fades, stereo 44,1 kHz 128 kbps |
-| `stoomboot-fanfare.mp3` | Eigen synthese: tuba-oempa, grote trom en bekken in marstempo; de fanfare op het podium. | SoundScout (eigen werk) | eigen werk | — | 120 BPM, G-C-D-G, exact 352.800 samples, gain +2.1 dB |
-| `dak-sluipen.mp3` | Eigen synthese: pizzicato-bas op de tellen, op de tenen; de robot met de contrabas op het dak. | SoundScout (eigen werk) | eigen werk | — | 120 BPM, G-C-D-G, exact 352.800 samples, gain +2.9 dB |
-| `pakjeskamer-speeldoos.mp3` | Eigen synthese: speeldoos met een eigen melodie (geen bestaand lied); de speeldoos op de plank rechtsboven. | SoundScout (eigen werk) | eigen werk | — | 120 BPM, G-C-D-G, exact 352.800 samples, gain -4.0 dB |
-| `bakkerij-ritme.mp3` | Eigen sequentie van CC0-slagen (pan, houtblok, blik); de robots die met lepels op pan, trommel en blik slaan. | SoundScout (eigen werk) | eigen werk | — | 120 BPM, G-C-D-G, exact 352.800 samples, gain +5.1 dB |
-| `huiskamer-piano.mp3` | Eigen synthese: piano-oempa met de akkoorden G-C-D-G; de robot aan de piano. | SoundScout (eigen werk) | eigen werk | — | 120 BPM, G-C-D-G, exact 352.800 samples, gain -0.1 dB |
+| `stoomboot-tuba.mp3` | Suno-stem (Bert): tuba; de tuba van de fanfare op het podium. | Suno, gemaakt door Bert van Uffelen | Suno-account Bert | — | maat 1–4 (0–7,806 s, 123,0 BPM) opgerekt naar 120 BPM (atempo 0,9758, toonhoogte behouden), exact 352.800 samples, gain +1.1 dB |
+| `dak-contrabas.mp3` | Suno-stem (Bert): contrabas, getokkeld; de robot met de contrabas op de dakrand. | Suno, gemaakt door Bert van Uffelen | Suno-account Bert | — | maat 1–4 (0–7,806 s, 123,0 BPM) opgerekt naar 120 BPM (atempo 0,9758, toonhoogte behouden), exact 352.800 samples, gain +0.9 dB |
+| `dak-trompet.mp3` | Suno-stem (Bert): trompet; de robot met de trompet op het dak. | Suno, gemaakt door Bert van Uffelen | Suno-account Bert | — | maat 1–4 (0–7,806 s, 123,0 BPM) opgerekt naar 120 BPM (atempo 0,9758, toonhoogte behouden), exact 352.800 samples, gain +1.8 dB |
+| `dak-trommel.mp3` | Suno-stem (Bert): kleine trom; de robot met de trommel op de dakrand. | Suno, gemaakt door Bert van Uffelen | Suno-account Bert | — | maat 1–4 (0–7,806 s, 123,0 BPM) opgerekt naar 120 BPM (atempo 0,9758, toonhoogte behouden), exact 352.800 samples, gain +0.4 dB |
+| `pakjeskamer-speeldoos.mp3` | Suno-stem (Bert): klokkenspel; de speeldoos op de plank rechtsboven. | Suno, gemaakt door Bert van Uffelen | Suno-account Bert | — | maat 1–4 (0–7,806 s, 123,0 BPM) opgerekt naar 120 BPM (atempo 0,9758, toonhoogte behouden), exact 352.800 samples, gain -1.5 dB |
+| `bakkerij-lepels.mp3` | Suno-stem (Bert): houten lepels op pannen en blik; de robots die met lepels slaan. | Suno, gemaakt door Bert van Uffelen | Suno-account Bert | — | maat 1–4 (0–7,806 s, 123,0 BPM) opgerekt naar 120 BPM (atempo 0,9758, toonhoogte behouden), exact 352.800 samples, gain +5.5 dB |
+| `huiskamer-piano.mp3` | Suno-stem (Bert): piano; de robot aan de piano. | Suno, gemaakt door Bert van Uffelen | Suno-account Bert | — | maat 1–4 (0–7,806 s, 123,0 BPM) opgerekt naar 120 BPM (atempo 0,9758, toonhoogte behouden), exact 352.800 samples, gain -0.4 dB |
 
-**Bouwstenen van `bakkerij-ritme.mp3`** (alle CC0):
-- pan: pot2.wav — vacuumfan7072 — https://freesound.org/people/vacuumfan7072/sounds/505714/
-- houtblok: Wood block hit — thomasjaunism — https://freesound.org/people/thomasjaunism/sounds/218460/
-- blik: Hit to the can.wav — lmr9 — https://freesound.org/people/lmr9/sounds/178183/
-
-**Muziek**: de vier andere loops (fanfare, sluipmuziek, speeldoos, piano) zijn volledig in
-code gesynthetiseerd; de melodie van de speeldoos is nieuw geschreven, geen bestaand lied.
-Alle vijf loops delen 120 BPM, G majeur en de akkoorden G | C | D | G, zodat elke
-combinatie stapelt.
+**Muziek**: zeven stems uit één Suno-nummer (instrumentaal, door Bert gemaakt): tuba, contrabas,
+trompet, trommel, klokkenspel, lepels en piano. Alle stems zijn op hetzelfde punt geknipt
+(maat 1–4) en op dezelfde manier opgerekt, dus ze lopen onderling precies gelijk en stapelen.
+De stem "drums (Snare)" was akoestisch gelijk aan "trommel" en is daarom één keer gebruikt.
+Rechten: volgens Berts Suno-abonnement; controleer dat dit een betaald plan is (Pro/Premier),
+want alleen dan liggen de rechten op de muziek bij de maker.
